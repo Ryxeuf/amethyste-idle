@@ -5,7 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Admin - Amethyste{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        {# Systeme de design : memes familles que le jeu #}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
         {% block stylesheets %}
             {# styles/app.css est charge via importmap + assets/app.js #}
         {% endblock %}
@@ -17,7 +20,7 @@
             {# Mobile overlay #}
             <div data-admin-sidebar-target="overlay"
                  data-action="click->admin-sidebar#close"
-                 class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+                 class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
 
             {# Sidebar #}
             <aside data-admin-sidebar-target="sidebar"

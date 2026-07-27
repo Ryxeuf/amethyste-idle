@@ -3,50 +3,62 @@
 {% block title %}{{ 'game.zone.title'|trans }}{% endblock %}
 
 {% block game_content %}
+{#
+   Ecran de zone — section 07 du systeme de design.
+
+   Trois regles tenues ici :
+   1. une seule action primaire : « Explorer ». Chasser, recolter, voyager sont
+      des actions secondaires, l'abandon et la fuite du texte ;
+   2. tout chiffre (energie, PV, stock d'un filon, duree de voyage) est en
+      monospace, aligne a droite ;
+   3. chaque liste vide dit ce qu'il faut faire au lieu d'afficher « vide ».
+#}
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header">
-            <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.zone.title'|trans }}</h2>
-                    <p class="text-gray-400 text-xs mt-0.5">{{ 'game.zone.subtitle'|trans }}</p>
+                    <h2 class="ds-name">{{ 'game.zone.title'|trans }}</h2>
+                    <p class="ds-hint">{{ 'game.zone.subtitle'|trans }}</p>
                 </div>
-                <div class="flex items-start gap-4">
+                <div class="flex flex-wrap items-start gap-4">
                     {% if phase is defined and phase %}
-                        <div class="text-right" title="{{ ('game.zone.phase.' ~ phase ~ '_tooltip')|trans }}">
-                            <p class="text-sm font-semibold {{ phase == 'night' ? 'text-indigo-300' : 'text-amber-200' }}">
+                        <div title="{{ ('game.zone.phase.' ~ phase ~ '_tooltip')|trans }}">
+                            <span class="ds-seal {{ phase == 'night' ? 'ds-seal-epic' : 'ds-seal-legendary' }}">
                                 {{ phase == 'night' ? '🌙' : '☀️' }} {{ ('game.zone.phase.' ~ phase)|trans }}
-                            </p>
+                            </span>
                         </div>
                     {% endif %}
                     {% if life %}
-                        <div class="text-right" title="{{ 'game.zone.life.tooltip'|trans }}">
-                            <p class="text-sm font-semibold {{ life.current < (life.max / 2) ? 'text-red-300' : 'text-rose-300' }}">
-                                ❤️ {{ 'game.zone.life.label'|trans }} {{ life.current }}/{{ life.max }}
-                            </p>
+                        <div class="w-32" title="{{ 'game.zone.life.tooltip'|trans }}">
+                            <div class="ds-meter__head">
+                                <span>❤️ {{ 'game.zone.life.label'|trans }}</span>
+                                <span>{{ life.current }} / {{ life.max }}</span>
+                            </div>
+                            <div class="ds-meter">
+                                <div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ life.max > 0 ? ((life.current / life.max) * 100)|round : 0 }}%"></div>
+                            </div>
                             {% if life.fullIn is not null %}
-                                <p class="text-[10px] text-gray-500">
+                                <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
                                     {{ 'game.zone.life.full_in'|trans({'%minutes%': (life.fullIn / 60)|round(0, 'ceil')}) }}
                                 </p>
                             {% endif %}
-                            <div class="mt-1 h-1.5 w-32 rounded-full bg-gray-800 overflow-hidden">
-                                <div class="h-full {{ life.current < (life.max / 2) ? 'bg-red-500/80' : 'bg-rose-400/80' }}" style="width: {{ life.max > 0 ? ((life.current / life.max) * 100)|round : 0 }}%"></div>
-                            </div>
                         </div>
                     {% endif %}
                     {% if energy %}
-                        <div class="text-right" title="{{ 'game.zone.energy.tooltip'|trans }}" data-testid="zone-energy">
-                            <p class="text-sm font-semibold text-amber-300">
-                                ⚡ {{ 'game.zone.energy.label'|trans }} {{ energy.current }}/{{ energy.max }}
-                            </p>
+                        <div class="w-32" title="{{ 'game.zone.energy.tooltip'|trans }}" data-testid="zone-energy">
+                            <div class="ds-meter__head">
+                                <span>⚡ {{ 'game.zone.energy.label'|trans }}</span>
+                                <span>{{ energy.current }} / {{ energy.max }}</span>
+                            </div>
+                            <div class="ds-meter">
+                                <div class="ds-meter__fill" style="width: {{ energy.max > 0 ? ((energy.current / energy.max) * 100)|round : 0 }}%"></div>
+                            </div>
                             {% if energy.nextPointIn is not null %}
-                                <p class="text-[10px] text-gray-500">
+                                <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
                                     {{ 'game.zone.energy.next_point'|trans({'%minutes%': (energy.nextPointIn / 60)|round(0, 'ceil')}) }}
                                 </p>
                             {% endif %}
-                            <div class="mt-1 h-1.5 w-32 rounded-full bg-gray-800 overflow-hidden">
-                                <div class="h-full bg-amber-400/80" style="width: {{ energy.max > 0 ? ((energy.current / energy.max) * 100)|round : 0 }}%"></div>
-                            </div>
                         </div>
                     {% endif %}
                 </div>
@@ -55,33 +67,33 @@
 
         <div class="game-card-body">
             {% if zone is null %}
-                <div class="text-center py-8">
-                    <p class="text-white text-sm font-medium">{{ 'game.zone.no_zone.title'|trans }}</p>
-                    <p class="text-gray-500 text-sm mt-1">{{ 'game.zone.no_zone.description'|trans }}</p>
+                <div class="ds-empty">
+                    <p class="ds-empty__title">{{ 'game.zone.no_zone.title'|trans }}</p>
+                    <p class="ds-empty__hint">{{ 'game.zone.no_zone.description'|trans }}</p>
                 </div>
             {% else %}
                 {% for label, messages in app.flashes(['success', 'error']) %}
                     {% for message in messages %}
-                        <div class="mb-3 px-3 py-2 rounded-md text-sm {{ label == 'success' ? 'bg-emerald-900/40 border border-emerald-700/50 text-emerald-200' : 'bg-red-900/40 border border-red-700/50 text-red-200' }}">
+                        <div class="ds-banner {{ label == 'success' ? 'ds-banner--gain' : 'ds-banner--loss' }} mb-3">
                             {{ message|trans }}
                         </div>
                     {% endfor %}
                 {% endfor %}
 
                 {% for result in app.flashes('explore_result') %}
-                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-indigo-900/40 border border-indigo-700/50 text-indigo-200">
+                    <div class="ds-banner mb-3">
                         🧭 {{ result.key|trans(result.params) }}
                     </div>
                 {% endfor %}
 
                 {% for result in app.flashes('gather_result') %}
-                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
+                    <div class="ds-banner ds-banner--gain mb-3">
                         ⛏️ {{ result.key|trans(result.params) }}
                     </div>
                 {% endfor %}
 
                 {% for result in app.flashes('boss_result') %}
-                    <div class="mb-3 px-3 py-2 rounded-md text-sm {{ result.defeated ? 'bg-fuchsia-900/40 border border-fuchsia-600/60 text-fuchsia-100' : 'bg-red-900/30 border border-red-800/50 text-red-200' }}">
+                    <div class="ds-banner {{ result.defeated ? 'ds-banner--gain' : 'ds-banner--loss' }} mb-3">
                         {% if result.defeated %}
                             ⚔️ {{ 'game.zone.boss.flash.defeated'|trans({'%damage%': result.damage}) }}
                         {% else %}
@@ -91,28 +103,30 @@
                 {% endfor %}
 
                 {% for result in app.flashes('expedition_result') %}
-                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-amber-900/30 border border-amber-700/50 text-amber-100">
-                        🧭 {{ 'game.zone.expedition.result'|trans({'%zone%': result.zone, '%gils%': result.gils}) }}
-                        {% if result.items is not empty %}
-                            <span class="block text-xs text-amber-200/80 mt-0.5">
-                                {% for item in result.items %}{{ item.quantity }}× {{ item.name }}{% if not loop.last %}, {% endif %}{% endfor %}
-                            </span>
-                        {% endif %}
+                    <div class="ds-banner ds-banner--gain mb-3">
+                        <span>
+                            🧭 {{ 'game.zone.expedition.result'|trans({'%zone%': result.zone, '%gils%': result.gils}) }}
+                            {% if result.items is not empty %}
+                                <span class="block ds-hint mt-0.5">
+                                    {% for item in result.items %}{{ item.quantity }}× {{ item.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                </span>
+                            {% endif %}
+                        </span>
                     </div>
                 {% endfor %}
 
                 {% if justArrived %}
-                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
+                    <div class="ds-banner ds-banner--gain mb-3">
                         {{ 'game.zone.travel.flash.arrived'|trans }}
                     </div>
                 {% endif %}
 
                 {% if travel %}
-                    <div class="mb-4 px-3 py-2.5 rounded-md bg-sky-900/30 border border-sky-700/50">
-                        <p class="text-sm text-sky-200 font-medium">
+                    <div class="ds-card p-3 mb-4">
+                        <p class="text-sm font-semibold text-ink">
                             {{ 'game.zone.travel.in_progress'|trans({'%zone%': travel.destination.localizedName(app.request.locale)}) }}
                         </p>
-                        <p class="text-xs text-sky-300/80 mt-0.5">
+                        <p class="ds-num ds-num--sm ds-num--muted text-left mt-0.5">
                             {% if travel.remainingSeconds < 60 %}
                                 {{ 'game.zone.travel.arrival_imminent'|trans }}
                             {% else %}
@@ -125,23 +139,22 @@
                 {# ── Expedition time-gated (ZON-13) ──────────────── #}
                 {% if expedition %}
                     {% if expedition.active %}
-                        <div class="mb-4 px-3 py-2.5 rounded-md bg-amber-900/25 border border-amber-700/50">
+                        <div class="ds-card p-3 mb-4">
                             {% if expedition.ready %}
-                                <p class="text-sm text-amber-100 font-medium">
+                                <p class="text-sm font-semibold text-ink">
                                     🧭 {{ 'game.zone.expedition.ready'|trans({'%zone%': expedition.zone.localizedName(app.request.locale)}) }}
                                 </p>
                                 <form method="post" action="{{ path('app_game_zone_expedition_claim') }}" class="mt-2">
                                     <input type="hidden" name="_token" value="{{ csrf_token('expedition_claim') }}">
-                                    <button type="submit"
-                                            class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-amber-800/50 border border-amber-500 text-amber-50 hover:bg-amber-700/60">
+                                    <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                         {{ 'game.zone.expedition.claim'|trans }}
                                     </button>
                                 </form>
                             {% else %}
-                                <p class="text-sm text-amber-100 font-medium">
+                                <p class="text-sm font-semibold text-ink">
                                     🧭 {{ 'game.zone.expedition.in_progress'|trans({'%zone%': expedition.zone.localizedName(app.request.locale)}) }}
                                 </p>
-                                <p class="text-xs text-amber-200/80 mt-0.5">
+                                <p class="ds-num ds-num--sm ds-num--muted text-left mt-0.5">
                                     {% if expedition.remainingSeconds < 60 %}
                                         {{ 'game.zone.expedition.return_imminent'|trans }}
                                     {% else %}
@@ -151,17 +164,16 @@
                             {% endif %}
                         </div>
                     {% elseif expedition.eligible and not travel %}
-                        <div class="mb-4 px-3 py-2.5 rounded-md bg-amber-900/15 border border-amber-800/40">
-                            <p class="text-sm font-semibold text-amber-100">{{ 'game.zone.expedition.heading'|trans }}</p>
-                            <p class="text-xs text-amber-200/70 mt-0.5 mb-2">{{ 'game.zone.expedition.subtitle'|trans }}</p>
+                        <div class="ds-card p-3 mb-4">
+                            <p class="ds-label">{{ 'game.zone.expedition.heading'|trans }}</p>
+                            <p class="ds-hint mt-0.5 mb-2">{{ 'game.zone.expedition.subtitle'|trans }}</p>
                             <div class="flex flex-wrap gap-2">
                                 {% for key, seconds in expedition.durations %}
                                     <form method="post" action="{{ path('app_game_zone_expedition_start', {durationKey: key}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('expedition_start_' ~ key) }}">
-                                        <button type="submit"
-                                                class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-amber-900/40 border border-amber-600 text-amber-100 hover:bg-amber-800/50">
+                                        <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                             {{ ('game.zone.expedition.duration.' ~ key)|trans }}
-                                            <span class="ml-2 text-[10px] uppercase tracking-wide text-amber-300/90">{{ (seconds / 3600)|round(1) }} h</span>
+                                            <span class="ds-num ds-num--sm ds-num--muted">{{ (seconds / 3600)|round(1) }} h</span>
                                         </button>
                                     </form>
                                 {% endfor %}
@@ -174,13 +186,13 @@
                 {% if zoneEvents is not empty %}
                     <div class="mb-4 space-y-2">
                         {% for event in zoneEvents %}
-                            <div class="px-3 py-2.5 rounded-md bg-fuchsia-900/25 border border-fuchsia-700/50">
+                            <div class="ds-card ds-edge-amethyst p-3">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
                                     <div>
-                                        <p class="text-sm font-semibold text-fuchsia-100">⚔️ {{ event.name }}
-                                            <span class="ml-1 text-[10px] uppercase tracking-wide text-fuchsia-300/80">{{ event.typeLabel }}</span>
+                                        <p class="ds-name ds-name--sm">⚔️ {{ event.name }}
+                                            <span class="ds-seal ds-seal-amethyst ml-1">{{ event.typeLabel }}</span>
                                         </p>
-                                        <p class="text-xs text-fuchsia-200/70 mt-0.5">
+                                        <p class="ds-num ds-num--sm ds-num--muted text-left mt-0.5">
                                             {% if event.remainingSeconds < 60 %}
                                                 {{ 'game.zone.event.ends_imminent'|trans }}
                                             {% else %}
@@ -189,15 +201,15 @@
                                         </p>
                                     </div>
                                     {% if event.joined %}
-                                        <span class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-fuchsia-800/40 border border-fuchsia-600 text-fuchsia-100">
+                                        <span class="ds-seal ds-seal--gain">
                                             {{ 'game.zone.event.joined'|trans }}
                                         </span>
                                     {% else %}
                                         <form method="post" action="{{ path('app_game_zone_event_join', {id: event.id}) }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token('zone_event_join_' ~ event.id) }}">
-                                            <button type="submit" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-fuchsia-900/50 border border-fuchsia-600 text-fuchsia-100 hover:bg-fuchsia-800/60">
+                                            <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                                 {{ 'game.zone.event.join'|trans }}
-                                                <span class="ml-2 text-[10px] uppercase tracking-wide text-amber-300/90">⚡ {{ event.cost }}</span>
+                                                <span class="ds-num ds-num--sm ds-num--muted">⚡ {{ event.cost }}</span>
                                             </button>
                                         </form>
                                     {% endif %}
@@ -209,37 +221,37 @@
 
                 {# ── Boss de zone asynchrone (ZON-18) ────────────── #}
                 {% if zoneBoss %}
-                    <div class="mb-4 px-3 py-3 rounded-md bg-fuchsia-950/40 border border-fuchsia-700/60">
+                    <div class="ds-card ds-edge-amethyst p-3 mb-4">
                         <div class="flex items-center justify-between gap-2 mb-1.5">
-                            <p class="text-sm font-semibold text-fuchsia-100">☠️ {{ zoneBoss.name }}
-                                <span class="ml-1 text-[10px] uppercase tracking-wide text-fuchsia-300/70">{{ zoneBoss.eventName }}</span>
+                            <p class="ds-name ds-name--sm">☠️ {{ zoneBoss.name }}
+                                <span class="ds-seal ds-seal-amethyst ml-1">{{ zoneBoss.eventName }}</span>
                             </p>
-                            <span class="text-xs text-fuchsia-200/80">{{ zoneBoss.hpCurrent }} / {{ zoneBoss.hpMax }} PV</span>
+                            <span class="ds-num">{{ zoneBoss.hpCurrent }} / {{ zoneBoss.hpMax }} PV</span>
                         </div>
-                        <div class="h-2 w-full rounded-full bg-gray-900 overflow-hidden mb-2">
-                            <div class="h-full bg-fuchsia-500/80" style="width: {{ zoneBoss.hpPercent }}%"></div>
+                        <div class="ds-meter ds-meter--tall mb-2">
+                            <div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ zoneBoss.hpPercent }}%"></div>
                         </div>
                         <form method="post" action="{{ path('app_game_zone_boss_assault', {id: zoneBoss.eventId}) }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('zone_boss_assault_' ~ zoneBoss.eventId) }}">
-                            <button type="submit" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-fuchsia-800/50 border border-fuchsia-500 text-fuchsia-50 hover:bg-fuchsia-700/60">
+                            <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                 {{ 'game.zone.boss.assault'|trans }}
-                                <span class="ml-2 text-[10px] uppercase tracking-wide text-amber-300/90">⚡ {{ zoneBoss.cost }}</span>
+                                <span class="ds-num ds-num--sm ds-num--muted">⚡ {{ zoneBoss.cost }}</span>
                             </button>
                         </form>
-                        <p class="text-[11px] text-fuchsia-200/60 mt-1.5">{{ 'game.zone.boss.hint'|trans }}</p>
+                        <p class="ds-hint mt-1.5">{{ 'game.zone.boss.hint'|trans }}</p>
                     </div>
                 {% endif %}
 
                 {# ── Donjon de groupe semi-synchrone (ZON-19) ────── #}
                 {% if groupDungeon %}
-                    <div class="mb-4 px-3 py-2.5 rounded-md bg-cyan-900/25 border border-cyan-700/50"
+                    <div class="ds-card ds-edge-rare p-3 mb-4"
                          data-controller="group-dungeon"
                          data-group-dungeon-mercure-url-value="{{ (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure') }}"
                          data-group-dungeon-run-id-value="{{ groupDungeon.runId }}"
                          data-group-dungeon-player-id-value="{{ groupDungeon.viewerId }}"
                          data-group-dungeon-turn-label-value="{{ 'game.zone.dungeon.turn_in'|trans({'%seconds%': '{s}'}) }}">
                         <div class="flex flex-wrap items-center justify-between gap-2">
-                            <p class="text-sm font-semibold text-cyan-100">
+                            <p class="ds-name ds-name--sm">
                                 🛡️ {{ 'game.zone.dungeon.in_progress'|trans({'%dungeon%': groupDungeon.dungeonName, '%count%': groupDungeon.memberCount}) }}
                             </p>
                             {% if groupDungeon.isLeader %}
@@ -247,23 +259,23 @@
                                       data-group-dungeon-target="abandon"
                                       {{ groupDungeon.combat.status == 'completed' ? 'class=hidden' : '' }}>
                                     <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_abandon') }}">
-                                    <button type="submit" class="text-xs px-2.5 py-1 rounded bg-red-900/40 border border-red-700/50 text-red-200 hover:bg-red-800/50">
+                                    <button type="submit" class="ds-btn ds-btn--quiet ds-btn--sm text-loss">
                                         {{ 'game.zone.dungeon.abandon'|trans }}
                                     </button>
                                 </form>
                             {% endif %}
                         </div>
 
-                        <p class="text-sm text-emerald-200 mt-1.5 {{ groupDungeon.combat.status == 'completed' ? '' : 'hidden' }}"
-                           data-group-dungeon-target="cleared">🏆 {{ 'game.zone.dungeon.cleared'|trans }}{% if groupDungeon.rewardGils is not null %} <span class="text-amber-300">+{{ groupDungeon.rewardGils }} gils</span>{% endif %}</p>
+                        <p class="text-sm text-gain mt-1.5 {{ groupDungeon.combat.status == 'completed' ? '' : 'hidden' }}"
+                           data-group-dungeon-target="cleared">🏆 {{ 'game.zone.dungeon.cleared'|trans }}{% if groupDungeon.rewardGils is not null %} <span class="ds-num ds-num--gain">+{{ groupDungeon.rewardGils }} gils</span>{% endif %}</p>
 
                         <div data-group-dungeon-target="combat" class="{{ groupDungeon.combat.status == 'completed' ? 'hidden' : '' }}">
-                            <div class="mt-2 mb-1 h-2 w-full rounded-full bg-gray-900 overflow-hidden">
-                                <div class="h-full bg-cyan-500/80" style="width: {{ groupDungeon.combat.encounterHpPercent }}%"
+                            <div class="ds-meter mt-2 mb-1">
+                                <div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ groupDungeon.combat.encounterHpPercent }}%"
                                      data-group-dungeon-target="hpBar"></div>
                             </div>
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-[11px] text-cyan-200/80">
+                                <span class="ds-num ds-num--sm ds-num--muted">
                                     <span data-group-dungeon-target="hpText">{{ groupDungeon.combat.encounterHpCurrent }} / {{ groupDungeon.combat.encounterHpMax }} PV</span>
                                     <span data-group-dungeon-target="turn">{% if groupDungeon.combat.turnRemainingSeconds is not null %}· {{ 'game.zone.dungeon.turn_in'|trans({'%seconds%': groupDungeon.combat.turnRemainingSeconds}) }}{% endif %}</span>
                                 </span>
@@ -271,55 +283,55 @@
                                       data-group-dungeon-target="attack"
                                       {{ groupDungeon.isMyTurn ? '' : 'class=hidden' }}>
                                     <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_act') }}">
-                                    <button type="submit" class="text-xs px-3 py-1 rounded bg-cyan-800/50 border border-cyan-500 text-cyan-50 hover:bg-cyan-700/60 font-medium">
+                                    <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                         {{ 'game.zone.dungeon.attack'|trans }}
                                     </button>
                                 </form>
-                                <span class="text-[11px] text-cyan-300/60 {{ groupDungeon.isMyTurn ? 'hidden' : '' }}"
+                                <span class="ds-hint {{ groupDungeon.isMyTurn ? 'hidden' : '' }}"
                                       data-group-dungeon-target="waiting">{{ 'game.zone.dungeon.waiting_turn'|trans }}</span>
                             </div>
                         </div>
-                        <p class="text-[11px] text-cyan-200/60 mt-1.5">{{ 'game.zone.dungeon.semisync_hint'|trans }}</p>
+                        <p class="ds-hint mt-1.5">{{ 'game.zone.dungeon.semisync_hint'|trans }}</p>
                     </div>
                 {% endif %}
 
                 {# ── En-tete de zone ─────────────────────────────── #}
                 <div class="mb-4" data-testid="zone-header">
                     <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-lg font-semibold text-white" data-testid="zone-name">{{ zone.localizedName(app.request.locale) }}</h3>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-300">
+                        <h3 class="ds-title" data-testid="zone-name">{{ zone.localizedName(app.request.locale) }}</h3>
+                        <span class="ds-seal ds-seal-common">
                             {{ (typeLabels[zone.type] ?? 'game.zone.type.wilderness')|trans }}
                         </span>
                         {% if zone.isSafe %}
-                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
+                            <span class="ds-seal ds-seal--gain">
                                 {{ 'game.zone.safe_badge'|trans }}
                             </span>
                         {% endif %}
                     </div>
                     {% set description = zone.localizedDescription(app.request.locale) %}
                     {% if description %}
-                        <p class="text-gray-400 text-sm mt-2">{{ description }}</p>
+                        <p class="ds-body mt-2">{{ description }}</p>
                     {% endif %}
                     {% if zone.illustrationPath %}
                         <img src="{{ asset('images/' ~ zone.illustrationPath) }}" alt="{{ zone.localizedName(app.request.locale) }}"
-                             class="mt-3 rounded-lg border border-gray-700 max-h-48 w-full object-cover">
+                             class="mt-3 rounded-panel border border-line max-h-48 w-full object-cover">
                     {% endif %}
                 </div>
 
                 {# ── Echoppes joueur (ECO-12) ────────────────────── #}
                 {% if shopsPresent|default([])|length > 0 %}
                     <div class="mb-4" data-testid="zone-shops">
-                        <h4 class="text-sm font-semibold text-gray-200 mb-2">Echoppes</h4>
+                        <h4 class="ds-label mb-2">Echoppes</h4>
                         <ul class="space-y-1.5">
                             {% for playerShop in shopsPresent %}
-                                <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
-                                    <span class="text-sm text-white">
-                                        {{ playerShop.name }}
-                                        <span class="text-xs text-gray-500">— {{ playerShop.owner.name }}</span>
+                                <li class="ds-row">
+                                    <span class="ds-row__body">
+                                        <span class="ds-row__name ds-name--sm">{{ playerShop.name }}</span>
+                                        <span class="ds-row__meta">{{ playerShop.owner.name }}</span>
                                     </span>
                                     <a href="{{ path('app_game_player_shop_visit', {id: playerShop.id}) }}"
                                        data-testid="zone-player-shop-link"
-                                       class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-amber-900/40 border border-amber-600 text-amber-100 hover:bg-amber-800/50">
+                                       class="ds-btn ds-btn--secondary ds-btn--sm">
                                         Entrer
                                     </a>
                                 </li>
@@ -330,19 +342,23 @@
 
                 {# ── PNJ presents (ZON-27) ───────────────────────── #}
                 <div class="mb-4" data-testid="zone-pnjs">
-                    <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.pnjs.heading'|trans }}</h4>
+                    <h4 class="ds-label mb-2">{{ 'game.zone.pnjs.heading'|trans }}</h4>
                     {% if pnjsPresent is empty %}
-                        <p class="text-gray-500 text-sm">{{ 'game.zone.pnjs.empty'|trans }}</p>
+                        <div class="ds-empty">
+                            <p class="ds-empty__hint">{{ 'game.zone.pnjs.empty'|trans }}</p>
+                        </div>
                     {% else %}
                         <ul class="space-y-1.5">
                             {% for pnj in pnjsPresent %}
-                                <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
-                                    <span class="text-sm text-white">{{ pnj.localizedName(app.request.locale) }}</span>
+                                <li class="ds-row">
+                                    <span class="ds-row__body">
+                                        <span class="ds-row__name ds-name--sm">{{ pnj.localizedName(app.request.locale) }}</span>
+                                    </span>
                                     <span class="flex items-center gap-2">
                                     {% if pnj.dialog is not empty %}
                                         <a href="{{ path('app_game_pnj_talk', {id: pnj.id}) }}"
                                            data-testid="zone-pnj-talk-link"
-                                           class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-cyan-900/40 border border-cyan-600 text-cyan-100 hover:bg-cyan-800/50">
+                                           class="ds-btn ds-btn--secondary ds-btn--sm">
                                             {{ 'game.zone.pnjs.talk'|trans }}
                                         </a>
                                     {% endif %}
@@ -350,11 +366,11 @@
                                         {% if pnj.isShopOpen(gameHour) %}
                                             <a href="{{ path('app_game_shop', {id: pnj.id}) }}"
                                                data-testid="zone-pnj-shop-link"
-                                               class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-amber-900/40 border border-amber-600 text-amber-100 hover:bg-amber-800/50">
+                                               class="ds-btn ds-btn--secondary ds-btn--sm">
                                                 {{ 'game.zone.pnjs.shop'|trans }}
                                             </a>
                                         {% else %}
-                                            <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-500">
+                                            <span class="ds-btn ds-btn--disabled ds-btn--sm">
                                                 {{ 'game.zone.pnjs.shop_closed'|trans }}
                                             </span>
                                         {% endif %}
@@ -369,17 +385,18 @@
                 {# ── Actions de zone (ZON-08..10) ────────────────── #}
                 {% if actions is not empty %}
                     <div class="mb-4">
-                        <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.actions.heading'|trans }}</h4>
+                        <h4 class="ds-label mb-2">{{ 'game.zone.actions.heading'|trans }}</h4>
                         <div class="flex flex-wrap gap-2">
                             {% for action in actions %}
                                 {% if action.key == 'explore' and action.enabled %}
+                                    {# L'unique action primaire de l'ecran. #}
                                     <form method="post" action="{{ path('app_game_zone_explore') }}" data-testid="zone-explore-form">
                                         <input type="hidden" name="_token" value="{{ csrf_token('explore') }}">
                                         <button type="submit" data-testid="zone-explore-button"
                                                 {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
-                                                class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-indigo-900/40 border border-indigo-600 text-indigo-100 hover:bg-indigo-800/50{% endif %}">
+                                                class="ds-btn ds-btn--primary">
                                             {{ action.label|trans }}
-                                            <span class="ml-2 text-[10px] uppercase tracking-wide {% if travel %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ action.cost }}</span>
+                                            <span class="ds-num ds-num--sm">⚡ {{ action.cost }}</span>
                                         </button>
                                     </form>
                                 {% endif %}
@@ -391,9 +408,11 @@
                     {# ── Chasser : proies ciblees du bestiaire (ZON-09) ── #}
                     {% if not zone.isSafe %}
                         <div class="mb-4">
-                            <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.hunt.heading'|trans }}</h4>
+                            <h4 class="ds-label mb-2">{{ 'game.zone.hunt.heading'|trans }}</h4>
                             {% if huntTargets is empty %}
-                                <p class="text-gray-500 text-sm">{{ 'game.zone.hunt.empty'|trans }}</p>
+                                <div class="ds-empty">
+                                    <p class="ds-empty__hint">{{ 'game.zone.hunt.empty'|trans }}</p>
+                                </div>
                             {% else %}
                                 <div class="flex flex-wrap gap-2">
                                     {% for target in huntTargets %}
@@ -401,9 +420,9 @@
                                             <input type="hidden" name="_token" value="{{ csrf_token('hunt_' ~ target.id) }}">
                                             <button type="submit" data-testid="zone-hunt-button"
                                                     {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
-                                                    class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-rose-900/40 border border-rose-600 text-rose-100 hover:bg-rose-800/50{% endif %}">
+                                                    class="ds-btn ds-btn--secondary">
                                                 🎯 {{ target.localizedName(app.request.locale) }}
-                                                <span class="ml-2 text-[10px] uppercase tracking-wide {% if travel %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ huntCost }}</span>
+                                                <span class="ds-num ds-num--sm ds-num--muted">⚡ {{ huntCost }}</span>
                                             </button>
                                         </form>
                                     {% endfor %}
@@ -416,26 +435,26 @@
                     {% if gatherables is not empty %}
                         {% set professionIcons = {'mining': '⛏️', 'herbalism': '🌿', 'fishing': '🎣'} %}
                         <div class="mb-4">
-                            <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.gather.heading'|trans }}</h4>
+                            <h4 class="ds-label mb-2">{{ 'game.zone.gather.heading'|trans }}</h4>
                             <div class="flex flex-wrap gap-2">
                                 {% for gatherable in gatherables %}
                                     {% set depleted = gatherable.depleted %}
-                                    {% set blocked = depleted or travel %}
-                                    <div class="rounded-md border px-3 py-2 min-w-[9rem] {% if depleted %}bg-gray-800/40 border-gray-700/60{% else %}bg-teal-900/30 border-teal-700/50{% endif %}">
+                                    <div class="ds-card p-3 min-w-[10rem] {{ depleted ? 'opacity-70' : '' }}">
                                         <div class="flex items-center justify-between gap-2">
-                                            <span class="text-sm text-white">
+                                            <span class="text-sm font-semibold text-ink">
                                                 {{ professionIcons[gatherable.profession] ?? '🧺' }} {{ gatherable.itemName }}
                                             </span>
-                                            <span class="text-[10px] uppercase tracking-wide {% if blocked %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ gatherCost }}</span>
+                                            <span class="ds-num ds-num--sm ds-num--muted">⚡ {{ gatherCost }}</span>
                                         </div>
+                                        {# Le stock est collectif : c'est une information sociale, pas un compteur perso. #}
                                         <div class="mt-1.5 flex items-center gap-2">
-                                            <div class="h-1.5 flex-1 rounded-full bg-gray-800 overflow-hidden">
-                                                <div class="h-full {% if depleted %}bg-gray-600{% else %}bg-teal-400/80{% endif %}" style="width: {{ gatherable.capacity > 0 ? ((gatherable.stock / gatherable.capacity) * 100)|round : 0 }}%"></div>
+                                            <div class="ds-meter flex-1">
+                                                <div class="ds-meter__fill {{ depleted ? '' : 'ds-meter__fill--gain' }}" style="width: {{ gatherable.capacity > 0 ? ((gatherable.stock / gatherable.capacity) * 100)|round : 0 }}%"></div>
                                             </div>
-                                            <span class="text-[10px] text-gray-400 tabular-nums">{{ gatherable.stock }}/{{ gatherable.capacity }}</span>
+                                            <span class="ds-num ds-num--sm">{{ gatherable.stock }}/{{ gatherable.capacity }}</span>
                                         </div>
                                         {% if depleted %}
-                                            <p class="mt-1 text-[10px] text-gray-500">
+                                            <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
                                                 {% if gatherable.respawnRemaining > 0 %}
                                                     {{ 'game.zone.gather.respawn_in'|trans({'%minutes%': (gatherable.respawnRemaining / 60)|round(0, 'ceil')}) }}
                                                 {% else %}
@@ -447,7 +466,7 @@
                                                 <input type="hidden" name="_token" value="{{ csrf_token('gather_' ~ gatherable.slug) }}">
                                                 <button type="submit" data-testid="zone-gather-button"
                                                         {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
-                                                        class="w-full inline-flex items-center justify-center rounded-md px-2.5 py-1 text-xs font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-teal-900/40 border border-teal-600 text-teal-100 hover:bg-teal-800/50{% endif %}">
+                                                        class="ds-btn ds-btn--secondary ds-btn--sm w-full">
                                                     {{ 'game.zone.actions.gather'|trans }}
                                                 </button>
                                             </form>
@@ -462,24 +481,27 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {# ── Connexions ──────────────────────────────── #}
                     <div>
-                        <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.connections.heading'|trans }}</h4>
+                        <h4 class="ds-label mb-2">{{ 'game.zone.connections.heading'|trans }}</h4>
                         {% if connections is empty %}
-                            <p class="text-gray-500 text-sm">{{ 'game.zone.connections.empty'|trans }}</p>
+                            <div class="ds-empty">
+                                <p class="ds-empty__hint">{{ 'game.zone.connections.empty'|trans }}</p>
+                            </div>
                         {% else %}
                             <ul class="space-y-1.5">
                                 {% for row in connections %}
                                     {% set connection = row.connection %}
                                     {% set seconds = row.seconds %}
                                     {% set locked = connection.requiresDiscovery and connection.toZone.id not in visitedZoneIds %}
-                                    <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
-                                        <span class="text-sm text-white">
-                                            {{ connection.toZone.localizedName(app.request.locale) }}
-                                            {% if locked %}
-                                                <span class="ml-1 text-xs text-amber-400/80" title="{{ 'game.zone.connections.locked'|trans }}">🔒</span>
-                                            {% endif %}
-                                        </span>
-                                        <span class="flex items-center gap-2">
-                                            <span class="text-xs {{ seconds < connection.travelSeconds ? 'text-emerald-300' : 'text-gray-400' }}">
+                                    <li class="ds-row">
+                                        <span class="ds-row__body">
+                                            <span class="ds-row__name ds-name--sm">
+                                                {{ connection.toZone.localizedName(app.request.locale) }}
+                                                {% if locked %}
+                                                    <span title="{{ 'game.zone.connections.locked'|trans }}">🔒</span>
+                                                {% endif %}
+                                            </span>
+                                            {# Duree reelle, mono : elle vient des `connections` declarees. #}
+                                            <span class="ds-num ds-num--sm text-left {{ seconds < connection.travelSeconds ? 'ds-num--gain' : 'ds-num--muted' }}">
                                                 {% if seconds == 0 %}
                                                     {{ 'game.zone.connections.travel_instant'|trans }}
                                                 {% else %}
@@ -489,25 +511,25 @@
                                                     <span title="{{ 'game.zone.connections.travel_mounted'|trans({'%mount%': mount|localized_mount_name, '%base%': (connection.travelSeconds / 60)|round}) }}">🐎</span>
                                                 {% endif %}
                                             </span>
-                                            {% if locked %}
-                                                <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-600">
-                                                    {{ 'game.zone.travel.button'|trans }}
-                                                </span>
-                                            {% elseif travel %}
-                                                <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-600"
-                                                      title="{{ 'game.zone.travel.error.already_traveling'|trans }}">
-                                                    {{ 'game.zone.travel.button'|trans }}
-                                                </span>
-                                            {% else %}
-                                                <form method="post" action="{{ path('app_game_zone_travel', {id: connection.id}) }}" data-testid="zone-travel-form">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('travel_' ~ connection.id) }}">
-                                                    <button type="submit" data-testid="zone-travel-button"
-                                                            class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-purple-900/40 border border-purple-600 text-purple-100 hover:bg-purple-800/50">
-                                                        {{ 'game.zone.travel.button'|trans }}
-                                                    </button>
-                                                </form>
-                                            {% endif %}
                                         </span>
+                                        {% if locked %}
+                                            <span class="ds-btn ds-btn--disabled ds-btn--sm">
+                                                {{ 'game.zone.travel.button'|trans }}
+                                            </span>
+                                        {% elseif travel %}
+                                            <span class="ds-btn ds-btn--disabled ds-btn--sm"
+                                                  title="{{ 'game.zone.travel.error.already_traveling'|trans }}">
+                                                {{ 'game.zone.travel.button'|trans }}
+                                            </span>
+                                        {% else %}
+                                            <form method="post" action="{{ path('app_game_zone_travel', {id: connection.id}) }}" data-testid="zone-travel-form">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('travel_' ~ connection.id) }}">
+                                                <button type="submit" data-testid="zone-travel-button"
+                                                        class="ds-btn ds-btn--secondary ds-btn--sm">
+                                                    {{ 'game.zone.travel.button'|trans }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -522,19 +544,21 @@
                          data-zone-chat-presence-url-value="{{ path('app_game_zone_presence') }}"
                          data-zone-chat-invite-url-value="{{ path('app_game_party_invite', {playerId: '__ID__'}) }}"
                          data-zone-chat-profile-url-value="{{ path('app_game_player_profile', {id: '__ID__'}) }}"{% endif %}>
-                        <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.players.heading'|trans }}</h4>
+                        <h4 class="ds-label mb-2">{{ 'game.zone.players.heading'|trans }}</h4>
                         <div data-zone-chat-target="presence" class="space-y-1">
                             {% if playersPresent is empty %}
-                                <p class="text-gray-500 text-sm">{{ 'game.zone.players.empty'|trans }}</p>
+                                <div class="ds-empty">
+                                    <p class="ds-empty__hint">{{ 'game.zone.players.empty'|trans }}</p>
+                                </div>
                             {% else %}
                                 {% for presentPlayer in playersPresent %}
-                                    <div class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-1.5">
-                                        <a href="{{ path('app_game_player_profile', {id: presentPlayer.id}) }}" class="text-sm text-white hover:text-sky-200 truncate">{{ presentPlayer.name }}</a>
+                                    <div class="ds-row min-h-0 py-1.5">
+                                        <a href="{{ path('app_game_player_profile', {id: presentPlayer.id}) }}" class="ds-row__body ds-row__name ds-name--sm truncate">{{ presentPlayer.name }}</a>
                                         {% if app.user and presentPlayer.user is defined and presentPlayer.user == app.user %}
-                                            <span class="text-[10px] uppercase tracking-wide text-purple-300">{{ 'game.zone.players.you'|trans }}</span>
+                                            <span class="ds-seal ds-seal-epic">{{ 'game.zone.players.you'|trans }}</span>
                                         {% else %}
                                             <form method="post" action="{{ path('app_game_party_invite', {playerId: presentPlayer.id}) }}">
-                                                <button type="submit" class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/50 border border-indigo-700 text-indigo-200 hover:bg-indigo-800/60" title="{{ 'game.zone.players.invite'|trans }}">+</button>
+                                                <button type="submit" class="ds-btn ds-btn--quiet ds-btn--sm" title="{{ 'game.zone.players.invite'|trans }}">+</button>
                                             </form>
                                         {% endif %}
                                     </div>
@@ -544,36 +568,38 @@
 
                         {# ── Chat de zone (temps reel Mercure) ────── #}
                         {% if zoneChat %}
-                            <h4 class="text-sm font-semibold text-gray-200 mb-2 mt-4">{{ 'game.zone.chat.heading'|trans }}</h4>
-                            <div class="rounded-md bg-gray-900/60 border border-gray-700/60">
+                            <h4 class="ds-label mb-2 mt-4">{{ 'game.zone.chat.heading'|trans }}</h4>
+                            <div class="ds-card">
                                 <div data-zone-chat-target="messages" class="h-40 overflow-y-auto px-3 py-2 text-xs">
                                     {% for message in zoneChat.messages %}
                                         <div class="text-xs py-0.5">
-                                            <span class="text-gray-600 mr-1">{{ message.createdAt ? message.createdAt|date('H:i') : '' }}</span>
-                                            <span class="font-semibold text-sky-300 mr-1">{{ message.sender.name }}:</span>
-                                            <span class="text-gray-200">{{ message.content }}</span>
+                                            <span class="ds-num ds-num--sm ds-num--muted mr-1">{{ message.createdAt ? message.createdAt|date('H:i') : '' }}</span>
+                                            <span class="font-semibold text-brand mr-1">{{ message.sender.name }}:</span>
+                                            <span class="text-ink">{{ message.content }}</span>
                                         </div>
                                     {% endfor %}
                                 </div>
-                                <form data-action="zone-chat#send" class="flex gap-1 border-t border-gray-700/60 p-2">
+                                <form data-action="zone-chat#send" class="flex gap-1 border-t border-line p-2">
                                     <input data-zone-chat-target="input" type="text" maxlength="500"
                                            placeholder="{{ 'game.zone.chat.placeholder'|trans }}"
-                                           class="flex-1 rounded bg-gray-800 border border-gray-700 px-2 py-1 text-xs text-gray-100 focus:outline-none focus:border-sky-600">
-                                    <button type="submit" class="rounded bg-sky-900/50 border border-sky-700 text-sky-200 hover:bg-sky-800/60 px-3 py-1 text-xs font-medium">{{ 'game.zone.chat.send'|trans }}</button>
+                                           class="flex-1 rounded-card bg-paper border border-line px-2 py-1 text-xs text-ink focus:outline-none focus:border-brand">
+                                    <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">{{ 'game.zone.chat.send'|trans }}</button>
                                 </form>
                             </div>
                         {% endif %}
 
                         {# ── Points d'interet ────────────────────── #}
-                        <h4 class="text-sm font-semibold text-gray-200 mb-2 mt-4">{{ 'game.zone.poi.heading'|trans }}</h4>
+                        <h4 class="ds-label mb-2 mt-4">{{ 'game.zone.poi.heading'|trans }}</h4>
                         {% if poiCounts is empty %}
-                            <p class="text-gray-500 text-sm">{{ 'game.zone.poi.empty'|trans }}</p>
+                            <div class="ds-empty">
+                                <p class="ds-empty__hint">{{ 'game.zone.poi.empty'|trans }}</p>
+                            </div>
                         {% else %}
-                            <ul class="space-y-1">
+                            <ul>
                                 {% for type, count in poiCounts %}
-                                    <li class="flex items-center justify-between text-sm text-gray-300">
-                                        <span>{{ (poiLabels[type] ?? type)|trans }}</span>
-                                        <span class="text-gray-500">× {{ count }}</span>
+                                    <li class="ds-stat">
+                                        <span class="ds-stat__label">{{ (poiLabels[type] ?? type)|trans }}</span>
+                                        <span class="ds-num">× {{ count }}</span>
                                     </li>
                                 {% endfor %}
                             </ul>

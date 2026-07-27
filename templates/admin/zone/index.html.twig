@@ -60,11 +60,11 @@
             </form>
             <form method="post" action="{{ path('admin_zone_import') }}" onsubmit="return confirm('Importer le graphe de zones depuis le YAML ? Les valeurs du fichier ecrasent celles de la base.')">
                 <input type="hidden" name="_token" value="{{ csrf_token('zone_import') }}">
-                <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition-colors">
+                <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-amber-600 hover:bg-amber-500 text-ink-on transition-colors">
                     Importer le YAML
                 </button>
             </form>
-            <a href="{{ path('admin_zone_new') }}" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+            <a href="{{ path('admin_zone_new') }}" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-ink-on transition-colors">
                 Nouvelle zone
             </a>
         </div>

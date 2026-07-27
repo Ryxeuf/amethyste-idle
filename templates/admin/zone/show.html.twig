@@ -7,10 +7,10 @@
     <div class="mb-6 flex flex-wrap items-center gap-3">
         <a href="{{ path('admin_zone_index') }}" class="text-sm text-purple-400 hover:text-purple-300">&larr; Toutes les zones</a>
         <span class="text-gray-700">|</span>
-        <a href="{{ path('admin_zone_edit', {id: zone.id}) }}" class="px-3 py-1.5 text-sm rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Editer</a>
+        <a href="{{ path('admin_zone_edit', {id: zone.id}) }}" class="px-3 py-1.5 text-sm rounded-lg bg-purple-600 hover:bg-purple-500 text-ink-on">Editer</a>
         <form method="post" action="{{ path('admin_zone_toggle', {id: zone.id}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('zone_toggle' ~ zone.id) }}">
-            <button type="submit" class="px-3 py-1.5 text-sm rounded-lg {% if zone.enabled %}bg-gray-700 hover:bg-gray-600 text-gray-200{% else %}bg-green-700 hover:bg-green-600 text-white{% endif %}">
+            <button type="submit" class="px-3 py-1.5 text-sm rounded-lg {% if zone.enabled %}bg-gray-700 hover:bg-gray-600 text-gray-200{% else %}bg-green-700 hover:bg-green-600 text-ink-on{% endif %}">
                 {{ zone.enabled ? 'Desactiver' : 'Activer' }}
             </button>
         </form>
@@ -40,7 +40,7 @@
             <div class="flex items-center justify-between gap-3 mb-3">
                 <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Liaisons</h2>
                 <a href="{{ path('admin_zone_connection_new', {id: zone.id}) }}"
-                   class="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Ajouter une liaison</a>
+                   class="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-ink-on">Ajouter une liaison</a>
             </div>
 
             {% if outgoing is empty %}
@@ -150,7 +150,7 @@
                         <input type="checkbox" name="nocturnal" value="1" class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-purple-600">
                         Nocturne
                     </label>
-                    <button type="submit" class="ml-auto px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Appliquer</button>
+                    <button type="submit" class="ml-auto px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-ink-on">Appliquer</button>
                 </div>
                 <p class="text-xs text-gray-600">Une creature engagee dans un combat n'est jamais retiree.</p>
             </form>

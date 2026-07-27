@@ -23,7 +23,7 @@
 
         {% for p in startPage..endPage %}
             <a href="?page={{ p }}{% if search is defined and search %}&q={{ search }}{% endif %}"
-               class="px-3 py-1.5 rounded-lg text-sm {% if p == currentPage %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %} transition-colors">
+               class="px-3 py-1.5 rounded-lg text-sm {% if p == currentPage %}bg-purple-600 text-ink-on{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %} transition-colors">
                 {{ p }}
             </a>
         {% endfor %}

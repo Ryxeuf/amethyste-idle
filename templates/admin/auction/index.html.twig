@@ -41,7 +41,7 @@
                     Journal economique
                 </a>
                 <a href="{{ path('admin_auction_flash_new') }}"
-                   class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-white text-sm rounded-lg transition-colors">
+                   class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-ink-on text-sm rounded-lg transition-colors">
                     Nouvelle vente flash
                 </a>
             </div>
@@ -74,7 +74,7 @@
                                           onsubmit="return confirm('Annuler cette vente flash ?')" class="inline">
                                         <input type="hidden" name="_token" value="{{ csrf_token('admin_flash_cancel_' ~ listing.id) }}">
                                         <button type="submit"
-                                                class="px-2 py-1 bg-red-700 hover:bg-red-600 text-white text-xs rounded transition-colors">
+                                                class="px-2 py-1 bg-red-700 hover:bg-red-600 text-ink-on text-xs rounded transition-colors">
                                             Annuler
                                         </button>
                                     </form>

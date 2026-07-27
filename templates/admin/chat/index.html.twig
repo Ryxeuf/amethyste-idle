@@ -28,7 +28,7 @@
                     Afficher supprimes
                 </label>
             </div>
-            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-ink-on px-4 py-2 rounded text-sm font-medium transition-colors">
                 Filtrer
             </button>
         </form>
@@ -120,7 +120,7 @@
         <div class="flex justify-center gap-2">
             {% for p in range(max(1, currentPage - 3), min(totalPages, currentPage + 3)) %}
                 <a href="{{ path('admin_chat_index', app.request.query.all|merge({page: p})) }}"
-                   class="px-3 py-1.5 rounded text-sm {% if p == currentPage %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-400 hover:bg-gray-700{% endif %} transition-colors">
+                   class="px-3 py-1.5 rounded text-sm {% if p == currentPage %}bg-purple-600 text-ink-on{% else %}bg-gray-800 text-gray-400 hover:bg-gray-700{% endif %} transition-colors">
                     {{ p }}
                 </a>
             {% endfor %}

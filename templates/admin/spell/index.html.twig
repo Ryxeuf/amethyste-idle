@@ -13,7 +13,7 @@
                 <a href="{{ path('admin_spell_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
             {% endif %}
         </form>
-        <a href="{{ path('admin_spell_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">+ Nouveau sort</a>
+        <a href="{{ path('admin_spell_new') }}" class="bg-purple-600 hover:bg-purple-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">+ Nouveau sort</a>
     </div>
 
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
@@ -37,7 +37,7 @@
                             <td class="px-4 py-3 text-gray-500">{{ spell.id }}</td>
                             <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ spell.name }}</td>
                             <td class="px-4 py-3">
-                                <span class="inline-flex px-2 py-1 text-xs rounded-full {% if spell.element.value == 'fire' %}bg-red-900 text-red-300{% elseif spell.element.value == 'water' %}bg-blue-900 text-blue-300{% elseif spell.element.value == 'earth' %}bg-yellow-900 text-yellow-300{% elseif spell.element.value == 'air' %}bg-teal-900 text-teal-300{% elseif spell.element.value == 'light' %}bg-white text-gray-900{% elseif spell.element.value == 'dark' %}bg-purple-900 text-purple-300{% elseif spell.element.value == 'metal' %}bg-gray-600 text-gray-200{% elseif spell.element.value == 'beast' %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-300{% endif %}">
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full {% if spell.element.value == 'fire' %}bg-red-900 text-red-300{% elseif spell.element.value == 'water' %}bg-blue-900 text-blue-300{% elseif spell.element.value == 'earth' %}bg-yellow-900 text-yellow-300{% elseif spell.element.value == 'air' %}bg-teal-900 text-teal-300{% elseif spell.element.value == 'light' %}bg-amber-900 text-amber-300{% elseif spell.element.value == 'dark' %}bg-purple-900 text-purple-300{% elseif spell.element.value == 'metal' %}bg-gray-600 text-gray-200{% elseif spell.element.value == 'beast' %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-300{% endif %}">
                                     {{ spell.element.value }}
                                 </span>
                             </td>

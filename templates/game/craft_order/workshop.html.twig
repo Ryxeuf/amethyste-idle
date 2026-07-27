@@ -35,7 +35,7 @@
                                     <span class="text-yellow-400 font-mono font-semibold text-sm">{{ order.commission|number_format(0, ',', ' ') }} G</span>
                                     <form method="post" action="{{ path('app_game_craft_order_claim', {id: order.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('craft_order_claim_' ~ order.id) }}">
-                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors">Accepter</button>
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 text-ink-on transition-colors">Accepter</button>
                                     </form>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                                 {% if order.ready %}
                                     <form method="post" action="{{ path('app_game_craft_order_fulfill', {id: order.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('craft_order_fulfill_' ~ order.id) }}">
-                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Livrer</button>
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-emerald-700 hover:bg-emerald-600 text-ink-on transition-colors">Livrer</button>
                                     </form>
                                 {% else %}
                                     {# Le craftingTime de la recette, rendu reel par ECO-07. #}

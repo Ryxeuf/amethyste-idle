@@ -160,7 +160,7 @@
                         {% endfor %}
                     </select>
                     <input type="number" name="xp_value" value="0" min="0" class="w-full sm:w-28 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200" placeholder="XP">
-                    <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0" onclick="return confirm('Modifier l\'XP de ce domaine ?');">
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0" onclick="return confirm('Modifier l\'XP de ce domaine ?');">
                         Definir XP
                     </button>
                 </form>
@@ -254,11 +254,11 @@
             <form method="post" action="{{ path('admin_player_ban', {id: player.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('ban' ~ player.id) }}">
                 {% if player.user.isBanned %}
-                    <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Debannir ce joueur ?');">
+                    <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Debannir ce joueur ?');">
                         Debannir
                     </button>
                 {% else %}
-                    <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Bannir ce joueur ?');">
+                    <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Bannir ce joueur ?');">
                         Bannir
                     </button>
                 {% endif %}
@@ -267,19 +267,19 @@
             {# Reset position #}
             <form method="post" action="{{ path('admin_player_reset_position', {id: player.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('reset' ~ player.id) }}">
-                <button type="submit" class="w-full bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Replacer ce joueur dans une zone de depart ?');">
+                <button type="submit" class="w-full bg-yellow-700 hover:bg-yellow-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Replacer ce joueur dans une zone de depart ?');">
                     Replacer en zone de depart
                 </button>
             </form>
 
-            <a href="{{ path('admin_player_teleport', {id: player.id}) }}" class="flex items-center justify-center w-full bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
+            <a href="{{ path('admin_player_teleport', {id: player.id}) }}" class="flex items-center justify-center w-full bg-blue-700 hover:bg-blue-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
                 Teleporter vers une zone
             </a>
 
             {% if player.fight %}
                 <form method="post" action="{{ path('admin_player_combat_detach', {id: player.id}) }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('combat_detach' ~ player.id) }}">
-                    <button type="submit" class="w-full bg-orange-800 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    <button type="submit" class="w-full bg-orange-800 hover:bg-orange-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             onclick="return confirm('Retirer ce joueur de son combat ?');">
                         Retirer du combat
                     </button>
@@ -297,7 +297,7 @@
                     <option value="ROLE_MODERATOR" {% if 'ROLE_MODERATOR' in player.user.roles %}selected{% endif %}>Moderateur</option>
                     <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in player.user.roles %}selected{% endif %}>Admin</option>
                 </select>
-                <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0" onclick="return confirm('Changer le role ?');">
+                <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0" onclick="return confirm('Changer le role ?');">
                     Changer
                 </button>
             </form>
@@ -314,7 +314,7 @@
                     {% endfor %}
                 </select>
                 <input type="number" name="quantity" value="1" min="1" max="99" class="w-full sm:w-20 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
-                <button type="submit" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0">
+                <button type="submit" class="bg-blue-700 hover:bg-blue-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0">
                     Donner
                 </button>
             </form>
@@ -340,7 +340,7 @@
             <form method="post" action="{{ path('admin_player_give_gils', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2">
                 <input type="hidden" name="_token" value="{{ csrf_token('give_gils' ~ player.id) }}">
                 <input type="number" name="amount" value="100" min="1" class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200" placeholder="Montant en gils">
-                <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap">
+                <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap">
                     Donner des gils
                 </button>
             </form>

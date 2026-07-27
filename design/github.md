@@ -4,6 +4,13 @@ branch: main
 ## Last sync
 date: 2026-07-27T12:30:46Z
 
+### Applied to the codebase (2026-07-27)
+- Tokens et composants traduits en code : `assets/styles/design-system.css` (`@theme` + couche `.ds-*`), importe par `assets/styles/app.css`.
+- Bascule de palette : les rampes heritees (`gray-*`, `purple-*`, `text-white`, et toutes les familles de teinte) sont reindexees vers le parchemin, pour que les gabarits pas encore repris basculent sans etre touches.
+- Ecrans repris aux composants : zone (section 07), combat, sac, competences, artisanat, boutique, plus la coque et la page de maintenance.
+- Les trois ecarts de l'audit sont fermes : mentions de niveau, monnaie « or » → gils, et le chemin `actions['combat']['spell_slug']` de `CombatSkillResolver` supprime (regle absolue #9).
+- Reste ouvert : les montures declarent un `requiredLevel` que rien n'applique ; son libelle devient « Palier » faute de regle a appliquer.
+
 ### Updated in this project
 - Audit des maquettes contre les règles déclarées (`docs/PIVOT_PBBG.md`, `docs/GAME_PRINCIPLES.md`) : les chiffres des écrans 6A-6C étaient inventés, et deux contredisaient le modèle post-pivot (pas de niveau global, énergie + time-gating réel au lieu de rendements à la minute).
 - Nouvelle section « 07 — Zone, d'après les règles déclarées » construite uniquement sur `config/game/zones/world_1.yaml` : table de rencontres de la Forêt des murmures (45/12/12/8/23), gils de coffre 5-25 le jour / 10-40 la nuit, filons partagés avec capacité et respawn, durées de voyage réelles (village 300 s, marais 300 s, mines 480 s), variance jour/nuit.

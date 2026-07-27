@@ -8,40 +8,40 @@
         {# Header #}
         <div class="game-card-header flex items-center justify-between">
             <div>
-                <h2 class="text-base sm:text-lg font-semibold text-white">{{ pnj.name }}</h2>
-                <p class="text-purple-200/70 text-xs">
+                <h2 class="ds-title">{{ pnj.name }}</h2>
+                <p class="ds-hint">
                     Marchand
                     {% if opensAt is not null and closesAt is not null %}
                         <span class="ml-1">({{ opensAt }}h - {{ closesAt }}h)</span>
                     {% endif %}
                     {% if not isOpen %}
-                        <span class="ml-1 text-red-400 font-semibold">— Fermé</span>
+                        <span class="ds-seal ds-seal--loss ml-1">— Fermé</span>
                     {% endif %}
                 </p>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-yellow-400 font-bold text-sm sm:text-base" id="player-gils">{{ player.gils }} Gils</span>
-                <a href="{{ path('app_game_zone') }}" class="text-purple-200/70 hover:text-white text-xs sm:text-sm">Retour</a>
+                <span class="ds-num ds-num--lg" id="player-gils">{{ player.gils }} Gils</span>
+                <a href="{{ path('app_game_zone') }}" class="ds-btn ds-btn--quiet ds-btn--sm">Retour</a>
             </div>
         </div>
         <div class="game-card-body">
 
         {% if not isOpen %}
-            <div class="bg-red-900/30 border border-red-700/50 rounded-lg p-4 mb-4 text-center">
-                <p class="text-red-300 text-sm">La boutique est fermée. Revenez entre {{ opensAt }}h et {{ closesAt }}h.</p>
+            <div class="ds-banner ds-banner--loss mb-4">
+                <p>La boutique est fermée. Revenez entre {{ opensAt }}h et {{ closesAt }}h.</p>
             </div>
         {% endif %}
 
         {% if totalDiscount is defined and totalDiscount > 0 %}
-            <div class="bg-emerald-900/30 border border-emerald-700/50 rounded-lg px-3 py-2 mb-4 text-xs sm:text-sm text-emerald-200 flex flex-wrap gap-x-3 gap-y-1">
-                <span class="font-semibold">Remise marchand : -{{ (totalDiscount * 100)|round }}%</span>
+            <div class="ds-banner ds-banner--gain mb-4 flex-wrap gap-x-3 gap-y-1">
+                <span class="ds-num ds-num--gain">Remise marchand : -{{ (totalDiscount * 100)|round }}%</span>
                 {% if renownDiscount > 0 %}
-                    <span class="text-emerald-300/80">
+                    <span class="ds-num ds-num--sm">
                         Renommée (<span class="{{ renownTier.cssClass }}">{{ renownTier.label }}</span>) : -{{ (renownDiscount * 100)|round }}%
                     </span>
                 {% endif %}
                 {% if guildDiscount > 0 %}
-                    <span class="text-emerald-300/80">Guilde : -{{ (guildDiscount * 100)|round }}%</span>
+                    <span class="ds-num ds-num--sm">Guilde : -{{ (guildDiscount * 100)|round }}%</span>
                 {% endif %}
             </div>
         {% endif %}
@@ -49,40 +49,40 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {# Buy section #}
             <div>
-                <h3 class="text-lg font-semibold text-purple-300 mb-3 border-b border-gray-700 pb-2">Acheter</h3>
+                <h3 class="ds-name mb-3 border-b border-line pb-2">Acheter</h3>
                 {% if shopItems is empty %}
-                    <p class="text-gray-500 text-sm">Aucun objet en vente.</p>
+                    <div class="ds-empty"><p class="ds-empty__hint">Aucun objet en vente.</p></div>
                 {% else %}
                     <div class="space-y-2">
                         {% for item in shopItems %}
                             {% set itemStock = stockInfo[item.slug] ?? null %}
                             {% set outOfStock = itemStock is not null and itemStock <= 0 %}
                             {% set effectivePrice = (totalDiscount is defined and totalDiscount > 0) ? (item.price * (1 - totalDiscount))|round(0, 'ceil') : item.price %}
-                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors{% if outOfStock %} opacity-50{% endif %}"
+                            <div class="ds-row ds-edge-{{ item.rarity|default('common') }}{% if outOfStock %} opacity-50{% endif %}"
                                  data-item-slug="{{ item.slug }}">
                                 <div class="flex-1 min-w-0">
-                                    <span class="font-medium text-sm {% if item.rarity == 'amethyst' %}text-fuchsia-400{% elseif item.rarity == 'legendary' %}text-yellow-400{% elseif item.rarity == 'epic' %}text-purple-300{% elseif item.rarity == 'rare' %}text-blue-300{% elseif item.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ item|localized_name }}</span>
+                                    <span class="ds-row__name ds-name--sm">{{ item|localized_name }}</span>
                                     {% if item.rarity and item.rarity != 'common' %}
                                         <span class="text-[9px] ml-1 inv-tooltip-rarity inv-tooltip-rarity--{{ item.rarity }}">{{ item.rarity|capitalize }}</span>
                                     {% endif %}
                                     {% set itemDescription = item|localized_description %}
-                                    <p class="text-gray-400 text-xs truncate">{{ itemDescription|slice(0, 60) }}{% if itemDescription|length > 60 %}...{% endif %}</p>
+                                    <p class="ds-row__meta truncate">{{ itemDescription|slice(0, 60) }}{% if itemDescription|length > 60 %}...{% endif %}</p>
                                 </div>
                                 <div class="flex items-center gap-3 ml-3">
                                     {% if itemStock is not null %}
-                                        <span class="text-xs font-mono whitespace-nowrap {% if outOfStock %}text-red-400{% elseif itemStock <= 3 %}text-orange-400{% else %}text-gray-400{% endif %}"
+                                        <span class="ds-num ds-num--sm {% if outOfStock %}ds-num--loss{% elseif itemStock <= 3 %}ds-num--loss{% else %}ds-num--muted{% endif %}"
                                               id="stock-{{ item.slug }}">
                                             {% if outOfStock %}Rupture{% else %}x{{ itemStock }}{% endif %}
                                         </span>
                                     {% endif %}
-                                    <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">
+                                    <span class="ds-num whitespace-nowrap">
                                         {% if effectivePrice != item.price %}
-                                            <span class="text-gray-400 text-[10px] line-through mr-1">{{ item.price }}</span>
+                                            <span class="ds-num ds-num--sm ds-num--muted line-through mr-1">{{ item.price }}</span>
                                         {% endif %}
                                         {{ effectivePrice }} G
                                     </span>
                                     <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ effectivePrice }}, {{ pnj.id }})"
-                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if not isOpen or player.gils < effectivePrice or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
+                                            class="ds-btn ds-btn--sm touch-target {% if not isOpen or player.gils < effectivePrice or outOfStock %}ds-btn--disabled{% else %}ds-btn--primary{% endif %}"
                                             {% if not isOpen or player.gils < effectivePrice or outOfStock %}disabled{% endif %}
                                             id="buy-btn-{{ item.slug }}">
                                         {% if not isOpen %}Fermé{% elseif outOfStock %}Rupture{% else %}Acheter{% endif %}
@@ -96,21 +96,21 @@
 
             {# Sell section #}
             <div>
-                <h3 class="text-lg font-semibold text-purple-300 mb-3 border-b border-gray-700 pb-2">Vendre</h3>
+                <h3 class="ds-name mb-3 border-b border-line pb-2">Vendre</h3>
                 {% set bag = player.inventories|first %}
                 {% if bag and bag.items|length > 0 %}
                     <div class="space-y-2 max-h-96 overflow-y-auto">
                         {% for playerItem in bag.items %}
-                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors"
+                            <div class="ds-row ds-edge-{{ playerItem.genericItem.rarity|default('common') }}"
                                  id="sell-item-{{ playerItem.id }}">
                                 <div class="flex-1 min-w-0">
-                                    <span class="font-medium text-sm {% if playerItem.genericItem.rarity == 'amethyst' %}text-fuchsia-400{% elseif playerItem.genericItem.rarity == 'legendary' %}text-yellow-400{% elseif playerItem.genericItem.rarity == 'epic' %}text-purple-300{% elseif playerItem.genericItem.rarity == 'rare' %}text-blue-300{% elseif playerItem.genericItem.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ playerItem.genericItem|localized_name }}</span>
-                                    <span class="text-gray-500 text-xs ml-1">({{ playerItem.genericItem.type }})</span>
+                                    <span class="ds-row__name ds-name--sm">{{ playerItem.genericItem|localized_name }}</span>
+                                    <span class="ds-row__meta">({{ playerItem.genericItem.type }})</span>
                                 </div>
                                 <div class="flex items-center gap-3 ml-3">
-                                    <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">{{ max(1, (playerItem.genericItem.price * 0.3)|round) }} G</span>
+                                    <span class="ds-num whitespace-nowrap">{{ max(1, (playerItem.genericItem.price * 0.3)|round) }} G</span>
                                     <button onclick="sellItem({{ playerItem.id }}, '{{ playerItem.genericItem.name }}', {{ pnj.id }})"
-                                            class="px-3 py-2 bg-red-600/80 hover:bg-red-500 active:bg-red-700 text-white text-xs rounded-lg transition-colors touch-target">
+                                            class="ds-btn ds-btn--secondary ds-btn--sm touch-target">
                                         Vendre
                                     </button>
                                 </div>
@@ -118,14 +118,14 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-gray-500 text-sm">Votre inventaire est vide.</p>
+                    <div class="ds-empty"><p class="ds-empty__hint">Votre inventaire est vide.</p></div>
                 {% endif %}
             </div>
         </div>
 
         {# Messages area #}
         <div id="shop-messages" class="mt-4 hidden">
-            <div class="bg-green-900/50 border border-green-700 rounded-lg p-3 text-green-300 text-sm" id="shop-message-text"></div>
+            <div class="ds-banner ds-banner--gain" id="shop-message-text"></div>
         </div>
         </div>{# end game-card-body #}
     </div>

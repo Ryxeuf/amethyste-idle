@@ -28,12 +28,12 @@
 					{% if isCurrent %}scale-110 transform{% endif %}"
 					title="{{ entry.entity.name }} — {{ 'game.fight.timeline.speed'|trans|default('Vitesse') }}: {{ entry.speed }}">
 					{# Avatar #}
-					<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 transition-all
+					<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-ink-on border-2 transition-all
 						{% if entry.type == 'player' %}
-							bg-gradient-to-br from-purple-500 to-purple-700
+							bg-brand
 							{% if isCurrent %}border-purple-300 shadow-lg shadow-purple-500/30{% else %}border-purple-600/50{% endif %}
 						{% else %}
-							bg-gradient-to-br from-red-600 to-red-800
+							bg-loss
 							{% if isCurrent %}border-red-300 shadow-lg shadow-red-500/30{% else %}border-red-700/50{% endif %}
 						{% endif %}">
 						{{ entry.entity.name|first|upper }}

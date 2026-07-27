@@ -22,11 +22,11 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ path('app_game_auction_sell') }}"
-                   class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                   class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-ink-on text-xs sm:text-sm rounded-lg transition-colors">
                     Vendre
                 </a>
                 <a href="{{ path('app_game_auction_my_listings') }}"
-                   class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                   class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs sm:text-sm rounded-lg transition-colors">
                     Mes ventes
                 </a>
             </div>
@@ -72,7 +72,7 @@
                         {% endfor %}
                     </select>
                     <button type="submit"
-                            class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg transition-colors">
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-ink-on text-sm rounded-lg transition-colors">
                         Filtrer
                     </button>
                 </div>
@@ -145,7 +145,7 @@
                                                 <input type="number" name="bid_amount" min="{{ minBid }}" value="{{ minBid }}"
                                                        class="w-24 bg-gray-700/50 border border-gray-600 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500">
                                                 <button type="submit"
-                                                        class="px-3 py-1 text-xs rounded-lg transition-colors {% if player.gils < minBid %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-amber-600 hover:bg-amber-500 text-white{% endif %}"
+                                                        class="px-3 py-1 text-xs rounded-lg transition-colors {% if player.gils < minBid %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-amber-600 hover:bg-amber-500 text-ink-on{% endif %}"
                                                         {% if player.gils < minBid %}disabled title="Fonds insuffisants"{% endif %}>
                                                     Encherir
                                                 </button>
@@ -165,7 +165,7 @@
                                                   onsubmit="return confirm('Acheter {{ item.name|e('js') }} pour {{ listing.totalPrice|number_format(0, ',', ' ') }} Gils ?')">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('auction_buy_' ~ listing.id) }}">
                                                 <button type="submit"
-                                                        class="px-3 py-1.5 text-xs rounded-lg transition-colors {% if player.gils < listing.totalPrice %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-purple-600 hover:bg-purple-500 text-white{% endif %}"
+                                                        class="px-3 py-1.5 text-xs rounded-lg transition-colors {% if player.gils < listing.totalPrice %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-purple-600 hover:bg-purple-500 text-ink-on{% endif %}"
                                                         {% if player.gils < listing.totalPrice %}disabled title="Fonds insuffisants"{% endif %}>
                                                     Acheter
                                                 </button>

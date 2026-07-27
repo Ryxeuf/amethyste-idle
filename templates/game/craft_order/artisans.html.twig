@@ -19,10 +19,10 @@
         <div class="game-card-body">
             <div class="flex flex-wrap gap-1.5 mb-4">
                 <a href="{{ path('app_game_craft_order_artisans') }}"
-                   class="px-2.5 py-1 text-xs rounded-lg transition-colors {{ craft == '' ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700' }}">Tous</a>
+                   class="px-2.5 py-1 text-xs rounded-lg transition-colors {{ craft == '' ? 'bg-indigo-600 text-ink-on' : 'bg-gray-800 text-gray-400 hover:bg-gray-700' }}">Tous</a>
                 {% for c in crafts %}
                     <a href="{{ path('app_game_craft_order_artisans', {craft: c}) }}"
-                       class="px-2.5 py-1 text-xs rounded-lg transition-colors {{ craft == c ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700' }}">{{ c }}</a>
+                       class="px-2.5 py-1 text-xs rounded-lg transition-colors {{ craft == c ? 'bg-indigo-600 text-ink-on' : 'bg-gray-800 text-gray-400 hover:bg-gray-700' }}">{{ c }}</a>
                 {% endfor %}
             </div>
 

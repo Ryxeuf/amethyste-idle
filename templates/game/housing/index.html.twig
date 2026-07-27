@@ -67,7 +67,7 @@
                     <form method="post" action="{{ path('app_game_house_rent') }}">
                         <input type="hidden" name="_token" value="{{ csrf_token('house_rent') }}">
                         <button type="submit" {{ player.gils >= rentAmount ? '' : 'disabled' }}
-                                class="px-3 py-1.5 text-xs rounded-lg bg-amber-700 hover:bg-amber-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white transition-colors">
+                                class="px-3 py-1.5 text-xs rounded-lg bg-amber-700 hover:bg-amber-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-ink-on transition-colors">
                             Payer le loyer
                         </button>
                     </form>
@@ -93,7 +93,7 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <button type="submit" class="px-3 py-1.5 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Semer</button>
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-ink-on transition-colors">Semer</button>
                                     </form>
                                 {% endif %}
                             {% else %}
@@ -107,7 +107,7 @@
                                     {% if plot.ripe %}
                                         <form method="post" action="{{ path('app_game_house_harvest', {id: plot.id}) }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token('garden_harvest_' ~ plot.id) }}">
-                                            <button type="submit" class="px-3 py-1.5 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Recolter</button>
+                                            <button type="submit" class="px-3 py-1.5 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-ink-on transition-colors">Recolter</button>
                                         </form>
                                     {% endif %}
                                 </div>
@@ -136,7 +136,7 @@
                                     <input type="hidden" name="_token" value="{{ csrf_token('house_furnish') }}">
                                     <input type="hidden" name="style" value="{{ style.value }}">
                                     <button type="submit" {{ player.gils >= style.price ? '' : 'disabled' }}
-                                            class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white transition-colors">
+                                            class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-ink-on transition-colors">
                                         {{ style.price|number_format(0, ',', ' ') }} G
                                     </button>
                                 </form>
@@ -168,7 +168,7 @@
                                class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
                     </div>
                     <button type="submit" {{ player.gils >= landPrice ? '' : 'disabled' }}
-                            class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-sm rounded-lg transition-colors">
+                            class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-ink-on text-sm rounded-lg transition-colors">
                         Acheter le terrain
                     </button>
                 </form>

@@ -26,11 +26,11 @@
                             </div>
                             <div class="flex gap-1.5">
                                 <button onclick="acceptInvitation({{ invitation.id }})"
-                                        class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors touch-target">
+                                        class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 text-ink-on text-xs rounded transition-colors touch-target">
                                     {{ 'game.party.invitation.accept'|trans }}
                                 </button>
                                 <button onclick="declineInvitation({{ invitation.id }})"
-                                        class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-white text-xs rounded transition-colors touch-target">
+                                        class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-ink-on text-xs rounded transition-colors touch-target">
                                     {{ 'game.party.invitation.decline'|trans }}
                                 </button>
                             </div>
@@ -54,12 +54,12 @@
                 <div class="flex gap-1.5">
                     {% if party.leader.id == player.id %}
                         <button onclick="disbandParty()"
-                                class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-white text-xs rounded transition-colors touch-target">
+                                class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-ink-on text-xs rounded transition-colors touch-target">
                             {{ 'game.party.disband'|trans }}
                         </button>
                     {% else %}
                         <button onclick="leaveParty()"
-                                class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-white text-xs rounded transition-colors touch-target">
+                                class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-ink-on text-xs rounded transition-colors touch-target">
                             {{ 'game.party.leave'|trans }}
                         </button>
                     {% endif %}
@@ -79,7 +79,7 @@
                             <input type="text" id="invite-player-name" placeholder="{{ 'game.party.invite_placeholder'|trans }}"
                                    class="flex-1 px-3 py-1.5 bg-gray-800 border border-gray-600 rounded text-white text-sm placeholder-gray-500 focus:border-purple-500 focus:outline-none">
                             <button onclick="invitePlayer()"
-                                    class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors touch-target">
+                                    class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs rounded transition-colors touch-target">
                                 {{ 'game.party.invite'|trans }}
                             </button>
                         </div>
@@ -132,7 +132,7 @@
                 </div>
 
                 <button onclick="createParty()"
-                        class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded transition-colors touch-target">
+                        class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 text-ink-on text-sm rounded transition-colors touch-target">
                     {{ 'game.party.create'|trans }}
                 </button>
             </div>

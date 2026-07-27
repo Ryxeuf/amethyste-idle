@@ -2,12 +2,13 @@
 {% set canCraftRecipe = craftCheck.possible ?? false %}
 {% set missingItems = craftCheck.missing ?? [] %}
 
+{# La qualite est une rarete : elle se dit en sceau, comme dans le DS. #}
 {% set qualityColors = {
-    'normal': 'text-gray-400 bg-gray-700 border-gray-600',
-    'uncommon': 'text-green-400 bg-green-900 border-green-700',
-    'rare': 'text-blue-400 bg-blue-900 border-blue-700',
-    'epic': 'text-purple-400 bg-purple-900 border-purple-700',
-    'legendary': 'text-orange-400 bg-orange-900 border-orange-700',
+    'normal': 'ds-seal-common',
+    'uncommon': 'ds-seal-uncommon',
+    'rare': 'ds-seal-rare',
+    'epic': 'ds-seal-epic',
+    'legendary': 'ds-seal-legendary',
 } %}
 
 {% set qualityLabels = {
@@ -18,29 +19,29 @@
     'legendary': 'Legendaire',
 } %}
 
-<div class="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-purple-600 transition-colors {% if not canCraftRecipe %}opacity-75{% endif %}">
+<div class="ds-card p-4 {% if not canCraftRecipe %}opacity-75{% endif %}">
     {# En-tete #}
     <div class="flex items-start justify-between mb-3">
         <div>
-            <h3 class="text-lg font-semibold text-white">{{ recipe|localized_recipe_name }}</h3>
+            <h3 class="ds-name">{{ recipe|localized_recipe_name }}</h3>
             {% if recipe.description %}
-                <p class="text-sm text-gray-400 mt-1">{{ recipe|localized_recipe_description }}</p>
+                <p class="ds-hint mt-1">{{ recipe|localized_recipe_description }}</p>
             {% endif %}
         </div>
         <div class="flex items-center gap-2 ml-2">
             {% if recipe.quality %}
-                <span class="text-xs px-2 py-1 rounded-full border {{ qualityColors[recipe.quality] ?? qualityColors['normal'] }}">
+                <span class="ds-seal {{ qualityColors[recipe.quality] ?? qualityColors['normal'] }}">
                     {{ qualityLabels[recipe.quality] ?? 'Normal' }}
                 </span>
             {% endif %}
             {% if recipe.requiredSpecialization %}
-                <span class="text-xs bg-yellow-900/60 text-yellow-300 border border-yellow-700/50 px-2 py-1 rounded-full whitespace-nowrap" title="Recette exclusive a la specialisation {{ recipe.requiredSpecialization.label }}">
+                <span class="ds-seal ds-seal-legendary" title="Recette exclusive a la specialisation {{ recipe.requiredSpecialization.label }}">
                     {{ recipe.requiredSpecialization.label }}
                 </span>
             {% endif %}
             {% if recipe.requiredLevel > 1 %}
-                <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded-full whitespace-nowrap">
-                    Niv. {{ recipe.requiredLevel }}
+                <span class="ds-seal ds-seal-common">
+                    {{ 'game.crafting.rank_short'|trans({'%rank%': recipe.requiredLevel}) }}
                 </span>
             {% endif %}
         </div>
@@ -48,7 +49,7 @@
 
     {# Ingredients #}
     <div class="mb-3">
-        <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Ingredients</h4>
+        <h4 class="ds-label mb-2">Ingredients</h4>
         <div class="flex flex-wrap gap-2">
             {% for ingredient in recipe.ingredients %}
                 {% set ingredientSlug = ingredient.slug %}
@@ -64,14 +65,9 @@
                     {% endif %}
                 {% endfor %}
 
-                <span class="inline-flex items-center px-2 py-1 rounded text-xs
-                    {% if isMissing %}
-                        bg-red-900 text-red-300 border border-red-700
-                    {% else %}
-                        bg-green-900 text-green-300 border border-green-700
-                    {% endif %}">
+                <span class="ds-seal {{ isMissing ? 'ds-seal--loss' : 'ds-seal--gain' }}">
                     {{ ingredientSlug|replace({'_': ' ', '-': ' '})|capitalize }}
-                    <span class="ml-1 font-mono">{{ haveCount }}/{{ ingredientQty }}</span>
+                    <span class="ds-num ds-num--sm ml-1">{{ haveCount }}/{{ ingredientQty }}</span>
                 </span>
             {% endfor %}
         </div>
@@ -79,8 +75,8 @@
 
     {# Resultat #}
     <div class="mb-3">
-        <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Resultat</h4>
-        <span class="text-purple-300 font-medium">
+        <h4 class="ds-label mb-1">Resultat</h4>
+        <span class="ds-name ds-name--sm">
             {{ recipe.result.name }}
             {% if recipe.resultQuantity > 1 %}
                 x{{ recipe.resultQuantity }}
@@ -89,9 +85,9 @@
     </div>
 
     {# Informations de craft #}
-    <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
-        <span>Temps : {{ recipe.craftingTime }}s</span>
-        <span>+{{ recipe.xpReward }} XP</span>
+    <div class="ds-stat mb-3">
+        <span class="ds-num ds-num--sm ds-num--muted text-left">Temps : {{ recipe.craftingTime }}s</span>
+        <span class="ds-num ds-num--gain">+{{ recipe.xpReward }} XP</span>
     </div>
 
     {# Bouton de fabrication avec quantite #}
@@ -109,15 +105,15 @@
         {% if canCraftRecipe and maxCraftQty > 1 %}
             <div class="flex items-center gap-1.5 mb-2">
                 <button type="button" data-action="craft-queue#decrement"
-                        class="w-7 h-7 flex items-center justify-center rounded bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-bold">-</button>
+                        class="ds-btn ds-btn--secondary ds-btn--sm w-7 min-h-0 h-7 px-0">-</button>
                 <input type="number" min="1" max="{{ maxCraftQty }}" value="1"
                        data-craft-queue-target="quantityInput"
-                       class="w-12 h-7 text-center text-sm bg-gray-700 text-white rounded border border-gray-600 focus:border-purple-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                       class="w-12 h-7 text-center ds-num bg-paper text-ink rounded-card border border-line focus:border-brand focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                 <button type="button" data-action="craft-queue#increment"
-                        class="w-7 h-7 flex items-center justify-center rounded bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-bold">+</button>
+                        class="ds-btn ds-btn--secondary ds-btn--sm w-7 min-h-0 h-7 px-0">+</button>
                 <button type="button" data-action="craft-queue#setMax"
                         data-craft-queue-target="maxBadge"
-                        class="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/50 text-purple-300 border border-purple-700/50 hover:bg-purple-800/50 cursor-pointer">
+                        class="ds-seal ds-seal-epic cursor-pointer">
                     Max ({{ maxCraftQty }})
                 </button>
             </div>
@@ -130,12 +126,7 @@
         <button type="button"
                 data-craft-queue-target="button"
                 data-action="craft-queue#craft"
-                class="w-full py-2 px-4 rounded-md text-sm font-medium transition-colors
-                    {% if canCraftRecipe %}
-                        bg-purple-600 hover:bg-purple-500 text-white cursor-pointer
-                    {% else %}
-                        bg-gray-700 text-gray-500 cursor-not-allowed
-                    {% endif %}"
+                class="ds-btn w-full {{ canCraftRecipe ? 'ds-btn--primary' : 'ds-btn--disabled' }}"
                 {% if not canCraftRecipe %}disabled{% endif %}>
             <span data-craft-queue-target="buttonText">
                 {% if canCraftRecipe %}

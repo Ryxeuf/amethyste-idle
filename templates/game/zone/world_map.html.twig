@@ -27,7 +27,7 @@
             {% if nodes is empty %}
                 <p class="text-gray-500 text-sm text-center py-8">{{ 'game.world_map.empty'|trans }}</p>
             {% else %}
-                <div class="relative w-full mx-auto rounded-lg border border-indigo-900/50 bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 overflow-hidden" style="max-width: 640px; aspect-ratio: 1 / 1;">
+                <div class="relative w-full mx-auto rounded-lg border border-indigo-900/50 bg-paper overflow-hidden" style="max-width: 640px; aspect-ratio: 1 / 1;">
                     {# ── Aretes (connexions) ── #}
                     <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none">
                         {% for edge in edges %}

@@ -63,7 +63,7 @@
                             <option value="0" {% if not fight.inProgress %}selected{% endif %}>Non</option>
                         </select>
                     </div>
-                    <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Enregistrer</button>
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium">Enregistrer</button>
                 </form>
             </div>
         </div>
@@ -73,7 +73,7 @@
             <p class="text-gray-500 text-sm mb-4">Liberer tout le monde et remettre les mobs sur la carte (combat laisse en base, in_progress = non).</p>
             <form method="post" action="{{ path('admin_fight_release', {id: fight.id}) }}" class="mb-6">
                 <input type="hidden" name="_token" value="{{ csrf_token('admin_fight_release' ~ fight.id) }}">
-                <button type="submit" class="w-full sm:w-auto bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                <button type="submit" class="w-full sm:w-auto bg-amber-700 hover:bg-amber-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium"
                         onclick="return confirm('Detacher tous les joueurs et liberer les mobs sur la carte ?');">
                     Liberer combat (garder les mobs)
                 </button>
@@ -83,7 +83,7 @@
                 <p class="text-red-400/90 text-sm mb-2">Zone admin : supprime le combat et les entites mob associees.</p>
                 <form method="post" action="{{ path('admin_fight_force_delete', {id: fight.id}) }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('admin_fight_force_delete' ~ fight.id) }}">
-                    <button type="submit" class="w-full sm:w-auto bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                    <button type="submit" class="w-full sm:w-auto bg-red-800 hover:bg-red-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium"
                             onclick="return confirm('SUPPRIMER ce combat et tous les mobs ? Irreversible.');">
                         Supprimer combat + mobs
                     </button>

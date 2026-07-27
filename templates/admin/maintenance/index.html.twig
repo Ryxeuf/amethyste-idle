@@ -25,11 +25,11 @@
             <form method="post" action="{{ path('admin_maintenance_toggle') }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('maintenance_toggle') }}">
                 {% if isActive %}
-                    <button type="submit" class="bg-green-700 hover:bg-green-600 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Desactiver la maintenance et remettre le site en ligne ?');">
+                    <button type="submit" class="bg-green-700 hover:bg-green-600 text-ink-on px-6 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Desactiver la maintenance et remettre le site en ligne ?');">
                         Desactiver la maintenance
                     </button>
                 {% else %}
-                    <button type="submit" class="bg-red-700 hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Activer la maintenance ? Le site sera inaccessible aux joueurs.');">
+                    <button type="submit" class="bg-red-700 hover:bg-red-600 text-ink-on px-6 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Activer la maintenance ? Le site sera inaccessible aux joueurs.');">
                         Activer la maintenance
                     </button>
                 {% endif %}

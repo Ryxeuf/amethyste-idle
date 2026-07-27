@@ -1,15 +1,15 @@
 {# Carte d'une recette verrouillee (niveau de domaine insuffisant) #}
-<div class="bg-gray-800/50 border border-gray-700/50 rounded-lg p-4 opacity-50 relative">
+<div class="ds-card p-4 opacity-60 relative">
     {# Indicateur de verrouillage #}
     <div class="absolute top-3 right-3 flex flex-col items-end gap-1">
-        <span class="inline-flex items-center gap-1 text-xs bg-amber-900/60 text-amber-300 px-2 py-1 rounded-full border border-amber-700/50">
+        <span class="ds-seal ds-seal-legendary">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
             </svg>
-            Niv. {{ recipe.requiredLevel }}
+            {{ 'game.crafting.rank_short'|trans({'%rank%': recipe.requiredLevel}) }}
         </span>
         {% if recipe.requiredSpecialization %}
-            <span class="inline-flex items-center gap-1 text-xs bg-yellow-900/60 text-yellow-300 px-2 py-1 rounded-full border border-yellow-700/50" title="Recette exclusive a la specialisation {{ recipe.requiredSpecialization.label }}">
+            <span class="ds-seal ds-seal-legendary" title="Recette exclusive a la specialisation {{ recipe.requiredSpecialization.label }}">
                 {{ recipe.requiredSpecialization.label }}
             </span>
         {% endif %}
@@ -17,16 +17,16 @@
 
     {# En-tete #}
     <div class="mb-3 pr-20">
-        <h3 class="text-lg font-semibold text-gray-400">{{ recipe|localized_recipe_name }}</h3>
+        <h3 class="ds-name">{{ recipe|localized_recipe_name }}</h3>
         {% if recipe.description %}
-            <p class="text-sm text-gray-500 mt-1">{{ recipe|localized_recipe_description }}</p>
+            <p class="ds-hint mt-1">{{ recipe|localized_recipe_description }}</p>
         {% endif %}
     </div>
 
     {# Resultat #}
     <div class="mb-3">
-        <h4 class="text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Resultat</h4>
-        <span class="text-gray-400 font-medium">
+        <h4 class="ds-label mb-1">Resultat</h4>
+        <span class="ds-name ds-name--sm">
             {{ recipe.result.name }}
             {% if recipe.resultQuantity > 1 %}
                 x{{ recipe.resultQuantity }}
@@ -35,8 +35,8 @@
     </div>
 
     {# Infos #}
-    <div class="flex items-center justify-between text-xs text-gray-600">
-        <span>Temps : {{ recipe.craftingTime }}s</span>
-        <span>+{{ recipe.xpReward }} XP</span>
+    <div class="ds-stat">
+        <span class="ds-num ds-num--sm ds-num--muted text-left">Temps : {{ recipe.craftingTime }}s</span>
+        <span class="ds-num ds-num--gain">+{{ recipe.xpReward }} XP</span>
     </div>
 </div>

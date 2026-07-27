@@ -11,6 +11,73 @@
 
 ---
 
+## Systeme de design « Parchemin » applique au produit (2026-07-27)
+
+`design/Amethyste - Design System.dc.html` decrivait une direction retenue —
+encre sur papier, amethyste comme unique couleur de marque, raretes en sceaux —
+et rien ne la portait dans le jeu. `assets/styles/app.css` avait grossi a
+~2 100 lignes de valeurs sombres codees en dur, sans echelle typographique ni
+token de rarete, et les six ecrans principaux souffraient du meme symptome : on
+ne savait pas ou cliquer.
+
+### Ce que le systeme tient
+
+Trois regles, portees par les composants et non par la discipline :
+
+1. **Une seule action primaire par ecran**, en amethyste plein
+   (`.ds-btn--primary`). Tout le reste est du texte (`.ds-btn--quiet`) ou une
+   bordure (`.ds-btn--secondary`). Sur l'ecran de zone, c'est « Explorer » ; en
+   combat, l'attaque de base ; en boutique, « Acheter ».
+2. **Tout chiffre est en monospace** (`.ds-num`), aligne a droite, avec son delta
+   juste a cote (`--gain` / `--loss`). Energie, PV, stock d'un filon, duree de
+   voyage, prix, cout d'un sort.
+3. **Un etat vide dit quoi faire** (`.ds-empty`), jamais juste « vide ».
+
+### Comment il a ete pose
+
+`assets/styles/design-system.css` porte les tokens (papiers, encres, amethyste,
+gain/perte/mana, six raretes, huit elements, Cormorant/Karla/Plex Mono, rayons
+4/6/8) et la couche `.ds-*`.
+
+Le point delicat etait le volume : deux cent vingt gabarits ecrits en classes
+sombres. Plutot que de les reprendre un par un, **les rampes heritees ont ete
+reindexees** dans `@theme` — `gray-900` devient le papier, `text-white` devient
+l'encre, `purple-*` devient l'amethyste, et chaque famille de teinte se replie
+sur l'un des six signaux. Un ecran non repris bascule donc sans etre touche.
+C'est un pont, pas une API : un ecran repris passe aux composants `.ds-*`.
+
+Deux corrections que cette bascule imposait : les cent cinquante-six lignes ou
+`text-white` couvre un aplat de signal a pleine saturation passent a
+`text-ink-on` (l'inversion aurait detruit leur contraste), et les seize degrades
+restants deviennent des aplats — le document n'en connait pas.
+
+Ecrans repris aux composants : **zone** (section 07 du document), **combat**,
+**sac**, **competences**, **artisanat**, **boutique**, plus la coque (barre du
+haut, barre basse, tiroir mobile) et la page de maintenance, qui portait son
+propre theme et ses propres polices.
+
+Les trente-deux degrades d'en-tete de domaine (un par slug, texte blanc sur fond
+sature) disparaissent : l'appartenance elementaire se lit sur la bille
+`.ds-elem-*`, la meme que les materia.
+
+### Trois ecarts fermes au passage
+
+L'audit du document contre `GAME_PRINCIPLES.md` et `CLAUDE.md` en avait releve
+trois, tous confirmes dans le code :
+
+- **Niveau global.** Le combat affichait « Niv. » pour le joueur alors que
+  `Player` ne porte aucun champ de niveau : la vue rendait « Niv. 0 » a chaque
+  rencontre. En artisanat, le « niveau » affiche est l'XP de domaine divisee par
+  cent — il se dit desormais « Rang ».
+- **Monnaie.** « Or gagne » a l'ecran de butin, « Or » au menu et au catalogue de
+  ressources : le modele ne connait que les gils.
+- **Sorts actifs dans l'arbre.** `CombatSkillResolver` lisait
+  `actions['combat']['spell_slug']` pour rendre des `Spell` — le motif que la
+  regle absolue #9 interdit. Les deux methodes concernees n'avaient aucun
+  appelant : le chemin etait ouvert, jamais emprunte. Il est ferme.
+
+---
+
 ## Correctifs competences & montures (2026-07-27)
 
 ### Apprendre une competence ne fonctionnait pas, et le disait mal

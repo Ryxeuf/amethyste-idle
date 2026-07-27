@@ -31,7 +31,7 @@
 								 data-action-id="{{ action.id }}"
 								 data-details="{{ action.details|json_encode|e('html_attr') }}"
 								 onclick="showActionDetails(this)">
-								<div class="w-8 h-8 rounded-full {% if action.type == 'player' %}bg-gradient-to-br from-purple-500 to-purple-700{% else %}bg-gradient-to-br from-red-500 to-red-700{% endif %} flex items-center justify-center text-sm text-white">
+								<div class="w-8 h-8 rounded-full {% if action.type == 'player' %}bg-brand{% else %}bg-loss{% endif %} flex items-center justify-center text-sm text-ink-on">
 									{{ action.actor }}
 								</div>
 							</div>
@@ -43,7 +43,7 @@
 	</div>
 
 	<!-- Modal pour les détails -->
-	<div id="action-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+	<div id="action-details-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 		<div class="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 relative">
 			<button class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200" onclick="closeActionModal()">
 				<i class="fas fa-times text-xl"></i>

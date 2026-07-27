@@ -33,7 +33,7 @@
                 </select>
                 <button type="button"
                         onclick="this.parentElement.remove()"
-                        class="bg-red-700 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm">
+                        class="bg-red-700 hover:bg-red-600 text-ink-on px-3 py-2 rounded-md text-sm">
                     -
                 </button>
             </div>
@@ -41,7 +41,7 @@
 
         <div class="flex items-center gap-4">
             <button type="submit"
-                    class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors">
+                    class="bg-purple-600 hover:bg-purple-500 text-ink-on px-6 py-2 rounded-md text-sm font-medium transition-colors">
                 Experimenter
             </button>
             <span class="text-xs text-gray-500">Minimum 2 ingredients requis</span>
@@ -60,7 +60,7 @@
         div.innerHTML = '<select name="items[]" class="flex-1 bg-gray-700 border border-gray-600 text-white rounded-md px-3 py-2 text-sm focus:ring-purple-500 focus:border-purple-500">' +
             firstSelect.innerHTML +
             '</select>' +
-            '<button type="button" onclick="this.parentElement.remove()" class="bg-red-700 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm">-</button>';
+            '<button type="button" onclick="this.parentElement.remove()" class="bg-red-700 hover:bg-red-600 text-ink-on px-3 py-2 rounded-md text-sm">-</button>';
         container.appendChild(div);
     }
 </script>
