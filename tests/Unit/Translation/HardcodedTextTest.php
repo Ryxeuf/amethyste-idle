@@ -60,7 +60,6 @@ class HardcodedTextTest extends TestCase
         'templates/game/housing/visit.html.twig' => 1,
         'templates/game/inventory/bank/_list.html.twig' => 2,
         'templates/game/inventory/equipment/_materia_track.html.twig' => 1,
-        'templates/game/inventory/items/_list.html.twig' => 3,
         'templates/game/inventory/materia/_list.html.twig' => 2,
         'templates/game/inventory/materials/_list.html.twig' => 2,
         'templates/game/player_shop/index.html.twig' => 3,

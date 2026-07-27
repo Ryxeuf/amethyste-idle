@@ -1,9 +1,14 @@
 import { Controller } from '@hotwired/stimulus';
 
 /**
- * Inventory controller: item detail tooltip (desktop) & bottom-sheet (mobile).
+ * Inventaire : apercu au survol (bureau) et panneau de detail au clic.
  *
- * Usage:
+ * Un clic sur un objet ouvre sa fiche : panneau lateral sur grand ecran,
+ * feuille remontante sur mobile. Le survol garde un apercu court, mais il ne
+ * suffisait pas — les actions d'un objet n'y tenaient pas, et sur mobile il
+ * n'existe pas.
+ *
+ * Usage :
  *   <div data-controller="inventory">
  *     <div data-inventory-target="item"
  *          data-item-name="Épée de feu"
@@ -13,13 +18,21 @@ import { Controller } from '@hotwired/stimulus';
  *          data-item-level="5"
  *          data-item-element="fire"
  *          data-item-slot="main_weapon"
+ *          data-item-kind="gear"
+ *          data-item-quantity="1"
+ *          data-item-durability="80"
+ *          data-item-durability-max="100"
+ *          data-item-tier="2"
+ *          data-item-value="120"
+ *          data-item-bound="1"
+ *          data-item-lock="locked_skill"
  *          data-item-effects="Brûle l'ennemi">
  *     </div>
- *     <!-- tooltip & sheet targets are auto-created -->
+ *     <!-- tooltip & panneau sont crees a la connexion -->
  *   </div>
  */
 export default class extends Controller {
-    static targets = ['item', 'tooltip', 'sheet', 'sheetBackdrop', 'tab', 'tabsNav', 'tabsWrapper'];
+    static targets = ['item', 'tooltip', 'panel', 'panelBackdrop', 'tab', 'tabsNav', 'tabsWrapper'];
     static values = {
         labels: { type: Object, default: {} },
     };
@@ -31,20 +44,26 @@ export default class extends Controller {
 
     connect() {
         this._createTooltip();
-        this._createSheet();
+        this._createPanel();
         this._isMobile = window.matchMedia('(hover: none)').matches;
         this._onResize = () => {
             this._isMobile = window.matchMedia('(hover: none)').matches;
             this._updateFades();
         };
+        this._onKeydown = (event) => {
+            if (event.key === 'Escape') this.closePanel();
+        };
         window.addEventListener('resize', this._onResize);
+        document.addEventListener('keydown', this._onKeydown);
         this._initScrollFades();
     }
 
     disconnect() {
         window.removeEventListener('resize', this._onResize);
+        document.removeEventListener('keydown', this._onKeydown);
+        document.body.style.overflow = '';
         this._tooltip?.remove();
-        this._sheet?.remove();
+        this._panel?.remove();
         this._backdrop?.remove();
     }
 
@@ -54,6 +73,8 @@ export default class extends Controller {
         const tab = event.currentTarget;
         this.tabTargets.forEach(t => t.classList.remove('inv-tab--active'));
         tab.classList.add('inv-tab--active');
+        // La fiche ouverte parle d'un objet de l'onglet qu'on quitte.
+        this.closePanel();
     }
 
     _initScrollFades() {
@@ -89,57 +110,67 @@ export default class extends Controller {
             <div class="inv-tooltip-compare"></div>
             <div class="inv-tooltip-materia"></div>
             <div class="inv-tooltip-effects"></div>
+            <div class="inv-tooltip-hint"></div>
         `;
+        el.querySelector('.inv-tooltip-hint').textContent = this._label('open_details_hint', 'Cliquez pour les détails');
         this.element.appendChild(el);
         this._tooltip = el;
     }
 
-    // ---- Bottom Sheet (mobile tap) ----
+    // ---- Panneau de detail (lateral sur bureau, feuille sur mobile) ----
 
-    _createSheet() {
-        // Backdrop
+    _createPanel() {
         const backdrop = document.createElement('div');
-        backdrop.className = 'inv-sheet-backdrop';
-        backdrop.setAttribute('data-inventory-target', 'sheetBackdrop');
-        backdrop.addEventListener('click', () => this.closeSheet());
+        backdrop.className = 'inv-panel-backdrop';
+        backdrop.setAttribute('data-inventory-target', 'panelBackdrop');
+        backdrop.addEventListener('click', () => this.closePanel());
 
-        // Sheet
-        const sheet = document.createElement('div');
-        sheet.className = 'inv-sheet';
-        sheet.setAttribute('data-inventory-target', 'sheet');
-        sheet.innerHTML = `
-            <div class="inv-sheet-handle"></div>
-            <div class="inv-sheet-header">
-                <span class="inv-sheet-name"></span>
-                <button class="inv-sheet-close" type="button">&times;</button>
+        const panel = document.createElement('div');
+        panel.className = 'inv-panel';
+        panel.setAttribute('data-inventory-target', 'panel');
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-label', this._label('details_title', 'Détails de l’objet'));
+        panel.innerHTML = `
+            <div class="inv-panel-handle"></div>
+            <div class="inv-panel-header">
+                <span class="inv-panel-name"></span>
+                <button class="inv-panel-close" type="button" aria-label=""></button>
             </div>
-            <div class="inv-sheet-rarity"></div>
-            <div class="inv-sheet-slot"></div>
-            <div class="inv-sheet-desc"></div>
-            <div class="inv-sheet-stats"></div>
-            <div class="inv-sheet-compare"></div>
-            <div class="inv-sheet-materia"></div>
-            <div class="inv-sheet-effects"></div>
-            <div class="inv-sheet-actions"></div>
+            <div class="inv-panel-badges">
+                <span class="inv-panel-rarity"></span>
+                <span class="inv-panel-kind"></span>
+                <span class="inv-panel-bound"></span>
+            </div>
+            <div class="inv-panel-slot"></div>
+            <div class="inv-panel-desc"></div>
+            <div class="inv-panel-stats"></div>
+            <div class="inv-panel-durability"></div>
+            <div class="inv-panel-compare"></div>
+            <div class="inv-panel-materia"></div>
+            <div class="inv-panel-effects"></div>
+            <div class="inv-panel-lock"></div>
+            <div class="inv-panel-actions"></div>
         `;
-        sheet.querySelector('.inv-sheet-close').addEventListener('click', () => this.closeSheet());
+        const closeButton = panel.querySelector('.inv-panel-close');
+        closeButton.textContent = '×';
+        closeButton.setAttribute('aria-label', this._label('close', 'Fermer'));
+        closeButton.addEventListener('click', () => this.closePanel());
 
         this.element.appendChild(backdrop);
-        this.element.appendChild(sheet);
-        this._sheet = sheet;
+        this.element.appendChild(panel);
+        this._panel = panel;
         this._backdrop = backdrop;
     }
 
     // Called when an item target connects
     itemTargetConnected(el) {
-        // Desktop: mouseenter/mouseleave
         el.addEventListener('mouseenter', (e) => this._showTooltip(e, el));
         el.addEventListener('mouseleave', () => this._hideTooltip());
         el.addEventListener('mousemove', (e) => this._moveTooltip(e));
-        // Mobile: tap — ouvre la fiche objet, sauf si l'utilisateur interagit avec
-        // les slots materia (liens / orbes) ou le formulaire de déséquipement.
+        // Clic : ouvre la fiche, sauf sur un element deja actionnable (slots
+        // materia, lien de modification, bouton d'equipement) — le geste direct
+        // doit rester direct.
         el.addEventListener('click', (e) => {
-            if (!this._isMobile) return;
             if (e.target.closest('.materia-slots-bar')) return;
             if (e.target.closest('.materia-slots-track')) return;
             if (e.target.closest('a[href]')) return;
@@ -147,10 +178,11 @@ export default class extends Controller {
             if (e.target.closest('button')) return;
             e.preventDefault();
             e.stopPropagation();
-            this._showSheet(el);
+            this._hideTooltip();
+            this.openPanel(el);
         });
-        // Make it look tappable
         el.style.cursor = 'pointer';
+        if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
     }
 
     // ---- Tooltip logic ----
@@ -202,8 +234,9 @@ export default class extends Controller {
         }
 
         const slotEl = t.querySelector('.inv-tooltip-slot');
-        if (data.slot) {
-            slotEl.textContent = this._slotLabel(data.slot);
+        const slotText = this._slotText(data);
+        if (slotText) {
+            slotEl.textContent = slotText;
             slotEl.style.display = '';
         } else {
             slotEl.style.display = 'none';
@@ -218,12 +251,9 @@ export default class extends Controller {
         }
 
         const statsEl = t.querySelector('.inv-tooltip-stats');
-        const stats = [];
-        if (data.protection && data.protection !== '0') stats.push('+' + data.protection + ' DEF');
-        if (data.level) stats.push(this._label('level', 'Niveau ') + data.level);
-        if (data.element && data.element !== 'none') stats.push(this._elementLabel(data.element));
+        const stats = this._statList(data);
         if (stats.length) {
-            statsEl.innerHTML = stats.map(s => '<span>' + s + '</span>').join('');
+            statsEl.innerHTML = stats.map(s => '<span>' + this._escHtml(s) + '</span>').join('');
             statsEl.style.display = '';
         } else {
             statsEl.style.display = 'none';
@@ -241,33 +271,50 @@ export default class extends Controller {
         }
     }
 
-    // ---- Bottom sheet logic ----
+    // ---- Panneau de detail ----
 
-    _showSheet(el) {
+    openPanel(el) {
         const data = this._extractData(el);
         if (!data.name) return;
 
-        const s = this._sheet;
-        s.querySelector('.inv-sheet-name').textContent = data.name;
+        const p = this._panel;
+        p.querySelector('.inv-panel-name').textContent = data.name;
 
-        const rarityEl = s.querySelector('.inv-sheet-rarity');
+        const rarityEl = p.querySelector('.inv-panel-rarity');
         if (data.rarity) {
             rarityEl.textContent = this._rarityLabel(data.rarity);
-            rarityEl.className = 'inv-sheet-rarity inv-sheet-rarity--' + data.rarity;
+            rarityEl.className = 'inv-panel-rarity inv-panel-rarity--' + data.rarity;
             rarityEl.style.display = '';
         } else {
             rarityEl.style.display = 'none';
         }
 
-        const slotEl = s.querySelector('.inv-sheet-slot');
-        if (data.slot) {
-            slotEl.textContent = this._slotLabel(data.slot);
+        const kindEl = p.querySelector('.inv-panel-kind');
+        if (data.kind) {
+            kindEl.textContent = this._kindLabel(data.kind);
+            kindEl.style.display = '';
+        } else {
+            kindEl.style.display = 'none';
+        }
+
+        const boundEl = p.querySelector('.inv-panel-bound');
+        if (data.bound === '1') {
+            boundEl.textContent = this._label('bound', 'Lié au personnage');
+            boundEl.style.display = '';
+        } else {
+            boundEl.style.display = 'none';
+        }
+
+        const slotEl = p.querySelector('.inv-panel-slot');
+        const slotText = this._slotText(data);
+        if (slotText) {
+            slotEl.textContent = slotText;
             slotEl.style.display = '';
         } else {
             slotEl.style.display = 'none';
         }
 
-        const descEl = s.querySelector('.inv-sheet-desc');
+        const descEl = p.querySelector('.inv-panel-desc');
         if (data.desc) {
             descEl.textContent = data.desc;
             descEl.style.display = '';
@@ -275,22 +322,22 @@ export default class extends Controller {
             descEl.style.display = 'none';
         }
 
-        const statsEl = s.querySelector('.inv-sheet-stats');
-        const stats = [];
-        if (data.protection && data.protection !== '0') stats.push('<span class="inv-sheet-stat"><span class="inv-sheet-stat-val text-blue-400">+' + data.protection + '</span> DEF</span>');
-        if (data.level) stats.push('<span class="inv-sheet-stat"><span class="inv-sheet-stat-val text-gray-300">Niv.' + data.level + '</span></span>');
-        if (data.element && data.element !== 'none') stats.push('<span class="inv-sheet-stat"><span class="inv-sheet-stat-val">' + this._elementLabel(data.element) + '</span></span>');
+        const statsEl = p.querySelector('.inv-panel-stats');
+        const stats = this._statList(data);
         if (stats.length) {
-            statsEl.innerHTML = stats.join('');
+            statsEl.innerHTML = stats
+                .map(s => '<span class="inv-panel-stat">' + this._escHtml(s) + '</span>')
+                .join('');
             statsEl.style.display = '';
         } else {
             statsEl.style.display = 'none';
         }
 
-        this._fillCompareSection(s.querySelector('.inv-sheet-compare'), data);
-        this._fillMateriaSection(s.querySelector('.inv-sheet-materia'), data);
+        this._fillDurabilitySection(p.querySelector('.inv-panel-durability'), data);
+        this._fillCompareSection(p.querySelector('.inv-panel-compare'), data);
+        this._fillMateriaSection(p.querySelector('.inv-panel-materia'), data);
 
-        const fxEl = s.querySelector('.inv-sheet-effects');
+        const fxEl = p.querySelector('.inv-panel-effects');
         if (data.effects) {
             fxEl.textContent = data.effects;
             fxEl.style.display = '';
@@ -298,30 +345,92 @@ export default class extends Controller {
             fxEl.style.display = 'none';
         }
 
-        // Copy action buttons from the item element
-        const actionsEl = s.querySelector('.inv-sheet-actions');
+        // Un objet verrouille doit dire pourquoi, ici comme dans la liste.
+        const lockEl = p.querySelector('.inv-panel-lock');
+        if (data.lock) {
+            lockEl.textContent = this._label('lock.' + data.lock, data.lock);
+            lockEl.style.display = '';
+        } else {
+            lockEl.style.display = 'none';
+        }
+
+        // Les actions sont celles de la ligne : les cloner evite de reconstruire
+        // (et de desynchroniser) les regles qui decident ce qui est possible.
+        const actionsEl = p.querySelector('.inv-panel-actions');
         actionsEl.innerHTML = '';
-        const forms = el.querySelectorAll('form');
-        forms.forEach(f => {
-            const clone = f.cloneNode(true);
-            // Make buttons full width inside the sheet
+        el.querySelectorAll('form').forEach((form) => {
+            const clone = form.cloneNode(true);
             const btn = clone.querySelector('button');
             if (btn) {
-                btn.className = 'inv-sheet-action-btn';
+                btn.className = 'inv-panel-action-btn';
+                const label = btn.getAttribute('title');
+                if (label) btn.textContent = label;
             }
             actionsEl.appendChild(clone);
         });
+        el.querySelectorAll('a[href]').forEach((link) => {
+            const clone = link.cloneNode(true);
+            clone.className = 'inv-panel-action-btn inv-panel-action-btn--link';
+            clone.textContent = link.getAttribute('title') || this._label('actions.details', 'Détails');
+            actionsEl.appendChild(clone);
+        });
 
-        // Show
-        this._backdrop.classList.add('inv-sheet-backdrop--visible');
-        s.classList.add('inv-sheet--visible');
-        document.body.style.overflow = 'hidden';
+        this._backdrop.classList.add('inv-panel-backdrop--visible');
+        p.classList.add('inv-panel--visible');
+        // Le verrou de defilement n'a de sens que pour la feuille mobile : sur
+        // grand ecran, le panneau accompagne la page, il ne la remplace pas.
+        if (this._isMobile) document.body.style.overflow = 'hidden';
     }
 
-    closeSheet() {
-        this._sheet.classList.remove('inv-sheet--visible');
-        this._backdrop.classList.remove('inv-sheet-backdrop--visible');
+    closePanel() {
+        if (!this._panel) return;
+        this._panel.classList.remove('inv-panel--visible');
+        this._backdrop.classList.remove('inv-panel-backdrop--visible');
         document.body.style.overflow = '';
+    }
+
+    // ---- Sections ----
+
+    /**
+     * Statistiques communes au survol et au panneau.
+     */
+    _statList(data) {
+        const stats = [];
+        if (data.protection && data.protection !== '0') stats.push('+' + data.protection + ' DEF');
+        if (data.level && data.level !== '0') stats.push(this._label('level', 'Niveau ') + data.level);
+        if (data.element && data.element !== 'none') stats.push(this._elementLabel(data.element));
+        if (data.tier) stats.push(this._label('tier', 'Palier %tier%').replace('%tier%', data.tier));
+        if (data.quantity && data.quantity !== '1') stats.push('x' + data.quantity);
+        if (data.value && data.value !== '0') stats.push(data.value + ' ' + this._label('gils', 'Gils'));
+        return stats;
+    }
+
+    _slotText(data) {
+        if (data.toolType) return this._toolLabel(data.toolType);
+        if (data.slot) return this._slotLabel(data.slot);
+        return '';
+    }
+
+    _fillDurabilitySection(el, data) {
+        const max = parseInt(data.durabilityMax) || 0;
+        if (max <= 0 || data.durability === '') {
+            el.style.display = 'none';
+            return;
+        }
+        const current = parseInt(data.durability) || 0;
+        const percent = Math.max(0, Math.min(100, Math.round((current / max) * 100)));
+        const broken = current <= 0;
+        el.innerHTML = `
+            <div class="inv-panel-durability-head">
+                <span>${this._escHtml(this._label('durability', 'Durabilité'))}</span>
+                <span class="tabular-nums">${current}/${max}</span>
+            </div>
+            <div class="inv-panel-durability-bar">
+                <div class="inv-panel-durability-fill${broken ? ' inv-panel-durability-fill--broken' : ''}" style="width: ${percent}%"></div>
+            </div>
+            ${broken ? '<div class="inv-panel-durability-broken">' + this._escHtml(this._label('broken', 'Outil cassé')) + '</div>' : ''}
+        `;
+        el.style.display = '';
     }
 
     // ---- Materia section ----
@@ -356,7 +465,7 @@ export default class extends Controller {
 
         if (data.eqName) {
             // Compare against equipped item
-            lines.push('<div class="inv-compare-title">Remplace : <span class="inv-compare-eq-name">' + this._escHtml(data.eqName) + '</span></div>');
+            lines.push('<div class="inv-compare-title">' + this._escHtml(this._label('replaces', 'Remplace :')) + ' <span class="inv-compare-eq-name">' + this._escHtml(data.eqName) + '</span></div>');
 
             // Protection delta
             const newProt = parseInt(data.protection) || 0;
@@ -383,7 +492,7 @@ export default class extends Controller {
                 } else if (!newElem && oldElem) {
                     lines.push('<div class="inv-compare-line inv-compare-down">' + this._label('loses', 'Perd ') + this._elementLabel(oldElem) + '</div>');
                 } else if (newElem && oldElem) {
-                    lines.push('<div class="inv-compare-line inv-compare-neutral">' + this._elementLabel(oldElem) + ' \u2192 ' + this._elementLabel(newElem) + '</div>');
+                    lines.push('<div class="inv-compare-line inv-compare-neutral">' + this._elementLabel(oldElem) + ' → ' + this._elementLabel(newElem) + '</div>');
                 }
             }
 
@@ -400,7 +509,7 @@ export default class extends Controller {
             }
             const mat = parseInt(data.materiaTotal) || 0;
             if (mat > 0) {
-                lines.push(this._deltaLine('Slots materia', mat));
+                lines.push(this._deltaLine(this._label('materia_slots', 'Slots materia'), mat));
             }
         }
 
@@ -411,7 +520,7 @@ export default class extends Controller {
     _deltaLine(label, delta) {
         const cls = delta > 0 ? 'inv-compare-up' : 'inv-compare-down';
         const sign = delta > 0 ? '+' : '';
-        return '<div class="inv-compare-line ' + cls + '">' + sign + delta + ' ' + label + '</div>';
+        return '<div class="inv-compare-line ' + cls + '">' + sign + delta + ' ' + this._escHtml(label) + '</div>';
     }
 
     _escHtml(str) {
@@ -432,6 +541,15 @@ export default class extends Controller {
             element: el.dataset.itemElement || '',
             slot: el.dataset.itemSlot || '',
             effects: el.dataset.itemEffects || '',
+            kind: el.dataset.itemKind || '',
+            toolType: el.dataset.itemToolType || '',
+            tier: el.dataset.itemTier || '',
+            quantity: el.dataset.itemQuantity || '',
+            durability: el.dataset.itemDurability ?? '',
+            durabilityMax: el.dataset.itemDurabilityMax || '',
+            value: el.dataset.itemValue || '',
+            bound: el.dataset.itemBound || '',
+            lock: el.dataset.itemLock || '',
             materiaTotal: el.dataset.itemMateriaTotal || '0',
             materiaFilled: el.dataset.itemMateriaFilled || '0',
             eqName: el.dataset.itemEqName || '',
@@ -455,6 +573,14 @@ export default class extends Controller {
             ring_1: 'Anneau 1', ring_2: 'Anneau 2',
         };
         return this._label('slot.' + s, fallbacks[s] || s);
+    }
+
+    _toolLabel(t) {
+        return this._label('tool.' + t, t);
+    }
+
+    _kindLabel(k) {
+        return this._label('kind.' + k, k);
     }
 
     _elementLabel(e) {

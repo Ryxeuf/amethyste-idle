@@ -33,11 +33,13 @@ class ItemsController extends AbstractController
                     $grouped[$slug] = [
                         'id' => $item->getId(),
                         'name' => $genericItem->getLocalizedName($locale),
-                        'type' => 'Consommable',
                         'quantity' => 0,
                         'description' => $genericItem->getLocalizedDescription($locale),
                         'usable' => $this->itemHelper->isUsable($genericItem),
                         'bound' => $item->isBound(),
+                        // Lus par la fiche laterale de l'objet.
+                        'rarity' => $genericItem->getRarity(),
+                        'value' => $genericItem->getPrice() ?? 0,
                     ];
                 }
                 ++$grouped[$slug]['quantity'];

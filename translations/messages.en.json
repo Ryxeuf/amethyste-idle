@@ -108,7 +108,8 @@
       "available_equipment": "Available Equipment",
       "items": {
         "title": "Items",
-        "empty": "No items in this tab"
+        "empty": "No items in this tab",
+        "empty_hint": "Consumables will show up here"
       },
       "materials": "Materials",
       "bank": "Bank",
@@ -257,7 +258,22 @@
         "equippable": "%count% equippable"
       },
       "materia_slots_short": "%count% slot(s)",
-      "locked_skill_gear": "Skill required to equip this item"
+      "locked_skill_gear": "Skill required to equip this item",
+      "details": {
+        "title": "Item details",
+        "close": "Close",
+        "hint": "Click for details and actions",
+        "replaces": "Replaces:",
+        "bound": "Bound to character",
+        "gils": "Gils"
+      },
+      "kind": {
+        "gear": "Equipment",
+        "tool": "Tool",
+        "consumable": "Consumable",
+        "material": "Material",
+        "materia": "Materia"
+      }
     },
     "map": {
       "title": "World Map",

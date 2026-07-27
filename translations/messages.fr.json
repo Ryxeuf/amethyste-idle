@@ -108,7 +108,8 @@
       "available_equipment": "Équipement disponible",
       "items": {
         "title": "Objets",
-        "empty": "Aucun objet dans cet onglet"
+        "empty": "Aucun objet dans cet onglet",
+        "empty_hint": "Les objets consommables apparaîtront ici"
       },
       "materials": "Matériaux",
       "bank": "Banque",
@@ -257,7 +258,22 @@
         "equippable": "%count% équipable(s)"
       },
       "materia_slots_short": "%count% slot(s)",
-      "locked_skill_gear": "Compétence requise pour équiper cet objet"
+      "locked_skill_gear": "Compétence requise pour équiper cet objet",
+      "details": {
+        "title": "Détails de l'objet",
+        "close": "Fermer",
+        "hint": "Cliquez pour les détails et les actions",
+        "replaces": "Remplace :",
+        "bound": "Lié au personnage",
+        "gils": "Gils"
+      },
+      "kind": {
+        "gear": "Équipement",
+        "tool": "Outil",
+        "consumable": "Consommable",
+        "material": "Matériau",
+        "materia": "Materia"
+      }
     },
     "map": {
       "title": "Carte du Monde",
