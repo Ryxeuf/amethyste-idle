@@ -65,6 +65,7 @@ class SmokeTest extends WebTestCase
         yield 'inventory_materia' => ['/game/inventory/materia'];
         yield 'inventory_materials' => ['/game/inventory/materials'];
         yield 'inventory_bank' => ['/game/inventory/bank'];
+        yield 'mounts' => ['/game/mounts'];
     }
 
     /**
