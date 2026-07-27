@@ -122,10 +122,10 @@ class DashboardControllerTest extends TestCase
     }
 
     /**
-     * @param list<Zone>                              $zones
-     * @param list<array{zoneId: int, total: int}>    $pnjData
-     * @param list<array{zoneId: int, total: int}>    $mobData
-     * @param list<array{zoneId: int, total: int}>    $playerData
+     * @param list<Zone>                           $zones
+     * @param list<array{zoneId: int, total: int}> $pnjData
+     * @param list<array{zoneId: int, total: int}> $mobData
+     * @param list<array{zoneId: int, total: int}> $playerData
      */
     private function configureEntityManagerMocks(
         ?array $zones = null,

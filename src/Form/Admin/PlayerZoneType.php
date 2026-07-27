@@ -17,6 +17,8 @@ use Symfony\Component\Validator\Constraints\NotNull;
  * Remplace l'ancien couple carte + coordonnees : depuis le pivot, la position
  * de reference est la zone (regle projet #7), et deplacer un joueur « en 85.34 »
  * ne changeait plus rien de ce qu'il pouvait faire.
+ *
+ * @extends AbstractType<Player>
  */
 class PlayerZoneType extends AbstractType
 {

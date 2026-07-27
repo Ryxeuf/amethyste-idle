@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints\Range;
  * Le formulaire n'est pas mappe sur `ZoneConnection` : son constructeur exige
  * les deux zones et interdit la boucle sur soi-meme, ce qu'un formulaire mappe
  * ne peut pas satisfaire avant validation. Le controleur construit l'arete.
+ *
+ * @extends AbstractType<array<string, mixed>>
  */
 class ZoneConnectionType extends AbstractType
 {

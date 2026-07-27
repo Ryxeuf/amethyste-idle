@@ -20,6 +20,8 @@ use Symfony\Component\Validator\Constraints\Regex;
  * Les traductions ne sont exposees que pour l'anglais : c'est la seule locale
  * du catalogue en plus du francais, et l'import YAML ne renseigne que `name_en`
  * / `description_en`.
+ *
+ * @extends AbstractType<Zone>
  */
 class ZoneType extends AbstractType
 {

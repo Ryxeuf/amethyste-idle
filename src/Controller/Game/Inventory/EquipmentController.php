@@ -138,8 +138,8 @@ class EquipmentController extends AbstractController
      * ou quelque chose est equipable remontent en tete, et ce sont les seuls
      * ouverts par defaut.
      *
-     * @param list<PlayerItem>      $availableTools
-     * @param array<int, string>    $toolEquipStates
+     * @param list<PlayerItem>   $availableTools
+     * @param array<int, string> $toolEquipStates
      *
      * @return array<string, array{items: list<PlayerItem>, equippable: int}>
      */

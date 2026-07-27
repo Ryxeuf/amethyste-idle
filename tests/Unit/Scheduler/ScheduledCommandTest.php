@@ -37,6 +37,7 @@ class ScheduledCommandTest extends TestCase
         'app:balance:report' => 'rapport d\'equilibrage, lu par un humain',
         'app:fixtures:load-selective' => 'outil de developpement',
         'app:game:validate' => 'controle de coherence, lance par la CI',
+        'app:player:backfill-zone' => 'reparation ponctuelle des joueurs sans zone, a lancer une fois apres deploiement',
         'app:zone:audit' => 'audit ponctuel du rattachement de zone',
         'app:zone:import' => 'import du graphe de zones, lance a chaque changement de YAML',
     ];
