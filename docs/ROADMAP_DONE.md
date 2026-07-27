@@ -11,6 +11,63 @@
 
 ---
 
+## Migration Tailwind 4 : ce que le CDN v2 cachait (2026-07-27)
+
+Le projet compilait en Tailwind 4 depuis longtemps — `@import "tailwindcss"`,
+tokens en `@theme`, binaire `v4.1.0` — et chargeait **en plus** le CDN Tailwind
+2.2.19. Les declarations hors calque l'emportant sur celles d'un `@layer`, c'est
+la v2 qui servait tous les noms de classe communs. L'interface tournait donc en
+v2 sans que personne l'ait decide, et la configuration v4 ne s'appliquait qu'aux
+classes que la v2 ne connaissait pas.
+
+Le CDN est parti avec le systeme de design. Restait a verifier ce que ce depart
+changeait — non pas ce que le diff montrait, mais ce que la cascade faisait.
+
+### La methode : mesurer plutot que deviner
+
+Les 1 292 classes citees par les gabarits ont ete confrontees, declaration par
+declaration, entre le CSS v2 d'origine et la feuille v4 compilee, en resolvant
+les variables de la v4 (`var(--text-sm)`, `calc(var(--spacing) * 2)`) pour ne
+comparer que des valeurs finales. Sur 346 ecarts bruts, 341 etaient du bruit de
+notation. **Cinq etaient reels.**
+
+### Les cinq ecarts
+
+- **`outline-none`** (79 occurrences) — en v2 et v3, un contour transparent de
+  2 px : invisible en temps normal, **visible en contraste force**, donc utile au
+  clavier. En v4, `outline-none` supprime le contour pour de bon ; l'ancien
+  comportement s'appelle `outline-hidden`. Tous les champs et boutons du jeu
+  avaient perdu leur repere de focus en contraste force.
+- **`shadow-sm`** (7) — la v4 a decale l'echelle d'un cran : son `shadow-sm`
+  vaut l'ancien `shadow`. Les ombres etaient devenues franches. Corrige en
+  `shadow-xs`, qui rend la valeur d'origine au pixel pres.
+- **`backdrop-blur-sm`** (4) — 4 px en v2, 8 px en v4. Corrige en
+  `backdrop-blur-xs`.
+- **`bg-clip-text`** (1) — la v4 n'emet plus `-webkit-background-clip`, exige par
+  Safari jusqu'a la 14.1. Sans lui, un texte transparent decoupe dans un degrade
+  ne se degrade pas : il disparait. Remis sous `@supports`.
+- **`bg-opacity-*`** (23, corrige avec le systeme de design) — supprime en v4.
+  Les voiles de modale seraient devenus des aplats opaques.
+
+Verifie aussi, et sans rien trouver : les trois valeurs **par defaut** que la v4
+a changees — `border` sans couleur (gris -> couleur du texte), `ring` sans
+couleur, `placeholder`. Les treize bordures qui paraissaient sans couleur la
+recoivent toutes par ailleurs, expression Twig ou style inline.
+
+Au passage, `flex-shrink-*` devient `shrink-*` (108 occurrences) et
+`bg-gradient-to-*` devient `bg-linear-to-*`, qui interpole en oklab.
+
+### Le garde-fou
+
+`LegacyTailwindScanner` et son test refusent desormais treize noms d'avant la v4
+dans les gabarits et les controleurs Stimulus. Les deux defauts que cette
+migration corrige sont exactement ceux qu'une relecture ne voit pas : une classe
+supprimee ne peint plus rien sans rien casser, une classe renommee garde son nom
+en changeant de sens. C'est la meme lecon que le reste du projet — un controle
+qu'on doit penser a declencher n'est pas un controle.
+
+---
+
 ## Systeme de design « Parchemin » applique au produit (2026-07-27)
 
 `design/Amethyste - Design System.dc.html` decrivait une direction retenue —

@@ -144,6 +144,14 @@ scripts/                # Scripts deploy, fixtures, etc.
   les ecrans pas encore repris restent coherents : c'est un pont, pas une API. Trois regles
   tenues par les composants : une seule action primaire par ecran, tout chiffre en monospace,
   un etat vide qui dit quoi faire. Reference visuelle : `design/Amethyste - Design System.dc.html`.
+- **Tailwind 4 uniquement** : plus aucun CDN Tailwind 2 n'est charge (il gagnait sur la feuille
+  compilee, les regles hors calque l'emportant sur celles d'un `@layer`). Les noms d'avant la v4
+  sont refuses par `LegacyTailwindScanner` : utilitaires d'opacite (`bg-opacity-50` ->
+  `bg-noir/50`), renommages v3 (`flex-shrink-0` -> `shrink-0`), `bg-gradient-to-*` ->
+  `bg-linear-to-*`, et `outline-none` -> `outline-hidden` (en v4, `outline-none` supprime le
+  contour au lieu de le rendre transparent, et le repere de focus disparait en contraste force).
+  Attention aux echelles decalees d'un cran : le `shadow-sm` de la v4 vaut l'ancien `shadow`,
+  son `blur-sm` vaut l'ancien `blur`. Les anciennes valeurs s'ecrivent `shadow-xs` et `blur-xs`.
 
 ## Pieges courants
 
