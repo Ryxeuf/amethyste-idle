@@ -9,7 +9,9 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
+use App\Entity\Game\Skill;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\ZoneActionException;
@@ -54,7 +56,7 @@ class GatherServiceTest extends TestCase
         $this->inventoryHelper = $this->createMock(InventoryHelper::class);
         $this->journalRepository = $this->createMock(PlayerJournalEntryRepository::class);
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository) extends GatherService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -188,6 +190,53 @@ class GatherServiceTest extends TestCase
         $this->assertSame('Minerai de fer', $result->itemName);
         $this->assertSame('game.zone.gather.result.success', $result->messageKey);
         $this->assertSame(3, $result->messageParams['%count%']);
+    }
+
+    /**
+     * Rendement par point d'energie : le budget d'energie reste egalitaire, c'est
+     * ce qu'une action rapporte qui recompense l'investissement.
+     */
+    public function testGatherAppliesThePlayerYieldBonus(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $skill = new Skill();
+        $skill->setActions(['yield' => ['gather_percent' => 50]]);
+        $player->addSkill($skill);
+
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->service->rolls = [3]; // yield brut 3, +50 % -> 4.5 arrondi a 5 (au plus proche)
+
+        $this->inventoryHelper->expects($this->exactly(5))->method('addItem');
+
+        $result = $this->service->gather($player, 'filon-de-fer');
+
+        $this->assertSame(5, $result->quantity);
+        $this->assertSame(15, $result->remainingStock);
+    }
+
+    /**
+     * Le bonus augmente ce qu'une action rapporte, il ne permet pas de prendre
+     * plus que ce que le filon contient : le stock partage reste le point de
+     * tension de la ressource.
+     */
+    public function testYieldBonusCannotExceedTheSharedStock(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $skill = new Skill();
+        $skill->setActions(['yield' => ['gather_percent' => 100]]);
+        $player->addSkill($skill);
+
+        $zone = $player->getCurrentZone();
+        $vein = new ZoneVein($zone, 'filon-de-fer', 2); // deux restants
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->service->rolls = [3]; // 3 doubles a 6, mais le stock plafonne a 2
+
+        $result = $this->service->gather($player, 'filon-de-fer');
+
+        $this->assertSame(2, $result->quantity);
+        $this->assertSame(0, $result->remainingStock);
     }
 
     public function testGatherBoundsYieldByRemainingStockAndMarksDepleted(): void

@@ -9,6 +9,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\Progression\ActionYieldResolver;
 use App\Helper\InventoryHelper;
 use App\Repository\PlayerJournalEntryRepository;
 use App\Repository\ZoneVeinRepository;
@@ -48,6 +49,7 @@ class GatherService
         private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly InventoryHelper $inventoryHelper,
         private readonly PlayerJournalEntryRepository $journalRepository,
+        private readonly ActionYieldResolver $yieldResolver,
     ) {
     }
 
@@ -132,7 +134,7 @@ class GatherService
         // L'energie n'est prelevee qu'une fois la recolte garantie possible.
         $this->actionEnergyManager->spend($player, $this->getGatherCost(), false);
 
-        $quantity = $this->computeYield($resource, $vein->getStock());
+        $quantity = $this->computeYield($player, $resource, $vein->getStock());
         $remaining = $vein->getStock() - $quantity;
         $vein->setStock($remaining);
         if ($remaining <= 0) {
@@ -247,14 +249,23 @@ class GatherService
     }
 
     /**
+     * Rendement d'une recolte : tirage declare par le filon, puis bonus de
+     * rendement du joueur (passifs de competence).
+     *
+     * Le bonus s'applique **avant** la borne de stock : il augmente ce qu'une
+     * action rapporte, il ne permet pas de prendre plus que ce que le filon
+     * contient — le stock partage reste le point de tension de la ressource.
+     *
      * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int} $resource
      */
-    private function computeYield(array $resource, int $stock): int
+    private function computeYield(Player $player, array $resource, int $stock): int
     {
         $min = $resource['yield_min'];
         $max = $resource['yield_max'];
         $span = $max - $min;
         $yield = $min + ($span > 0 ? $this->roll($span + 1) - 1 : 0);
+
+        $yield = $this->yieldResolver->applyBonus($player, ActionYieldResolver::CATEGORY_GATHER, $yield);
 
         return max(1, min($yield, $stock));
     }

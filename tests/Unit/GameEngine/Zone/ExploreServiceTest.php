@@ -11,6 +11,7 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\Game\Monster;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExploreResult;
@@ -58,7 +59,7 @@ class ExploreServiceTest extends TestCase
         $this->gameTimeService = $this->createMock(GameTimeService::class);
         $this->gameTimeService->method('isNight')->willReturnCallback(fn (): bool => $this->night);
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->mobRepository, $this->fightHandler, $this->journalRepository, $this->gameTimeService) extends ExploreService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->mobRepository, $this->fightHandler, $this->journalRepository, $this->gameTimeService, new ActionYieldResolver()) extends ExploreService {
             /** @var list<int> */
             public array $rolls = [];
             private int $rollIndex = 0;
