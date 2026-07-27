@@ -317,8 +317,47 @@ d'ECO-02), ni le respawn des filons, ni les saisons, ni le releve de masse monet
 > parce que l'audit du jalon F l'a decouvert, et parce que **multiplier des instances qui
 > executent zero tache planifiee ne produit rien**.
 
-- [ ] Ajouter un service `worker` (`messenger:consume scheduler_default`) au `compose.prod.yaml`
-- [ ] **Exactement une** replique de ce worker, quel que soit le nombre de repliques web
+#### Mode d'emploi de l'activation
+
+L'activation n'est pas qu'un service a ajouter : deux pieges la rendent dangereuse telle quelle.
+
+**Piege 1 — l'arriere de loyers.** `PlayerHouse::extendRent()` et `ShopRentService::extend()`
+avancent l'echeance de sept jours **a partir de l'echeance precedente**, pas a partir de
+maintenant, et chaque execution ne rattrape **qu'une periode**. Comme `app:house:rent` et
+`app:shop:rent` n'ont jamais tourne, toutes les echeances sont dans le passe : brancher le
+planificateur tel quel prelevererait **une semaine de loyer par jour** a chaque proprietaire
+jusqu'a rattrapage — un mois de prelevements quotidiens pour six mois d'arriere, puis mise en
+sommeil des demeures et fermeture des echoppes insolvables.
+
+Personne n'a contracte cette dette. Elle s'efface **avant** de brancher le worker :
+
+```bash
+docker compose exec php php bin/console app:economy:rent-backlog-reset --dry-run  # mesurer
+docker compose exec php php bin/console app:economy:rent-backlog-reset            # effacer
+```
+
+La commande est idempotente : relancee sur une base assainie, elle ne trouve rien et n'ecrit rien.
+
+**Piege 2 — l'entrypoint.** `frankenphp/docker-entrypoint.sh` declenche son bloc d'installation
+pour tout `$1` valant `frankenphp`, `php` ou `bin/console` : migrations Doctrine, `cache:clear`,
+`cache:warmup`, `tailwind:build`, `asset-map:compile`. Un worker lance par
+`command: php bin/console messenger:consume …` **rejouerait donc les migrations en concurrence avec
+le conteneur web**, et refarait les assets a chaque redemarrage horaire. Le service worker doit
+court-circuiter l'entrypoint (`entrypoint: ["php"]`) ou passer par un script dedie.
+
+**Piege 3 — le nombre de repliques.** Tant que F.1 (verrou de calendrier) n'est pas fait,
+**exactement une** replique du worker, quel que soit le nombre de repliques web.
+
+- [ ] Lancer `app:economy:rent-backlog-reset` (piege 1)
+- [ ] Ajouter un service `worker` a `compose.prod.yaml`, entrypoint court-circuite (piege 2)
+- [ ] **Exactement une** replique de ce worker (piege 3)
+- [ ] Verifier apres 24 h : un seul releve `gils_supply_snapshot`, un seul prelevement de loyer
+
+> **Non livre par la campagne** : le service `worker` lui-meme. Le CD deploie automatiquement sur
+> `main` ; une definition de service non testee — variable d'environnement manquante, entrypoint
+> mal court-circuite, etiquette Traefik heritee par megarde — partirait donc **directement en
+> production**. Cette etape demande Docker sous la main. Le reste (mesure, effacement de l'arriere,
+> garde-fous) est livre et teste.
 
 #### F.1 — Le calendrier n'a pas de verrou
 
