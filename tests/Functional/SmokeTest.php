@@ -58,6 +58,13 @@ class SmokeTest extends WebTestCase
         yield 'achievements' => ['/game/achievements'];
         yield 'codex' => ['/game/codex'];
         yield 'quests' => ['/game/quests'];
+        // Les onglets de l'inventaire sont charges dans un turbo-frame : ce sont
+        // des requetes distinctes, et c'est la que vivent ses gabarits.
+        yield 'inventory_equipment' => ['/game/inventory/equipment'];
+        yield 'inventory_items' => ['/game/inventory/items'];
+        yield 'inventory_materia' => ['/game/inventory/materia'];
+        yield 'inventory_materials' => ['/game/inventory/materials'];
+        yield 'inventory_bank' => ['/game/inventory/bank'];
     }
 
     /**
