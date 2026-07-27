@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #0e0d12; color: #e8e6ef; font-family: Karla, system-ui, sans-serif; }
+  a { color: #b79cff; }
+  a:hover { color: #d6c6ff; }
+  * { box-sizing: border-box; }
+</style>
+</helmet>
+
+<section style="padding: 56px 56px 40px; display: flex; flex-direction: column; gap: 40px">
+  <div style="max-width: 760px; display: flex; flex-direction: column; gap: 14px">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #8a83a6">Tour 2 — Trois nouvelles pistes</div>
+    <h1 style="margin: 0; font-family: Karla, sans-serif; font-size: 40px; font-weight: 700; letter-spacing: -0.02em; color: #f4f2fa">Codex, Vitrail, Parchemin</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #a9a3c0; text-wrap: pretty"><a href="#2a">2a</a> est l'hybride demandé : la structure tabulaire et le monospace de <a href="#1b">1b</a>, posés dans l'encre et les serifs de <a href="#1a">1a</a>. <a href="#2b">2b</a> et <a href="#2c">2c</a> partent ailleurs — l'un plus graphique, l'autre à contre-courant en clair.</p>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 36px; align-items: flex-start">
+
+    <!-- ============ 2a — CODEX (hybride 1a + 1b) ============ -->
+    <div id="2a" style="width: 452px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #14121a; background: #c9b8ff; padding: 4px 9px; border-radius: 4px">2a</span>
+        <span style="font-size: 20px; font-weight: 700; color: #f4f2fa">Codex</span>
+        <span style="font-size: 13px; color: #8a83a6">hybride 1a × 1b</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #9a94b4">Les données de la Console dans l'écrin du Grimoire : registre à colonnes, chiffres monospace alignés à droite, mais titres serif, filets d'encre et respiration. Un seul accent doré pour l'action principale, le violet pour la navigation.</p>
+
+      <div style="background: #16141c; border: 1px solid #2b2735; border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; gap: 8px">
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #100e15; border: 1px solid #2b2735"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #1c1926"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #6d28d9"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #c9a227"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #efe9dc"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #efe9dc">Cormorant — titres</div>
+          <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; color: #9a94b4">IBM Plex Sans — libellés et corps</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #c9a227">IBM Plex Mono — 318 · +86 · 2/3</div>
+        </div>
+      </div>
+
+      <div style="width: 452px; height: 812px; border-radius: 22px; overflow: hidden; background: #100e15; border: 1px solid #2b2735; display: flex; flex-direction: column; font-family: 'IBM Plex Sans', sans-serif">
+        <div style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #241f2e">
+          <div style="display: flex; align-items: baseline; gap: 8px">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: #efe9dc">Elrivan</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a83a6">L42</span>
+          </div>
+          <div style="display: flex; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px">
+            <span style="color: #d98a8a">812/940</span>
+            <span style="color: #8fb3e0">210/260</span>
+            <span style="color: #c9a227">12 480</span>
+          </div>
+        </div>
+
+        <div style="padding: 18px 16px 12px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid #241f2e">
+          <div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: #efe9dc; line-height: 1">Équipement</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7a7392; margin-top: 3px">6 emplacements · 4 materia</div>
+          </div>
+          <div style="display: flex; gap: 16px; font-size: 13px">
+            <span style="color: #efe9dc; font-weight: 600; border-bottom: 2px solid #c9a227; padding-bottom: 3px">Porté</span>
+            <span style="color: #7a7392">Sac 37</span>
+            <span style="color: #7a7392">Materia 9</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid #241f2e">
+          <div style="padding: 10px 12px; border-right: 1px solid #241f2e"><div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7a7392">Atq</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #efe9dc">318</div></div>
+          <div style="padding: 10px 12px; border-right: 1px solid #241f2e"><div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7a7392">Déf</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #efe9dc">204</div></div>
+          <div style="padding: 10px 12px; border-right: 1px solid #241f2e"><div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7a7392">Vit</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #efe9dc">91</div></div>
+          <div style="padding: 10px 12px"><div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7a7392">Crit</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #efe9dc">12%</div></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 1fr 66px; padding: 8px 16px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #625b7a; border-bottom: 1px solid #241f2e">
+          <div>Slot</div><div>Objet</div><div style="text-align: right">Bonus</div>
+        </div>
+
+        <div style="flex: 1; overflow: hidden">
+          <div style="display: grid; grid-template-columns: 66px 1fr 66px; align-items: center; gap: 10px; padding: 12px 16px; min-height: 66px; border-bottom: 1px solid #1e1a27">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7a7392">ARME</div>
+            <div style="min-width: 0">
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: #d4a537; line-height: 1.15">Lame de Vesper</div>
+              <div style="display: flex; gap: 5px; margin-top: 6px; align-items: center">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fb7185, #7f1d1d)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a78bfa, #4c1d95)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1px dashed #4a4360"></div>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #625b7a; margin-left: 3px">2/3</span>
+              </div>
+            </div>
+            <div style="text-align: right"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #efe9dc">+86</div><div style="font-size: 10px; color: #625b7a">ATQ</div></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 66px 1fr 66px; align-items: center; gap: 10px; padding: 12px 16px; min-height: 66px; border-bottom: 1px solid #1e1a27; background: #14121b">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7a7392">TORSE</div>
+            <div style="min-width: 0">
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: #b79cff; line-height: 1.15">Haubert de brume</div>
+              <div style="display: flex; gap: 5px; margin-top: 6px; align-items: center">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #60a5fa, #1e3a8a)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1px dashed #4a4360"></div>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #625b7a; margin-left: 3px">1/2</span>
+              </div>
+            </div>
+            <div style="text-align: right"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #efe9dc">+52</div><div style="font-size: 10px; color: #625b7a">DÉF</div></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 66px 1fr 66px; align-items: center; gap: 10px; padding: 12px 16px; min-height: 66px; border-bottom: 1px solid #1e1a27">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7a7392">MAINS</div>
+            <div style="min-width: 0">
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: #7ec99a; line-height: 1.15">Gantelets d'écorce</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #625b7a; margin-top: 6px">0/1</div>
+            </div>
+            <div style="text-align: right"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #efe9dc">+14</div><div style="font-size: 10px; color: #625b7a">DÉF</div></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 66px 1fr 66px; align-items: center; gap: 10px; padding: 12px 16px; min-height: 66px; border-bottom: 1px solid #1e1a27; background: #14121b">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7a7392">JAMBES</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: #625b7a">emplacement libre</div>
+            <div style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #c9a227">ÉQUIPER</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 66px 1fr 66px; align-items: center; gap: 10px; padding: 12px 16px; min-height: 66px; border-bottom: 1px solid #1e1a27">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7a7392">AMUL.</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: #625b7a">emplacement libre</div>
+            <div style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #c9a227">ÉQUIPER</div>
+          </div>
+
+          <div style="margin: 14px 16px; border: 1px solid #2b2735; border-radius: 6px; padding: 12px; display: flex; align-items: center; justify-content: space-between; min-height: 56px">
+            <div>
+              <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #625b7a; margin-bottom: 3px">Amélioration suggérée</div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: #8fb3e0">Jambières runiques</div>
+            </div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7ec99a">▲ +31</div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 16px; border-top: 1px solid #241f2e; display: flex; gap: 10px">
+          <div style="flex: 1; height: 48px; border-radius: 6px; background: #c9a227; color: #17130a; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center">Optimiser</div>
+          <div style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid #35304a; color: #9a94b4; display: flex; align-items: center; justify-content: center">⋯</div>
+        </div>
+
+        <div style="height: 60px; border-top: 1px solid #241f2e; background: #14121a; display: flex; align-items: center; justify-content: space-around">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 19px; height: 19px; border-radius: 3px; background: #2b2735"></div>Carte</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 19px; height: 19px; border-radius: 3px; background: #2b2735"></div>Combat</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #c9b8ff"><div style="width: 19px; height: 19px; border-radius: 3px; background: #6d28d9"></div>Sac</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 19px; height: 19px; border-radius: 3px; background: #2b2735"></div>Skills</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 19px; height: 19px; border-radius: 3px; background: #2b2735"></div>Plus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 2b — VITRAIL ============ -->
+    <div id="2b" style="width: 452px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #14121a; background: #6ad1e3; padding: 4px 9px; border-radius: 4px">2b</span>
+        <span style="font-size: 20px; font-weight: 700; color: #f4f2fa">Vitrail</span>
+        <span style="font-size: 13px; color: #8a83a6">facettes, plomb, lumière</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #9a94b4">Structure en facettes serties : chaque bloc est cerné d'un trait « plomb » clair sur fond nuit bleutée, et la rareté colore la facette entière. Très identitaire, un peu plus coûteux à tenir sur des listes longues — mais imbattable pour l'inventaire et le combat.</p>
+
+      <div style="background: #131a2a; border: 1px solid #2c3b57; border-radius: 4px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; gap: 8px">
+          <div style="flex: 1; height: 44px; background: #0a1020; border: 1px solid #2c3b57"></div>
+          <div style="flex: 1; height: 44px; background: #1b2740"></div>
+          <div style="flex: 1; height: 44px; background: #6ad1e3"></div>
+          <div style="flex: 1; height: 44px; background: #b06ae3"></div>
+          <div style="flex: 1; height: 44px; background: #f0c05a"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: #e6efff; letter-spacing: 0.01em">Cormorant Garamond</div>
+          <div style="font-family: Karla, sans-serif; font-size: 14px; color: #93a6c4">Karla — corps, libellés en petites capitales</div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #6ad1e3">Space Grotesk — 318 · +86 · 12%</div>
+        </div>
+      </div>
+
+      <div style="width: 452px; height: 812px; border-radius: 22px; overflow: hidden; background: #0a1020; border: 1px solid #2c3b57; display: flex; flex-direction: column; font-family: Karla, sans-serif">
+        <div style="padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; background: #101a2e; border-bottom: 1px solid #2c3b57">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <div style="width: 32px; height: 32px; background: #1b2740; border: 1px solid #45608c; transform: rotate(45deg)"></div>
+            <div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: #e6efff; line-height: 1">Elrivan</div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-size: 11px; color: #6f86ab">Niv. 42</div>
+            </div>
+          </div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #f0c05a">12 480</div>
+        </div>
+
+        <div style="padding: 16px 14px 12px">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: #e6efff; line-height: 1">Équipement</div>
+          <div style="display: flex; gap: 6px; margin-top: 12px">
+            <div style="flex: 1; text-align: center; padding: 10px 0; min-height: 42px; background: #6ad1e3; color: #0a1020; font-size: 13px; font-weight: 700; letter-spacing: 0.04em">PORTÉ</div>
+            <div style="flex: 1; text-align: center; padding: 10px 0; min-height: 42px; background: #131a2a; border: 1px solid #2c3b57; color: #93a6c4; font-size: 13px; font-weight: 600; letter-spacing: 0.04em">SAC 37</div>
+            <div style="flex: 1; text-align: center; padding: 10px 0; min-height: 42px; background: #131a2a; border: 1px solid #2c3b57; color: #93a6c4; font-size: 13px; font-weight: 600; letter-spacing: 0.04em">MATERIA</div>
+          </div>
+        </div>
+
+        <div style="padding: 0 14px 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px">
+          <div style="background: #131a2a; border: 1px solid #2c3b57; padding: 9px 10px"><div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">ATQ</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #e6efff">318</div></div>
+          <div style="background: #131a2a; border: 1px solid #2c3b57; padding: 9px 10px"><div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">DÉF</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #e6efff">204</div></div>
+          <div style="background: #131a2a; border: 1px solid #2c3b57; padding: 9px 10px"><div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">VIT</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #e6efff">91</div></div>
+        </div>
+
+        <div style="flex: 1; overflow: hidden; padding: 0 14px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; gap: 11px; align-items: center; padding: 12px; min-height: 74px; background: linear-gradient(115deg, rgba(240,192,90,.14), #101a2e 60%); border: 1px solid rgba(240,192,90,.5)">
+            <div style="width: 46px; height: 46px; background: #1b2740; border: 1px solid rgba(240,192,90,.5)"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">ARME</div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #f0c05a; line-height: 1.15">Lame de Vesper</div>
+              <div style="display: flex; gap: 5px; margin-top: 6px">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fb7185, #7f1d1d); box-shadow: 0 0 9px rgba(239,68,68,.5)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a78bfa, #4c1d95); box-shadow: 0 0 9px rgba(167,139,250,.5)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed #45608c"></div>
+              </div>
+            </div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #e6efff">+86</div>
+          </div>
+
+          <div style="display: flex; gap: 11px; align-items: center; padding: 12px; min-height: 74px; background: linear-gradient(115deg, rgba(176,106,227,.14), #101a2e 60%); border: 1px solid rgba(176,106,227,.5)">
+            <div style="width: 46px; height: 46px; background: #1b2740; border: 1px solid rgba(176,106,227,.5)"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">TORSE</div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #d5a9f5; line-height: 1.15">Haubert de brume</div>
+              <div style="display: flex; gap: 5px; margin-top: 6px">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #60a5fa, #1e3a8a); box-shadow: 0 0 9px rgba(59,130,246,.5)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed #45608c"></div>
+              </div>
+            </div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #e6efff">+52</div>
+          </div>
+
+          <div style="display: flex; gap: 11px; align-items: center; padding: 12px; min-height: 74px; background: linear-gradient(115deg, rgba(106,227,158,.12), #101a2e 60%); border: 1px solid rgba(106,227,158,.45)">
+            <div style="width: 46px; height: 46px; background: #1b2740; border: 1px solid rgba(106,227,158,.45)"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">MAINS</div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #8ee7b4; line-height: 1.15">Gantelets d'écorce</div>
+              <div style="display: flex; gap: 5px; margin-top: 6px">
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed #45608c"></div>
+              </div>
+            </div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #e6efff">+14</div>
+          </div>
+
+          <div style="display: flex; gap: 11px; align-items: center; padding: 12px; min-height: 66px; border: 1px dashed #2c3b57">
+            <div style="width: 46px; height: 46px; border: 1px dashed #2c3b57"></div>
+            <div style="flex: 1">
+              <div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">JAMBES</div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: #55688a">facette vide</div>
+            </div>
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #6ad1e3">SERTIR</div>
+          </div>
+
+          <div style="display: flex; gap: 11px; align-items: center; padding: 12px; min-height: 66px; border: 1px dashed #2c3b57">
+            <div style="width: 46px; height: 46px; border: 1px dashed #2c3b57"></div>
+            <div style="flex: 1">
+              <div style="font-size: 10px; letter-spacing: 0.14em; color: #6f86ab">AMULETTE</div>
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: #55688a">facette vide</div>
+            </div>
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #6ad1e3">SERTIR</div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 14px">
+          <div style="height: 50px; background: #6ad1e3; color: #0a1020; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center">OPTIMISER</div>
+        </div>
+
+        <div style="height: 62px; background: #101a2e; border-top: 1px solid #2c3b57; display: flex; align-items: center; justify-content: space-around">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f86ab"><div style="width: 18px; height: 18px; background: #2c3b57; transform: rotate(45deg)"></div>Carte</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f86ab"><div style="width: 18px; height: 18px; background: #2c3b57; transform: rotate(45deg)"></div>Combat</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6ad1e3"><div style="width: 18px; height: 18px; background: #6ad1e3; transform: rotate(45deg)"></div>Sac</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f86ab"><div style="width: 18px; height: 18px; background: #2c3b57; transform: rotate(45deg)"></div>Skills</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f86ab"><div style="width: 18px; height: 18px; background: #2c3b57; transform: rotate(45deg)"></div>Plus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 2c — PARCHEMIN ============ -->
+    <div id="2c" style="width: 452px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #14121a; background: #e8d9b5; padding: 4px 9px; border-radius: 4px">2c</span>
+        <span style="font-size: 20px; font-weight: 700; color: #f4f2fa">Parchemin</span>
+        <span style="font-size: 13px; color: #8a83a6">thème clair, à contre-courant</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #9a94b4">Le pari inverse : encre sur papier. Contraste maximal en plein soleil, texte plus petit lisible sans effort, et les raretés deviennent des sceaux colorés très reconnaissables. Le violet améthyste passe en couleur de marque plutôt qu'en fond.</p>
+
+      <div style="background: #f4efe2; border: 1px solid #ddd2ba; border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; gap: 8px">
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #fbf8f0; border: 1px solid #ddd2ba"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #e8e0cc"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #5b2fb0"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #a8341f"></div>
+          <div style="flex: 1; height: 44px; border-radius: 4px; background: #26221c"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: #26221c">Cormorant — titres</div>
+          <div style="font-family: Karla, sans-serif; font-size: 14px; color: #5d564a">Karla — corps de texte sur papier</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #5b2fb0">IBM Plex Mono — 318 · +86 · 2/3</div>
+        </div>
+      </div>
+
+      <div style="width: 452px; height: 812px; border-radius: 22px; overflow: hidden; background: #fbf8f0; border: 1px solid #ddd2ba; display: flex; flex-direction: column; font-family: Karla, sans-serif">
+        <div style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; background: #26221c">
+          <div style="display: flex; align-items: baseline; gap: 8px">
+            <span style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 700; color: #f4efe2">Elrivan</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #a89b81">L42</span>
+          </div>
+          <div style="display: flex; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px">
+            <span style="color: #e8927c">812/940</span>
+            <span style="color: #9fbde8">210/260</span>
+            <span style="color: #e8c97c">12 480</span>
+          </div>
+        </div>
+
+        <div style="padding: 18px 16px 10px; border-bottom: 1px solid #ddd2ba">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: #26221c; line-height: 1">Équipement</div>
+          <div style="font-size: 13px; color: #7a705f; margin-top: 2px">6 emplacements · 4 materia serties</div>
+        </div>
+
+        <div style="display: flex; padding: 0 16px; border-bottom: 1px solid #ddd2ba">
+          <div style="padding: 11px 0; margin-right: 22px; font-size: 14px; font-weight: 700; color: #26221c; border-bottom: 3px solid #5b2fb0">Porté</div>
+          <div style="padding: 11px 0; margin-right: 22px; font-size: 14px; color: #7a705f">Sac (37)</div>
+          <div style="padding: 11px 0; font-size: 14px; color: #7a705f">Materia</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); background: #f4efe2; border-bottom: 1px solid #ddd2ba">
+          <div style="padding: 10px 12px; border-right: 1px solid #e3dac6"><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8a806d">Atq</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #26221c">318</div></div>
+          <div style="padding: 10px 12px; border-right: 1px solid #e3dac6"><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8a806d">Déf</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #26221c">204</div></div>
+          <div style="padding: 10px 12px; border-right: 1px solid #e3dac6"><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8a806d">Vit</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #26221c">91</div></div>
+          <div style="padding: 10px 12px"><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8a806d">Crit</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: #26221c">12%</div></div>
+        </div>
+
+        <div style="flex: 1; overflow: hidden; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px; min-height: 70px; background: #fff; border: 1px solid #ddd2ba; border-left: 4px solid #c08a1e; border-radius: 6px; box-shadow: 0 1px 0 rgba(38,34,28,.06)">
+            <div style="width: 46px; height: 46px; border-radius: 6px; background: #f0ead9; border: 1px solid #ddd2ba"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="display: flex; align-items: center; gap: 7px">
+                <span style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #26221c; line-height: 1.1">Lame de Vesper</span>
+                <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7a5407; background: #f5e4b8; padding: 2px 6px; border-radius: 4px">LÉG</span>
+              </div>
+              <div style="display: flex; gap: 5px; margin-top: 7px; align-items: center">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fb7185, #9f1239)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a78bfa, #5b21b6)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed #bcb09a"></div>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8a806d; margin-left: 3px">2/3</span>
+              </div>
+            </div>
+            <div style="text-align: right"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; color: #1f7a49">+86</div><div style="font-size: 10px; color: #8a806d">ATQ</div></div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px; min-height: 70px; background: #fff; border: 1px solid #ddd2ba; border-left: 4px solid #5b2fb0; border-radius: 6px; box-shadow: 0 1px 0 rgba(38,34,28,.06)">
+            <div style="width: 46px; height: 46px; border-radius: 6px; background: #f0ead9; border: 1px solid #ddd2ba"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="display: flex; align-items: center; gap: 7px">
+                <span style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #26221c; line-height: 1.1">Haubert de brume</span>
+                <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #4a1f95; background: #e6dcfb; padding: 2px 6px; border-radius: 4px">ÉPI</span>
+              </div>
+              <div style="display: flex; gap: 5px; margin-top: 7px; align-items: center">
+                <div style="width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #60a5fa, #1e40af)"></div>
+                <div style="width: 15px; height: 15px; border-radius: 50%; border: 1.5px dashed #bcb09a"></div>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8a806d; margin-left: 3px">1/2</span>
+              </div>
+            </div>
+            <div style="text-align: right"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; color: #1f7a49">+52</div><div style="font-size: 10px; color: #8a806d">DÉF</div></div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px; min-height: 70px; background: #fff; border: 1px solid #ddd2ba; border-left: 4px solid #1f7a49; border-radius: 6px; box-shadow: 0 1px 0 rgba(38,34,28,.06)">
+            <div style="width: 46px; height: 46px; border-radius: 6px; background: #f0ead9; border: 1px solid #ddd2ba"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="display: flex; align-items: center; gap: 7px">
+                <span style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: #26221c; line-height: 1.1">Gantelets d'écorce</span>
+                <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #145c36; background: #d6efe0; padding: 2px 6px; border-radius: 4px">PC</span>
+              </div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8a806d; margin-top: 7px">0/1 materia</div>
+            </div>
+            <div style="text-align: right"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; color: #1f7a49">+14</div><div style="font-size: 10px; color: #8a806d">DÉF</div></div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px; min-height: 64px; border: 1px dashed #cfc4ab; border-radius: 6px">
+            <div style="width: 46px; height: 46px; border-radius: 6px; border: 1px dashed #cfc4ab"></div>
+            <div style="flex: 1">
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: #8a806d">Jambes — vide</div>
+              <div style="font-size: 12px; color: #a8341f; font-weight: 600">3 objets disponibles</div>
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: #5b2fb0">Équiper</div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 11px; min-height: 64px; border: 1px dashed #cfc4ab; border-radius: 6px">
+            <div style="width: 46px; height: 46px; border-radius: 6px; border: 1px dashed #cfc4ab"></div>
+            <div style="flex: 1">
+              <div style="font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: #8a806d">Amulette — vide</div>
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: #5b2fb0">Équiper</div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 16px; border-top: 1px solid #ddd2ba; display: flex; gap: 10px; background: #f4efe2">
+          <div style="flex: 1; height: 48px; border-radius: 6px; background: #5b2fb0; color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center">Optimiser</div>
+          <div style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid #cfc4ab; color: #7a705f; display: flex; align-items: center; justify-content: center">⋯</div>
+        </div>
+
+        <div style="height: 62px; background: #26221c; display: flex; align-items: center; justify-content: space-around">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #a89b81"><div style="width: 19px; height: 19px; border-radius: 4px; background: #4a4437"></div>Carte</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #a89b81"><div style="width: 19px; height: 19px; border-radius: 4px; background: #4a4437"></div>Combat</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #d8c9f5"><div style="width: 19px; height: 19px; border-radius: 4px; background: #7c4ddb"></div>Sac</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #a89b81"><div style="width: 19px; height: 19px; border-radius: 4px; background: #4a4437"></div>Skills</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #a89b81"><div style="width: 19px; height: 19px; border-radius: 4px; background: #4a4437"></div>Plus</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section style="padding: 16px 56px 96px; display: flex; flex-direction: column; gap: 40px">
+  <div style="max-width: 760px; display: flex; flex-direction: column; gap: 14px">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #8a83a6">Tour 1 — Directions visuelles</div>
+    <h1 style="margin: 0; font-family: Karla, sans-serif; font-size: 40px; font-weight: 700; letter-spacing: -0.02em; color: #f4f2fa">Trois identités pour Améthyste Idle</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #a9a3c0; text-wrap: pretty">Même écran dans les trois cas — <strong style="color: #d8d3ea; font-weight: 600">Équipement / Materia</strong>, mobile d'abord — pour comparer à contenu égal. Chaque direction propose ses tokens (couleurs, typo, rayons) et le traitement des composants clés. Dis-moi laquelle tient la route (<a href="#1a">1a</a>, <a href="#1b">1b</a>, <a href="#1c">1c</a>) et je la déroule en design system complet + 2-3 écrans.</p>
+    <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #6f6a88">Priorité donnée à ton point de douleur : lisibilité et intuitivité. Dans les trois, la hiérarchie est explicite (ce qui est équipé, ce qui est libre, ce qui est verrouillé), les cibles tactiles font ≥ 44 px, et les chiffres sont alignés et comparables.</p>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 36px; align-items: flex-start">
+
+    <!-- ============ 1a — GRIMOIRE ============ -->
+    <div id="1a" style="width: 452px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #14121a; background: #c9b8ff; padding: 4px 9px; border-radius: 4px">1a</span>
+        <span style="font-size: 20px; font-weight: 700; color: #f4f2fa">Grimoire</span>
+        <span style="font-size: 13px; color: #8a83a6">encre &amp; améthyste</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #9a94b4">Fond encre profonde, filets fins, titres en serif. L'UI se lit comme une page d'ouvrage : peu d'aplats, beaucoup de règles et d'espacement. Le violet ne sert qu'à l'état actif et aux liens — le reste est neutre, donc les raretés ressortent seules.</p>
+
+      <div style="background: #16141c; border: 1px solid #2b2735; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; gap: 8px">
+          <div style="flex: 1; height: 44px; border-radius: 6px; background: #100e15; border: 1px solid #2b2735"></div>
+          <div style="flex: 1; height: 44px; border-radius: 6px; background: #1c1926; border: 1px solid #2b2735"></div>
+          <div style="flex: 1; height: 44px; border-radius: 6px; background: #6d28d9"></div>
+          <div style="flex: 1; height: 44px; border-radius: 6px; background: #a78bfa"></div>
+          <div style="flex: 1; height: 44px; border-radius: 6px; background: #e8e2d0"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: #f2efe6; line-height: 1.1">Cormorant Garamond</div>
+          <div style="font-size: 14px; color: #9a94b4">Karla — corps de texte, libellés, boutons</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #c9b8ff">IBM Plex Mono — 1 234 · +18 ATQ · 04:31</div>
+        </div>
+      </div>
+
+      <!-- phone -->
+      <div style="width: 452px; height: 812px; border-radius: 22px; overflow: hidden; background: #100e15; border: 1px solid #2b2735; display: flex; flex-direction: column; font-family: Karla, sans-serif">
+        <div style="padding: 14px 18px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #241f2e">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <div style="width: 34px; height: 34px; border-radius: 6px; background: #1c1926; border: 1px solid #35304a"></div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: #f2efe6">Elrivan</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a83a6">Niv. 42 · Mage d'ombre</div>
+            </div>
+          </div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #e8e2d0">12 480 <span style="color: #8a7f5f">or</span></div>
+        </div>
+
+        <div style="padding: 20px 18px 10px">
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: #f2efe6; line-height: 1">Équipement</div>
+          <div style="font-size: 13px; color: #8a83a6; margin-top: 2px">6 emplacements · 4 materia serties</div>
+        </div>
+
+        <div style="display: flex; gap: 0; padding: 0 18px; border-bottom: 1px solid #241f2e">
+          <div style="padding: 10px 2px 9px; margin-right: 20px; font-size: 14px; font-weight: 600; color: #f2efe6; border-bottom: 2px solid #a78bfa">Porté</div>
+          <div style="padding: 10px 2px 9px; margin-right: 20px; font-size: 14px; color: #8a83a6">Sac (37)</div>
+          <div style="padding: 10px 2px 9px; font-size: 14px; color: #8a83a6">Materia</div>
+        </div>
+
+        <div style="padding: 14px 18px; display: flex; gap: 10px; border-bottom: 1px solid #241f2e">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+            <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Attaque</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600; color: #f2efe6">318 <span style="font-size: 12px; color: #7ec99a">+24</span></div>
+          </div>
+          <div style="width: 1px; background: #241f2e"></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+            <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Défense</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600; color: #f2efe6">204</div>
+          </div>
+          <div style="width: 1px; background: #241f2e"></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+            <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Vitesse</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600; color: #f2efe6">91 <span style="font-size: 12px; color: #d98a8a">−6</span></div>
+          </div>
+        </div>
+
+        <div style="flex: 1; overflow: hidden; padding: 12px 18px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 68px; border-radius: 8px; background: #16141c; border: 1px solid #2b2735; border-left: 3px solid #d4a537">
+            <div style="width: 44px; height: 44px; border-radius: 6px; background: #221d2c; border: 1px solid #3a3350"></div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Arme</div>
+              <div style="font-size: 15px; font-weight: 600; color: #f2efe6">Lame de Vesper</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #d4a537">Légendaire · +86 ATQ</div>
+            </div>
+            <div style="display: flex; gap: 5px; align-items: center">
+              <div style="width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fb7185, #7f1d1d); box-shadow: 0 0 8px rgba(239,68,68,.5)"></div>
+              <div style="width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a78bfa, #4c1d95); box-shadow: 0 0 8px rgba(167,139,250,.5)"></div>
+              <div style="width: 16px; height: 16px; border-radius: 50%; border: 1.5px dashed #4a4360"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 68px; border-radius: 8px; background: #16141c; border: 1px solid #2b2735; border-left: 3px solid #8b5cf6">
+            <div style="width: 44px; height: 44px; border-radius: 6px; background: #221d2c; border: 1px solid #3a3350"></div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Torse</div>
+              <div style="font-size: 15px; font-weight: 600; color: #f2efe6">Haubert de brume</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #b79cff">Épique · +52 DÉF</div>
+            </div>
+            <div style="display: flex; gap: 5px; align-items: center">
+              <div style="width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #60a5fa, #1e3a8a); box-shadow: 0 0 8px rgba(59,130,246,.5)"></div>
+              <div style="width: 16px; height: 16px; border-radius: 50%; border: 1.5px dashed #4a4360"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 68px; border-radius: 8px; background: #16141c; border: 1px solid #2b2735; border-left: 3px solid #4d8f6a">
+            <div style="width: 44px; height: 44px; border-radius: 6px; background: #221d2c; border: 1px solid #3a3350"></div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Mains</div>
+              <div style="font-size: 15px; font-weight: 600; color: #f2efe6">Gantelets d'écorce</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7ec99a">Peu commun · +14 DÉF</div>
+            </div>
+            <div style="display: flex; gap: 5px; align-items: center">
+              <div style="width: 16px; height: 16px; border-radius: 50%; border: 1.5px dashed #4a4360"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 68px; border-radius: 8px; border: 1px dashed #2b2735">
+            <div style="width: 44px; height: 44px; border-radius: 6px; border: 1px dashed #3a3350"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Jambes</div>
+              <div style="font-size: 14px; color: #6f6a88; font-style: italic">Vide</div>
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #b79cff">Équiper</div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 68px; border-radius: 8px; border: 1px dashed #2b2735">
+            <div style="width: 44px; height: 44px; border-radius: 6px; border: 1px dashed #3a3350"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+              <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #7a7392">Amulette</div>
+              <div style="font-size: 14px; color: #6f6a88; font-style: italic">Vide</div>
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #b79cff">Équiper</div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 18px 14px; border-top: 1px solid #241f2e; display: flex; gap: 10px">
+          <div style="flex: 1; height: 48px; border-radius: 8px; background: #6d28d9; color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center">Optimiser</div>
+          <div style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid #35304a; display: flex; align-items: center; justify-content: center; color: #9a94b4; font-size: 18px">⋯</div>
+        </div>
+
+        <div style="height: 62px; border-top: 1px solid #241f2e; background: #14121a; display: flex; align-items: center; justify-content: space-around; padding: 0 8px">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 20px; height: 20px; border-radius: 4px; background: #2b2735"></div>Carte</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 20px; height: 20px; border-radius: 4px; background: #2b2735"></div>Combat</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #c9b8ff"><div style="width: 20px; height: 20px; border-radius: 4px; background: #6d28d9"></div>Sac</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 20px; height: 20px; border-radius: 4px; background: #2b2735"></div>Skills</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; color: #6f6a88"><div style="width: 20px; height: 20px; border-radius: 4px; background: #2b2735"></div>Plus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1b — CONSOLE ============ -->
+    <div id="1b" style="width: 452px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #14121a; background: #7ee0c0; padding: 4px 9px; border-radius: 4px">1b</span>
+        <span style="font-size: 20px; font-weight: 700; color: #f4f2fa">Console</span>
+        <span style="font-size: 13px; color: #8a83a6">dense, chiffré, à la Torn</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #9a94b4">Zéro décor : tableaux, colonnes alignées, monospace partout où il y a un nombre. Tout est comparable d'un coup d'œil et rien ne bouge sous le doigt. La couleur est un code strict (rareté, gain/perte, élément) — jamais de la décoration.</p>
+
+      <div style="background: #14161a; border: 1px solid #262b33; border-radius: 4px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; gap: 8px">
+          <div style="flex: 1; height: 44px; background: #0b0d10; border: 1px solid #262b33"></div>
+          <div style="flex: 1; height: 44px; background: #1a1e24"></div>
+          <div style="flex: 1; height: 44px; background: #7ee0c0"></div>
+          <div style="flex: 1; height: 44px; background: #a78bfa"></div>
+          <div style="flex: 1; height: 44px; background: #f4a259"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 26px; font-weight: 700; color: #eef1f5; letter-spacing: -0.01em">IBM Plex Sans</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #7ee0c0">IBM Plex Mono — 1 234 · +18 ATQ · 04:31</div>
+          <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: #8c95a3">Angles droits (2 px), lignes de 1 px, densité assumée</div>
+        </div>
+      </div>
+
+      <div style="width: 452px; height: 812px; border-radius: 22px; overflow: hidden; background: #0b0d10; border: 1px solid #262b33; display: flex; flex-direction: column; font-family: 'IBM Plex Sans', sans-serif">
+        <div style="padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; background: #14161a; border-bottom: 1px solid #262b33">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8c95a3">ELRIVAN <span style="color: #eef1f5">L42</span></div>
+          <div style="display: flex; gap: 14px; font-family: 'IBM Plex Mono', monospace; font-size: 12px">
+            <span style="color: #f0708a">PV 812/940</span>
+            <span style="color: #6aa9ff">PM 210/260</span>
+            <span style="color: #f4a259">12 480</span>
+          </div>
+        </div>
+
+        <div style="display: flex; background: #14161a; border-bottom: 1px solid #262b33">
+          <div style="flex: 1; text-align: center; padding: 11px 0; font-size: 13px; font-weight: 600; color: #0b0d10; background: #7ee0c0">ÉQUIP.</div>
+          <div style="flex: 1; text-align: center; padding: 11px 0; font-size: 13px; color: #8c95a3; border-left: 1px solid #262b33">SAC 37</div>
+          <div style="flex: 1; text-align: center; padding: 11px 0; font-size: 13px; color: #8c95a3; border-left: 1px solid #262b33">MATERIA 9</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid #262b33">
+          <div style="padding: 9px 10px; border-right: 1px solid #262b33"><div style="font-size: 10px; letter-spacing: 0.08em; color: #6b7482">ATQ</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; color: #eef1f5">318</div></div>
+          <div style="padding: 9px 10px; border-right: 1px solid #262b33"><div style="font-size: 10px; letter-spacing: 0.08em; color: #6b7482">DÉF</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; color: #eef1f5">204</div></div>
+          <div style="padding: 9px 10px; border-right: 1px solid #262b33"><div style="font-size: 10px; letter-spacing: 0.08em; color: #6b7482">VIT</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; color: #eef1f5">91</div></div>
+          <div style="padding: 9px 10px"><div style="font-size: 10px; letter-spacing: 0.08em; color: #6b7482">CRIT</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; color: #eef1f5">12%</div></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 74px 1fr auto; align-items: center; padding: 7px 12px; background: #14161a; border-bottom: 1px solid #262b33; font-size: 10px; letter-spacing: 0.1em; color: #6b7482">
+          <div>SLOT</div><div>OBJET</div><div>BONUS</div>
+        </div>
+
+        <div style="flex: 1; overflow: hidden">
+          <div style="display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 8px; padding: 11px 12px; min-height: 60px; border-bottom: 1px solid #1b1f25">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7482">ARME</div>
+            <div style="min-width: 0">
+              <div style="font-size: 14px; font-weight: 600; color: #f4a259; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Lame de Vesper</div>
+              <div style="display: flex; gap: 4px; margin-top: 4px; align-items: center">
+                <div style="width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fb7185, #7f1d1d)"></div>
+                <div style="width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a78bfa, #4c1d95)"></div>
+                <div style="width: 14px; height: 14px; border-radius: 50%; border: 1px dashed #3c434d"></div>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482; margin-left: 2px">2/3</span>
+              </div>
+            </div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7ee0c0; text-align: right">+86<div style="font-size: 10px; color: #6b7482">ATQ</div></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 8px; padding: 11px 12px; min-height: 60px; border-bottom: 1px solid #1b1f25; background: #101317">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7482">TORSE</div>
+            <div style="min-width: 0">
+              <div style="font-size: 14px; font-weight: 600; color: #c084fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Haubert de brume</div>
+              <div style="display: flex; gap: 4px; margin-top: 4px; align-items: center">
+                <div style="width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #60a5fa, #1e3a8a)"></div>
+                <div style="width: 14px; height: 14px; border-radius: 50%; border: 1px dashed #3c434d"></div>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482; margin-left: 2px">1/2</span>
+              </div>
+            </div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7ee0c0; text-align: right">+52<div style="font-size: 10px; color: #6b7482">DÉF</div></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 8px; padding: 11px 12px; min-height: 60px; border-bottom: 1px solid #1b1f25">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7482">MAINS</div>
+            <div style="min-width: 0">
+              <div style="font-size: 14px; font-weight: 600; color: #6ee7a0">Gantelets d'écorce</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482; margin-top: 4px">0/1 materia</div>
+            </div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7ee0c0; text-align: right">+14<div style="font-size: 10px; color: #6b7482">DÉF</div></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 8px; padding: 11px 12px; min-height: 60px; border-bottom: 1px solid #1b1f25; background: #101317">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7482">JAMBES</div>
+            <div style="font-size: 14px; color: #4e5661">— vide —</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7ee0c0; text-align: right">ÉQUIPER</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 8px; padding: 11px 12px; min-height: 60px; border-bottom: 1px solid #1b1f25">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7482">AMUL.</div>
+            <div style="font-size: 14px; color: #4e5661">— vide —</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7ee0c0; text-align: right">ÉQUIPER</div>
+          </div>
+
+          <div style="padding: 12px; display: flex; flex-direction: column; gap: 7px">
+            <div style="font-size: 10px; letter-spacing: 0.1em; color: #6b7482">MEILLEUR ÉCHANGE DISPONIBLE</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; min-height: 48px; background: #14161a; border: 1px solid #262b33">
+              <div>
+                <div style="font-size: 13px; font-weight: 600; color: #6aa9ff">Jambières runiques</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7482">Jambes · Rare</div>
+              </div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7ee0c0">▲ +31 DÉF</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 10px 12px; display: flex; gap: 8px; border-top: 1px solid #262b33; background: #14161a">
+          <div style="flex: 1; height: 46px; background: #7ee0c0; color: #0b0d10; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">TOUT OPTIMISER</div>
+          <div style="width: 46px; height: 46px; border: 1px solid #3c434d; color: #8c95a3; display: flex; align-items: center; justify-content: center">⋯</div>
+        </div>
+
+        <div style="height: 58px; border-top: 1px solid #262b33; background: #0e1114; display: flex; align-items: center; justify-content: space-around">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482"><div style="width: 18px; height: 18px; background: #262b33"></div>CARTE</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482"><div style="width: 18px; height: 18px; background: #262b33"></div>COMBAT</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7ee0c0"><div style="width: 18px; height: 18px; background: #7ee0c0"></div>SAC</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482"><div style="width: 18px; height: 18px; background: #262b33"></div>SKILLS</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6b7482"><div style="width: 18px; height: 18px; background: #262b33"></div>PLUS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1c — CRISTAL ============ -->
+    <div id="1c" style="width: 452px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: baseline; gap: 12px">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #14121a; background: #ff9ec4; padding: 4px 9px; border-radius: 4px">1c</span>
+        <span style="font-size: 20px; font-weight: 700; color: #f4f2fa">Cristal</span>
+        <span style="font-size: 13px; color: #8a83a6">tactile, contrasté, jeu mobile</span>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #9a94b4">Gros blocs, coins arrondis, une couleur par famille d'action. Chaque ligne d'équipement est une carte qu'on peut viser au pouce, avec l'objet, ses materia et son gain sur trois niveaux de lecture. Le plus « jeu » des trois, le plus lisible en mouvement.</p>
+
+      <div style="background: #1a1726; border: 1px solid #2f2a45; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; gap: 8px">
+          <div style="flex: 1; height: 44px; border-radius: 10px; background: #12101c"></div>
+          <div style="flex: 1; height: 44px; border-radius: 10px; background: #241f38"></div>
+          <div style="flex: 1; height: 44px; border-radius: 10px; background: #8b5cf6"></div>
+          <div style="flex: 1; height: 44px; border-radius: 10px; background: #ff9ec4"></div>
+          <div style="flex: 1; height: 44px; border-radius: 10px; background: #4ade80"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-family: Outfit, sans-serif; font-size: 28px; font-weight: 800; color: #f6f3ff; letter-spacing: -0.02em">Outfit</div>
+          <div style="font-family: Outfit, sans-serif; font-size: 14px; color: #a79ec7">Outfit — titres et libellés, graisses tranchées</div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #ff9ec4">Space Grotesk — 1 234 · +18 ATQ</div>
+        </div>
+      </div>
+
+      <div style="width: 452px; height: 812px; border-radius: 22px; overflow: hidden; background: #12101c; border: 1px solid #2f2a45; display: flex; flex-direction: column; font-family: Outfit, sans-serif">
+        <div style="padding: 14px 16px; display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #2a1f4d, #17132a)">
+          <div style="width: 42px; height: 42px; border-radius: 12px; background: #3b2f66; border: 1px solid #55458f"></div>
+          <div style="flex: 1">
+            <div style="font-size: 15px; font-weight: 700; color: #f6f3ff">Elrivan</div>
+            <div style="height: 6px; border-radius: 99px; background: #241f38; margin-top: 6px; overflow: hidden"><div style="width: 62%; height: 100%; background: linear-gradient(90deg, #8b5cf6, #ff9ec4)"></div></div>
+          </div>
+          <div style="text-align: right">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #ffd166">12 480</div>
+            <div style="font-size: 11px; color: #a79ec7">Niv. 42</div>
+          </div>
+        </div>
+
+        <div style="padding: 16px 16px 10px; display: flex; align-items: center; justify-content: space-between">
+          <div style="font-size: 24px; font-weight: 800; color: #f6f3ff; letter-spacing: -0.02em">Équipement</div>
+          <div style="font-size: 12px; font-weight: 600; color: #12101c; background: #4ade80; padding: 5px 10px; border-radius: 99px">4 materia</div>
+        </div>
+
+        <div style="padding: 0 16px 12px; display: flex; gap: 8px">
+          <div style="padding: 9px 16px; min-height: 40px; border-radius: 99px; background: #8b5cf6; color: #fff; font-size: 14px; font-weight: 600; display: flex; align-items: center">Porté</div>
+          <div style="padding: 9px 16px; min-height: 40px; border-radius: 99px; background: #241f38; color: #a79ec7; font-size: 14px; font-weight: 600; display: flex; align-items: center">Sac 37</div>
+          <div style="padding: 9px 16px; min-height: 40px; border-radius: 99px; background: #241f38; color: #a79ec7; font-size: 14px; font-weight: 600; display: flex; align-items: center">Materia 9</div>
+        </div>
+
+        <div style="padding: 0 16px 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
+          <div style="border-radius: 14px; background: #1a1726; padding: 10px 12px"><div style="font-size: 11px; color: #a79ec7">Attaque</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #f6f3ff">318</div></div>
+          <div style="border-radius: 14px; background: #1a1726; padding: 10px 12px"><div style="font-size: 11px; color: #a79ec7">Défense</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #f6f3ff">204</div></div>
+          <div style="border-radius: 14px; background: #1a1726; padding: 10px 12px"><div style="font-size: 11px; color: #a79ec7">Vitesse</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #f6f3ff">91</div></div>
+        </div>
+
+        <div style="flex: 1; overflow: hidden; padding: 0 16px; display: flex; flex-direction: column; gap: 10px">
+          <div style="border-radius: 16px; background: linear-gradient(135deg, rgba(255,209,102,.12), #1a1726); border: 1px solid rgba(255,209,102,.35); padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 76px">
+            <div style="width: 52px; height: 52px; border-radius: 14px; background: #2c2540; border: 1px solid #463d6b"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="display: flex; align-items: center; gap: 7px">
+                <div style="font-size: 16px; font-weight: 700; color: #f6f3ff">Lame de Vesper</div>
+                <div style="font-size: 10px; font-weight: 700; color: #12101c; background: #ffd166; padding: 2px 6px; border-radius: 6px">LÉG</div>
+              </div>
+              <div style="font-size: 12px; color: #a79ec7; margin-top: 2px">Arme · +86 ATQ</div>
+              <div style="display: flex; gap: 6px; margin-top: 7px">
+                <div style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fb7185, #7f1d1d); box-shadow: 0 0 10px rgba(239,68,68,.55)"></div>
+                <div style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a78bfa, #4c1d95); box-shadow: 0 0 10px rgba(167,139,250,.55)"></div>
+                <div style="width: 18px; height: 18px; border-radius: 50%; border: 2px dashed #4d4472"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-radius: 16px; background: linear-gradient(135deg, rgba(167,139,250,.12), #1a1726); border: 1px solid rgba(167,139,250,.35); padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 76px">
+            <div style="width: 52px; height: 52px; border-radius: 14px; background: #2c2540; border: 1px solid #463d6b"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="display: flex; align-items: center; gap: 7px">
+                <div style="font-size: 16px; font-weight: 700; color: #f6f3ff">Haubert de brume</div>
+                <div style="font-size: 10px; font-weight: 700; color: #12101c; background: #c4b5fd; padding: 2px 6px; border-radius: 6px">ÉPI</div>
+              </div>
+              <div style="font-size: 12px; color: #a79ec7; margin-top: 2px">Torse · +52 DÉF</div>
+              <div style="display: flex; gap: 6px; margin-top: 7px">
+                <div style="width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #60a5fa, #1e3a8a); box-shadow: 0 0 10px rgba(59,130,246,.55)"></div>
+                <div style="width: 18px; height: 18px; border-radius: 50%; border: 2px dashed #4d4472"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-radius: 16px; background: #1a1726; border: 1px solid rgba(74,222,128,.3); padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 76px">
+            <div style="width: 52px; height: 52px; border-radius: 14px; background: #2c2540; border: 1px solid #463d6b"></div>
+            <div style="flex: 1; min-width: 0">
+              <div style="display: flex; align-items: center; gap: 7px">
+                <div style="font-size: 16px; font-weight: 700; color: #f6f3ff">Gantelets d'écorce</div>
+                <div style="font-size: 10px; font-weight: 700; color: #12101c; background: #4ade80; padding: 2px 6px; border-radius: 6px">PC</div>
+              </div>
+              <div style="font-size: 12px; color: #a79ec7; margin-top: 2px">Mains · +14 DÉF</div>
+              <div style="display: flex; gap: 6px; margin-top: 7px">
+                <div style="width: 18px; height: 18px; border-radius: 50%; border: 2px dashed #4d4472"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-radius: 16px; border: 2px dashed #2f2a45; padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 72px">
+            <div style="width: 52px; height: 52px; border-radius: 14px; border: 2px dashed #2f2a45"></div>
+            <div style="flex: 1">
+              <div style="font-size: 15px; font-weight: 600; color: #6f6790">Jambes libres</div>
+              <div style="font-size: 12px; color: #ff9ec4; font-weight: 600; margin-top: 2px">3 objets disponibles</div>
+            </div>
+            <div style="width: 34px; height: 34px; border-radius: 50%; background: #ff9ec4; color: #12101c; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center">+</div>
+          </div>
+        </div>
+
+        <div style="padding: 12px 16px">
+          <div style="height: 52px; border-radius: 16px; background: linear-gradient(90deg, #8b5cf6, #b46bd6); color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center">Optimiser mon build</div>
+        </div>
+
+        <div style="height: 68px; background: #17132a; border-top: 1px solid #2f2a45; display: flex; align-items: center; justify-content: space-around; padding: 0 6px">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: #6f6790"><div style="width: 22px; height: 22px; border-radius: 8px; background: #241f38"></div>Carte</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: #6f6790"><div style="width: 22px; height: 22px; border-radius: 8px; background: #241f38"></div>Combat</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; color: #f6f3ff"><div style="width: 40px; height: 30px; border-radius: 12px; background: #8b5cf6"></div>Sac</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: #6f6790"><div style="width: 22px; height: 22px; border-radius: 8px; background: #241f38"></div>Skills</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: #6f6790"><div style="width: 22px; height: 22px; border-radius: 8px; background: #241f38"></div>Plus</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+</body>
+</html>
