@@ -27,7 +27,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-1">Objet</label>
                         <select name="player_item_id" required
-                                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500">
                             {% for playerItem in sellableItems %}
                                 {% set item = playerItem.genericItem %}
                                 <option value="{{ playerItem.id }}">
@@ -41,12 +41,12 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-1">Prix par unite (Gils)</label>
                             <input type="number" name="price_per_unit" min="1" value="100" required
-                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-1">Quantite</label>
                             <input type="number" name="quantity" min="1" value="1" required
-                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-1">
@@ -54,7 +54,7 @@
                             </label>
                             <input type="number" name="duration_hours" min="{{ minDuration }}" max="{{ maxDuration }}"
                                    value="{{ defaultDuration }}" required
-                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500">
                         </div>
                     </div>
 

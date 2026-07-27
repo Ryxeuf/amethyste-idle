@@ -7,7 +7,7 @@
     <div class="mb-6">
         <form method="get" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <input type="text" name="q" value="{{ search }}" placeholder="Rechercher (action, type, label)..."
-                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-80">
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-hidden focus:border-purple-500 w-full sm:w-80">
             <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
             {% if search %}
                 <a href="{{ path('admin_log_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>

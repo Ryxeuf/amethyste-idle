@@ -13,7 +13,7 @@
             <div class="game-card">
                 <div class="game-card-header">
                     <h2 class="text-sm sm:text-base font-bold text-white flex items-center">
-                        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                         {{ 'game.home.domains.title'|trans }}
@@ -104,7 +104,7 @@
             {% if player.fight %}
                 <a href="{{ path('app_game_fight') }}" class="block game-card border-orange-700/50 hover:border-orange-600/70 transition-colors">
                     <div class="game-card-body flex items-center gap-3 py-3">
-                        <div class="w-10 h-10 rounded-full bg-orange-900/60 flex items-center justify-center flex-shrink-0 animate-pulse">
+                        <div class="w-10 h-10 rounded-full bg-orange-900/60 flex items-center justify-center shrink-0 animate-pulse">
                             <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
                             </svg>
@@ -113,7 +113,7 @@
                             <h3 class="text-sm font-bold text-orange-300">{{ 'game.home.fight_banner.title'|trans }}</h3>
                             <p class="text-xs text-orange-200/70">{{ 'game.home.fight_banner.description'|trans({'%step%': player.fight.step}) }}</p>
                         </div>
-                        <svg class="w-5 h-5 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-orange-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </div>
@@ -127,7 +127,7 @@
                 <div class="game-card">
                     <div class="game-card-header flex items-center justify-between">
                         <h2 class="text-sm sm:text-base font-bold text-white flex items-center">
-                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                             </svg>
                             {{ 'game.home.quests.title'|trans }}
@@ -154,7 +154,7 @@
                                                         <div class="flex-1 progress-bar">
                                                             <div class="progress-bar-fill {{ pct >= 100 ? 'bg-green-500' : 'bg-purple-500' }}" style="width: {{ pct }}%"></div>
                                                         </div>
-                                                        <span class="flex-shrink-0 tabular-nums {{ pct >= 100 ? 'text-green-400' : '' }}">{{ current }}/{{ required }}</span>
+                                                        <span class="shrink-0 tabular-nums {{ pct >= 100 ? 'text-green-400' : '' }}">{{ current }}/{{ required }}</span>
                                                     </div>
                                                 {% endfor %}
                                             </div>
@@ -183,7 +183,7 @@
                 <div class="game-card">
                     <div class="game-card-header flex items-center justify-between">
                         <h2 class="text-sm sm:text-base font-bold text-white flex items-center">
-                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                             </svg>
                             {{ 'game.home.equipment.title'|trans }}
@@ -198,7 +198,7 @@
                                 {% for playerItem in equippedItems %}
                                     {% set item = playerItem.genericItem %}
                                     <div class="flex items-center gap-2.5 bg-gray-800/60 rounded-lg px-3 py-2 border border-gray-700/40 {{ item.rarity ? 'equip-rarity-' ~ item.rarity : '' }}">
-                                        <div class="w-7 h-7 rounded bg-gray-700/80 flex items-center justify-center flex-shrink-0">
+                                        <div class="w-7 h-7 rounded bg-gray-700/80 flex items-center justify-center shrink-0">
                                             {% if item.gearLocation == 'main_weapon' or item.gearLocation == 'side_weapon' %}
                                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                             {% elseif item.gearLocation == 'head' %}

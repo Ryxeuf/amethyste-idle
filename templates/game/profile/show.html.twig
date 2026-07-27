@@ -193,7 +193,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-sm font-medium text-gray-200 truncate">{{ de.domain.title }}</span>
-                            <span class="text-xs text-gray-400 ml-2 flex-shrink-0">{{ de.totalExperience }} XP</span>
+                            <span class="text-xs text-gray-400 ml-2 shrink-0">{{ de.totalExperience }} XP</span>
                         </div>
                         <div class="flex gap-3 text-[10px] text-gray-500">
                             {% if de.damage > 0 %}<span class="text-red-400">+{{ de.damage }} Deg</span>{% endif %}
@@ -219,7 +219,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for pa in featuredAchievements %}
                     <div class="flex items-center gap-2 bg-paper-2 rounded-lg p-2.5 border border-amber-700/20">
-                        <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
+                        <span class="text-lg shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
                         <div class="min-w-0 flex-1">
                             <div class="text-sm font-medium text-amber-400 truncate">{{ pa.achievement.title }}</div>
                             <div class="text-[10px] text-gray-500 truncate">{{ pa.achievement.description }}</div>
@@ -251,7 +251,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for pa in completedAchievements %}
                     <div class="flex items-center gap-2 bg-gray-800/50 rounded-lg p-2.5">
-                        <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
+                        <span class="text-lg shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
                         <div class="min-w-0 flex-1">
                             <div class="text-sm font-medium text-amber-400 truncate">{{ pa.achievement.title }}</div>
                             <div class="text-[10px] text-gray-500 truncate">{{ pa.achievement.description }}</div>

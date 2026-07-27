@@ -23,7 +23,7 @@
     {# Filters + actions #}
     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <form method="get" class="flex items-center gap-3">
-            <select name="map" onchange="this.form.submit()" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-purple-500">
+            <select name="map" onchange="this.form.submit()" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-hidden focus:border-purple-500">
                 <option value="0">Toutes les cartes</option>
                 {% for map in maps %}
                     <option value="{{ map.id }}" {% if filterMapId == map.id %}selected{% endif %}>{{ map.name }}</option>

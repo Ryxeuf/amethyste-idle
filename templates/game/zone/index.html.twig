@@ -312,14 +312,14 @@
                                     </span>
                                     {# Action secondaire : « Explorer » reste la seule action primaire de l'ecran. #}
                                     {% if offer.canLaunch %}
-                                        <form method="post" action="{{ path('app_game_zone_dungeon_launch', {'id': offer.id}) }}" class="flex-shrink-0 ml-3">
+                                        <form method="post" action="{{ path('app_game_zone_dungeon_launch', {'id': offer.id}) }}" class="shrink-0 ml-3">
                                             <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_launch_' ~ offer.id) }}">
                                             <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                                 {{ 'game.zone.dungeon.launch'|trans }}
                                             </button>
                                         </form>
                                     {% else %}
-                                        <span class="ds-hint flex-shrink-0 ml-3 text-right">{{ offer.blocker|trans }}</span>
+                                        <span class="ds-hint shrink-0 ml-3 text-right">{{ offer.blocker|trans }}</span>
                                     {% endif %}
                                 </li>
                             {% endfor %}
@@ -615,7 +615,7 @@
                                 <form data-action="zone-chat#send" class="flex gap-1 border-t border-line p-2">
                                     <input data-zone-chat-target="input" type="text" maxlength="500"
                                            placeholder="{{ 'game.zone.chat.placeholder'|trans }}"
-                                           class="flex-1 rounded-card bg-paper border border-line px-2 py-1 text-xs text-ink focus:outline-none focus:border-brand">
+                                           class="flex-1 rounded-card bg-paper border border-line px-2 py-1 text-xs text-ink focus:outline-hidden focus:border-brand">
                                     <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">{{ 'game.zone.chat.send'|trans }}</button>
                                 </form>
                             </div>

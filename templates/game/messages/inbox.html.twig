@@ -44,7 +44,7 @@
                     {% for msg in messages %}
                         <a href="{{ path('app_game_messages_read', {id: msg.id}) }}"
                            class="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-gray-700/50 border {{ not msg.read and tab == 'inbox' ? 'border-purple-500/40 bg-purple-900/10' : 'border-gray-700/30' }}">
-                            <div class="w-8 h-8 rounded-full {{ not msg.read and tab == 'inbox' ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700 text-gray-400' }} flex items-center justify-center text-sm font-bold flex-shrink-0">
+                            <div class="w-8 h-8 rounded-full {{ not msg.read and tab == 'inbox' ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700 text-gray-400' }} flex items-center justify-center text-sm font-bold shrink-0">
                                 {% if tab == 'inbox' %}
                                     {{ msg.sender.name|first|upper }}
                                 {% else %}
@@ -56,12 +56,12 @@
                                     <span class="text-sm {{ not msg.read and tab == 'inbox' ? 'text-white font-semibold' : 'text-gray-300' }} truncate">
                                         {% if tab == 'inbox' %}{{ msg.sender.name }}{% else %}{{ msg.receiver.name }}{% endif %}
                                     </span>
-                                    <span class="text-xs text-gray-500 flex-shrink-0">{{ msg.createdAt|date('d/m H:i') }}</span>
+                                    <span class="text-xs text-gray-500 shrink-0">{{ msg.createdAt|date('d/m H:i') }}</span>
                                 </div>
                                 <p class="text-xs {{ not msg.read and tab == 'inbox' ? 'text-gray-200' : 'text-gray-500' }} truncate">{{ msg.subject }}</p>
                             </div>
                             {% if not msg.read and tab == 'inbox' %}
-                                <div class="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0"></div>
+                                <div class="w-2 h-2 rounded-full bg-purple-400 shrink-0"></div>
                             {% endif %}
                         </a>
                     {% endfor %}

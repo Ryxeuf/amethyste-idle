@@ -116,7 +116,7 @@
                                             </div>
                                             <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                         </div>
-                                        <div class="flex gap-1.5 flex-shrink-0">
+                                        <div class="flex gap-1.5 shrink-0">
                                             {% if progress >= 100 %}
                                                 <button onclick="completeDailyQuest({{ dailyQuest.id }})"
                                                         class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-ink-on text-xs rounded transition-colors touch-target">
@@ -208,7 +208,7 @@
                                     <div class="bg-gray-700/30 rounded-lg p-3 border border-gray-700 opacity-75">
                                         <div class="flex items-center justify-between">
                                             <h3 class="text-gray-300 font-medium text-sm">{{ dq.quest|localized_quest_name }}</h3>
-                                            <span class="text-green-500 text-xs font-mono flex-shrink-0 ml-2">Terminee</span>
+                                            <span class="text-green-500 text-xs font-mono shrink-0 ml-2">Terminee</span>
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -234,7 +234,7 @@
                                                 <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                             </div>
                                             <button onclick="acceptDailyQuest({{ quest.id }})"
-                                                    class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-ink-on text-xs rounded transition-colors touch-target flex-shrink-0">
+                                                    class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-ink-on text-xs rounded transition-colors touch-target shrink-0">
                                                 Accepter
                                             </button>
                                         </div>
@@ -378,7 +378,7 @@
                                         {% endif %}
                                     </div>
                                     <button onclick="acceptQuest({{ quest.id }})"
-                                            class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-ink-on text-xs rounded transition-colors touch-target flex-shrink-0">
+                                            class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-ink-on text-xs rounded transition-colors touch-target shrink-0">
                                         Accepter
                                     </button>
                                 </div>

@@ -167,7 +167,7 @@ export default class extends Controller {
 
             const orb = document.createElement('button')
             orb.type = 'button'
-            orb.className = 'relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-gray-900'
+            orb.className = 'relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 transition-all duration-200 cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-offset-1 focus:ring-offset-gray-900'
             orb.title = `Slot ${idx + 1} — ${el.label}`
 
             if (slot.element === 'none') {

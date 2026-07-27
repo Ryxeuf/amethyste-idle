@@ -137,7 +137,7 @@
                 <input type="hidden" name="_token" value="{{ csrf_token('zone_population' ~ zone.id) }}">
                 <label for="zone-monster" class="block text-xs text-gray-500">Fixer un effectif</label>
                 <select id="zone-monster" name="monster_id" required
-                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:border-purple-500">
                     <option value="">Choisir une creature</option>
                     {% for monster in monsters %}
                         <option value="{{ monster.id }}">{{ monster.name }} (niv. {{ monster.level }})</option>
@@ -145,7 +145,7 @@
                 </select>
                 <div class="flex items-center gap-3">
                     <input type="number" name="count" min="0" max="200" value="0" required
-                           class="w-24 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                           class="w-24 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:border-purple-500">
                     <label class="flex items-center gap-1.5 text-xs text-gray-400">
                         <input type="checkbox" name="nocturnal" value="1" class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-purple-600">
                         Nocturne

@@ -354,6 +354,17 @@
   --color-pink-950: #fadcf3;
 }
 
+/*
+ * Compatibilite WebKit : la v4 n'emet plus `-webkit-background-clip`, que Safari
+ * a exige jusqu'a la 14.1. Sans lui, un texte transparent decoupe sur un degrade
+ * disparait au lieu de se colorer. Trois lignes valent mieux qu'un titre invisible.
+ */
+@supports (-webkit-background-clip: text) {
+  .bg-clip-text {
+    -webkit-background-clip: text;
+  }
+}
+
 @layer base {
   html,
   body {

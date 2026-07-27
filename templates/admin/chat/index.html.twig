@@ -10,11 +10,11 @@
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-xs text-gray-400 mb-1">Recherche</label>
                 <input type="text" name="q" value="{{ search }}" placeholder="Contenu ou nom de joueur..."
-                       class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                       class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:ring-1 focus:ring-purple-500">
             </div>
             <div>
                 <label class="block text-xs text-gray-400 mb-1">Canal</label>
-                <select name="channel" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                <select name="channel" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:ring-1 focus:ring-purple-500">
                     <option value="">Tous</option>
                     <option value="global" {% if channel == 'global' %}selected{% endif %}>General</option>
                     <option value="map" {% if channel == 'map' %}selected{% endif %}>Carte</option>

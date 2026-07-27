@@ -19,7 +19,7 @@
             <div class="px-8 pb-8">
                 {% if error %}
                     <div class="mb-4 px-4 py-3 rounded-lg bg-red-900/40 border border-red-700 text-red-300 text-sm flex items-start gap-2">
-                        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                         </svg>
                         <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
@@ -46,7 +46,7 @@
                                 </svg>
                             </div>
                             <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
-                                   class="w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                   class="w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                                    placeholder="votre@email.com" autocomplete="email" required autofocus>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                                 </svg>
                             </div>
                             <input type="password" name="password" id="inputPassword"
-                                   class="w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                   class="w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                                    placeholder="••••••••" autocomplete="current-password" required>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                     </div>
 
                     <button type="submit"
-                            class="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-ink-on font-semibold rounded-lg shadow-lg shadow-purple-900/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                            class="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-ink-on font-semibold rounded-lg shadow-lg shadow-purple-900/30 transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
                         {{ 'security.login'|trans }}
                     </button>
                 </form>
