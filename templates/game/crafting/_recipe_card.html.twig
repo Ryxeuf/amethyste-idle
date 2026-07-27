@@ -41,7 +41,7 @@
             {% endif %}
             {% if recipe.requiredLevel > 1 %}
                 <span class="ds-seal ds-seal-common">
-                    Niv. {{ recipe.requiredLevel }}
+                    {{ 'game.crafting.rank_short'|trans({'%rank%': recipe.requiredLevel}) }}
                 </span>
             {% endif %}
         </div>

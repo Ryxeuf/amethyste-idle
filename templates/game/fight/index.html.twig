@@ -317,7 +317,6 @@
 							</div>
 							<div class="min-w-0 flex-1">
 								<h2 class="ds-name ds-name--sm truncate">{{ fightPlayer.name }}</h2>
-								<span class="text-[10px] text-purple-300">{{ 'game.fight.level_short'|trans }}{{ fightPlayer.level ?? 0 }}</span>
 							</div>
 						</div>
 
@@ -384,13 +383,12 @@
 									{% endif %}
 								</h2>
 								<div class="flex items-center gap-1 flex-wrap">
-									<span class="text-[10px] text-gray-400">{{ 'game.fight.level_short'|trans }}{{ mob.level ?? 0 }}</span>
 									<span class="text-[9px]" title="{{ 'game.fight.difficulty'|trans({'%level%': mob.monster.difficulty}) }}">
 										{% for i in 1..5 %}
 											{% if i <= (mob.monster.difficulty ?? 1) %}
-												<span class="text-yellow-400">&#9733;</span>
+												<span class="text-rarity-legendary">&#9733;</span>
 											{% else %}
-												<span class="text-gray-600">&#9733;</span>
+												<span class="text-line-strong">&#9733;</span>
 											{% endif %}
 										{% endfor %}
 									</span>

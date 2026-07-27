@@ -89,7 +89,7 @@
                             class="craft-tab-btn ds-tab focus:outline-none{% if loop.first %} ds-tab--active{% endif %}">
                         {{ craftLabels[craft] ?? craft|capitalize }}
                         <span class="ds-seal ds-seal-common ml-1">
-                            Niv. {{ craftLevels[craft] ?? 1 }}
+                            {{ 'game.crafting.rank_short'|trans({'%rank%': craftLevels[craft] ?? 1}) }}
                         </span>
                     </button>
                 {% endfor %}
