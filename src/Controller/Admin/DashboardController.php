@@ -4,9 +4,10 @@ namespace App\Controller\Admin;
 
 use App\Entity\App\AdminLog;
 use App\Entity\App\Fight;
-use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\Entity\App\Pnj;
+use App\Entity\App\Zone;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Quest;
@@ -118,59 +119,70 @@ class DashboardController extends AbstractController
     }
 
     /**
-     * @return list<array{name: string, pnjCount: int, mobCount: int, playerCount: int}>
+     * Repartition du monde par zone.
+     *
+     * Comptait par carte : depuis le pivot, la position d'un joueur est sa zone
+     * (regle #7), et toute zone creee sans carte d'origine restait invisible ici
+     * — colonnes a zero pour une zone pourtant peuplee.
+     *
+     * @return list<array{id: int, name: string, type: string, pnjCount: int, mobCount: int, playerCount: int}>
      */
     private function buildZoneStats(): array
     {
-        $pnjCounts = $this->em->createQueryBuilder()
-            ->select('m.id, m.name, COUNT(p.id) AS pnjCount')
-            ->from(Map::class, 'm')
-            ->leftJoin('m.pnjs', 'p')
-            ->groupBy('m.id, m.name')
-            ->orderBy('m.name', 'ASC')
+        /** @var list<Zone> $zones */
+        $zones = $this->em->getRepository(Zone::class)
+            ->createQueryBuilder('z')
+            ->andWhere('z.enabled = true')
+            ->orderBy('z.name', 'ASC')
             ->getQuery()
             ->getResult();
 
-        $livingMobCounts = $this->em->createQueryBuilder()
-            ->select('m.id, m.name, COUNT(mob.id) AS mobCount')
-            ->from(Map::class, 'm')
-            ->leftJoin('m.mobs', 'mob', 'WITH', 'mob.diedAt IS NULL')
-            ->groupBy('m.id, m.name')
-            ->orderBy('m.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        $connectedThreshold = new \DateTimeImmutable('-15 minutes');
-        $connectedPlayerCounts = $this->em->createQueryBuilder()
-            ->select('m.id, m.name, COUNT(pl.id) AS playerCount')
-            ->from(Map::class, 'm')
-            ->leftJoin('m.players', 'pl', 'WITH', 'pl.updatedAt >= :threshold')
-            ->setParameter('threshold', $connectedThreshold)
-            ->groupBy('m.id, m.name')
-            ->orderBy('m.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        $zones = [];
-        foreach ($pnjCounts as $row) {
-            $zones[$row['id']] = [
-                'name' => $row['name'],
-                'pnjCount' => (int) $row['pnjCount'],
+        $rows = [];
+        foreach ($zones as $zone) {
+            $rows[$zone->getId()] = [
+                'id' => $zone->getId(),
+                'name' => $zone->getName(),
+                'type' => $zone->getType(),
+                'pnjCount' => 0,
                 'mobCount' => 0,
                 'playerCount' => 0,
             ];
         }
-        foreach ($livingMobCounts as $row) {
-            if (isset($zones[$row['id']])) {
-                $zones[$row['id']]['mobCount'] = (int) $row['mobCount'];
-            }
+
+        if ([] === $rows) {
+            return [];
         }
-        foreach ($connectedPlayerCounts as $row) {
-            if (isset($zones[$row['id']])) {
-                $zones[$row['id']]['playerCount'] = (int) $row['playerCount'];
+
+        $ids = array_keys($rows);
+        $connectedThreshold = new \DateTimeImmutable('-15 minutes');
+
+        $families = [
+            'pnjCount' => [Pnj::class, 'zone', null],
+            'mobCount' => [Mob::class, 'zone', 'e.diedAt IS NULL'],
+            'playerCount' => [Player::class, 'currentZone', 'e.updatedAt >= :threshold'],
+        ];
+
+        foreach ($families as $key => [$entity, $field, $condition]) {
+            $qb = $this->em->createQueryBuilder()
+                ->select('z.id AS zoneId, COUNT(e.id) AS total')
+                ->from($entity, 'e')
+                ->join('e.' . $field, 'z')
+                ->where('z.id IN (:ids)')
+                ->setParameter('ids', $ids)
+                ->groupBy('z.id');
+
+            if (null !== $condition) {
+                $qb->andWhere($condition);
+            }
+            if (str_contains((string) $condition, ':threshold')) {
+                $qb->setParameter('threshold', $connectedThreshold);
+            }
+
+            foreach ($qb->getQuery()->getResult() as $row) {
+                $rows[(int) $row['zoneId']][$key] = (int) $row['total'];
             }
         }
 
-        return array_values($zones);
+        return array_values($rows);
     }
 }
