@@ -66,7 +66,7 @@
                         </svg>
                     </div>
                     <span class="dashboard-action-label">{{ 'game.home.actions.explore'|trans }}</span>
-                    <span class="dashboard-action-hint">{{ player.map ? player.map|localized_map_name : '???' }}</span>
+                    <span class="dashboard-action-hint">{{ zone ? zone.localizedName(app.request.locale) : 'game.home.player.zone_unknown'|trans }}</span>
                 </a>
 
                 <a href="{{ path('app_game_inventory_index') }}" class="dashboard-action-card dashboard-action-inventory">
@@ -237,12 +237,12 @@
                 <div class="game-card-body py-3">
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                         <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-purple-400 truncate">{{ player.map ? player.map|localized_map_name : '—' }}</div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.current_map'|trans }}</div>
+                            <div class="text-lg sm:text-xl font-bold text-purple-400 truncate">{{ zone ? zone.localizedName(app.request.locale) : '—' }}</div>
+                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.current_zone'|trans }}</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-green-400">{{ playersOnMap }}</div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.players_nearby'|trans }}</div>
+                            <div class="text-lg sm:text-xl font-bold text-green-400">{{ playersInZone }}</div>
+                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.players_in_zone'|trans }}</div>
                         </div>
                         <div class="text-center">
                             <div class="text-lg sm:text-xl font-bold text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }}</div>

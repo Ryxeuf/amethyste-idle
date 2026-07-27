@@ -312,11 +312,13 @@
       "player": {
         "life": "Health",
         "energy": "Energy",
-        "map": "Map",
         "dead": "You are dead... Return to the map to respawn.",
         "in_fight": "A fight is in progress!",
         "birthdate": "Born on",
-        "member_since": "Adventurer since %date%"
+        "member_since": "Adventurer since %date%",
+        "zone": "Zone",
+        "zone_type": "Type",
+        "zone_unknown": "Unknown location"
       },
       "actions": {
         "explore": "Explore",
@@ -347,9 +349,9 @@
         "description": "Turn %step% — Join the fight"
       },
       "world": {
-        "current_map": "Current map",
-        "players_nearby": "Players nearby",
-        "skills_unlocked": "Skills"
+        "skills_unlocked": "Skills",
+        "current_zone": "Current zone",
+        "players_in_zone": "Players in zone"
       }
     },
     "footer": {

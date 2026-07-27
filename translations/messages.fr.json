@@ -312,11 +312,13 @@
       "player": {
         "life": "Vie",
         "energy": "Énergie",
-        "map": "Carte",
         "dead": "Vous êtes mort... Retournez sur la carte pour réapparaître.",
         "in_fight": "Un combat est en cours !",
         "birthdate": "Né le",
-        "member_since": "Aventurier depuis le %date%"
+        "member_since": "Aventurier depuis le %date%",
+        "zone": "Zone",
+        "zone_type": "Type",
+        "zone_unknown": "Position inconnue"
       },
       "actions": {
         "explore": "Explorer",
@@ -347,9 +349,9 @@
         "description": "Tour %step% — Rejoignez le combat"
       },
       "world": {
-        "current_map": "Carte actuelle",
-        "players_nearby": "Joueurs proches",
-        "skills_unlocked": "Compétences"
+        "skills_unlocked": "Compétences",
+        "current_zone": "Zone actuelle",
+        "players_in_zone": "Joueurs dans la zone"
       }
     },
     "footer": {
