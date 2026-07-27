@@ -65,8 +65,9 @@ Chaque zone devient une **configuration déclarative** (tables de rencontres, lo
 
 Principe directeur : **l'énergie gate l'accès aux rencontres, jamais le combat lui-même.**
 
-- **Coûtent de l'énergie** : explorer, chasser, voyager, lancer une expédition, récolter, rejoindre un événement de zone.
+- **Coûtent de l'énergie** : explorer, chasser, récolter, rejoindre un événement de zone, assaillir un boss de zone, tenter une épreuve chronométrée.
 - **Gratuits et illimités** : les tours de combat, une fois la rencontre engagée. Un combat peut durer 30 secondes ou 2 heures sans différence — le combat tour par tour (matérias, tactique) est le cœur conservé du jeu et ne doit jamais être pénalisé par la durée.
+- **Gratuits car déjà payés en temps réel** : voyager entre zones, lancer et récupérer une expédition. Une version antérieure de ce document les listait comme coûtant de l'énergie ; ils ne l'ont jamais fait dans le code, et c'est la bonne décision. Le voyage coûte des minutes réelles, et c'est sur ce coût-temps que repose l'arbitrage entre marchés régionaux (ECO-03) : le doubler d'un coût en énergie tuerait le transport de marchandises. Quant à l'expédition, c'est précisément l'outil du joueur qui n'a pas le temps de jouer activement — la facturer reviendrait à taxer l'absence.
 - **Second régulateur : les PV.** Sortir d'un combat affaibli impose de régénérer (temps réel) ou de consommer des soins. L'énergie limite les *tentatives*, la vie fait payer les *échecs*.
 
 Quatre curseurs indépendants, tous équilibrables via `docs/BALANCE.md` sans toucher au code : énergie (tentatives), PV (échecs), lockouts (donjons), contribution (loot de groupe).

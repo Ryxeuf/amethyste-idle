@@ -28,6 +28,18 @@ class Player implements CharacterInterface
     use CoordinatesTrait;
     use TimestampableEntity;
 
+    /**
+     * Plafond d'energie d'action par defaut : 24 h de regeneration
+     * (86400 s / `zone.energy.regen_seconds` a 360 s = 240 points).
+     *
+     * Le plafond couvre volontairement une journee entiere : en dessous, le
+     * joueur qui ne se connecte qu'une fois par 24 h perd l'energie regeneree
+     * au-dela du plafond, ce qui penalise l'absence longue (cf. docs/BALANCE.md
+     * section 8). Ce plafond ne donne rien de plus au joueur assidu, qui
+     * dispose du meme budget quotidien — il le depense simplement plus tot.
+     */
+    public const DEFAULT_MAX_ACTION_ENERGY = 240;
+
     public function __toString()
     {
         return $this->getName();
@@ -116,15 +128,15 @@ class Player implements CharacterInterface
 
     /**
      * Energie d'action PBBG (ZON-07) : gate l'acces aux rencontres (explorer,
-     * chasser, recolter, voyager...), JAMAIS le combat lui-meme. Distincte de
-     * `energy` (ressource de combat consommee par les sorts). Regeneration
-     * paresseuse via ActionEnergyManager (aucun cron).
+     * chasser, recolter, rejoindre un evenement...), JAMAIS le combat lui-meme.
+     * Distincte de `energy` (ressource de combat consommee par les sorts).
+     * Regeneration paresseuse via ActionEnergyManager (aucun cron).
      */
-    #[ORM\Column(name: 'action_energy', type: 'integer', options: ['default' => 100])]
-    private int $actionEnergy = 100;
+    #[ORM\Column(name: 'action_energy', type: 'integer', options: ['default' => self::DEFAULT_MAX_ACTION_ENERGY])]
+    private int $actionEnergy = self::DEFAULT_MAX_ACTION_ENERGY;
 
-    #[ORM\Column(name: 'max_action_energy', type: 'integer', options: ['default' => 100])]
-    private int $maxActionEnergy = 100;
+    #[ORM\Column(name: 'max_action_energy', type: 'integer', options: ['default' => self::DEFAULT_MAX_ACTION_ENERGY])]
+    private int $maxActionEnergy = self::DEFAULT_MAX_ACTION_ENERGY;
 
     /**
      * Dernier point de calcul de la regeneration (null = jamais calcule).
