@@ -8,6 +8,7 @@ use App\Entity\App\PartyMember;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
+use App\GameEngine\Dungeon\DungeonManager;
 use App\GameEngine\Dungeon\GroupDungeonException;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Party\PartyManager;
@@ -21,6 +22,7 @@ class GroupDungeonServiceTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private GroupDungeonRunRepository&MockObject $runRepository;
     private PartyManager&MockObject $partyManager;
+    private DungeonManager&MockObject $dungeonManager;
     private GroupDungeonService $service;
 
     protected function setUp(): void
@@ -28,7 +30,17 @@ class GroupDungeonServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->runRepository = $this->createMock(GroupDungeonRunRepository::class);
         $this->partyManager = $this->createMock(PartyManager::class);
-        $this->service = new GroupDungeonService($this->entityManager, $this->runRepository, $this->partyManager);
+        $this->dungeonManager = $this->createMock(DungeonManager::class);
+        // Par defaut, les prerequis du donjon sont satisfaits : chaque test qui
+        // les met en cause le declare explicitement.
+        $this->dungeonManager->method('meetsLevelRequirement')->willReturn(true);
+        $this->dungeonManager->method('getMissingEntryItems')->willReturn([]);
+        $this->service = new GroupDungeonService(
+            $this->entityManager,
+            $this->runRepository,
+            $this->partyManager,
+            $this->dungeonManager,
+        );
     }
 
     private function buildPlayer(int $id, ?Zone $zone): Player
@@ -50,11 +62,16 @@ class GroupDungeonServiceTest extends TestCase
         return $zone;
     }
 
-    private function buildDungeon(int $maxPlayers = 4): Dungeon
+    /**
+     * Donjon de groupe rattache a la zone d'id 1 — celle ou les tests placent le
+     * leader par defaut.
+     */
+    private function buildDungeon(int $maxPlayers = 4, ?Zone $zone = null): Dungeon
     {
         $dungeon = new Dungeon();
         $dungeon->setName('Caverne oubliee');
         $dungeon->setMaxPlayers($maxPlayers);
+        $dungeon->setZone($zone ?? $this->buildZone());
 
         return $dungeon;
     }
@@ -111,6 +128,7 @@ class GroupDungeonServiceTest extends TestCase
         $this->partyManager->method('getPlayerMembership')->willReturn(null);
 
         $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.no_party');
         $this->service->launch($leader, $this->buildDungeon());
     }
 
@@ -124,6 +142,7 @@ class GroupDungeonServiceTest extends TestCase
         $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
 
         $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.not_leader');
         $this->service->launch($wannabe, $this->buildDungeon());
     }
 
@@ -139,6 +158,7 @@ class GroupDungeonServiceTest extends TestCase
         $this->runRepository->method('findActiveForPlayer')->willReturn(null);
 
         $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.member_absent');
         $this->service->launch($leader, $this->buildDungeon());
     }
 
@@ -153,6 +173,7 @@ class GroupDungeonServiceTest extends TestCase
         $this->runRepository->method('findActiveForPlayer')->willReturn($existing);
 
         $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.already_running');
         $this->service->launch($leader, $this->buildDungeon());
     }
 
@@ -167,7 +188,129 @@ class GroupDungeonServiceTest extends TestCase
         $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
 
         $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.too_many');
         $this->service->launch($leader, $this->buildDungeon(2)); // max 2
+    }
+
+    /**
+     * Un donjon solo ne doit pas etre lancable par la voie de groupe : une party
+     * d'un seul joueur passe la limite `maxPlayers` de 1 et contournerait le
+     * cooldown et les prerequis de la voie solo.
+     */
+    public function testLaunchRejectsSoloDungeon(): void
+    {
+        $zone = $this->buildZone();
+        $leader = $this->buildPlayer(1, $zone);
+        $party = $this->buildParty($leader, []);
+
+        $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
+        $this->runRepository->method('findActiveForPlayer')->willReturn(null);
+
+        $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.not_group');
+        $this->service->launch($leader, $this->buildDungeon(1));
+    }
+
+    public function testLaunchRejectsDungeonAttachedToAnotherZone(): void
+    {
+        $zone = $this->buildZone(1);
+        $leader = $this->buildPlayer(1, $zone);
+        $party = $this->buildParty($leader, []);
+
+        $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
+        $this->runRepository->method('findActiveForPlayer')->willReturn(null);
+
+        $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.wrong_zone');
+        $this->service->launch($leader, $this->buildDungeon(4, $this->buildZone(2)));
+    }
+
+    public function testLaunchRejectsWhenAMemberLacksExperience(): void
+    {
+        $zone = $this->buildZone();
+        $leader = $this->buildPlayer(1, $zone);
+        $member = $this->buildPlayer(2, $zone);
+        $party = $this->buildParty($leader, [$member]);
+
+        $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
+        $this->runRepository->method('findActiveForPlayer')->willReturn(null);
+
+        $dungeonManager = $this->createMock(DungeonManager::class);
+        // Le leader remplit la condition, le membre non : le lancement doit tomber.
+        $dungeonManager->method('meetsLevelRequirement')
+            ->willReturnCallback(static fn (Player $player): bool => 1 === $player->getId());
+        $dungeonManager->method('getMissingEntryItems')->willReturn([]);
+
+        $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.member_experience');
+        $this->serviceWith($dungeonManager)->launch($leader, $this->buildDungeon());
+    }
+
+    public function testLaunchRejectsWhenAMemberLacksEntryItems(): void
+    {
+        $zone = $this->buildZone();
+        $leader = $this->buildPlayer(1, $zone);
+        $member = $this->buildPlayer(2, $zone);
+        $party = $this->buildParty($leader, [$member]);
+
+        $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
+        $this->runRepository->method('findActiveForPlayer')->willReturn(null);
+
+        $dungeonManager = $this->createMock(DungeonManager::class);
+        $dungeonManager->method('meetsLevelRequirement')->willReturn(true);
+        $dungeonManager->method('getMissingEntryItems')
+            ->willReturnCallback(static fn (Player $player): array => 1 === $player->getId() ? [] : ['Fragment Sylvestre']);
+
+        $this->expectException(GroupDungeonException::class);
+        $this->expectExceptionMessage('game.zone.dungeon.error.member_items');
+        $this->serviceWith($dungeonManager)->launch($leader, $this->buildDungeon());
+    }
+
+    public function testGetLaunchBlockerIsNullWhenLaunchable(): void
+    {
+        $zone = $this->buildZone();
+        $leader = $this->buildPlayer(1, $zone);
+        $party = $this->buildParty($leader, []);
+
+        $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
+        $this->runRepository->method('findActiveForPlayer')->willReturn(null);
+
+        $this->assertNull($this->service->getLaunchBlocker($leader, $this->buildDungeon()));
+    }
+
+    /**
+     * L'ecran de zone affiche ce motif : il doit etre exactement celui que
+     * `launch()` opposerait, sinon l'UI proposerait un lancement impossible.
+     */
+    public function testGetLaunchBlockerReportsTheBlockingReason(): void
+    {
+        $leader = $this->buildPlayer(1, $this->buildZone());
+        $this->partyManager->method('getPlayerMembership')->willReturn(null);
+
+        $this->assertSame(
+            'game.zone.dungeon.error.no_party',
+            $this->service->getLaunchBlocker($leader, $this->buildDungeon()),
+        );
+    }
+
+    public function testGetLaunchBlockerReportsMissingZone(): void
+    {
+        $wanderer = $this->buildPlayer(1, null);
+
+        $this->assertSame(
+            'game.zone.dungeon.error.no_zone',
+            $this->service->getLaunchBlocker($wanderer, $this->buildDungeon()),
+        );
+    }
+
+    private function serviceWith(DungeonManager&MockObject $dungeonManager): GroupDungeonService
+    {
+        return new GroupDungeonService(
+            $this->entityManager,
+            $this->runRepository,
+            $this->partyManager,
+            $dungeonManager,
+        );
     }
 
     public function testAbandonByLeader(): void

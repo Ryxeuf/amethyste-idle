@@ -130,6 +130,7 @@ class ZoneController extends AbstractController
                 'zoneEvents' => [],
                 'zoneBoss' => null,
                 'groupDungeon' => null,
+                'groupDungeonOffers' => [],
                 'pnjsPresent' => [],
                 'gameHour' => $this->gameTimeService->getHour(),
                 'zoneChat' => null,
@@ -198,6 +199,7 @@ class ZoneController extends AbstractController
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
             'zoneBoss' => $this->buildZoneBoss($zone),
             'groupDungeon' => $this->buildGroupDungeon($player),
+            'groupDungeonOffers' => $this->buildGroupDungeonOffers($player, $zone),
             // Les PNJ presents dans la zone (ZON-27) : depuis la suppression des
             // overlays carte, l'ecran de zone est le seul endroit d'ou les
             // atteindre — sans lui, les boutiques sont injoignables.
@@ -597,6 +599,44 @@ class ZoneController extends AbstractController
             'isMyTurn' => ($combat['activePlayerId'] ?? null) === $player->getId(),
             'rewardGils' => $rewardGils,
         ];
+    }
+
+    /**
+     * Donjons de groupe proposes par la zone courante.
+     *
+     * Sans ce point d'entree, le moteur de donjon de groupe (ZON-19/20) restait
+     * inatteignable : aucun ecran n'exposait `app_game_zone_dungeon_launch`.
+     *
+     * Le motif de blocage vient de `GroupDungeonService::getLaunchBlocker()`, la
+     * meme source que celle appliquee au POST — l'ecran ne peut donc pas proposer
+     * un lancement que le service refuserait.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function buildGroupDungeonOffers(Player $player, Zone $zone): array
+    {
+        // Un run actif occupe deja l'ecran : rien a proposer.
+        if (null !== $this->groupDungeonService->getActiveRunForPlayer($player)) {
+            return [];
+        }
+
+        $offers = [];
+        foreach ($this->groupDungeonService->findOfferedInZone($zone) as $dungeon) {
+            $blocker = $this->groupDungeonService->getLaunchBlocker($player, $dungeon);
+            $offers[] = [
+                'id' => $dungeon->getId(),
+                // L'entite, pas son nom : la vue la localise via les filtres
+                // `localized_dungeon_name` / `localized_dungeon_description`.
+                'dungeon' => $dungeon,
+                'maxPlayers' => $dungeon->getMaxPlayers(),
+                'requiredExperience' => $dungeon->getMinLevel() * 100,
+                'lootPreview' => $dungeon->getLootPreview() ?? [],
+                'canLaunch' => null === $blocker,
+                'blocker' => $blocker,
+            ];
+        }
+
+        return $offers;
     }
 
     /**
