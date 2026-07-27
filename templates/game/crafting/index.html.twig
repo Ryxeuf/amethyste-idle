@@ -5,42 +5,42 @@
 {% block game_content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-purple-400 mb-2">Artisanat</h1>
-        <p class="text-gray-300">Fabriquez des objets a partir de materiaux recoltes.</p>
+        <h1 class="ds-title mb-2">Artisanat</h1>
+        <p class="ds-body">Fabriquez des objets a partir de materiaux recoltes.</p>
     </div>
 
     {# Messages flash #}
     {% include 'game/crafting/_craft_result.html.twig' %}
 
     {# Bloc specialisation de metier (task 122) #}
-    <div class="mb-6 p-4 bg-gray-800/50 border border-purple-500/30 rounded-lg">
-        <h2 class="text-lg font-semibold text-purple-300 mb-2 flex items-center gap-2">
+    <div class="ds-panel mb-6">
+        <h2 class="ds-name mb-2 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M6.5 2a.5.5 0 00-.5.5v1.5h-1A1.5 1.5 0 003.5 5.5v11A1.5 1.5 0 005 18h10a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0015 4h-1V2.5a.5.5 0 00-1 0V4H7V2.5a.5.5 0 00-.5-.5z"/>
             </svg>
             Specialisation de metier
         </h2>
         {% if player.craftSpecialization %}
-            <p class="text-sm text-purple-200">
-                Vous etes <span class="font-bold text-yellow-300">{{ player.craftSpecialization.label }}</span>.
-                <span class="text-gray-300">Bonus : +{{ specializationBonus }}% de chance d'ameliorer la qualite lors du craft en {{ player.craftSpecialization.craftSlug }}.</span>
+            <p class="ds-body">
+                Vous etes <span class="ds-name ds-name--sm">{{ player.craftSpecialization.label }}</span>.
+                <span class="ds-hint">Bonus : +{{ specializationBonus }}% de chance d'ameliorer la qualite lors du craft en {{ player.craftSpecialization.craftSlug }}.</span>
             </p>
         {% elseif specializationCheck.ok %}
-            <p class="text-sm text-gray-300 mb-3">
-                Choisissez une specialisation de maitrise. Le choix est <span class="text-amber-300 font-bold">irreversible</span> et accorde +{{ specializationBonus }}% de chance d'amelioration de qualite sur le metier correspondant.
+            <p class="ds-body mb-3">
+                Choisissez une specialisation de maitrise. Le choix est <span class="ds-seal ds-seal-legendary">irreversible</span> et accorde +{{ specializationBonus }}% de chance d'amelioration de qualite sur le metier correspondant.
             </p>
             <form method="post" action="{{ path('app_game_craft_specialization') }}" onsubmit="return confirm('Ce choix est irreversible. Confirmer ?');" class="flex flex-wrap gap-2">
                 <input type="hidden" name="_token" value="{{ csrf_token('craft_specialization') }}">
                 {% for spec in specializations %}
                     <button type="submit" name="specialization" value="{{ spec.value }}"
-                            class="px-3 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded transition-colors"
+                            class="ds-btn ds-btn--secondary ds-btn--sm"
                             title="{{ spec.description }}">
                         {{ spec.label }}
                     </button>
                 {% endfor %}
             </form>
         {% else %}
-            <p class="text-sm text-gray-400">
+            <p class="ds-hint">
                 {{ specializationCheck.reason }}
             </p>
         {% endif %}
@@ -49,13 +49,13 @@
     {# ECO-20 : le travail en cours a l'etabli. Le `craftingTime` des recettes
        etait affiche depuis toujours et applique nulle part. #}
     {% if activeJob %}
-        <div class="mb-6 bg-amber-950/40 border border-amber-800/50 rounded-lg p-4"
+        <div class="ds-card ds-edge-legendary p-4 mb-6"
              data-controller="craft-job"
              data-craft-job-remaining-value="{{ activeJob.remainingSeconds }}">
             <div class="flex items-center justify-between gap-4">
                 <div class="min-w-0">
-                    <h3 class="text-sm font-semibold text-amber-200">Etabli occupe</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">
+                    <h3 class="ds-name ds-name--sm">Etabli occupe</h3>
+                    <p class="ds-num ds-num--sm text-left mt-0.5">
                         {{ activeJob.quantity }}x {{ activeJob.recipe.result.name }}
                         · <span data-craft-job-target="countdown">{{ activeJob.remainingSeconds }}</span>s restantes
                     </p>
@@ -64,7 +64,7 @@
                     <button type="submit"
                             data-craft-job-target="button"
                             {{ activeJob.ready ? '' : 'disabled' }}
-                            class="px-4 py-2 text-sm rounded-lg bg-emerald-700 hover:bg-emerald-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white transition-colors">
+                            class="ds-btn ds-btn--primary">
                         Recuperer
                     </button>
                 </form>
@@ -74,8 +74,8 @@
 
     {# Onglets des professions d'artisanat #}
     <div class="mb-6">
-        <div class="border-b border-gray-700">
-            <nav class="flex flex-wrap space-x-4 md:space-x-8" id="craft-tabs">
+        <div>
+            <nav class="ds-tabs flex-wrap" id="craft-tabs">
                 {% set craftLabels = {
                     'forgeron': 'Forge',
                     'tanneur': 'Tannerie',
@@ -86,14 +86,9 @@
                 {% for craft in crafts %}
                     <button type="button"
                             data-craft-tab="{{ craft }}"
-                            class="craft-tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none
-                                {% if loop.first %}
-                                    border-purple-500 text-purple-400
-                                {% else %}
-                                    border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-400
-                                {% endif %}">
+                            class="craft-tab-btn ds-tab focus:outline-none{% if loop.first %} ds-tab--active{% endif %}">
                         {{ craftLabels[craft] ?? craft|capitalize }}
-                        <span class="ml-1 text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full">
+                        <span class="ds-seal ds-seal-common ml-1">
                             Niv. {{ craftLevels[craft] ?? 1 }}
                         </span>
                     </button>
@@ -109,20 +104,20 @@
 
             {# Tool warning #}
             {% if craftToolStatus[craft] is defined and not craftToolStatus[craft].ok %}
-                <div class="mb-4 p-3 bg-amber-900/30 border border-amber-500/30 rounded-lg flex items-center gap-2">
+                <div class="ds-banner ds-banner--loss mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-                    <span class="text-xs sm:text-sm text-amber-200">{{ craftToolStatus[craft].message }}</span>
+                    <span>{{ craftToolStatus[craft].message }}</span>
                 </div>
             {% endif %}
 
             {# Indicateur de progression #}
             {% set nextUnlock = nextUnlockByCraft[craft] ?? {nextLevel: null, count: 0, totalLocked: 0} %}
             {% if nextUnlock.nextLevel is not null %}
-                <div class="mb-4 p-3 bg-purple-900/20 border border-purple-500/20 rounded-lg flex items-center gap-2">
+                <div class="ds-banner mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-xs sm:text-sm text-purple-200">
+                    <span>
                         {{ nextUnlock.count }} recette{{ nextUnlock.count > 1 ? 's' : '' }} au niveau {{ nextUnlock.nextLevel }}
                         {% if nextUnlock.totalLocked > nextUnlock.count %}
                             ({{ nextUnlock.totalLocked }} verrouillee{{ nextUnlock.totalLocked > 1 ? 's' : '' }} au total)
@@ -144,16 +139,16 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="text-center text-gray-400 py-12">
-                    <p class="text-lg">Aucune recette disponible pour cette profession.</p>
-                    <p class="text-sm mt-2">Progressez dans le jeu pour debloquer de nouvelles recettes.</p>
+                <div class="ds-empty">
+                    <p class="ds-empty__title">Aucune recette disponible pour cette profession.</p>
+                    <p class="ds-empty__hint">Progressez dans le jeu pour debloquer de nouvelles recettes.</p>
                 </div>
             {% endif %}
 
             {# Recettes verrouilees #}
             {% if lockedRecipesByCraft[craft] is defined and lockedRecipesByCraft[craft]|length > 0 %}
                 <div class="mt-6">
-                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <h3 class="ds-label mb-3 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                         </svg>
@@ -172,8 +167,8 @@
     {% endfor %}
 
     {# Section Enchantements #}
-    <div class="mt-8 border-t border-gray-700 pt-6">
-        <h2 class="text-xl font-semibold text-purple-300 mb-4">Enchantements</h2>
+    <div class="mt-8 border-t border-line pt-6">
+        <h2 class="ds-title mb-4">Enchantements</h2>
         {% include 'game/crafting/_enchantment.html.twig' with {
             enchantmentDefinitions: enchantmentDefinitions,
             equippedItems: equippedItems,
@@ -182,8 +177,8 @@
     </div>
 
     {# Section Experimentation #}
-    <div class="mt-8 border-t border-gray-700 pt-6">
-        <h2 class="text-xl font-semibold text-purple-300 mb-4">Experimentation</h2>
+    <div class="mt-8 border-t border-line pt-6">
+        <h2 class="ds-title mb-4">Experimentation</h2>
         {% include 'game/crafting/_experiment.html.twig' with {
             playerItems: playerItems
         } %}
@@ -201,8 +196,7 @@
 
                 // Reset tous les onglets
                 tabButtons.forEach(function(btn) {
-                    btn.classList.remove('border-purple-500', 'text-purple-400');
-                    btn.classList.add('border-transparent', 'text-gray-400');
+                    btn.classList.remove('ds-tab--active');
                 });
 
                 // Cacher tous les panneaux
@@ -211,8 +205,7 @@
                 });
 
                 // Activer l'onglet clique
-                button.classList.remove('border-transparent', 'text-gray-400');
-                button.classList.add('border-purple-500', 'text-purple-400');
+                button.classList.add('ds-tab--active');
 
                 // Afficher le panneau correspondant
                 var panel = document.getElementById('craft-panel-' + craft);
