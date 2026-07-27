@@ -131,6 +131,29 @@
                     </tbody>
                 </table>
             {% endif %}
+
+            {# Effectif cible, comme en YAML : on complete ou on retire jusqu'au compte demande. #}
+            <form method="post" action="{{ path('admin_zone_population', {id: zone.id}) }}" class="mt-4 pt-4 border-t border-gray-800 space-y-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('zone_population' ~ zone.id) }}">
+                <label for="zone-monster" class="block text-xs text-gray-500">Fixer un effectif</label>
+                <select id="zone-monster" name="monster_id" required
+                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                    <option value="">Choisir une creature</option>
+                    {% for monster in monsters %}
+                        <option value="{{ monster.id }}">{{ monster.name }} (niv. {{ monster.level }})</option>
+                    {% endfor %}
+                </select>
+                <div class="flex items-center gap-3">
+                    <input type="number" name="count" min="0" max="200" value="0" required
+                           class="w-24 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                    <label class="flex items-center gap-1.5 text-xs text-gray-400">
+                        <input type="checkbox" name="nocturnal" value="1" class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-purple-600">
+                        Nocturne
+                    </label>
+                    <button type="submit" class="ml-auto px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Appliquer</button>
+                </div>
+                <p class="text-xs text-gray-600">Une creature engagee dans un combat n'est jamais retiree.</p>
+            </form>
         </div>
 
         {# ---- Habitants ---- #}
@@ -152,7 +175,15 @@
 
         {# ---- Recolte ---- #}
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Filons de recolte</h2>
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Filons de recolte</h2>
+                {% if gatherResources is not empty %}
+                    <form method="post" action="{{ path('admin_zone_vein_refill', {id: zone.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('zone_vein_refill' ~ zone.id) }}">
+                        <button type="submit" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-100">Recharger</button>
+                    </form>
+                {% endif %}
+            </div>
             {% if gatherResources is empty %}
                 <p class="text-sm text-gray-500">Aucune ressource declaree (<code>gather_config</code> vide).</p>
             {% else %}

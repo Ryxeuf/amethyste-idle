@@ -9,6 +9,7 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\App\ZoneVein;
+use App\Entity\Game\Monster;
 use App\Form\Admin\ZoneConnectionType;
 use App\Form\Admin\ZoneType;
 use App\GameEngine\Zone\ZoneDefinitionException;
@@ -217,6 +218,8 @@ class ZoneController extends AbstractController
             'playersPresent' => $this->em->getRepository(Player::class)->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50),
             'gatherResources' => $zone->getGatherResources(),
             'veins' => $veinBySlug,
+            'monsters' => $this->em->getRepository(Monster::class)->createQueryBuilder('m')
+                ->orderBy('m.name', 'ASC')->getQuery()->getResult(),
         ]);
     }
 
@@ -372,6 +375,127 @@ class ZoneController extends AbstractController
         $this->addFlash('success', sprintf('Liaison %s supprimee.', $label));
 
         return $this->redirectToRoute('admin_zone_show', ['id' => $zoneId]);
+    }
+
+    /**
+     * Ajuste l'effectif d'une espece dans une zone.
+     *
+     * Meme regle que l'import YAML : on complete jusqu'au compte demande, sans
+     * jamais toucher une creature engagee dans un combat. Ramener l'effectif a
+     * zero est possible, mais une creature en combat est conservee — la retirer
+     * casserait la rencontre en cours d'un joueur.
+     */
+    #[Route('/{id}/population', name: 'population', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function population(Request $request, Zone $zone): Response
+    {
+        if (!$this->isCsrfTokenValid('zone_population' . $zone->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+        }
+
+        $monster = $this->em->getRepository(Monster::class)->find($request->request->getInt('monster_id'));
+        if (null === $monster) {
+            $this->addFlash('error', 'Creature introuvable.');
+
+            return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+        }
+
+        $target = max(0, $request->request->getInt('count'));
+        $nocturnal = '1' === $request->request->get('nocturnal');
+
+        /** @var list<Mob> $existing */
+        $existing = $this->em->getRepository(Mob::class)->findBy(['zone' => $zone, 'monster' => $monster]);
+        $delta = $target - \count($existing);
+
+        if ($delta > 0) {
+            for ($i = 0; $i < $delta; ++$i) {
+                $this->em->persist($this->spawn($zone, $monster, $nocturnal));
+            }
+            $message = sprintf('%d creature(s) "%s" ajoutee(s).', $delta, $monster->getName());
+        } elseif ($delta < 0) {
+            $removable = array_values(array_filter($existing, static fn (Mob $mob): bool => null === $mob->getFight()));
+            $removed = 0;
+            foreach (\array_slice($removable, 0, -$delta) as $mob) {
+                $this->em->remove($mob);
+                ++$removed;
+            }
+            $kept = -$delta - $removed;
+            $message = sprintf('%d creature(s) "%s" retiree(s).', $removed, $monster->getName());
+            if ($kept > 0) {
+                $message .= sprintf(' %d conservee(s) : engagee(s) dans un combat.', $kept);
+            }
+        } else {
+            $message = sprintf('Effectif de "%s" deja a %d.', $monster->getName(), $target);
+        }
+
+        $this->em->flush();
+        $this->adminLogger->log('population', 'Zone', $zone->getId(), sprintf(
+            '%s: %s -> %d',
+            $zone->getSlug(),
+            $monster->getSlug(),
+            $target,
+        ));
+        $this->addFlash('success', $message);
+
+        return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+    }
+
+    /**
+     * Remet un filon a sa capacite declaree.
+     *
+     * Sert quand une zone est bloquee sur un stock a zero — respawn manque,
+     * capacite changee en YAML sans que l'etat runtime suive.
+     */
+    #[Route('/{id}/veins/refill', name: 'vein_refill', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function veinRefill(Request $request, Zone $zone): Response
+    {
+        if (!$this->isCsrfTokenValid('zone_vein_refill' . $zone->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+        }
+
+        $capacityBySlug = [];
+        foreach ($zone->getGatherResources() as $resource) {
+            $slug = \is_string($resource['slug'] ?? null) ? $resource['slug'] : null;
+            if (null !== $slug) {
+                $capacityBySlug[$slug] = max(0, (int) ($resource['capacity'] ?? 0));
+            }
+        }
+
+        $refilled = 0;
+        foreach ($this->em->getRepository(ZoneVein::class)->findBy(['zone' => $zone]) as $vein) {
+            $capacity = $capacityBySlug[$vein->getSlug()] ?? null;
+            if (null === $capacity) {
+                // Filon orphelin : la ressource n'est plus declaree en YAML.
+                continue;
+            }
+            $vein->setStock($capacity);
+            $vein->setDepletedAt(null);
+            ++$refilled;
+        }
+
+        $this->em->flush();
+        $this->adminLogger->log('vein_refill', 'Zone', $zone->getId(), sprintf('%s: %d filon(s)', $zone->getSlug(), $refilled));
+        $this->addFlash('success', sprintf('%d filon(s) remis a leur capacite.', $refilled));
+
+        return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+    }
+
+    private function spawn(Zone $zone, Monster $monster, bool $nocturnal): Mob
+    {
+        $mob = new Mob();
+        $mob->setMonster($monster);
+        // Zone posee explicitement : `WorldEntityZoneListener` respecte une zone
+        // deja fixee et n'ira pas chercher de carte (une zone nee apres le pivot
+        // n'en a aucune).
+        $mob->setZone($zone);
+        $mob->setLife($monster->getLife());
+        $mob->setLevel($monster->getLevel());
+        $mob->setNocturnal($nocturnal);
+
+        return $mob;
     }
 
     /**
