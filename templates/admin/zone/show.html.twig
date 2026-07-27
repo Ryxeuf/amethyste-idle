@@ -37,7 +37,11 @@
 
         {# ---- Liaisons ---- #}
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 lg:col-span-2">
-            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Liaisons</h2>
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Liaisons</h2>
+                <a href="{{ path('admin_zone_connection_new', {id: zone.id}) }}"
+                   class="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Ajouter une liaison</a>
+            </div>
 
             {% if outgoing is empty %}
                 <p class="text-sm text-amber-400 mb-4">
@@ -51,6 +55,7 @@
                             <th class="text-right py-2 font-medium">Duree</th>
                             <th class="text-left py-2 pl-4 font-medium">Decouverte requise</th>
                             <th class="text-left py-2 font-medium">Etat</th>
+                            <th class="text-right py-2 font-medium">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +72,14 @@
                                     {% else %}
                                         <span class="text-gray-500">inactive</span>
                                     {% endif %}
+                                </td>
+                                <td class="py-2 text-right whitespace-nowrap">
+                                    <a href="{{ path('admin_zone_connection_edit', {id: connection.id}) }}" class="text-xs text-gray-400 hover:text-gray-200">Editer</a>
+                                    <form method="post" action="{{ path('admin_zone_connection_delete', {id: connection.id}) }}" class="inline"
+                                          onsubmit="return confirm('Supprimer la liaison vers {{ connection.toZone.name|e('js') }} ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('zone_connection_delete' ~ connection.id) }}">
+                                        <button type="submit" class="ml-2 text-xs text-red-400 hover:text-red-300">Supprimer</button>
+                                    </form>
                                 </td>
                             </tr>
                         {% endfor %}

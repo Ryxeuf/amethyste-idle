@@ -1,0 +1,30 @@
+{% set widget_class = ' w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40' %}
+
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6 max-w-2xl">
+    <p class="text-sm text-gray-500 mb-4">
+        Depuis <span class="text-gray-300">{{ zone.name }}</span>. Une liaison est orientee : un sens par arete.
+    </p>
+    {{ form_start(form, {'attr': {'class': 'space-y-5'}}) }}
+        {% for field in form %}
+            {% if field.vars.name != '_token' %}
+                <div>
+                    {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+                    {% set is_checkbox = field.vars.block_prefixes[1]|default('') == 'checkbox' %}
+                    {% set merged_attr = field.vars.attr|default({})|merge({
+                        'class': (field.vars.attr.class|default('')) ~ (is_checkbox ? ' h-4 w-4 rounded border-gray-700 bg-gray-800 text-purple-600' : widget_class)
+                    }) %}
+                    {{ form_widget(field, {'attr': merged_attr}) }}
+                    {{ form_errors(field) }}
+                    {% if field.vars.help is defined and field.vars.help %}
+                        <p class="text-xs text-gray-500 mt-1.5">{{ field.vars.help }}</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="flex items-center gap-3 pt-2 border-t border-gray-800">
+            <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">Enregistrer</button>
+            <a href="{{ path('admin_zone_show', {id: zone.id}) }}" class="text-sm text-gray-400 hover:text-gray-200">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>

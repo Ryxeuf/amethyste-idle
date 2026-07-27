@@ -9,6 +9,7 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\App\ZoneVein;
+use App\Form\Admin\ZoneConnectionType;
 use App\Form\Admin\ZoneType;
 use App\GameEngine\Zone\ZoneDefinitionException;
 use App\GameEngine\Zone\ZoneDefinitionLoader;
@@ -18,6 +19,7 @@ use App\Repository\ZoneRepository;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -258,6 +260,131 @@ class ZoneController extends AbstractController
         $this->addFlash('success', sprintf('Zone "%s" %s.', $zone->getName(), $zone->isEnabled() ? 'activee' : 'desactivee'));
 
         return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+    }
+
+    #[Route('/{id}/connections/new', name: 'connection_new', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function connectionNew(Request $request, Zone $zone): Response
+    {
+        $form = $this->createForm(ZoneConnectionType::class, [
+            'travelSeconds' => 60,
+            'requiresDiscovery' => false,
+            'enabled' => true,
+            'bidirectional' => true,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            /** @var Zone $target */
+            $target = $data['toZone'];
+
+            if ($target === $zone) {
+                $form->get('toZone')->addError(new FormError('Une liaison ne peut pas boucler sur sa propre zone.'));
+            } elseif (null !== $this->zoneConnectionRepository->findOneBy(['fromZone' => $zone, 'toZone' => $target])) {
+                $form->get('toZone')->addError(new FormError('Cette liaison existe deja ; editez-la plutot que de la dupliquer.'));
+            } else {
+                $created = [$this->createConnection($zone, $target, $data)];
+                if (($data['bidirectional'] ?? false)
+                    && null === $this->zoneConnectionRepository->findOneBy(['fromZone' => $target, 'toZone' => $zone])) {
+                    $created[] = $this->createConnection($target, $zone, $data);
+                }
+                $this->em->flush();
+
+                foreach ($created as $connection) {
+                    $this->adminLogger->log('create', 'ZoneConnection', $connection->getId(), sprintf(
+                        '%s -> %s',
+                        $connection->getFromZone()->getSlug(),
+                        $connection->getToZone()->getSlug(),
+                    ));
+                }
+                $this->addFlash('success', sprintf('%d liaison(s) creee(s).', \count($created)));
+
+                return $this->redirectToRoute('admin_zone_show', ['id' => $zone->getId()]);
+            }
+        }
+
+        return $this->render('admin/zone/connection_new.html.twig', [
+            'zone' => $zone,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/connections/{id}/edit', name: 'connection_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function connectionEdit(Request $request, ZoneConnection $connection): Response
+    {
+        $form = $this->createForm(ZoneConnectionType::class, [
+            'toZone' => $connection->getToZone(),
+            'travelSeconds' => $connection->getTravelSeconds(),
+            'requiresDiscovery' => $connection->requiresDiscovery(),
+            'enabled' => $connection->isEnabled(),
+        ], ['allow_bidirectional' => false]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            if ($data['toZone'] !== $connection->getToZone()) {
+                // Changer la destination revient a une autre arete : le couple
+                // (from, to) est unique en base, la corriger ici ferait un
+                // doublon silencieux ou une violation de contrainte.
+                $form->get('toZone')->addError(new FormError('La destination ne se change pas : supprimez cette liaison et creez-en une autre.'));
+            } else {
+                $connection->setTravelSeconds((int) $data['travelSeconds']);
+                $connection->setRequiresDiscovery((bool) ($data['requiresDiscovery'] ?? false));
+                $connection->setEnabled((bool) ($data['enabled'] ?? false));
+                $this->em->flush();
+
+                $this->adminLogger->log('update', 'ZoneConnection', $connection->getId(), sprintf(
+                    '%s -> %s',
+                    $connection->getFromZone()->getSlug(),
+                    $connection->getToZone()->getSlug(),
+                ));
+                $this->addFlash('success', 'Liaison mise a jour.');
+
+                return $this->redirectToRoute('admin_zone_show', ['id' => $connection->getFromZone()->getId()]);
+            }
+        }
+
+        return $this->render('admin/zone/connection_edit.html.twig', [
+            'connection' => $connection,
+            'zone' => $connection->getFromZone(),
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/connections/{id}/delete', name: 'connection_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function connectionDelete(Request $request, ZoneConnection $connection): Response
+    {
+        $zoneId = $connection->getFromZone()->getId();
+
+        if (!$this->isCsrfTokenValid('zone_connection_delete' . $connection->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_zone_show', ['id' => $zoneId]);
+        }
+
+        $label = sprintf('%s -> %s', $connection->getFromZone()->getSlug(), $connection->getToZone()->getSlug());
+        $this->adminLogger->log('delete', 'ZoneConnection', $connection->getId(), $label);
+
+        $this->em->remove($connection);
+        $this->em->flush();
+
+        $this->addFlash('success', sprintf('Liaison %s supprimee.', $label));
+
+        return $this->redirectToRoute('admin_zone_show', ['id' => $zoneId]);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function createConnection(Zone $from, Zone $to, array $data): ZoneConnection
+    {
+        $connection = new ZoneConnection($from, $to, (int) $data['travelSeconds']);
+        $connection->setRequiresDiscovery((bool) ($data['requiresDiscovery'] ?? false));
+        $connection->setEnabled((bool) ($data['enabled'] ?? false));
+        $this->em->persist($connection);
+
+        return $connection;
     }
 
     /**
