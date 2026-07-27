@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Inventory;
 
+use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Player\PlayerActionHelper;
@@ -100,6 +101,8 @@ class EquipmentController extends AbstractController
             'setBonuses' => $setBonuses,
             'toolSlots' => $toolSlots,
             'toolEquipStates' => $toolEquipStates,
+            'toolGroups' => $this->groupToolsByType($availableTools, $toolEquipStates),
+            'gearGroups' => $this->groupGearBySlot($availableGear),
             'avatarPayload' => $this->avatarPayloadBuilder->build($player),
         ]);
     }
@@ -125,5 +128,58 @@ class EquipmentController extends AbstractController
         }
 
         return \in_array($tool->getSlug(), $equippableToolSlugs, true) ? 'ok' : 'locked_skill';
+    }
+
+    /**
+     * Regroupe les outils disponibles par type d'outil.
+     *
+     * Un sac d'artisan porte facilement une trentaine d'outils : a plat, il
+     * fallait derouler toute la liste pour atteindre une faucille. Les groupes
+     * ou quelque chose est equipable remontent en tete, et ce sont les seuls
+     * ouverts par defaut.
+     *
+     * @param list<PlayerItem>      $availableTools
+     * @param array<int, string>    $toolEquipStates
+     *
+     * @return array<string, array{items: list<PlayerItem>, equippable: int}>
+     */
+    private function groupToolsByType(array $availableTools, array $toolEquipStates): array
+    {
+        $groups = [];
+        foreach ($availableTools as $item) {
+            $toolType = $item->getGenericItem()->getToolType() ?? 'unknown';
+            $groups[$toolType] ??= ['items' => [], 'equippable' => 0];
+            $groups[$toolType]['items'][] = $item;
+            if (($toolEquipStates[$item->getId()] ?? null) === 'ok') {
+                ++$groups[$toolType]['equippable'];
+            }
+        }
+
+        uasort($groups, static fn (array $a, array $b): int => $b['equippable'] <=> $a['equippable']);
+
+        return $groups;
+    }
+
+    /**
+     * Regroupe l'equipement disponible par emplacement, meme motif que les
+     * outils : une liste plate de dizaines de pieces ne se parcourt pas.
+     *
+     * @param list<PlayerItem> $availableGear
+     *
+     * @return array<string, list<PlayerItem>>
+     */
+    private function groupGearBySlot(array $availableGear): array
+    {
+        $groups = [];
+        foreach ($availableGear as $item) {
+            $slot = $item->getGenericItem()->getGearLocation() ?? 'unknown';
+            $groups[$slot][] = $item;
+        }
+
+        // Ordre du paperdoll : l'ecran se lit de la tete aux pieds.
+        $order = array_flip(Item::GEAR_LOCATIONS);
+        uksort($groups, static fn (string $a, string $b): int => ($order[$a] ?? \PHP_INT_MAX) <=> ($order[$b] ?? \PHP_INT_MAX));
+
+        return $groups;
     }
 }

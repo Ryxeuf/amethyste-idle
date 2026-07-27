@@ -252,7 +252,12 @@
         "title": "Equipment sets",
         "pieces": "%equipped%/%total% pieces"
       },
-      "available_equipment_empty": "No equipment available"
+      "available_equipment_empty": "No equipment available",
+      "groups": {
+        "equippable": "%count% equippable"
+      },
+      "materia_slots_short": "%count% slot(s)",
+      "locked_skill_gear": "Skill required to equip this item"
     },
     "map": {
       "title": "World Map",

@@ -252,7 +252,12 @@
         "title": "Sets d'équipement",
         "pieces": "%equipped%/%total% pièces"
       },
-      "available_equipment_empty": "Aucun équipement disponible"
+      "available_equipment_empty": "Aucun équipement disponible",
+      "groups": {
+        "equippable": "%count% équipable(s)"
+      },
+      "materia_slots_short": "%count% slot(s)",
+      "locked_skill_gear": "Compétence requise pour équiper cet objet"
     },
     "map": {
       "title": "Carte du Monde",

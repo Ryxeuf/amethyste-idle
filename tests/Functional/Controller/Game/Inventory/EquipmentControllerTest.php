@@ -7,6 +7,8 @@ namespace App\Tests\Functional\Controller\Game\Inventory;
 use App\Controller\Game\Inventory\EquipmentController;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
+use App\Entity\Game\Item;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
@@ -98,10 +100,102 @@ class EquipmentControllerTest extends TestCase
         $this->assertNull($this->capturedTemplateParams['avatarPayload']);
     }
 
-    private function setupCommonExpectations(Player $player): void
+    /**
+     * Un outil dont l'emplacement est ouvert mais dont le talent de palier
+     * manque doit s'afficher verrouille : la liste proposait de l'equiper, et
+     * le serveur refusait.
+     */
+    public function testToolWithoutTierTalentIsReportedAsLockedBySkill(): void
+    {
+        $player = $this->createMock(Player::class);
+        $pickaxe = $this->tool(1, 'pickaxe-iron', Item::TOOL_TYPE_PICKAXE);
+        $this->setupCommonExpectations($player, [$pickaxe]);
+
+        $player->method('getUnlockedToolSlots')->willReturn([Item::TOOL_TYPE_PICKAXE]);
+        $this->playerActionHelper->method('getEquippableToolSlugs')->willReturn(['pickaxe-bronze']);
+
+        ($this->controller)();
+
+        $this->assertSame(['locked_skill'], array_values($this->capturedTemplateParams['toolEquipStates']));
+    }
+
+    public function testToolWithClosedSlotIsReportedAsLockedBySlot(): void
+    {
+        $player = $this->createMock(Player::class);
+        $sickle = $this->tool(2, 'sickle-bronze', Item::TOOL_TYPE_SICKLE);
+        $this->setupCommonExpectations($player, [$sickle]);
+
+        $player->method('getUnlockedToolSlots')->willReturn([]);
+        // Le talent d'equipement seul ne suffit pas : l'emplacement doit etre ouvert.
+        $this->playerActionHelper->method('getEquippableToolSlugs')->willReturn(['sickle-bronze']);
+
+        ($this->controller)();
+
+        $this->assertSame(['locked_slot'], array_values($this->capturedTemplateParams['toolEquipStates']));
+    }
+
+    public function testToolWithSlotAndTalentIsEquippable(): void
+    {
+        $player = $this->createMock(Player::class);
+        $pickaxe = $this->tool(3, 'pickaxe-bronze', Item::TOOL_TYPE_PICKAXE);
+        $this->setupCommonExpectations($player, [$pickaxe]);
+
+        $player->method('getUnlockedToolSlots')->willReturn([Item::TOOL_TYPE_PICKAXE]);
+        $this->playerActionHelper->method('getEquippableToolSlugs')->willReturn(['pickaxe-bronze']);
+
+        ($this->controller)();
+
+        $this->assertSame(['ok'], array_values($this->capturedTemplateParams['toolEquipStates']));
+    }
+
+    /**
+     * Les outils sont regroupes par type, groupes utilisables en tete : c'est ce
+     * qui evite de derouler trente lignes pour equiper une faucille.
+     */
+    public function testToolsAreGroupedByTypeWithUsableGroupsFirst(): void
+    {
+        $player = $this->createMock(Player::class);
+        $items = [
+            $this->tool(1, 'pickaxe-iron', Item::TOOL_TYPE_PICKAXE),
+            $this->tool(2, 'pickaxe-steel', Item::TOOL_TYPE_PICKAXE),
+            $this->tool(3, 'sickle-bronze', Item::TOOL_TYPE_SICKLE),
+        ];
+        $this->setupCommonExpectations($player, $items);
+
+        $player->method('getUnlockedToolSlots')->willReturn([Item::TOOL_TYPE_PICKAXE, Item::TOOL_TYPE_SICKLE]);
+        $this->playerActionHelper->method('getEquippableToolSlugs')->willReturn(['sickle-bronze']);
+
+        ($this->controller)();
+
+        $groups = $this->capturedTemplateParams['toolGroups'];
+        $this->assertSame([Item::TOOL_TYPE_SICKLE, Item::TOOL_TYPE_PICKAXE], array_keys($groups));
+        $this->assertSame(1, $groups[Item::TOOL_TYPE_SICKLE]['equippable']);
+        $this->assertSame(0, $groups[Item::TOOL_TYPE_PICKAXE]['equippable']);
+        $this->assertCount(2, $groups[Item::TOOL_TYPE_PICKAXE]['items']);
+    }
+
+    private function tool(int $id, string $slug, string $toolType): PlayerItem
+    {
+        $generic = new Item();
+        $generic->setName(ucfirst($slug));
+        $generic->setType(Item::TYPE_TOOL);
+        $generic->setSlug($slug);
+        $generic->setToolType($toolType);
+
+        $playerItem = new PlayerItem();
+        $playerItem->setId($id);
+        $playerItem->setGenericItem($generic);
+
+        return $playerItem;
+    }
+
+    /**
+     * @param list<PlayerItem> $bagItems
+     */
+    private function setupCommonExpectations(Player $player, array $bagItems = []): void
     {
         $bag = $this->createMock(Inventory::class);
-        $bag->method('getItems')->willReturn(new ArrayCollection([]));
+        $bag->method('getItems')->willReturn(new ArrayCollection($bagItems));
         $this->playerHelper->method('getBagInventory')->willReturn($bag);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
@@ -127,7 +221,6 @@ class EquipmentControllerTest extends TestCase
             'maxEnergy' => 5,
         ]);
 
-        $player->method('getUnlockedToolSlots')->willReturn([]);
         $this->playerActionHelper->method('getUnlockedToolSlots')->willReturn([]);
     }
 
