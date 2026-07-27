@@ -33,8 +33,14 @@
       releve de masse monetaire). Preuve : `api:mob:move` etait planifiee toutes les minutes
       alors que ZON-21 l'avait supprimee. Garde-fou `ScheduledCommandTest` livre ; les 7
       commandes recurrentes orphelines sont declarees.
-- [ ] **F.0 — ajouter le worker `messenger:consume scheduler_default`** au deploiement
-      (changement d'infrastructure, non testable sans Docker — a valider par l'exploitant)
+- [x] **F.0 — activation rendue sure** ✅ — l'audit a trouve que brancher le worker tel quel
+      prelevererait **une semaine de loyer par jour** a chaque proprietaire jusqu'a rattraper un
+      arriere que personne n'a contracte (`extendRent()` repart de l'echeance precedente, et une
+      execution ne rattrape qu'une periode). `app:economy:rent-backlog-reset` efface cet arriere,
+      et le mode d'emploi documente les trois pieges (arriere, entrypoint, nombre de repliques).
+- [ ] **F.0 — ajouter le service `worker`** a `compose.prod.yaml` (changement d'infrastructure,
+      **non testable sans Docker** et le CD deploie automatiquement sur `main` — a appliquer par
+      l'exploitant en suivant le mode d'emploi)
 - [ ] **Jalon Z — passe de mesure sur le profil zone** (prerequis : etalonner les 4 scenarios realignes)
 - [ ] **Objectif : 200 joueurs simultanes sans degradation** (mesure de validation finale)
 

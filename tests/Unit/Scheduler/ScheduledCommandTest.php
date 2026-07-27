@@ -33,6 +33,7 @@ class ScheduledCommandTest extends TestCase
      */
     private const MANUAL = [
         'app:avatar:inventory' => 'outil d\'inventaire des sprites, lance a la demande',
+        'app:economy:rent-backlog-reset' => 'operation ponctuelle, a lancer une fois avant de brancher le worker (F.0)',
         'app:balance:report' => 'rapport d\'equilibrage, lu par un humain',
         'app:fixtures:load-selective' => 'outil de developpement',
         'app:game:validate' => 'controle de coherence, lance par la CI',

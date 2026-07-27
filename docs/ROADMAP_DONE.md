@@ -7,7 +7,68 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**tache 134 jalon F** — audit de scaling, decouverte que le calendrier des taches ne tourne pas ; **ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-27 (**tache 134 jalon F.0** — l'activation du planificateur rendue sure ; **tache 134 jalon F** — audit de scaling, decouverte que le calendrier des taches ne tourne pas ; **ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## Tache 134, jalon F.0 — Rendre l'activation du planificateur sure (Sprint 12, 2026-07-27)
+
+Le jalon F avait etabli qu'**aucun processus ne consomme le calendrier des taches**. Restait a
+brancher le worker. En preparant cette activation, deux pieges sont apparus — dont un qui aurait
+coute cher aux joueurs.
+
+### L'arriere de loyers, et pourquoi il ne doit pas etre reclame
+
+`PlayerHouse::extendRent()` et `ShopRentService::extend()` avancent l'echeance de sept jours **a
+partir de l'echeance precedente**, pas a partir de maintenant. Et `collectDueRents()` ne rattrape
+**qu'une periode par execution**.
+
+Comme `app:house:rent` et `app:shop:rent` n'ont jamais tourne, toutes les echeances sont dans le
+passe. Brancher le planificateur tel quel aurait donc preleve **une semaine de loyer par jour** a
+chaque proprietaire, jusqu'a rattrapage — 26 prelevements quotidiens consecutifs pour six mois
+d'arriere, puis mise en sommeil des demeures et fermeture des echoppes insolvables.
+
+Personne n'a contracte cette dette : elle est l'effet d'une tache qui n'a jamais tourne. On
+l'efface.
+
+### Pourquoi une commande ponctuelle, et non un correctif dans le service
+
+Rattraper une periode par execution est le comportement **correct** en regime normal : une panne de
+deux jours ne doit pas offrir deux jours de loyer gratuits. Ce qu'on veut ici, c'est effacer un
+arriere precis, une fois, en connaissance de cause. C'est une decision d'exploitation, pas une
+regle de jeu — elle se prend a la main, et `--dry-run` la chiffre avant qu'on la prenne.
+
+`RentBacklogResetter::inspect()` n'ecrit rien, ce qu'un test verifie explicitement : sans cela,
+`--dry-run` mentirait.
+
+### Le second piege
+
+`frankenphp/docker-entrypoint.sh` declenche son bloc d'installation pour tout `$1` valant
+`frankenphp`, `php` ou `bin/console` : migrations, `cache:clear`, `cache:warmup`,
+`tailwind:build`, `asset-map:compile`. Un worker lance par `command: php bin/console
+messenger:consume …` **rejouerait les migrations en concurrence avec le conteneur web**, et
+referait les assets a chaque redemarrage horaire. Il doit court-circuiter l'entrypoint.
+
+### Ce qui n'est pas livre, et pourquoi
+
+Le service `worker` lui-meme. **Le CD deploie automatiquement sur `main`** : une definition de
+service non testee — variable d'environnement manquante, entrypoint mal court-circuite, etiquette
+Traefik heritee par megarde — partirait directement en production. Cette etape demande Docker sous
+la main.
+
+Tout ce qui l'entoure est livre et teste : la mesure, l'effacement, et le mode d'emploi des trois
+pieges.
+
+### Livre
+
+- `src/GameEngine/Economy/RentBacklogResetter.php` + `RentBacklogReport`
+- `src/Command/RentBacklogResetCommand.php` (`app:economy:rent-backlog-reset`, `--dry-run`),
+  idempotente
+- 8 tests
+- `docs/LOAD_TESTING_BOTTLENECKS.md` § F.0 — mode d'emploi de l'activation
+
+Le garde-fou `ScheduledCommandTest` livre la veille a fait son travail des la premiere execution :
+il a refuse la nouvelle commande tant qu'elle n'etait pas classee.
 
 ---
 
