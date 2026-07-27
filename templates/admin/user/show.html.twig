@@ -81,7 +81,7 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-                    <button type="submit" class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    <button type="submit" class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             onclick="return confirm('Modifier les roles de cet utilisateur ?');">
                         Enregistrer les roles
                     </button>
@@ -121,12 +121,12 @@
                 <form method="post" action="{{ path('admin_user_ban', {id: user.id}) }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('ban' ~ user.id) }}">
                     {% if user.isBanned %}
-                        <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                                 onclick="return confirm('Debannir cet utilisateur ?');">
                             Debannir
                         </button>
                     {% else %}
-                        <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                                 onclick="return confirm('Bannir cet utilisateur ?');">
                             Bannir
                         </button>
@@ -140,7 +140,7 @@
                     <input type="hidden" name="_token" value="{{ csrf_token('reset_password' ~ user.id) }}">
                     <input type="password" name="new_password" placeholder="Nouveau mot de passe" minlength="6" required
                            class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500">
-                    <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0"
+                    <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0"
                             onclick="return confirm('Reinitialiser le mot de passe ?');">
                         Reset MDP
                     </button>

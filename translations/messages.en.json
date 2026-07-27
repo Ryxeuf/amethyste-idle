@@ -77,7 +77,7 @@
       "zone": "Zone",
       "world_map": "World map"
     },
-    "currency": "Gold",
+    "currency": "Gils",
     "energy": "Energy",
     "game_section": {
       "heading": "Your game",
@@ -295,7 +295,7 @@
         "mushroom": "Mushroom",
         "poison": "Poison",
         "moss": "Moss",
-        "gold": "Gold",
+        "gold": "Gils",
         "food": "Food",
         "knowledge": "Knowledge"
       },
@@ -572,7 +572,7 @@
       },
       "loot": {
         "title": "Combat summary",
-        "gold": "Gold earned",
+        "gold": "Gils earned",
         "experience": "Experience earned",
         "items": "Items found",
         "items_list": "Items list",
@@ -734,8 +734,8 @@
       "subtitle": "Discover the mounts of the world and how to obtain them.",
       "empty": "No mounts available at the moment.",
       "speed_bonus": "Speed bonus",
-      "required_level": "Required level",
-      "level_short": "Lv %level%",
+      "required_level": "Required tier",
+      "level_short": "Tier %level%",
       "gil_cost": "Gil cost",
       "gil": "gils",
       "owned": "Owned",
@@ -803,7 +803,8 @@
         "crafting_progress": "Crafting...",
         "crafted_done": "crafted!",
         "connection_error": "Connection error."
-      }
+      },
+      "rank_short": "Rank %rank%"
     },
     "notifications": {
       "title": "Notifications",

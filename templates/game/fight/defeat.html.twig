@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block game_content %}
-	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+	<div class="game-page min-h-screen bg-paper-2 flex items-center justify-center">
 		<div class="max-w-md w-full mx-4">
 			<div class="game-card p-6 sm:p-8 text-center">
 				{# Icone de defaite #}
@@ -37,7 +37,7 @@
 					</div>
 				</div>
 
-				<a href="{{ path('app_game_zone') }}" class="inline-block w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium text-sm">
+				<a href="{{ path('app_game_zone') }}" class="ds-btn ds-btn--primary w-full">
 					{{ 'game.fight.return_to_map'|trans }}
 				</a>
 			</div>

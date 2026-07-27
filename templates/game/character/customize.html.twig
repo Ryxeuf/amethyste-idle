@@ -14,7 +14,7 @@
 
             <div class="px-8 pb-8">
                 {% for message in app.flashes('success') %}
-                    <div class="mb-4 px-4 py-3 rounded-lg bg-emerald-900 bg-opacity-40 border border-emerald-700 text-emerald-300 text-sm">
+                    <div class="mb-4 px-4 py-3 rounded-lg bg-emerald-900/40 border border-emerald-700 text-emerald-300 text-sm">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -37,7 +37,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-lg shadow-purple-900/30 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button type="submit" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-ink-on font-semibold rounded-lg shadow-lg shadow-purple-900/30 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500">
                         {{ 'game.character.customize.submit'|trans }}
                     </button>
                 {{ form_end(form) }}

@@ -4,13 +4,10 @@
 
 {% block site_navbar %}
 	{# Minimal fight header #}
-	<header class="bg-gray-800/95 backdrop-blur-sm border-b border-purple-900/30 sticky top-0 z-40">
-		<div class="flex items-center justify-between h-11 px-3 md:px-6" style="padding-top: var(--safe-top)">
-			<a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-base">{{ 'game.title'|trans }}</a>
-			<div class="flex items-center gap-2">
-				<span class="text-xs text-gray-500">{{ 'game.fight.turn'|trans }} {{ fight.step }}</span>
-				<span class="text-sm text-gray-400">{{ 'game.fight.title'|trans }}</span>
-			</div>
+	<header class="ds-ink-bar sticky top-0 z-40">
+		<div class="ds-screen-head" style="padding-top: var(--safe-top)">
+			<a href="{{ path('app_game') }}" class="ds-screen-head__title">{{ 'game.title'|trans }}</a>
+			<span class="ds-screen-head__meta">{{ 'game.fight.turn'|trans }} {{ fight.step }} · {{ 'game.fight.title'|trans }}</span>
 		</div>
 	</header>
 {% endblock %}
@@ -18,16 +15,16 @@
 {# Macro pour les badges de statut #}
 {% macro status_effect_badges(effectsList) %}
 	{% for fse in effectsList %}
-		<span class="status-badge
-			{% if fse.statusEffect.type == 'poison' %}bg-green-900/50 text-green-300 border-green-700
-			{% elseif fse.statusEffect.type == 'burn' %}bg-orange-900/50 text-orange-300 border-orange-700
-			{% elseif fse.statusEffect.type == 'freeze' %}bg-cyan-900/50 text-cyan-300 border-cyan-700
-			{% elseif fse.statusEffect.type == 'paralysis' %}bg-yellow-900/50 text-yellow-300 border-yellow-700
-			{% elseif fse.statusEffect.type == 'silence' %}bg-gray-700/50 text-gray-300 border-gray-600
-			{% elseif fse.statusEffect.type == 'regeneration' %}bg-emerald-900/50 text-emerald-300 border-emerald-700
-			{% elseif fse.statusEffect.type == 'shield' %}bg-blue-900/50 text-blue-300 border-blue-700
-			{% elseif fse.statusEffect.type == 'berserk' %}bg-red-900/50 text-red-300 border-red-700
-			{% else %}bg-purple-900/50 text-purple-300 border-purple-700
+		<span class="ds-seal
+			{% if fse.statusEffect.type == 'poison' %}ds-seal-uncommon
+			{% elseif fse.statusEffect.type == 'burn' %}ds-seal--loss
+			{% elseif fse.statusEffect.type == 'freeze' %}ds-seal-rare
+			{% elseif fse.statusEffect.type == 'paralysis' %}ds-seal-legendary
+			{% elseif fse.statusEffect.type == 'silence' %}ds-seal-common
+			{% elseif fse.statusEffect.type == 'regeneration' %}ds-seal--gain
+			{% elseif fse.statusEffect.type == 'shield' %}ds-seal--mana
+			{% elseif fse.statusEffect.type == 'berserk' %}ds-seal--loss
+			{% else %}ds-seal-amethyst
 			{% endif %}
 		" title="{{ fse.statusEffect|localized_status_effect_name }} ({{ fse.remainingTurns }} {{ 'game.fight.turns'|trans|default('tours') }})">
 			{% if fse.statusEffect.icon %}
@@ -85,12 +82,12 @@
 {% block game_content %}
 	<style>
 		.selectable-target { cursor: pointer; transition: all 0.2s ease; }
-		.selectable-target.selected { border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5); }
+		.selectable-target.selected { border-color: var(--color-brand); box-shadow: 0 0 0 2px rgba(91, 47, 176, 0.35); }
 		.selectable-target.disabled { opacity: 0.5; cursor: not-allowed; }
 		.spell-on-cooldown { opacity: 0.5; pointer-events: none; }
 		.spell-btn .cooldown-badge {
 			position: absolute; top: -4px; right: -4px;
-			background: #ef4444; color: white; border-radius: 50%;
+			background: var(--color-loss); color: #fff; border-radius: 50%;
 			width: 18px; height: 18px; font-size: 10px;
 			display: flex; align-items: center; justify-content: center;
 		}
@@ -100,11 +97,11 @@
 			overflow-y: auto;
 			scroll-behavior: smooth;
 			scrollbar-width: thin;
-			scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+			scrollbar-color: var(--color-line-strong) transparent;
 		}
 		.combat-log-container::-webkit-scrollbar { width: 4px; }
 		.combat-log-container::-webkit-scrollbar-track { background: transparent; }
-		.combat-log-container::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
+		.combat-log-container::-webkit-scrollbar-thumb { background: var(--color-line-strong); border-radius: 4px; }
 		@media (min-width: 1024px) {
 			.combat-log-container { max-height: 400px; }
 		}
@@ -133,8 +130,8 @@
 			}
 		}
 		/* Tab active state */
-		.fight-tab.active { color: #a78bfa; border-bottom-color: #a78bfa; }
-		.fight-tab { color: #9ca3af; border-bottom-color: transparent; }
+		.fight-tab.active { color: var(--color-ink); border-bottom-color: var(--color-brand); font-weight: 700; }
+		.fight-tab { color: var(--color-ink-2); border-bottom-color: transparent; }
 		/* Compact progress bar for mobile */
 		.progress-bar-compact { height: 0.25rem; }
 		/* Log entry animation */
@@ -193,24 +190,24 @@
 		.floating-number {
 			position: absolute; left: 50%; top: 0;
 			pointer-events: none; z-index: 100;
-			font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+			font-weight: 800; text-shadow: 0 1px 3px rgba(251, 248, 240, 0.9);
 			animation: floatNumber 1s ease-out forwards;
 		}
-		.floating-number.damage { color: #fbbf24; font-size: 1.25rem; }
-		.floating-number.critical { color: #ef4444; font-size: 1.5rem; }
-		.floating-number.heal { color: #34d399; font-size: 1.25rem; }
-		.floating-number.miss { color: #6b7280; font-size: 1rem; font-style: italic; }
+		.floating-number.damage { color: var(--color-loss); font-size: 1.25rem; }
+		.floating-number.critical { color: var(--color-rarity-amethyst); font-size: 1.5rem; }
+		.floating-number.heal { color: var(--color-gain); font-size: 1.25rem; }
+		.floating-number.miss { color: var(--color-ink-3); font-size: 1rem; font-style: italic; }
 		/* Boss health bar */
 		.boss-health-bar {
-			background: linear-gradient(135deg, rgba(127,29,29,0.8), rgba(153,27,27,0.6));
-			border: 1px solid rgba(239,68,68,0.5);
+			background: var(--color-loss-tint);
+			border: 1px solid var(--color-loss);
 			backdrop-filter: blur(4px);
 		}
 		.boss-health-fill {
-			background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+			background: var(--color-loss);
 			transition: width 0.6s ease-out;
 		}
-		.boss-health-fill.low { background: linear-gradient(90deg, #991b1b, #dc2626, #991b1b); animation: bossLowPulse 1s ease-in-out infinite; }
+		.boss-health-fill.low { background: #8f2818; animation: bossLowPulse 1s ease-in-out infinite; }
 		@keyframes bossLowPulse {
 			0%, 100% { opacity: 1; }
 			50% { opacity: 0.7; }
@@ -228,17 +225,17 @@
 			animation: synergySlideIn 2s ease-out forwards;
 		}
 		/* Status effect aura glow on character cards */
-		.status-aura-poison { box-shadow: 0 0 8px 2px rgba(34,197,94,0.3), inset 0 0 4px rgba(34,197,94,0.1); }
-		.status-aura-burn { box-shadow: 0 0 8px 2px rgba(249,115,22,0.3), inset 0 0 4px rgba(249,115,22,0.1); }
-		.status-aura-freeze { box-shadow: 0 0 8px 2px rgba(34,211,238,0.3), inset 0 0 4px rgba(34,211,238,0.1); }
-		.status-aura-regeneration { box-shadow: 0 0 8px 2px rgba(52,211,153,0.3), inset 0 0 4px rgba(52,211,153,0.1); }
-		.status-aura-shield { box-shadow: 0 0 8px 2px rgba(59,130,246,0.3), inset 0 0 4px rgba(59,130,246,0.1); }
-		.status-aura-berserk { box-shadow: 0 0 8px 2px rgba(239,68,68,0.3), inset 0 0 4px rgba(239,68,68,0.1); }
-		.status-aura-paralysis { box-shadow: 0 0 8px 2px rgba(234,179,8,0.3), inset 0 0 4px rgba(234,179,8,0.1); }
-		.status-aura-silence { box-shadow: 0 0 8px 2px rgba(107,114,128,0.3), inset 0 0 4px rgba(107,114,128,0.1); }
+		.status-aura-poison { box-shadow: 0 0 0 2px rgba(31,122,73,0.35); }
+		.status-aura-burn { box-shadow: 0 0 0 2px rgba(168,52,31,0.35); }
+		.status-aura-freeze { box-shadow: 0 0 0 2px rgba(43,94,168,0.35); }
+		.status-aura-regeneration { box-shadow: 0 0 0 2px rgba(31,122,73,0.35); }
+		.status-aura-shield { box-shadow: 0 0 0 2px rgba(43,94,168,0.35); }
+		.status-aura-berserk { box-shadow: 0 0 0 2px rgba(168,52,31,0.35); }
+		.status-aura-paralysis { box-shadow: 0 0 0 2px rgba(192,138,30,0.35); }
+		.status-aura-silence { box-shadow: 0 0 0 2px rgba(138,128,109,0.35); }
 	</style>
 
-	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800"
+	<div class="game-page min-h-screen bg-paper-2"
 		{% if isCoop is defined and isCoop %}data-coop="true" data-fight-id="{{ fight.id }}" data-my-turn="{{ isMyTurn ? 'true' : 'false' }}" data-current-turn-key="{{ currentTurnKey }}" data-player-key="player_{{ player.id }}"{% endif %}>
 
 		{# Coop turn indicator #}
@@ -309,41 +306,39 @@
 						{% endif %}
 					{% endfor %}
 					<div class="selectable-target rounded-lg p-2 sm:p-3 transition-all {{ dominantAura }}
-						{% if isCurrentPlayer %}bg-gradient-to-br from-purple-900/80 to-purple-800/80 border-2 border-purple-500{% else %}game-card border border-purple-500/20{% endif %}"
+	game-card {% if isCurrentPlayer %}ds-edge-epic{% endif %}"
 						data-player-id="{{ fightPlayer.id }}" data-target-type="player">
 
 						<div class="flex items-center gap-2 mb-1.5">
-							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0
-								{% if isCurrentPlayer %}ring-2 ring-purple-400{% endif %}">
-								<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+							<div class="ds-icon-frame w-8 h-8 sm:w-10 sm:h-10">
+								<svg class="w-4 h-4 sm:w-5 sm:h-5 text-ink-2" fill="currentColor" viewBox="0 0 20 20">
 									<path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
 								</svg>
 							</div>
 							<div class="min-w-0 flex-1">
-								<h2 class="text-xs sm:text-sm font-bold text-white truncate">{{ fightPlayer.name }}</h2>
-								<span class="text-[10px] text-purple-300">{{ 'game.fight.level_short'|trans }}{{ fightPlayer.level ?? 0 }}</span>
+								<h2 class="ds-name ds-name--sm truncate">{{ fightPlayer.name }}</h2>
 							</div>
 						</div>
 
 						{# HP bar #}
 						<div class="mb-1">
-							<div class="flex items-center justify-between mb-0.5">
-								<span class="text-[10px] text-gray-400">{{ 'game.fight.hp'|trans }}</span>
-								<span class="text-[10px] font-bold text-white">{{ fightPlayer.life }}/{{ effMaxLife }}</span>
+							<div class="ds-meter__head">
+								<span>{{ 'game.fight.hp'|trans }}</span>
+								<span>{{ fightPlayer.life }} / {{ effMaxLife }}</span>
 							</div>
-							<div class="progress-bar progress-bar-compact">
-								<div class="progress-bar-fill bg-red-500" style="width: {{ (fightPlayer.life / (effMaxLife > 0 ? effMaxLife : 1)) * 100 }}%"></div>
+							<div class="ds-meter">
+								<div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ (fightPlayer.life / (effMaxLife > 0 ? effMaxLife : 1)) * 100 }}%"></div>
 							</div>
 						</div>
 
 						{# Energy bar #}
 						<div class="mb-1">
-							<div class="flex items-center justify-between mb-0.5">
-								<span class="text-[10px] text-gray-400">{{ 'game.fight.energy'|trans }}</span>
-								<span class="text-[10px] font-bold text-white">{{ fightPlayer.energy }}/{{ fightPlayer.maxEnergy }}</span>
+							<div class="ds-meter__head">
+								<span>{{ 'game.fight.energy'|trans }}</span>
+								<span>{{ fightPlayer.energy }} / {{ fightPlayer.maxEnergy }}</span>
 							</div>
-							<div class="progress-bar progress-bar-compact">
-								<div class="progress-bar-fill bg-blue-500" style="width: {{ (fightPlayer.energy/fightPlayer.maxEnergy)*100 }}%"></div>
+							<div class="ds-meter">
+								<div class="ds-meter__fill ds-meter__fill--mp" style="width: {{ (fightPlayer.energy/fightPlayer.maxEnergy)*100 }}%"></div>
 							</div>
 						</div>
 
@@ -371,11 +366,11 @@
 						data-mob-id="{{ mob.id }}" data-target-type="mob">
 
 						<div class="flex items-center gap-2 mb-1.5">
-							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-loss-tint rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
 								{% if mob.monster.isBoss %}
 									<span class="text-yellow-400 text-sm">&#9813;</span>
 								{% else %}
-									<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+									<svg class="w-4 h-4 sm:w-5 sm:h-5 text-ink-2" fill="currentColor" viewBox="0 0 20 20">
 										<path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-2 1-3 .5 1.5 1 2 1 3a3 3 0 01.12 1.62z" clip-rule="evenodd"/>
 									</svg>
 								{% endif %}
@@ -388,13 +383,12 @@
 									{% endif %}
 								</h2>
 								<div class="flex items-center gap-1 flex-wrap">
-									<span class="text-[10px] text-gray-400">{{ 'game.fight.level_short'|trans }}{{ mob.level ?? 0 }}</span>
 									<span class="text-[9px]" title="{{ 'game.fight.difficulty'|trans({'%level%': mob.monster.difficulty}) }}">
 										{% for i in 1..5 %}
 											{% if i <= (mob.monster.difficulty ?? 1) %}
-												<span class="text-yellow-400">&#9733;</span>
+												<span class="text-rarity-legendary">&#9733;</span>
 											{% else %}
-												<span class="text-gray-600">&#9733;</span>
+												<span class="text-line-strong">&#9733;</span>
 											{% endif %}
 										{% endfor %}
 									</span>
@@ -409,12 +403,12 @@
 
 						{# HP bar #}
 						<div class="mb-1">
-							<div class="flex items-center justify-between mb-0.5">
-								<span class="text-[10px] text-gray-400">{{ 'game.fight.hp'|trans }}</span>
-								<span class="text-[10px] font-bold text-white">{{ mob.life }}/{{ mob.maxLife }}</span>
+							<div class="ds-meter__head">
+								<span>{{ 'game.fight.hp'|trans }}</span>
+								<span>{{ mob.life }} / {{ mob.maxLife }}</span>
 							</div>
-							<div class="progress-bar progress-bar-compact">
-								<div class="progress-bar-fill bg-red-500" style="width: {{ (mob.life/mob.maxLife)*100 }}%"></div>
+							<div class="ds-meter">
+								<div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ (mob.life/mob.maxLife)*100 }}%"></div>
 							</div>
 						</div>
 
@@ -448,14 +442,14 @@
 			{# --- LEFT: ACTIONS --- #}
 			<div>
 				{# Mobile tabs #}
-				<div class="flex border-b border-gray-700 mb-2 lg:hidden">
-					<button class="fight-tab active flex-1 text-center py-2 text-xs font-semibold border-b-2 transition-colors" data-tab="actions">
+				<div class="ds-tabs mb-2 lg:hidden">
+					<button class="fight-tab ds-tab ds-tab--active active flex-1 text-center" data-tab="actions">
 						{{ 'game.fight.actions'|trans }}
 					</button>
-					<button class="fight-tab flex-1 text-center py-2 text-xs font-semibold border-b-2 transition-colors" data-tab="log">
+					<button class="fight-tab ds-tab flex-1 text-center" data-tab="log">
 						{{ 'game.fight.log.title'|trans }}
 						{% if fightLogs|length > 0 %}
-							<span class="ml-1 inline-flex items-center justify-center w-4 h-4 text-[9px] bg-purple-600 text-white rounded-full">{{ fightLogs|length }}</span>
+							<span class="ds-seal ds-seal-epic ml-1">{{ fightLogs|length }}</span>
 						{% endif %}
 					</button>
 				</div>
@@ -466,28 +460,28 @@
 						{# Action buttons #}
 						<div class="fight-actions-grid w-full mb-2">
 							<button id="action-attack"
-									class="fight-action bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 active:from-red-800 active:to-red-900 transition-all font-medium touch-target text-sm"
+									class="fight-action ds-btn ds-btn--primary touch-target"
 									data-href="{{ path("app_game_fight_attack") }}"
 									data-content="{{ 'game.fight.attacking'|trans }}">
 								{{ 'game.fight.action.attack'|trans }}
 							</button>
 
 							<button id="fight-spells"
-									class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 active:from-blue-800 active:to-blue-900 transition-all font-medium touch-target text-sm"
+									class="ds-btn ds-btn--secondary touch-target"
 									data-href="{{ path("app_game_fight_spell") }}"
 									data-target="#fight-action-container">
 								{{ 'game.fight.action.spell'|trans }}
 							</button>
 
 							<button id="fight-objects"
-									class="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 active:from-green-800 active:to-green-900 transition-all font-medium touch-target text-sm"
+									class="ds-btn ds-btn--secondary touch-target"
 									data-href="{{ path("app_game_fight_item") }}"
 									data-target="#fight-action-container">
 								{{ 'game.fight.action.object'|trans }}
 							</button>
 
 							<button id="action-flee"
-									class="fight-action bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 active:from-gray-800 active:to-gray-900 transition-all font-medium touch-target text-sm"
+									class="fight-action ds-btn ds-btn--quiet text-loss touch-target"
 									data-href="{{ path("app_game_fight_flee") }}"
 									data-content="{{ 'game.fight.fleeing'|trans }}">
 								{{ 'game.fight.action.flee'|trans }}
@@ -497,7 +491,7 @@
 						{# Materia spells #}
 						{% if materiaSpells is defined and materiaSpells|length > 0 %}
 							<div class="w-full">
-								<h4 class="text-[10px] font-semibold text-purple-300 mb-1.5">{{ 'game.fight.materia_spells'|trans }}</h4>
+								<h4 class="ds-label mb-1.5">{{ 'game.fight.materia_spells'|trans }}</h4>
 								<div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
 									{% for entry in materiaSpells %}
 										{% set spell = entry.spell %}
@@ -507,20 +501,20 @@
 										{% set hasEnergy = player.energy >= spell.energyCost %}
 										{% set isAvailable = not isLocked and cooldown == 0 and hasEnergy %}
 										{% set isDefensive = (spell.heal is not null and spell.heal > 0) and (spell.damage is null or spell.damage == 0) %}
-										<button class="spell-btn fight-action relative px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all touch-target
-											{% if isLocked %}bg-gray-800 text-gray-600 cursor-not-allowed opacity-50
-											{% elseif not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed
-											{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
+										<button class="spell-btn fight-action ds-action relative touch-target
+											{% if isLocked %}ds-action--locked
+											{% elseif not isAvailable %}spell-on-cooldown ds-action--locked
+											{% elseif isDefensive %}ds-action--heal{% endif %}
 											{% if not isLocked %}
-												{% if elementMatch %} ring-2 ring-yellow-400
-												{% elseif spell.element.value == 'fire' %} ring-1 ring-orange-500/50
-												{% elseif spell.element.value == 'water' %} ring-1 ring-blue-500/50
-												{% elseif spell.element.value == 'earth' %} ring-1 ring-amber-500/50
-												{% elseif spell.element.value == 'air' %} ring-1 ring-teal-500/50
-												{% elseif spell.element.value == 'light' %} ring-1 ring-yellow-500/50
-												{% elseif spell.element.value == 'dark' %} ring-1 ring-purple-500/50
-												{% elseif spell.element.value == 'metal' %} ring-1 ring-gray-400/50
-												{% elseif spell.element.value == 'beast' %} ring-1 ring-green-500/50
+												{% if elementMatch %} ring-2 ring-rarity-legendary
+												{% elseif spell.element.value == 'fire' %} ring-1 ring-element-fire/60
+												{% elseif spell.element.value == 'water' %} ring-1 ring-element-water/60
+												{% elseif spell.element.value == 'earth' %} ring-1 ring-element-earth/60
+												{% elseif spell.element.value == 'air' %} ring-1 ring-element-air/60
+												{% elseif spell.element.value == 'light' %} ring-1 ring-element-light/60
+												{% elseif spell.element.value == 'dark' %} ring-1 ring-element-dark/60
+												{% elseif spell.element.value == 'metal' %} ring-1 ring-element-metal/60
+												{% elseif spell.element.value == 'beast' %} ring-1 ring-element-beast/60
 												{% endif %}
 											{% endif %}"
 											data-href="{{ path("app_game_fight_spell") }}"
@@ -528,21 +522,21 @@
 											data-spell-type="{{ isDefensive ? 'defensive' : 'offensive' }}"
 											{% if not isAvailable %}disabled{% endif %}
 											title="{% if isLocked %}{{ 'game.fight.spell_locked'|trans }} — {% endif %}{{ spell.description }}{% if elementMatch %} [{{ 'game.fight.element_match_bonus'|trans }}]{% endif %}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
-											<span class="block truncate">{{ spell.name }}</span>
+											<span class="ds-action__name block truncate">{{ spell.name }}</span>
 											{% if isLocked %}
-												<span class="block text-[9px] text-red-400 mt-0.5">{{ 'game.fight.spell_locked'|trans }}</span>
+												<span class="ds-action__cost block">{{ 'game.fight.spell_locked'|trans }}</span>
 											{% else %}
-												<span class="block text-[9px] opacity-75 mt-0.5">
+												<span class="ds-action__cost block">
 													{% if spell.energyCost > 0 %}{{ spell.energyCost }} EN{% endif %}
 													{% if spell.damage %} · {{ spell.damage }} DMG{% endif %}
 													{% if spell.heal %} · {{ spell.heal }} HEAL{% endif %}
-													{% if elementMatch %} · <span class="text-yellow-400">+25%</span>{% endif %}
+													{% if elementMatch %} · <span class="text-rarity-legendary-ink">+25%</span>{% endif %}
 												</span>
 												{% if cooldown > 0 %}
 													<span class="cooldown-badge">{{ cooldown }}</span>
 												{% endif %}
 												{% if not hasEnergy and cooldown == 0 %}
-													<span class="block text-[9px] text-red-400">{{ 'game.fight.energy_insufficient'|trans }}</span>
+													<span class="ds-action__cost block text-loss">{{ 'game.fight.energy_insufficient'|trans }}</span>
 												{% endif %}
 											{% endif %}
 										</button>
@@ -553,29 +547,29 @@
 					{% else %}
 						{# Fight ended #}
 						<div>
-							<h3 class="text-lg sm:text-xl font-bold text-white text-center mb-3">{{ 'game.fight.terminated'|trans }}</h3>
+							<h3 class="ds-title text-center mb-3">{{ 'game.fight.terminated'|trans }}</h3>
 							{% if fight.victory %}
 								<form class="space-y-3" action="{{ path("app_game_fight_loot") }}" role="form" method="post">
 									<input type="hidden" name="fight" value="{{ fight.id }}">
-									<div class="bg-gray-700/50 rounded-lg p-2 sm:p-4">
-										<h4 class="text-sm font-semibold text-white mb-2">{{ 'game.fight.loot.items_list'|trans }}</h4>
+									<div class="ds-panel">
+										<h4 class="ds-label mb-2">{{ 'game.fight.loot.items_list'|trans }}</h4>
 										<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
 											{% for item in fight.loot %}
-												<div class="flex items-center justify-between p-2 bg-gray-800 rounded-lg border border-purple-500/20">
+												<div class="ds-row min-h-0 py-1.5">
 													<div class="flex items-center gap-2 min-w-0">
-														<div class="w-6 h-6 bg-gradient-to-br from-purple-600 to-purple-800 rounded flex items-center justify-center flex-shrink-0">
-															<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+														<div class="ds-icon-frame w-6 h-6">
+															<svg class="w-3 h-3 text-ink-2" fill="currentColor" viewBox="0 0 20 20">
 																<path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"/>
 															</svg>
 														</div>
-														<span class="text-white text-xs truncate">{{ item.name }}</span>
+														<span class="ds-row__name ds-name--sm truncate">{{ item.name }}</span>
 													</div>
-													<input type="checkbox" class="form-checkbox h-4 w-4 text-purple-600 rounded border-gray-600 flex-shrink-0" checked name="items[]" value="{{ item.id }}">
+													<input type="checkbox" class="form-checkbox h-4 w-4 accent-brand rounded border-line flex-shrink-0" checked name="items[]" value="{{ item.id }}">
 												</div>
 											{% endfor %}
 										</div>
 									</div>
-									<button type="submit" class="w-full px-3 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium touch-target text-sm">
+									<button type="submit" class="ds-btn ds-btn--primary w-full touch-target">
 										{{ 'game.fight.loot.collect'|trans }}
 									</button>
 								</form>
@@ -584,7 +578,7 @@
 								{% for mob in fight.mobs %}
 								<div id="butcher-section-{{ mob.id }}" class="mt-2">
 									<button type="button"
-										class="butcher-btn w-full px-3 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all font-medium touch-target text-sm"
+										class="butcher-btn ds-btn ds-btn--secondary w-full touch-target"
 										data-mob-id="{{ mob.id }}"
 										onclick="butcherMob({{ mob.id }}, this)">
 										{{ 'game.fight.butcher'|trans({'%name%': mob.monster|localized_monster_name}) }}
@@ -594,11 +588,11 @@
 								{% endfor %}
 							{% else %}
 								<div class="text-center py-4">
-									<div class="inline-block p-3 bg-red-500/20 rounded-xl">
-										<svg class="w-10 h-10 text-red-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+									<div class="inline-block p-3 bg-loss-tint rounded-panel">
+										<svg class="w-10 h-10 text-loss mx-auto" fill="currentColor" viewBox="0 0 20 20">
 											<path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-2 1-3 .5 1.5 1 2 1 3a3 3 0 01.12 1.62z" clip-rule="evenodd"/>
 										</svg>
-										<p class="text-white mt-2 font-medium text-sm">{{ 'game.fight.defeat'|trans }}</p>
+										<p class="ds-name ds-name--sm mt-2">{{ 'game.fight.defeat'|trans }}</p>
 									</div>
 								</div>
 							{% endif %}
@@ -610,35 +604,33 @@
 			{# --- RIGHT: COMBAT LOG --- #}
 			<div id="panel-log" class="hidden lg:block">
 				<div class="hidden lg:block">
-					<h4 class="text-xs font-semibold text-purple-300 mb-1.5">{{ 'game.fight.log.title'|trans }}</h4>
+					<h4 class="ds-label mb-1.5">{{ 'game.fight.log.title'|trans }}</h4>
 				</div>
 				<div class="game-card p-2 sm:p-3">
 					<div id="combat-log" class="combat-log-container">
 						{% if fightLogs|length == 0 %}
-							<p class="text-gray-500 text-xs text-center py-4">{{ 'game.fight.log.empty'|trans }}</p>
+							<div class="ds-empty"><p class="ds-empty__hint">{{ 'game.fight.log.empty'|trans }}</p></div>
 						{% else %}
 							{% set currentTurn = -1 %}
 							{% for log in fightLogs %}
 								{% if log.turn != currentTurn %}
 									{% set currentTurn = log.turn %}
 									<div class="flex items-center gap-2 my-1.5">
-										<div class="flex-1 h-px bg-gray-700"></div>
-										<span class="text-[9px] text-gray-500 font-semibold uppercase">{{ 'game.fight.turn'|trans }} {{ log.turn }}</span>
-										<div class="flex-1 h-px bg-gray-700"></div>
+										<div class="flex-1 h-px bg-line"></div>
+										<span class="ds-label">{{ 'game.fight.turn'|trans }} {{ log.turn }}</span>
+										<div class="flex-1 h-px bg-line"></div>
 									</div>
 								{% endif %}
-								<div class="log-entry flex items-start gap-1.5 py-0.5 text-[11px] leading-tight
-									{% if log.type == 'death' or log.type == 'defeat' %}text-red-300
-									{% elseif log.type == 'victory' %}text-yellow-300
-									{% elseif log.type == 'heal' %}text-green-300
-									{% elseif log.type == 'critical' %}text-yellow-400
-									{% elseif log.type == 'miss' %}text-gray-500
-									{% elseif log.type == 'fight_start' %}text-purple-300
-									{% elseif log.actorType == 'mob' %}text-red-200
-									{% elseif log.actorType == 'player' %}text-blue-200
-									{% else %}text-gray-300{% endif %}">
-									<span class="flex-shrink-0 w-3 text-center">{{ _self.log_icon(log.type) }}</span>
-									<span>{{ log.message }}</span>
+								<div class="log-entry ds-log
+									{% if log.type == 'death' or log.type == 'defeat' %}text-loss
+									{% elseif log.type == 'victory' %}text-rarity-legendary-ink
+									{% elseif log.type == 'heal' %}text-gain
+									{% elseif log.type == 'critical' %}text-rarity-amethyst-ink
+									{% elseif log.type == 'miss' or log.type == 'fight_start' %}ds-log--old
+									{% elseif log.actorType == 'mob' %}ds-log--past
+									{% endif %}">
+									<span class="ds-log__turn text-center">{{ _self.log_icon(log.type) }}</span>
+									<span class="flex-1">{{ log.message }}</span>
 								</div>
 							{% endfor %}
 						{% endif %}
@@ -859,7 +851,7 @@
 				const el = document.createElement('div');
 				el.className = 'synergy-notification';
 				el.innerHTML = `
-					<div class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-600/90 to-purple-600/90 border border-cyan-400/50 backdrop-blur-sm shadow-lg shadow-cyan-500/20">
+					<div class="px-4 py-2 rounded-lg bg-brand border border-cyan-400/50 backdrop-blur-sm shadow-lg shadow-cyan-500/20">
 						<div class="flex items-center gap-2">
 							<span class="text-cyan-200 text-lg">&#10024;</span>
 							<div>

@@ -6,26 +6,29 @@
     <title>Maintenance — Amethyste Idle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Karla:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* Memes tokens que `assets/styles/design-system.css` : cette page est
+           servie sans les assets du jeu, elle les recopie donc a l'identique. */
         :root {
-            --bg-dark: #0f0e17;
-            --bg-card: #1a1926;
-            --amethyst: #8b5cf6;
-            --amethyst-glow: #a78bfa;
-            --amethyst-dark: #5b21b6;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
+            --bg-dark: #f4efe2;
+            --bg-card: #ffffff;
+            --amethyst: #5b2fb0;
+            --amethyst-glow: #7c4ddb;
+            --amethyst-dark: #4a1f95;
+            --text: #26221c;
+            --text-muted: #8a806d;
+            --line: #ddd2ba;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             min-height: 100vh;
             background: var(--bg-dark);
             background-image:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
-                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(91, 33, 182, 0.12), transparent);
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(91, 47, 176, 0.08), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(192, 138, 30, 0.06), transparent);
             color: var(--text);
-            font-family: 'Nunito', sans-serif;
+            font-family: Karla, system-ui, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +44,7 @@
             height: 120px;
             margin: 0 auto 2rem;
             position: relative;
-            filter: drop-shadow(0 0 24px rgba(139, 92, 246, 0.4));
+            filter: drop-shadow(0 6px 14px rgba(91, 47, 176, 0.25));
             animation: float 3s ease-in-out infinite;
         }
         .crystal svg {
@@ -58,12 +61,12 @@
             50% { opacity: 1; }
         }
         h1 {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            color: var(--amethyst-glow);
+            font-size: clamp(1.75rem, 6vw, 2.5rem);
+            color: var(--text);
             margin-bottom: 0.5rem;
-            letter-spacing: 0.05em;
+            letter-spacing: -0.01em;
         }
         .subtitle {
             font-size: 1rem;
@@ -72,14 +75,14 @@
         }
         .card {
             background: var(--bg-card);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-            border-radius: 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
             padding: 1.75rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 24px rgba(38, 34, 28, 0.12);
         }
         .bar-wrap {
             height: 8px;
-            background: rgba(139, 92, 246, 0.2);
+            background: #e8e0cc;
             border-radius: 4px;
             overflow: hidden;
             margin-top: 1rem;
@@ -87,7 +90,7 @@
         .bar {
             height: 100%;
             width: 35%;
-            background: linear-gradient(90deg, var(--amethyst), var(--amethyst-glow));
+            background: var(--amethyst);
             border-radius: 4px;
             animation: loading 1.8s ease-in-out infinite;
         }
@@ -115,9 +118,9 @@
             <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="crystal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#a78bfa"/>
-                        <stop offset="50%" style="stop-color:#7c3aed"/>
-                        <stop offset="100%" style="stop-color:#5b21b6"/>
+                        <stop offset="0%" style="stop-color:#7c4ddb"/>
+                        <stop offset="50%" style="stop-color:#5b2fb0"/>
+                        <stop offset="100%" style="stop-color:#4a1f95"/>
                     </linearGradient>
                     <linearGradient id="crystal-shine" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" style="stop-color:rgba(255,255,255,0.4)"/>

@@ -3,78 +3,33 @@
 namespace App\GameEngine\Fight;
 
 use App\Entity\App\Player;
-use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\GameEngine\Progression\SynergyCalculator;
-use Doctrine\ORM\EntityManagerInterface;
 
 class CombatSkillResolver
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
         private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
     ) {
     }
 
-    /**
-     * Get all skills that grant combat abilities for a player.
-     * Looks for skills whose `actions` JSON contains a "combat" key.
+    /*
+     * Regle absolue #9 : une competence d'arbre n'accorde JAMAIS de sort actif.
      *
-     * @return array<array{skill: Skill, combat: array}>
-     */
-    public function getAvailableSkillsForCombat(Player $player): array
-    {
-        $combatSkills = [];
-
-        foreach ($player->getSkills() as $skill) {
-            $actions = $skill->getActions();
-            if ($actions === null || !isset($actions['combat'])) {
-                continue;
-            }
-
-            $combatData = $actions['combat'];
-            $combatSkills[] = [
-                'skill' => $skill,
-                'combat' => $combatData,
-            ];
-        }
-
-        return $combatSkills;
-    }
-
-    /**
-     * Get the spells unlocked by a player's combat skills.
+     * Deux methodes lisaient ici `actions['combat']['spell_slug']` et rendaient
+     * les `Spell` correspondants — exactement le motif interdit, et celui que
+     * l'audit du systeme de design a retrouve dans la maquette « Competences »
+     * sous la forme d'un noeud d'arbre « Trait d'ombre · 25 PM ».
      *
-     * @return Spell[]
+     * Elles n'avaient aucun appelant : le chemin etait ouvert, jamais emprunte.
+     * Il est ferme. Un sort actif s'obtient par une materia — competence
+     * `actions.materia.unlock`, materia possedee, materia sertie — et par
+     * l'attaque de base de l'arme, toujours gratuite.
+     *
+     * Les competences restent passives : bonus de stats (`getCombatBonuses`)
+     * et deverrouillage de materia (`getUnlockedMateriaSpellSlugs`).
      */
-    public function getUnlockedSpells(Player $player): array
-    {
-        $combatSkills = $this->getAvailableSkillsForCombat($player);
-        $spellSlugs = [];
-
-        foreach ($combatSkills as $entry) {
-            $combat = $entry['combat'];
-            if (isset($combat['spell_slug'])) {
-                $spellSlugs[] = $combat['spell_slug'];
-            }
-            if (isset($combat['spells']) && is_array($combat['spells'])) {
-                foreach ($combat['spells'] as $spellSlug) {
-                    $spellSlugs[] = $spellSlug;
-                }
-            }
-        }
-
-        if (empty($spellSlugs)) {
-            return [];
-        }
-
-        $spellSlugs = array_unique($spellSlugs);
-
-        return $this->entityManager->getRepository(Spell::class)->findBy([
-            'slug' => $spellSlugs,
-        ]);
-    }
 
     /**
      * Check if a player has enough energy to cast a given spell.
@@ -165,25 +120,5 @@ class CombatSkillResolver
     public function hasUnlockedMateriaSpell(Player $player, string $spellSlug): bool
     {
         return in_array($spellSlug, $this->getUnlockedMateriaSpellSlugs($player), true);
-    }
-
-    /**
-     * Check if a player has a specific combat skill unlocked.
-     */
-    public function hasSkillWithSpell(Player $player, string $spellSlug): bool
-    {
-        $combatSkills = $this->getAvailableSkillsForCombat($player);
-
-        foreach ($combatSkills as $entry) {
-            $combat = $entry['combat'];
-            if (isset($combat['spell_slug']) && $combat['spell_slug'] === $spellSlug) {
-                return true;
-            }
-            if (isset($combat['spells']) && in_array($spellSlug, $combat['spells'], true)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

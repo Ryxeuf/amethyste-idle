@@ -1,0 +1,1224 @@
+/*
+ * ============================================================================
+ * AMETHYSTE — SYSTEME DE DESIGN « PARCHEMIN »
+ * ============================================================================
+ *
+ * Traduction en code du document `design/Amethyste - Design System.dc.html`.
+ * Encre sur papier, amethyste comme unique couleur de marque, raretes en sceaux.
+ *
+ * Trois regles de clarte, tenues par les composants ci-dessous :
+ *
+ *   1. UNE SEULE ACTION PRIMAIRE PAR ECRAN, en amethyste plein (.ds-btn--primary).
+ *      Tout le reste est du texte (.ds-btn--quiet) ou une bordure (.ds-btn--secondary).
+ *   2. TOUT CHIFFRE EST EN MONOSPACE (.ds-num), aligne a droite, avec son delta
+ *      juste a cote (.ds-num--gain / .ds-num--loss).
+ *   3. UN ETAT VIDE DIT TOUJOURS QUOI FAIRE (.ds-empty), jamais juste « vide ».
+ *
+ * Cibles tactiles : 44 px minimum, 48 px pour l'action primaire.
+ *
+ * Ce fichier ne contient que les tokens et les composants. Les ecrans les
+ * consomment ; ils ne redeclarent pas de couleur.
+ */
+
+@theme {
+  /* --- 01a. Surfaces & encre ------------------------------------------- */
+  --color-paper: #fbf8f0;
+  --color-paper-2: #f4efe2;
+  --color-paper-3: #e8e0cc;
+  --color-paper-4: #e0d7c1;
+  --color-card: #ffffff;
+  --color-line: #ddd2ba;
+  --color-line-strong: #cfc4ab;
+  --color-line-soft: #ece5d5;
+  --color-ink: #26221c;
+  --color-ink-2: #5d564a;
+  --color-ink-3: #8a806d;
+  --color-ink-4: #a8a08c;
+  /* Encre inversee : texte pose sur une surface encre */
+  --color-ink-on: #f4efe2;
+  --color-ink-on-2: #a89b81;
+
+  /* --- 01b. Marque & signaux -------------------------------------------- */
+  --color-brand: #5b2fb0;
+  --color-brand-active: #7c4ddb;
+  --color-brand-deep: #4a1f95;
+  --color-brand-tint: #e6dcfb;
+  --color-brand-ink: #3c1a7d;
+  --color-gain: #1f7a49;
+  --color-gain-tint: #d6efe0;
+  --color-gain-ink: #145c36;
+  --color-loss: #a8341f;
+  --color-loss-tint: #f6ddd6;
+  --color-mana: #2b5ea8;
+  --color-mana-tint: #d8e6f8;
+  --color-mana-ink: #1c4c8a;
+
+  /* --- 01c. Raretes — sceau + filet gauche ------------------------------ */
+  --color-rarity-common: #4a4437;
+  --color-rarity-common-tint: #e8e0cc;
+  --color-rarity-common-ink: #4a4437;
+  --color-rarity-uncommon: #1f7a49;
+  --color-rarity-uncommon-tint: #d6efe0;
+  --color-rarity-uncommon-ink: #145c36;
+  --color-rarity-rare: #2b5ea8;
+  --color-rarity-rare-tint: #d8e6f8;
+  --color-rarity-rare-ink: #1c4c8a;
+  --color-rarity-epic: #5b2fb0;
+  --color-rarity-epic-tint: #e6dcfb;
+  --color-rarity-epic-ink: #4a1f95;
+  --color-rarity-legendary: #c08a1e;
+  --color-rarity-legendary-tint: #f5e4b8;
+  --color-rarity-legendary-ink: #7a5407;
+  --color-rarity-amethyst: #b0248f;
+  --color-rarity-amethyst-tint: #fadcf3;
+  --color-rarity-amethyst-ink: #8c1273;
+
+  /* --- 01d. Elements (materia, domaines) -------------------------------- */
+  --color-element-fire: #9f1239;
+  --color-element-fire-light: #fb7185;
+  --color-element-water: #1e40af;
+  --color-element-water-light: #60a5fa;
+  --color-element-earth: #92400e;
+  --color-element-earth-light: #fbbf24;
+  --color-element-air: #0e7490;
+  --color-element-air-light: #67e8f9;
+  --color-element-light: #a16207;
+  --color-element-light-light: #fde68a;
+  --color-element-dark: #4c1d95;
+  --color-element-dark-light: #a78bfa;
+  --color-element-metal: #4b5563;
+  --color-element-metal-light: #cbd5e1;
+  --color-element-beast: #3f6212;
+  --color-element-beast-light: #a3e635;
+
+  /* --- 02. Typographie -------------------------------------------------- */
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --font-sans: Karla, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- 02b. Rayons : 4 badge · 6 carte · 8 panneau · plein pill --------- */
+  --radius-badge: 4px;
+  --radius-card: 6px;
+  --radius-panel: 8px;
+}
+
+/*
+ * ============================================================================
+ * BASCULE GLOBALE — les rampes heritees pointent vers le parchemin
+ * ============================================================================
+ *
+ * L'interface a ete ecrite en sombre : `bg-gray-900`, `text-white`,
+ * `border-gray-700`, accents `purple-*`, sur plus de deux cents gabarits.
+ * Plutot que de reecrire chaque classe une par une, la rampe est reindexee ici :
+ * les tons « fonces » deviennent les papiers, les tons « clairs » deviennent
+ * l'encre, et le violet Tailwind devient l'amethyste de marque.
+ *
+ * Consequence : un ecran non encore repris passe au parchemin sans etre touche,
+ * et un ecran repris utilise les composants .ds-* ci-dessous. Les deux cohabitent.
+ *
+ * Un ecran converti n'utilise plus ces classes : elles sont un pont, pas une API.
+ */
+@theme {
+  /* --- Neutres : la rampe est inversee, le fonce devient le papier -------- */
+  --color-gray-950: #ffffff;
+  --color-gray-900: #fbf8f0;
+  --color-gray-800: #f4efe2;
+  --color-gray-750: #ece5d5;
+  --color-gray-700: #e8e0cc;
+  --color-gray-600: #ddd2ba;
+  --color-gray-500: #cfc4ab;
+  --color-gray-400: #8a806d;
+  --color-gray-300: #5d564a;
+  --color-gray-200: #3b3529;
+  --color-gray-100: #2f2a22;
+  --color-gray-50: #26221c;
+
+  --color-slate-950: #ffffff;
+  --color-slate-900: #fbf8f0;
+  --color-slate-800: #f4efe2;
+  --color-slate-700: #e8e0cc;
+  --color-slate-600: #ddd2ba;
+  --color-slate-500: #cfc4ab;
+  --color-slate-400: #8a806d;
+  --color-slate-300: #5d564a;
+  --color-slate-200: #3b3529;
+  --color-slate-100: #2f2a22;
+  --color-slate-50: #26221c;
+
+  --color-zinc-900: #fbf8f0;
+  --color-zinc-800: #f4efe2;
+  --color-zinc-700: #e8e0cc;
+  --color-zinc-600: #ddd2ba;
+  --color-zinc-400: #8a806d;
+  --color-zinc-300: #5d564a;
+
+  /* `text-white` couvre plus de 500 usages : c'est le texte principal, donc l'encre. */
+  --color-white: #26221c;
+
+  /*
+   * Teintes : meme inversion. 800-950 servaient de fond sombre -> teinte claire ;
+   * 500-700 restent la couleur pleine ; 50-400 servaient de texte clair -> encre.
+   * Les familles sont repliees sur les six signaux du DS : amethyste (marque),
+   * gain, perte, mana, or et amethyste de rarete.
+   */
+  --color-red-50: #8f2818;
+  --color-red-100: #8f2818;
+  --color-red-200: #8f2818;
+  --color-red-300: #8f2818;
+  --color-red-400: #8f2818;
+  --color-red-500: #a8341f;
+  --color-red-600: #a8341f;
+  --color-red-700: #a8341f;
+  --color-red-800: #f6ddd6;
+  --color-red-900: #f6ddd6;
+  --color-red-950: #f6ddd6;
+
+  --color-rose-50: #8f2818;
+  --color-rose-100: #8f2818;
+  --color-rose-200: #8f2818;
+  --color-rose-300: #8f2818;
+  --color-rose-400: #8f2818;
+  --color-rose-500: #a8341f;
+  --color-rose-600: #a8341f;
+  --color-rose-700: #a8341f;
+  --color-rose-800: #f6ddd6;
+  --color-rose-900: #f6ddd6;
+  --color-rose-950: #f6ddd6;
+
+  --color-orange-50: #8a4a11;
+  --color-orange-100: #8a4a11;
+  --color-orange-200: #8a4a11;
+  --color-orange-300: #8a4a11;
+  --color-orange-400: #8a4a11;
+  --color-orange-500: #b8651a;
+  --color-orange-600: #b8651a;
+  --color-orange-700: #b8651a;
+  --color-orange-800: #f7e3ce;
+  --color-orange-900: #f7e3ce;
+  --color-orange-950: #f7e3ce;
+
+  --color-amber-50: #7a5407;
+  --color-amber-100: #7a5407;
+  --color-amber-200: #7a5407;
+  --color-amber-300: #7a5407;
+  --color-amber-400: #7a5407;
+  --color-amber-500: #c08a1e;
+  --color-amber-600: #c08a1e;
+  --color-amber-700: #c08a1e;
+  --color-amber-800: #f5e4b8;
+  --color-amber-900: #f5e4b8;
+  --color-amber-950: #f5e4b8;
+
+  --color-yellow-50: #7a5407;
+  --color-yellow-100: #7a5407;
+  --color-yellow-200: #7a5407;
+  --color-yellow-300: #7a5407;
+  --color-yellow-400: #7a5407;
+  --color-yellow-500: #c08a1e;
+  --color-yellow-600: #c08a1e;
+  --color-yellow-700: #c08a1e;
+  --color-yellow-800: #f5e4b8;
+  --color-yellow-900: #f5e4b8;
+  --color-yellow-950: #f5e4b8;
+
+  --color-green-50: #145c36;
+  --color-green-100: #145c36;
+  --color-green-200: #145c36;
+  --color-green-300: #145c36;
+  --color-green-400: #145c36;
+  --color-green-500: #1f7a49;
+  --color-green-600: #1f7a49;
+  --color-green-700: #1f7a49;
+  --color-green-800: #d6efe0;
+  --color-green-900: #d6efe0;
+  --color-green-950: #d6efe0;
+
+  --color-emerald-50: #145c36;
+  --color-emerald-100: #145c36;
+  --color-emerald-200: #145c36;
+  --color-emerald-300: #145c36;
+  --color-emerald-400: #145c36;
+  --color-emerald-500: #1f7a49;
+  --color-emerald-600: #1f7a49;
+  --color-emerald-700: #1f7a49;
+  --color-emerald-800: #d6efe0;
+  --color-emerald-900: #d6efe0;
+  --color-emerald-950: #d6efe0;
+
+  --color-teal-50: #0b5a70;
+  --color-teal-100: #0b5a70;
+  --color-teal-200: #0b5a70;
+  --color-teal-300: #0b5a70;
+  --color-teal-400: #0b5a70;
+  --color-teal-500: #0e7490;
+  --color-teal-600: #0e7490;
+  --color-teal-700: #0e7490;
+  --color-teal-800: #d6eef2;
+  --color-teal-900: #d6eef2;
+  --color-teal-950: #d6eef2;
+
+  --color-cyan-50: #0b5a70;
+  --color-cyan-100: #0b5a70;
+  --color-cyan-200: #0b5a70;
+  --color-cyan-300: #0b5a70;
+  --color-cyan-400: #0b5a70;
+  --color-cyan-500: #0e7490;
+  --color-cyan-600: #0e7490;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #d6eef2;
+  --color-cyan-900: #d6eef2;
+  --color-cyan-950: #d6eef2;
+
+  --color-sky-50: #1c4c8a;
+  --color-sky-100: #1c4c8a;
+  --color-sky-200: #1c4c8a;
+  --color-sky-300: #1c4c8a;
+  --color-sky-400: #1c4c8a;
+  --color-sky-500: #2b5ea8;
+  --color-sky-600: #2b5ea8;
+  --color-sky-700: #2b5ea8;
+  --color-sky-800: #d8e6f8;
+  --color-sky-900: #d8e6f8;
+  --color-sky-950: #d8e6f8;
+
+  --color-blue-50: #1c4c8a;
+  --color-blue-100: #1c4c8a;
+  --color-blue-200: #1c4c8a;
+  --color-blue-300: #1c4c8a;
+  --color-blue-400: #1c4c8a;
+  --color-blue-500: #2b5ea8;
+  --color-blue-600: #2b5ea8;
+  --color-blue-700: #2b5ea8;
+  --color-blue-800: #d8e6f8;
+  --color-blue-900: #d8e6f8;
+  --color-blue-950: #d8e6f8;
+
+  --color-indigo-50: #3c1a7d;
+  --color-indigo-100: #3c1a7d;
+  --color-indigo-200: #3c1a7d;
+  --color-indigo-300: #3c1a7d;
+  --color-indigo-400: #3c1a7d;
+  --color-indigo-500: #5b2fb0;
+  --color-indigo-600: #5b2fb0;
+  --color-indigo-700: #5b2fb0;
+  --color-indigo-800: #e6dcfb;
+  --color-indigo-900: #e6dcfb;
+  --color-indigo-950: #e6dcfb;
+
+  --color-violet-50: #3c1a7d;
+  --color-violet-100: #3c1a7d;
+  --color-violet-200: #3c1a7d;
+  --color-violet-300: #3c1a7d;
+  --color-violet-400: #3c1a7d;
+  --color-violet-500: #5b2fb0;
+  --color-violet-600: #5b2fb0;
+  --color-violet-700: #5b2fb0;
+  --color-violet-800: #e6dcfb;
+  --color-violet-900: #e6dcfb;
+  --color-violet-950: #e6dcfb;
+
+  --color-purple-50: #3c1a7d;
+  --color-purple-100: #3c1a7d;
+  --color-purple-200: #3c1a7d;
+  --color-purple-300: #3c1a7d;
+  --color-purple-400: #3c1a7d;
+  --color-purple-500: #5b2fb0;
+  --color-purple-600: #5b2fb0;
+  --color-purple-700: #5b2fb0;
+  --color-purple-800: #e6dcfb;
+  --color-purple-900: #e6dcfb;
+  --color-purple-950: #e6dcfb;
+
+  --color-fuchsia-50: #8c1273;
+  --color-fuchsia-100: #8c1273;
+  --color-fuchsia-200: #8c1273;
+  --color-fuchsia-300: #8c1273;
+  --color-fuchsia-400: #8c1273;
+  --color-fuchsia-500: #b0248f;
+  --color-fuchsia-600: #b0248f;
+  --color-fuchsia-700: #b0248f;
+  --color-fuchsia-800: #fadcf3;
+  --color-fuchsia-900: #fadcf3;
+  --color-fuchsia-950: #fadcf3;
+
+  --color-pink-50: #8c1273;
+  --color-pink-100: #8c1273;
+  --color-pink-200: #8c1273;
+  --color-pink-300: #8c1273;
+  --color-pink-400: #8c1273;
+  --color-pink-500: #b0248f;
+  --color-pink-600: #b0248f;
+  --color-pink-700: #b0248f;
+  --color-pink-800: #fadcf3;
+  --color-pink-900: #fadcf3;
+  --color-pink-950: #fadcf3;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--color-paper-2);
+    color: var(--color-ink);
+  }
+
+  /*
+   * Cormorant pour les titres, Karla pour le texte, Plex Mono pour tout chiffre.
+   * Les trois familles sont chargees dans `base.html.twig`.
+   */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  /* Les chiffres restent alignes d'une ligne a l'autre. */
+  .font-mono,
+  code,
+  kbd,
+  samp {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* ==========================================================================
+   * 02 — TYPOGRAPHIE
+   * ======================================================================== */
+
+  /* Titre d'ecran — Cormorant 700 · 32px */
+  .ds-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--color-ink);
+  }
+
+  /* Nom d'objet, de monstre, de quete — Cormorant 700 · 20px */
+  .ds-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--color-ink);
+  }
+
+  .ds-name--sm {
+    font-size: 17px;
+  }
+
+  /* Etiquette de champ — Karla 700 · 11px · +0.1em */
+  .ds-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  /* Sur-titre de section — Plex Mono 11px · +0.16em */
+  .ds-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .ds-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-ink);
+  }
+
+  .ds-hint {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-ink-3);
+  }
+
+  /* Regle 2 — tout chiffre est en monospace, aligne a droite. */
+  .ds-num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+    text-align: right;
+  }
+
+  .ds-num--lg {
+    font-size: 18px;
+  }
+
+  .ds-num--sm {
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .ds-num--gain {
+    color: var(--color-gain);
+  }
+
+  .ds-num--loss {
+    color: var(--color-loss);
+  }
+
+  .ds-num--mana {
+    color: var(--color-mana);
+  }
+
+  .ds-num--muted {
+    color: var(--color-ink-3);
+  }
+
+  /*
+   * Valeur non arbitree : le chiffre existe dans la maquette mais pas encore
+   * dans les regles du jeu (cf. `docs/BALANCE.md`). Souligne en pointille pour
+   * qu'on ne le prenne pas pour une donnee.
+   */
+  .ds-num--open {
+    border-bottom: 1px dotted var(--color-ink-3);
+  }
+
+  /* ==========================================================================
+   * 03 — BOUTONS
+   * ======================================================================== */
+
+  .ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: var(--radius-card);
+    border: 1px solid transparent;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  /* Regle 1 — une seule par ecran. */
+  .ds-btn--primary {
+    min-height: 48px;
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .ds-btn--primary:hover {
+    background: var(--color-brand-active);
+    border-color: var(--color-brand-active);
+  }
+
+  .ds-btn--secondary {
+    background: var(--color-card);
+    border-color: var(--color-line-strong);
+    color: var(--color-ink);
+  }
+
+  .ds-btn--secondary:hover {
+    background: var(--color-paper-2);
+  }
+
+  .ds-btn--quiet {
+    background: transparent;
+    color: var(--color-brand);
+    font-weight: 700;
+  }
+
+  .ds-btn--quiet:hover {
+    background: var(--color-brand-tint);
+  }
+
+  .ds-btn--danger {
+    background: var(--color-loss);
+    border-color: var(--color-loss);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .ds-btn--danger:hover {
+    background: #8f2818;
+  }
+
+  .ds-btn--sm {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .ds-btn:disabled,
+  .ds-btn--disabled,
+  .ds-btn[aria-disabled='true'] {
+    background: var(--color-paper-3);
+    border-color: var(--color-paper-3);
+    color: var(--color-ink-4);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ==========================================================================
+   * 03 — SURFACES
+   * ======================================================================== */
+
+  .ds-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  .ds-panel {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-panel);
+    padding: 16px;
+  }
+
+  .ds-panel--flush {
+    padding: 0;
+  }
+
+  /* Bande encre : en-tete d'ecran et barre basse. */
+  .ds-ink-bar {
+    background: var(--color-ink);
+    color: var(--color-ink-on);
+  }
+
+  .ds-divider {
+    border-color: var(--color-line-soft);
+  }
+
+  /* ==========================================================================
+   * 03 — ONGLETS, PILLS, JAUGES
+   * ======================================================================== */
+
+  .ds-tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid var(--color-line);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ds-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ds-tab {
+    padding: 9px 0;
+    font-size: 14px;
+    color: var(--color-ink-2);
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    text-decoration: none;
+  }
+
+  .ds-tab--active,
+  .ds-tab[aria-selected='true'] {
+    font-weight: 700;
+    color: var(--color-ink);
+    border-bottom-color: var(--color-brand);
+  }
+
+  .ds-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink-2);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .ds-pill--active,
+  .ds-pill[aria-selected='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .ds-meter {
+    height: 8px;
+    border-radius: 99px;
+    background: var(--color-paper-3);
+    overflow: hidden;
+  }
+
+  .ds-meter--tall {
+    height: 10px;
+  }
+
+  .ds-meter__fill {
+    height: 100%;
+    background: var(--color-brand);
+    transition: width 0.3s ease;
+  }
+
+  .ds-meter__fill--hp {
+    background: var(--color-loss);
+  }
+
+  .ds-meter__fill--mp {
+    background: var(--color-mana);
+  }
+
+  .ds-meter__fill--xp {
+    background: var(--color-brand);
+  }
+
+  .ds-meter__fill--gain {
+    background: var(--color-gain);
+  }
+
+  /* Entete de jauge : libelle a gauche, chiffre a droite, tout en mono. */
+  .ds-meter__head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-3);
+    margin-bottom: 3px;
+  }
+
+  /* ==========================================================================
+   * 03 — LIGNE D'OBJET (3 etats : equipe, disponible, vide)
+   * ======================================================================== */
+
+  .ds-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    min-height: 62px;
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+  }
+
+  .ds-row:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  .ds-row--empty {
+    background: transparent;
+    border: 1px dashed var(--color-line-strong);
+    opacity: 0.85;
+  }
+
+  .ds-row__icon {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-card);
+    background: #f0ead9;
+    border: 1px solid var(--color-line);
+    overflow: hidden;
+  }
+
+  .ds-row__icon img {
+    image-rendering: pixelated;
+  }
+
+  .ds-row__icon--empty {
+    background: transparent;
+    border-style: dashed;
+    border-color: var(--color-line-strong);
+  }
+
+  .ds-row__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ds-row__name {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-ink);
+  }
+
+  .ds-row--empty .ds-row__name {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--color-ink-3);
+  }
+
+  .ds-row__meta {
+    font-size: 12px;
+    color: var(--color-ink-3);
+  }
+
+  /* Le filet gauche porte la rarete ; le sceau porte le mot. */
+  .ds-edge-common {
+    border-left: 4px solid var(--color-rarity-common);
+  }
+
+  .ds-edge-uncommon {
+    border-left: 4px solid var(--color-rarity-uncommon);
+  }
+
+  .ds-edge-rare {
+    border-left: 4px solid var(--color-rarity-rare);
+  }
+
+  .ds-edge-epic {
+    border-left: 4px solid var(--color-rarity-epic);
+  }
+
+  .ds-edge-legendary {
+    border-left: 4px solid var(--color-rarity-legendary);
+  }
+
+  .ds-edge-amethyst {
+    border-left: 4px solid var(--color-rarity-amethyst);
+  }
+
+  /* ==========================================================================
+   * 03 — SCEAUX (rarete, statut, element)
+   * ======================================================================== */
+
+  .ds-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--radius-badge);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: var(--color-paper-3);
+    color: var(--color-rarity-common-ink);
+  }
+
+  .ds-seal-common {
+    background: var(--color-rarity-common-tint);
+    color: var(--color-rarity-common-ink);
+  }
+
+  .ds-seal-uncommon {
+    background: var(--color-rarity-uncommon-tint);
+    color: var(--color-rarity-uncommon-ink);
+  }
+
+  .ds-seal-rare {
+    background: var(--color-rarity-rare-tint);
+    color: var(--color-rarity-rare-ink);
+  }
+
+  .ds-seal-epic {
+    background: var(--color-rarity-epic-tint);
+    color: var(--color-rarity-epic-ink);
+  }
+
+  .ds-seal-legendary {
+    background: var(--color-rarity-legendary-tint);
+    color: var(--color-rarity-legendary-ink);
+  }
+
+  .ds-seal-amethyst {
+    background: var(--color-rarity-amethyst-tint);
+    color: var(--color-rarity-amethyst-ink);
+  }
+
+  .ds-seal--gain {
+    background: var(--color-gain-tint);
+    color: var(--color-gain-ink);
+  }
+
+  .ds-seal--loss {
+    background: var(--color-loss-tint);
+    color: var(--color-loss);
+  }
+
+  .ds-seal--mana {
+    background: var(--color-mana-tint);
+    color: var(--color-mana-ink);
+  }
+
+  /* Pastille d'element : la meme bille que les materia, en petit. */
+  .ds-elem {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .ds-elem-fire {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-fire-light), var(--color-element-fire));
+  }
+
+  .ds-elem-water {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-water-light), var(--color-element-water));
+  }
+
+  .ds-elem-earth {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-earth-light), var(--color-element-earth));
+  }
+
+  .ds-elem-air {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-air-light), var(--color-element-air));
+  }
+
+  .ds-elem-light {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-light-light), var(--color-element-light));
+  }
+
+  .ds-elem-dark {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-dark-light), var(--color-element-dark));
+  }
+
+  .ds-elem-metal {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-metal-light), var(--color-element-metal));
+  }
+
+  .ds-elem-beast {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-beast-light), var(--color-element-beast));
+  }
+
+  .ds-elem-none {
+    background: radial-gradient(circle at 35% 30%, #e8e0cc, #a8a08c);
+  }
+
+  /* ==========================================================================
+   * 03 — BANDEAU SYSTEME & ETAT VIDE
+   * ======================================================================== */
+
+  .ds-banner {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 12px;
+    border-radius: var(--radius-card);
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-size: 13px;
+  }
+
+  .ds-banner::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-brand);
+  }
+
+  .ds-banner--gain {
+    background: var(--color-gain-tint);
+    color: var(--color-gain-ink);
+  }
+
+  .ds-banner--gain::before {
+    background: var(--color-gain);
+  }
+
+  .ds-banner--loss {
+    background: var(--color-loss-tint);
+    color: var(--color-loss);
+  }
+
+  .ds-banner--loss::before {
+    background: var(--color-loss);
+  }
+
+  /* Regle 3 — un etat vide dit ce qu'il faut faire. */
+  .ds-empty {
+    padding: 18px;
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-card);
+    text-align: center;
+  }
+
+  .ds-empty__title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .ds-empty__hint {
+    font-size: 13px;
+    color: var(--color-ink-2);
+    margin: 4px 0 10px;
+  }
+
+  /* ==========================================================================
+   * 05 — PIECES D'ECRAN
+   * ======================================================================== */
+
+  /* En-tete d'ecran : nom a gauche, contexte en mono a droite, sur encre. */
+  .ds-screen-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--color-ink);
+  }
+
+  .ds-screen-head__title {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--color-ink-on);
+  }
+
+  .ds-screen-head__meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-on-2);
+  }
+
+  /*
+   * Barre de navigation : la meme bande d'encre en haut et en bas, sur tous
+   * les ecrans. Seul l'onglet courant porte de l'amethyste.
+   */
+  .ds-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-card);
+    color: var(--color-ink-on-2);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ds-nav-link:hover {
+    background: rgba(244, 239, 226, 0.12);
+    color: var(--color-ink-on);
+  }
+
+  .ds-nav-link--active {
+    background: var(--color-brand);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .ds-nav-link--active:hover {
+    background: var(--color-brand-active);
+    color: #fff;
+  }
+
+  /* Icone d'action de la barre : discrete au repos, encre claire au survol. */
+  .ds-nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: var(--radius-card);
+    color: var(--color-ink-on-2);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ds-nav-icon:hover {
+    background: rgba(244, 239, 226, 0.12);
+    color: var(--color-ink-on);
+  }
+
+  /* Panneau deroulant : il quitte l'encre, donc il repasse au papier. */
+  .ds-nav-panel {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 8px 24px rgba(38, 34, 28, 0.16);
+  }
+
+  /* Entree de menu deroulant, posee sur le papier du panneau. */
+  .ds-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-card);
+    color: var(--color-ink-2);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ds-menu-item:hover {
+    background: var(--color-paper-2);
+    color: var(--color-ink);
+  }
+
+  .ds-menu-item--active {
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-weight: 700;
+  }
+
+  /* Journal de combat : le tour a gauche en mono, la phrase a droite. */
+  .ds-log {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--color-ink);
+    padding-bottom: 7px;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .ds-log:last-child {
+    border-bottom: 0;
+  }
+
+  .ds-log__turn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-ink-3);
+    width: 26px;
+    flex: none;
+  }
+
+  .ds-log--past {
+    color: var(--color-ink-2);
+  }
+
+  .ds-log--old {
+    color: var(--color-ink-3);
+  }
+
+  /*
+   * Carte d'action de combat : titre en clair, cout et effet en mono juste
+   * dessous. Indisponible = visible mais grise, avec la raison affichee.
+   */
+  .ds-action {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 62px;
+    padding: 10px 12px;
+    border-radius: var(--radius-card);
+    background: var(--color-card);
+    border: 1px solid var(--color-line-strong);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .ds-action__name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .ds-action__cost {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-3);
+  }
+
+  .ds-action--primary {
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+  }
+
+  .ds-action--primary .ds-action__name {
+    color: #fff;
+  }
+
+  .ds-action--primary .ds-action__cost {
+    color: #fff;
+    opacity: 0.8;
+  }
+
+  .ds-action--heal .ds-action__cost {
+    color: var(--color-gain);
+  }
+
+  .ds-action:disabled,
+  .ds-action--locked {
+    background: var(--color-line-soft);
+    border-color: var(--color-paper-4);
+    cursor: not-allowed;
+  }
+
+  .ds-action--locked .ds-action__name,
+  .ds-action:disabled .ds-action__name,
+  .ds-action--locked .ds-action__cost,
+  .ds-action:disabled .ds-action__cost {
+    color: var(--color-ink-4);
+  }
+
+  /* Cadre d'icone 32 px sur fond papier, pixels non lisses. */
+  .ds-icon-frame {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-card);
+    background: #f0ead9;
+    border: 1px solid var(--color-line);
+  }
+
+  .ds-icon-frame--lg {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-panel);
+    background: var(--color-paper-3);
+    border-color: var(--color-line-strong);
+  }
+
+  .ds-icon-frame img,
+  .ds-pixel {
+    image-rendering: pixelated;
+  }
+
+  /* Liste de statistiques : libelle a gauche, chiffre mono a droite. */
+  .ds-stat {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .ds-stat:last-child {
+    border-bottom: 0;
+  }
+
+  .ds-stat__label {
+    font-size: 13px;
+    color: var(--color-ink-2);
+  }
+}

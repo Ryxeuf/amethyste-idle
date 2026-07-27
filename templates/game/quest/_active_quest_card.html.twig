@@ -43,18 +43,18 @@
             {% if progress >= 100 %}
                 {% if quest.choiceOutcome is not empty %}
                     <button onclick="showChoiceModal({{ playerQuest.id }}, {{ quest.choiceOutcome|json_encode|e('html_attr') }})"
-                            class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white text-xs rounded transition-colors touch-target">
+                            class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-ink-on text-xs rounded transition-colors touch-target">
                         Choisir & Rendre
                     </button>
                 {% else %}
                     <button onclick="completeQuest({{ playerQuest.id }})"
-                            class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white text-xs rounded transition-colors touch-target">
+                            class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-ink-on text-xs rounded transition-colors touch-target">
                         Rendre
                     </button>
                 {% endif %}
             {% endif %}
             <button onclick="abandonQuest({{ playerQuest.id }})"
-                    class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 active:bg-red-700 text-white text-xs rounded transition-colors touch-target">
+                    class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 active:bg-red-700 text-ink-on text-xs rounded transition-colors touch-target">
                 Abandonner
             </button>
         </div>
@@ -210,7 +210,7 @@
                         <input type="text" id="puzzle-answer-{{ entry.pnj_id }}" placeholder="Votre reponse..."
                                class="flex-1 px-2 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
                         <button onclick="submitPuzzleAnswer({{ entry.pnj_id }})"
-                                class="px-2 py-0.5 text-xs bg-purple-700 hover:bg-purple-600 text-white rounded transition-colors">
+                                class="px-2 py-0.5 text-xs bg-purple-700 hover:bg-purple-600 text-ink-on rounded transition-colors">
                             Repondre
                         </button>
                     </div>

@@ -21,14 +21,14 @@
 
 {# ─── Configuration des éléments ─── #}
 {% set elementConfig = {
-    'fire':  {label: 'Feu',     dot: 'bg-red-500',     text: 'text-red-400',     border: 'border-red-500/40'},
-    'water': {label: 'Eau',     dot: 'bg-blue-500',    text: 'text-blue-400',    border: 'border-blue-500/40'},
-    'air':   {label: 'Air',     dot: 'bg-purple-400',  text: 'text-purple-300',  border: 'border-purple-400/40'},
-    'earth': {label: 'Terre',   dot: 'bg-green-600',   text: 'text-green-400',   border: 'border-green-500/40'},
-    'metal': {label: 'Métal',   dot: 'bg-gray-400',    text: 'text-gray-300',    border: 'border-gray-400/40'},
-    'beast': {label: 'Bête',    dot: 'bg-emerald-500', text: 'text-emerald-400', border: 'border-emerald-500/40'},
-    'light': {label: 'Lumière', dot: 'bg-yellow-400',  text: 'text-yellow-300',  border: 'border-yellow-400/40'},
-    'dark':  {label: 'Ombre',   dot: 'bg-indigo-600',  text: 'text-indigo-300',  border: 'border-indigo-500/40'},
+    'fire':  {label: 'Feu',     dot: 'ds-elem ds-elem-fire',  text: 'ds-label'},
+    'water': {label: 'Eau',     dot: 'ds-elem ds-elem-water', text: 'ds-label'},
+    'air':   {label: 'Air',     dot: 'ds-elem ds-elem-air',   text: 'ds-label'},
+    'earth': {label: 'Terre',   dot: 'ds-elem ds-elem-earth', text: 'ds-label'},
+    'metal': {label: 'Métal',   dot: 'ds-elem ds-elem-metal', text: 'ds-label'},
+    'beast': {label: 'Bête',    dot: 'ds-elem ds-elem-beast', text: 'ds-label'},
+    'light': {label: 'Lumière', dot: 'ds-elem ds-elem-light', text: 'ds-label'},
+    'dark':  {label: 'Ombre',   dot: 'ds-elem ds-elem-dark',  text: 'ds-label'},
 } %}
 {% set elementOrder = ['fire', 'water', 'air', 'earth', 'metal', 'beast', 'light', 'dark'] %}
 
@@ -41,44 +41,44 @@
     ═══════════════════════════════════════════ #}
     {% if skillCount > 0 %}
         <div data-skills-target="respecModal"
-             class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+             class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/45"
              data-action="click->skills#closeRespecOnBackdrop">
-            <div class="bg-gray-800 border border-gray-600 rounded-xl p-6 max-w-sm mx-4 shadow-2xl">
-                <h3 class="text-lg font-bold text-white mb-3">{{ "game.skills.respec.title"|trans }}</h3>
-                <p class="text-gray-300 text-sm mb-3">
+            <div class="ds-panel p-6 max-w-sm mx-4">
+                <h3 class="ds-title mb-3">{{ "game.skills.respec.title"|trans }}</h3>
+                <p class="ds-body mb-3">
                     {{ "game.skills.respec.description"|trans }}
                 </p>
-                <div class="bg-gray-900 rounded-lg p-3 mb-4 text-sm space-y-1.5">
-                    <div class="flex justify-between text-gray-400">
-                        <span>{{ "game.skills.respec.count_label"|trans }}</span>
-                        <span class="text-white font-bold">{{ skillCount }}</span>
+                <div class="ds-card p-3 mb-4">
+                    <div class="ds-stat">
+                        <span class="ds-stat__label">{{ "game.skills.respec.count_label"|trans }}</span>
+                        <span class="ds-num">{{ skillCount }}</span>
                     </div>
-                    <div class="flex justify-between text-gray-400">
-                        <span>{{ "game.skills.respec.cost_label"|trans }}</span>
-                        <span class="text-amber-400 font-bold">{{ "game.skills.respec.gils_amount"|trans({'%count%': respecCost}) }}</span>
+                    <div class="ds-stat">
+                        <span class="ds-stat__label">{{ "game.skills.respec.cost_label"|trans }}</span>
+                        <span class="ds-num ds-num--loss">{{ "game.skills.respec.gils_amount"|trans({'%count%': respecCost}) }}</span>
                     </div>
-                    <div class="flex justify-between text-gray-400">
-                        <span>{{ "game.skills.respec.your_gils_label"|trans }}</span>
-                        <span class="{{ canRespec ? 'text-green-400' : 'text-red-400' }} font-bold">{{ "game.skills.respec.gils_amount"|trans({'%count%': playerGils}) }}</span>
+                    <div class="ds-stat">
+                        <span class="ds-stat__label">{{ "game.skills.respec.your_gils_label"|trans }}</span>
+                        <span class="ds-num {{ canRespec ? 'ds-num--gain' : 'ds-num--loss' }}">{{ "game.skills.respec.gils_amount"|trans({'%count%': playerGils}) }}</span>
                     </div>
                 </div>
                 <div class="flex gap-3">
                     <button type="button"
                             data-action="click->skills#closeRespec"
-                            class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors">
+                            class="ds-btn ds-btn--secondary flex-1">
                         {{ "common.cancel"|trans }}
                     </button>
                     {% if canRespec %}
                         <form action="{{ path('app_game_skill_respec') }}" method="post" class="flex-1">
                             <input type="hidden" name="_token" value="{{ csrf_token('respec') }}">
                             <button type="submit"
-                                    class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors">
+                                    class="ds-btn ds-btn--primary w-full">
                                 {{ "common.confirm"|trans }}
                             </button>
                         </form>
                     {% else %}
                         <button type="button" disabled
-                                class="flex-1 bg-gray-600 text-gray-400 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed">
+                                class="ds-btn ds-btn--disabled flex-1">
                             {{ "game.skills.respec.insufficient_funds"|trans }}
                         </button>
                     {% endif %}
@@ -93,25 +93,25 @@
     <div class="mb-4">
         <div class="flex items-start justify-between mb-2">
             <div>
-                <h1 class="text-xl sm:text-2xl font-bold text-white">{{ "title.skills"|trans }}</h1>
-                <p class="text-gray-400 text-sm mt-0.5">{{ "game.skills.description"|trans }}</p>
+                <h1 class="ds-title">{{ "title.skills"|trans }}</h1>
+                <p class="ds-hint mt-0.5">{{ "game.skills.description"|trans }}</p>
             </div>
             {% if skillCount > 0 %}
                 <button type="button"
                         data-action="click->skills#openRespec"
-                        class="{{ canRespec ? 'bg-amber-600 hover:bg-amber-700' : 'bg-gray-600 cursor-not-allowed' }} text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors flex-shrink-0 ml-4">
+                        class="ds-btn ds-btn--sm {{ canRespec ? 'ds-btn--secondary' : 'ds-btn--disabled' }} flex-shrink-0 ml-4">
                     {{ "game.skills.respec.trigger_button"|trans }}
                 </button>
             {% endif %}
         </div>
         <div class="flex items-center gap-3">
-            <span class="text-xs text-gray-500 flex-shrink-0">Points</span>
-            <div class="flex-1 bg-gray-700/60 rounded-full h-1.5">
+            <span class="ds-label flex-shrink-0">Points</span>
+            <div class="ds-meter flex-1">
                 {% set pct = maxTotalPoints > 0 ? (totalUsedPoints / maxTotalPoints * 100) : 0 %}
-                <div class="{{ pct >= 100 ? 'bg-red-500' : (pct >= 80 ? 'bg-amber-500' : 'bg-purple-600') }} h-1.5 rounded-full transition-all duration-300"
+                <div class="ds-meter__fill {{ pct >= 100 ? 'ds-meter__fill--hp' : '' }}"
                      style="width: {{ pct > 100 ? 100 : pct }}%"></div>
             </div>
-            <span class="text-xs font-bold {{ totalUsedPoints >= maxTotalPoints ? 'text-red-400' : 'text-gray-300' }} flex-shrink-0">
+            <span class="ds-num flex-shrink-0 {{ totalUsedPoints >= maxTotalPoints ? 'ds-num--loss' : '' }}">
                 {{ totalUsedPoints }}/{{ maxTotalPoints }}
             </span>
         </div>
@@ -120,13 +120,13 @@
     {# ═══════════════════════════════════════════
        RÉSUMÉ DU BUILD ACTIF
     ═══════════════════════════════════════════ #}
-    <div class="mb-4 rounded-xl border border-purple-500/20 bg-purple-900/15 px-4 py-2.5">
+    <div class="ds-banner mb-4">
         <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider flex-shrink-0">Build actif</span>
+            <span class="ds-label flex-shrink-0">Build actif</span>
             {% if buildStats.count == 0 %}
-                <span class="text-xs text-gray-600 italic">Aucune compétence apprise.</span>
+                <span class="ds-hint italic">Aucune compétence apprise.</span>
             {% else %}
-                <span class="text-xs text-gray-500">{{ buildStats.count }} compétence{{ buildStats.count > 1 ? 's' : '' }}</span>
+                <span class="ds-num ds-num--sm">{{ buildStats.count }} compétence{{ buildStats.count > 1 ? 's' : '' }}</span>
                 <div class="flex items-center gap-1.5 flex-wrap">
                     {% if buildStats.damage > 0 %}
                         <span class="stat-badge stat-badge-damage">⚔ +{{ buildStats.damage }} dég.</span>
@@ -154,39 +154,39 @@
     <div class="mb-4 game-card overflow-hidden">
         <button type="button"
                 data-action="click->skills#togglePresets"
-                class="w-full bg-gradient-to-r from-gray-700 to-gray-600 px-4 py-2.5 flex items-center justify-between hover:from-gray-600 hover:to-gray-500 transition-colors">
-            <span class="text-sm font-semibold text-white">Presets de build</span>
-            <span class="text-xs text-white/50">{{ presets|length }}/{{ maxPresets }} ▾</span>
+                class="game-card-header w-full flex items-center justify-between">
+            <span class="ds-name ds-name--sm">Presets de build</span>
+            <span class="ds-num ds-num--sm">{{ presets|length }}/{{ maxPresets }} ▾</span>
         </button>
         <div data-skills-target="presetsPanel" class="hidden p-3 sm:p-4">
             {% if canSavePreset %}
                 <form action="{{ path('app_game_skill_preset_save') }}" method="post" class="flex gap-2 mb-3">
                     <input type="hidden" name="_token" value="{{ csrf_token('preset_save') }}">
                     <input type="text" name="preset_name" placeholder="Nom du preset..." maxlength="50" required
-                           class="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                           class="flex-1 bg-paper border border-line rounded-card px-3 py-1.5 text-sm text-ink focus:border-brand focus:outline-none">
                     <button type="submit"
-                            class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition-colors flex-shrink-0">
+                            class="ds-btn ds-btn--secondary ds-btn--sm flex-shrink-0">
                         Sauvegarder
                     </button>
                 </form>
             {% elseif skillCount > 0 %}
-                <p class="text-xs text-gray-500 mb-3">Limite de {{ maxPresets }} presets atteinte.</p>
+                <p class="ds-hint mb-3">Limite de {{ maxPresets }} presets atteinte.</p>
             {% else %}
-                <p class="text-xs text-gray-500 mb-3">Apprenez des compétences pour sauvegarder un preset.</p>
+                <p class="ds-hint mb-3">Apprenez des compétences pour sauvegarder un preset.</p>
             {% endif %}
             {% if presets|length > 0 %}
                 <div class="space-y-2">
                     {% for preset in presets %}
-                        <div class="flex items-center justify-between bg-gray-800/60 rounded-lg p-3 border border-gray-700">
-                            <div class="min-w-0 flex-1">
-                                <span class="text-sm font-semibold text-white truncate block">{{ preset.name }}</span>
-                                <span class="text-xs text-gray-500">{{ preset.skillSlugs|length }} compétence{{ preset.skillSlugs|length > 1 ? 's' : '' }}</span>
+                        <div class="ds-row">
+                            <div class="ds-row__body">
+                                <span class="ds-row__name ds-name--sm truncate block">{{ preset.name }}</span>
+                                <span class="ds-num ds-num--sm text-left">{{ preset.skillSlugs|length }} compétence{{ preset.skillSlugs|length > 1 ? 's' : '' }}</span>
                             </div>
                             <div class="flex gap-2 flex-shrink-0 ml-3">
                                 <form action="{{ path('app_game_skill_preset_load', {id: preset.id}) }}" method="post">
                                     <input type="hidden" name="_token" value="{{ csrf_token('preset_load_' ~ preset.id) }}">
                                     <button type="submit"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-colors"
+                                            class="ds-btn ds-btn--secondary ds-btn--sm"
                                             onclick="return confirm('Charger ce preset ? Vos compétences actuelles seront redistribuées (coût en gils).')">
                                         Charger
                                     </button>
@@ -194,7 +194,7 @@
                                 <form action="{{ path('app_game_skill_preset_delete', {id: preset.id}) }}" method="post">
                                     <input type="hidden" name="_token" value="{{ csrf_token('preset_delete_' ~ preset.id) }}">
                                     <button type="submit"
-                                            class="bg-red-600/80 hover:bg-red-700 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-colors"
+                                            class="ds-btn ds-btn--quiet ds-btn--sm text-loss"
                                             onclick="return confirm('Supprimer ce preset ?')">
                                         Supprimer
                                     </button>
@@ -204,7 +204,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-xs text-gray-500 text-center py-1">Aucun preset sauvegardé.</p>
+                <p class="ds-hint text-center py-1">Aucun preset sauvegardé.</p>
             {% endif %}
         </div>
     </div>
@@ -213,9 +213,9 @@
        MAIN : SIDEBAR + DOMAIN PANELS
     ═══════════════════════════════════════════ #}
     {% if domains|length == 0 %}
-        <div class="game-card p-8 text-center">
-            <p class="text-gray-400 text-sm">Vous n'avez pas encore progressé dans un domaine.</p>
-            <p class="text-gray-500 text-xs mt-1">Combattez des ennemis et récoltez des ressources pour débloquer des domaines.</p>
+        <div class="ds-empty">
+            <p class="ds-empty__title">Vous n'avez pas encore progressé dans un domaine.</p>
+            <p class="ds-empty__hint">Combattez des ennemis et récoltez des ressources pour débloquer des domaines.</p>
         </div>
     {% else %}
         <div class="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start">
@@ -233,13 +233,13 @@
                                     data-action="click->skills#selectDomain"
                                     data-domain-id="{{ domain.id }}"
                                     aria-selected="{{ domain.id == activeDomainId ? 'true' : 'false' }}"
-                                    class="skills-domain-btn skills-domain-chip flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-600 text-sm text-gray-300 whitespace-nowrap">
+                                    class="skills-domain-btn skills-domain-chip ds-pill flex-shrink-0">
                                 {% if domain.element and elementConfig[domain.element] is defined %}
-                                    <span class="w-2 h-2 rounded-full flex-shrink-0 {{ elementConfig[domain.element].dot }}"></span>
+                                    <span class="{{ elementConfig[domain.element].dot }} w-2 h-2"></span>
                                 {% endif %}
                                 <span>{{ domain|localized_domain_title }}</span>
                                 {% if availCount > 0 %}
-                                    <span class="bg-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">{{ availCount }}</span>
+                                    <span class="ds-seal ds-seal-epic">{{ availCount }}</span>
                                 {% endif %}
                             </button>
                         {% endfor %}
@@ -254,8 +254,8 @@
                             {% set cfg = elementConfig[element] %}
                             <div>
                                 <div class="flex items-center gap-1.5 px-2 pb-1 mb-0.5">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ cfg.dot }}"></span>
-                                    <span class="text-xs font-semibold uppercase tracking-wider {{ cfg.text }}">{{ cfg.label }}</span>
+                                    <span class="{{ cfg.dot }} w-2 h-2"></span>
+                                    <span class="{{ cfg.text }}">{{ cfg.label }}</span>
                                 </div>
                                 {% for domain in groupDomains %}
                                     {% set availCount   = domain.skills|filter(s => s.canBeAcquired and not s.acquired)|length %}
@@ -267,20 +267,19 @@
                                             aria-selected="{{ domain.id == activeDomainId ? 'true' : 'false' }}"
                                             class="skills-domain-btn w-full text-left mb-0.5">
                                         <div class="flex items-center justify-between gap-1">
-                                            <span class="text-sm font-medium text-gray-200 truncate">{{ domain|localized_domain_title }}</span>
+                                            <span class="ds-name ds-name--sm truncate">{{ domain|localized_domain_title }}</span>
                                             {% if availCount > 0 %}
-                                                <span class="bg-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">{{ availCount }}</span>
+                                                <span class="ds-seal ds-seal-epic flex-shrink-0">{{ availCount }}</span>
                                             {% elseif acquiredCount > 0 %}
-                                                <span class="text-green-600 text-xs font-semibold flex-shrink-0">✓{{ acquiredCount }}</span>
+                                                <span class="ds-seal ds-seal--gain flex-shrink-0">✓{{ acquiredCount }}</span>
                                             {% endif %}
                                         </div>
                                         {% if domain.totalExperience is defined and domain.totalExperience > 0 %}
-                                            <div class="mt-1 w-full bg-gray-700/60 rounded-full h-0.5">
+                                            <div class="ds-meter mt-1" style="height: 4px">
                                                 {% set xpPct = domain.totalExperience > 0 ? (domain.availableExperience / domain.totalExperience * 100) : 0 %}
-                                                <div class="h-0.5 rounded-full {{ cfg.dot }} opacity-70 transition-all duration-500"
-                                                     style="width: {{ xpPct > 100 ? 100 : xpPct }}%"></div>
+                                                <div class="ds-meter__fill" style="width: {{ xpPct > 100 ? 100 : xpPct }}%"></div>
                                             </div>
-                                            <div class="text-xs text-gray-600 mt-0.5">{{ domain.availableExperience }} XP dispo</div>
+                                            <div class="ds-num ds-num--sm text-left mt-0.5">{{ domain.availableExperience }} XP dispo</div>
                                         {% endif %}
                                     </button>
                                 {% endfor %}
@@ -293,7 +292,7 @@
                     {% if ungrouped|length > 0 %}
                         <div>
                             <div class="flex items-center gap-1.5 px-2 pb-1 mb-0.5">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ "game.skills.sidebar.others_group"|trans }}</span>
+                                <span class="ds-label">{{ "game.skills.sidebar.others_group"|trans }}</span>
                             </div>
                             {% for domain in ungrouped %}
                                 {% set availCount = domain.skills|filter(s => s.canBeAcquired and not s.acquired)|length %}
@@ -304,9 +303,9 @@
                                         aria-selected="{{ domain.id == activeDomainId ? 'true' : 'false' }}"
                                         class="skills-domain-btn w-full text-left mb-0.5">
                                     <div class="flex items-center justify-between gap-1">
-                                        <span class="text-sm font-medium text-gray-200 truncate">{{ domain|localized_domain_title }}</span>
+                                        <span class="ds-name ds-name--sm truncate">{{ domain|localized_domain_title }}</span>
                                         {% if availCount > 0 %}
-                                            <span class="bg-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">{{ availCount }}</span>
+                                            <span class="ds-seal ds-seal-epic flex-shrink-0">{{ availCount }}</span>
                                         {% endif %}
                                     </div>
                                 </button>
@@ -325,35 +324,38 @@
                          class="{{ domain.id != activeDomainId ? 'hidden' : '' }}">
 
                         {# En-tête du domaine #}
-                        <div class="domain-header-{{ domain.slug }} rounded-xl px-4 py-3 mb-4 flex items-center justify-between flex-wrap gap-2">
+                        <div class="ds-panel mb-4 flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-2.5">
-                                <h2 class="text-base sm:text-lg font-bold text-white">{{ domain|localized_domain_title }}</h2>
                                 {% if domain.element and elementConfig[domain.element] is defined %}
-                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-black/25 text-white/90">
+                                    <span class="{{ elementConfig[domain.element].dot }}"></span>
+                                {% endif %}
+                                <h2 class="ds-title">{{ domain|localized_domain_title }}</h2>
+                                {% if domain.element and elementConfig[domain.element] is defined %}
+                                    <span class="ds-seal ds-seal-common">
                                         {{ elementConfig[domain.element].label }}
                                     </span>
                                 {% endif %}
                             </div>
                             <div class="flex items-center gap-3 flex-wrap">
                                 {% if domain.totalExperience is defined and domain.totalExperience > 0 %}
-                                    <span class="text-xs text-white/80">
-                                        XP dispo : <strong class="text-white">{{ domain.availableExperience }}</strong>
+                                    <span class="ds-num">
+                                        XP dispo : {{ domain.availableExperience }}
                                     </span>
-                                    <span class="text-xs text-white/50 hidden sm:inline">
-                                        Total : <strong class="text-white/70">{{ domain.totalExperience }}</strong>
+                                    <span class="ds-num ds-num--muted hidden sm:inline">
+                                        Total : {{ domain.totalExperience }}
                                     </span>
                                 {% endif %}
                                 {% if domain.damage is defined and domain.damage > 0 %}
-                                    <span class="text-xs text-white/70">⚔ +{{ domain.damage }}</span>
+                                    <span class="ds-num ds-num--sm">⚔ +{{ domain.damage }}</span>
                                 {% endif %}
                                 {% if domain.hit is defined and domain.hit > 0 %}
-                                    <span class="text-xs text-white/70">🎯 +{{ domain.hit }}</span>
+                                    <span class="ds-num ds-num--sm">🎯 +{{ domain.hit }}</span>
                                 {% endif %}
                                 {% if domain.critical is defined and domain.critical > 0 %}
-                                    <span class="text-xs text-white/70">💥 +{{ domain.critical }}</span>
+                                    <span class="ds-num ds-num--sm">💥 +{{ domain.critical }}</span>
                                 {% endif %}
                                 <a href="{{ path('app_game_domain_info', {id: domain.id}) }}"
-                                   class="text-xs bg-white/15 hover:bg-white/25 text-white px-2.5 py-1 rounded-lg transition-colors">
+                                   class="ds-btn ds-btn--secondary ds-btn--sm">
                                     Details
                                 </a>
                             </div>
@@ -364,24 +366,24 @@
 
                         {# ── Section Disponibles ── #}
                         <div class="mb-5">
-                            <h3 class="text-xs font-semibold uppercase tracking-wider text-purple-400 mb-2 px-0.5">
+                            <h3 class="ds-label mb-2 px-0.5">
                                 Disponibles
-                                <span class="text-purple-700 ml-1">{{ skillsAvailable|length }}</span>
+                                <span class="ds-num ds-num--sm ml-1">{{ skillsAvailable|length }}</span>
                             </h3>
                             {% if skillsAvailable|length == 0 %}
-                                <p class="text-xs text-gray-600 italic px-0.5">Aucune compétence disponible pour l'instant.</p>
+                                <div class="ds-empty"><p class="ds-empty__hint">Aucune compétence disponible pour l'instant.</p></div>
                             {% else %}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {% for skill in skillsAvailable %}
-                                        <div class="skill-node skill-node--available rounded-xl p-3 border">
+                                        <div class="skill-node skill-node--available ds-card ds-edge-epic p-3">
                                             <div class="flex items-start justify-between gap-2">
                                                 <div class="min-w-0 flex-1">
-                                                    <h4 class="text-sm font-semibold text-white">{{ skill.title }}</h4>
-                                                    <p class="text-xs text-gray-400 mt-0.5 leading-relaxed">{{ skill.description }}</p>
+                                                    <h4 class="ds-name ds-name--sm">{{ skill.title }}</h4>
+                                                    <p class="ds-hint mt-0.5">{{ skill.description }}</p>
                                                     <div class="flex flex-wrap gap-1 mt-2">
-                                                        <span class="text-xs text-purple-300 font-semibold">{{ skill.requiredPoints }} pts XP</span>
+                                                        <span class="ds-num ds-num--sm">{{ skill.requiredPoints }} pts XP</span>
                                                         {% for req in skill.requirements %}
-                                                            <span class="text-xs px-1.5 py-0.5 rounded-full {{ req.acquired ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400' }}">
+                                                            <span class="ds-seal {{ req.acquired ? 'ds-seal--gain' : 'ds-seal--loss' }}">
                                                                 {{ req.title }} {{ req.acquired ? '✓' : '✗' }}
                                                             </span>
                                                         {% endfor %}
@@ -396,7 +398,7 @@
                                                     <input type="hidden" name="skill_id" value="{{ skill.id }}">
                                                     <input type="hidden" name="domain_id" value="{{ domain.id }}">
                                                     <button type="submit"
-                                                            class="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-colors touch-target whitespace-nowrap">
+                                                            class="ds-btn ds-btn--secondary ds-btn--sm touch-target whitespace-nowrap">
                                                         {{ "game.skills.learn"|trans }}
                                                     </button>
                                                 </form>
@@ -410,20 +412,20 @@
                         {# ── Section Acquises ── #}
                         {% if skillsAcquired|length > 0 %}
                             <div class="mb-5">
-                                <h3 class="text-xs font-semibold uppercase tracking-wider text-green-600 mb-2 px-0.5">
+                                <h3 class="ds-label mb-2 px-0.5">
                                     Acquises
-                                    <span class="text-green-800 ml-1">{{ skillsAcquired|length }}</span>
+                                    <span class="ds-num ds-num--sm ml-1">{{ skillsAcquired|length }}</span>
                                 </h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {% for skill in skillsAcquired %}
-                                        <div class="skill-node skill-node--acquired rounded-xl p-3 border">
+                                        <div class="skill-node skill-node--acquired ds-card ds-edge-uncommon p-3">
                                             <div class="flex items-start justify-between gap-2">
                                                 <div class="min-w-0 flex-1">
                                                     <div class="flex items-center gap-1.5">
-                                                        <span class="text-green-500 text-xs leading-none">✓</span>
-                                                        <h4 class="text-sm font-semibold text-gray-200">{{ skill.title }}</h4>
+                                                        <span class="text-gain text-xs leading-none">✓</span>
+                                                        <h4 class="ds-name ds-name--sm">{{ skill.title }}</h4>
                                                     </div>
-                                                    <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ skill.description }}</p>
+                                                    <p class="ds-hint mt-0.5">{{ skill.description }}</p>
                                                     {% set hasStats = skill.damage > 0 or skill.heal > 0 or skill.hit > 0 or skill.critical > 0 or skill.life > 0 %}
                                                     {% if hasStats %}
                                                         <div class="flex flex-wrap gap-1 mt-1.5">
@@ -435,7 +437,7 @@
                                                         </div>
                                                     {% endif %}
                                                 </div>
-                                                <span class="bg-green-800/40 text-green-400 font-semibold py-1.5 px-3 rounded-lg text-xs flex-shrink-0">
+                                                <span class="ds-seal ds-seal--gain flex-shrink-0">
                                                     {{ "game.skills.learned"|trans }}
                                                 </span>
                                             </div>
@@ -455,50 +457,9 @@
 </div>{# end game-page #}
 {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        /* Feu */
-        .domain-header-pyromancien  { background: linear-gradient(135deg, #e02424, #991b1b); }
-        .domain-header-berserker    { background: linear-gradient(135deg, #dc6b09, #92400e); }
-        .domain-header-artificier   { background: linear-gradient(135deg, #c44d00, #7c2d12); }
-        /* Eau */
-        .domain-header-hydromancien { background: linear-gradient(135deg, #0066ff, #1e40af); }
-        .domain-header-guérisseur   { background: linear-gradient(135deg, #0099cc, #0e7490); }
-        .domain-header-marémancien  { background: linear-gradient(135deg, #00ccee, #0891b2); }
-        /* Air */
-        .domain-header-foudromancien { background: linear-gradient(135deg, #6b5fbf, #4c1d95); }
-        .domain-header-archer        { background: linear-gradient(135deg, #8a7fd4, #5b21b6); }
-        .domain-header-vagabond      { background: linear-gradient(135deg, #a89ed9, #6d28d9); }
-        /* Terre */
-        .domain-header-géomancien  { background: linear-gradient(135deg, #5a7a3a, #166534); }
-        .domain-header-défenseur   { background: linear-gradient(135deg, #387483, #065f46); }
-        .domain-header-gardien     { background: linear-gradient(135deg, #6b5a3a, #78350f); }
-        /* Métal */
-        .domain-header-soldat    { background: linear-gradient(135deg, #777777, #374151); }
-        .domain-header-chevalier { background: linear-gradient(135deg, #555555, #1f2937); }
-        .domain-header-ingénieur { background: linear-gradient(135deg, #999999, #4b5563); }
-        /* Bête */
-        .domain-header-chasseur  { background: linear-gradient(135deg, #009007, #065f46); }
-        .domain-header-dompteur  { background: linear-gradient(135deg, #2d8040, #14532d); }
-        .domain-header-druide    { background: linear-gradient(135deg, #58ae5e, #166534); }
-        /* Lumière */
-        .domain-header-paladin     { background: linear-gradient(135deg, #d4a017, #92400e); }
-        .domain-header-prêtre      { background: linear-gradient(135deg, #e8c547, #b45309); }
-        .domain-header-inquisiteur { background: linear-gradient(135deg, #f0d77a, #d97706); }
-        /* Ombre */
-        .domain-header-assassin      { background: linear-gradient(135deg, #480040, #1e1b4b); }
-        .domain-header-nécromancien  { background: linear-gradient(135deg, #2d0033, #0f172a); }
-        .domain-header-sorcier       { background: linear-gradient(135deg, #3a0050, #1e1b4b); }
-        /* Récolte */
-        .domain-header-mineur      { background: linear-gradient(135deg, #6b6b6b, #374151); }
-        .domain-header-herboriste  { background: linear-gradient(135deg, #58ae5e, #166534); }
-        .domain-header-pêcheur     { background: linear-gradient(135deg, #0037ff, #1e40af); }
-        .domain-header-dépeceur    { background: linear-gradient(135deg, #bc6500, #92400e); }
-        /* Craft */
-        .domain-header-forgeron    { background: linear-gradient(135deg, #333333, #111827); }
-        .domain-header-tanneur     { background: linear-gradient(135deg, #8b6914, #78350f); }
-        .domain-header-alchimiste  { background: linear-gradient(135deg, #2a2a4e, #1e1b4b); }
-        .domain-header-joaillier   { background: linear-gradient(135deg, #ba53a2, #701a75); }
-    </style>
-{% endblock %}
+{#
+   Les en-tetes de domaine ne portent plus de degrade par slug : le systeme de
+   design reserve la couleur pleine a l'action primaire, et l'appartenance
+   elementaire se lit sur la bille (`.ds-elem-*`), comme sur les materia.
+#}
+
