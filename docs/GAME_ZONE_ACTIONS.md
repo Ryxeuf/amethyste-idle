@@ -302,7 +302,81 @@ l'accès aux **filons rares** que son arbre débloque, et par l'**information
 exclusive** de la §5.5 qui lui dit où le rendement est le meilleur. C'est exactement
 la répartition voulue par BALANCE.md §8.
 
-### 6.5 Accès : le champ `profession` ne sert à rien aujourd'hui
+### 6.5 Calibrage des filons — la méthode et les valeurs
+
+Le modèle de la §6.4 empêche l'exclusion, il ne corrige pas des capacités mal
+posées : un filon dont le tampon est de 8 unités reste collé à son plancher en
+permanence dès qu'une poignée de joueurs y passe, et tout le monde y récolte à 60 %
+en permanence. Les 27 filons de `world_1.yaml` ont donc été entièrement recalibrés.
+
+**Trois grandeurs, et une seule est le levier économique :**
+
+| Grandeur | Rôle | Ce qu'elle règle |
+|----------|------|------------------|
+| `capacity` | **Tampon** | Ce qu'un afflux absorbe avant que la vitalité touche le plancher |
+| `respawn_seconds` | **Lisibilité** | Le temps de retour à pleine vitalité depuis zéro, affiché au joueur |
+| `R = capacity × 3600 / respawn_seconds` | **Débit soutenu** | Ce que le filon injecte réellement dans l'économie, en unités/heure |
+
+L'erreur de la calibration d'origine était de confondre les deux premières avec la
+troisième : on rendait une ressource rare en **rabotant le tampon**, ce qui ne
+réduit le débit qu'accessoirement mais rend le filon vide en permanence. La règle
+est désormais explicite : **la rareté se règle par le palier et par le gate de
+compétence (§6.6), jamais en étranglant la capacité.**
+
+**Cinq profils, appliqués sans exception :**
+
+| Palier | `capacity` | `respawn` | rendement | R (u/h) | unités/jour | récolteurs soutenus | filons |
+|--------|-----------:|----------:|-----------|--------:|------------:|--------------------:|-------:|
+| **T0** fondation | 72 | 45 min | 1-3 | 96 | 2304 | **58** | 4 |
+| **T1** commun | 60 | 45 min | 1-3 | 80 | 1920 | **48** | 8 |
+| **T2** peu commun | 32 | 60 min | 1-2 | 32 | 768 | **26** | 7 |
+| **T3** rare | 24 | 90 min | 1-2 | 16 | 384 | **13** | 7 |
+| **T4** épique | 22 | 180 min | 1-2 | 7,3 | 176 | **6** | 1 |
+
+« Récolteurs soutenus » = joueurs réguliers qui consacrent **20 récoltes par jour**
+à *ce* filon — un joueur en a 80 au total, à répartir entre filons, zones et autres
+actions. C'est la mesure de planification honnête ; le « joueur à plein temps » de
+la §6.3 est une borne théorique, personne ne joue comme ça.
+
+**Deux contraintes tenues par chaque profil :**
+
+1. **Tampon ≥ rafale d'un joueur seul.** La fatigue personnelle plafonne une session
+   d'acharnement autour de 15 récoltes utiles. À rendement moyen 2, cela fait 30
+   unités : un tampon T0/T1 de 60-72 ne peut donc pas être vidé par une personne.
+   Le plus petit tampon (T4, 22) résiste encore à une rafale de 15 récoltes à 1,5.
+2. **T0 n'est jamais un goulot.** Cuivre, étain, menthe et truite gâtent le plancher
+   T1 de l'économie (GAME_PRINCIPLES §4.1) : bronze, outillage de départ, première
+   potion. Une pénurie à cet étage bloque toutes les chaînes d'artisanat en amont.
+
+**Le palier vient de la valeur déclarée de l'item**, pas d'une appréciation : rareté
+de `fixtures/game/item/ore.yaml` quand elle existe, prix marchand sinon. Cuivre 5 et
+étain 6 en T0 ; fer 10 en T1 ; argent 20, or 30, cobalt 35 en T2 ; diamant et
+émeraude (rareté `Rare` déclarée) en T3 ; fleur de phénix 120 en T4.
+
+**Conséquence assumée : l'apport mondial de ressources augmente nettement.** La veine
+d'or passe de 192 à 768 unités par jour, le diamant de 96 à 384. C'est le but — ces
+filons étaient étranglés au point d'être décoratifs — mais ça déplace l'équilibre de
+l'économie joueur. Le levier de correction est unique et tient en une ligne : **le
+`R` du palier**, une valeur dans un tableau. Pas un filon à retoucher.
+
+**Note de déploiement.** `app:zone:import` réécrit la définition des zones mais ne
+touche **pas** `ZoneVein`, qui porte l'état runtime. Les filons déjà créés en base
+gardent donc leur stock d'avant — et comme un filon partiellement vidé ne repousse
+jamais (E1), les nouvelles capacités ne prendraient effet qu'après épuisement
+complet. Le recalibrage doit donc s'accompagner d'une **remise à niveau des stocks
+existants** (`ZoneVein.stock` porté à la nouvelle `capacity`), ou être livré après
+le correctif E1.
+
+Deux anomalies relevées au passage, laissées telles quelles parce qu'elles relèvent
+des données d'objet et non de la zone :
+
+- `ore-ruby` vaut **15 gils** alors qu'il alimente la « gemme de sel » d'une zone
+  tardive — moins cher qu'une sauge. Classé T2 sur son rôle, pas sur son prix ; le
+  prix de l'item est à revoir.
+- `ore-emerald` (45) est déclaré `Rare` mais vaut moins que `plant-ghostshroom` (60),
+  classé au même palier. La rareté déclarée l'emporte ici.
+
+### 6.6 Accès : le champ `profession` ne sert à rien aujourd'hui
 
 `GatherService` ne consulte **jamais** les compétences du joueur. Un personnage sans
 un seul point en minage peut vider une veine d'or. Le champ `profession` d'un filon
@@ -515,7 +589,7 @@ peuvent être traités séparément.
 | E5 | ~30 compétences pointent vers des `spots` supprimés par ZON-21 | `SkillFixtures.php:3860+` | **Haute** — points de talent dépensés pour rien |
 | E6 | `PlayerResourceCatalog::TIER_LOCATIONS` déclaré, jamais consommé | `PlayerResourceCatalog.php:17` | Basse |
 | E7 | Un filon peut être vidé par un seul joueur en une session | conception | Moyenne |
-| E8 | **Saturation** : la veine d'or ne supporte que 2,4 joueurs à plein temps ; au-delà, elle est vide en permanence et le joueur occasionnel ne la voit jamais autrement | conception (§6.3) | **Haute** |
+| E8 | **Saturation** : la veine d'or ne supportait que 2,4 joueurs à plein temps ; au-delà, vide en permanence | conception (§6.3) | **Haute** — corrigé côté données par le recalibrage (§6.5), reste à corriger côté moteur (§6.4) |
 
 E4 et E5 sont deux faces du même trou : le pivot a emporté le système qui donnait
 leur sens aux arbres de récolte, et rien ne l'a remplacé.
@@ -536,17 +610,21 @@ leur sens aux arbres de récolte, et rien ne l'a remplacé.
    vitalité partagée et la fatigue personnelle modulent le **rendement**, elles ne
    ferment pas l'accès. Plancher d'une unité. C'est ce qui protège le joueur
    occasionnel de la saturation (§6.3-6.4).
-6. L'accès à un filon est gaté par le `tier` déclaré en YAML et la compétence
+6. Les 27 filons de `world_1.yaml` sont recalibrés sur **cinq profils de palier**
+   (§6.5). La rareté se règle par le palier et le gate de compétence, jamais en
+   étranglant la capacité — le tampon d'un filon ne descend plus jamais sous ce
+   qu'un joueur seul peut prélever en une session.
+7. L'accès à un filon est gaté par le `tier` déclaré en YAML et la compétence
    d'arbre correspondante ; la visibilité et l'accès sont deux choses distinctes.
-7. La progression dans l'arbre de récolte donne une **information exclusive** sur les
+8. La progression dans l'arbre de récolte donne une **information exclusive** sur les
    filons — vitalité, temps de retour, rendement effectif, état des zones voisines.
    Le récolteur avancé est un courtier d'information (§5.5).
-8. Le repérage cumulatif d'une zone débloque de l'**information** à 25/50/100/150
+9. Le repérage cumulatif d'une zone débloque de l'**information** à 25/50/100/150
    explorations, jamais un bonus chiffré.
-9. Une carte révèle, elle ne crée pas.
-10. **Pas de domaine « Cartographe »** : son marché sature définitivement (§9.1). La
+10. Une carte révèle, elle ne crée pas.
+11. **Pas de domaine « Cartographe »** : son marché sature définitivement (§9.1). La
     cartographie est un palier avancé des arbres de récolte existants.
-11. Aucune compétence de découverte ne réduit un coût d'énergie ni n'augmente le
+12. Aucune compétence de découverte ne réduit un coût d'énergie ni n'augmente le
     débit d'actions.
 
 **Ouvertes** :
@@ -557,9 +635,12 @@ leur sens aux arbres de récolte, et rien ne l'a remplacé.
 - **Courbes de vitalité et de fatigue** — les facteurs 0,60 et 0,40, la vitesse de
   dissipation de la fatigue : posés comme repères paramétrables, à confronter aux
   données de jeu réelles.
-- **Capacités des filons rares** — la veine d'or (8 / 60 min) sature à 2,4 joueurs.
-  Même avec le modèle de rendement, une capacité aussi basse maintient la zone en
-  permanence près du plancher. Les capacités du YAML sont à réviser en même temps.
+- **Effet économique du recalibrage** — l'apport mondial augmente nettement sur les
+  paliers auparavant étranglés (or ×4, diamant ×4). Voulu, mais à confronter à
+  l'économie joueur : le levier de correction est le `R` du palier (§6.5), pas les
+  filons un par un.
+- **Prix d'items incohérents** relevés au recalibrage : `ore-ruby` à 15 gils,
+  `ore-emerald` à 45 pour une rareté `Rare`. Relève des données d'objet.
 - **Rangs de filons par profession** — combien de `tier` (2 ? 4 ?), et redécoupage
   des ~30 compétences `spots` existantes sur ces rangs.
 - **Fatigue personnelle et groupes** — quatre joueurs qui exploitent un filon

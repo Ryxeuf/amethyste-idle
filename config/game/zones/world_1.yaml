@@ -23,6 +23,30 @@
 #       etait sinon derive de `Mob.map` via `Zone::sourceMap`.
 #     gather:                       filons recoltables partages (optionnel)
 #       - { slug, item, profession, capacity, respawn_seconds, yield_min, yield_max }
+#
+#       CALIBRAGE DES FILONS — cf. docs/GAME_ZONE_ACTIONS.md §6.6
+#       Ne pas poser de valeurs a la main : reprendre un profil de palier.
+#       Le levier economique est le **debit soutenu** R = capacity x 3600 /
+#       respawn_seconds (unites/heure). `capacity` n'est qu'un **tampon** : ce
+#       qu'un afflux de joueurs absorbe avant que la vitalite touche son
+#       plancher. Un tampon trop petit — c'etait le defaut de la calibration
+#       d'origine — fait qu'un seul joueur vide le filon, et le joueur
+#       occasionnel ne voit plus jamais la ressource.
+#
+#       | Palier          | capacity | respawn | rendement | R (u/h) | recolteurs |
+#       |-----------------|---------:|--------:|-----------|--------:|-----------:|
+#       | T0 fondation    |       72 |  45 min | 1-3       |      96 |         58 |
+#       | T1 commun       |       60 |  45 min | 1-3       |      80 |         48 |
+#       | T2 peu commun   |       32 |  60 min | 1-2       |      32 |         26 |
+#       | T3 rare         |       24 |  90 min | 1-2       |      16 |         13 |
+#       | T4 epique       |       22 | 180 min | 1-2       |     7.3 |          6 |
+#
+#       « recolteurs » = joueurs reguliers soutenus, a 20 recoltes/jour sur ce
+#       filon (un joueur dispose de 80 recoltes/jour a 240 energie / 3).
+#       T0 est reserve aux ressources qui gatent le plancher T1 de l'economie
+#       (cuivre, etain, menthe, truite) : elles ne doivent jamais etre un goulot.
+#       La rarete se regle par le **palier** et le **gate de competence**, pas en
+#       etranglant la capacite.
 #   connections:
 #     - { from, to, travel_seconds, bidirectional, requires_discovery, enabled }
 
@@ -61,19 +85,19 @@ zones:
                 chest_gils_max: 40
                 mob_slugs: [ghost, skeleton]
         gather:
-            - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 24, respawn_seconds: 900, yield_min: 1, yield_max: 3 }
-            - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 16, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
-            - { slug: ginseng-des-sous-bois, item: plant-ginseng, profession: herbalism, capacity: 16, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
-            - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 18, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: ginseng-des-sous-bois, item: plant-ginseng, profession: herbalism, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             # ECO-02 : la camomille n'avait aucune source dans le monde livre, ce
             # qui rendait `recipe_potion_base` — la premiere recette d'alchimie —
             # impossible a realiser.
-            - { slug: camomille-des-clairieres, item: plant-chamomile, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: camomille-des-clairieres, item: plant-chamomile, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             # Correctif 128b : ces herbes nourrissaient 8 recettes d'alchimie de
             # niveau 2 a 10 et n'etaient recoltables nulle part. Elles rejoignent
             # les zones de depart — les gater derriere l'Acte 4 aurait mis une
             # recette de niveau 2 hors de portee jusqu'au niveau 30.
-            - { slug: aloes-des-clairieres, item: plant-aloe-vera, profession: herbalism, capacity: 18, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: aloes-des-clairieres, item: plant-aloe-vera, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
 
     mines-profondes:
         name: 'Mines profondes'
@@ -98,13 +122,13 @@ zones:
                 chest_gils_max: 60
                 mob_slugs: [clay_golem, rusty_automaton, stone_golem]
         gather:
-            - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 24, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
+            - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             # ECO-02 : l'etain n'avait aucune source. Sans lui, pas de lingot de
             # bronze — donc aucun outil de bronze, et toute la chaine d'outillage
             # T1 restait hors d'atteinte.
-            - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 22, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
-            - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 18, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
-            - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+            - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
 
     marais-brumeux:
         name: 'Marais Brumeux'
@@ -128,13 +152,13 @@ zones:
                 chest_gils_max: 45
                 mob_slugs: [will_o_wisp, creeping_shadow, specter]
         gather:
-            - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
-            - { slug: valeriane-des-tourbieres, item: plant-valerian, profession: herbalism, capacity: 14, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
+            - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: valeriane-des-tourbieres, item: plant-valerian, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             # Pire cas des quatre : une quete en demande deux exemplaires.
-            - { slug: mandragore-des-tourbieres, item: plant-mandrake, profession: herbalism, capacity: 12, respawn_seconds: 1800, yield_min: 1, yield_max: 1 }
-            - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 16, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
-            - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 12, respawn_seconds: 2100, yield_min: 1, yield_max: 2 }
-            - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
+            - { slug: mandragore-des-tourbieres, item: plant-mandrake, profession: herbalism, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
 
     crete-de-ventombre:
         name: 'Crête de Ventombre'
@@ -158,9 +182,9 @@ zones:
                 chest_gils_max: 80
                 mob_slugs: [gargoyle, wyvern, griffin]
         gather:
-            - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 14, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
-            - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
-            - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 12, respawn_seconds: 2100, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
 
     quartier-des-jardins:
         name: 'Quartier des Jardins'
@@ -217,7 +241,7 @@ zones:
               greeting: 'Les scorpions sortent au crepuscule. Les ombres, elles, ne dorment jamais.'
 
         gather:
-            - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 12, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
     # === Acte 4 (tache 128b) ===
@@ -249,7 +273,7 @@ zones:
             - { monster: basilisk, count: 2 }
             - { monster: dune_wraith, count: 2, nocturnal: true }
         gather:
-            - { slug: gemme-de-sel, item: ore-ruby, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+            - { slug: gemme-de-sel, item: ore-ruby, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
 
     cite-ensevelie:
         name: 'Cite Ensevelie'
@@ -272,8 +296,8 @@ zones:
             - { monster: basilisk, count: 3 }
             - { monster: sand_stalker, count: 3, group_tag: pillards }
         gather:
-            - { slug: fruit-du-vide, item: plant-voidfruit, profession: herbalism, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
-            - { slug: eclat-de-diamant, item: ore-diamond, profession: mining, capacity: 6, respawn_seconds: 5400, yield_min: 1, yield_max: 1 }
+            - { slug: fruit-du-vide, item: plant-voidfruit, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: eclat-de-diamant, item: ore-diamond, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
 
     pas-de-givre:
         name: 'Pas de Givre'
@@ -296,8 +320,8 @@ zones:
             - { monster: winter_harpy, count: 3 }
             - { monster: hoarfrost_shade, count: 2, nocturnal: true }
         gather:
-            - { slug: fleur-de-lune-des-neiges, item: plant-moonflower, profession: herbalism, capacity: 12, respawn_seconds: 2400, yield_min: 1, yield_max: 2 }
-            - { slug: filon-d-emeraude, item: ore-emerald, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+            - { slug: fleur-de-lune-des-neiges, item: plant-moonflower, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-emeraude, item: ore-emerald, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
 
     glacier-du-silence:
         name: 'Glacier du Silence'
@@ -321,8 +345,8 @@ zones:
             - { monster: rime_drake, count: 2 }
             - { monster: winter_harpy, count: 2, nocturnal: true }
         gather:
-            - { slug: feuille-de-dragon-gelee, item: plant-dragonleaf, profession: herbalism, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
-            - { slug: fleur-de-phenix, item: plant-phoenixflower, profession: herbalism, capacity: 5, respawn_seconds: 5400, yield_min: 1, yield_max: 1 }
+            - { slug: feuille-de-dragon-gelee, item: plant-dragonleaf, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: fleur-de-phenix, item: plant-phoenixflower, profession: herbalism, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
 
 connections:
     - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }
