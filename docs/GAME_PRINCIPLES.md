@@ -5,7 +5,8 @@
 > Complète (ne remplace pas) : [PIVOT_PBBG.md](PIVOT_PBBG.md) (décision technique du pivot),
 > [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md) (contrôle de cité, livré),
 > [roadmap/PLAN_PLAYER_ECONOMY.md](roadmap/PLAN_PLAYER_ECONOMY.md) (déclinaison en jalons de l'économie joueur),
-> [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) (déclinaison en jalons de la narration).
+> [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) (déclinaison en jalons de la narration),
+> [GAME_ZONE_ACTIONS.md](GAME_ZONE_ACTIONS.md) (actions et information de l'écran de zone).
 
 Ce document fige les décisions de direction issues des discussions de conception.
 Les règles absolues du projet (pas de PvP, pas de niveau global, PvE coopératif,
