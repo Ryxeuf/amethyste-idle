@@ -371,46 +371,98 @@
       "player": {
         "life": "Health",
         "energy": "Energy",
-        "dead": "You are dead... Return to the map to respawn.",
-        "in_fight": "A fight is in progress!",
-        "birthdate": "Born on",
-        "member_since": "Adventurer since %date%",
-        "zone": "Zone",
-        "zone_type": "Type",
-        "zone_unknown": "Unknown location"
+        "birthdate": "Born on"
       },
-      "actions": {
-        "explore": "Explore",
-        "craft": "Crafting",
-        "skills_count": "%count% learned",
-        "recipes_count": "%count% recipes"
+      "resume": {
+        "eyebrow": "Pick up where you left off",
+        "waiting": "%minutes% min left",
+        "state": {
+          "dead": "You went down. Your strength is coming back on its own.",
+          "fight": "A fight is waiting, and it will not end without you.",
+          "travel": "Travelling to %zone% — arriving in %minutes% min.",
+          "expedition": "Expedition under way from %zone% — back in %minutes% min.",
+          "expedition_done": "Your expedition from %zone% is back.",
+          "ready": "You are in %zone%, and nothing is holding you back.",
+          "lost": "You are nowhere. Pick a destination."
+        },
+        "action": {
+          "dead": "Get back up",
+          "fight": "Return to the fight",
+          "expedition_done": "Collect the spoils",
+          "ready": "Carry on in %zone%",
+          "lost": "Open the world map",
+          "watch": "View the zone"
+        }
+      },
+      "pending": {
+        "title": "Waiting for you",
+        "empty": "Nothing is waiting",
+        "empty_hint": "All settled. Whatever happens next happens in the zone.",
+        "empty_action": "Go to the zone",
+        "tone": {
+          "gain": "To collect",
+          "loss": "Overdue",
+          "neutral": "To read"
+        },
+        "house_rent": {
+          "icon": "🏠",
+          "title": "Rent overdue",
+          "hint": "Your home sleeps until it is paid — nothing is lost."
+        },
+        "expedition_ready": {
+          "icon": "🧭",
+          "title": "An expedition is back",
+          "hint": "Its spoils are waiting to be claimed."
+        },
+        "craft_ready": {
+          "icon": "🔨",
+          "title": "A piece of work is done",
+          "hint": "Stop by the workshop to pick it up."
+        },
+        "garden_ripe": {
+          "icon": "🌱",
+          "title": "%count% plot%plural% to harvest",
+          "hint": "The garden stops growing until it is cleared."
+        },
+        "craft_orders": {
+          "icon": "📦",
+          "title": "%count% order%plural% to deliver",
+          "hint": "A client is waiting for their commission."
+        },
+        "quests_ready": {
+          "icon": "📜",
+          "title": "%count% quest%plural% completed",
+          "hint": "All that is left is claiming the reward."
+        },
+        "talent_xp": {
+          "icon": "✨",
+          "title": "%xp% XP to spend",
+          "hint": "Experience is sitting idle in your talent trees."
+        },
+        "messages_unread": {
+          "icon": "✉️",
+          "title": "%count% unread message%plural%",
+          "hint": "Someone wrote to you."
+        }
+      },
+      "recap": {
+        "title": "Since yesterday",
+        "view_all": "Journal",
+        "empty": "Nothing to tell",
+        "empty_hint": "Your deeds will be written here from the first outing."
       },
       "domains": {
-        "title": "Progression",
+        "title": "Progress",
         "available_xp": "%xp% XP available",
-        "empty": "No domains unlocked",
-        "view_all": "View skills"
+        "empty": "No domain opened yet",
+        "empty_hint": "Fighting, gathering, crafting: every action feeds a domain.",
+        "view_all": "Skills"
       },
       "quests": {
-        "title": "Active Quests",
-        "empty": "No active quests",
-        "empty_hint": "Talk to NPCs to get quests",
-        "view_all": "View all %count% quests"
-      },
-      "equipment": {
-        "title": "Equipment",
-        "manage": "Manage",
-        "empty": "No equipment",
-        "empty_hint": "Equip items from your inventory"
-      },
-      "fight_banner": {
-        "title": "Fight in progress!",
-        "description": "Turn %step% — Join the fight"
-      },
-      "world": {
-        "skills_unlocked": "Skills",
-        "current_zone": "Current zone",
-        "players_in_zone": "Players in zone"
+        "title": "Active quests",
+        "empty": "No quest in progress",
+        "empty_hint": "NPCs in safe zones hand them out.",
+        "view_all_short": "Quest journal"
       }
     },
     "footer": {

@@ -31,6 +31,7 @@ final class HardcodedTextScanner
      * Ecrans nes du pivot PBBG. Ils sont propres, et doivent le rester.
      */
     public const PIVOT_TEMPLATES = [
+        'templates/game/index.html.twig',
         'templates/game/zone/index.html.twig',
         'templates/game/zone/world_map.html.twig',
         'templates/game/dungeon/list.html.twig',
