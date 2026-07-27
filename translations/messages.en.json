@@ -134,7 +134,12 @@
         "finger": "Ring",
         "main_hand": "Main weapon",
         "off_hand": "Side weapon",
-        "unknown": "Unknown slot"
+        "unknown": "Unknown slot",
+        "paperdoll": {
+          "main_weapon": "Weapon",
+          "side_weapon": "Shield",
+          "ring": "Ring"
+        }
       },
       "actions": {
         "equip": "Equip",
@@ -231,7 +236,23 @@
         "mortar": "Alchemy mortar",
         "chisel": "Jeweler's chisel",
         "unknown": "Tool"
-      }
+      },
+      "tools": {
+        "title": "Trade tools",
+        "available": "Available tools",
+        "empty_slot": "Empty",
+        "no_slot_hint": "Learn a trade to unlock tool slots",
+        "locked_slot": "Tool slot not unlocked",
+        "locked_skill": "Talent required to equip this tool",
+        "broken": "Broken tool",
+        "durability": "Durability",
+        "tier": "Tier %tier%"
+      },
+      "sets": {
+        "title": "Equipment sets",
+        "pieces": "%equipped%/%total% pieces"
+      },
+      "available_equipment_empty": "No equipment available"
     },
     "map": {
       "title": "World Map",

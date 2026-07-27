@@ -134,7 +134,12 @@
         "finger": "Anneau",
         "main_hand": "Arme principale",
         "off_hand": "Arme secondaire",
-        "unknown": "Emplacement inconnu"
+        "unknown": "Emplacement inconnu",
+        "paperdoll": {
+          "main_weapon": "Arme",
+          "side_weapon": "Bouclier",
+          "ring": "Anneau"
+        }
       },
       "actions": {
         "equip": "Équiper",
@@ -231,7 +236,23 @@
         "mortar": "Mortier d'alchimie",
         "chisel": "Burin de joaillier",
         "unknown": "Outil"
-      }
+      },
+      "tools": {
+        "title": "Outils de métier",
+        "available": "Outils disponibles",
+        "empty_slot": "Vide",
+        "no_slot_hint": "Apprenez un métier pour débloquer des emplacements d'outils",
+        "locked_slot": "Emplacement d'outil non débloqué",
+        "locked_skill": "Talent requis pour équiper cet outil",
+        "broken": "Outil cassé",
+        "durability": "Durabilité",
+        "tier": "Palier %tier%"
+      },
+      "sets": {
+        "title": "Sets d'équipement",
+        "pieces": "%equipped%/%total% pièces"
+      },
+      "available_equipment_empty": "Aucun équipement disponible"
     },
     "map": {
       "title": "Carte du Monde",
