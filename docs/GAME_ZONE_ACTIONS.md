@@ -170,6 +170,28 @@ rencontres.
 
 Voir §9.
 
+### 5.5 Les paliers d'information du prospecteur
+
+Voir un filon et **le lire** sont deux choses différentes. C'est là que l'arbre de
+métier paie, et c'est un levier parfaitement propre au regard de G2 : l'information
+exclusive ne donne ni énergie, ni action, ni butin. Elle donne de la **décision**.
+
+| Palier | Ce que le prospecteur voit et que les autres ne voient pas |
+|--------|-----------------------------------------------------------|
+| **Aucun** | Le filon existe, son nom, sa profession. Rien de plus. |
+| **Prospection I** | La **vitalité** du filon (stock courant / capacité) et son rendement nominal |
+| **Prospection II** | Le **temps de retour** à pleine vitalité, et sa vitesse de régénération |
+| **Prospection III** | Son **rendement effectif attendu** — vitalité et fatigue personnelle comprises (§6.2) : il sait ce que le prochain coup de pioche va réellement rapporter |
+| **Prospection IV** | La vitalité de ce même minerai **dans les zones adjacentes**, sans y voyager |
+
+Le palier IV est le plus intéressant en jeu coopératif : il fait du mineur avancé un
+**courtier d'information**. C'est lui qui dit à la guilde « le fer des Mines est à
+15 %, montez au nord » — un rôle social que rien d'autre ne remplit aujourd'hui, et
+qui donne une raison de monter un arbre de récolte au-delà du rendement.
+
+Les autres joueurs, eux, voient le filon comme un état qualitatif : *florissant /
+entamé / éreinté*. Assez pour décider, pas assez pour optimiser.
+
 ---
 
 ## 6. Filons : partage et concurrence
@@ -185,7 +207,7 @@ L'alternative — instancier les filons par joueur — est **rejetée** : elle s
 seule tension coopérative de la boucle, et rien d'autre dans le jeu ne la remplace
 (pas de PvP, pas de compétition de classement en zone).
 
-### 6.2 Comment on gère la concurrence
+### 6.2 Ce qui ne va pas dans le modèle livré
 
 Le modèle livré est *stock partagé, épuisement, respawn intégral après délai*. Il a
 trois défauts constatés dans le code, dont deux sont des bugs de conception :
@@ -196,32 +218,91 @@ trois défauts constatés dans le code, dont deux sont des bugs de conception :
 | **Pas de verrou** | Aucun lock ni `UPDATE … WHERE stock >= :n` | Deux récoltes simultanées lisent le même stock : survente possible sur les dernières unités |
 | **Monopolisable** | Aucune borne par joueur | 240 énergie = 80 récoltes ; un seul joueur vide les quatre filons d'une forêt et personne d'autre ne récolte de la journée |
 
-**Décision — modèle retenu : partage + régénération continue + part personnelle.**
+### 6.3 La saturation — pourquoi un stock partagé exclut le joueur occasionnel
 
-1. **Régénération continue.** Le filon regagne une unité toutes les
-   `respawn_seconds / capacity` secondes, plafonné à `capacity`, calculé à la lecture
-   à partir du dernier prélèvement. Aucun champ nouveau n'est nécessaire au-delà de
-   ce que porte déjà `ZoneVein`. Un filon à demi vidé se rétablit ; un filon à zéro
-   met le même temps qu'aujourd'hui à revenir plein.
-2. **Prélèvement atomique.** La décrémentation passe par un `UPDATE` conditionnel
-   (ou un verrou pessimiste sur la ligne) ; en cas d'échec, l'action est refusée
-   **sans dépenser d'énergie** — comme le fait déjà le cas « filon épuisé ».
-3. **Part personnelle glissante.** Un joueur ne peut prélever plus de **1/3 de la
-   capacité** d'un filon donné par fenêtre de respawn. Au-delà, le filon lui répond
-   *« vous avez épuisé ce que ce filon vous donnera aujourd'hui »* — le stock reste
-   disponible pour les autres. Paramétrable (`zone.gather.personal_share`), donc
-   ajustable sans code.
+Avant de choisir un modèle, il faut regarder ce que la régénération continue supporte
+réellement. Un filon régénère `capacity` unités par `respawn_seconds`. Un joueur
+dispose de 240 énergie par jour, soit **80 récoltes** à ⚡ 3.
 
-La part personnelle est le seul point réellement nouveau du modèle, et c'est celui
-qui empêche la concurrence de se réduire à « qui se connecte à 3 h du matin ». Elle
-respecte G5 : personne ne bloque personne, chacun a une part.
+| Filon | Capacité | Respawn | Unités/jour | Récoltes/jour supportées | **Joueurs à plein temps avant saturation** |
+|-------|---------:|--------:|------------:|-------------------------:|-----------------------------------------:|
+| Filon de cuivre | 24 | 20 min | 1728 | ~864 | **10,8** |
+| Filon de fer | 18 | 30 min | 864 | ~576 | **7,2** |
+| Mandragore des tourbières | 12 | 30 min | 576 | 576 | **7,2** |
+| Spores fantômes | 12 | 35 min | 493 | ~329 | **4,1** |
+| **Veine d'or** | **8** | **60 min** | **192** | **192** | **2,4** |
+
+La veine d'or sature à **deux joueurs et demi**. Au-delà, elle reste à zéro en
+permanence, et le joueur qui se connecte vingt minutes le soir trouve un filon vide
+tous les soirs de sa vie. Les filons rares sont, par construction, les plus fragiles :
+plus la ressource est précieuse, plus sa capacité est basse, plus vite elle sature.
+
+**La réponse est donc oui : le modèle de la §6.2 telle qu'elle était d'abord écrite
+— stock partagé, refus quand le stock est à zéro — exclut le joueur occasionnel dès
+que la zone est fréquentée.** La part personnelle limite ce qu'un joueur *prend*,
+elle ne *réserve* rien à celui qui n'est pas là. Elle est anti-monopole, pas
+anti-saturation. C'est une erreur de conception, et elle frappe précisément le
+joueur que les trois couches de BALANCE.md §9 cherchent à protéger.
+
+### 6.4 Modèle retenu : le filon module le rendement, il ne ferme jamais l'accès
+
+**Une récolte ne peut pas échouer.** Le stock partagé cesse d'être un portillon pour
+devenir un **facteur de rendement**. C'est le même déplacement que celui déjà fait
+pour l'énergie : l'accès est égalitaire, l'investissement se voit dans ce que chaque
+action rapporte.
+
+```
+rendement = tirage nominal (YAML)
+          × bonus d'arbre        (ActionYieldResolver, plafonné à +100 %)
+          × vitalité partagée    (1,00 filon plein → 0,60 filon à sec)
+          × fatigue personnelle  (1,00 frais → 0,40 après acharnement)
+          plancher absolu : 1 unité
+```
+
+1. **Vitalité partagée** — c'est l'ancien stock, régénéré en continu
+   (`capacity / respawn_seconds`). À zéro, le filon n'est pas fermé : il est
+   **éreinté**, et rend 60 % du nominal. C'est l'information sociale de la §6.1,
+   conservée intacte, mais sa conséquence devient graduelle.
+2. **Fatigue personnelle** — vos propres prélèvements récents sur *ce* filon, qui se
+   dissipent en quelques heures. Elle ne pénalise que celui qui s'acharne, et elle
+   est invisible aux autres.
+3. **Plancher** — une récolte rapporte toujours au moins une unité. Le message
+   *« filon épuisé, revenez dans 20 minutes »* disparaît : c'est le pire message
+   possible pour quelqu'un qui a vingt minutes.
+
+**Ce que ça donne concrètement :**
+
+| Situation | Vitalité | Fatigue | Rendement |
+|-----------|---------:|--------:|----------:|
+| Joueur occasionnel, filon intact | 1,00 | 1,00 | **100 %** |
+| **Joueur occasionnel, filon farmé par vingt personnes** | 0,60 | 1,00 | **60 %** |
+| Joueur assidu qui campe le même filon | 0,60 | 0,40 | **24 %** |
+| Joueur assidu qui tourne entre zones | 0,85 | 1,00 | **85 %** |
+
+Le joueur occasionnel n'est **jamais** exclu : au pire il récolte 60 % — et il n'a
+de toute façon pas 80 récoltes à dépenser. Le joueur assidu qui campe s'auto-punit
+et a tout intérêt à répartir ses 80 récoltes sur plusieurs filons et plusieurs
+zones, ce qui est exactement le comportement souhaité : il fait vivre la carte au
+lieu de la stériliser.
+
+C'est une **tragédie des communs qui se lit correctement** : surexploiter dégrade le
+rendement pour tout le monde, y compris pour celui qui surexploite, et le groupe a
+une raison collective de s'étaler. Le tout sans qu'un joueur puisse jamais en bloquer
+un autre — G5 est tenu par construction, ce qui n'était pas le cas d'un modèle où le
+premier arrivé prend tout.
+
+**Effet de bord bienvenu** : la course au verrou disparaît. Puisqu'aucune récolte
+n'est refusée faute de stock, la survente de la dernière unité (E2) cesse d'être un
+bug fonctionnel. Le décompte reste atomique pour la justesse de la vitalité affichée,
+mais un échec de compteur ne prive plus personne de son action.
 
 **Conséquence à assumer** : le mineur assidu ne compense plus par le volume. Il
-compense par le **rendement** (`ActionYieldResolver`, plafonné à +100 %) et par
-l'accès aux **filons rares** que son arbre débloque. C'est exactement la répartition
-voulue par BALANCE.md §8.
+compense par le **rendement** (`ActionYieldResolver`, plafonné à +100 %), par
+l'accès aux **filons rares** que son arbre débloque, et par l'**information
+exclusive** de la §5.5 qui lui dit où le rendement est le meilleur. C'est exactement
+la répartition voulue par BALANCE.md §8.
 
-### 6.3 Accès : le champ `profession` ne sert à rien aujourd'hui
+### 6.5 Accès : le champ `profession` ne sert à rien aujourd'hui
 
 `GatherService` ne consulte **jamais** les compétences du joueur. Un personnage sans
 un seul point en minage peut vider une veine d'or. Le champ `profession` d'un filon
@@ -325,12 +406,57 @@ récompense de quête, marchand PNJ, et **hôtel des ventes** — une carte est 
 non lié, donc échangeable. C'est sa raison d'être économique : un joueur explore, un
 autre achète le temps qu'il n'a pas.
 
-**Craft joueur : question ouverte.** Rendre les cartes craftables serait cohérent
-avec l'économie joueur, mais aucun des quatre domaines d'artisanat (Forgeron,
-Tanneur, Alchimiste, Joaillier) ne s'y prête, et **ajouter un domaine « Cartographe »
-est une décision de portée trop large pour ce document** (arbre complet, recettes,
-outil, place dans la synergie élémentaire). Défaut retenu : cartes **non craftables**,
-sources ci-dessus uniquement. À rouvrir si le besoin économique se confirme.
+### 9.1 Le domaine « Cartographe » n'est pas viable — et c'est réparable autrement
+
+La question mérite d'être tranchée, parce que la chaîne d'entrée existe : le
+parchemin vient du Dépeceur, l'encre de l'Herboriste. Un 33ᵉ domaine s'insérerait
+sans peine dans la synergie élémentaire (air, aux côtés du Vagabond).
+
+**Ce qui le tue est la demande, pas l'offre.** Les quatre domaines d'artisanat
+livrés produisent des biens qui **quittent l'économie** : une potion se boit, une
+arme s'use et se remplace, un bijou se déclasse au palier suivant. La demande se
+renouvelle, donc le métier vit. Une carte, elle, révèle une information **permanente
+et non rivale** : chaque joueur en achète une par zone, **une seule fois, à vie**.
+
+```
+Demande totale = nb de joueurs × nb de zones          (puis zéro, pour toujours)
+```
+
+Un domaine complet — quarante compétences, un arbre, des recettes, un outil — adossé
+à un marché qui sature définitivement condamne le premier Cartographe à être aussi le
+dernier. Ce n'est pas un problème d'équilibrage, c'est un problème de forme : on
+n'accroche pas une profession à un stock fini.
+
+**Le critère qui le rendrait viable** est unique et clair : **il faudrait que la
+connaissance périme**. Si les tables de rencontres et les filons se recomposaient à
+chaque saison (`InfluenceSeason`, `SeasonArc`, `Festival` existent déjà), les cartes
+redeviendraient un consommable et la demande se renouvellerait tous les trois mois.
+C'est une décision de portée bien plus large que cet écran — elle touche la
+saisonnalité du monde — et elle n'est pas à prendre ici. Tant qu'elle n'est pas
+prise, **pas de domaine Cartographe**.
+
+**Ce qu'on fait à la place** : la cartographie est une **facette des métiers
+existants**, pas un métier. Un palier avancé de chaque arbre de récolte
+(« Relevé de prospection ») permet de coucher sur le parchemin **ce que le joueur
+sait déjà** — et rien d'autre.
+
+```php
+'actions' => [['action' => 'survey', 'profession' => 'mining']],
+```
+
+Quatre propriétés qui tombent juste :
+
+- **Pas de domaine nouveau.** Le coût de conception est un palier par arbre.
+- **La chaîne d'entrée existe déjà** : parchemin (Dépeceur) + encre (Herboriste).
+  Deux métiers de récolte gagnent un débouché sans qu'on écrive une ligne d'économie.
+- **On ne peut vendre que ce qu'on connaît.** Le croquis encode les filons que son
+  auteur a lui-même découverts — l'objet est adossé à un effort réel, pas à une
+  recette.
+- **La saturation cesse d'être fatale** : c'est un revenu d'appoint pour un
+  prospecteur, pas le gagne-pain d'une profession entière.
+
+Défaut retenu, donc : **cartes non craftables par un domaine dédié**, productibles
+en appoint par les récolteurs avancés, et par ailleurs loot / quête / marchand / HV.
 
 ---
 
@@ -345,7 +471,8 @@ reprise design doit tenir.
 3. CRÉNEAU ENGAGÉ      Voyage OU expédition en cours — sinon, rien du tout
 4. URGENCES            Événement de zone actif · boss · donjon en cours
 5. AGIR                Les 5 actions d'énergie, coûts en ⚡, une seule primaire
-6. CE QUE JE SAIS      Filons connus (stock partagé, part restante, exigence si
+6. CE QUE JE SAIS      Filons connus (vitalité partagée, rendement attendu selon
+                       le palier de prospection du joueur, exigence si
                        verrouillé) · proies au bestiaire · compteurs d'inconnu
 7. LA ZONE             PNJ · échoppes · donjons proposés · joueurs présents · chat
 8. PARTIR              Connexions, durée réelle (monture comprise), verrous
@@ -354,7 +481,9 @@ reprise design doit tenir.
 **Invariants de l'écran :**
 
 - Tout chiffre est en monospace, aligné à droite (`ds-num`). Sans exception :
-  énergie, PV, stock, durée, coût, part restante.
+  énergie, PV, vitalité, durée, coût, rendement.
+- Un filon n'est **jamais** affiché comme fermé. Éreinté se dit *« rendement
+  minimal »*, jamais *« revenez dans 20 minutes »*.
 - Une seule action primaire — « Explorer ». Tout le reste est secondaire ou discret.
 - Chaque liste vide dit **quoi faire**, jamais « aucun élément ».
 - Le bloc 3 est **exclusif** et désactive le bloc 5. Un seul créneau de temps réel.
@@ -386,6 +515,7 @@ peuvent être traités séparément.
 | E5 | ~30 compétences pointent vers des `spots` supprimés par ZON-21 | `SkillFixtures.php:3860+` | **Haute** — points de talent dépensés pour rien |
 | E6 | `PlayerResourceCatalog::TIER_LOCATIONS` déclaré, jamais consommé | `PlayerResourceCatalog.php:17` | Basse |
 | E7 | Un filon peut être vidé par un seul joueur en une session | conception | Moyenne |
+| E8 | **Saturation** : la veine d'or ne supporte que 2,4 joueurs à plein temps ; au-delà, elle est vide en permanence et le joueur occasionnel ne la voit jamais autrement | conception (§6.3) | **Haute** |
 
 E4 et E5 sont deux faces du même trou : le pivot a emporté le système qui donnait
 leur sens aux arbres de récolte, et rien ne l'a remplacé.
@@ -402,25 +532,36 @@ leur sens aux arbres de récolte, et rien ne l'a remplacé.
 3. Les filons connus se montrent ; les inconnus se comptent, ils ne se cachent pas.
 4. Découverte d'un filon par : passif d'arbre, catalogue (5 récoltes), exploration,
    carte.
-5. Les filons restent **partagés**. Régénération continue, prélèvement atomique,
-   part personnelle d'un tiers de capacité par fenêtre.
+5. Les filons restent **partagés**, mais **une récolte n'échoue jamais** : la
+   vitalité partagée et la fatigue personnelle modulent le **rendement**, elles ne
+   ferment pas l'accès. Plancher d'une unité. C'est ce qui protège le joueur
+   occasionnel de la saturation (§6.3-6.4).
 6. L'accès à un filon est gaté par le `tier` déclaré en YAML et la compétence
    d'arbre correspondante ; la visibilité et l'accès sont deux choses distinctes.
-7. Le repérage cumulatif d'une zone débloque de l'**information** à 25/50/100/150
+7. La progression dans l'arbre de récolte donne une **information exclusive** sur les
+   filons — vitalité, temps de retour, rendement effectif, état des zones voisines.
+   Le récolteur avancé est un courtier d'information (§5.5).
+8. Le repérage cumulatif d'une zone débloque de l'**information** à 25/50/100/150
    explorations, jamais un bonus chiffré.
-8. Une carte révèle, elle ne crée pas. Cartes non craftables par défaut.
-9. Aucune compétence de découverte ne réduit un coût d'énergie ni n'augmente le
-   débit d'actions.
+9. Une carte révèle, elle ne crée pas.
+10. **Pas de domaine « Cartographe »** : son marché sature définitivement (§9.1). La
+    cartographie est un palier avancé des arbres de récolte existants.
+11. Aucune compétence de découverte ne réduit un coût d'énergie ni n'augmente le
+    débit d'actions.
 
 **Ouvertes** :
 
-- **Cartes craftables** — suppose un domaine « Cartographe » ; décision de portée
-  trop large pour ce document (§9).
-- **Valeurs de paliers** (25/50/100/150 explorations, part personnelle à 1/3) —
-  posées comme repères paramétrables, à confronter aux données de jeu réelles.
+- **Péremption de la connaissance** — si les filons et les tables se recomposaient
+  par saison, les cartes redeviendraient un consommable et le domaine Cartographe
+  redeviendrait viable (§9.1). Décision de portée mondiale, à prendre ailleurs.
+- **Courbes de vitalité et de fatigue** — les facteurs 0,60 et 0,40, la vitesse de
+  dissipation de la fatigue : posés comme repères paramétrables, à confronter aux
+  données de jeu réelles.
+- **Capacités des filons rares** — la veine d'or (8 / 60 min) sature à 2,4 joueurs.
+  Même avec le modèle de rendement, une capacité aussi basse maintient la zone en
+  permanence près du plancher. Les capacités du YAML sont à réviser en même temps.
 - **Rangs de filons par profession** — combien de `tier` (2 ? 4 ?), et redécoupage
   des ~30 compétences `spots` existantes sur ces rangs.
-- **Part personnelle et groupes** — un groupe de quatre joueurs qui exploite un
-  filon ensemble contourne-t-il la part personnelle ? Réponse par défaut : non, la
-  part est individuelle. À reconsidérer si ça pénalise le jeu en groupe, qui est le
-  cœur coopératif.
+- **Fatigue personnelle et groupes** — quatre joueurs qui exploitent un filon
+  ensemble subissent chacun leur propre fatigue, donc rien ne les pénalise
+  collectivement. À vérifier en jeu : c'est voulu, le groupe doit rester avantageux.
