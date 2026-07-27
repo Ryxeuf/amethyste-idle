@@ -190,6 +190,27 @@ class ZoneControllerTest extends TestCase
         return $zone;
     }
 
+    /**
+     * Donjon de groupe rattache a une zone. L'id est requis : l'ecran construit
+     * l'action de lancement et le jeton CSRF a partir de lui, donc un donjon non
+     * persiste ferait echouer l'appel a `getId()`.
+     */
+    private function buildGroupDungeon(Zone $zone, int $maxPlayers = 4, int $minLevel = 3): Dungeon
+    {
+        $dungeon = new Dungeon();
+        $dungeon->setSlug('galeries-envahies');
+        $dungeon->setName('Les Galeries envahies');
+        $dungeon->setDescription('Un boyau effondre sous les racines.');
+        $dungeon->setMaxPlayers($maxPlayers);
+        $dungeon->setMinLevel($minLevel);
+        $dungeon->setZone($zone);
+
+        $ref = new \ReflectionProperty(Dungeon::class, 'id');
+        $ref->setValue($dungeon, 42);
+
+        return $dungeon;
+    }
+
     private function buildObjectLayer(string $type): ObjectLayer
     {
         $objectLayer = new ObjectLayer();
@@ -251,12 +272,7 @@ class ZoneControllerTest extends TestCase
         $player->setCurrentZone($zone);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $dungeon = new Dungeon();
-        $dungeon->setName('Les Galeries envahies');
-        $dungeon->setDescription('Un boyau effondre sous les racines.');
-        $dungeon->setMaxPlayers(4);
-        $dungeon->setMinLevel(3);
-        $dungeon->setZone($zone);
+        $dungeon = $this->buildGroupDungeon($zone);
         $dungeon->setLootPreview(['Equipement tier 2']);
 
         $this->groupDungeonService->method('findOfferedInZone')->with($zone)->willReturn([$dungeon]);
@@ -274,6 +290,9 @@ class ZoneControllerTest extends TestCase
         // L'entite est passee telle quelle : la vue la localise via
         // `localized_dungeon_name`.
         $this->assertSame($dungeon, $offers[0]['dungeon']);
+        // L'id porte l'action de lancement et son jeton CSRF : sans lui, le
+        // bouton ne peut pas etre construit.
+        $this->assertSame(42, $offers[0]['id']);
         $this->assertSame(4, $offers[0]['maxPlayers']);
         // minLevel * 100 : le prerequis est de l'XP de domaine, pas un niveau
         // global (regle #6 du projet).
@@ -297,12 +316,7 @@ class ZoneControllerTest extends TestCase
         $player->setCurrentZone($zone);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $dungeon = new Dungeon();
-        $dungeon->setName('Les Galeries envahies');
-        $dungeon->setDescription('Un boyau effondre sous les racines.');
-        $dungeon->setMaxPlayers(4);
-        $dungeon->setMinLevel(3);
-        $dungeon->setZone($zone);
+        $dungeon = $this->buildGroupDungeon($zone);
 
         $this->groupDungeonService->method('findOfferedInZone')->willReturn([$dungeon]);
         $this->groupDungeonService->method('getLaunchBlocker')
