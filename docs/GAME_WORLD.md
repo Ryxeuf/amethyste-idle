@@ -114,9 +114,36 @@ Le rang du foyer détermine **ce que la zone offre** :
 | **Métropole** | Éveil de matéria, plans de fin de jeu, boss de région, services uniques au monde. |
 
 **Un foyer qui ne reçoit plus rien redescend.** Pas de siège, pas de destruction : de
-l'oubli. Une régression par marée d'inactivité, annoncée à l'avance, réversible. C'est la
-version douce et PvE de la destruction de nœud — et c'est exactement le Reflux à l'échelle
-d'un village.
+l'oubli. C'est la version douce et PvE de la destruction de nœud — et c'est exactement le
+Reflux à l'échelle d'un village.
+
+**Règles de régression** *(arbitrage tranché)* — une régression fait mal, et la douleur doit
+être bornée :
+
+- **Annoncée une marée à l'avance.** Un foyer qui décroche entre en *étiage* : la guilde et
+  les habitués sont prévenus, et la saison entière reste pour redresser.
+- **On perd le rang, pas les investissements.** Les upgrades payés, les parcelles, les
+  échoppes et les stocks survivent à la chute ; ils redeviennent actifs au retour du rang.
+  Perdre un rang coûte des *services*, jamais du patrimoine.
+- **La remontée est accélérée.** Un foyer qui a déjà été Cité remonte à Cité bien plus vite
+  qu'il n'y est monté la première fois : la strate est encore là, il ne manque que du monde.
+
+Le message est « ce lieu s'endort », jamais « vous avez perdu ». La comparaison utile est
+Haven & Hearth / Wurm Online, où la dégradation est brutale et fait fuir : on garde le
+principe, on retire la punition.
+
+### 3.1 bis — Intégration au monde existant *(arbitrage tranché)*
+
+Les PNJ, boutiques et ateliers déjà posés dans les zones **ne sont pas rétro-gatés**. On
+n'enlève rien à personne : le système de foyer est **incrémental**.
+
+- Toute zone déjà peuplée démarre à un **rang non nul** correspondant à ce qu'elle offre
+  aujourd'hui (Forêt des murmures, Mines profondes… = Hameau ; les zones de l'Acte 4 =
+  Campement).
+- Seuls les **services nouveaux** — marché local, ateliers de haut palier, parcelles,
+  étals, éveil de matéria, boss de région — sont gardés par le rang.
+- Conséquence : le pilier territorial peut se livrer **par tranches**, sans jamais casser
+  une zone existante ni migrer les fixtures de PNJ.
 
 ### 3.2 Le type d'un foyer se décide tout seul
 
@@ -138,14 +165,21 @@ aucune écriture : il émerge de l'activité mesurée par le système d'influenc
 
 > Le monde ne supporte qu'une quantité finie de temps accumulé.
 
-Concrètement, un quota par monde :
+Concrètement, un quota **par monde, indexé sur la population active** *(arbitrage tranché)* :
+le monde grandit quand le serveur grandit, mais toujours moins vite que lui — c'est ce qui
+maintient la tension quel que soit le nombre de joueurs, et ce qui évite qu'un petit serveur
+soit figé à une seule grande ville.
 
-| Rang | Nombre simultané max |
-|---|---|
-| Métropole | **1** |
-| Cité | 3 |
-| Bourg | 6 |
-| Hameau | libre |
+| Rang | Quota de base | Indexation |
+|---|---|---|
+| Métropole | **1** | +1 par palier de population active |
+| Cité | 3 | +1 par palier |
+| Bourg | 6 | +2 par palier |
+| Hameau | libre | — |
+
+Un « palier de population active » se lit sur les joueurs actifs de la marée écoulée, pas sur
+les comptes créés — un serveur qui se vide reperd son quota, et le monde se resserre comme il
+s'était ouvert.
 
 Et une **zone d'influence** : un foyer de rang N plafonne ses voisins directs au rang N-1.
 Une Métropole fait de ses voisins des vassaux — ils gardent leur marché et leur identité,
@@ -518,27 +552,28 @@ consommateur sur des événements déjà émis.
 
 ## 10. Arbitrages à trancher
 
-1. **Les foyers remplacent-ils les villes en dur ?** Le Village de Lumière reste fixe (§3.4).
-   Mais les PNJ, boutiques et ateliers des autres zones sont aujourd'hui statiques : soit on
-   les rattache rétroactivement à un rang de foyer (cohérent, coûteux), soit on ne fait
-   monter que les **services nouveaux** (moins pur, incrémental). Ma recommandation : le
-   second, avec un rang de départ non nul pour les zones déjà peuplées.
-2. **Quotas de Crue : par monde ou par région ?** Par monde, c'est plus tendu et plus
-   politique ; par région, c'est plus lisible et moins bloquant pour un petit serveur. Piste :
-   **par monde, mais indexé sur la population active** — le quota grandit quand le serveur
-   grandit.
-3. **La régression est-elle vécue comme une punition ?** Même risque que le blanchiment. La
-   régression par oubli est plus douce qu'un siège, mais perdre son marché parce que la
-   guilde a changé de région fait mal. Piste : annonce une marée à l'avance, perte du **rang**
-   mais pas des **investissements**, remontée accélérée.
-4. **Le nom du « Blanc »** — se confond avec le fragment blanc du Sommet (Acte 2).
+### Tranchés (2026-07-27)
+
+| # | Question | Décision |
+|---|---|---|
+| A | Les foyers remplacent-ils les villes en dur ? | **Non — incrémental.** Rien n'est rétro-gaté ; les zones peuplées démarrent à un rang non nul, seuls les services nouveaux dépendent du rang (§3.1 bis). |
+| B | Quota de Crue par monde ou par région ? | **Par monde, indexé sur la population active** (§3.3). |
+| C | La régression est-elle une punition ? | **Bornée** : annonce une marée à l'avance, perte du rang mais pas des investissements, remontée accélérée (§3.1). |
+
+### Encore ouverts
+
+1. **Le nom du « Blanc »** — se confond avec le fragment blanc du Sommet (Acte 2).
    Alternatives : *la Page*, *l'Étale*, *le Retiré*.
-5. **La Fonderie : faction jouable ou force lointaine ?** Recommandation : **jouable**. Un
+2. **La Fonderie : faction jouable ou force lointaine ?** Recommandation : **jouable**. Un
    antagoniste chez qui on fait ses courses vaut mille fois mieux qu'un antagoniste qu'on ne
    fréquente jamais.
-6. **La sur-extraction blanchit-elle vraiment une zone ?** Superbe en fiction, risqué en jeu.
-   Piste : réversible et lente, avec une marée de restauration toujours disponible.
-7. **Quand ouvrir la Voûte ?** Le retournement ne vaut que gardé : aucun contenu ne s'en
+3. **La sur-extraction blanchit-elle vraiment une zone ?** Superbe en fiction, risqué en jeu.
+   Piste retenue de Wakfu (cf. [GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md)) : réversible, et
+   **la restauration se paie au trésor de guilde** — la taxe finance la remise en état de la
+   veine. La sanction devient une dépense, pas une perte sèche.
+4. **Qualité variable de l'améthystite ?** (idée SWG, cf. GAME_INSPIRATIONS §3) — donnerait
+   au HV une profondeur qu'un tas fongible n'a pas, et un métier réel au prospecteur.
+5. **Quand ouvrir la Voûte ?** Le retournement ne vaut que gardé : aucun contenu ne s'en
    approche avant des dizaines de marées, et il n'est jamais « joué » — il est *inscrit*,
    comme un fait canon.
 
