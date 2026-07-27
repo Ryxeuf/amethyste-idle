@@ -275,8 +275,10 @@ class ZoneControllerTest extends TestCase
         $this->assertNull($this->capturedTemplateParams['travel']);
         $this->assertNull($this->capturedTemplateParams['justArrived']);
         $this->assertSame([7], $this->capturedTemplateParams['visitedZoneIds']);
-        $this->assertSame(100, $this->capturedTemplateParams['energy']['current']);
-        $this->assertSame(100, $this->capturedTemplateParams['energy']['max']);
+        // Le joueur de ce test ne touche pas a son energie d'action : l'ecran
+        // doit refleter le plafond par defaut, pas une valeur figee.
+        $this->assertSame(Player::DEFAULT_MAX_ACTION_ENERGY, $this->capturedTemplateParams['energy']['current']);
+        $this->assertSame(Player::DEFAULT_MAX_ACTION_ENERGY, $this->capturedTemplateParams['energy']['max']);
 
         $actionKeys = array_column($this->capturedTemplateParams['actions'], 'key');
         $this->assertSame(['explore'], $actionKeys);

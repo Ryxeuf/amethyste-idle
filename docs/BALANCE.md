@@ -129,7 +129,7 @@ La commande `app:balance:report` detecte automatiquement les anomalies :
 
 ## 8. Energie d'action PBBG (pivot, ZON-07)
 
-Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager, rejoindre un evenement de zone). **Jamais le combat lui-meme** : les tours de combat restent gratuits et illimites (principe directeur du pivot, docs/PIVOT_PBBG.md). Distincte de l'energie de combat (`Player.energy`, cout des sorts).
+Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, rejoindre un evenement de zone). **Jamais le combat lui-meme** : les tours de combat restent gratuits et illimites (principe directeur du pivot, docs/PIVOT_PBBG.md). Distincte de l'energie de combat (`Player.energy`, cout des sorts).
 
 ### Curseurs (table `parameter`, lus par `ActionEnergyManager`)
 
@@ -149,7 +149,23 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | `zone.dungeon.lockout.decay` | 0.5 | Facteur multiplicatif de la recompense par reussite recente du meme donjon (ZON-20) |
 | `zone.dungeon.lockout.min_factor` | 0.25 | Plancher de la recompense decroissante (protection de l'economie, on prefere la decroissance au blocage sec, ZON-20) |
 
-`Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
+Le cout d'une **epreuve chronometree** n'a pas de curseur global : il est declare par epreuve (`TimeTrial.energy_cost`, defaut 5, lu par `TimeTrialService`) — le contenu se regle par la donnee.
+
+### Plafond : 24 h de regeneration
+
+`Player.maxActionEnergy` vaut **240** par defaut (`Player::DEFAULT_MAX_ACTION_ENERGY`), soit exactement 24 h de regeneration a 360 s/pt. C'est un champ par joueur, extensible plus tard via talents/equipement.
+
+Le plafond couvre volontairement une journee entiere. A 100 (valeur d'origine, ZON-07), le plein etait atteint en 10 h et toute l'energie regeneree au-dela etait perdue :
+
+| Rythme de connexion | Energie captee sur 240 | Perte |
+|---|---|---|
+| 1x / 24 h | 100 | **58 %** |
+| 2x / 12 h | 200 | 17 % |
+| 3x / 8 h | 240 | 0 % |
+
+Le reglage imposait donc **~2,4 connexions par jour** pour ne rien gaspiller : il penalisait l'absence longue, a l'inverse de l'objectif de conception (ne pas contraindre la frequence de connexion). Regle de calibrage : **le plafond doit toujours couvrir au moins 24 h de regeneration**. Si `zone.energy.regen_seconds` change, le plafond doit suivre (`86400 / regen_seconds`).
+
+Ce plafond ne donne rien de plus au joueur assidu : le budget quotidien reste 240 points pour tout le monde. Il le depense simplement plus tot dans sa journee.
 
 **Filons partages (ZON-10)** : la capacite (`capacity`), le delai de respawn (`respawn_seconds`) et le rendement (`yield_min`/`yield_max`) de chaque ressource sont declares par zone dans `Zone.gatherConfig` (pas de curseur `parameter` global — le contenu se regle par la donnee). Defauts de code (`GatherService`) si absents : capacite 20, respawn 1800 s, rendement 1-2. Le stock est **collectif** (partage par tous les joueurs presents dans la zone) et se recharge entierement a la capacite une fois la fenetre de respawn ecoulee.
 
@@ -157,7 +173,34 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 
 - **Regeneration paresseuse** : calculee a la lecture (`refresh`), aucun cron. Le reliquat de temps est conserve entre deux lectures ; le timer demarre a la premiere depense depuis le plein.
 - **Depense** (`spend`) : refuse si insuffisant (`NotEnoughActionEnergyException`), les actions affichent le cout.
-- **Reperes** : plein en 10 h a 360 s/pt. Couts indicatifs a etalonner en Sprint 8 : explorer 5, chasser 5, recolter 3, voyager 0 (le voyage coute du temps, pas de l'energie — a re-evaluer), evenement de zone 10.
+- **Reperes** : 10 pts/h, 240 pts/jour, plein en 24 h. Un plein represente ~48 rencontres a 5 pts, ou 80 recoltes a 3 pts.
+- **Aucune source d'energie hors du temps** : `setActionEnergy()` n'est appele que par `ActionEnergyManager`. Pas de potion, pas de repas, pas de recharge payante — et c'est deliberé. Une recharge achetable transformerait le regulateur d'equite en boutique (cf. docs/MONETIZATION.md, qui n'en prevoit pas).
+
+### Ce qui ne coute PAS d'energie
+
+Reciproque du principe directeur, a garder explicite pour ne pas facturer par inadvertance :
+
+| Systeme | Regulateur a la place |
+|---|---|
+| Tours de combat | Aucun (principe directeur : le combat ne doit jamais etre penalise par sa duree) |
+| Voyage entre zones | Temps reel du graphe — et c'est ce cout-temps qui porte l'arbitrage regional d'ECO-03 |
+| Expeditions (lancer / recuperer) | Temps reel ; c'est l'outil du joueur peu disponible, le facturer taxerait l'absence |
+| Craft | Temporisation de l'etabli (`readyAt`, ECO-20) |
+| Donjon solo | Cooldown |
+| Donjon de groupe | Lockout a recompense **decroissante** (`zone.dungeon.lockout.*`) |
+| Economie (HV, commandes de craft, echoppes, services) | Gils et taxes regionales |
+| Jardin / housing | Temps reel de croissance + loyers |
+| Quetes, dailies, PNJ, arbres de talents, social | Rotation quotidienne, points de talent, aucun |
+
+### Les trois couches de rythme
+
+L'energie n'est qu'une des trois couches, et les separer est ce qui permet de servir le joueur peu disponible **et** le joueur investi sans que l'un penalise l'autre :
+
+1. **Couche temps reel (offline-first)** — expeditions, craft temporise, jardin, loyers, commandes de craft, ventes HV. Ne coute pas d'energie, tourne sans le joueur. Deux passages courts par jour suffisent a faire tourner ces boucles.
+2. **Couche energie (les tentatives)** — acces aux rencontres. Budget quotidien **egalitaire** : jouer plus n'en donne pas plus. C'est le garde-fou qui empeche l'absent de decrocher.
+3. **Couche temps investi (illimitee)** — combat tactique, coordination de groupe, donjons, marche, influence de guilde. Plus on joue, plus on gagne, **sans consommer d'energie**.
+
+Corollaire de calibrage : pour recompenser l'investissement, augmenter le **rendement par point** (butin, qualite, chance via talents et equipement) et etoffer la **couche 3**, jamais le nombre d'actions. Tout levier qui augmente le debit brut d'actions creuse l'ecart avec le joueur peu disponible, ce que les couches sont justement censees eviter.
 
 ### Les 4 curseurs du pivot
 
