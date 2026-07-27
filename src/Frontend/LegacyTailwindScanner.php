@@ -70,6 +70,10 @@ final class LegacyTailwindScanner
         'bg-gradient-to' => '-[a-z]{1,2}',
         'flex-shrink' => '(?:-0)?',
         'flex-grow' => '(?:-0)?',
+        'overflow-ellipsis' => '',
+        'decoration-slice' => '',
+        'decoration-clone' => '',
+        'outline-none' => '',
     ];
 
     private const EXCLUDED = ['templates/old_game/'];
@@ -116,7 +120,7 @@ final class LegacyTailwindScanner
             $pattern = sprintf(
                 '/(?<![\w-])(?:[a-z-]+:)*%s%s(?![\w-])(?!\s*:)/',
                 preg_quote($legacy, '/'),
-                self::SUFFIXES[$legacy] ?? '',
+                self::SUFFIXES[$legacy],
             );
 
             if (preg_match_all($pattern, $content, $matches)) {
@@ -141,16 +145,14 @@ final class LegacyTailwindScanner
                 continue;
             }
             $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($base, \FilesystemIterator::SKIP_DOTS),
+                new \RecursiveDirectoryIterator($base, \RecursiveDirectoryIterator::SKIP_DOTS),
             );
             foreach ($iterator as $file) {
-                if (!$file instanceof \SplFileInfo || !$file->isFile()) {
+                /* @var \SplFileInfo $file */
+                if (!$file->isFile() || !\in_array($file->getExtension(), ['twig', 'js'], true)) {
                     continue;
                 }
-                if (!\in_array($file->getExtension(), ['twig', 'js'], true)) {
-                    continue;
-                }
-                $relative = ltrim(str_replace($this->projectDir, '', $file->getPathname()), '/');
+                $relative = substr($file->getPathname(), \strlen($this->projectDir) + 1);
                 foreach (self::EXCLUDED as $prefix) {
                     if (str_starts_with($relative, $prefix)) {
                         continue 2;
