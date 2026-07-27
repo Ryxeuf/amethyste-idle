@@ -55,15 +55,12 @@ class SkillActionsController extends AbstractController
             return ApiResponse::error('not_found', 'Competence introuvable.', 404);
         }
 
-        if ($this->skillHelper->hasSkill($skill)) {
-            return ApiResponse::error('action_rejected', 'Competence deja acquise.', 409);
+        // Le motif du refus vient du moteur : le dupliquer ici laissait deux
+        // verites diverger.
+        $result = $this->skillAcquiring->acquireSkill($skill);
+        if (!$result->acquired) {
+            return ApiResponse::error('action_rejected', 'Acquisition refusee : ' . $result->refusal . '.', 409);
         }
-
-        if (!$this->skillHelper->canAcquireSkill($skill)) {
-            return ApiResponse::error('action_rejected', 'Prerequis non remplis ou points insuffisants.', 409);
-        }
-
-        $this->skillAcquiring->acquireSkill($skill);
 
         $player = $this->playerHelper->getPlayer();
 

@@ -3,9 +3,10 @@
 namespace App\Tests\Functional\Controller\Game\Skill;
 
 use App\Controller\Game\Skill\AcquireController;
-use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\SkillAcquiring;
+use App\GameEngine\Progression\SkillAcquisitionResult;
+use App\Helper\PlayerSkillHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AcquireControllerTest extends TestCase
 {
@@ -30,9 +32,15 @@ class AcquireControllerTest extends TestCase
         $this->skillAcquiring = $this->createMock(SkillAcquiring::class);
         $this->flashBag = new FlashBag();
 
+        // Le traducteur rend la cle : le test verifie le message choisi, pas sa
+        // traduction.
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
         $this->controller = new AcquireController(
             $this->entityManager,
             $this->skillAcquiring,
+            $translator,
         );
 
         $this->controller->setContainer($this->createContainer());
@@ -41,70 +49,84 @@ class AcquireControllerTest extends TestCase
     public function testAcquireSuccess(): void
     {
         $skill = $this->createMock(Skill::class);
-        $domain = $this->createMock(Domain::class);
+        $this->setupRepository($skill);
 
-        $this->setupRepositories($skill, $domain);
+        $this->skillAcquiring->expects($this->once())->method('acquireSkill')->with($skill)
+            ->willReturn(SkillAcquisitionResult::acquired());
 
-        $this->skillAcquiring->expects($this->once())->method('acquireSkill')->with($skill);
-
-        $request = $this->createAcquireRequest(1, 1);
-        $response = $this->controller->__invoke($request);
+        $response = $this->controller->__invoke($this->createAcquireRequest(1));
 
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertNotEmpty($this->flashBag->peek('success'));
-        $this->assertStringContainsString('acquise', $this->flashBag->peek('success')[0]);
+        $this->assertSame(['game.skills.acquire.success'], $this->flashBag->peek('success'));
+    }
+
+    /**
+     * Un refus disait « acquise avec succes » : le joueur cliquait en boucle sans
+     * savoir ce qui manquait.
+     */
+    public function testRefusalIsReportedWithItsReason(): void
+    {
+        $skill = $this->createMock(Skill::class);
+        $this->setupRepository($skill);
+
+        $this->skillAcquiring->method('acquireSkill')
+            ->willReturn(SkillAcquisitionResult::refused(PlayerSkillHelper::REFUSAL_NOT_ENOUGH_XP));
+
+        $response = $this->controller->__invoke($this->createAcquireRequest(1));
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEmpty($this->flashBag->peek('success'));
+        $this->assertSame(
+            ['game.skills.acquire.refused.not_enough_xp'],
+            $this->flashBag->peek('warning'),
+        );
     }
 
     public function testAcquireSkillNotFoundShowsError(): void
     {
-        $this->setupRepositories(skill: null, domain: $this->createMock(Domain::class));
+        $this->setupRepository(null);
 
         $this->skillAcquiring->expects($this->never())->method('acquireSkill');
 
-        $request = $this->createAcquireRequest(999, 1);
-        $response = $this->controller->__invoke($request);
+        $response = $this->controller->__invoke($this->createAcquireRequest(999));
 
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertNotEmpty($this->flashBag->peek('error'));
-        $this->assertStringContainsString('non trouvé', $this->flashBag->peek('error')[0]);
+        $this->assertSame(['game.skills.acquire.not_found'], $this->flashBag->peek('error'));
     }
 
-    public function testAcquireDomainNotFoundShowsError(): void
+    /**
+     * Le domaine d'ou vient le clic n'entre plus dans la decision : l'acquisition
+     * credite tous les domaines de la competence.
+     */
+    public function testAcquireWorksWithoutDomainField(): void
     {
-        $this->setupRepositories(skill: $this->createMock(Skill::class), domain: null);
+        $skill = $this->createMock(Skill::class);
+        $this->setupRepository($skill);
 
-        $this->skillAcquiring->expects($this->never())->method('acquireSkill');
+        $this->skillAcquiring->expects($this->once())->method('acquireSkill')
+            ->willReturn(SkillAcquisitionResult::acquired());
 
-        $request = $this->createAcquireRequest(1, 999);
+        $request = Request::create('/game/skills/acquire', 'POST', ['skill_id' => 1]);
         $response = $this->controller->__invoke($request);
 
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertNotEmpty($this->flashBag->peek('error'));
+        $this->assertSame(['game.skills.acquire.success'], $this->flashBag->peek('success'));
     }
 
-    private function createAcquireRequest(int $skillId, int $domainId): Request
+    private function createAcquireRequest(int $skillId): Request
     {
         return Request::create('/game/skills/acquire', 'POST', [
             'skill_id' => $skillId,
-            'domain_id' => $domainId,
+            'domain_id' => 1,
         ]);
     }
 
-    private function setupRepositories(?Skill $skill, ?Domain $domain): void
+    private function setupRepository(?Skill $skill): void
     {
         $skillRepo = $this->createMock(EntityRepository::class);
         $skillRepo->method('find')->willReturn($skill);
 
-        $domainRepo = $this->createMock(EntityRepository::class);
-        $domainRepo->method('find')->willReturn($domain);
-
-        $this->entityManager->method('getRepository')->willReturnCallback(
-            fn (string $class) => match ($class) {
-                Skill::class => $skillRepo,
-                Domain::class => $domainRepo,
-                default => $this->createMock(EntityRepository::class),
-            },
-        );
+        $this->entityManager->method('getRepository')->willReturn($skillRepo);
     }
 
     private function createContainer(): ContainerInterface&MockObject

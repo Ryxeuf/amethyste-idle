@@ -361,7 +361,6 @@
 
                         {% set skillsAvailable = domain.skills|filter(s => s.canBeAcquired and not s.acquired) %}
                         {% set skillsAcquired  = domain.skills|filter(s => s.acquired) %}
-                        {% set skillsLocked    = domain.skills|filter(s => not s.canBeAcquired and not s.acquired) %}
 
                         {# ── Section Disponibles ── #}
                         <div class="mb-5">
@@ -438,39 +437,6 @@
                                                 </div>
                                                 <span class="bg-green-800/40 text-green-400 font-semibold py-1.5 px-3 rounded-lg text-xs flex-shrink-0">
                                                     {{ "game.skills.learned"|trans }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {# ── Section Verrouillées ── #}
-                        {% if skillsLocked|length > 0 %}
-                            <div class="mb-4">
-                                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2 px-0.5">
-                                    Verrouillées
-                                    <span class="text-gray-700 ml-1">{{ skillsLocked|length }}</span>
-                                </h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    {% for skill in skillsLocked %}
-                                        <div class="skill-node skill-node--locked rounded-xl p-3 border">
-                                            <div class="flex items-start justify-between gap-2">
-                                                <div class="min-w-0 flex-1">
-                                                    <h4 class="text-sm font-medium text-gray-500">{{ skill.title }}</h4>
-                                                    <p class="text-xs text-gray-700 mt-0.5 leading-relaxed">{{ skill.description }}</p>
-                                                    <div class="flex flex-wrap gap-1 mt-2">
-                                                        <span class="text-xs text-gray-600">{{ skill.requiredPoints }} pts XP requis</span>
-                                                        {% for req in skill.requirements %}
-                                                            <span class="text-xs px-1.5 py-0.5 rounded-full {{ req.acquired ? 'bg-green-900/25 text-green-700' : 'bg-red-900/25 text-red-700' }}">
-                                                                {{ req.title }} {{ req.acquired ? '✓' : '✗' }}
-                                                            </span>
-                                                        {% endfor %}
-                                                    </div>
-                                                </div>
-                                                <span class="bg-gray-800/60 text-gray-600 font-semibold py-1.5 px-3 rounded-lg text-xs flex-shrink-0 cursor-not-allowed">
-                                                    Verrouillé
                                                 </span>
                                             </div>
                                         </div>

@@ -498,6 +498,17 @@
       },
       "sidebar": {
         "others_group": "Others"
+      },
+      "acquire": {
+        "success": "Skill learned!",
+        "not_found": "Skill not found.",
+        "refused": {
+          "no_player": "No active character.",
+          "already_acquired": "You already have this skill.",
+          "global_cap": "You have reached the 500 skill point cap.",
+          "not_enough_xp": "Not enough domain experience.",
+          "missing_requirements": "You are missing a prerequisite for this skill."
+        }
       }
     },
     "domains": {
@@ -731,8 +742,6 @@
       "active": "Active",
       "mount_button": "Mount",
       "unmount_button": "Dismount",
-      "purchase_button": "Buy (%cost% gils)",
-      "cannot_afford": "Not enough gils",
       "obtention": {
         "quest": "Quest reward",
         "drop": "Rare drop",
@@ -745,15 +754,17 @@
         "not_owned": "You do not own this mount.",
         "disabled": "This mount is unavailable.",
         "unknown": "Mount not found.",
-        "csrf_invalid": "Invalid action. Please try again.",
-        "purchased": "Mount purchased successfully!",
-        "insufficient_gils": "You do not have enough gils to buy this mount.",
-        "not_purchasable": "This mount is not for sale.",
-        "already_owned": "You already own this mount."
+        "csrf_invalid": "Invalid action. Please try again."
       },
       "filter": {
         "aria": "Filter mounts by obtention type",
         "all": "All"
+      },
+      "how_to_obtain": {
+        "quest": "Earned as a quest reward.",
+        "drop": "Found as a rare drop.",
+        "purchase": "Bought from a mount merchant.",
+        "achievement": "Earned by completing an achievement."
       }
     },
     "harvest": {

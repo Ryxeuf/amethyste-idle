@@ -69,7 +69,7 @@ class HardcodedTextTest extends TestCase
         'templates/game/quest/_active_quest_card.html.twig' => 3,
         'templates/game/quest/index.html.twig' => 10,
         'templates/game/shop/index.html.twig' => 4,
-        'templates/game/skills/index.html.twig' => 9,
+        'templates/game/skills/index.html.twig' => 7,
         'templates/home/index.html.twig' => 1,
         'templates/maintenance.html.twig' => 2,
         'templates/security/login.html.twig' => 2,
