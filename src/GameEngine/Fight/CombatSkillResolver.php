@@ -5,12 +5,10 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Player;
 use App\Entity\Game\Spell;
 use App\GameEngine\Progression\SynergyCalculator;
-use Doctrine\ORM\EntityManagerInterface;
 
 class CombatSkillResolver
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
         private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
     ) {

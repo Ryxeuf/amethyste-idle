@@ -8,24 +8,21 @@ use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Progression\SynergyCalculator;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CombatSkillResolverMateriaTest extends TestCase
 {
     private CombatSkillResolver $resolver;
-    private EntityManagerInterface&MockObject $entityManager;
 
     protected function setUp(): void
     {
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $synergyCalculator = $this->createMock(SynergyCalculator::class);
         $equipmentSetResolver = $this->createMock(EquipmentSetResolver::class);
         $equipmentSetResolver->method('getSetBonuses')->willReturn([
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0, 'protection' => 0,
         ]);
-        $this->resolver = new CombatSkillResolver($this->entityManager, $synergyCalculator, $equipmentSetResolver);
+        $this->resolver = new CombatSkillResolver($synergyCalculator, $equipmentSetResolver);
     }
 
     private function createSkillWithMateriaUnlock(string $spellSlug): Skill&MockObject
