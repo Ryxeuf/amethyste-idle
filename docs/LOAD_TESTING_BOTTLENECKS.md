@@ -290,26 +290,91 @@ latence.
 **Gain attendu** : capacite SSE x2, fin des coupures spurieuses observees
 en environnement Docker.
 
-### Jalon F — Plan de scaling horizontal (priorite 6, effort L)
+### Jalon F — Plan de scaling horizontal (priorite 6, effort L) — **audit fait (2026-07-26)**
 
-**Objectif** : preparer le passage a plusieurs instances FrankenPHP
-derriere Traefik.
+**Objectif** : preparer le passage a plusieurs instances FrankenPHP derriere Traefik.
 
-- [ ] Sessions Symfony partagees : passer `session.handler` sur Redis
-      (`sf.session.handler.redis`) — prerequis du jalon A.
-- [ ] Verrous Doctrine / cache : audit des `Lock` Symfony et des cache
-      pools pour s'assurer qu'aucun n'est filesystem-dependent une fois
-      multi-instance.
-- [ ] Mercure : passer en mode hub externe (Mercure standalone ou
-      `cloud.mercure.rocks`) pour decoupler les publications du nombre
-      d'instances FrankenPHP.
-- [ ] Traefik : load balancer round-robin sur 2 a 4 replicas FrankenPHP.
-- [ ] Re-run **les 4 scenarios** a 200 VUs avec 2 replicas et comparer
-      avec la baseline mono-instance (jalons A-E appliques).
+L'audit du 2026-07-26 a inspecte le depot pour chacun des points ci-dessous. Il en ressort
+**cinq obstacles verifies**, dont un qui precede tous les autres.
 
-**Gain attendu** : capacite lineaire avec le nombre de replicas. Doit
-etre conditionne par les jalons A-E (sinon on duplique des goulots
-au lieu d'augmenter la capacite).
+#### F.0 — Le calendrier des taches n'est consomme par personne ⛔ **bloquant, et anterieur au scaling**
+
+`symfony/scheduler` publie ses messages sur un transport `scheduler_default` qu'il faut
+consommer avec `messenger:consume scheduler_default`. **Aucun processus de ce type n'existe** :
+ni dans `compose.yaml`, ni dans `compose.prod.yaml`, ni dans le `Dockerfile`, ni dans
+`frankenphp/docker-entrypoint.sh`. `config/packages/messenger.yaml` declare
+`transports: []`, et il n'y a pas de cron systeme dans le depot.
+
+**La preuve** : `DefaultScheduleProvider` planifiait `api:mob:move` **toutes les minutes**
+alors que la commande a ete supprimee par ZON-21. Un consommateur aurait leve
+« Command not defined » toutes les 60 secondes depuis le pivot. Personne ne l'a vu.
+
+Consequence : aucune tache recurrente ne tourne. Ni l'expiration des encheres et des commandes
+— qui **rendent de l'escrow** —, ni les loyers, ni le restock des boutiques PNJ (le plancher T1
+d'ECO-02), ni le respawn des filons, ni les saisons, ni le releve de masse monetaire d'ECO-15.
+
+> Ce point n'est pas un probleme de scaling : c'est un probleme de production. Il est place ici
+> parce que l'audit du jalon F l'a decouvert, et parce que **multiplier des instances qui
+> executent zero tache planifiee ne produit rien**.
+
+- [ ] Ajouter un service `worker` (`messenger:consume scheduler_default`) au `compose.prod.yaml`
+- [ ] **Exactement une** replique de ce worker, quel que soit le nombre de repliques web
+
+#### F.1 — Le calendrier n'a pas de verrou
+
+`Schedule::lock()` n'est pas appele, et `symfony/lock` n'est meme pas une dependance. Des qu'un
+consommateur existera **sur N repliques**, chaque tache se declenchera **N fois**. Les degats
+sont economiques et irreversibles : recompenses de saison versees N fois, loyers preleves N fois,
+et N releves de masse monetaire par jour — ce qui fausserait la tendance d'ECO-15 elle-meme.
+
+- [ ] `composer require symfony/lock`, puis `->lock($lockFactory->createLock('scheduler'))`
+- [ ] Alternative si le worker reste en replique unique : documenter la contrainte **et** la
+      faire respecter par le deploiement, plutot que par convention
+
+#### F.2 — Les sessions sont sur disque local
+
+`config/packages/framework.yaml` declare `session: true` sans `handler_id` : Symfony retombe sur
+le stockage fichier, dans le conteneur. Derriere un round-robin, un joueur perd sa session a
+chaque requete servie par une autre replique.
+
+- [ ] `session.handler` sur Redis — **prerequis du jalon A**
+
+#### F.3 — Le cache applicatif est sur disque local
+
+`config/packages/cache.yaml` ne declare aucun adaptateur : le pool `cache.app` est en
+`filesystem`. Les collectors `/metrics` du **jalon C** mettent en cache avec un TTL de 10 s ;
+avec N repliques, ce sont N caches independants, donc N fois plus de collectes qu'attendu — le
+gain du jalon C se dilue exactement au rythme ou l'on scale.
+
+- [ ] `cache.app` sur Redis — **meme prerequis que F.2**
+
+#### F.4 — Mercure est un hub local a chaque conteneur
+
+`frankenphp/Caddyfile` configure le transport Mercure sur `{$MERCURE_TRANSPORT_PATH:/data/mercure.db}`,
+un fichier Bolt **local au conteneur**. Avec N repliques, un abonne connecte a la replique 1 ne
+recevra jamais une publication faite par la replique 2.
+
+C'est l'obstacle le plus visible pour le joueur, et il echoue **en silence** : le chat de zone,
+les evenements de zone, les donjons de groupe et les barres de boss se scinderaient en N mondes
+paralleles sans qu'aucune erreur ne soit levee.
+
+- [ ] Hub Mercure externe (standalone ou `cloud.mercure.rocks`), decouple des repliques
+
+#### Et ensuite
+
+- [ ] Traefik : round-robin sur 2 a 4 repliques FrankenPHP
+- [ ] Re-run **les 4 scenarios** a 200 VUs avec 2 repliques, compare a la baseline mono-instance
+
+**Gain attendu** : capacite lineaire avec le nombre de repliques. Conditionne par les jalons A-E
+— sinon on duplique des goulots au lieu d'augmenter la capacite. Et conditionne, avant tout,
+par **F.0** : rien de tout cela n'a de sens tant qu'aucune tache planifiee ne s'execute.
+
+**Garde-fou livre** : `tests/Unit/Scheduler/ScheduledCommandTest.php` — toute commande est
+planifiee ou declaree manuelle, et toute commande planifiee existe. Les sept commandes
+recurrentes qui n'etaient declarees nulle part (`app:auction:expire`, `app:craft-order:expire`,
+`app:harvest:respawn`, `app:shop:restock`, `app:house:rent`, `app:shop:rent`,
+`app:invasion:tick`) sont desormais dans le calendrier — **inertes tant que F.0 n'est pas fait**,
+actives des qu'il l'est.
 
 ---
 
@@ -341,7 +406,7 @@ dans `docs/audits/` avec date, configuration, resume k6.
 | **C — Cache + indexes `/metrics`** | **✅ Termine** | 3a (indexes Player/Mob) + 3b (cache TTL 10s) + 3d (partial index Fight) |
 | **D — Indexes composites + refactor map** | **✅ Termine**, puis **sans objet** (ZON-24) | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) + 3f (cloture analytique : `idx_player_map_coords` non actionable car coords sont une string filtree en PHP). Les endpoints `/api/map/*` qui motivaient ce jalon ont disparu avec ZON-21 ; seul `idx_mob_alive_map` reste utile. |
 | E — Hardening Mercure | ⏳ A faire | — |
-| F — Scaling horizontal | ⏳ A faire | — |
+| **F — Scaling horizontal** | 🔍 **Audit fait** (2026-07-26) | 5 obstacles verifies (F.0 a F.4). **F.0 est bloquant et anterieur au scaling** : aucun processus ne consomme le calendrier des taches, donc aucune tache recurrente ne tourne. Garde-fou `ScheduledCommandTest` livre. |
 | **Z — Passe de mesure sur le profil zone** | ⏳ **A faire, prerequis de l'objectif 200 joueurs** | Scenarios realignes par ZON-24 ; aucun run n'a encore ete effectue sur le profil zone. |
 
 ### Roadmap a venir

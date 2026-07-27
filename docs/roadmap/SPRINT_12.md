@@ -26,7 +26,15 @@
 - [ ] **Jalon A — Cache Redis** (cache applicatif partage, sessions, cache Doctrine de 2e niveau)
 - [ ] **Jalon B — PgBouncer** (pooling de connexions PostgreSQL)
 - [ ] **Jalon E — Hardening Mercure** (limites d'abonnes, backpressure, TTL des topics)
-- [ ] **Jalon F — Plan de scaling horizontal** (multi-instances FrankenPHP derriere Traefik)
+- [x] **Jalon F — Plan de scaling horizontal** 🔍 **audit fait** — 5 obstacles verifies dans
+      [`LOAD_TESTING_BOTTLENECKS.md`](../LOAD_TESTING_BOTTLENECKS.md). **F.0 est bloquant et
+      anterieur au scaling** : aucun processus ne consomme le calendrier des taches, donc
+      **aucune tache recurrente ne tourne** (expiration d'escrow, loyers, restock PNJ, saisons,
+      releve de masse monetaire). Preuve : `api:mob:move` etait planifiee toutes les minutes
+      alors que ZON-21 l'avait supprimee. Garde-fou `ScheduledCommandTest` livre ; les 7
+      commandes recurrentes orphelines sont declarees.
+- [ ] **F.0 — ajouter le worker `messenger:consume scheduler_default`** au deploiement
+      (changement d'infrastructure, non testable sans Docker — a valider par l'exploitant)
 - [ ] **Jalon Z — passe de mesure sur le profil zone** (prerequis : etalonner les 4 scenarios realignes)
 - [ ] **Objectif : 200 joueurs simultanes sans degradation** (mesure de validation finale)
 
