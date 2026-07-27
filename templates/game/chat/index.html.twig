@@ -24,7 +24,7 @@
      }|json_encode|e('html_attr') }}">
 
     {# Tab Navigation #}
-    <div class="flex border-b border-gray-700 mb-2 flex-shrink-0">
+    <div class="flex border-b border-gray-700 mb-2 shrink-0">
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="global"
                 class="chat-tab-active px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
             {{ 'game.chat.tabs.general'|trans }}
@@ -97,7 +97,7 @@
 
     {# Private Messages Panel #}
     <div data-chat-target="privatePanel" class="flex-1 flex flex-col min-h-0 hidden">
-        <div class="flex gap-2 mb-2 flex-shrink-0">
+        <div class="flex gap-2 mb-2 shrink-0">
             <div class="relative flex-1">
                 <input type="text"
                        data-chat-target="playerSearch"
@@ -115,7 +115,7 @@
     </div>
 
     {# Input Bar #}
-    <form data-action="submit->chat#send" class="flex gap-2 mt-2 flex-shrink-0">
+    <form data-action="submit->chat#send" class="flex gap-2 mt-2 shrink-0">
         <input type="text"
                data-chat-target="input"
                placeholder="{{ 'game.chat.input_placeholder'|trans }}"

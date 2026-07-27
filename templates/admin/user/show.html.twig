@@ -102,7 +102,7 @@
                                 <p class="text-gray-200 text-sm font-medium truncate">{{ player.name }}</p>
                                 <p class="text-gray-500 text-xs truncate">{{ player.classType }} — {{ player.map ? player.map.name : 'Aucune carte' }}</p>
                             </div>
-                            <svg class="w-4 h-4 text-gray-500 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     {% endfor %}
                 </div>
@@ -140,7 +140,7 @@
                     <input type="hidden" name="_token" value="{{ csrf_token('reset_password' ~ user.id) }}">
                     <input type="password" name="new_password" placeholder="Nouveau mot de passe" minlength="6" required
                            class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500">
-                    <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0"
+                    <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0"
                             onclick="return confirm('Reinitialiser le mot de passe ?');">
                         Reset MDP
                     </button>

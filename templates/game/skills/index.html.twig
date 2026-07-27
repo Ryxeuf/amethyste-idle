@@ -99,19 +99,19 @@
             {% if skillCount > 0 %}
                 <button type="button"
                         data-action="click->skills#openRespec"
-                        class="ds-btn ds-btn--sm {{ canRespec ? 'ds-btn--secondary' : 'ds-btn--disabled' }} flex-shrink-0 ml-4">
+                        class="ds-btn ds-btn--sm {{ canRespec ? 'ds-btn--secondary' : 'ds-btn--disabled' }} shrink-0 ml-4">
                     {{ "game.skills.respec.trigger_button"|trans }}
                 </button>
             {% endif %}
         </div>
         <div class="flex items-center gap-3">
-            <span class="ds-label flex-shrink-0">Points</span>
+            <span class="ds-label shrink-0">Points</span>
             <div class="ds-meter flex-1">
                 {% set pct = maxTotalPoints > 0 ? (totalUsedPoints / maxTotalPoints * 100) : 0 %}
                 <div class="ds-meter__fill {{ pct >= 100 ? 'ds-meter__fill--hp' : '' }}"
                      style="width: {{ pct > 100 ? 100 : pct }}%"></div>
             </div>
-            <span class="ds-num flex-shrink-0 {{ totalUsedPoints >= maxTotalPoints ? 'ds-num--loss' : '' }}">
+            <span class="ds-num shrink-0 {{ totalUsedPoints >= maxTotalPoints ? 'ds-num--loss' : '' }}">
                 {{ totalUsedPoints }}/{{ maxTotalPoints }}
             </span>
         </div>
@@ -122,7 +122,7 @@
     ═══════════════════════════════════════════ #}
     <div class="ds-banner mb-4">
         <div class="flex items-center gap-3 flex-wrap">
-            <span class="ds-label flex-shrink-0">Build actif</span>
+            <span class="ds-label shrink-0">Build actif</span>
             {% if buildStats.count == 0 %}
                 <span class="ds-hint italic">Aucune compétence apprise.</span>
             {% else %}
@@ -165,7 +165,7 @@
                     <input type="text" name="preset_name" placeholder="Nom du preset..." maxlength="50" required
                            class="flex-1 bg-paper border border-line rounded-card px-3 py-1.5 text-sm text-ink focus:border-brand focus:outline-hidden">
                     <button type="submit"
-                            class="ds-btn ds-btn--secondary ds-btn--sm flex-shrink-0">
+                            class="ds-btn ds-btn--secondary ds-btn--sm shrink-0">
                         Sauvegarder
                     </button>
                 </form>
@@ -182,7 +182,7 @@
                                 <span class="ds-row__name ds-name--sm truncate block">{{ preset.name }}</span>
                                 <span class="ds-num ds-num--sm text-left">{{ preset.skillSlugs|length }} compétence{{ preset.skillSlugs|length > 1 ? 's' : '' }}</span>
                             </div>
-                            <div class="flex gap-2 flex-shrink-0 ml-3">
+                            <div class="flex gap-2 shrink-0 ml-3">
                                 <form action="{{ path('app_game_skill_preset_load', {id: preset.id}) }}" method="post">
                                     <input type="hidden" name="_token" value="{{ csrf_token('preset_load_' ~ preset.id) }}">
                                     <button type="submit"
@@ -233,7 +233,7 @@
                                     data-action="click->skills#selectDomain"
                                     data-domain-id="{{ domain.id }}"
                                     aria-selected="{{ domain.id == activeDomainId ? 'true' : 'false' }}"
-                                    class="skills-domain-btn skills-domain-chip ds-pill flex-shrink-0">
+                                    class="skills-domain-btn skills-domain-chip ds-pill shrink-0">
                                 {% if domain.element and elementConfig[domain.element] is defined %}
                                     <span class="{{ elementConfig[domain.element].dot }} w-2 h-2"></span>
                                 {% endif %}
@@ -247,7 +247,7 @@
                 </div>
 
                 {# Desktop : sidebar groupée par élément #}
-                <div class="hidden lg:block w-52 flex-shrink-0 sticky top-4 space-y-3">
+                <div class="hidden lg:block w-52 shrink-0 sticky top-4 space-y-3">
                     {% for element in elementOrder %}
                         {% set groupDomains = domains|filter(d => d.element == element) %}
                         {% if groupDomains|length > 0 %}
@@ -269,9 +269,9 @@
                                         <div class="flex items-center justify-between gap-1">
                                             <span class="ds-name ds-name--sm truncate">{{ domain|localized_domain_title }}</span>
                                             {% if availCount > 0 %}
-                                                <span class="ds-seal ds-seal-epic flex-shrink-0">{{ availCount }}</span>
+                                                <span class="ds-seal ds-seal-epic shrink-0">{{ availCount }}</span>
                                             {% elseif acquiredCount > 0 %}
-                                                <span class="ds-seal ds-seal--gain flex-shrink-0">✓{{ acquiredCount }}</span>
+                                                <span class="ds-seal ds-seal--gain shrink-0">✓{{ acquiredCount }}</span>
                                             {% endif %}
                                         </div>
                                         {% if domain.totalExperience is defined and domain.totalExperience > 0 %}
@@ -305,7 +305,7 @@
                                     <div class="flex items-center justify-between gap-1">
                                         <span class="ds-name ds-name--sm truncate">{{ domain|localized_domain_title }}</span>
                                         {% if availCount > 0 %}
-                                            <span class="ds-seal ds-seal-epic flex-shrink-0">{{ availCount }}</span>
+                                            <span class="ds-seal ds-seal-epic shrink-0">{{ availCount }}</span>
                                         {% endif %}
                                     </div>
                                 </button>
@@ -394,7 +394,7 @@
                                                         {% if skill.life > 0 %}<span class="stat-badge stat-badge-life">+{{ skill.life }} vie</span>{% endif %}
                                                     </div>
                                                 </div>
-                                                <form action="{{ path('app_game_skill_acquire') }}" method="post" class="flex-shrink-0">
+                                                <form action="{{ path('app_game_skill_acquire') }}" method="post" class="shrink-0">
                                                     <input type="hidden" name="skill_id" value="{{ skill.id }}">
                                                     <input type="hidden" name="domain_id" value="{{ domain.id }}">
                                                     <button type="submit"
@@ -437,7 +437,7 @@
                                                         </div>
                                                     {% endif %}
                                                 </div>
-                                                <span class="ds-seal ds-seal--gain flex-shrink-0">
+                                                <span class="ds-seal ds-seal--gain shrink-0">
                                                     {{ "game.skills.learned"|trans }}
                                                 </span>
                                             </div>

@@ -366,7 +366,7 @@
 						data-mob-id="{{ mob.id }}" data-target-type="mob">
 
 						<div class="flex items-center gap-2 mb-1.5">
-							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-loss-tint rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-loss-tint rounded-lg flex items-center justify-center shadow-lg shrink-0">
 								{% if mob.monster.isBoss %}
 									<span class="text-yellow-400 text-sm">&#9813;</span>
 								{% else %}
@@ -564,7 +564,7 @@
 														</div>
 														<span class="ds-row__name ds-name--sm truncate">{{ item.name }}</span>
 													</div>
-													<input type="checkbox" class="form-checkbox h-4 w-4 accent-brand rounded border-line flex-shrink-0" checked name="items[]" value="{{ item.id }}">
+													<input type="checkbox" class="form-checkbox h-4 w-4 accent-brand rounded border-line shrink-0" checked name="items[]" value="{{ item.id }}">
 												</div>
 											{% endfor %}
 										</div>

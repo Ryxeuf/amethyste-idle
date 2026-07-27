@@ -27,14 +27,14 @@
                     {% for friendship in pendingReceived %}
                         <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-yellow-500/30">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-sm font-bold flex-shrink-0">
+                                <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-sm font-bold shrink-0">
                                     {{ friendship.player.name|first|upper }}
                                 </div>
                                 <a href="{{ path('app_game_player_profile', {id: friendship.player.id}) }}" class="text-white text-sm font-medium hover:text-purple-400 truncate">
                                     {{ friendship.player.name }}
                                 </a>
                             </div>
-                            <div class="flex gap-2 flex-shrink-0">
+                            <div class="flex gap-2 shrink-0">
                                 <form action="{{ path('app_game_friends_accept', {id: friendship.id}) }}" method="post">
                                     <button type="submit" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-ink-on text-xs rounded transition-colors">
                                         {{ 'game.friends.accept'|trans }}
@@ -114,7 +114,7 @@
                     {% for friendship in pendingSent %}
                         <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center text-gray-400 text-sm font-bold flex-shrink-0">
+                                <div class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center text-gray-400 text-sm font-bold shrink-0">
                                     {{ friendship.friend.name|first|upper }}
                                 </div>
                                 <a href="{{ path('app_game_player_profile', {id: friendship.friend.id}) }}" class="text-gray-300 text-sm hover:text-purple-400 truncate">

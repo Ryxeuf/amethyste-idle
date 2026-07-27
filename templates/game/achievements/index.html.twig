@@ -63,15 +63,15 @@
                                             <div class="flex items-center gap-2">
                                                 {% if isHidden and not isCompleted %}
                                                     <h3 class="text-amber-300 font-semibold text-sm sm:text-base">{{ 'game.achievement.hidden_title'|trans }}</h3>
-                                                    <span class="text-amber-500 text-xs font-mono flex-shrink-0">{{ 'game.achievement.badge.secret'|trans }}</span>
+                                                    <span class="text-amber-500 text-xs font-mono shrink-0">{{ 'game.achievement.badge.secret'|trans }}</span>
                                                 {% else %}
                                                     <h3 class="text-white font-semibold text-sm sm:text-base {% if isCompleted %}text-green-300{% endif %}">
                                                         {{ achievement|localized_achievement_title }}
                                                     </h3>
                                                     {% if isCompleted %}
-                                                        <span class="text-green-500 text-xs font-mono flex-shrink-0">{{ 'game.achievement.badge.unlocked'|trans }}</span>
+                                                        <span class="text-green-500 text-xs font-mono shrink-0">{{ 'game.achievement.badge.unlocked'|trans }}</span>
                                                         {% if isHidden %}
-                                                            <span class="text-amber-500 text-xs font-mono flex-shrink-0">{{ 'game.achievement.badge.secret'|trans }}</span>
+                                                            <span class="text-amber-500 text-xs font-mono shrink-0">{{ 'game.achievement.badge.secret'|trans }}</span>
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endif %}

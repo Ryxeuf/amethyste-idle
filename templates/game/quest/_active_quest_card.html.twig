@@ -39,7 +39,7 @@
                 </p>
             {% endif %}
         </div>
-        <div class="flex gap-1.5 flex-shrink-0">
+        <div class="flex gap-1.5 shrink-0">
             {% if progress >= 100 %}
                 {% if quest.choiceOutcome is not empty %}
                     <button onclick="showChoiceModal({{ playerQuest.id }}, {{ quest.choiceOutcome|json_encode|e('html_attr') }})"
