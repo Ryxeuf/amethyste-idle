@@ -4,7 +4,9 @@
 
 `assets/styles/app.css` a grossi à ~1500 lignes sans système : mêmes composants redéclarés, pas d'échelle typographique, pas de token de rareté. Les six écrans principaux souffraient du même symptôme — on ne sait pas où cliquer.
 
-Cette PR ajoute un design system documenté, sous forme d'un document HTML autonome (`design/amethyste-design-system.html`), et six écrans mobiles maquettés avec.
+Cette PR ajoute un design system documenté, sous forme d'un document HTML autonome dans `design/`, et six écrans mobiles maquettés avec.
+
+Les icônes ne sont pas dupliquées : le document pointe vers les planches déjà présentes dans le repo — `assets/styles/images/Resources/Shikashi's Fantasy Icons Pack v2/#1 - Transparent Icons.png` (grille 32 px), `assets/styles/images/materias_32.png` et `assets/styles/images/monster/Enemy 01-1.png`.
 
 ## Direction retenue
 
