@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  * base**. Deux requetes d'achat concurrentes ne doivent pas pouvoir batir deux
  * maisons — et donc prelever deux fois le prix du terrain.
  */
-final class Version20260726PlayerHouse extends AbstractMigration
+final class Version20260726APlayerHouse extends AbstractMigration
 {
     public function getDescription(): string
     {
