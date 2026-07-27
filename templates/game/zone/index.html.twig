@@ -312,14 +312,14 @@
                                     </span>
                                     {# Action secondaire : « Explorer » reste la seule action primaire de l'ecran. #}
                                     {% if offer.canLaunch %}
-                                        <form method="post" action="{{ path('app_game_zone_dungeon_launch', {'id': offer.id}) }}" class="flex-shrink-0 ml-3">
+                                        <form method="post" action="{{ path('app_game_zone_dungeon_launch', {'id': offer.id}) }}" class="shrink-0 ml-3">
                                             <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_launch_' ~ offer.id) }}">
                                             <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
                                                 {{ 'game.zone.dungeon.launch'|trans }}
                                             </button>
                                         </form>
                                     {% else %}
-                                        <span class="ds-hint flex-shrink-0 ml-3 text-right">{{ offer.blocker|trans }}</span>
+                                        <span class="ds-hint shrink-0 ml-3 text-right">{{ offer.blocker|trans }}</span>
                                     {% endif %}
                                 </li>
                             {% endfor %}
