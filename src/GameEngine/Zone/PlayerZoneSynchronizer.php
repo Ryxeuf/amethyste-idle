@@ -21,9 +21,20 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * Les cartes sans zone (donjons instancies, carte de test) laissent la zone
  * courante inchangee : le joueur y retournera en sortant.
+ *
+ * `resolveOrAssign()` complete l'amorce : un joueur qui n'a **ni** zone **ni**
+ * carte rattachee a une zone — cas de tout personnage reste sur la carte de
+ * test, ou d'une base ou le hub n'a pas ete seede sous son slug attendu — se
+ * retrouvait sans position, donc sans aucune action possible. Le repli remonte
+ * jusqu'a une zone de depart plausible plutot que de rendre `null`.
  */
 class PlayerZoneSynchronizer implements EventSubscriberInterface
 {
+    /**
+     * Zone de depart canonique du monde 1.
+     */
+    public const HUB_SLUG = 'village-de-lumiere';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ZoneRepository $zoneRepository,
@@ -39,7 +50,41 @@ class PlayerZoneSynchronizer implements EventSubscriberInterface
 
     public function onPlayerRespawned(PlayerRespawnedEvent $event): void
     {
-        $this->syncFromMap($event->getPlayer(), true);
+        $this->resolveOrAssign($event->getPlayer(), true);
+    }
+
+    /**
+     * Position effective du joueur, en la lui attribuant si elle manque.
+     *
+     * Ordre de resolution, du plus precis au plus generique :
+     *  1. la zone courante, si elle existe ;
+     *  2. la zone de la carte de rattachement (transition pivot) ;
+     *  3. le hub declare (`village-de-lumiere`) ;
+     *  4. une zone de depart plausible restante (ville sure, puis ville, puis
+     *     n'importe quelle zone hors donjon).
+     *
+     * Retourne `null` uniquement si le monde ne contient aucune zone active :
+     * la seule situation ou « position inconnue » decrit vraiment la base.
+     */
+    public function resolveOrAssign(Player $player, bool $flush = false): ?Zone
+    {
+        $before = $player->getCurrentZone();
+
+        $zone = $before ?? $this->syncFromMap($player);
+        if (null === $zone) {
+            $zone = $this->zoneRepository->findEnabledBySlug(self::HUB_SLUG)
+                ?? $this->zoneRepository->findDefaultStartingZone();
+
+            if (null !== $zone) {
+                $player->setCurrentZone($zone);
+            }
+        }
+
+        if ($flush && $player->getCurrentZone() !== $before) {
+            $this->entityManager->flush();
+        }
+
+        return $zone;
     }
 
     /**
