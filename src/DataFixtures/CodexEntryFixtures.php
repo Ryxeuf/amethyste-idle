@@ -37,6 +37,19 @@ class CodexEntryFixtures extends Fixture
                 'unlockKey' => 'mines-profondes',
             ],
             [
+                // Le hub etait la seule des trois zones de depart sans entree de
+                // region : le joueur y passait ses premieres heures sans que le
+                // Codex n'en garde trace.
+                'slug' => 'region-village-de-lumiere',
+                'category' => CodexEntry::CATEGORY_REGION,
+                'title' => 'Le Village de Lumière',
+                'title_translations' => ['en' => 'The Village of Light'],
+                'description' => "Un cercle de murs bas, une forge qui ne s'éteint pas et des jardins de temple où poussent le thym et la lavande. Le Village de Lumière n'est pas grand ; il est simplement le seul endroit du monde connu où l'on dort sans monter la garde.",
+                'description_translations' => ['en' => 'A ring of low walls, a forge that never goes out, and temple gardens where thyme and lavender grow. The Village of Light is not large; it is simply the only place in the known world where one sleeps without standing watch.'],
+                'unlockType' => CodexEntry::UNLOCK_ZONE_VISIT,
+                'unlockKey' => 'village-de-lumiere',
+            ],
+            [
                 'slug' => 'bestiary-gardien-foret',
                 'category' => CodexEntry::CATEGORY_BESTIARY_LORE,
                 'title' => 'Le Gardien de la Forêt',
@@ -45,6 +58,18 @@ class CodexEntryFixtures extends Fixture
                 'description_translations' => ['en' => 'A colossus of wood and moss, the Guardian watches over the forest heart. To defeat it, they say, is to inherit a shard of its vigilance.'],
                 'unlockType' => CodexEntry::UNLOCK_BOSS_KILL,
                 'unlockKey' => 'forest_guardian',
+            ],
+            [
+                // Pendant minier du Gardien : les deux zones hostiles de depart
+                // ont desormais chacune leur boss de zone et sa page de Codex.
+                'slug' => 'bestiary-seigneur-forge',
+                'category' => CodexEntry::CATEGORY_BESTIARY_LORE,
+                'title' => 'Le Seigneur de la Forge',
+                'title_translations' => ['en' => 'The Forge Lord'],
+                'description' => "Les mineurs jurent qu'il fut un homme, et qu'il descendit trop bas chercher un métal qui n'a pas de nom. Ce qui bat encore dans sa poitrine n'est plus un cœur : c'est un feu qu'on n'a jamais su éteindre.",
+                'description_translations' => ['en' => 'The miners swear he was once a man, and that he went too deep looking for a metal with no name. What still beats in his chest is no longer a heart: it is a fire no one ever learned to put out.'],
+                'unlockType' => CodexEntry::UNLOCK_BOSS_KILL,
+                'unlockKey' => 'forge_lord',
             ],
             [
                 'slug' => 'chronique-de-l-eveil',

@@ -201,6 +201,50 @@ class GameEventFixtures extends Fixture implements DependentFixtureInterface
                 'recurring' => true,
                 'recurrence_interval' => 4320, // 72 h en minutes
             ],
+
+            // === Boss des deux zones de depart hostiles ===
+            //
+            // Le Gardien de la Foret et le Seigneur de la Forge existaient dans
+            // le bestiaire, peuplaient leur zone, et l'entree de Codex
+            // `bestiary-gardien-foret` attendait un kill de boss — mais aucun
+            // evenement ne les faisait naitre en combat collectif. Un joueur du
+            // monde de depart n'avait donc jamais rencontre la mecanique de
+            // boss de zone (ZON-18) avant l'Acte 4.
+            //
+            // Les barres sont taillees pour une poignee de joueurs, pas pour un
+            // serveur : un assaut inflige environ la valeur de `hit` du joueur
+            // et coute 10 d'energie, soit de l'ordre du millier de degats par
+            // joueur et par jour au niveau de la zone.
+            'event_boss_gardien_foret' => [
+                'name' => 'Le Gardien s\'eveille',
+                'type' => GameEvent::TYPE_BOSS_SPAWN,
+                'description' => 'Les arbres de la Foret des murmures se sont tus d\'un coup. Quelque chose de vieux vient de se lever au cœur du bois.',
+                'status' => GameEvent::STATUS_SCHEDULED,
+                'starts_at' => '+2 hours',
+                'ends_at' => '+14 hours',
+                'zone' => 'foret-des-murmures',
+                'parameters' => [
+                    'monster_slug' => 'forest_guardian',
+                    'boss_hp' => 4000,
+                ],
+                'recurring' => true,
+                'recurrence_interval' => 1440, // 24 h en minutes
+            ],
+            'event_boss_seigneur_forge' => [
+                'name' => 'La Forge rallumee',
+                'type' => GameEvent::TYPE_BOSS_SPAWN,
+                'description' => 'Une lueur rouge monte des galeries basses et le sol tiedit sous les pas. Le Seigneur de la Forge a rallume ses feux.',
+                'status' => GameEvent::STATUS_SCHEDULED,
+                'starts_at' => '+6 hours',
+                'ends_at' => '+18 hours',
+                'zone' => 'mines-profondes',
+                'parameters' => [
+                    'monster_slug' => 'forge_lord',
+                    'boss_hp' => 6500,
+                ],
+                'recurring' => true,
+                'recurrence_interval' => 2160, // 36 h en minutes
+            ],
             'event_festival_lune' => [
                 'name' => 'Festival de la Lune',
                 'type' => GameEvent::TYPE_XP_BONUS,
