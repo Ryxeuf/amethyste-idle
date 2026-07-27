@@ -137,6 +137,13 @@ scripts/                # Scripts deploy, fixtures, etc.
 - **Evenements** : architecture Event-Driven (actions -> Events -> EventSubscribers)
 - **Collisions** : bitmask directionnel N/S/E/W, -1 = mur impassable
 - **Nommage** : PascalCase entites, camelCase methodes, snake_case routes
+- **Systeme de design** : `assets/styles/design-system.css` porte les tokens (`@theme`) et les
+  composants `.ds-*` (boutons, cartes, sceaux de rarete, jauges, lignes d'objet, etats vides).
+  Un ecran repris utilise ces composants ; il ne redeclare pas de couleur. Les rampes Tailwind
+  heritees (`gray-*`, `purple-*`, `text-white`…) sont **reindexees** vers le parchemin pour que
+  les ecrans pas encore repris restent coherents : c'est un pont, pas une API. Trois regles
+  tenues par les composants : une seule action primaire par ecran, tout chiffre en monospace,
+  un etat vide qui dit quoi faire. Reference visuelle : `design/Amethyste - Design System.dc.html`.
 
 ## Pieges courants
 
@@ -177,6 +184,7 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 - [docs/ZON_CAMPAIGN_RECAP.md](docs/ZON_CAMPAIGN_RECAP.md) — Synthese versionnee de la campagne ZON-12→21 (pivot PBBG) : jalons, decisions de conception, suivis
 - [docs/roadmap/ROADMAP_TODO_INDEX.md](docs/roadmap/ROADMAP_TODO_INDEX.md) — Roadmap a venir (index + liens par sprint) ; [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Point d'entree
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
+- [design/Amethyste - Design System.dc.html](design/Amethyste%20-%20Design%20System.dc.html) — Document du systeme de design « Parchemin » (tokens, composants, six ecrans mobiles, refonte de l'ecran de zone). Traduit en code dans `assets/styles/design-system.css`
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 - [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)
 - [docs/LOAD_TESTING_BOTTLENECKS.md](docs/LOAD_TESTING_BOTTLENECKS.md) — Synthese des goulots probables identifies par les scenarios k6 (`scripts/load-test/`) + plan d'optimisation priorise en 6 jalons (Redis cache, PgBouncer, indexes & cache des collectors `/metrics`, indexes composites map, hardening Mercure, scaling horizontal). Etat des jalons mis a jour au fur et a mesure des sous-phases livrees (cf. tache 134 du Sprint 12).
