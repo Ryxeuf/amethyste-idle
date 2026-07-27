@@ -128,7 +128,13 @@
         "ring_1": "Anneau 1",
         "ring_2": "Anneau 2",
         "accessory": "Accessoire",
-        "empty": "Vide"
+        "empty": "Vide",
+        "feet": "Pieds",
+        "legs": "Jambes",
+        "finger": "Anneau",
+        "main_hand": "Arme principale",
+        "off_hand": "Arme secondaire",
+        "unknown": "Emplacement inconnu"
       },
       "actions": {
         "equip": "Équiper",
@@ -214,6 +220,17 @@
         "spell_label": "Sort :",
         "bonus_xp": "+25% XP — Bonus élémentaire",
         "bonus_synergy": "+15% Dégâts — Synergie liée"
+      },
+      "tool_slot": {
+        "pickaxe": "Pioche",
+        "sickle": "Faucille",
+        "fishing_rod": "Canne à pêche",
+        "skinning_knife": "Couteau de dépeçage",
+        "hammer": "Marteau de forge",
+        "tanning_kit": "Kit de tannage",
+        "mortar": "Mortier d'alchimie",
+        "chisel": "Burin de joaillier",
+        "unknown": "Outil"
       }
     },
     "map": {

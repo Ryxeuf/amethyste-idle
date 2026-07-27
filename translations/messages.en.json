@@ -128,7 +128,13 @@
         "ring_1": "Ring 1",
         "ring_2": "Ring 2",
         "accessory": "Accessory",
-        "empty": "Empty"
+        "empty": "Empty",
+        "feet": "Feet",
+        "legs": "Legs",
+        "finger": "Ring",
+        "main_hand": "Main weapon",
+        "off_hand": "Side weapon",
+        "unknown": "Unknown slot"
       },
       "actions": {
         "equip": "Equip",
@@ -214,6 +220,17 @@
         "spell_label": "Spell:",
         "bonus_xp": "+25% XP — Elemental bonus",
         "bonus_synergy": "+15% Damage — Linked synergy"
+      },
+      "tool_slot": {
+        "pickaxe": "Pickaxe",
+        "sickle": "Sickle",
+        "fishing_rod": "Fishing rod",
+        "skinning_knife": "Skinning knife",
+        "hammer": "Smithing hammer",
+        "tanning_kit": "Tanning kit",
+        "mortar": "Alchemy mortar",
+        "chisel": "Jeweler's chisel",
+        "unknown": "Tool"
       }
     },
     "map": {

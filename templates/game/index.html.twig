@@ -209,7 +209,12 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="text-xs font-medium text-gray-200 truncate">{{ item.name }}</div>
-                                            <div class="text-[10px] text-gray-500">{{ ('game.inventory.slot.' ~ item.gearLocation)|trans }}</div>
+                                            {# Un outil n'a pas de gearLocation, et certains emplacements herites
+                                               (feet, finger…) n'ont pas de cle : sans repli, l'ecran affichait la
+                                               cle brute — « game.inventory.slot. » pour une pioche. #}
+                                            {% set slotKey = item.isTool and item.toolType ? 'game.inventory.tool_slot.' ~ item.toolType : 'game.inventory.slot.' ~ (item.gearLocation ?: 'unknown') %}
+                                            {% set slotLabel = slotKey|trans %}
+                                            <div class="text-[10px] text-gray-500">{{ slotLabel == slotKey ? 'game.inventory.slot.unknown'|trans : slotLabel }}</div>
                                         </div>
                                         {% if item.rarity %}
                                             <span class="inv-tooltip-rarity inv-tooltip-rarity--{{ item.rarity }} text-[9px]">{{ item.rarity }}</span>
