@@ -14,7 +14,7 @@
 
             <div class="px-8 pb-8">
                 {% for message in app.flashes('success') %}
-                    <div class="mb-4 px-4 py-3 rounded-lg bg-emerald-900 bg-opacity-40 border border-emerald-700 text-emerald-300 text-sm">
+                    <div class="mb-4 px-4 py-3 rounded-lg bg-emerald-900/40 border border-emerald-700 text-emerald-300 text-sm">
                         {{ message }}
                     </div>
                 {% endfor %}
