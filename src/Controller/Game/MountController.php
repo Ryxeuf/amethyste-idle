@@ -129,5 +129,4 @@ class MountController extends AbstractController
 
         return $this->redirectToRoute('app_game_mounts');
     }
-
 }
