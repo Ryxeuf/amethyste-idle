@@ -7,7 +7,65 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-27 (**tache 134 jalon F.0** — l'activation du planificateur rendue sure ; **tache 134 jalon F** — audit de scaling, decouverte que le calendrier des taches ne tourne pas ; **ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-27 (**correctifs pivot — position, inventaire, administration** : un joueur ne reste plus sans zone, l'inventaire cesse de proposer l'impossible, les ecrans d'administration parlent zone ; **tache 134 jalon F.0** — l'activation du planificateur rendue sure ; **tache 134 jalon F** — audit de scaling, decouverte que le calendrier des taches ne tourne pas ; **ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## Correctifs pivot — position du joueur, inventaire, administration (2026-07-27)
+
+Trois symptomes distincts, une meme cause : des ecrans restes au vocabulaire d'avant le pivot.
+
+### Un joueur pouvait n'etre nulle part
+
+Le repli de position s'arretait au hub cherche par slug. Un personnage pose sur une carte sans zone
+de rattachement — la carte de test, ou toute carte anterieure a `Player::currentZone` — se retrouvait
+avec `currentZone` a `null`, et l'ecran de zone affichait « Position inconnue ». Aucune action :
+ni explorer, ni chasser, ni voyager. Rien ne le signalait, et la migration
+`Version20260724PlayerCurrentZone` ne rattrapait que les cartes portant une zone.
+
+`PlayerZoneSynchronizer::resolveOrAssign()` porte desormais la resolution complete — zone courante,
+carte de rattachement, hub, puis zone de depart plausible (ville sure, ville, zone hors donjon). Elle
+ne rend `null` que si le monde n'a aucune zone active : la seule situation ou « position inconnue »
+decrit vraiment la base. La creation de personnage l'utilise, et `app:player:backfill-zone` repare
+les joueurs deja en base.
+
+### L'inventaire proposait ce que le serveur refusait
+
+La liste des outils affichait « equiper » des que l'emplacement d'outil etait ouvert, alors que
+`EquipItemController` exige en plus le talent du palier (`equip.tool`). Le joueur cliquait sur une
+pioche en fer, acier ou mithril pour ne recevoir qu'un refus, sans savoir ce qui manquait. Les deux
+verrous sont maintenant distingues, avec un motif lisible **sans survol** — sur mobile, un `title`
+n'existe pas.
+
+Au passage : trente-et-un outils a plat imposaient de derouler toute la liste pour atteindre une
+faucille. Les sections se replient (etat memorise), les outils sont groupes par type et l'equipement
+par emplacement, et les groupes sans rien d'equipable restent fermes. Un clic sur un objet ouvre sa
+fiche — tiroir lateral sur grand ecran, feuille remontante sur mobile — avec statistiques,
+durabilite, comparaison avec la piece portee, motif du verrou et actions. Les actions y sont
+**clonees** depuis la ligne : les regles de ce qui est possible restent a un seul endroit.
+
+### L'administration ne savait pas ce qu'etait une zone
+
+Aucun ecran ne montrait le graphe de zones : le corriger demandait d'editer le YAML et de relancer un
+import en ligne de commande, sans jamais voir l'etat reel de la base. Le deplacement d'un joueur
+demandait une carte et des coordonnees `x.y` validees contre le terrain — une position qui ne decrit
+plus rien de jouable. Et la table « Repartition par zone » du tableau de bord regroupait par
+**carte** : toute zone nee apres le pivot en etait absente, ses joueurs avec.
+
+`/admin/zones` (role World Builder) livre la liste filtrable, la fiche detaillee, la creation,
+l'edition, les liaisons du graphe, l'effectif d'une espece, le rechargement des filons, et l'import
+YAML jouable depuis l'ecran — en verification puis en application, ce que l'idempotence de
+`ZoneImporter` rend sur. Le deplacement d'un joueur devient une teleportation vers une zone, qui
+annule un voyage en cours.
+
+Deux etats qu'aucun ecran ne signalait remontent : une zone sans liaison sortante (cul-de-sac) ou
+sans liaison entrante (inatteignable), et le nombre de joueurs restes sans zone.
+
+### Ce que la CI garde
+
+Le test de fumee couvre desormais les ecrans d'administration : un gabarit casse ou une dependance
+manquante s'y voit en HTTP 500, pas autrement. La dette i18n baisse de onze extraits —
+`inventory/equipment/_list` et `inventory/items/_list` sortent du plan de reference.
 
 ---
 
