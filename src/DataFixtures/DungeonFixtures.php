@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\Map;
+use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -57,13 +58,87 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($convergence);
         $this->addReference('dungeon_convergence', $convergence);
 
+        $this->loadGroupDungeons($manager, $map);
+
         $manager->flush();
+    }
+
+    /**
+     * Donjons de **groupe**, rattaches a une zone du graphe : ce sont les seuls
+     * que l'ecran de zone propose (`maxPlayers > 1`). Les deux donjons solo
+     * ci-dessus restent hors graphe, ouverts depuis `/game/dungeon`.
+     *
+     * Ils forment le reservoir de contenu gratuit du modele PBBG : l'entree ne
+     * coute pas d'energie et la repetition est reglee par la decroissance de
+     * recompense (`zone.dungeon.lockout.*`), pas par un blocage sec.
+     */
+    private function loadGroupDungeons(ObjectManager $manager, Map $fallbackMap): void
+    {
+        $definitions = [
+            [
+                'slug' => 'galeries-envahies',
+                'zone' => 'foret-des-murmures',
+                'name' => 'Les Galeries envahies',
+                'nameEn' => 'The Overrun Galleries',
+                'description' => 'Sous les racines de la foret, un boyau s\'est effondre et libere ce qui dormait dessous. Trop vaste pour un seul aventurier : il faut y descendre a plusieurs.',
+                'descriptionEn' => 'Beneath the forest roots, a tunnel has collapsed and freed what slept below. Far too vast for a lone adventurer: you must descend as a group.',
+                'minLevel' => 3,
+                'maxPlayers' => 4,
+                'lootPreview' => ['Equipement tier 2', 'Materia commune', 'Composants d\'artisanat'],
+            ],
+            [
+                'slug' => 'forges-noyees',
+                'zone' => 'mines-profondes',
+                'name' => 'Les Forges noyees',
+                'nameEn' => 'The Drowned Forges',
+                'description' => 'Les anciennes forges des mines ont ete englouties par une nappe souterraine. Les constructs qui les gardaient tournent encore, indifferents a l\'eau qui monte.',
+                'descriptionEn' => 'The old forges of the mines were swallowed by an underground flood. The constructs that guarded them still turn, indifferent to the rising water.',
+                'minLevel' => 8,
+                'maxPlayers' => 5,
+                'lootPreview' => ['Equipement tier 3', 'Materia rare', 'Lingots de cobalt'],
+            ],
+        ];
+
+        $zoneRepository = $manager->getRepository(Zone::class);
+
+        foreach ($definitions as $definition) {
+            $zone = $zoneRepository->findOneBy(['slug' => $definition['zone']]);
+            if (null === $zone) {
+                // Le graphe de zones est importe depuis le YAML : si la zone
+                // visee disparait de la definition, on saute le donjon plutot
+                // que de casser tout le chargement des fixtures.
+                continue;
+            }
+
+            $dungeon = new Dungeon();
+            $dungeon->setSlug($definition['slug']);
+            $dungeon->setName($definition['name']);
+            $dungeon->setNameTranslations(['en' => $definition['nameEn']]);
+            $dungeon->setDescription($definition['description']);
+            $dungeon->setDescriptionTranslations(['en' => $definition['descriptionEn']]);
+            // `map` reste obligatoire mais n'est plus qu'un support de donnees
+            // depuis la suppression du rendu carte (ZON-21) : c'est `zone` qui
+            // rattache desormais le donjon au monde.
+            $dungeon->setMap($zone->getSourceMap() ?? $fallbackMap);
+            $dungeon->setZone($zone);
+            $dungeon->setMinLevel($definition['minLevel']);
+            $dungeon->setMaxPlayers($definition['maxPlayers']);
+            $dungeon->setLootPreview($definition['lootPreview']);
+            $dungeon->setCreatedAt(new \DateTime());
+            $dungeon->setUpdatedAt(new \DateTime());
+
+            $manager->persist($dungeon);
+            $this->addReference('dungeon_' . $definition['slug'], $dungeon);
+        }
     }
 
     public function getDependencies(): array
     {
         return [
             MapFixtures::class,
+            // Les donjons de groupe se rattachent aux zones du graphe, importees
+            // depuis config/game/zones/world_1.yaml par cette fixture.
+            ZoneGraphFixtures::class,
         ];
     }
 }
