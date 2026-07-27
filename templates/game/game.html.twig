@@ -130,7 +130,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
                                 <span data-notification-center-target="badge"
-                                      class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 {{ notif_unread == 0 ? 'hidden' : '' }}">
+                                      class="absolute -top-0.5 -right-0.5 bg-red-500 text-ink-on text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 {{ notif_unread == 0 ? 'hidden' : '' }}">
                                     {{ notif_unread > 99 ? '99+' : notif_unread }}
                                 </span>
                             </button>
@@ -187,7 +187,7 @@
                         </svg>
                         {% set mobile_notif_unread = notification_unread_count() %}
                         {% if mobile_notif_unread > 0 %}
-                            <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5">
+                            <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-ink-on text-[9px] font-bold rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5">
                                 {{ mobile_notif_unread > 99 ? '99+' : mobile_notif_unread }}
                             </span>
                         {% endif %}
@@ -441,7 +441,7 @@
              data-tutorial-highlight-step-value="{{ tuto_step.value }}">
             <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand text-white ds-num ds-num--sm font-bold">
+                    <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand text-ink-on ds-num ds-num--sm font-bold">
                         {{ tuto_step.stepNumber }}
                     </span>
                     <div class="min-w-0">

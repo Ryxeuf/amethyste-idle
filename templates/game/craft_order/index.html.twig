@@ -18,20 +18,20 @@
                 </p>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ path('app_game_craft_order_new') }}" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm rounded-lg transition-colors">Commander</a>
+                <a href="{{ path('app_game_craft_order_new') }}" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-ink-on text-xs sm:text-sm rounded-lg transition-colors">Commander</a>
                 <a href="{{ path('app_game_craft_order_artisans') }}" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs sm:text-sm rounded-lg transition-colors">Artisans</a>
-                <a href="{{ path('app_game_craft_order_workshop') }}" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs sm:text-sm rounded-lg transition-colors">Mon atelier</a>
-                <a href="{{ path('app_game_craft_order_mine') }}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm rounded-lg transition-colors">Mes commandes</a>
+                <a href="{{ path('app_game_craft_order_workshop') }}" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-ink-on text-xs sm:text-sm rounded-lg transition-colors">Mon atelier</a>
+                <a href="{{ path('app_game_craft_order_mine') }}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs sm:text-sm rounded-lg transition-colors">Mes commandes</a>
             </div>
         </div>
 
         <div class="game-card-body">
             <div class="flex flex-wrap gap-2 mb-4">
                 <a href="{{ path('app_game_craft_order') }}"
-                   class="px-3 py-1.5 text-xs rounded-lg {% if craft == '' %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">Tous les metiers</a>
+                   class="px-3 py-1.5 text-xs rounded-lg {% if craft == '' %}bg-purple-600 text-ink-on{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">Tous les metiers</a>
                 {% for c in crafts %}
                     <a href="{{ path('app_game_craft_order', {craft: c}) }}"
-                       class="px-3 py-1.5 text-xs rounded-lg capitalize {% if craft == c %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">{{ c }}</a>
+                       class="px-3 py-1.5 text-xs rounded-lg capitalize {% if craft == c %}bg-purple-600 text-ink-on{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">{{ c }}</a>
                 {% endfor %}
             </div>
 
@@ -60,7 +60,7 @@
                                 <form method="post" action="{{ path('app_game_craft_order_claim', {id: order.id}) }}"
                                       onsubmit="return confirm('Prendre cette commande en charge ?')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('craft_order_claim_' ~ order.id) }}">
-                                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+                                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-purple-600 hover:bg-purple-500 text-ink-on transition-colors">
                                         Prendre en charge
                                     </button>
                                 </form>

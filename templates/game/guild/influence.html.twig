@@ -22,7 +22,7 @@
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     {% for region in regions %}
                         <a href="{{ path('app_game_guild_influence', {region: region.slug, season: season ? season.slug : ''}) }}"
-                           class="px-2.5 py-1 text-xs rounded transition-colors {{ selectedRegion is not null and selectedRegion.slug == region.slug ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
+                           class="px-2.5 py-1 text-xs rounded transition-colors {{ selectedRegion is not null and selectedRegion.slug == region.slug ? 'bg-amber-600 text-ink-on' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
                             {{ region|localized_region_name }}
                         </a>
                     {% endfor %}
@@ -53,7 +53,7 @@
                             <div class="mt-2 flex flex-wrap gap-1.5">
                                 {% for past in completedSeasons %}
                                     <a href="{{ path('app_game_guild_influence', {region: selectedRegion ? selectedRegion.slug : '', season: past.slug}) }}"
-                                       class="px-2 py-1 text-[10px] rounded transition-colors {{ season.slug == past.slug ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
+                                       class="px-2 py-1 text-[10px] rounded transition-colors {{ season.slug == past.slug ? 'bg-purple-600 text-ink-on' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
                                         {{ past.name }}
                                     </a>
                                 {% endfor %}

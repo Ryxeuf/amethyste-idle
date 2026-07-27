@@ -31,7 +31,7 @@
 								 data-action-id="{{ action.id }}"
 								 data-details="{{ action.details|json_encode|e('html_attr') }}"
 								 onclick="showActionDetails(this)">
-								<div class="w-8 h-8 rounded-full {% if action.type == 'player' %}bg-gradient-to-br from-purple-500 to-purple-700{% else %}bg-gradient-to-br from-red-500 to-red-700{% endif %} flex items-center justify-center text-sm text-white">
+								<div class="w-8 h-8 rounded-full {% if action.type == 'player' %}bg-brand{% else %}bg-loss{% endif %} flex items-center justify-center text-sm text-ink-on">
 									{{ action.actor }}
 								</div>
 							</div>

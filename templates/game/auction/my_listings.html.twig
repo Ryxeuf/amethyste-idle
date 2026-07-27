@@ -19,7 +19,7 @@
                     {{ 'game.auction.my_listings.back_to_auction'|trans }}
                 </a>
                 <a href="{{ path('app_game_auction_sell') }}"
-                   class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                   class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-ink-on text-xs sm:text-sm rounded-lg transition-colors">
                     {{ 'game.auction.my_listings.sell_button'|trans }}
                 </a>
             </div>
@@ -82,7 +82,7 @@
                                           onsubmit="return confirm('{{ 'game.auction.my_listings.active.cancel_confirm'|trans|e('js') }}')">
                                         <input type="hidden" name="_token" value="{{ csrf_token('auction_cancel_' ~ listing.id) }}">
                                         <button type="submit"
-                                                class="px-3 py-1.5 bg-red-600/80 hover:bg-red-500 text-white text-xs rounded-lg transition-colors">
+                                                class="px-3 py-1.5 bg-red-600/80 hover:bg-red-500 text-ink-on text-xs rounded-lg transition-colors">
                                             {{ 'game.auction.my_listings.active.cancel_button'|trans }}
                                         </button>
                                     </form>

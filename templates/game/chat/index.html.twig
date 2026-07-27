@@ -53,7 +53,7 @@
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
                     {% set senderTag = player_guild_tag(message.sender) %}
                     {% set senderColor = player_guild_color(message.sender) %}
-                    {% if senderTag %}<span class="text-xs font-bold mr-0.5" style="color: {{ senderColor ?? '#f59e0b' }}">[{{ senderTag }}]</span>{% endif %}
+                    {% if senderTag %}<span class="text-xs font-bold mr-0.5" style="color: {{ senderColor ?? '#c08a1e' }}">[{{ senderTag }}]</span>{% endif %}
                     {% if message.sender.prestigeTitle %}<span class="text-yellow-300 text-xs italic mr-0.5">{{ message.sender.prestigeTitle }}</span>{% endif %}
                     <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
@@ -70,7 +70,7 @@
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
                     {% set senderTag = player_guild_tag(message.sender) %}
                     {% set senderColor = player_guild_color(message.sender) %}
-                    {% if senderTag %}<span class="text-xs font-bold mr-0.5" style="color: {{ senderColor ?? '#f59e0b' }}">[{{ senderTag }}]</span>{% endif %}
+                    {% if senderTag %}<span class="text-xs font-bold mr-0.5" style="color: {{ senderColor ?? '#c08a1e' }}">[{{ senderTag }}]</span>{% endif %}
                     {% if message.sender.prestigeTitle %}<span class="text-yellow-300 text-xs italic mr-0.5">{{ message.sender.prestigeTitle }}</span>{% endif %}
                     <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
@@ -122,18 +122,19 @@
                maxlength="500"
                autocomplete="off"
                class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
-        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors">
             {{ 'game.chat.send'|trans }}
         </button>
     </form>
 </div>
 
 <style>
-    .chat-tab-active { background: rgb(88 28 135 / 0.5); color: #c084fc; border-bottom: 2px solid #a855f7; }
-    .chat-tab-inactive { color: #9ca3af; border-bottom: 2px solid transparent; }
-    .chat-tab-inactive:hover { color: #d1d5db; background: rgb(55 65 81 / 0.5); }
+    /* Onglets de canal : la meme regle que `.ds-tab`, filet amethyste sous l'actif. */
+    .chat-tab-active { color: var(--color-ink); font-weight: 700; border-bottom: 3px solid var(--color-brand); }
+    .chat-tab-inactive { color: var(--color-ink-2); border-bottom: 3px solid transparent; }
+    .chat-tab-inactive:hover { color: var(--color-ink); background: var(--color-paper-2); }
     .scrollbar-thin::-webkit-scrollbar { width: 6px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--color-line-strong); border-radius: 3px; }
 </style>
 {% endblock %}

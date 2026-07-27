@@ -9,7 +9,7 @@
     <div class="game-card mb-4">
         <div class="game-card-body">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-2xl font-bold text-white border-2 border-purple-400/50 shadow-lg shadow-purple-500/20">
+                <div class="w-16 h-16 rounded-full bg-brand flex items-center justify-center text-2xl font-bold text-ink-on">
                     {{ targetPlayer.name|first|upper }}
                 </div>
                 <div class="flex-1 min-w-0">
@@ -74,7 +74,7 @@
                     {% if not isOwnProfile %}
                         <div class="mt-2 flex items-center gap-2">
                             <form action="{{ path('app_game_friends_request', {id: targetPlayer.id}) }}" method="post" class="inline">
-                                <button type="submit" class="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
+                                <button type="submit" class="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs rounded transition-colors">
                                     {{ 'game.friends.add_friend'|trans }}
                                 </button>
                             </form>
@@ -102,7 +102,7 @@
                                           class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200"
                                           placeholder="Decrivez le probleme..."></textarea>
                             </div>
-                            <button type="submit" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded transition-colors">
+                            <button type="submit" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-ink-on text-xs rounded transition-colors">
                                 Envoyer le signalement
                             </button>
                         </form>
@@ -218,7 +218,7 @@
         <div class="game-card-body">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for pa in featuredAchievements %}
-                    <div class="flex items-center gap-2 bg-gradient-to-r from-amber-900/20 to-gray-800/50 rounded-lg p-2.5 border border-amber-700/20">
+                    <div class="flex items-center gap-2 bg-paper-2 rounded-lg p-2.5 border border-amber-700/20">
                         <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
                         <div class="min-w-0 flex-1">
                             <div class="text-sm font-medium text-amber-400 truncate">{{ pa.achievement.title }}</div>

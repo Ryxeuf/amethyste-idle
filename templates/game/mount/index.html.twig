@@ -103,7 +103,7 @@
                                             <form method="post" action="{{ path('app_game_mounts_mount', {id: mount.id}) }}" class="inline">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('mount_' ~ mount.id) }}">
                                                 <button type="submit"
-                                                        class="text-[11px] px-2.5 py-1 rounded-md bg-purple-700 hover:bg-purple-600 active:bg-purple-800 text-white transition-colors">
+                                                        class="text-[11px] px-2.5 py-1 rounded-md bg-purple-700 hover:bg-purple-600 active:bg-purple-800 text-ink-on transition-colors">
                                                     {{ 'game.mount.mount_button'|trans }}
                                                 </button>
                                             </form>

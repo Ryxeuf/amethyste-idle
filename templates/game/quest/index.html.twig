@@ -119,12 +119,12 @@
                                         <div class="flex gap-1.5 flex-shrink-0">
                                             {% if progress >= 100 %}
                                                 <button onclick="completeDailyQuest({{ dailyQuest.id }})"
-                                                        class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white text-xs rounded transition-colors touch-target">
+                                                        class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-ink-on text-xs rounded transition-colors touch-target">
                                                     Rendre
                                                 </button>
                                             {% endif %}
                                             <button onclick="abandonDailyQuest({{ dailyQuest.id }})"
-                                                    class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 active:bg-red-700 text-white text-xs rounded transition-colors touch-target">
+                                                    class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 active:bg-red-700 text-ink-on text-xs rounded transition-colors touch-target">
                                                 Abandonner
                                             </button>
                                         </div>
@@ -234,7 +234,7 @@
                                                 <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                             </div>
                                             <button onclick="acceptDailyQuest({{ quest.id }})"
-                                                    class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white text-xs rounded transition-colors touch-target flex-shrink-0">
+                                                    class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-ink-on text-xs rounded transition-colors touch-target flex-shrink-0">
                                                 Accepter
                                             </button>
                                         </div>
@@ -378,7 +378,7 @@
                                         {% endif %}
                                     </div>
                                     <button onclick="acceptQuest({{ quest.id }})"
-                                            class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded transition-colors touch-target flex-shrink-0">
+                                            class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-ink-on text-xs rounded transition-colors touch-target flex-shrink-0">
                                         Accepter
                                     </button>
                                 </div>
@@ -597,7 +597,7 @@ function showChoiceModal(playerQuestId, choices) {
     choices.forEach(c => {
         const btn = document.createElement('button');
         btn.textContent = c.label;
-        btn.className = 'w-full px-3 py-2 bg-purple-700 hover:bg-purple-600 active:bg-purple-800 text-white text-sm rounded transition-colors';
+        btn.className = 'w-full px-3 py-2 bg-purple-700 hover:bg-purple-600 active:bg-purple-800 text-ink-on text-sm rounded transition-colors';
         btn.onclick = () => completeQuest(playerQuestId, c.key);
         container.appendChild(btn);
     });

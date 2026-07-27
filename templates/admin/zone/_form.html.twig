@@ -22,7 +22,7 @@
         </div>
 
         <div class="flex items-center gap-3 pt-2 border-t border-gray-800">
-            <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+            <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-ink-on transition-colors">
                 Enregistrer
             </button>
             <a href="{{ zone is defined and zone.id is defined ? path('admin_zone_show', {id: zone.id}) : path('admin_zone_index') }}"
