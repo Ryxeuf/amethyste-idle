@@ -1,6 +1,6 @@
 # Monde d'Améthyste — géographie, civilisation, politique, trame
 
-> **Statut : proposition, à valider.** Juillet 2026.
+> **Statut : socle adopté.** Juillet 2026 — décisions **A → F** actées le 2026-07-27 (§10).
 > Socle de monde : le cadre dans lequel ajouter des zones, des factions, des saisons et du
 > contenu économique sans se contredire. Ce document ne redéfinit aucune règle du projet :
 > il fournit la **fiction qui les rend nécessaires**, et le **système territorial** qui les
@@ -58,7 +58,8 @@ place pour deux.
 | **Foyer** | Le point d'une zone où le sédiment s'accumule. Ce qui devient — ou pas — une ville. **C'est le nœud.** |
 | **Crue** | La loi qui limite le nombre de grandes cités. Nommée d'après ce qui a tué l'âge précédent. |
 | **Reflux** | Le mouvement lent par lequel le monde reprend ce qu'il a déposé. |
-| **Blanc** | Terre dont la mémoire a été reprise. Ni faune, ni flore, ni récolte, ni souvenir. |
+| **Pâleur** | État d'une terre sur-exploitée : elle rend moins, et plus trouble. Graduel, borné, réversible. |
+| **l'Étale** | Le lieu où la marée n'est jamais revenue. Terre dont la mémoire a été reprise pour de bon — ni faune, ni flore, ni récolte, ni souvenir. Ancien : **aucun vivant ne l'a causé**. |
 | **Marée** | Respiration du cristal, tous les ~28 jours : une strate ancienne affleure. *(= une saison.)* |
 | **Limpide** *(formel : sans-strate)* | Être sans passé propre, donc capable de porter celui des autres. **Le personnage joueur.** |
 
@@ -82,7 +83,7 @@ pour devenir une loi du monde.
 | **Marchés régionaux** (D13) | Un marché est la bouche d'un foyer. Il n'existe pas de marché « du monde », parce qu'il n'existe pas de lieu qui soit partout. |
 | **Contrôle de cité par l'influence** (GCC) | Une cité n'appartient pas à qui la prend, mais à qui l'a **faite monter**. |
 | **Saisons de 4 semaines** (D8-D12) | Le cristal respire. À chaque marée, une strate affleure et le monde redevient un mois durant ce qu'il a été. |
-| **Codex** (D11) | Ce n'est pas un menu : c'est **la mémoire que les joueurs sauvent du Reflux**. Ce qui y est inscrit ne blanchit pas. |
+| **Codex** (D11) | Ce n'est pas un menu : c'est **la mémoire que les joueurs sauvent du Reflux**. Ce qui y est inscrit ne pâlit pas. |
 
 ---
 
@@ -227,7 +228,7 @@ boutique, un atelier et une quête. La région `sanctuaire-lumiere` est donc
 | **Épuisé** | Désert, sel, ambre | Dunes d'Ambre, Mer de Sel |
 | **Arrêté net** | Glace, silence, choses conservées entières | Pas de Givre, Glacier du Silence |
 | **Enseveli d'un coup** | Ruines intactes sous la surface | Cité ensevelie |
-| **Retiré** | Le **Blanc** — absence | *(à venir)* |
+| **Retiré** | **l'Étale** — absence | *(à venir)* |
 
 Les onze zones livrées se rangent dans la grille **sans une retouche**. On formalise ce qui
 existe, on n'impose pas une couche.
@@ -252,7 +253,7 @@ Le graphe actuel — un centre et deux bras — est repris tel quel :
 
 **Plus on s'éloigne de Lumière, plus la strate sous les pieds est ancienne et abîmée.** Le
 bras nord monte vers ce qui s'est figé, le bras sud descend vers ce qui s'est tari. Les
-deux finissent au bord du Blanc. C'est aussi la lecture du **palier de danger** : la
+deux finissent au bord de l'Étale. C'est aussi la lecture du **palier de danger** : la
 profondeur de strate *est* le tier de la zone, à la manière des anneaux d'Albion.
 
 ### 4.3 Les régions
@@ -267,7 +268,7 @@ une est réservée.
 | **Terres Sauvages** | Métal, Eau/Ténèbre, Air | Strates ouvertes, veines épaisses | Mines profondes, Marais brumeux, Crête de Ventombre | Oui — 8 % | Cœur industriel : **c'est là que se joue la doctrine** (§6) |
 | **L'Ambre** *(à créer)* | Feu / Terre, épuisée | Ancien fond de mer, temps fossilisé | Dunes d'Ambre, Mer de Sel, Cité ensevelie | Oui — 10 % | Les reliques de l'âge précédent |
 | **Le Silence** *(à créer)* | Eau / Lumière, figée | Le temps s'y est arrêté en plein geste | Pas de Givre, Glacier du Silence | **Non** — 0 % | Aucun foyer ne tient : on y monte des **expéditions** |
-| **Le Blanc** *(réservée)* | *néant* | Ce que le Reflux a repris | *(expansion)* | Sans objet | La frontière |
+| **L'Étale** *(réservée)* | *néant* | Ce que le Reflux a repris | *(expansion)* | Sans objet | La frontière |
 
 Deux propriétés de conception à garder :
 
@@ -285,7 +286,8 @@ Chacun est **une mécanique**, pas une couleur de fond :
 | Biome | Ce qu'on y voit | Ce qu'il fait au jeu |
 |---|---|---|
 | **Affleurement** | Veine à ciel ouvert, bêtes prises dans le cristal | Améthystite brute, très haut rendement, **vitalité de filon fragile** — le levier de sur-extraction |
-| **Blanc** | Rien. Ni couleur, ni bruit, ni faune | Biome **d'absence** : aucune récolte, aucun PNJ, seulement des Effacés. Peut **apparaître** en conséquence d'une saison |
+| **Étale** | Rien. Ni couleur, ni bruit, ni faune | Biome **d'absence** : aucune récolte, aucun PNJ, aucun foyer — seulement des Effacés. On n'y récolte pas, **on y retrouve** (§12.1) |
+| **Zone pâlie** | Les couleurs se délavent, les filons rendent trouble | **État**, pas biome : superposable à n'importe quelle zone, réversible contre paiement au trésor (§12.1) |
 | **Ambre** | Choses conservées en plein geste | Butin de l'âge précédent ; **toute récolte réveille ce qui était conservé** |
 | **Chœur** | Deux veines croisées, deux lumières à contretemps | Synergie élémentaire forte, gain de matéria accru, météo instable |
 | **Faille** | Un canyon où chaque assise est une époque | Donjon **vertical** : descendre = remonter le temps, une faune par palier |
@@ -303,7 +305,7 @@ Chacun est **une mécanique**, pas une couleur de fond :
 | Canopée / sylve ancienne | Verticalité, herboristerie haute, faune Bête | Bois/Bête | Moyen |
 | Karst / grottes noyées | Donjons naturels | Eau/Ténèbre | Moyen |
 | Steppe / badlands | Montures, caravanes longues | Terre/Air | Faible |
-| Le Blanc | Frontière, endgame, expansion | *néant* | Réservé |
+| L'Étale | Frontière, endgame, expansion | *néant* | Réservé |
 
 Rien à modéliser aujourd'hui. Ce qui compte : **chaque entrée sait déjà à quelle veine, quel
 élément et quel métier elle se rattache.** L'ajout devient un fichier YAML, pas un débat.
@@ -492,7 +494,7 @@ La compétition reste **indirecte et PvE** : on ne combat pas la guilde d'en fac
 |---|---|---|---|
 | **Acte d'introduction** | *Le réveil du Limpide.* Un être sans passé ouvre les yeux à Lumière, rassemble quatre fragments, atteint la Voûte — et découvre qu'elle est **fermée de l'intérieur**. | Une fois par personnage | Arc `intro` + Actes 2-3 (livrés) |
 | **Marées** | Un épisode par mois : une strate affleure, une menace monte, un climax se combat, une résolution s'inscrit. Résoluble, oubliable. | 4 semaines | `InfluenceSeason` + 4 `GameEvent` (livré) |
-| **Le Reflux** | La ligne longue : le Blanc gagne, la Fonderie accélère, les foyers montent et tombent, la Voûte s'ouvrira. N'avance que par **basculements canon rares**. | Années | `is_canon` + journal de monde (livré) |
+| **Le Reflux** | La ligne longue : la Pâleur gagne, la Fonderie accélère, les foyers montent et tombent, la Voûte s'ouvrira. N'avance que par **basculements canon rares**. | Années | `is_canon` + journal de monde (livré) |
 
 L'existant s'y range sans réécriture : les quatre fragments des Actes 2-3 (vert/forêt,
 orange/mines, bleu-gris/marais, blanc/sommet) deviennent les **quatre clés de voûte**, une
@@ -521,13 +523,13 @@ le quota bute sur le trauma fondateur de son monde.
 
 D'où la question de fin, qui n'a pas de bonne réponse :
 
-- **Ouvrir.** Rendre au monde tout ce qu'il a déposé. La magie redevient infinie, le Blanc
+- **Ouvrir.** Rendre au monde tout ce qu'il a déposé. La magie redevient infinie, la Pâleur
   recule — et le poids revient, et avec lui la raison qui avait fait fermer.
 - **Refermer.** Sceller ce qui reste, accepter que la magie s'éteigne en une génération, et
   laisser un monde ordinaire à ceux qui viendront.
 - **Répartir.** Ne plus garder la mémoire dans une pierre, mais **dans ce que les vivants ont
   bâti et écrit** — les foyers, le Codex, les faits canon des marées. Ce que les joueurs ont
-  sauvé, le monde le garde ; ce qu'ils ont laissé blanchir, il le perd.
+  sauvé, le monde le garde ; ce qu'ils ont laissé pâlir, il le perd.
 
 La troisième voie est la raison d'être du Codex (D11) *et* des foyers (§3) : **la
 civilisation que les joueurs construisent est la réponse à la question de fin.** Aucune
@@ -536,13 +538,13 @@ varie (compatible D10).
 
 ### 7.4 Les Effacés
 
-Ce qui sort du Blanc n'a pas de forme propre, puisque plus rien ne se souvient de lui.
+Ce qui sort de l'Étale n'a pas de forme propre, puisque plus rien ne se souvient de lui.
 **Un Effacé prend le geste de qui le combat** : il vous rend vos matérias, une par une, un
 tour plus tard. Bestiaire infiniment variable pour un seul comportement, lecture immédiate
 (« il me refait mon propre sort »), et un contre-jeu qui récompense la diversité
 d'équipement plutôt que la puissance brute. Réutilise `SpellApplicator` et
 `MobActionHandler`, sans nouveau moteur. C'est l'ennemi générique du jeu, disponible pour
-n'importe quelle marée et n'importe quelle zone qui blanchit.
+n'importe quelle marée et n'importe quelle zone qui pâlit.
 
 ---
 
@@ -556,12 +558,12 @@ climax → résolution, livré) ; seule la strate change.
 | **La Marée d'Ambre** | Un jour de l'âge précédent, dans les Dunes | Ce qui était conservé se réveille | Lecteurs contre Fondeurs sur le butin |
 | **La Fonte** | L'été d'avant le gel, au Silence | Ce qui s'était arrêté reprend son geste | Une zone gelée devient temporairement exploitable |
 | **Le Chœur** | Deux veines entrent en phase | Boss à double élément | Synergie élémentaire poussée à l'extrême |
-| **Le Blanchiment** | *Rien ne remonte* — une zone se vide | Empêcher un foyer de tomber | **Conséquence directe** de la sur-extraction du mois précédent |
+| **La Pâleur** | *Rien ne remonte* — une zone se délave | Empêcher un foyer de tomber | **Conséquence directe** de la sur-extraction du mois précédent |
 | **L'Appel de la Crue** | Le quota se libère | Faire monter un foyer avant les autres | Course de nœuds entre guildes, sans un coup échangé |
 | **La Contrefaçon** | Les Ombres inondent le marché de fausses matérias | Remonter à l'atelier | Marée **économique** : le HV est le terrain |
 
 Deux propriétés à tenir : environ une marée sur trois est **canon** (D9/D12) ; et les marées
-« conséquence » (*Blanchiment*, *Appel de la Crue*) doivent être **déclenchées par ce que les
+« conséquence » (*la Pâleur*, *Appel de la Crue*) doivent être **déclenchées par ce que les
 joueurs ont fait le mois d'avant**. C'est ce qui fait une boucle plutôt qu'un calendrier.
 
 ---
@@ -575,7 +577,7 @@ seule mécanique** ; le pilier des foyers (5 à 8) est un chantier de roadmap à
 |---|---|---|
 | 1 | Régions `ambre` et `silence` + rattachement des zones de l'Acte 4 | Donnée (`RegionFixtures`) |
 | 2 | Faction **la Fonderie** + récompenses | Donnée (`FactionFixtures`) |
-| 3 | Entrées de Codex : régions, factions, vocabulaire (sédiment, veine, Crue, Blanc, Limpide) | Donnée (`CodexEntryFixtures`) |
+| 3 | Entrées de Codex : régions, factions, vocabulaire (sédiment, veine, Crue, Pâleur, Étale, Limpide) | Donnée (`CodexEntryFixtures`) |
 | 4 | `Region.veine` (élément dominant) | Une colonne |
 | 5 | **`Settlement`** : rang, type, sédiment accumulé, `Zone` (1-1) | Entité + migration |
 | 6 | Dépôt de sédiment : brancher sur les events déjà écoutés par `InfluenceListener` | Un subscriber de plus, aucun event neuf |
@@ -583,7 +585,7 @@ seule mécanique** ; le pilier des foyers (5 à 8) est un chantier de roadmap à
 | 8 | Crue : quotas + zone d'influence + régression par marée d'inactivité | Logique au tick de saison |
 | 9 | Bonus d'atelier par foyer (ligne de production × type) | Un multiplicateur lu au craft |
 | 10 | Caravanes : cargaison, voyage lent, rencontres de route | S'appuie sur le graphe de voyage |
-| 11 | Biome **Blanc** (`Zone.isBlanched`) + famille **Effacés** | Un booléen + un comportement de mob |
+| 11 | **Pâleur** (`Zone.paleness`, réversible contre paiement) + biome de **l'Étale** + famille **Effacés** | Un compteur, un type de zone, un comportement de mob |
 
 Le point 6 est le plus important à noter : **le système d'influence de guilde mesure déjà
 exactement ce dont les foyers ont besoin** (kills, craft, récolte, pêche, quêtes, défis). Le
@@ -601,15 +603,13 @@ consommateur sur des événements déjà émis.
 | A | Les foyers remplacent-ils les villes en dur ? | **Non — incrémental.** Rien n'est rétro-gaté ; les zones peuplées démarrent à un rang non nul, seuls les services nouveaux dépendent du rang (§3.1 bis). |
 | B | Quota de Crue par monde ou par région ? | **Par monde, indexé sur la population active** (§3.3). |
 | C | La régression est-elle une punition ? | **Bornée** : annonce une marée à l'avance, perte du rang mais pas des investissements, remontée accélérée (§3.1). |
-
 | D | Qualité variable des ressources ? | **Oui**, sur la ligne du cristal uniquement, en quatre bandes (§5.4). |
+| E | Le « Blanc » : sanction ou frontière ? | **Les deux, séparés et nommés** — la **Pâleur** (état de zone, réversible, réparable contre paiement) et **l'Étale** (lieu ancien, permanent, frontière de fin de jeu). Aucun vivant ne cause une Étale (§12.1). |
+| F | La Fonderie : jouable ou lointaine ? | **Jouable dès le début**, et sans méchanceté. Levier retenu : **fondre ou lire** une matéria (§12.2). |
 
-### Encore ouverts
+### Encore ouvert
 
-1. **Le Blanc** — nature, nom, et rapport à la sur-extraction. Dossier développé en **§12.1**.
-2. **La Fonderie** — jouable ou lointaine, et sur quel levier mécanique. Dossier développé
-   en **§12.2**.
-3. **Quand ouvrir la Voûte ?** Le retournement ne vaut que gardé : aucun contenu ne s'en
+1. **Quand ouvrir la Voûte ?** Le retournement ne vaut que gardé : aucun contenu ne s'en
    approche avant des dizaines de marées, et il n'est jamais « joué » — il est *inscrit*,
    comme un fait canon.
 
@@ -631,52 +631,53 @@ demande que trois réponses :
 
 ---
 
-## 12. Dossiers en discussion
+## 12. Dossiers instruits *(tranchés le 2026-07-27)*
 
-Deux notions étaient citées sans être définies. Elles sont détaillées ici pour être
-tranchées — chacune pose **une** vraie question, le reste en découle.
+Deux notions étaient citées sans être définies. Le raisonnement qui a mené à la décision est
+conservé ici : c'est lui qui empêchera de revenir dessus par inadvertance.
 
-### 12.1 Le Blanc
+### 12.1 La Pâleur et l'Étale
 
-#### Le problème réel
+#### Le problème qu'il a fallu voir
 
-Dans les versions précédentes de ce document, le Blanc faisait **deux métiers incompatibles** :
+Le « Blanc » des premières versions de ce document faisait **deux métiers incompatibles** :
 
 - **Une sanction** — ce que devient une zone sur-extraite.
 - **Une frontière** — une région de fin de jeu, pleine de contenu, d'où sortent les Effacés.
 
-Les deux se contredisent. Si le Blanc est riche et gratifiant, blanchir sa région n'est pas
-une punition mais un jackpot. S'il est stérile, c'est une perte sèche, et Eco nous a montré
+Les deux se contredisent. Si c'est riche et gratifiant, ruiner sa région n'est plus une
+punition mais un jackpot. S'il est stérile, c'est une perte sèche, et Eco nous a montré
 ce que produit une perte sèche collective : de la rancune entre voisins, pas de l'écologie.
-**La question à trancher n'est donc pas le nom, c'est lequel des deux métiers il garde.**
+**La question n'était donc pas le nom, mais lequel des deux métiers garder.**
 
 #### Trois options cohérentes
 
 | | **A — un état, pas un lieu** | **B — un lieu, pas un état** | **C — les deux, séparés et nommés** |
 |---|---|---|---|
 | Sur-extraction | Une zone peut s'appauvrir, réversible | Aucune conséquence durable, juste des rendements qui baissent | Une zone peut **pâlir** — graduel, réversible, payant à réparer |
-| Frontière | Aucune : l'expansion passe par de nouvelles régions | Une région permanente au bord du monde, contenu de fin de jeu | Un vrai Blanc **ancien**, hérité de l'âge précédent, jamais causé par les joueurs |
-| Effacés | Sans source claire | Sortent de la région | Sortent du Blanc ancien ; une zone pâlie n'en produit pas |
+| Frontière | Aucune : l'expansion passe par de nouvelles régions | Une région permanente au bord du monde, contenu de fin de jeu | Un vrai lieu mort **ancien**, hérité de l'âge précédent, jamais causé par les joueurs |
+| Effacés | Sans source claire | Sortent de la région | Sortent du lieu ancien ; une zone pâlie n'en produit pas |
 | Risque | Le thème écologique existe, mais ne mène nulle part | On perd l'enjeu qui rend le monde signifiant | Deux systèmes à tenir au lieu d'un |
 | Confusion de nom | — | — | **Résolue** : deux choses, deux mots |
 
-**Recommandation : C.** C'est la seule qui garde le thème *et* le contenu, et le problème de
-nom disparaît de lui-même puisqu'il s'agit de deux objets différents.
+**Décision : C.** Seule option qui garde le thème *et* le contenu — et le problème de nom
+disparaît de lui-même, puisqu'il s'agit de deux objets différents.
 
-#### Ce que donne l'option C
+#### Ce que donne la décision
 
 **La Pâleur** — un état de zone, graduel et réversible.
 Une zone sur-exploitée pâlit : les filons rendent moins et plus trouble (§5.4), la faune
-s'éclaircit, le foyer entre en étiage. Elle ne devient **jamais** un Blanc : la Pâleur a un
+s'éclaircit, le foyer entre en étiage. Elle ne devient **jamais** une Étale : la Pâleur a un
 plancher. On la répare en payant — **au trésor de la guilde contrôlante** (mécanique de
 Wakfu, cf. GAME_INSPIRATIONS §2.2). La sanction est donc une **dépense** et une décision
 politique, jamais une perte définitive.
 
-**Le Blanc** — un lieu, ancien, permanent, jamais causé par un joueur vivant.
+**L'Étale** — un lieu, ancien, permanent, jamais causé par un joueur vivant. Le nom vient du
+moment où la marée s'arrête : ici, elle ne s'est jamais remise à monter.
 C'est ce que l'âge précédent a laissé en se retirant. Ses propriétés :
 
 - Aucune récolte, aucun PNJ, aucun foyer possible — **rien ne s'y dépose**.
-- On n'y **récolte** pas, on y **retrouve**. Le Blanc est l'endroit où échouent les choses
+- On n'y **récolte** pas, on y **retrouve**. L'Étale est l'endroit où échouent les choses
   que le monde a perdues : plans éteints, matérias sans propriétaire, noms. C'est donc
   **une source exclusive de plans et de matéria** — exactement les récompenses que D2 veut
   trouvées et non achetées — sans ajouter une seule ligne de production concurrente.
@@ -684,33 +685,33 @@ C'est ce que l'âge précédent a laissé en se retirant. Ses propriétés :
   Même grammaire que le Silence, déjà posée.
 - C'est de là que viennent les **Effacés** (§7.4).
 
-#### Le nom
+#### Le nom du lieu — pourquoi *l'Étale*
 
-Trois candidats, si l'on garde l'option C il ne concerne plus que le **lieu** :
+Trois candidats étaient en lice pour le lieu (l'état, lui, s'appelle la Pâleur sans débat) :
 
 | Nom | Registre | Pour | Contre |
 |---|---|---|---|
-| **L'Étale** | Marin — l'instant où la marée s'arrête | Colle au vocabulaire déjà posé (marée, reflux, crue). Un lieu où la marée ne revient plus. | Mot peu connu |
+| **L'Étale** ✅ | Marin — l'instant où la marée s'arrête | Colle au vocabulaire déjà posé (marée, reflux, crue). Un lieu où la marée ne revient plus. | Mot peu connu — le Codex l'explique |
 | **La Lacune** | Manuscrit — un trou dans un texte | Colle au Codex : le monde est écrit, une Lacune est ce qui manque à la page | Sonne savant |
 | **Le Blanc** | Direct | Immédiat, fort | Se confond avec le fragment blanc du Sommet (Acte 2) et avec « blanchiment » |
 
-**Recommandation : l'Étale**, parce qu'il fait partie d'une famille de mots que le joueur
-apprend déjà (marée, reflux, crue), et que « la marée qui ne revient jamais » dit exactement
-ce qu'est l'endroit.
+**Retenu : l'Étale**, parce qu'il appartient à une famille de mots que le joueur apprend
+déjà (marée, reflux, crue), et que « la marée qui ne revient jamais » dit exactement ce
+qu'est l'endroit.
 
 ### 12.2 La Fonderie
 
-#### Le problème réel
+#### Le problème qu'il a fallu voir
 
 Une faction ne vaut que par ce qu'elle **fait faire au joueur**. Les quatre existantes sont
 des réputations avec une boutique : correctes, tièdes. Si la Fonderie n'est qu'une cinquième
 boutique avec une couleur différente, elle ne portera pas l'axe doctrinal (§6.2), et l'axe
 restera un paragraphe de lore.
 
-**La question à trancher est donc : quel geste de jeu, répété tous les jours, incarne le
-choix entre extraire et préserver ?**
+**La question était donc : quel geste de jeu, répété tous les jours, incarne le choix entre
+extraire et préserver ?**
 
-#### La réponse proposée : fondre ou lire
+#### La réponse retenue : fondre ou lire
 
 Une matéria trouvée peut aller à deux endroits, et un seul :
 
@@ -719,7 +720,7 @@ Une matéria trouvée peut aller à deux endroits, et un seul :
 | Ce qu'on donne | La matéria | La matéria |
 | Ce qu'on reçoit | Des gils et de l'**essence** — le carburant de la commodité : réparations, entretien de foyer, escorte de caravane, accélération d'artisanat | Une entrée de **Codex**, de la réputation, et un progrès d'**accord** dans l'arbre correspondant |
 | Quand | Tout de suite, utile aujourd'hui | Durable, jamais repris |
-| Ce que ça fait au monde | Un geste disparaît définitivement | Le geste est **inscrit** — il ne blanchira pas |
+| Ce que ça fait au monde | Un geste disparaît définitivement | Le geste est **inscrit** — il ne pâlira jamais |
 
 C'est tout le propos du monde ramené à **un bouton**. Le joueur pressé fond ; le joueur qui
 pense au serveur lit. Personne n'a tort, et il faut choisir à chaque matéria en double.
@@ -727,6 +728,10 @@ Aucune cinématique, aucun dialogue moral : la doctrine devient une micro-décis
 quotidienne, et le Codex (D11) cesse d'être une collection pour devenir le camp d'en face.
 
 Cette mécanique, à elle seule, justifie d'ajouter la faction.
+
+**Impact modèle** : une action de conversion sur `PlayerItem` de type matéria, deux
+destinataires, deux tables de récompense. L'essence est une monnaie secondaire, dépensable
+uniquement en services (jamais en objets — sinon elle concurrence les gils et le craft joueur).
 
 #### Jouable, et surtout pas méchante
 
@@ -736,8 +741,8 @@ Cette mécanique, à elle seule, justifie d'ajouter la faction.
 | Force dramatique | On fait ses courses chez celui qui vide le monde | Plus menaçante, mais abstraite | Le choix arrive quand le joueur peut le comprendre |
 | Coût | Réputation + boutique + quêtes (comme les 4 autres) | Faible | Moyen |
 
-**Recommandation : A.** Un antagoniste chez qui on fait ses courses vaut mille fois mieux
-qu'un antagoniste qu'on ne fréquente jamais. Et le choix fondre/lire n'a de poids que s'il
+**Décision : A.** Un antagoniste chez qui on fait ses courses vaut mille fois mieux qu'un
+antagoniste qu'on ne fréquente jamais. Et le choix fondre/lire n'a de poids que s'il
 est disponible dès la première matéria en double.
 
 **Point de conception à tenir** : la Fonderie n'est pas un empire, elle n'a pas de tyran, et

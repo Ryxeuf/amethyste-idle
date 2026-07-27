@@ -48,9 +48,9 @@ Le plus proche de nous, et français. Deux systèmes :
   espèces éteintes** et la modification du climat.
 
 **Ce qu'on prend** : la **restauration payée par le trésor**. C'est la réponse à notre
-arbitrage n° 3 (« la sur-extraction blanchit-elle une zone ? ») : oui, mais la guilde
-contrôlante peut **payer** la remise en état de la veine. La sanction devient une dépense —
-donc un gold sink, donc un choix politique — au lieu d'une perte sèche.
+question « la sur-extraction abîme-t-elle une zone ? » : oui — c'est la **Pâleur** — mais la
+guilde contrôlante peut **payer** la remise en état de la veine. La sanction devient une
+dépense — donc un gold sink, donc un choix politique — au lieu d'une perte sèche.
 **Ce qu'on prend aussi** : l'idée qu'une organisation a des **rôles spécialisés** dont un
 consacré à la santé du territoire.
 **Ce qu'on laisse** : l'extinction définitive (trop punitive, Ankama a dû l'assouplir) et
@@ -68,7 +68,7 @@ voir un voisin agir par intérêt propre.
 
 **Ce qu'on prend** : le principe que la gouvernance doit avoir des **conséquences
 mécaniques**, sinon c'est du cosmétique.
-**Ce qu'on retient comme garde-fou** : notre Crue et notre Blanchiment sont des contraintes
+**Ce qu'on retient comme garde-fou** : notre Crue et notre Pâleur sont des contraintes
 collectives. Sans amortisseur, elles produiront exactement cette friction — un joueur en
 voudra à un autre d'avoir « gâché » sa région. D'où les décisions déjà prises : régression
 annoncée, patrimoine préservé, restauration payante plutôt que perte définitive.
