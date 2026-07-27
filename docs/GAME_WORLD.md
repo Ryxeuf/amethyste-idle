@@ -359,7 +359,49 @@ est donc un métier. Version PvE de la caravane d'Albion :
 C'est le gold sink et le sink de temps que réclame §4.7 de GAME_PRINCIPLES, sous une forme
 qui produit du jeu au lieu d'une taxe.
 
-### 5.4 Ce qu'on ne prend pas d'Albion
+### 5.4 La pureté — toute améthystite ne se vaut pas *(tranché)*
+
+Emprunt à Star Wars Galaxies (cf. [GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md) §2.6), adapté
+pour éviter son défaut : chez eux *toutes* les ressources avaient des statistiques, ce qui a
+transformé l'artisanat en tableur.
+
+**Un lot d'améthystite porte une pureté.** Elle se lit sur quatre bandes plutôt que sur une
+note continue — c'est ce qui évite d'éclater les piles d'inventaire en mille lots
+incomparables :
+
+| Bande | Ce que ça veut dire | Usage |
+|---|---|---|
+| **Trouble** | Le geste est illisible | Fonte, consommables, matériaux de base |
+| **Clair** | Lisible mais confus | Artisanat courant |
+| **Pur** | Net | Haut palier, commandes exigeantes |
+| **Parfait** | On entend qui l'a fait | **Seule bande qui permet d'éveiller une matéria** |
+
+La pureté d'un lot se tire à la récolte, dans une fourchette donnée par : le **palier du
+filon**, sa **vitalité** au moment où l'on récolte (un filon éreinté ne rend plus que du
+trouble), la **compétence** du récolteur, la **marée** en cours et le **biome** (un
+Affleurement ou un Chœur tirent haut).
+
+**Le périmètre est volontairement étroit** : la pureté ne s'applique qu'à la **ligne du
+cristal** — améthystite, minerais, gemmes. Les herbes, poissons, cuirs et bois restent
+fongibles. Le plancher T1 (D1) ne doit jamais demander à un débutant de comparer des lots.
+
+Ce que ça débloque, et c'est beaucoup pour une colonne :
+
+- **Le HV cesse d'être un tas.** Une annonce porte sa bande ; les prix se séparent ; il
+  existe enfin une raison de préférer un vendeur à un autre.
+- **Le prospecteur a un métier.** Savoir quel filon rend du *Pur* cette marée-ci est une
+  information qui vaut de l'argent — exactement l'information exclusive décrite dans
+  [GAME_ZONE_ACTIONS.md](GAME_ZONE_ACTIONS.md).
+- **`Recipe.quality` se réveille.** Le champ existe et dort ; il trouve son intrant.
+- **Les commandes de craft peuvent exiger une bande minimale** — ce qui répond à la question
+  ouverte de [GAME_PRINCIPLES.md](GAME_PRINCIPLES.md) §6.
+- **La matéria devient rare par construction**, sans table de drop : il faut du *Parfait*,
+  et le Parfait ne se force pas.
+
+**Impact modèle** : `PlayerItem.purity` (enum de bande, nullable — `null` = hors périmètre),
+la bande comme critère de pile et de filtre au HV, un modificateur de qualité au craft.
+
+### 5.5 Ce qu'on ne prend pas d'Albion
 
 Le **full loot** et le PvP ouvert, évidemment (règle 11) — mais aussi l'**obsolescence par
 saison** : ici l'équipement ne s'évapore pas à chaque marée. La demande de fond vient des
@@ -560,20 +602,14 @@ consommateur sur des événements déjà émis.
 | B | Quota de Crue par monde ou par région ? | **Par monde, indexé sur la population active** (§3.3). |
 | C | La régression est-elle une punition ? | **Bornée** : annonce une marée à l'avance, perte du rang mais pas des investissements, remontée accélérée (§3.1). |
 
+| D | Qualité variable des ressources ? | **Oui**, sur la ligne du cristal uniquement, en quatre bandes (§5.4). |
+
 ### Encore ouverts
 
-1. **Le nom du « Blanc »** — se confond avec le fragment blanc du Sommet (Acte 2).
-   Alternatives : *la Page*, *l'Étale*, *le Retiré*.
-2. **La Fonderie : faction jouable ou force lointaine ?** Recommandation : **jouable**. Un
-   antagoniste chez qui on fait ses courses vaut mille fois mieux qu'un antagoniste qu'on ne
-   fréquente jamais.
-3. **La sur-extraction blanchit-elle vraiment une zone ?** Superbe en fiction, risqué en jeu.
-   Piste retenue de Wakfu (cf. [GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md)) : réversible, et
-   **la restauration se paie au trésor de guilde** — la taxe finance la remise en état de la
-   veine. La sanction devient une dépense, pas une perte sèche.
-4. **Qualité variable de l'améthystite ?** (idée SWG, cf. GAME_INSPIRATIONS §3) — donnerait
-   au HV une profondeur qu'un tas fongible n'a pas, et un métier réel au prospecteur.
-5. **Quand ouvrir la Voûte ?** Le retournement ne vaut que gardé : aucun contenu ne s'en
+1. **Le Blanc** — nature, nom, et rapport à la sur-extraction. Dossier développé en **§12.1**.
+2. **La Fonderie** — jouable ou lointaine, et sur quel levier mécanique. Dossier développé
+   en **§12.2**.
+3. **Quand ouvrir la Voûte ?** Le retournement ne vaut que gardé : aucun contenu ne s'en
    approche avant des dizaines de marées, et il n'est jamais « joué » — il est *inscrit*,
    comme un fait canon.
 
@@ -592,3 +628,133 @@ C'est délibéré : le monde est un **cadre de production**, pas un roman. Ajout
 demande que trois réponses :
 
 > *Quelle veine ? Comment le temps s'y est-il déposé ? Que peut-on y bâtir ?*
+
+---
+
+## 12. Dossiers en discussion
+
+Deux notions étaient citées sans être définies. Elles sont détaillées ici pour être
+tranchées — chacune pose **une** vraie question, le reste en découle.
+
+### 12.1 Le Blanc
+
+#### Le problème réel
+
+Dans les versions précédentes de ce document, le Blanc faisait **deux métiers incompatibles** :
+
+- **Une sanction** — ce que devient une zone sur-extraite.
+- **Une frontière** — une région de fin de jeu, pleine de contenu, d'où sortent les Effacés.
+
+Les deux se contredisent. Si le Blanc est riche et gratifiant, blanchir sa région n'est pas
+une punition mais un jackpot. S'il est stérile, c'est une perte sèche, et Eco nous a montré
+ce que produit une perte sèche collective : de la rancune entre voisins, pas de l'écologie.
+**La question à trancher n'est donc pas le nom, c'est lequel des deux métiers il garde.**
+
+#### Trois options cohérentes
+
+| | **A — un état, pas un lieu** | **B — un lieu, pas un état** | **C — les deux, séparés et nommés** |
+|---|---|---|---|
+| Sur-extraction | Une zone peut s'appauvrir, réversible | Aucune conséquence durable, juste des rendements qui baissent | Une zone peut **pâlir** — graduel, réversible, payant à réparer |
+| Frontière | Aucune : l'expansion passe par de nouvelles régions | Une région permanente au bord du monde, contenu de fin de jeu | Un vrai Blanc **ancien**, hérité de l'âge précédent, jamais causé par les joueurs |
+| Effacés | Sans source claire | Sortent de la région | Sortent du Blanc ancien ; une zone pâlie n'en produit pas |
+| Risque | Le thème écologique existe, mais ne mène nulle part | On perd l'enjeu qui rend le monde signifiant | Deux systèmes à tenir au lieu d'un |
+| Confusion de nom | — | — | **Résolue** : deux choses, deux mots |
+
+**Recommandation : C.** C'est la seule qui garde le thème *et* le contenu, et le problème de
+nom disparaît de lui-même puisqu'il s'agit de deux objets différents.
+
+#### Ce que donne l'option C
+
+**La Pâleur** — un état de zone, graduel et réversible.
+Une zone sur-exploitée pâlit : les filons rendent moins et plus trouble (§5.4), la faune
+s'éclaircit, le foyer entre en étiage. Elle ne devient **jamais** un Blanc : la Pâleur a un
+plancher. On la répare en payant — **au trésor de la guilde contrôlante** (mécanique de
+Wakfu, cf. GAME_INSPIRATIONS §2.2). La sanction est donc une **dépense** et une décision
+politique, jamais une perte définitive.
+
+**Le Blanc** — un lieu, ancien, permanent, jamais causé par un joueur vivant.
+C'est ce que l'âge précédent a laissé en se retirant. Ses propriétés :
+
+- Aucune récolte, aucun PNJ, aucun foyer possible — **rien ne s'y dépose**.
+- On n'y **récolte** pas, on y **retrouve**. Le Blanc est l'endroit où échouent les choses
+  que le monde a perdues : plans éteints, matérias sans propriétaire, noms. C'est donc
+  **une source exclusive de plans et de matéria** — exactement les récompenses que D2 veut
+  trouvées et non achetées — sans ajouter une seule ligne de production concurrente.
+- **On n'y reste pas.** Le séjour efface : un malus cumulatif qui force l'expédition courte.
+  Même grammaire que le Silence, déjà posée.
+- C'est de là que viennent les **Effacés** (§7.4).
+
+#### Le nom
+
+Trois candidats, si l'on garde l'option C il ne concerne plus que le **lieu** :
+
+| Nom | Registre | Pour | Contre |
+|---|---|---|---|
+| **L'Étale** | Marin — l'instant où la marée s'arrête | Colle au vocabulaire déjà posé (marée, reflux, crue). Un lieu où la marée ne revient plus. | Mot peu connu |
+| **La Lacune** | Manuscrit — un trou dans un texte | Colle au Codex : le monde est écrit, une Lacune est ce qui manque à la page | Sonne savant |
+| **Le Blanc** | Direct | Immédiat, fort | Se confond avec le fragment blanc du Sommet (Acte 2) et avec « blanchiment » |
+
+**Recommandation : l'Étale**, parce qu'il fait partie d'une famille de mots que le joueur
+apprend déjà (marée, reflux, crue), et que « la marée qui ne revient jamais » dit exactement
+ce qu'est l'endroit.
+
+### 12.2 La Fonderie
+
+#### Le problème réel
+
+Une faction ne vaut que par ce qu'elle **fait faire au joueur**. Les quatre existantes sont
+des réputations avec une boutique : correctes, tièdes. Si la Fonderie n'est qu'une cinquième
+boutique avec une couleur différente, elle ne portera pas l'axe doctrinal (§6.2), et l'axe
+restera un paragraphe de lore.
+
+**La question à trancher est donc : quel geste de jeu, répété tous les jours, incarne le
+choix entre extraire et préserver ?**
+
+#### La réponse proposée : fondre ou lire
+
+Une matéria trouvée peut aller à deux endroits, et un seul :
+
+| | **La Fonderie — fondre** | **Le Cercle des Mages — lire** |
+|---|---|---|
+| Ce qu'on donne | La matéria | La matéria |
+| Ce qu'on reçoit | Des gils et de l'**essence** — le carburant de la commodité : réparations, entretien de foyer, escorte de caravane, accélération d'artisanat | Une entrée de **Codex**, de la réputation, et un progrès d'**accord** dans l'arbre correspondant |
+| Quand | Tout de suite, utile aujourd'hui | Durable, jamais repris |
+| Ce que ça fait au monde | Un geste disparaît définitivement | Le geste est **inscrit** — il ne blanchira pas |
+
+C'est tout le propos du monde ramené à **un bouton**. Le joueur pressé fond ; le joueur qui
+pense au serveur lit. Personne n'a tort, et il faut choisir à chaque matéria en double.
+Aucune cinématique, aucun dialogue moral : la doctrine devient une micro-décision
+quotidienne, et le Codex (D11) cesse d'être une collection pour devenir le camp d'en face.
+
+Cette mécanique, à elle seule, justifie d'ajouter la faction.
+
+#### Jouable, et surtout pas méchante
+
+| | **A — faction jouable dès le début** | **B — force du monde, non fréquentable** | **C — jouable, débloquée après l'Acte 2** |
+|---|---|---|---|
+| Présence | Quotidienne : on lui vend, on lui achète, on travaille pour elle | Lointaine, on en subit les effets | Absente à l'onboarding, présente ensuite |
+| Force dramatique | On fait ses courses chez celui qui vide le monde | Plus menaçante, mais abstraite | Le choix arrive quand le joueur peut le comprendre |
+| Coût | Réputation + boutique + quêtes (comme les 4 autres) | Faible | Moyen |
+
+**Recommandation : A.** Un antagoniste chez qui on fait ses courses vaut mille fois mieux
+qu'un antagoniste qu'on ne fréquente jamais. Et le choix fondre/lire n'a de poids que s'il
+est disponible dès la première matéria en double.
+
+**Point de conception à tenir** : la Fonderie n'est pas un empire, elle n'a pas de tyran, et
+elle ne conspire pas. Elle éclaire les cités, chauffe les foyers du Silence, arme les
+caravanes et paie bien. Ses gens sont sympathiques et inquiets de voir des villages sans
+lumière. Elle a **raison à court terme** — c'est précisément ce qui la rend impossible à
+combattre. L'antagoniste du jeu est le Reflux ; la Fonderie est ce qui l'accélère en
+améliorant la vie de tout le monde.
+
+#### Ce qu'elle apporte au reste des systèmes
+
+- **Un plancher d'achat.** La Fonderie rachète toujours le cristal, à prix bas mais garanti.
+  C'est le miroir du plancher T1 de vente (D1) : un débutant n'est jamais bloqué par un
+  marché sans acheteur — protection *cold-start* côté vente.
+- **Un gold sink et un sink de matière** : ce qu'elle fond disparaît du monde.
+- **Un levier de foyer.** Un foyer peut accueillir un atelier de la Fonderie : rendement
+  d'extraction en hausse, vitalité de veine en baisse. La doctrine d'une guilde (§6.3)
+  devient un bâtiment qu'on voit sur l'écran de zone.
+- **Un adversaire d'arc saisonnier** disponible en permanence (*Le Procès de la Fonderie*,
+  §8) sans avoir à inventer une menace neuve à chaque marée.
