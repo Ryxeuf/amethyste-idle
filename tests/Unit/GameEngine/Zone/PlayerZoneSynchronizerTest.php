@@ -116,4 +116,61 @@ class PlayerZoneSynchronizerTest extends TestCase
 
         $this->assertSame($zone, $player->getCurrentZone());
     }
+
+    public function testResolveOrAssignKeepsExistingZoneWithoutLookup(): void
+    {
+        $zone = (new Zone())->setSlug('marais-brumeux')->setName('Marais');
+        $player = new Player();
+        $player->setCurrentZone($zone);
+
+        $this->zoneRepository->expects($this->never())->method('findEnabledBySlug');
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->assertSame($zone, $this->synchronizer->resolveOrAssign($player, true));
+    }
+
+    public function testResolveOrAssignFallsBackToHubWhenMapHasNoZone(): void
+    {
+        $hub = (new Zone())->setSlug(PlayerZoneSynchronizer::HUB_SLUG)->setName('Village');
+        $player = new Player();
+        $player->setMap(new Map());
+
+        $this->zoneRepository->method('findEnabledBySourceMap')->willReturn(null);
+        $this->zoneRepository->method('findEnabledBySlug')
+            ->with(PlayerZoneSynchronizer::HUB_SLUG)->willReturn($hub);
+        $this->zoneRepository->expects($this->never())->method('findDefaultStartingZone');
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->assertSame($hub, $this->synchronizer->resolveOrAssign($player, true));
+        $this->assertSame($hub, $player->getCurrentZone());
+    }
+
+    /**
+     * Sans hub sous son slug attendu, le joueur restait sans position — donc
+     * sans aucune action possible. Le repli descend jusqu'a une zone plausible.
+     */
+    public function testResolveOrAssignFallsBackToDefaultStartingZoneWithoutHub(): void
+    {
+        $fallback = (new Zone())->setSlug('quartier-des-jardins')->setName('Quartier');
+        $player = new Player();
+
+        $this->zoneRepository->method('findEnabledBySlug')->willReturn(null);
+        $this->zoneRepository->method('findDefaultStartingZone')->willReturn($fallback);
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->assertSame($fallback, $this->synchronizer->resolveOrAssign($player, true));
+        $this->assertSame($fallback, $player->getCurrentZone());
+    }
+
+    public function testResolveOrAssignReturnsNullWhenWorldHasNoZone(): void
+    {
+        $player = new Player();
+
+        $this->zoneRepository->method('findEnabledBySlug')->willReturn(null);
+        $this->zoneRepository->method('findDefaultStartingZone')->willReturn(null);
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->assertNull($this->synchronizer->resolveOrAssign($player, true));
+        $this->assertNull($player->getCurrentZone());
+    }
 }

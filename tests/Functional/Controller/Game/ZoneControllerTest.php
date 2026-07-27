@@ -35,7 +35,6 @@ use App\Repository\GroupDungeonClearRepository;
 use App\Repository\PlayerShopRepository;
 use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
-use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -60,8 +59,9 @@ class ZoneControllerTest extends TestCase
     private EntityRepository&MockObject $pnjRepository;
     /** @var list<Pnj> PNJ presents dans la zone, surchargeable par test */
     private array $pnjsInZone = [];
+    /** Zone attribuee au joueur sans position, surchargeable par test */
+    private ?Zone $startingZoneFallback = null;
     private PlayerHelper&MockObject $playerHelper;
-    private ZoneRepository&MockObject $zoneRepository;
     private ZoneConnectionRepository&MockObject $zoneConnectionRepository;
     private PlayerZoneSynchronizer&MockObject $playerZoneSynchronizer;
     private ZoneTravelService&MockObject $zoneTravelService;
@@ -108,9 +108,18 @@ class ZoneControllerTest extends TestCase
         ]);
 
         $this->playerHelper = $this->createMock(PlayerHelper::class);
-        $this->zoneRepository = $this->createMock(ZoneRepository::class);
         $this->zoneConnectionRepository = $this->createMock(ZoneConnectionRepository::class);
         $this->playerZoneSynchronizer = $this->createMock(PlayerZoneSynchronizer::class);
+        // L'ecran delegue toute la resolution de position au synchroniseur : le
+        // double en reproduit le contrat (zone courante, sinon zone de depart).
+        $this->playerZoneSynchronizer->method('resolveOrAssign')
+            ->willReturnCallback(function (Player $player): ?Zone {
+                if (null === $player->getCurrentZone() && null !== $this->startingZoneFallback) {
+                    $player->setCurrentZone($this->startingZoneFallback);
+                }
+
+                return $player->getCurrentZone();
+            });
         $this->zoneTravelService = $this->createMock(ZoneTravelService::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
@@ -147,7 +156,6 @@ class ZoneControllerTest extends TestCase
         $this->controller = new ZoneController(
             $this->entityManager,
             $this->playerHelper,
-            $this->zoneRepository,
             $this->zoneConnectionRepository,
             $this->playerZoneSynchronizer,
             $this->zoneTravelService,
@@ -518,20 +526,18 @@ class ZoneControllerTest extends TestCase
         $this->assertSame(['explore'], $actionKeys);
     }
 
-    public function testFallsBackToHubWhenPlayerHasNoZone(): void
+    public function testFallsBackToStartingZoneWhenPlayerHasNoZone(): void
     {
-        $hub = $this->buildZone(ZoneController::HUB_SLUG, Zone::TYPE_CITY, true);
+        $hub = $this->buildZone(PlayerZoneSynchronizer::HUB_SLUG, Zone::TYPE_CITY, true);
         $player = new Player();
         $player->setMaxLife(100);
         $player->setLife(100);
         $player->setMap(new Map());
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $this->playerZoneSynchronizer->expects($this->once())
-            ->method('syncFromMap')->with($player, true)->willReturn(null);
-        $this->zoneRepository->expects($this->once())
-            ->method('findEnabledBySlug')->with(ZoneController::HUB_SLUG)->willReturn($hub);
-        $this->entityManager->expects($this->once())->method('flush');
+        // Le repli complet (carte, hub, zone de depart) vit dans le
+        // synchroniseur : l'ecran ne fait plus que lui demander une position.
+        $this->startingZoneFallback = $hub;
 
         $this->zoneConnectionRepository->method('findEnabledFrom')->willReturn([]);
         $this->playerRepository->method('findBy')->willReturn([$player]);
@@ -549,10 +555,6 @@ class ZoneControllerTest extends TestCase
         $player->setMaxLife(100);
         $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
-
-        $this->playerZoneSynchronizer->method('syncFromMap')->willReturn(null);
-        $this->zoneRepository->method('findEnabledBySlug')->willReturn(null);
-        $this->entityManager->expects($this->never())->method('flush');
 
         $response = $this->controller->index();
 

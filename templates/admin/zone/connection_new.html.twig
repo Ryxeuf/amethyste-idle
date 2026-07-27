@@ -1,0 +1,11 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouvelle liaison - Admin{% endblock %}
+{% block page_title %}Nouvelle liaison depuis {{ zone.name }}{% endblock %}
+
+{% block body %}
+    <div class="mb-6">
+        <a href="{{ path('admin_zone_show', {id: zone.id}) }}" class="text-sm text-purple-400 hover:text-purple-300">&larr; Retour a la zone</a>
+    </div>
+    {% include 'admin/zone/_connection_form.html.twig' %}
+{% endblock %}

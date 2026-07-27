@@ -1,0 +1,144 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Zones - Admin{% endblock %}
+{% block page_title %}Zones du monde{% endblock %}
+
+{% block body %}
+    {# Rappel de la source de verite : editer ici puis relancer l'import YAML
+       ecrase la modification. #}
+    <div class="mb-6 rounded-xl border border-blue-900/50 bg-blue-950/30 px-4 py-3 text-sm text-blue-200">
+        Le graphe livre est decrit dans <code class="text-blue-100">config/game/zones/*.yaml</code>.
+        Ces ecrans montrent et corrigent l'etat en base ; une modification faite ici est ecrasee au prochain
+        <code class="text-blue-100">app:zone:import</code> si le YAML dit autre chose.
+    </div>
+
+    {% if orphanPlayers > 0 %}
+        <div class="mb-6 rounded-xl border border-amber-800/60 bg-amber-950/30 px-4 py-3 text-sm text-amber-200">
+            <strong>{{ orphanPlayers }}</strong> joueur(s) sans zone : leur ecran de jeu affiche « position inconnue » et
+            aucune action ne leur est possible. Reparer avec
+            <code class="text-amber-100">app:player:backfill-zone</code>.
+        </div>
+    {% endif %}
+
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <form method="get" class="flex flex-wrap items-end gap-3">
+            <div>
+                <label for="zone-q" class="block text-xs text-gray-500 mb-1">Recherche</label>
+                <input id="zone-q" type="text" name="q" value="{{ search }}" placeholder="Nom ou slug"
+                       class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+            </div>
+            <div>
+                <label for="zone-type" class="block text-xs text-gray-500 mb-1">Type</label>
+                <select id="zone-type" name="type" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-purple-500">
+                    <option value="">Tous</option>
+                    {% for t in types %}
+                        <option value="{{ t }}" {% if type == t %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="zone-state" class="block text-xs text-gray-500 mb-1">Etat</label>
+                <select id="zone-state" name="state" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-purple-500">
+                    <option value="">Toutes</option>
+                    <option value="enabled" {% if state == 'enabled' %}selected{% endif %}>Actives</option>
+                    <option value="disabled" {% if state == 'disabled' %}selected{% endif %}>Desactivees</option>
+                </select>
+            </div>
+            <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-100 transition-colors">Filtrer</button>
+            {% if search or type or state %}
+                <a href="{{ path('admin_zone_index') }}" class="text-sm text-purple-400 hover:text-purple-300">Reinitialiser</a>
+            {% endif %}
+        </form>
+
+        <div class="flex items-center gap-3">
+            <form method="post" action="{{ path('admin_zone_import') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('zone_import') }}">
+                <input type="hidden" name="dry_run" value="1">
+                <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-100 transition-colors">
+                    Verifier le YAML
+                </button>
+            </form>
+            <form method="post" action="{{ path('admin_zone_import') }}" onsubmit="return confirm('Importer le graphe de zones depuis le YAML ? Les valeurs du fichier ecrasent celles de la base.')">
+                <input type="hidden" name="_token" value="{{ csrf_token('zone_import') }}">
+                <button type="submit" class="px-4 py-2 text-sm font-medium rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition-colors">
+                    Importer le YAML
+                </button>
+            </form>
+            <a href="{{ path('admin_zone_new') }}" class="px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+                Nouvelle zone
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-800 text-gray-400">
+                        <th class="text-left px-4 py-3 font-medium">Zone</th>
+                        <th class="text-left px-4 py-3 font-medium">Type</th>
+                        <th class="text-left px-4 py-3 font-medium">Etat</th>
+                        <th class="text-left px-4 py-3 font-medium">Carte monde</th>
+                        <th class="text-right px-4 py-3 font-medium">Liaisons</th>
+                        <th class="text-right px-4 py-3 font-medium">Creatures</th>
+                        <th class="text-right px-4 py-3 font-medium">PNJ</th>
+                        <th class="text-right px-4 py-3 font-medium">POI</th>
+                        <th class="text-right px-4 py-3 font-medium">Joueurs</th>
+                        <th class="text-right px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for zone in zones %}
+                        {% set c = counts[zone.id] %}
+                        <tr class="border-b border-gray-800/60 hover:bg-gray-800/40">
+                            <td class="px-4 py-3">
+                                <a href="{{ path('admin_zone_show', {id: zone.id}) }}" class="text-purple-400 hover:text-purple-300 font-medium">{{ zone.name }}</a>
+                                <div class="text-xs text-gray-600">{{ zone.slug }}</div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">
+                                {{ zone.type }}
+                                {% if zone.safe %}<span class="ml-1 text-xs text-emerald-400">sure</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if zone.enabled %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-green-900 text-green-300">active</span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-gray-700 text-gray-400">inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-gray-500">
+                                {% if zone.hasMapPosition %}{{ zone.mapX }} / {{ zone.mapY }}{% else %}<span class="text-gray-700">non placee</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-right {{ c.connections == 0 ? 'text-amber-400' : 'text-gray-300' }}">{{ c.connections }}</td>
+                            <td class="px-4 py-3 text-right text-gray-300">{{ c.mobs }}</td>
+                            <td class="px-4 py-3 text-right text-gray-300">{{ c.pnjs }}</td>
+                            <td class="px-4 py-3 text-right text-gray-300">{{ c.pois }}</td>
+                            <td class="px-4 py-3 text-right text-gray-300">{{ c.players }}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap">
+                                <a href="{{ path('admin_zone_edit', {id: zone.id}) }}" class="text-sm text-gray-400 hover:text-gray-200">Editer</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="10" class="px-4 py-8 text-center text-gray-500">
+                                Aucune zone. Importer le graphe depuis le YAML ou en creer une.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4 flex items-center justify-between text-sm text-gray-500">
+        <span>{{ total }} zone(s)</span>
+        {% if totalPages > 1 %}
+            <div class="flex items-center gap-2">
+                {% for p in 1..totalPages %}
+                    <a href="{{ path('admin_zone_index', {q: search, type: type, state: state, page: p}) }}"
+                       class="px-3 py-1 rounded-lg {% if p == currentPage %}bg-purple-900 text-purple-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %}">{{ p }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

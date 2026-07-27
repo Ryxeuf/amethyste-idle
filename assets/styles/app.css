@@ -1303,6 +1303,136 @@ a.materia-slots-counter--link:hover {
   margin: 0 auto 0.75rem;
 }
 
+/* ===== INVENTORY: Sections & groupes repliables =====
+   Une liste plate de trente outils imposait de scroller pour equiper une
+   faucille : chaque section, puis chaque groupe, se replie et retient son etat. */
+.inv-section {
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+@media (min-width: 640px) {
+  .inv-section { padding: 1rem; }
+}
+.inv-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0 0 0.625rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+  cursor: pointer;
+  text-align: left;
+}
+.inv-section.collapse--closed .inv-section-header {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom-color: transparent;
+}
+.inv-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+@media (min-width: 640px) {
+  .inv-section-title { font-size: 0.875rem; }
+}
+.inv-section-title--amber { color: #fbbf24; }
+.inv-section-title--purple { color: #c084fc; }
+.inv-section-count {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  background: rgba(55, 65, 81, 1);
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.inv-group {
+  border: 1px solid rgba(75, 85, 99, 0.25);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: rgba(17, 24, 39, 0.3);
+}
+.inv-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  background: rgba(55, 65, 81, 0.25);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+.inv-group-header:hover {
+  background: rgba(55, 65, 81, 0.45);
+}
+.inv-group-icon {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+.inv-group-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #e5e7eb;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.inv-group-count {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  background: rgba(31, 41, 55, 0.8);
+  padding: 0.0625rem 0.4375rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.inv-group-badge {
+  font-size: 0.625rem;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0.0625rem 0.4375rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.inv-group-body {
+  padding: 0.5rem;
+}
+
+.collapse-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: #6b7280;
+  transform: rotate(-90deg);
+  transition: transform 0.18s ease;
+}
+.collapse-icon--open {
+  transform: rotate(0deg);
+}
+/* Bat les utilitaires Tailwind qui posent `display` (grid, flex) : sans cela,
+   une section repliee restait affichee malgre l'attribut `hidden`. */
+.collapse-content--hidden {
+  display: none !important;
+}
+
 /* ===== INVENTORY: Item cards ===== */
 .inv-item-card {
   background: rgba(31, 41, 55, 0.4);
@@ -1408,7 +1538,7 @@ a.materia-slots-counter--link:hover {
 
 /* ===== INVENTORY: Equipment Comparison ===== */
 .inv-tooltip-compare,
-.inv-sheet-compare {
+.inv-panel-compare {
   margin-top: 0.375rem;
   padding: 0.375rem;
   background: rgba(55, 65, 81, 0.4);
@@ -1450,8 +1580,11 @@ a.materia-slots-counter--link:hover {
   font-weight: 400;
 }
 
-/* ===== INVENTORY: Bottom Sheet (mobile tap) ===== */
-.inv-sheet-backdrop {
+/* ===== INVENTORY: Panneau de detail =====
+   Lateral sur grand ecran, feuille remontante sur mobile : la fiche d'un objet
+   porte des actions, ce qu'une infobulle au survol ne peut pas offrir — et sur
+   mobile le survol n'existe pas. */
+.inv-panel-backdrop {
   position: fixed;
   inset: 0;
   z-index: 998;
@@ -1460,12 +1593,12 @@ a.materia-slots-counter--link:hover {
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
-.inv-sheet-backdrop--visible {
+.inv-panel-backdrop--visible {
   opacity: 1;
   visibility: visible;
 }
 
-.inv-sheet {
+.inv-panel {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -1477,15 +1610,43 @@ a.materia-slots-counter--link:hover {
   padding: 0.5rem 1.25rem calc(1.25rem + var(--safe-bottom));
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-  max-height: 60vh;
+  max-height: 70vh;
   overflow-y: auto;
   backdrop-filter: blur(12px);
 }
-.inv-sheet--visible {
+.inv-panel--visible {
   transform: translateY(0);
 }
 
-.inv-sheet-handle {
+/* Grand ecran : tiroir lateral, la page reste lisible a cote. */
+@media (min-width: 768px) {
+  .inv-panel-backdrop {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .inv-panel {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: 22rem;
+    max-width: 90vw;
+    max-height: none;
+    border-radius: 0.75rem 0 0 0.75rem;
+    border-top: none;
+    border-left: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 1.25rem;
+    transform: translateX(100%);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+  }
+  .inv-panel--visible {
+    transform: translateX(0);
+  }
+  .inv-panel-handle {
+    display: none;
+  }
+}
+
+.inv-panel-handle {
   width: 2.5rem;
   height: 0.25rem;
   background: rgba(107, 114, 128, 0.4);
@@ -1493,20 +1654,22 @@ a.materia-slots-counter--link:hover {
   margin: 0 auto 0.75rem;
 }
 
-.inv-sheet-header {
+.inv-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
-.inv-sheet-name {
+.inv-panel-name {
   font-size: 1.125rem;
   font-weight: 600;
   color: #fff;
 }
-.inv-sheet-close {
+.inv-panel-close {
   width: 2rem;
   height: 2rem;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1517,60 +1680,96 @@ a.materia-slots-counter--link:hover {
   cursor: pointer;
   border-radius: 0.375rem;
 }
-.inv-sheet-close:hover { background: rgba(55, 65, 81, 0.5); }
+.inv-panel-close:hover { background: rgba(55, 65, 81, 0.5); }
 
-.inv-sheet-rarity {
+.inv-panel-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+.inv-panel-rarity,
+.inv-panel-kind,
+.inv-panel-bound {
   font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  display: inline-block;
   padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
-  margin-bottom: 0.5rem;
 }
-.inv-sheet-rarity--legendary { background: rgba(234, 179, 8, 0.2); color: #facc15; }
-.inv-sheet-rarity--epic { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
-.inv-sheet-rarity--rare { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-.inv-sheet-rarity--uncommon { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-.inv-sheet-rarity--common { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
-.inv-sheet-rarity--amethyst { background: rgba(217, 70, 239, 0.2); color: #e879f9; }
+.inv-panel-rarity--legendary { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+.inv-panel-rarity--epic { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+.inv-panel-rarity--rare { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.inv-panel-rarity--uncommon { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.inv-panel-rarity--common { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+.inv-panel-rarity--amethyst { background: rgba(217, 70, 239, 0.2); color: #e879f9; }
+.inv-panel-kind { background: rgba(55, 65, 81, 0.6); color: #d1d5db; }
+.inv-panel-bound { background: rgba(234, 179, 8, 0.12); color: #fbbf24; }
 
-.inv-sheet-slot {
+.inv-panel-slot {
   font-size: 0.75rem;
   color: #9ca3af;
   margin-bottom: 0.625rem;
 }
-.inv-sheet-desc {
+.inv-panel-desc {
   font-size: 0.875rem;
   color: #d1d5db;
   line-height: 1.5;
   margin-bottom: 0.625rem;
 }
-.inv-sheet-stats {
+.inv-panel-stats {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 0.625rem;
 }
-.inv-sheet-stat {
+.inv-panel-stat {
   font-size: 0.75rem;
+  font-weight: 600;
   color: #d1d5db;
   background: rgba(55, 65, 81, 0.5);
   padding: 0.25rem 0.625rem;
   border-radius: 0.375rem;
 }
-.inv-sheet-stat-val {
-  font-weight: 600;
+.inv-panel-durability {
+  margin-bottom: 0.625rem;
 }
-.inv-sheet-materia {
+.inv-panel-durability-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+.inv-panel-durability-bar {
+  height: 0.375rem;
+  background: rgba(17, 24, 39, 0.6);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.inv-panel-durability-fill {
+  height: 100%;
+  background: #fbbf24;
+  border-radius: 9999px;
+}
+.inv-panel-durability-fill--broken {
+  background: #ef4444;
+}
+.inv-panel-durability-broken {
+  font-size: 0.6875rem;
+  color: #f87171;
+  margin-top: 0.25rem;
+}
+.inv-panel-materia {
   margin-bottom: 0.5rem;
   padding: 0.375rem 0.625rem;
   background: rgba(139, 92, 246, 0.08);
   border-radius: 0.375rem;
   border-left: 2px solid rgba(168, 85, 247, 0.4);
 }
-.inv-sheet-effects {
+.inv-panel-effects {
   font-size: 0.8125rem;
   color: #c084fc;
   background: rgba(139, 92, 246, 0.1);
@@ -1578,13 +1777,27 @@ a.materia-slots-counter--link:hover {
   border-radius: 0.375rem;
   margin-bottom: 0.75rem;
 }
-.inv-sheet-actions {
+.inv-panel-lock {
+  font-size: 0.75rem;
+  color: #fbbf24;
+  background: rgba(234, 179, 8, 0.1);
+  border-left: 2px solid rgba(234, 179, 8, 0.4);
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+.inv-panel-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
-.inv-sheet-action-btn {
-  flex: 1;
+.inv-panel-actions form {
+  flex: 1 1 8rem;
+}
+.inv-panel-action-btn {
+  display: block;
+  width: 100%;
   padding: 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
@@ -1593,11 +1806,25 @@ a.materia-slots-counter--link:hover {
   border: none;
   cursor: pointer;
   transition: background 0.15s;
-  background: rgba(127, 29, 29, 0.4);
-  color: #f87171;
+  background: rgba(88, 28, 135, 0.5);
+  color: #d8b4fe;
 }
-.inv-sheet-action-btn:hover {
-  background: rgba(153, 27, 27, 0.6);
+.inv-panel-action-btn:hover {
+  background: rgba(107, 33, 168, 0.7);
+}
+.inv-panel-action-btn--link {
+  flex: 1 1 8rem;
+  text-decoration: none;
+  background: rgba(55, 65, 81, 0.6);
+  color: #e5e7eb;
+}
+
+.inv-tooltip-hint {
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin-top: 0.375rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(75, 85, 99, 0.3);
 }
 
 /* ===== DASHBOARD: Quick Action Cards ===== */

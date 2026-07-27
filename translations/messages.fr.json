@@ -108,7 +108,8 @@
       "available_equipment": "Équipement disponible",
       "items": {
         "title": "Objets",
-        "empty": "Aucun objet dans cet onglet"
+        "empty": "Aucun objet dans cet onglet",
+        "empty_hint": "Les objets consommables apparaîtront ici"
       },
       "materials": "Matériaux",
       "bank": "Banque",
@@ -128,7 +129,18 @@
         "ring_1": "Anneau 1",
         "ring_2": "Anneau 2",
         "accessory": "Accessoire",
-        "empty": "Vide"
+        "empty": "Vide",
+        "feet": "Pieds",
+        "legs": "Jambes",
+        "finger": "Anneau",
+        "main_hand": "Arme principale",
+        "off_hand": "Arme secondaire",
+        "unknown": "Emplacement inconnu",
+        "paperdoll": {
+          "main_weapon": "Arme",
+          "side_weapon": "Bouclier",
+          "ring": "Anneau"
+        }
       },
       "actions": {
         "equip": "Équiper",
@@ -214,6 +226,53 @@
         "spell_label": "Sort :",
         "bonus_xp": "+25% XP — Bonus élémentaire",
         "bonus_synergy": "+15% Dégâts — Synergie liée"
+      },
+      "tool_slot": {
+        "pickaxe": "Pioche",
+        "sickle": "Faucille",
+        "fishing_rod": "Canne à pêche",
+        "skinning_knife": "Couteau de dépeçage",
+        "hammer": "Marteau de forge",
+        "tanning_kit": "Kit de tannage",
+        "mortar": "Mortier d'alchimie",
+        "chisel": "Burin de joaillier",
+        "unknown": "Outil"
+      },
+      "tools": {
+        "title": "Outils de métier",
+        "available": "Outils disponibles",
+        "empty_slot": "Vide",
+        "no_slot_hint": "Apprenez un métier pour débloquer des emplacements d'outils",
+        "locked_slot": "Emplacement d'outil non débloqué",
+        "locked_skill": "Talent requis pour équiper cet outil",
+        "broken": "Outil cassé",
+        "durability": "Durabilité",
+        "tier": "Palier %tier%"
+      },
+      "sets": {
+        "title": "Sets d'équipement",
+        "pieces": "%equipped%/%total% pièces"
+      },
+      "available_equipment_empty": "Aucun équipement disponible",
+      "groups": {
+        "equippable": "%count% équipable(s)"
+      },
+      "materia_slots_short": "%count% slot(s)",
+      "locked_skill_gear": "Compétence requise pour équiper cet objet",
+      "details": {
+        "title": "Détails de l'objet",
+        "close": "Fermer",
+        "hint": "Cliquez pour les détails et les actions",
+        "replaces": "Remplace :",
+        "bound": "Lié au personnage",
+        "gils": "Gils"
+      },
+      "kind": {
+        "gear": "Équipement",
+        "tool": "Outil",
+        "consumable": "Consommable",
+        "material": "Matériau",
+        "materia": "Materia"
       }
     },
     "map": {
@@ -312,11 +371,13 @@
       "player": {
         "life": "Vie",
         "energy": "Énergie",
-        "map": "Carte",
         "dead": "Vous êtes mort... Retournez sur la carte pour réapparaître.",
         "in_fight": "Un combat est en cours !",
         "birthdate": "Né le",
-        "member_since": "Aventurier depuis le %date%"
+        "member_since": "Aventurier depuis le %date%",
+        "zone": "Zone",
+        "zone_type": "Type",
+        "zone_unknown": "Position inconnue"
       },
       "actions": {
         "explore": "Explorer",
@@ -347,9 +408,9 @@
         "description": "Tour %step% — Rejoignez le combat"
       },
       "world": {
-        "current_map": "Carte actuelle",
-        "players_nearby": "Joueurs proches",
-        "skills_unlocked": "Compétences"
+        "skills_unlocked": "Compétences",
+        "current_zone": "Zone actuelle",
+        "players_in_zone": "Joueurs dans la zone"
       }
     },
     "footer": {

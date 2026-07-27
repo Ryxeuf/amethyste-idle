@@ -34,7 +34,9 @@
                          data-item-name="{{ gi.name }}"
                          data-item-desc="{{ gi.description }}"
                          data-item-rarity="{{ gi.rarity }}"
-                         data-item-element="{{ gi.element.value }}">
+                         data-item-element="{{ gi.element.value }}"
+                         data-item-kind="{{ gi.isGear() ? 'gear' : (gi.isTool() ? 'tool' : (gi.isMateria() ? 'materia' : (gi.isResource() ? 'material' : 'consumable'))) }}"
+                         data-item-value="{{ gi.price ?? 0 }}">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0
                             {% if gi.rarity == 'amethyst' %}bg-fuchsia-900/40 text-fuchsia-400
                             {% elseif gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400

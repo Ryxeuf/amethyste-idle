@@ -108,7 +108,8 @@
       "available_equipment": "Available Equipment",
       "items": {
         "title": "Items",
-        "empty": "No items in this tab"
+        "empty": "No items in this tab",
+        "empty_hint": "Consumables will show up here"
       },
       "materials": "Materials",
       "bank": "Bank",
@@ -128,7 +129,18 @@
         "ring_1": "Ring 1",
         "ring_2": "Ring 2",
         "accessory": "Accessory",
-        "empty": "Empty"
+        "empty": "Empty",
+        "feet": "Feet",
+        "legs": "Legs",
+        "finger": "Ring",
+        "main_hand": "Main weapon",
+        "off_hand": "Side weapon",
+        "unknown": "Unknown slot",
+        "paperdoll": {
+          "main_weapon": "Weapon",
+          "side_weapon": "Shield",
+          "ring": "Ring"
+        }
       },
       "actions": {
         "equip": "Equip",
@@ -214,6 +226,53 @@
         "spell_label": "Spell:",
         "bonus_xp": "+25% XP — Elemental bonus",
         "bonus_synergy": "+15% Damage — Linked synergy"
+      },
+      "tool_slot": {
+        "pickaxe": "Pickaxe",
+        "sickle": "Sickle",
+        "fishing_rod": "Fishing rod",
+        "skinning_knife": "Skinning knife",
+        "hammer": "Smithing hammer",
+        "tanning_kit": "Tanning kit",
+        "mortar": "Alchemy mortar",
+        "chisel": "Jeweler's chisel",
+        "unknown": "Tool"
+      },
+      "tools": {
+        "title": "Trade tools",
+        "available": "Available tools",
+        "empty_slot": "Empty",
+        "no_slot_hint": "Learn a trade to unlock tool slots",
+        "locked_slot": "Tool slot not unlocked",
+        "locked_skill": "Talent required to equip this tool",
+        "broken": "Broken tool",
+        "durability": "Durability",
+        "tier": "Tier %tier%"
+      },
+      "sets": {
+        "title": "Equipment sets",
+        "pieces": "%equipped%/%total% pieces"
+      },
+      "available_equipment_empty": "No equipment available",
+      "groups": {
+        "equippable": "%count% equippable"
+      },
+      "materia_slots_short": "%count% slot(s)",
+      "locked_skill_gear": "Skill required to equip this item",
+      "details": {
+        "title": "Item details",
+        "close": "Close",
+        "hint": "Click for details and actions",
+        "replaces": "Replaces:",
+        "bound": "Bound to character",
+        "gils": "Gils"
+      },
+      "kind": {
+        "gear": "Equipment",
+        "tool": "Tool",
+        "consumable": "Consumable",
+        "material": "Material",
+        "materia": "Materia"
       }
     },
     "map": {
@@ -312,11 +371,13 @@
       "player": {
         "life": "Health",
         "energy": "Energy",
-        "map": "Map",
         "dead": "You are dead... Return to the map to respawn.",
         "in_fight": "A fight is in progress!",
         "birthdate": "Born on",
-        "member_since": "Adventurer since %date%"
+        "member_since": "Adventurer since %date%",
+        "zone": "Zone",
+        "zone_type": "Type",
+        "zone_unknown": "Unknown location"
       },
       "actions": {
         "explore": "Explore",
@@ -347,9 +408,9 @@
         "description": "Turn %step% — Join the fight"
       },
       "world": {
-        "current_map": "Current map",
-        "players_nearby": "Players nearby",
-        "skills_unlocked": "Skills"
+        "skills_unlocked": "Skills",
+        "current_zone": "Current zone",
+        "players_in_zone": "Players in zone"
       }
     },
     "footer": {

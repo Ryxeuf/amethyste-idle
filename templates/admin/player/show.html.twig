@@ -73,26 +73,35 @@
                     <dt class="text-gray-500 text-sm">Vitesse</dt>
                     <dd class="text-gray-200 text-sm">{{ player.speed }}</dd>
                 </div>
+                {# Position = zone depuis le pivot (regle #7) ; la carte et les
+                   coordonnees restent des champs herites sans effet de jeu. #}
                 <div class="flex justify-between items-center gap-2">
-                    <dt class="text-gray-500 text-sm">Carte</dt>
-                    <dd class="text-gray-200 text-sm text-right">
-                        {{ player.map ? player.map.name : '-' }}
-                    </dd>
-                </div>
-                <div class="flex justify-between items-center gap-2">
-                    <dt class="text-gray-500 text-sm shrink-0">Position</dt>
+                    <dt class="text-gray-500 text-sm shrink-0">Zone</dt>
                     <dd class="text-gray-200 text-sm flex items-center gap-2 flex-wrap justify-end">
-                        <span>{{ player.coordinates }}</span>
-                        <a href="{{ path('admin_player_move', {id: player.id}) }}" class="text-blue-400 hover:text-blue-300 text-sm whitespace-nowrap">Deplacer</a>
+                        {% if player.currentZone %}
+                            <a href="{{ path('admin_zone_show', {id: player.currentZone.id}) }}" class="text-purple-400 hover:text-purple-300">{{ player.currentZone.name }}</a>
+                        {% else %}
+                            <span class="text-amber-400">aucune</span>
+                        {% endif %}
+                        <a href="{{ path('admin_player_teleport', {id: player.id}) }}" class="text-blue-400 hover:text-blue-300 text-sm whitespace-nowrap">Teleporter</a>
                     </dd>
                 </div>
-                <div class="flex justify-between">
-                    <dt class="text-gray-500 text-sm">Derniere case (last)</dt>
-                    <dd class="text-gray-200 text-sm font-mono">{{ player.lastCoordinates }}</dd>
+                <div class="flex justify-between items-center gap-2">
+                    <dt class="text-gray-500 text-sm shrink-0">Voyage</dt>
+                    <dd class="text-gray-200 text-sm text-right">
+                        {% if player.traveling %}
+                            vers {{ player.travelToZone ? player.travelToZone.name : '?' }}
+                            {% if player.travelArrivesAt %}<span class="text-gray-500">({{ player.travelArrivesAt|date('H:i:s') }})</span>{% endif %}
+                        {% else %}
+                            <span class="text-gray-500">aucun</span>
+                        {% endif %}
+                    </dd>
                 </div>
-                <div class="flex justify-between">
-                    <dt class="text-gray-500 text-sm">Deplacement (is_moving)</dt>
-                    <dd class="text-gray-200 text-sm">{{ player.moving ? 'Oui' : 'Non' }}</dd>
+                <div class="flex justify-between items-center gap-2">
+                    <dt class="text-gray-500 text-sm">Carte d'origine (herite)</dt>
+                    <dd class="text-gray-500 text-sm text-right">
+                        {{ player.map ? player.map.name : '-' }} · {{ player.coordinates }}
+                    </dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Mort</dt>
@@ -258,13 +267,13 @@
             {# Reset position #}
             <form method="post" action="{{ path('admin_player_reset_position', {id: player.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('reset' ~ player.id) }}">
-                <button type="submit" class="w-full bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Reinitialiser la position ?');">
-                    Reinitialiser la position
+                <button type="submit" class="w-full bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Replacer ce joueur dans une zone de depart ?');">
+                    Replacer en zone de depart
                 </button>
             </form>
 
-            <a href="{{ path('admin_player_move', {id: player.id}) }}" class="flex items-center justify-center w-full bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
-                Deplacer sur la carte
+            <a href="{{ path('admin_player_teleport', {id: player.id}) }}" class="flex items-center justify-center w-full bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
+                Teleporter vers une zone
             </a>
 
             {% if player.fight %}
@@ -311,9 +320,10 @@
             </form>
         </div>
 
-        {# Session carte (is_moving) #}
+        {# Verrou herite de l'ere carte : plus aucun deplacement ne le pose, mais
+           la teleportation payante (gold sink) le lit encore comme un verrou. #}
         <div class="mt-4 pt-4 border-t border-gray-800">
-            <h3 class="text-sm font-medium text-gray-400 mb-3">Etat deplacement carte (is_moving)</h3>
+            <h3 class="text-sm font-medium text-gray-400 mb-3">Verrou de session (is_moving, herite)</h3>
             <form method="post" action="{{ path('admin_player_session_moving', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                 <input type="hidden" name="_token" value="{{ csrf_token('session_moving' ~ player.id) }}">
                 <select name="is_moving" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">

@@ -34,7 +34,6 @@ use App\Repository\GroupDungeonClearRepository;
 use App\Repository\PlayerShopRepository;
 use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
-use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -50,8 +49,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ZoneController extends AbstractController
 {
-    public const HUB_SLUG = 'village-de-lumiere';
-
     private const POI_TYPES = [
         ObjectLayer::TYPE_HARVEST_SPOT,
         ObjectLayer::TYPE_FORGE,
@@ -63,7 +60,6 @@ class ZoneController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerHelper $playerHelper,
-        private readonly ZoneRepository $zoneRepository,
         private readonly ZoneConnectionRepository $zoneConnectionRepository,
         private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
         private readonly ZoneTravelService $zoneTravelService,
@@ -678,18 +674,7 @@ class ZoneController extends AbstractController
      */
     private function resolveZone(Player $player): ?Zone
     {
-        $zone = $player->getCurrentZone() ?? $this->playerZoneSynchronizer->syncFromMap($player, true);
-        if (null !== $zone) {
-            return $zone;
-        }
-
-        $hub = $this->zoneRepository->findEnabledBySlug(self::HUB_SLUG);
-        if (null !== $hub) {
-            $player->setCurrentZone($hub);
-            $this->entityManager->flush();
-        }
-
-        return $hub;
+        return $this->playerZoneSynchronizer->resolveOrAssign($player, true);
     }
 
     /**

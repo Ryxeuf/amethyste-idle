@@ -1,0 +1,258 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ zone.name }} - Zones - Admin{% endblock %}
+{% block page_title %}Zone : {{ zone.name }}{% endblock %}
+
+{% block body %}
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+        <a href="{{ path('admin_zone_index') }}" class="text-sm text-purple-400 hover:text-purple-300">&larr; Toutes les zones</a>
+        <span class="text-gray-700">|</span>
+        <a href="{{ path('admin_zone_edit', {id: zone.id}) }}" class="px-3 py-1.5 text-sm rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Editer</a>
+        <form method="post" action="{{ path('admin_zone_toggle', {id: zone.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('zone_toggle' ~ zone.id) }}">
+            <button type="submit" class="px-3 py-1.5 text-sm rounded-lg {% if zone.enabled %}bg-gray-700 hover:bg-gray-600 text-gray-200{% else %}bg-green-700 hover:bg-green-600 text-white{% endif %}">
+                {{ zone.enabled ? 'Desactiver' : 'Activer' }}
+            </button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {# ---- Identite ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 lg:col-span-1">
+            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Identite</h2>
+            <dl class="space-y-2 text-sm">
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Slug</dt><dd class="text-gray-200 font-mono text-xs">{{ zone.slug }}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Type</dt><dd class="text-gray-200">{{ zone.type }}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Zone sure</dt><dd class="{{ zone.safe ? 'text-emerald-400' : 'text-gray-400' }}">{{ zone.safe ? 'oui' : 'non' }}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Active</dt><dd class="{{ zone.enabled ? 'text-green-400' : 'text-amber-400' }}">{{ zone.enabled ? 'oui' : 'non' }}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Nom EN</dt><dd class="text-gray-300">{{ zone.nameTranslations.en|default('—') }}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Carte monde</dt><dd class="text-gray-300">{% if zone.hasMapPosition %}{{ zone.mapX }} / {{ zone.mapY }}{% else %}non placee{% endif %}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Illustration</dt><dd class="text-gray-300 text-xs">{{ zone.illustrationPath|default('—') }}</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-gray-500">Carte d'origine</dt><dd class="text-gray-300">{{ zone.sourceMap ? zone.sourceMap.name : '—' }}</dd></div>
+            </dl>
+            {% if zone.description %}
+                <p class="mt-3 pt-3 border-t border-gray-800 text-sm text-gray-400">{{ zone.description }}</p>
+            {% endif %}
+        </div>
+
+        {# ---- Liaisons ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 lg:col-span-2">
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Liaisons</h2>
+                <a href="{{ path('admin_zone_connection_new', {id: zone.id}) }}"
+                   class="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Ajouter une liaison</a>
+            </div>
+
+            {% if outgoing is empty %}
+                <p class="text-sm text-amber-400 mb-4">
+                    Aucune liaison sortante : cette zone est un cul-de-sac, on y entre sans pouvoir en repartir.
+                </p>
+            {% else %}
+                <table class="w-full text-sm mb-4">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-500 text-xs uppercase">
+                            <th class="text-left py-2 font-medium">Vers</th>
+                            <th class="text-right py-2 font-medium">Duree</th>
+                            <th class="text-left py-2 pl-4 font-medium">Decouverte requise</th>
+                            <th class="text-left py-2 font-medium">Etat</th>
+                            <th class="text-right py-2 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for connection in outgoing %}
+                            <tr class="border-b border-gray-800/60">
+                                <td class="py-2">
+                                    <a href="{{ path('admin_zone_show', {id: connection.toZone.id}) }}" class="text-purple-400 hover:text-purple-300">{{ connection.toZone.name }}</a>
+                                </td>
+                                <td class="py-2 text-right text-gray-300 tabular-nums">{{ connection.travelSeconds }} s</td>
+                                <td class="py-2 pl-4 text-gray-400">{{ connection.requiresDiscovery ? 'oui' : 'non' }}</td>
+                                <td class="py-2">
+                                    {% if connection.enabled %}
+                                        <span class="text-green-400">active</span>
+                                    {% else %}
+                                        <span class="text-gray-500">inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-2 text-right whitespace-nowrap">
+                                    <a href="{{ path('admin_zone_connection_edit', {id: connection.id}) }}" class="text-xs text-gray-400 hover:text-gray-200">Editer</a>
+                                    <form method="post" action="{{ path('admin_zone_connection_delete', {id: connection.id}) }}" class="inline"
+                                          onsubmit="return confirm('Supprimer la liaison vers {{ connection.toZone.name|e('js') }} ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('zone_connection_delete' ~ connection.id) }}">
+                                        <button type="submit" class="ml-2 text-xs text-red-400 hover:text-red-300">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Entrantes</h3>
+            {% if incoming is empty %}
+                <p class="text-sm text-amber-400">Aucune liaison entrante : cette zone est inatteignable par le voyage.</p>
+            {% else %}
+                <div class="flex flex-wrap gap-2">
+                    {% for connection in incoming %}
+                        <a href="{{ path('admin_zone_show', {id: connection.fromZone.id}) }}"
+                           class="px-2 py-1 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-white">
+                            {{ connection.fromZone.name }} ({{ connection.travelSeconds }} s){% if not connection.enabled %} — inactive{% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# ---- Population ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Creatures</h2>
+            {% if population is empty %}
+                <p class="text-sm text-gray-500">
+                    Aucune creature : la chasse ne rendra rien ici{% if not zone.safe %} — pourtant la zone n'est pas declaree sure{% endif %}.
+                </p>
+            {% else %}
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-500 text-xs uppercase">
+                            <th class="text-left py-2 font-medium">Espece</th>
+                            <th class="text-right py-2 font-medium">Total</th>
+                            <th class="text-right py-2 font-medium">Vivantes</th>
+                            <th class="text-right py-2 font-medium">Nocturnes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in population %}
+                            <tr class="border-b border-gray-800/60">
+                                <td class="py-2 text-gray-200">{{ row.monster.name }} <span class="text-gray-600 text-xs">niv. {{ row.monster.level }}</span></td>
+                                <td class="py-2 text-right text-gray-300 tabular-nums">{{ row.total }}</td>
+                                <td class="py-2 text-right tabular-nums {{ row.alive == 0 ? 'text-amber-400' : 'text-gray-300' }}">{{ row.alive }}</td>
+                                <td class="py-2 text-right text-gray-400 tabular-nums">{{ row.nocturnal }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {# Effectif cible, comme en YAML : on complete ou on retire jusqu'au compte demande. #}
+            <form method="post" action="{{ path('admin_zone_population', {id: zone.id}) }}" class="mt-4 pt-4 border-t border-gray-800 space-y-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('zone_population' ~ zone.id) }}">
+                <label for="zone-monster" class="block text-xs text-gray-500">Fixer un effectif</label>
+                <select id="zone-monster" name="monster_id" required
+                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                    <option value="">Choisir une creature</option>
+                    {% for monster in monsters %}
+                        <option value="{{ monster.id }}">{{ monster.name }} (niv. {{ monster.level }})</option>
+                    {% endfor %}
+                </select>
+                <div class="flex items-center gap-3">
+                    <input type="number" name="count" min="0" max="200" value="0" required
+                           class="w-24 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                    <label class="flex items-center gap-1.5 text-xs text-gray-400">
+                        <input type="checkbox" name="nocturnal" value="1" class="h-4 w-4 rounded border-gray-700 bg-gray-800 text-purple-600">
+                        Nocturne
+                    </label>
+                    <button type="submit" class="ml-auto px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-600 hover:bg-purple-500 text-white">Appliquer</button>
+                </div>
+                <p class="text-xs text-gray-600">Une creature engagee dans un combat n'est jamais retiree.</p>
+            </form>
+        </div>
+
+        {# ---- Habitants ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">PNJ ({{ pnjs|length }})</h2>
+            {% if pnjs is empty %}
+                <p class="text-sm text-gray-500">Aucun habitant.</p>
+            {% else %}
+                <ul class="space-y-1.5 text-sm">
+                    {% for pnj in pnjs %}
+                        <li class="flex items-center justify-between gap-3">
+                            <a href="{{ path('admin_pnj_edit', {id: pnj.id}) }}" class="text-purple-400 hover:text-purple-300">{{ pnj.name }}</a>
+                            <span class="text-xs text-gray-500">{{ pnj.classType }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        {# ---- Recolte ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Filons de recolte</h2>
+                {% if gatherResources is not empty %}
+                    <form method="post" action="{{ path('admin_zone_vein_refill', {id: zone.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('zone_vein_refill' ~ zone.id) }}">
+                        <button type="submit" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-100">Recharger</button>
+                    </form>
+                {% endif %}
+            </div>
+            {% if gatherResources is empty %}
+                <p class="text-sm text-gray-500">Aucune ressource declaree (<code>gather_config</code> vide).</p>
+            {% else %}
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-500 text-xs uppercase">
+                            <th class="text-left py-2 font-medium">Ressource</th>
+                            <th class="text-left py-2 font-medium">Metier</th>
+                            <th class="text-right py-2 font-medium">Capacite</th>
+                            <th class="text-right py-2 font-medium">Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resource in gatherResources %}
+                            {% set slug = resource.slug|default('?') %}
+                            {% set vein = veins[slug]|default(null) %}
+                            <tr class="border-b border-gray-800/60">
+                                <td class="py-2 text-gray-200">{{ slug }} <span class="text-xs text-gray-600">{{ resource.item|default('') }}</span></td>
+                                <td class="py-2 text-gray-400">{{ resource.profession|default('—') }}</td>
+                                <td class="py-2 text-right text-gray-300 tabular-nums">{{ resource.capacity|default('—') }}</td>
+                                <td class="py-2 text-right tabular-nums {{ vein and vein.stock == 0 ? 'text-amber-400' : 'text-gray-300' }}">
+                                    {% if vein %}{{ vein.stock }}{% else %}<span class="text-gray-600">jamais recolte</span>{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+
+        {# ---- POI ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Points d'interet ({{ pois|length }})</h2>
+            {% if pois is empty %}
+                <p class="text-sm text-gray-500">Aucun point d'interet.</p>
+            {% else %}
+                <ul class="space-y-1.5 text-sm">
+                    {% for poi in pois %}
+                        <li class="flex items-center justify-between gap-3">
+                            <span class="text-gray-200">{{ poi.name|default(poi.type) }}</span>
+                            <span class="text-xs text-gray-500">{{ poi.type }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        {# ---- Joueurs presents ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 lg:col-span-2">
+            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Joueurs presents ({{ playersPresent|length }})</h2>
+            {% if playersPresent is empty %}
+                <p class="text-sm text-gray-500">Personne dans cette zone.</p>
+            {% else %}
+                <div class="flex flex-wrap gap-2">
+                    {% for player in playersPresent %}
+                        <a href="{{ path('admin_player_show', {id: player.id}) }}" class="px-2 py-1 text-xs rounded-lg bg-gray-800 text-gray-300 hover:text-white">{{ player.name }}</a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# ---- Exploration ---- #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <h2 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Exploration</h2>
+            {% if zone.exploreConfig is empty %}
+                <p class="text-sm text-gray-500">Configuration par defaut du service d'exploration.</p>
+            {% else %}
+                <pre class="text-xs text-gray-400 overflow-x-auto">{{ zone.exploreConfig|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

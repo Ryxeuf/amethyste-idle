@@ -3,6 +3,7 @@
 namespace App\Twig\Components;
 
 use App\Entity\App\Player;
+use App\Entity\App\Zone;
 use App\Helper\PlayerHelper;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
@@ -21,25 +22,31 @@ class DashboardPlayerRecap
         return $this->playerHelper->getPlayer();
     }
 
-    public function getMapName(): string
+    /**
+     * Zone courante : la position de reference depuis le pivot PBBG (regle #7).
+     * La carte et les coordonnees affichees ici jusqu'alors ne decrivaient plus
+     * rien de jouable — un joueur « en 85-34 sur la carte de test » n'a aucune
+     * action possible.
+     */
+    public function getZone(): ?Zone
     {
-        $player = $this->getPlayer();
-
-        return $player?->getMap()?->getName() ?? '???';
+        return $this->getPlayer()?->getCurrentZone();
     }
 
-    public function getX(): int
+    /**
+     * Cle de traduction du type de zone (`game.zone.type.*`), ou null si le
+     * joueur n'a pas encore de zone.
+     */
+    public function getZoneTypeKey(): ?string
     {
-        $player = $this->getPlayer();
+        $zone = $this->getZone();
 
-        return $player ? $player->getX() : 0;
+        return null === $zone ? null : 'game.zone.type.' . $zone->getType();
     }
 
-    public function getY(): int
+    public function isZoneSafe(): bool
     {
-        $player = $this->getPlayer();
-
-        return $player ? $player->getY() : 0;
+        return $this->getZone()?->isSafe() ?? false;
     }
 
     public function getLife(): int

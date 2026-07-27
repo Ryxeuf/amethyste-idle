@@ -10,14 +10,12 @@ use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
-use App\Form\Admin\PlayerPositionType;
-use App\Helper\CellHelper;
-use App\Helper\MapCellValidator;
+use App\Form\Admin\PlayerZoneType;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Service\Admin\AdminFightModerationService;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,6 +29,7 @@ class PlayerController extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
         private readonly AdminFightModerationService $fightModeration,
+        private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
     ) {
     }
 
@@ -68,48 +67,43 @@ class PlayerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/move', name: 'move', requirements: ['id' => '\d+'])]
-    public function move(Request $request, Player $player): Response
+    /**
+     * Teleporte un joueur vers une zone.
+     *
+     * L'ecran demandait une carte et des coordonnees « x.y » validees contre le
+     * terrain — un heritage de l'ere carte : depuis le pivot, la position de
+     * reference est la zone (regle #7), et deplacer un joueur en 85.34 ne
+     * changeait plus rien de ce qu'il pouvait faire.
+     */
+    #[Route('/{id}/teleport', name: 'teleport', requirements: ['id' => '\d+'])]
+    public function teleport(Request $request, Player $player): Response
     {
-        $form = $this->createForm(PlayerPositionType::class, $player, ['show_map_field' => true]);
+        $origin = $player->getCurrentZone();
+        $form = $this->createForm(PlayerZoneType::class, $player);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $coordsStr = trim($player->getCoordinates());
-            $map = $player->getMap();
+            $zone = $player->getCurrentZone();
 
-            if (!preg_match('/^\d+\.\d+$/', $coordsStr)) {
-                $form->get('coordinates')->addError(new FormError('Format attendu : x.y (entiers, ex. 10.15).'));
-            } elseif ($map === null) {
-                $form->get('map')->addError(new FormError('Choisissez une carte.'));
-            } else {
-                [$sx, $sy] = explode('.', $coordsStr, 2);
-                $x = (int) $sx;
-                $y = (int) $sy;
-                $normalized = CellHelper::stringifyCoordinates($x, $y);
+            // Un voyage en cours pointe vers une autre destination : le laisser
+            // courant ferait « arriver » le joueur ailleurs quelques minutes
+            // apres la teleportation.
+            $player->setTravelToZone(null);
+            $player->setTravelArrivesAt(null);
+            $this->em->flush();
 
-                if (!MapCellValidator::isCellWalkable($map, $x, $y)) {
-                    $form->get('coordinates')->addError(new FormError('La case cible est bloquee ou hors carte.'));
-                } else {
-                    $player->setCoordinates($normalized);
-                    $player->setLastCoordinates($normalized);
-                    $player->setIsMoving(false);
-                    $this->em->flush();
+            $this->adminLogger->log('teleport', 'Player', $player->getId(), sprintf(
+                '%s teleporte de %s vers %s',
+                $player->getName(),
+                $origin?->getSlug() ?? 'aucune zone',
+                $zone?->getSlug() ?? 'aucune zone',
+            ));
+            $this->addFlash('success', sprintf('Joueur "%s" teleporte vers %s.', $player->getName(), $zone?->getName() ?? '—'));
 
-                    $this->adminLogger->log('update', 'Player', $player->getId(), sprintf(
-                        '%s deplace vers %s sur %s',
-                        $player->getName(),
-                        $normalized,
-                        $map->getName()
-                    ));
-                    $this->addFlash('success', 'Joueur "' . $player->getName() . '" place en ' . $normalized . ' (' . $map->getName() . ').');
-
-                    return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
-                }
-            }
+            return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
         }
 
-        return $this->render('admin/player/move.html.twig', [
+        return $this->render('admin/player/teleport.html.twig', [
             'player' => $player,
             'form' => $form->createView(),
         ]);
@@ -196,15 +190,32 @@ class PlayerController extends AbstractController
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
     }
 
+    /**
+     * Ramene un joueur a une zone de depart.
+     *
+     * Reposait sur des coordonnees fixes (« 5.5 ») qui ne decrivent plus une
+     * position depuis le pivot ; la resolution est celle du jeu — carte de
+     * rattachement, hub, puis zone de depart plausible.
+     */
     #[Route('/{id}/reset-position', name: 'reset_position', methods: ['POST'])]
     public function resetPosition(Request $request, Player $player): Response
     {
         if ($this->isCsrfTokenValid('reset' . $player->getId(), $request->request->get('_token'))) {
-            $player->setCoordinates('5.5');
-            $player->setLastCoordinates('5.5');
-            $this->em->flush();
-            $this->adminLogger->log('reset_position', 'Player', $player->getId(), $player->getName());
-            $this->addFlash('success', 'Position du joueur "' . $player->getName() . '" reinitialisee.');
+            $player->setCurrentZone(null);
+            $player->setTravelToZone(null);
+            $player->setTravelArrivesAt(null);
+
+            $zone = $this->playerZoneSynchronizer->resolveOrAssign($player, true);
+
+            $this->adminLogger->log('reset_position', 'Player', $player->getId(), $player->getName(), [
+                'zone' => $zone?->getSlug(),
+            ]);
+
+            if (null === $zone) {
+                $this->addFlash('warning', 'Aucune zone active en base : importer le graphe de zones (/admin/zones) puis reessayer.');
+            } else {
+                $this->addFlash('success', sprintf('Joueur "%s" replace en %s.', $player->getName(), $zone->getName()));
+            }
         }
 
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);

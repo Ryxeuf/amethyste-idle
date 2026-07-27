@@ -2,6 +2,8 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\App\Player;
+use App\Entity\App\Zone;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -56,6 +58,86 @@ class SmokeTest extends WebTestCase
         yield 'achievements' => ['/game/achievements'];
         yield 'codex' => ['/game/codex'];
         yield 'quests' => ['/game/quests'];
+        // Les onglets de l'inventaire sont charges dans un turbo-frame : ce sont
+        // des requetes distinctes, et c'est la que vivent ses gabarits.
+        yield 'inventory_equipment' => ['/game/inventory/equipment'];
+        yield 'inventory_items' => ['/game/inventory/items'];
+        yield 'inventory_materia' => ['/game/inventory/materia'];
+        yield 'inventory_materials' => ['/game/inventory/materials'];
+        yield 'inventory_bank' => ['/game/inventory/bank'];
+    }
+
+    /**
+     * Les ecrans d'administration passent par le meme garde-fou : un gabarit
+     * casse ou une dependance manquante s'y voit en HTTP 500, pas autrement.
+     */
+    #[DataProvider('adminRoutesProvider')]
+    public function testAdminRouteDoesNotReturn500(string $url): void
+    {
+        $this->client->request('GET', $url);
+        $statusCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertLessThan(
+            500,
+            $statusCode,
+            sprintf('Route %s returned HTTP %d', $url, $statusCode),
+        );
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function adminRoutesProvider(): iterable
+    {
+        yield 'dashboard' => ['/admin'];
+        yield 'zones' => ['/admin/zones'];
+        yield 'zone_new' => ['/admin/zones/new'];
+        yield 'players' => ['/admin/players'];
+    }
+
+    /**
+     * Fiches liees a une entite reelle : elles ne sont pas atteignables par une
+     * URL fixe, et c'est justement la ou vivent les gabarits les plus fournis.
+     */
+    public function testZoneAndPlayerDetailScreensRender(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+
+        $zone = $em->getRepository(Zone::class)->findOneBy([], ['id' => 'ASC']);
+        if ($zone === null) {
+            $this->markTestSkipped('Aucune zone en base — lancer app:zone:import.');
+        }
+
+        foreach ([
+            sprintf('/admin/zones/%d', $zone->getId()),
+            sprintf('/admin/zones/%d/edit', $zone->getId()),
+            sprintf('/admin/zones/%d/connections/new', $zone->getId()),
+        ] as $url) {
+            $this->client->request('GET', $url);
+            $this->assertLessThan(
+                500,
+                $this->client->getResponse()->getStatusCode(),
+                sprintf('Route %s returned HTTP %d', $url, $this->client->getResponse()->getStatusCode()),
+            );
+        }
+
+        $player = $em->getRepository(Player::class)->findOneBy([], ['id' => 'ASC']);
+        if ($player === null) {
+            $this->markTestSkipped('Aucun joueur en base.');
+        }
+
+        foreach ([
+            sprintf('/admin/players/%d', $player->getId()),
+            sprintf('/admin/players/%d/teleport', $player->getId()),
+        ] as $url) {
+            $this->client->request('GET', $url);
+            $this->assertLessThan(
+                500,
+                $this->client->getResponse()->getStatusCode(),
+                sprintf('Route %s returned HTTP %d', $url, $this->client->getResponse()->getStatusCode()),
+            );
+        }
     }
 
     public function testUnauthenticatedGameAccessRedirects(): void

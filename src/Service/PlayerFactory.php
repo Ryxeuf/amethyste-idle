@@ -63,7 +63,10 @@ class PlayerFactory
         $player->setMap($spawnMap);
         $player->setCoordinates(self::SPAWN_COORDINATES);
         $player->setLastCoordinates(self::SPAWN_COORDINATES);
-        $this->playerZoneSynchronizer->syncFromMap($player);
+        // Un personnage neuf doit avoir une zone : la carte de spawn peut n'etre
+        // rattachee a aucune (carte de test), et sans zone aucune action du pivot
+        // n'est possible.
+        $this->playerZoneSynchronizer->resolveOrAssign($player);
 
         $this->entityManager->persist($player);
 

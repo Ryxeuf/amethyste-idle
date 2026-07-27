@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Controller\Admin;
 
 use App\Controller\Admin\DashboardController;
+use App\Entity\App\Zone;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
@@ -71,17 +72,17 @@ class DashboardControllerTest extends TestCase
     public function testZoneStatsContainsCorrectCounts(): void
     {
         $this->configureEntityManagerMocks(
+            zones: [$this->zone(1, 'Plaine de Départ'), $this->zone(2, 'Forêt Sombre')],
             pnjData: [
-                ['id' => 1, 'name' => 'Plaine de Départ', 'pnjCount' => 3],
-                ['id' => 2, 'name' => 'Forêt Sombre', 'pnjCount' => 1],
+                ['zoneId' => 1, 'total' => 3],
+                ['zoneId' => 2, 'total' => 1],
             ],
             mobData: [
-                ['id' => 1, 'name' => 'Plaine de Départ', 'mobCount' => 5],
-                ['id' => 2, 'name' => 'Forêt Sombre', 'mobCount' => 12],
+                ['zoneId' => 1, 'total' => 5],
+                ['zoneId' => 2, 'total' => 12],
             ],
             playerData: [
-                ['id' => 1, 'name' => 'Plaine de Départ', 'playerCount' => 2],
-                ['id' => 2, 'name' => 'Forêt Sombre', 'playerCount' => 0],
+                ['zoneId' => 1, 'total' => 2],
             ],
         );
 
@@ -98,34 +99,46 @@ class DashboardControllerTest extends TestCase
         $this->assertSame('Forêt Sombre', $zoneStats[1]['name']);
         $this->assertSame(1, $zoneStats[1]['pnjCount']);
         $this->assertSame(12, $zoneStats[1]['mobCount']);
+        // Aucune ligne renvoyee pour cette zone : le compteur reste a zero.
         $this->assertSame(0, $zoneStats[1]['playerCount']);
     }
 
-    public function testZoneStatsEmptyWhenNoMaps(): void
+    public function testZoneStatsEmptyWhenNoZone(): void
     {
-        $this->configureEntityManagerMocks(pnjData: [], mobData: [], playerData: []);
+        $this->configureEntityManagerMocks(zones: []);
 
         $this->controller->index();
 
-        $zoneStats = $this->capturedTemplateVars['zoneStats'];
-        $this->assertCount(0, $zoneStats);
+        $this->assertCount(0, $this->capturedTemplateVars['zoneStats']);
+    }
+
+    private function zone(int $id, string $name): Zone
+    {
+        $zone = (new Zone())->setName($name)->setSlug(strtolower(str_replace(' ', '-', $name)));
+        $ref = new \ReflectionProperty(Zone::class, 'id');
+        $ref->setValue($zone, $id);
+
+        return $zone;
     }
 
     /**
-     * @param list<array{id: int, name: string, pnjCount: int}>    $pnjData
-     * @param list<array{id: int, name: string, mobCount: int}>    $mobData
-     * @param list<array{id: int, name: string, playerCount: int}> $playerData
+     * @param list<Zone>                           $zones
+     * @param list<array{zoneId: int, total: int}> $pnjData
+     * @param list<array{zoneId: int, total: int}> $mobData
+     * @param list<array{zoneId: int, total: int}> $playerData
      */
     private function configureEntityManagerMocks(
-        array $pnjData = [['id' => 1, 'name' => 'TestMap', 'pnjCount' => 0]],
-        array $mobData = [['id' => 1, 'name' => 'TestMap', 'mobCount' => 0]],
-        array $playerData = [['id' => 1, 'name' => 'TestMap', 'playerCount' => 0]],
+        ?array $zones = null,
+        array $pnjData = [],
+        array $mobData = [],
+        array $playerData = [],
     ): void {
-        // Mock repository for count() calls (metrics + liveStats)
+        $zones ??= [$this->zone(1, 'TestZone')];
+
+        // Repository generique pour les compteurs (metriques + stats live).
         $repo = $this->createMock(EntityRepository::class);
         $repo->method('count')->willReturn(0);
 
-        // Mock repository for AdminLog with its own query builder
         $logQuery = $this->createMock(Query::class);
         $logQuery->method('getResult')->willReturn([]);
 
@@ -140,20 +153,36 @@ class DashboardControllerTest extends TestCase
         $logRepo->method('count')->willReturn(0);
         $logRepo->method('createQueryBuilder')->willReturn($logQb);
 
+        // Liste des zones actives, lue via le repository de Zone.
+        $zonesQuery = $this->createMock(Query::class);
+        $zonesQuery->method('getResult')->willReturn($zones);
+
+        $zonesQb = $this->createMock(QueryBuilder::class);
+        $zonesQb->method('andWhere')->willReturnSelf();
+        $zonesQb->method('orderBy')->willReturnSelf();
+        $zonesQb->method('getQuery')->willReturn($zonesQuery);
+
+        $zoneRepo = $this->createMock(EntityRepository::class);
+        $zoneRepo->method('count')->willReturn(0);
+        $zoneRepo->method('createQueryBuilder')->willReturn($zonesQb);
+
         $this->em->method('getRepository')->willReturnCallback(
-            function (string $class) use ($repo, $logRepo) {
+            function (string $class) use ($repo, $logRepo, $zoneRepo) {
                 if ($class === \App\Entity\App\AdminLog::class) {
                     return $logRepo;
+                }
+                if ($class === Zone::class) {
+                    return $zoneRepo;
                 }
 
                 return $repo;
             }
         );
 
-        // Order matches controller: totalGils, bannedPlayers, then 3 zone stats queries
+        // Ordre des appels du controleur : totalGils, bannedPlayers, puis les
+        // trois agregats par zone (PNJ, creatures vivantes, joueurs connectes).
         $queryBuilders = [];
 
-        // 1. totalGils query builder
         $gilsQuery = $this->createMock(Query::class);
         $gilsQuery->method('getSingleScalarResult')->willReturn(0);
         $gilsQb = $this->createMock(QueryBuilder::class);
@@ -162,7 +191,6 @@ class DashboardControllerTest extends TestCase
         $gilsQb->method('getQuery')->willReturn($gilsQuery);
         $queryBuilders[] = $gilsQb;
 
-        // 2. bannedPlayers query builder
         $bannedQuery = $this->createMock(Query::class);
         $bannedQuery->method('getSingleScalarResult')->willReturn(0);
         $bannedQb = $this->createMock(QueryBuilder::class);
@@ -172,7 +200,6 @@ class DashboardControllerTest extends TestCase
         $bannedQb->method('getQuery')->willReturn($bannedQuery);
         $queryBuilders[] = $bannedQb;
 
-        // 3-5. Zone stats query builders (pnj, mobs, players)
         foreach ([$pnjData, $mobData, $playerData] as $result) {
             $query = $this->createMock(Query::class);
             $query->method('getResult')->willReturn($result);
@@ -180,9 +207,10 @@ class DashboardControllerTest extends TestCase
             $qb = $this->createMock(QueryBuilder::class);
             $qb->method('select')->willReturnSelf();
             $qb->method('from')->willReturnSelf();
-            $qb->method('leftJoin')->willReturnSelf();
+            $qb->method('join')->willReturnSelf();
+            $qb->method('where')->willReturnSelf();
+            $qb->method('andWhere')->willReturnSelf();
             $qb->method('groupBy')->willReturnSelf();
-            $qb->method('orderBy')->willReturnSelf();
             $qb->method('setParameter')->willReturnSelf();
             $qb->method('getQuery')->willReturn($query);
             $queryBuilders[] = $qb;

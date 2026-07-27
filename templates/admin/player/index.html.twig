@@ -24,7 +24,7 @@
                         <th class="text-left px-4 py-3 font-medium">Sprite</th>
                         <th class="text-left px-4 py-3 font-medium">Nom</th>
                         <th class="text-left px-4 py-3 font-medium">Utilisateur</th>
-                        <th class="text-left px-4 py-3 font-medium">Carte</th>
+                        <th class="text-left px-4 py-3 font-medium">Zone</th>
                         <th class="text-left px-4 py-3 font-medium">Vie</th>
                         <th class="text-left px-4 py-3 font-medium">Gils</th>
                         <th class="text-left px-4 py-3 font-medium">Statut</th>
@@ -39,7 +39,13 @@
                             <td class="px-4 py-3">{% include 'admin/_sprite_preview.html.twig' with { sprite_key: 'player_default', size: 'sm' } %}</td>
                             <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ player.name }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ player.user.username ?? player.user.email }}</td>
-                            <td class="px-4 py-3 text-gray-400">{{ player.map ? player.map.name : '-' }}</td>
+                            <td class="px-4 py-3">
+                                {% if player.currentZone %}
+                                    <a href="{{ path('admin_zone_show', {id: player.currentZone.id}) }}" class="text-purple-400 hover:text-purple-300">{{ player.currentZone.name }}</a>
+                                {% else %}
+                                    <span class="text-amber-400">aucune zone</span>
+                                {% endif %}
+                            </td>
                             <td class="px-4 py-3 text-gray-400 whitespace-nowrap">{{ player.life }}/{{ player.maxLife }}</td>
                             <td class="px-4 py-3 text-yellow-400 whitespace-nowrap">{{ player.gils|number_format(0, ',', ' ') }}</td>
                             <td class="px-4 py-3">
