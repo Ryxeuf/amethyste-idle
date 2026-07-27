@@ -51,26 +51,103 @@
 #     - { from, to, travel_seconds, bidirectional, requires_discovery, enabled }
 
 zones:
+    # =========================================================================
+    # ZONE 1 — Village de Lumiere (hub, zone sure)
+    # =========================================================================
+    #
+    # Le point de depart de tout personnage, et le seul lieu ou l'on ne risque
+    # rien. `safe: true` fait forcer le poids `mob` a 0 par `ExploreService` :
+    # declarer une population ici n'aurait aucun effet, d'ou l'absence de bloc
+    # `mobs:`.
     village-de-lumiere:
         name: 'Village de Lumière'
         name_en: 'Village of Light'
-        description: "Le hub central du World 1. Zone sure : commerces, artisans et voyageurs s'y croisent."
-        description_en: 'The central hub of World 1. Safe zone: shops, artisans and travelers cross paths here.'
+        description: "Le hub central du World 1. Un fanal dresse contre les tenebres alentour : la forge, les echoppes, les jardins du temple et les voyageurs de passage. Ici, rien ne mord."
+        description_en: 'The central hub of World 1. A beacon raised against the surrounding dark: the forge, the shops, the temple gardens and passing travelers. Nothing bites here.'
         type: city
         safe: true
         map_x: 50
         map_y: 55
+        enabled: true
         source_map: 'Village de Lumière'
+        explore:
+            # Ce qu'on trouve en flanant dans un village, ce sont des gens. Sans
+            # bloc `explore`, la zone tombait sur les defauts du service (mob 50
+            # ramene a 0, puis 40 % de « rien ») : flaner au village ne racontait
+            # rien. Le poids `pnj` domine desormais, et `harvest` reste faible —
+            # les jardins ci-dessous se recoltent directement, sans reperage.
+            weights: { mob: 0, chest: 14, harvest: 10, pnj: 46, nothing: 30 }
+            chest_gils_min: 3
+            chest_gils_max: 12
+            night:
+                # Le village dort : les rues se vident, et la bourse oubliee sur
+                # un etal a deja trouve preneur.
+                weights: { mob: 0, chest: 8, harvest: 6, pnj: 22, nothing: 64 }
+                chest_gils_min: 2
+                chest_gils_max: 8
+        gather:
+            # Jardins du temple — palier T0 (cf. tableau en tete de fichier).
+            #
+            # Meme diagnostic que la camomille d'ECO-02 : le thym et la lavande
+            # n'avaient **aucune source** dans le monde livre alors qu'ils gatent
+            # les deux premieres recettes d'alchimie que rencontre un joueur —
+            # `recipe-antidote` (niveau 2, 1x lavande) et `recipe-healing-medium`
+            # (niveau 2, 2x thym), plus `recipe-elixir-defense` (niveau 3, 2x
+            # thym). Les poser en zone sure au palier T0, c'est garantir que le
+            # plancher T1 de l'economie ne dependra jamais d'une zone hostile.
+            - { slug: carre-de-thym, item: plant-thyme, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: bordure-de-lavande, item: plant-lavender, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+        pnjs:
+            # Habitants declares (ZON-26b-b). Ils **completent** les sept PNJ de
+            # `VillageHubPnjFixtures` (forgeron, alchimiste, marchand, maitresse
+            # des quetes, banquier, garde, guide) : ceux-la portent des arbres de
+            # dialogue et des chaines de quete, que le YAML ne sait pas decrire.
+            # Ici, on ajoute des figures de fond — une replique, parfois un etal.
+            - slug: village-jardiniere-fioline
+              name: 'Fioline, jardiniere du temple'
+              name_en: 'Fioline, Temple Gardener'
+              class_type: villager
+              greeting: "Le thym pousse le long du mur sud, la lavande sur la bordure. Sers-toi — mais laisse-en pour le suivant."
+              # Plancher T1 PNJ (cf. docs/GAME_PRINCIPLES.md) : les herbes de base
+              # restent achetables meme quand les carres sont a sec.
+              shop_items: [plant-thyme, plant-lavender, plant-mint]
+              opens_at: 7
+              closes_at: 18
+            - slug: village-crieur-hesper
+              name: 'Hesper le crieur public'
+              name_en: 'Hesper the Town Crier'
+              class_type: villager
+              greeting: "Avis ! La foret bruisse plus qu'a l'ordinaire, et les mines rendent moins de fer qu'au printemps. Voila pour les nouvelles."
+            - slug: village-veilleur-tancrede
+              name: 'Tancrede, veilleur de nuit'
+              name_en: 'Tancred, Night Watchman'
+              class_type: guard
+              life: 60
+              greeting: "Dors si tu peux. Moi, je compte les heures jusqu'a l'aube — et je vends de quoi les tenir."
+              shop_items: [beer-pint, bread, grilled-meat]
+              # Horaire a cheval sur minuit : `Pnj::isShopOpen` traite le cas
+              # `opens_at > closes_at` comme une plage nocturne (20h -> 6h).
+              opens_at: 20
+              closes_at: 6
 
+    # =========================================================================
+    # ZONE 2 — Foret des murmures (premiere zone hostile)
+    # =========================================================================
+    #
+    # La zone ou l'on apprend a se battre et a recolter. Population et habitants
+    # sont **declares** ici : jusqu'a ZON-26b ils venaient de la carte TMX
+    # d'origine via `MobFixtures`, ce qui melait deux sources de verite pour un
+    # meme contenu.
     foret-des-murmures:
         name: 'Forêt des murmures'
         name_en: 'Whispering Forest'
-        description: 'Arbres centenaires, clairieres et riviere. Premiers dangers pour les aventuriers.'
-        description_en: 'Ancient trees, clearings and a river. First dangers for adventurers.'
+        description: "Arbres centenaires, clairieres et riviere aux eaux vives. On y apprend a se battre et a cueillir — et, la nuit venue, a ne pas s'attarder."
+        description_en: 'Ancient trees, clearings and a river of quick water. Here one learns to fight and to forage — and, once night falls, not to linger.'
         type: wilderness
         safe: false
         map_x: 28
         map_y: 38
+        enabled: true
         source_map: 'Forêt des murmures'
         explore:
             weights: { mob: 45, chest: 12, harvest: 12, pnj: 8, nothing: 23 }
@@ -83,6 +160,10 @@ zones:
                 weights: { mob: 65, chest: 15, harvest: 5, pnj: 2, nothing: 13 }
                 chest_gils_min: 10
                 chest_gils_max: 40
+                # Ce pool ne filtre que les creatures **presentes dans la zone**
+                # (`ExploreService::resolveMob` retombe sur le vivier complet si le
+                # filtre ne rend rien). Le squelette etait declare ici sans jamais
+                # avoir ete peuple : le bloc `mobs:` ci-dessous le corrige.
                 mob_slugs: [ghost, skeleton]
         gather:
             - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
@@ -98,16 +179,86 @@ zones:
             # les zones de depart — les gater derriere l'Acte 4 aurait mis une
             # recette de niveau 2 hors de portee jusqu'au niveau 30.
             - { slug: aloes-des-clairieres, item: plant-aloe-vera, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            # Meme correctif, applique aux plantes restees orphelines : le romarin
+            # alimente un enchantement, le pissenlit et l'echinacee ne poussaient
+            # nulle part. La foret est leur biome naturel — et la premiere zone
+            # ou un joueur ouvre l'arbre d'herboristerie.
+            - { slug: romarin-des-lisieres, item: plant-rosemary, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: pissenlits-des-clairieres, item: plant-dandelion, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: echinacee-des-fourres, item: plant-echinacea, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            # Le second poisson de la riviere, palier T2 : la truite nourrit le
+            # plancher, le saumon donne une raison de revenir avec un meilleur
+            # niveau de peche.
+            - { slug: saumons-des-rapides, item: fish-salmon, profession: fishing, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+        # Population declaree (ZON-26b). Elle remplace les spawns que
+        # `MobFixtures` posait sur la carte TMX `map_3` : deux sources de verite
+        # pour un meme contenu, dont une invisible depuis ce fichier.
+        #
+        # Le `count` est un **effectif**, pas une espece : quatre gelees sont
+        # quatre rencontres possibles, et un combat en cours n'asseche pas la
+        # zone pour les autres joueurs.
+        mobs:
+            # Vivier diurne — la marche de progression de la zone, du niveau 1
+            # (gelee, loup, scarabee) au niveau 4 (loup alpha).
+            - { monster: slime, count: 4 }
+            - { monster: wolf, count: 4, group_tag: meute-des-murmures }
+            - { monster: beetle, count: 3 }
+            - { monster: spider, count: 3 }
+            - { monster: venom_snake, count: 3 }
+            - { monster: scorpion, count: 2 }
+            - { monster: mushroom_golem, count: 2 }
+            - { monster: ochu, count: 2 }
+            - { monster: undine, count: 2 }
+            - { monster: sylph, count: 2 }
+            - { monster: salamander, count: 1 }
+            - { monster: alpha_wolf, count: 1, group_tag: meute-des-murmures }
+            # Vivier nocturne — c'est lui que `explore.night.mob_slugs` restreint.
+            # Le squelette manquait : le pool nocturne le nommait sans qu'aucun
+            # individu n'existe, et le filtre retombait silencieusement sur le
+            # vivier diurne.
+            - { monster: skeleton, count: 3, nocturnal: true }
+            - { monster: ghost, count: 3, nocturnal: true }
+            - { monster: will_o_wisp, count: 2, nocturnal: true }
+            - { monster: creeping_shadow, count: 1, nocturnal: true }
+            # Rencontre sommitale de la zone. Son pendant minier est le Seigneur
+            # de la Forge ; toutes deux debloquent une entree de Codex au kill.
+            - { monster: forest_guardian, count: 1 }
+        pnjs:
+            # Completent les cinq PNJ de `ForestPnjFixtures` (garde forestier,
+            # herboriste, ermite, bucheron, chasseuse), qui portent les arbres de
+            # dialogue de l'Acte 2 et restent donc en PHP.
+            - slug: foret-pecheur-tobin
+              name: 'Tobin, pecheur des rapides'
+              name_en: 'Tobin, Rapids Fisherman'
+              class_type: merchant
+              greeting: "La truite mord toute l'annee. Le saumon, lui, se merite — remonte jusqu'aux rapides si tu veux le voir."
+              shop_items: [fishing-rod-bronze, healing-potion-small, bread]
+              opens_at: 5
+              closes_at: 20
+            - slug: foret-veilleuse-morrigane
+              name: 'Morrigane, veilleuse des lisieres'
+              name_en: 'Morrigane, Edge Watcher'
+              class_type: hunter
+              life: 45
+              greeting: "Le jour, la foret n'est qu'une foret. Apres le crepuscule, ce qui marche entre les arbres n'a plus de souffle. Rentre."
 
+    # =========================================================================
+    # ZONE 3 — Mines profondes (extraction, palier au-dessus de la foret)
+    # =========================================================================
+    #
+    # La zone d'extraction du monde de depart : c'est d'ici que sort la matiere
+    # premiere de toute la chaine de forge. La recolte y prime sur la rencontre,
+    # et le sous-sol ne connait pas le jour — mais les galeries desertees, si.
     mines-profondes:
         name: 'Mines profondes'
         name_en: 'Deep Mines'
-        description: 'Tunnels et filons riches en minerai, mais les profondeurs sont hostiles.'
-        description_en: 'Tunnels and veins rich in ore, but the depths are hostile.'
+        description: "Tunnels etayes, bassins noirs et filons a perte de galerie. On y descend pour le minerai ; ce qui remonte n'est pas toujours ce qu'on y a laisse."
+        description_en: 'Propped tunnels, black pools and veins running the length of the gallery. One goes down for ore; what comes back up is not always what was left there.'
         type: wilderness
         safe: false
         map_x: 72
         map_y: 36
+        enabled: true
         source_map: 'Mines profondes'
         explore:
             # Zone d'extraction : la recolte prime sur la rencontre, et les
@@ -129,6 +280,55 @@ zones:
             - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            # L'anguille electrique n'avait aucune source. Les bassins noyes des
+            # galeries basses lui donnent son biome, et la mine sa premiere
+            # ressource de peche — jusqu'ici l'extraction y etait le seul metier
+            # de recolte represente. Palier T3 : on ne descend pas pecher par
+            # hasard.
+            - { slug: bassins-aux-anguilles, item: fish-electric-eel, profession: fishing, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+        # Population declaree (ZON-26b), en remplacement des spawns de la carte
+        # TMX `map_4`. La mine monte plus haut que la foret : on y croise du
+        # niveau 1 pres du carreau et du niveau 24 au fond.
+        mobs:
+            # Carreau et premieres galeries.
+            - { monster: bat, count: 4 }
+            - { monster: giant_rat, count: 3 }
+            - { monster: clay_golem, count: 3 }
+            - { monster: stone_golem, count: 3 }
+            # Galeries centrales — la patrouille d'automates est le premier
+            # groupe organise que rencontre un joueur.
+            # Une seule entree par espece : `ZoneImporter::syncMobs` complete
+            # jusqu'au `count` declare en comptant les individus deja en base,
+            # et deux entrees pour un meme monstre rendraient l'effectif final
+            # dependant de l'ordre des flushs.
+            - { monster: rusty_automaton, count: 4, group_tag: patrouille-de-la-mine }
+            - { monster: gargoyle, count: 2 }
+            - { monster: crystal_golem, count: 2 }
+            # Salles profondes.
+            - { monster: abyssal_blacksmith, count: 1 }
+            # Vivier nocturne. `explore.night.mob_slugs` restreint les rencontres
+            # aux constructs (golems et automates) : le chevalier maudit et la
+            # liche restent des rencontres de fond, pas le theme de la nuit.
+            - { monster: cursed_knight, count: 2, nocturnal: true }
+            - { monster: lesser_lich, count: 1, nocturnal: true }
+            # Rencontre sommitale de la zone, pendant du Gardien de la Foret.
+            - { monster: forge_lord, count: 1 }
+        pnjs:
+            # Completent les cinq PNJ de `MinesPnjFixtures` (contremaitre,
+            # ingenieure, marchand souterrain, guerisseuse, vieux prospecteur).
+            # Sous terre, les horaires n'ont pas de sens : les etals miniers
+            # ouvrent en continu (pas de `opens_at` / `closes_at`).
+            - slug: mines-cantiniere-brida
+              name: 'Brida, cantiniere du carreau'
+              name_en: 'Brida, Pithead Cook'
+              class_type: merchant
+              greeting: "Descends le ventre plein ou ne descends pas. La galerie ne rend pas ce qu'elle prend."
+              shop_items: [stew, grilled-meat, bread, beer-pint]
+            - slug: mines-porteur-de-lanterne-kolm
+              name: 'Kolm, porteur de lanterne'
+              name_en: 'Kolm, Lantern Bearer'
+              class_type: villager
+              greeting: "Je marche devant, tu marches derriere. Si ma lampe s'eteint, ne cours pas : ecoute."
 
     marais-brumeux:
         name: 'Marais Brumeux'
