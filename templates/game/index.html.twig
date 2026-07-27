@@ -3,261 +3,242 @@
 {% block title %}{{ 'game.title'|trans }}{% endblock %}
 
 {% block game_content %}
-<div class="game-page">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-        {# ===== LEFT SIDEBAR: Player Card + Domains ===== #}
-        <div class="lg:col-span-1 space-y-3 sm:space-y-4">
-            {{ component('DashboardPlayerRecap') }}
+{#
+   Le hub — premier ecran apres connexion.
 
-            {# ===== DOMAIN PROGRESSION ===== #}
-            <div class="game-card">
-                <div class="game-card-header">
-                    <h2 class="text-sm sm:text-base font-bold text-white flex items-center">
-                        <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        {{ 'game.home.domains.title'|trans }}
-                    </h2>
+   Il repond a deux questions, et refuse le reste :
+   1. « je fais quoi maintenant ? » -> la reprise, une seule action primaire,
+      dictee par l'etat du personnage (mort, combat, voyage, expedition, pret) ;
+   2. « qu'est-ce qui m'attend ? » -> les attentes actionnables, puis le recap
+      de ce qui vient d'etre fait.
+
+   Ce qu'on n'y met pas, et pourquoi : l'equipement porte (c'est l'inventaire),
+   le detail d'une quete (c'est le journal de quetes), et toute statistique deja
+   lisible ailleurs sur le meme ecran. L'ancienne « barre de statut monde »
+   repetait les Gils et la zone pour la troisieme fois.
+#}
+{% set locale = app.request.locale %}
+{% set resumeZone = resume.zone ? resume.zone.localizedName(locale) : '' %}
+{% set resumeMinutes = resume.remainingSeconds is not null ? (resume.remainingSeconds / 60)|round(0, 'ceil') : 0 %}
+
+<div class="game-page space-y-4 sm:space-y-6">
+
+    {# ===== 1. LA REPRISE — l'unique action primaire de l'ecran ===== #}
+    <div class="game-card">
+        <div class="game-card-body">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <p class="ds-eyebrow">{{ 'game.home.resume.eyebrow'|trans }}</p>
+                    <h1 class="ds-title truncate">{{ player.name }}</h1>
+                    <p class="ds-hint mt-1">
+                        {{ ('game.home.resume.state.' ~ resume.state)|trans({'%zone%': resumeZone, '%minutes%': resumeMinutes}) }}
+                    </p>
                 </div>
-                <div class="game-card-body space-y-2.5">
-                    {% if domainExperiences|length > 0 %}
-                        {% for domainExp in domainExperiences %}
-                            {% set domain = domainExp.domain %}
-                            {% set totalXp = domainExp.totalExperience %}
-                            {% set availableXp = domainExp.availableExperience %}
-                            <div>
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-medium text-gray-200 flex items-center gap-1.5">
-                                        <span class="dashboard-domain-dot dashboard-domain-{{ domain.slug }}"></span>
-                                        {{ domain.title }}
-                                    </span>
-                                    <span class="text-[10px] text-gray-400">{{ totalXp }} XP</span>
-                                </div>
-                                {% if availableXp > 0 %}
-                                    <div class="text-[10px] text-green-400 mb-0.5">
-                                        {{ 'game.home.domains.available_xp'|trans({'%xp%': availableXp}) }}
-                                    </div>
-                                {% endif %}
-                                <div class="progress-bar">
-                                    {% set usedPct = totalXp > 0 ? min(((totalXp - availableXp) / totalXp * 100)|round(0, 'floor'), 100) : 0 %}
-                                    <div class="progress-bar-fill dashboard-domain-bar-{{ domain.slug }}" style="width: {{ usedPct }}%"></div>
-                                </div>
-                            </div>
+
+                <div class="flex flex-wrap items-start gap-4">
+                    <div class="w-32" title="{{ 'game.zone.life.tooltip'|trans }}">
+                        <div class="ds-meter__head">
+                            <span>❤️ {{ 'game.home.player.life'|trans }}</span>
+                            <span>{{ life.current }} / {{ life.max }}</span>
+                        </div>
+                        <div class="ds-meter">
+                            <div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ life.max > 0 ? ((life.current / life.max) * 100)|round : 0 }}%"></div>
+                        </div>
+                        {% if life.fullIn is not null %}
+                            <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
+                                {{ 'game.zone.life.full_in'|trans({'%minutes%': (life.fullIn / 60)|round(0, 'ceil')}) }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="w-32" title="{{ 'game.zone.energy.tooltip'|trans }}">
+                        <div class="ds-meter__head">
+                            <span>⚡ {{ 'game.home.player.energy'|trans }}</span>
+                            <span>{{ energy.current }} / {{ energy.max }}</span>
+                        </div>
+                        <div class="ds-meter">
+                            <div class="ds-meter__fill" style="width: {{ energy.max > 0 ? ((energy.current / energy.max) * 100)|round : 0 }}%"></div>
+                        </div>
+                        {% if energy.nextPointIn is not null %}
+                            <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
+                                {{ 'game.zone.energy.next_point'|trans({'%minutes%': (energy.nextPointIn / 60)|round(0, 'ceil')}) }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="w-24">
+                        <div class="ds-meter__head">
+                            <span>🪙 {{ 'game.currency'|trans }}</span>
+                        </div>
+                        <p class="ds-num ds-num--lg">{{ player.gils|number_format(0, ',', ' ') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+                {% if resume.actionable %}
+                    <a href="{{ path(resume.route) }}" class="ds-btn ds-btn--primary">
+                        {{ ('game.home.resume.action.' ~ resume.state)|trans({'%zone%': resumeZone}) }}
+                    </a>
+                {% else %}
+                    {# Registre 2 de GAME_ZONE_ACTIONS.md : ce qui tourne sans le
+                       joueur s'affiche comme un etat, jamais comme un bouton. #}
+                    <span class="ds-banner">
+                        {{ 'game.home.resume.waiting'|trans({'%minutes%': resumeMinutes}) }}
+                    </span>
+                    <a href="{{ path(resume.route) }}" class="ds-btn ds-btn--secondary">
+                        {{ 'game.home.resume.action.watch'|trans }}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+
+        {# ===== COLONNE PRINCIPALE ===== #}
+        <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+
+            {# ===== 2. CE QUI VOUS ATTEND ===== #}
+            <div class="game-card">
+                <div class="game-card-header flex items-center justify-between">
+                    <h2 class="ds-name">{{ 'game.home.pending.title'|trans }}</h2>
+                    {% if pending|length > 0 %}
+                        <span class="ds-num ds-num--sm">{{ pending|length }}</span>
+                    {% endif %}
+                </div>
+                <div class="game-card-body space-y-2">
+                    {% if pending|length > 0 %}
+                        {% for item in pending %}
+                            <a href="{{ path(item.route, item.routeParams) }}" class="ds-row">
+                                <span class="ds-row__icon text-xl leading-none">
+                                    {{ ('game.home.pending.' ~ item.key ~ '.icon')|trans }}
+                                </span>
+                                <span class="ds-row__body">
+                                    <span class="ds-row__name block truncate">{{ ('game.home.pending.' ~ item.key ~ '.title')|trans(item.params) }}</span>
+                                    <span class="ds-row__meta block">{{ ('game.home.pending.' ~ item.key ~ '.hint')|trans }}</span>
+                                </span>
+                                <span class="ds-seal {{ item.tone == 'gain' ? 'ds-seal--gain' : (item.tone == 'loss' ? 'ds-seal--loss' : '') }}">
+                                    {{ ('game.home.pending.tone.' ~ item.tone)|trans }}
+                                </span>
+                            </a>
                         {% endfor %}
                     {% else %}
-                        <p class="text-xs text-gray-500 text-center py-2">{{ 'game.home.domains.empty'|trans }}</p>
+                        <div class="ds-empty">
+                            <p class="ds-empty__title">{{ 'game.home.pending.empty'|trans }}</p>
+                            <p class="ds-empty__hint">{{ 'game.home.pending.empty_hint'|trans }}</p>
+                            <a href="{{ path('app_game_zone') }}" class="ds-btn ds-btn--secondary ds-btn--sm">
+                                {{ 'game.home.pending.empty_action'|trans }}
+                            </a>
+                        </div>
                     {% endif %}
-                    <a href="{{ path('app_game_skills') }}" class="block text-center text-xs text-purple-400 hover:text-purple-300 transition-colors pt-1">
-                        {{ 'game.home.domains.view_all'|trans }}
+                </div>
+            </div>
+
+            {# ===== 3. LE RECAP — ce que le personnage vient de faire ===== #}
+            <div class="game-card">
+                <div class="game-card-header flex items-center justify-between">
+                    <h2 class="ds-name">{{ 'game.home.recap.title'|trans }}</h2>
+                    <a href="{{ path('app_game_journal') }}" class="ds-btn ds-btn--quiet ds-btn--sm">
+                        {{ 'game.home.recap.view_all'|trans }}
                     </a>
+                </div>
+                <div class="game-card-body">
+                    {% if recap.isEmpty %}
+                        <div class="ds-empty">
+                            <p class="ds-empty__title">{{ 'game.home.recap.empty'|trans }}</p>
+                            <p class="ds-empty__hint">{{ 'game.home.recap.empty_hint'|trans }}</p>
+                        </div>
+                    {% else %}
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            {% for type, count in recap.counts %}
+                                <span class="ds-pill">
+                                    {{ ('game.journal.type.' ~ type)|trans }}
+                                    <span class="ds-num ds-num--sm">{{ count }}</span>
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <div class="space-y-0">
+                            {% for entry in recap.entries %}
+                                <div class="ds-log">
+                                    <span class="ds-log__turn">{{ entry.createdAt|date('H:i') }}</span>
+                                    <span class="min-w-0">{{ entry.message }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        {# ===== MAIN CONTENT ===== #}
-        <div class="lg:col-span-3 space-y-4 sm:space-y-6">
+        {# ===== COLONNE LATERALE ===== #}
+        <div class="space-y-4 sm:space-y-6">
 
-            {# ===== QUICK ACTIONS GRID ===== #}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-                <a href="{{ path('app_game_zone') }}" class="dashboard-action-card dashboard-action-explore">
-                    <div class="dashboard-action-icon">
-                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                        </svg>
-                    </div>
-                    <span class="dashboard-action-label">{{ 'game.home.actions.explore'|trans }}</span>
-                    <span class="dashboard-action-hint">{{ zone ? zone.localizedName(app.request.locale) : 'game.home.player.zone_unknown'|trans }}</span>
-                </a>
-
-                <a href="{{ path('app_game_inventory_index') }}" class="dashboard-action-card dashboard-action-inventory">
-                    <div class="dashboard-action-icon">
-                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
-                    </div>
-                    <span class="dashboard-action-label">{{ 'game.nav.inventory'|trans }}</span>
-                    <span class="dashboard-action-hint">{{ bagUsed }}/{{ bagSize }}</span>
-                </a>
-
-                <a href="{{ path('app_game_skills') }}" class="dashboard-action-card dashboard-action-skills">
-                    <div class="dashboard-action-icon">
-                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                        </svg>
-                    </div>
-                    <span class="dashboard-action-label">{{ 'game.nav.skills'|trans }}</span>
-                    <span class="dashboard-action-hint">{{ 'game.home.actions.skills_count'|trans({'%count%': skillsCount}) }}</span>
-                </a>
-
-                <a href="{{ path('app_game_craft') }}" class="dashboard-action-card dashboard-action-craft">
-                    <div class="dashboard-action-icon">
-                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-                        </svg>
-                    </div>
-                    <span class="dashboard-action-label">{{ 'game.home.actions.craft'|trans }}</span>
-                    <span class="dashboard-action-hint">{{ 'game.home.actions.recipes_count'|trans({'%count%': player.discoveredRecipes|length}) }}</span>
-                </a>
-            </div>
-
-            {# ===== FIGHT IN PROGRESS BANNER ===== #}
-            {% if player.fight %}
-                <a href="{{ path('app_game_fight') }}" class="block game-card border-orange-700/50 hover:border-orange-600/70 transition-colors">
-                    <div class="game-card-body flex items-center gap-3 py-3">
-                        <div class="w-10 h-10 rounded-full bg-orange-900/60 flex items-center justify-center shrink-0 animate-pulse">
-                            <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm font-bold text-orange-300">{{ 'game.home.fight_banner.title'|trans }}</h3>
-                            <p class="text-xs text-orange-200/70">{{ 'game.home.fight_banner.description'|trans({'%step%': player.fight.step}) }}</p>
-                        </div>
-                        <svg class="w-5 h-5 text-orange-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </div>
-                </a>
-            {% endif %}
-
-            {# ===== TWO-COLUMN: Quests + Equipment ===== #}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                {# ===== ACTIVE QUESTS ===== #}
-                <div class="game-card">
-                    <div class="game-card-header flex items-center justify-between">
-                        <h2 class="text-sm sm:text-base font-bold text-white flex items-center">
-                            <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                            </svg>
-                            {{ 'game.home.quests.title'|trans }}
-                        </h2>
-                        <span class="text-xs text-purple-300 bg-purple-900/50 px-2 py-0.5 rounded-full">{{ activeQuests|length }}</span>
-                    </div>
-                    <div class="game-card-body space-y-2.5">
-                        {% if activeQuests|length > 0 %}
-                            {% for playerQuest in activeQuests|slice(0, 3) %}
-                                {% set quest = playerQuest.quest %}
-                                {% set tracking = playerQuest.tracking %}
-                                <div class="bg-gray-800/80 rounded-lg p-3 border border-gray-700/50 hover:border-purple-700/40 transition-colors">
-                                    <h3 class="text-sm font-semibold text-purple-300 truncate">{{ quest|localized_quest_name }}</h3>
-                                    {% set questDescription = quest|localized_quest_description %}
-                                    <p class="text-gray-400 text-xs mt-0.5 line-clamp-2">{{ questDescription|slice(0, 80) }}{% if questDescription|length > 80 %}...{% endif %}</p>
-                                    {% for trackType in ['monsters', 'collect', 'craft'] %}
-                                        {% if tracking[trackType] is defined and tracking[trackType] is not empty %}
-                                            <div class="mt-2 space-y-1">
-                                                {% for entry in tracking[trackType] %}
-                                                    {% set current = entry.count|default(0) %}
-                                                    {% set required = entry.necessary|default(1) %}
-                                                    {% set pct = required > 0 ? min((current / required * 100)|round(0, 'floor'), 100) : 0 %}
-                                                    <div class="flex items-center gap-2 text-xs text-gray-400">
-                                                        <div class="flex-1 progress-bar">
-                                                            <div class="progress-bar-fill {{ pct >= 100 ? 'bg-green-500' : 'bg-purple-500' }}" style="width: {{ pct }}%"></div>
-                                                        </div>
-                                                        <span class="shrink-0 tabular-nums {{ pct >= 100 ? 'text-green-400' : '' }}">{{ current }}/{{ required }}</span>
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                            {% if activeQuests|length > 3 %}
-                                <a href="{{ path('app_game_quests') }}" class="block text-center text-xs text-purple-400 hover:text-purple-300 transition-colors pt-1">
-                                    {{ 'game.home.quests.view_all'|trans({'%count%': activeQuests|length}) }}
-                                </a>
-                            {% endif %}
-                        {% else %}
-                            <div class="text-center py-4">
-                                <svg class="w-8 h-8 text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                </svg>
-                                <p class="text-xs text-gray-500">{{ 'game.home.quests.empty'|trans }}</p>
-                                <p class="text-[10px] text-gray-600 mt-0.5">{{ 'game.home.quests.empty_hint'|trans }}</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                {# ===== EQUIPPED ITEMS ===== #}
-                <div class="game-card">
-                    <div class="game-card-header flex items-center justify-between">
-                        <h2 class="text-sm sm:text-base font-bold text-white flex items-center">
-                            <svg class="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                            {{ 'game.home.equipment.title'|trans }}
-                        </h2>
-                        <a href="{{ path('app_game_inventory_index') }}" class="text-xs text-purple-400 hover:text-purple-300 transition-colors">
-                            {{ 'game.home.equipment.manage'|trans }}
-                        </a>
-                    </div>
-                    <div class="game-card-body">
-                        {% if equippedItems|length > 0 %}
-                            <div class="grid grid-cols-1 gap-1.5">
-                                {% for playerItem in equippedItems %}
-                                    {% set item = playerItem.genericItem %}
-                                    <div class="flex items-center gap-2.5 bg-gray-800/60 rounded-lg px-3 py-2 border border-gray-700/40 {{ item.rarity ? 'equip-rarity-' ~ item.rarity : '' }}">
-                                        <div class="w-7 h-7 rounded bg-gray-700/80 flex items-center justify-center shrink-0">
-                                            {% if item.gearLocation == 'main_weapon' or item.gearLocation == 'side_weapon' %}
-                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                            {% elseif item.gearLocation == 'head' %}
-                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                            {% else %}
-                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                                            {% endif %}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="text-xs font-medium text-gray-200 truncate">{{ item.name }}</div>
-                                            {# Un outil n'a pas de gearLocation, et certains emplacements herites
-                                               (feet, finger…) n'ont pas de cle : sans repli, l'ecran affichait la
-                                               cle brute — « game.inventory.slot. » pour une pioche. #}
-                                            {% set slotKey = item.isTool and item.toolType ? 'game.inventory.tool_slot.' ~ item.toolType : 'game.inventory.slot.' ~ (item.gearLocation ?: 'unknown') %}
-                                            {% set slotLabel = slotKey|trans %}
-                                            <div class="text-[10px] text-gray-500">{{ slotLabel == slotKey ? 'game.inventory.slot.unknown'|trans : slotLabel }}</div>
-                                        </div>
-                                        {% if item.rarity %}
-                                            <span class="inv-tooltip-rarity inv-tooltip-rarity--{{ item.rarity }} text-[9px]">{{ item.rarity }}</span>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4">
-                                <svg class="w-8 h-8 text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                </svg>
-                                <p class="text-xs text-gray-500">{{ 'game.home.equipment.empty'|trans }}</p>
-                                <a href="{{ path('app_game_inventory_index') }}" class="text-[10px] text-purple-400 hover:text-purple-300 mt-1 inline-block">
-                                    {{ 'game.home.equipment.empty_hint'|trans }}
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            {# ===== WORLD STATUS BAR ===== #}
+            {# ===== 4. PROGRESSION — la seule mesure d'avancement du jeu ===== #}
             <div class="game-card">
-                <div class="game-card-body py-3">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                        <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-purple-400 truncate">{{ zone ? zone.localizedName(app.request.locale) : '—' }}</div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.current_zone'|trans }}</div>
+                <div class="game-card-header flex items-center justify-between">
+                    <h2 class="ds-name">{{ 'game.home.domains.title'|trans }}</h2>
+                    <a href="{{ path('app_game_skills') }}" class="ds-btn ds-btn--quiet ds-btn--sm">
+                        {{ 'game.home.domains.view_all'|trans }}
+                    </a>
+                </div>
+                <div class="game-card-body space-y-3">
+                    {% if domainExperiences|length > 0 %}
+                        {% for domainExp in domainExperiences %}
+                            {% set totalXp = domainExp.totalExperience %}
+                            {% set availableXp = domainExp.availableExperience %}
+                            {% set usedPct = totalXp > 0 ? min(((totalXp - availableXp) / totalXp * 100)|round(0, 'floor'), 100) : 0 %}
+                            <div>
+                                <div class="ds-meter__head">
+                                    <span class="truncate">{{ domainExp.domain|localized_domain_title }}</span>
+                                    <span>{{ totalXp }} XP</span>
+                                </div>
+                                <div class="ds-meter">
+                                    <div class="ds-meter__fill ds-meter__fill--xp" style="width: {{ usedPct }}%"></div>
+                                </div>
+                                {% if availableXp > 0 %}
+                                    <p class="ds-num ds-num--sm ds-num--gain text-left mt-1">
+                                        {{ 'game.home.domains.available_xp'|trans({'%xp%': availableXp}) }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="ds-empty">
+                            <p class="ds-empty__title">{{ 'game.home.domains.empty'|trans }}</p>
+                            <p class="ds-empty__hint">{{ 'game.home.domains.empty_hint'|trans }}</p>
                         </div>
-                        <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-green-400">{{ playersInZone }}</div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.players_in_zone'|trans }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# ===== 5. QUETES EN COURS — le fil narratif, pas son detail ===== #}
+            <div class="game-card">
+                <div class="game-card-header flex items-center justify-between">
+                    <h2 class="ds-name">{{ 'game.home.quests.title'|trans }}</h2>
+                    <a href="{{ path('app_game_quests') }}" class="ds-btn ds-btn--quiet ds-btn--sm">
+                        {{ 'game.home.quests.view_all_short'|trans }}
+                    </a>
+                </div>
+                <div class="game-card-body space-y-3">
+                    {% if quests|length > 0 %}
+                        {% for line in quests %}
+                            <div>
+                                <div class="ds-meter__head">
+                                    <span class="truncate">{{ line.quest|localized_quest_name }}</span>
+                                    <span>{{ line.percent }}%</span>
+                                </div>
+                                <div class="ds-meter">
+                                    <div class="ds-meter__fill {{ line.percent >= 100 ? 'ds-meter__fill--gain' : '' }}" style="width: {{ line.percent }}%"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="ds-empty">
+                            <p class="ds-empty__title">{{ 'game.home.quests.empty'|trans }}</p>
+                            <p class="ds-empty__hint">{{ 'game.home.quests.empty_hint'|trans }}</p>
                         </div>
-                        <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }}</div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">Gils</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-blue-400">{{ skillsCount }}</div>
-                            <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.skills_unlocked'|trans }}</div>
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -2,20 +2,41 @@
 
 namespace App\Controller\Game;
 
-use App\Entity\App\Player;
+use App\GameEngine\Player\PlayerHubDigest;
+use App\GameEngine\Zone\ActionEnergyManager;
+use App\GameEngine\Zone\ExpeditionService;
+use App\GameEngine\Zone\LifeRegenManager;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
+use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Le hub : premier ecran apres connexion.
+ *
+ * Il repond a deux questions et s'interdit le reste : **qu'est-ce qui
+ * m'attend** (`pending`, `recap`) et **je fais quoi maintenant** (`resume`).
+ * Ce qui relevait de la fiche de personnage — l'equipement porte, le detail de
+ * l'inventaire — est parti chez lui, dans l'inventaire.
+ *
+ * Les regularisations paresseuses (arrivee de voyage, energie, PV, expedition)
+ * sont les memes que sur l'ecran de zone, et pour la meme raison : sans elles,
+ * le hub annoncerait un voyage termine il y a deux heures comme s'il durait
+ * encore. C'est le premier ecran vu apres connexion, donc le premier a devoir
+ * dire la verite.
+ */
 class IndexController extends AbstractController
 {
     public function __construct(
         private readonly PlayerHelper $playerHelper,
-        private readonly EntityManagerInterface $entityManager,
         private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
+        private readonly PlayerHubDigest $hubDigest,
+        private readonly ZoneTravelService $zoneTravelService,
+        private readonly ActionEnergyManager $actionEnergyManager,
+        private readonly LifeRegenManager $lifeRegenManager,
+        private readonly ExpeditionService $expeditionService,
     ) {
     }
 
@@ -28,52 +49,33 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Equipped items (gear > 0)
-        $equippedItems = [];
-        $bagInventory = $this->playerHelper->getBagInventory();
-        foreach ($bagInventory->getItems() as $playerItem) {
-            if ($playerItem->getGear() > 0) {
-                $equippedItems[] = $playerItem;
-            }
-        }
+        $this->zoneTravelService->settleArrival($player);
+        $this->actionEnergyManager->refresh($player, true);
+        $this->lifeRegenManager->refresh($player, true);
+        $this->expeditionService->settle($player);
 
-        // Inventory stats
-        $bagSize = $bagInventory->getSize();
-        $bagUsed = $bagInventory->getOccupiedSpace();
-
-        // Domain experiences
-        $domainExperiences = $player->getDomainExperiences();
-
-        // Active quests
-        $activeQuests = $player->getQuests();
-
-        // Skills count
-        $skillsCount = $player->getSkills()->count();
-
-        // Aventuriers presents dans la meme zone (position de reference depuis
-        // le pivot, regle #7) : le comptage par carte laissait le compteur a 0
-        // pour toute zone creee sans carte d'origine.
-        // Le tableau de bord est le premier ecran apres connexion : c'est ici
-        // qu'un joueur sans position doit en recevoir une, sans quoi il lit
-        // « position inconnue » avant meme d'avoir ouvert l'ecran de zone.
-        $zone = $this->playerZoneSynchronizer->resolveOrAssign($player, true);
-
-        $playersInZone = 0;
-        if (null !== $zone) {
-            $playersInZone = max(0, $this->entityManager->getRepository(Player::class)
-                ->count(['currentZone' => $zone]) - 1); // hors soi-meme
-        }
+        // Un joueur sans position en recoit une ici : le hub est le premier
+        // ecran apres connexion, et « position inconnue » n'est pas un etat
+        // qu'on doit lire avant meme d'avoir ouvert l'ecran de zone.
+        $this->playerZoneSynchronizer->resolveOrAssign($player, true);
 
         return $this->render('game/index.html.twig', [
             'player' => $player,
-            'equippedItems' => $equippedItems,
-            'bagSize' => $bagSize,
-            'bagUsed' => $bagUsed,
-            'domainExperiences' => $domainExperiences,
-            'activeQuests' => $activeQuests,
-            'skillsCount' => $skillsCount,
-            'zone' => $zone,
-            'playersInZone' => $playersInZone,
+            'resume' => $this->hubDigest->resume($player),
+            'pending' => $this->hubDigest->pending($player),
+            'recap' => $this->hubDigest->recap($player),
+            'domainExperiences' => $player->getDomainExperiences(),
+            'quests' => $this->hubDigest->quests($player),
+            'energy' => [
+                'current' => $player->getActionEnergy(),
+                'max' => $player->getMaxActionEnergy(),
+                'nextPointIn' => $this->actionEnergyManager->secondsUntilNextPoint($player),
+            ],
+            'life' => [
+                'current' => $player->getLife(),
+                'max' => $player->getMaxLife(),
+                'fullIn' => $this->lifeRegenManager->secondsUntilFull($player),
+            ],
         ]);
     }
 }

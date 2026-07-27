@@ -371,46 +371,98 @@
       "player": {
         "life": "Vie",
         "energy": "Énergie",
-        "dead": "Vous êtes mort... Retournez sur la carte pour réapparaître.",
-        "in_fight": "Un combat est en cours !",
-        "birthdate": "Né le",
-        "member_since": "Aventurier depuis le %date%",
-        "zone": "Zone",
-        "zone_type": "Type",
-        "zone_unknown": "Position inconnue"
+        "birthdate": "Né le"
       },
-      "actions": {
-        "explore": "Explorer",
-        "craft": "Artisanat",
-        "skills_count": "%count% acquises",
-        "recipes_count": "%count% recettes"
+      "resume": {
+        "eyebrow": "Reprise",
+        "waiting": "Encore %minutes% min",
+        "state": {
+          "dead": "Vous êtes tombé. Vos forces reviennent d'elles-mêmes.",
+          "fight": "Un combat vous attend, et il ne se terminera pas sans vous.",
+          "travel": "En route vers %zone% — arrivée dans %minutes% min.",
+          "expedition": "Expédition en cours depuis %zone% — retour dans %minutes% min.",
+          "expedition_done": "Votre expédition depuis %zone% est rentrée.",
+          "ready": "Vous êtes à %zone%, et rien ne vous retient.",
+          "lost": "Vous n'êtes nulle part. Choisissez une destination."
+        },
+        "action": {
+          "dead": "Reprendre pied",
+          "fight": "Retourner au combat",
+          "expedition_done": "Récupérer le butin",
+          "ready": "Continuer à %zone%",
+          "lost": "Ouvrir la carte du monde",
+          "watch": "Voir la zone"
+        }
+      },
+      "pending": {
+        "title": "Ce qui vous attend",
+        "empty": "Rien ne vous attend",
+        "empty_hint": "Tout est réglé. Ce qui arrive ensuite arrive dans la zone.",
+        "empty_action": "Rejoindre la zone",
+        "tone": {
+          "gain": "À récupérer",
+          "loss": "En retard",
+          "neutral": "À lire"
+        },
+        "house_rent": {
+          "icon": "🏠",
+          "title": "Loyer en retard",
+          "hint": "Votre demeure dort jusqu'au paiement — rien n'est perdu."
+        },
+        "expedition_ready": {
+          "icon": "🧭",
+          "title": "Une expédition est rentrée",
+          "hint": "Son butin attend d'être réclamé."
+        },
+        "craft_ready": {
+          "icon": "🔨",
+          "title": "Un ouvrage est terminé",
+          "hint": "Passez à l'atelier le retirer."
+        },
+        "garden_ripe": {
+          "icon": "🌱",
+          "title": "%count% parcelle%plural% à récolter",
+          "hint": "Le jardin ne pousse plus tant qu'il n'est pas vidé."
+        },
+        "craft_orders": {
+          "icon": "📦",
+          "title": "%count% commande%plural% à livrer",
+          "hint": "Un client attend son ouvrage."
+        },
+        "quests_ready": {
+          "icon": "📜",
+          "title": "%count% quête%plural% achevée%plural%",
+          "hint": "Il ne reste qu'à en réclamer la récompense."
+        },
+        "talent_xp": {
+          "icon": "✨",
+          "title": "%xp% XP à dépenser",
+          "hint": "De l'expérience dort dans vos arbres de talent."
+        },
+        "messages_unread": {
+          "icon": "✉️",
+          "title": "%count% message%plural% non lu%plural%",
+          "hint": "Quelqu'un vous a écrit."
+        }
+      },
+      "recap": {
+        "title": "Depuis hier",
+        "view_all": "Journal",
+        "empty": "Rien à raconter",
+        "empty_hint": "Vos hauts faits s'écriront ici dès la première sortie."
       },
       "domains": {
         "title": "Progression",
         "available_xp": "%xp% XP disponibles",
-        "empty": "Aucun domaine débloqué",
-        "view_all": "Voir les compétences"
+        "empty": "Aucun domaine ouvert",
+        "empty_hint": "Combattre, récolter, fabriquer : chaque action nourrit un domaine.",
+        "view_all": "Compétences"
       },
       "quests": {
-        "title": "Quêtes actives",
+        "title": "Quêtes en cours",
         "empty": "Aucune quête en cours",
-        "empty_hint": "Parlez aux PNJ pour obtenir des quêtes",
-        "view_all": "Voir les %count% quêtes"
-      },
-      "equipment": {
-        "title": "Équipement",
-        "manage": "Gérer",
-        "empty": "Aucun équipement",
-        "empty_hint": "Équipez-vous via l'inventaire"
-      },
-      "fight_banner": {
-        "title": "Combat en cours !",
-        "description": "Tour %step% — Rejoignez le combat"
-      },
-      "world": {
-        "skills_unlocked": "Compétences",
-        "current_zone": "Zone actuelle",
-        "players_in_zone": "Joueurs dans la zone"
+        "empty_hint": "Les PNJ des zones sûres en confient.",
+        "view_all_short": "Journal de quêtes"
       }
     },
     "footer": {
