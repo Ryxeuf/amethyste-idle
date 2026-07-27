@@ -8,6 +8,7 @@ use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\GameTimeService;
 use App\Repository\MobRepository;
 use App\Repository\PlayerJournalEntryRepository;
@@ -50,6 +51,7 @@ class ExploreService
         private readonly FightHandler $fightHandler,
         private readonly PlayerJournalEntryRepository $journalRepository,
         private readonly GameTimeService $gameTimeService,
+        private readonly ActionYieldResolver $yieldResolver,
     ) {
     }
 
@@ -211,6 +213,9 @@ class ExploreService
         $min = max(0, (int) ($config['chest_gils_min'] ?? self::DEFAULT_CHEST_GILS_MIN));
         $max = max($min, (int) ($config['chest_gils_max'] ?? self::DEFAULT_CHEST_GILS_MAX));
         $gils = $min + ($max > $min ? $this->roll($max - $min + 1) - 1 : 0);
+        // Rendement par point d'energie : ce que l'action rapporte augmente avec
+        // l'investissement du joueur, pas le nombre d'actions qu'il peut mener.
+        $gils = $this->yieldResolver->applyBonus($player, ActionYieldResolver::CATEGORY_CHEST, $gils);
 
         $player->addGils($gils);
 

@@ -202,6 +202,45 @@ L'energie n'est qu'une des trois couches, et les separer est ce qui permet de se
 
 Corollaire de calibrage : pour recompenser l'investissement, augmenter le **rendement par point** (butin, qualite, chance via talents et equipement) et etoffer la **couche 3**, jamais le nombre d'actions. Tout levier qui augmente le debit brut d'actions creuse l'ecart avec le joueur peu disponible, ce que les couches sont justement censees eviter.
 
+### Rendement par point d'energie (`ActionYieldResolver`)
+
+Mise en oeuvre du corollaire ci-dessus. Les bonus sont des **passifs de competence**
+(regle absolue #9), cumulatifs sur l'ensemble des competences apprises.
+
+| Categorie | Effet | Consommateur |
+|-----------|-------|--------------|
+| `gather_percent` | Quantite recoltee par action de recolte | `GatherService::computeYield()` |
+| `chest_percent` | Gils d'un coffre trouve en explorant | `ExploreService::resolveChest()` |
+
+Declaration dans `Skill.actions`, sous les **deux** formes qui coexistent dans les arbres livres :
+
+```php
+// Forme map (arbres de combat et de materia)
+'actions' => ['yield' => ['gather_percent' => 10]]
+// Forme liste de descripteurs (arbres de recolte et d'artisanat)
+'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 10]]
+```
+
+**Regles de calibrage**
+
+- **Plafond cumule de 100 %** (`ActionYieldResolver::MAX_BONUS_PERCENT`). Ce n'est pas
+  une precaution de style : sans lui, un arbre assez long finit par rendre le plafond
+  d'energie sans effet, et le joueur assidu retrouve par le rendement le debit que le
+  budget quotidien lui refuse.
+- **Arrondi au plus proche**, pas a l'inferieur : sur un rendement de 1 a 2 unites, un
+  bonus de 10 % arrondi en bas ne se verrait jamais et le joueur paierait des points de
+  talent pour rien.
+- **Le stock partage borne le resultat** : le bonus augmente ce qu'une action rapporte,
+  il ne permet pas de prendre plus que ce que le filon contient. Le stock reste le point
+  de tension d'une ressource sur un serveur peuple.
+- Une valeur negative est ignoree : elle signale une donnee fautive, pas un malus voulu.
+
+**Limite connue** : le bonus de recolte n'est pas cloisonne par profession. Un joueur qui
+maximise les quatre arbres de recolte (mineur, herboriste, pecheur, depeceur) cumule
+74 % sur **toutes** les ressources, y compris celles des metiers qu'il ne pratique pas.
+Le plafond borne la derive, mais le cloisonnement par `profession` (deja declare sur
+chaque filon de `Zone.gatherConfig`) reste a faire.
+
 ### Les 4 curseurs du pivot
 
 1. **Energie** (tentatives) — ce chapitre.
