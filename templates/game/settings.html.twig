@@ -47,14 +47,14 @@
                                 id="language"
                                 name="language"
                                 data-action="change->locale-switcher#change"
-                                class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                                class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                                 <option value="fr"{% if app.request.locale == 'fr' %} selected{% endif %}>Francais</option>
                                 <option value="en"{% if app.request.locale == 'en' %} selected{% endif %}>English</option>
                             </select>
                         </div>
                         <div>
                             <label for="difficulty" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.general.difficulty'|trans }}</label>
-                            <select id="difficulty" name="difficulty" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                            <select id="difficulty" name="difficulty" class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                                 <option value="easy">{{ 'game.settings.general.difficulty_easy'|trans }}</option>
                                 <option value="normal">{{ 'game.settings.general.difficulty_normal'|trans }}</option>
                                 <option value="hard">{{ 'game.settings.general.difficulty_hard'|trans }}</option>
@@ -174,27 +174,27 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="username" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.account.username'|trans }}</label>
-                            <input type="text" name="username" id="username" value="{{ app.user.username|default('') }}" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                            <input type="text" name="username" id="username" value="{{ app.user.username|default('') }}" class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.account.email'|trans }}</label>
-                            <input type="email" name="email" id="email" value="{{ app.user.email|default('') }}" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                            <input type="email" name="email" id="email" value="{{ app.user.email|default('') }}" class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                         </div>
                     </div>
 
                     <div>
                         <label for="current-password" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.account.current_password'|trans }}</label>
-                        <input type="password" name="current-password" id="current-password" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                        <input type="password" name="current-password" id="current-password" class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="new-password" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.account.new_password'|trans }}</label>
-                            <input type="password" name="new-password" id="new-password" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                            <input type="password" name="new-password" id="new-password" class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                         </div>
                         <div>
                             <label for="confirm-password" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.account.confirm_password'|trans }}</label>
-                            <input type="password" name="confirm-password" id="confirm-password" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                            <input type="password" name="confirm-password" id="confirm-password" class="bg-gray-700 text-white shadow-xs focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
                         </div>
                     </div>
 
