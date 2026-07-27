@@ -2322,6 +2322,147 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+
+            // ══════════════════════════════════════════════════════════════
+            // Le cercle de Lumiere — chaine des trois zones de depart
+            // ══════════════════════════════════════════════════════════════
+            //
+            // L'arc `intro` apprend a se battre ; celui-ci apprend le **lieu**.
+            // Une etape par zone, chacune sur ce que la zone a de propre : les
+            // jardins du temple au village, la riviere et le vivier nocturne en
+            // foret, les bassins et la patrouille d'automates dans la mine.
+            //
+            // Chaque objectif cite une ressource ou une creature reellement
+            // presente dans la zone visee (cf. `config/game/zones/world_1.yaml`) :
+            // un slug errone laisserait une quete acceptable dont l'objectif ne
+            // se valide jamais.
+            'quest_cercle_jardins' => [
+                'name' => 'Le cercle de Lumière — Les jardins du temple',
+                'name_translations' => ['en' => 'The Circle of Light — The Temple Gardens'],
+                'description' => 'Fioline entretient les carrés du temple depuis trente ans. Elle vous laisse cueillir, à condition que vous appreniez à le faire proprement : du thym le long du mur sud, de la lavande sur la bordure.',
+                'description_translations' => ['en' => 'Fioline has tended the temple beds for thirty years. She lets you forage, provided you learn to do it properly: thyme along the south wall, lavender on the border.'],
+                'requirements' => [
+                    'collect' => [
+                        'plant-thyme' => 3,
+                        'plant-lavender' => 2,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 30,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 1, 'genericItemSlug' => 'crafted-potion-base'],
+                    ],
+                ],
+                'storyArc' => 'cercle_lumiere',
+                'arcOrder' => 1,
+            ],
+            'quest_cercle_foret' => [
+                'name' => 'Le cercle de Lumière — Ce qui marche entre les arbres',
+                'name_translations' => ['en' => 'The Circle of Light — What Walks Between the Trees'],
+                'description' => 'Morrigane veille les lisières et ne s\'en cache pas : après le crépuscule, la forêt appartient à autre chose. Montez jusqu\'aux rapides, ramenez un saumon, et débarrassez le sentier des ossements qui s\'y relèvent.',
+                'description_translations' => ['en' => 'Morrigane watches the forest edge and makes no secret of it: after dusk, the woods belong to something else. Climb to the rapids, bring back a salmon, and clear the path of the bones that rise there.'],
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'zone_slug' => 'foret-des-murmures',
+                            'name' => 'Forêt des murmures',
+                        ],
+                    ],
+                    'collect' => [
+                        'fish-salmon' => 1,
+                    ],
+                    'monsters' => [
+                        [
+                            'name' => 'Squelette',
+                            'slug' => 'skeleton',
+                            'count' => 2,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 60,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'healing-potion-small'],
+                    ],
+                ],
+                'storyArc' => 'cercle_lumiere',
+                'arcOrder' => 2,
+                // prerequisiteQuests set after flush
+            ],
+            'quest_cercle_mines' => [
+                'name' => 'Le cercle de Lumière — Sous le carreau',
+                'name_translations' => ['en' => 'The Circle of Light — Below the Pithead'],
+                'description' => 'Brida vous nourrit avant la descente, Kolm marche devant avec la lampe. Ce qu\'ils demandent en retour est simple : que la patrouille d\'automates cesse de tourner dans les galeries centrales, et qu\'on sache enfin ce qui vit dans les bassins noyés.',
+                'description_translations' => ['en' => 'Brida feeds you before the descent, Kolm walks ahead with the lamp. What they ask in return is simple: that the automaton patrol stop circling the central galleries, and that someone finally learn what lives in the flooded pools.'],
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'zone_slug' => 'mines-profondes',
+                            'name' => 'Mines profondes',
+                        ],
+                    ],
+                    'collect' => [
+                        'fish-electric-eel' => 1,
+                    ],
+                    'monsters' => [
+                        [
+                            'name' => 'Automate rouillé',
+                            'slug' => 'rusty_automaton',
+                            'count' => 3,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 110,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 1, 'genericItemSlug' => 'pickaxe-bronze'],
+                    ],
+                ],
+                'storyArc' => 'cercle_lumiere',
+                'arcOrder' => 3,
+                // prerequisiteQuests set after flush
+            ],
+
+            // Journalieres adossees aux filons et populations ajoutes ci-dessus :
+            // le pool `recolte` n'avait que la menthe et le cuivre, le pool
+            // `combat` aucune cible souterraine.
+            'daily_collect_thyme' => [
+                'name' => 'Le carré du temple',
+                'name_translations' => ['en' => 'The Temple Bed'],
+                'description' => 'Fioline manque de thym pour les remèdes de la semaine. Le carré est juste derrière le temple.',
+                'description_translations' => ['en' => 'Fioline is short of thyme for the week\'s remedies. The bed is right behind the temple.'],
+                'requirements' => [
+                    'collect' => [
+                        'plant-thyme' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 25,
+                    'gold' => 15,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'recolte',
+            ],
+            'daily_kill_bats' => [
+                'name' => 'Le plafond bouge',
+                'name_translations' => ['en' => 'The Ceiling Moves'],
+                'description' => 'Les chauves-souris ont repris les premières galeries et personne ne veut plus y porter de lampe. Dégagez le passage.',
+                'description_translations' => ['en' => 'Bats have retaken the first galleries and nobody will carry a lamp there anymore. Clear the way.'],
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Chauve-souris', 'slug' => 'bat', 'count' => 4],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 35,
+                    'gold' => 25,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'combat',
+            ],
         ];
 
         foreach ($quests as $key => $data) {
@@ -2394,6 +2535,16 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         }
         for ($i = 1; $i < \count($acte4); ++$i) {
             $acte4[$i]->setPrerequisiteQuests([$acte4[$i - 1]->getId()]);
+        }
+
+        // Le cercle de Lumiere : une etape par zone de depart, dans l'ordre du
+        // graphe (village -> foret -> mines).
+        $cercle = [];
+        foreach (['jardins', 'foret', 'mines'] as $step) {
+            $cercle[] = $this->getReference('quest_cercle_' . $step, Quest::class);
+        }
+        for ($i = 1; $i < \count($cercle); ++$i) {
+            $cercle[$i]->setPrerequisiteQuests([$cercle[$i - 1]->getId()]);
         }
 
         // Quest chains (Acte 1/2/3) and PNJ ID fixups are in QuestChainFixtures
