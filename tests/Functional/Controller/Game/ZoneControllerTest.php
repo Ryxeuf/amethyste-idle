@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Entity\Game\Dungeon;
 use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
@@ -233,6 +234,90 @@ class ZoneControllerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([$merchant], $this->capturedTemplateParams['pnjsPresent']);
         $this->assertIsInt($this->capturedTemplateParams['gameHour']);
+    }
+
+    /**
+     * Le moteur de donjon de groupe (ZON-19/20) etait livre mais inatteignable :
+     * aucun ecran n'exposait `app_game_zone_dungeon_launch`. L'ecran de zone doit
+     * desormais lister les donjons de groupe de la zone courante.
+     */
+    public function testIndexOffersGroupDungeonsOfTheCurrentZone(): void
+    {
+        $zone = $this->buildZone('foret-des-murmures');
+
+        $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
+        $player->setCurrentZone($zone);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $dungeon = new Dungeon();
+        $dungeon->setName('Les Galeries envahies');
+        $dungeon->setDescription('Un boyau effondre sous les racines.');
+        $dungeon->setMaxPlayers(4);
+        $dungeon->setMinLevel(3);
+        $dungeon->setZone($zone);
+        $dungeon->setLootPreview(['Equipement tier 2']);
+
+        $this->groupDungeonService->method('findOfferedInZone')->with($zone)->willReturn([$dungeon]);
+        $this->groupDungeonService->method('getLaunchBlocker')->willReturn(null);
+
+        $this->zoneConnectionRepository->method('findEnabledFrom')->willReturn([]);
+        $this->playerRepository->method('findBy')->willReturn([$player]);
+        $this->objectLayerRepository->method('findBy')->willReturn([]);
+
+        $response = $this->controller->index();
+
+        $this->assertSame(200, $response->getStatusCode());
+        $offers = $this->capturedTemplateParams['groupDungeonOffers'];
+        $this->assertCount(1, $offers);
+        // L'entite est passee telle quelle : la vue la localise via
+        // `localized_dungeon_name`.
+        $this->assertSame($dungeon, $offers[0]['dungeon']);
+        $this->assertSame(4, $offers[0]['maxPlayers']);
+        // minLevel * 100 : le prerequis est de l'XP de domaine, pas un niveau
+        // global (regle #6 du projet).
+        $this->assertSame(300, $offers[0]['requiredExperience']);
+        $this->assertTrue($offers[0]['canLaunch']);
+        $this->assertNull($offers[0]['blocker']);
+    }
+
+    /**
+     * Le motif de refus vient du service, pas d'une regle reimplementee dans la
+     * vue : l'ecran ne peut donc pas proposer un lancement que `launch()`
+     * rejetterait.
+     */
+    public function testIndexSurfacesTheLaunchBlockerInsteadOfTheButton(): void
+    {
+        $zone = $this->buildZone('foret-des-murmures');
+
+        $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
+        $player->setCurrentZone($zone);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $dungeon = new Dungeon();
+        $dungeon->setName('Les Galeries envahies');
+        $dungeon->setDescription('Un boyau effondre sous les racines.');
+        $dungeon->setMaxPlayers(4);
+        $dungeon->setMinLevel(3);
+        $dungeon->setZone($zone);
+
+        $this->groupDungeonService->method('findOfferedInZone')->willReturn([$dungeon]);
+        $this->groupDungeonService->method('getLaunchBlocker')
+            ->willReturn('game.zone.dungeon.error.no_party');
+
+        $this->zoneConnectionRepository->method('findEnabledFrom')->willReturn([]);
+        $this->playerRepository->method('findBy')->willReturn([$player]);
+        $this->objectLayerRepository->method('findBy')->willReturn([]);
+
+        $response = $this->controller->index();
+
+        $this->assertSame(200, $response->getStatusCode());
+        $offer = $this->capturedTemplateParams['groupDungeonOffers'][0];
+        $this->assertFalse($offer['canLaunch']);
+        $this->assertSame('game.zone.dungeon.error.no_party', $offer['blocker']);
     }
 
     public function testIndexRendersZoneWithConnectionsPlayersAndPoi(): void

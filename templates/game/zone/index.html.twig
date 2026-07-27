@@ -283,6 +283,41 @@
                     </div>
                 {% endif %}
 
+                {# ── Donjons de groupe proposes par la zone ───────── #}
+                {% if groupDungeonOffers is not empty %}
+                    <div class="mb-4 px-3 py-2.5 rounded-md bg-cyan-900/15 border border-cyan-800/40"
+                         data-testid="zone-group-dungeons">
+                        <p class="text-sm font-semibold text-cyan-100 mb-2">🛡️ {{ 'game.zone.dungeon.offers_title'|trans }}</p>
+                        {% for offer in groupDungeonOffers %}
+                            <div class="py-2 {% if not loop.last %}border-b border-cyan-800/30{% endif %}">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="text-sm text-white">{{ offer.dungeon|localized_dungeon_name }}</span>
+                                    <span class="text-[11px] text-cyan-200/70">{{ 'game.zone.dungeon.offer_group_size'|trans({'%max%': offer.maxPlayers}) }}</span>
+                                    {% if offer.requiredExperience > 0 %}
+                                        <span class="text-[11px] text-cyan-200/70">{{ 'game.zone.dungeon.offer_required_xp'|trans({'%xp%': offer.requiredExperience}) }}</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-[11px] text-cyan-200/50 mt-0.5">{{ offer.dungeon|localized_dungeon_description }}</p>
+                                {% if offer.lootPreview is not empty %}
+                                    <p class="text-[11px] text-cyan-200/50 mt-0.5">{{ offer.lootPreview|join(' · ') }}</p>
+                                {% endif %}
+                                {% if offer.canLaunch %}
+                                    <form method="post" action="{{ path('app_game_zone_dungeon_launch', {'id': offer.id}) }}" class="mt-1.5">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_launch_' ~ offer.id) }}">
+                                        <button type="submit"
+                                                class="text-xs px-2.5 py-1 rounded bg-cyan-700/70 hover:bg-cyan-600 text-white transition">
+                                            {{ 'game.zone.dungeon.launch'|trans }}
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <p class="text-[11px] text-amber-200/70 mt-1.5">{{ offer.blocker|trans }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <p class="text-[11px] text-cyan-200/60 mt-1.5">{{ 'game.zone.dungeon.offers_hint'|trans }}</p>
+                    </div>
+                {% endif %}
+
                 {# ── En-tete de zone ─────────────────────────────── #}
                 <div class="mb-4" data-testid="zone-header">
                     <div class="flex flex-wrap items-center gap-2">

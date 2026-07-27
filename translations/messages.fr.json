@@ -1292,13 +1292,22 @@
           "already_running": "Un membre du groupe est deja dans un donjon de groupe.",
           "not_active": "Ce donjon de groupe n'est plus actif.",
           "unknown": "Donjon introuvable.",
-          "not_your_turn": "Ce n'est pas votre tour."
+          "not_your_turn": "Ce n'est pas votre tour.",
+          "not_group": "Ce donjon ne se joue qu'en solo.",
+          "wrong_zone": "Ce donjon ne se lance pas depuis cette zone.",
+          "member_experience": "Un membre du groupe n'a pas l'experience requise pour ce donjon.",
+          "member_items": "Un membre du groupe n'a pas les objets d'entree requis."
         },
         "cleared": "Rencontre vaincue ! Donjon de groupe termine.",
         "turn_in": "tour suivant dans %seconds% s",
         "attack": "Attaquer",
         "waiting_turn": "En attente du tour d'un allie…",
-        "semisync_hint": "Chacun agit a son tour ; passe le delai, l'attaque de base est jouee automatiquement (semi-synchrone)."
+        "semisync_hint": "Chacun agit a son tour ; passe le delai, l'attaque de base est jouee automatiquement (semi-synchrone).",
+        "offers_title": "Donjons de groupe",
+        "offers_hint": "Formez un groupe dans cette zone, puis le chef lance le donjon. Les tours de combat sont gratuits et illimites.",
+        "offer_group_size": "jusqu'a %max% joueurs",
+        "offer_required_xp": "%xp% XP dans un domaine de combat",
+        "launch": "Lancer le donjon"
       },
       "explore": {
         "result": {

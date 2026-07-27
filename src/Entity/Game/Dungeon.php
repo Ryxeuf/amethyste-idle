@@ -3,6 +3,7 @@
 namespace App\Entity\Game;
 
 use App\Entity\App\Map;
+use App\Entity\App\Zone;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -47,6 +48,20 @@ class Dungeon
 
     #[ORM\Column(name: 'max_players', type: 'integer', options: ['default' => 1])]
     private int $maxPlayers = 1;
+
+    /**
+     * Zone depuis laquelle le donjon se lance (pivot PBBG : la position d'un
+     * joueur est sa zone, cf. regle #7). null = donjon hors graphe, accessible
+     * uniquement par la liste globale `/game/dungeon` (donjons solo legacy).
+     *
+     * C'est ce lien, et non `map`, qui rattache un donjon au monde : plusieurs
+     * zones peuvent partager une meme `sourceMap` (le Village de Lumiere en est
+     * un cas dans `config/game/zones/world_1.yaml`), la carte est donc un
+     * rattachement ambigu.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $zone = null;
 
     #[ORM\Column(name: 'icon', type: 'string', length: 255, nullable: true)]
     private ?string $icon = null;
@@ -204,6 +219,27 @@ class Dungeon
     public function setMaxPlayers(int $maxPlayers): self
     {
         $this->maxPlayers = $maxPlayers;
+
+        return $this;
+    }
+
+    /**
+     * Un donjon est un donjon de **groupe** des lors qu'il accepte plus d'un
+     * joueur : pas de drapeau dedie a maintenir en parallele de `maxPlayers`.
+     */
+    public function isGroupDungeon(): bool
+    {
+        return $this->maxPlayers > 1;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): self
+    {
+        $this->zone = $zone;
 
         return $this;
     }

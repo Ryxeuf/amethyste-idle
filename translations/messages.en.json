@@ -1292,13 +1292,22 @@
           "already_running": "A party member is already in a group dungeon.",
           "not_active": "This group dungeon is no longer active.",
           "unknown": "Dungeon not found.",
-          "not_your_turn": "It is not your turn."
+          "not_your_turn": "It is not your turn.",
+          "not_group": "This dungeon is solo only.",
+          "wrong_zone": "This dungeon cannot be launched from this zone.",
+          "member_experience": "A party member lacks the experience required for this dungeon.",
+          "member_items": "A party member lacks the required entry items."
         },
         "cleared": "Encounter defeated! Group dungeon complete.",
         "turn_in": "next turn in %seconds%s",
         "attack": "Attack",
         "waiting_turn": "Waiting for an ally's turn…",
-        "semisync_hint": "Each member acts on their turn; past the delay, the basic attack is played automatically (semi-synchronous)."
+        "semisync_hint": "Each member acts on their turn; past the delay, the basic attack is played automatically (semi-synchronous).",
+        "offers_title": "Group dungeons",
+        "offers_hint": "Form a party in this zone, then the leader launches the dungeon. Combat turns are free and unlimited.",
+        "offer_group_size": "up to %max% players",
+        "offer_required_xp": "%xp% XP in a combat domain",
+        "launch": "Launch dungeon"
       },
       "explore": {
         "result": {
