@@ -508,15 +508,45 @@ class Player implements CharacterInterface
         return $this->domainExperiences;
     }
 
+    /**
+     * Le joueur possede-t-il cette competence ?
+     *
+     * La comparaison porte sur l'identifiant, pas sur l'identite d'objet : les
+     * competences arrivent ici par deux chemins d'hydratation differents (la
+     * collection du joueur, et celle du domaine chargee en JOIN FETCH), et un
+     * `===` n'a de sens que tant que les deux passent par la meme carte
+     * d'identite. Une competence non encore persistee retombe sur l'identite.
+     */
     public function hasSkill(Skill $skill): bool
     {
+        $skillId = self::skillId($skill);
+
         foreach ($this->getSkills() as $playerSkill) {
             if ($playerSkill === $skill) {
+                return true;
+            }
+            if (null !== $skillId && self::skillId($playerSkill) === $skillId) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Identifiant d'une competence, ou `null` si elle n'est pas persistee.
+     *
+     * `Skill::getId()` est declare `int` sur une propriete sans valeur par
+     * defaut : une competence transiente — cas courant en test — fait lever
+     * l'accesseur plutot que de rendre `null`.
+     */
+    private static function skillId(Skill $skill): ?int
+    {
+        try {
+            return $skill->getId();
+        } catch (\Error) {
+            return null;
+        }
     }
 
     /** @return Collection<int, Skill> */

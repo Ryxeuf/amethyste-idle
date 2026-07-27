@@ -498,6 +498,17 @@
       },
       "sidebar": {
         "others_group": "Autres"
+      },
+      "acquire": {
+        "success": "Compétence acquise avec succès !",
+        "not_found": "Compétence introuvable.",
+        "refused": {
+          "no_player": "Aucun personnage actif.",
+          "already_acquired": "Vous possédez déjà cette compétence.",
+          "global_cap": "Limite de 500 points de compétence atteinte.",
+          "not_enough_xp": "Points d'expérience de domaine insuffisants.",
+          "missing_requirements": "Il vous manque un prérequis pour cette compétence."
+        }
       }
     },
     "domains": {
@@ -731,8 +742,6 @@
       "active": "Active",
       "mount_button": "Monter",
       "unmount_button": "Descendre",
-      "purchase_button": "Acheter (%cost% gils)",
-      "cannot_afford": "Gils insuffisants",
       "obtention": {
         "quest": "Recompense de quete",
         "drop": "Drop rare",
@@ -745,15 +754,17 @@
         "not_owned": "Vous ne possedez pas cette monture.",
         "disabled": "Cette monture est indisponible.",
         "unknown": "Monture introuvable.",
-        "csrf_invalid": "Action invalide. Veuillez reessayer.",
-        "purchased": "Monture achetee avec succes !",
-        "insufficient_gils": "Vous n'avez pas assez de gils pour acheter cette monture.",
-        "not_purchasable": "Cette monture n'est pas en vente.",
-        "already_owned": "Vous possedez deja cette monture."
+        "csrf_invalid": "Action invalide. Veuillez reessayer."
       },
       "filter": {
         "aria": "Filtrer les montures par type d'obtention",
         "all": "Toutes"
+      },
+      "how_to_obtain": {
+        "quest": "S'obtient en récompense d'une quête.",
+        "drop": "S'obtient comme butin rare.",
+        "purchase": "S'achète auprès d'un marchand de montures.",
+        "achievement": "S'obtient en accomplissant un succès."
       }
     },
     "harvest": {
