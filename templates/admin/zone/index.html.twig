@@ -25,11 +25,11 @@
             <div>
                 <label for="zone-q" class="block text-xs text-gray-500 mb-1">Recherche</label>
                 <input id="zone-q" type="text" name="q" value="{{ search }}" placeholder="Nom ou slug"
-                       class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                       class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:border-purple-500">
             </div>
             <div>
                 <label for="zone-type" class="block text-xs text-gray-500 mb-1">Type</label>
-                <select id="zone-type" name="type" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-purple-500">
+                <select id="zone-type" name="type" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-hidden focus:border-purple-500">
                     <option value="">Tous</option>
                     {% for t in types %}
                         <option value="{{ t }}" {% if type == t %}selected{% endif %}>{{ t }}</option>
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <label for="zone-state" class="block text-xs text-gray-500 mb-1">Etat</label>
-                <select id="zone-state" name="state" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-purple-500">
+                <select id="zone-state" name="state" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-hidden focus:border-purple-500">
                     <option value="">Toutes</option>
                     <option value="enabled" {% if state == 'enabled' %}selected{% endif %}>Actives</option>
                     <option value="disabled" {% if state == 'disabled' %}selected{% endif %}>Desactivees</option>

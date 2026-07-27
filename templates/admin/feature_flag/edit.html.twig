@@ -19,7 +19,7 @@
             <form method="post" action="{{ path('admin_feature_flag_add_user', {id: flag.id}) }}" class="flex flex-wrap items-center gap-2 mb-6">
                 <input type="hidden" name="_token" value="{{ csrf_token('add_user' ~ flag.id) }}">
                 <input type="text" name="identifier" placeholder="Email ou username..." required
-                       class="flex-1 min-w-[200px] bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500">
+                       class="flex-1 min-w-[200px] bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-hidden focus:border-purple-500">
                 <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors">+ Ajouter</button>
             </form>
 

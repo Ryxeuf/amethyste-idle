@@ -163,7 +163,7 @@
                 <form action="{{ path('app_game_skill_preset_save') }}" method="post" class="flex gap-2 mb-3">
                     <input type="hidden" name="_token" value="{{ csrf_token('preset_save') }}">
                     <input type="text" name="preset_name" placeholder="Nom du preset..." maxlength="50" required
-                           class="flex-1 bg-paper border border-line rounded-card px-3 py-1.5 text-sm text-ink focus:border-brand focus:outline-none">
+                           class="flex-1 bg-paper border border-line rounded-card px-3 py-1.5 text-sm text-ink focus:border-brand focus:outline-hidden">
                     <button type="submit"
                             class="ds-btn ds-btn--secondary ds-btn--sm flex-shrink-0">
                         Sauvegarder

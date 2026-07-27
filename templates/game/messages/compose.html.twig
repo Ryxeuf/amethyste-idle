@@ -25,21 +25,21 @@
                     <label class="block text-xs text-gray-400 mb-1">{{ 'game.messages.compose.recipient'|trans }}</label>
                     <input type="text" name="recipient" value="{{ recipient ? recipient.name : '' }}"
                            placeholder="{{ 'game.messages.compose.recipient_placeholder'|trans }}" required autocomplete="off"
-                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-hidden">
                 </div>
 
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">{{ 'game.messages.compose.subject'|trans }}</label>
                     <input type="text" name="subject" value="{{ replySubject }}" maxlength="100"
                            placeholder="{{ 'game.messages.compose.subject_placeholder'|trans }}" required
-                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-hidden">
                 </div>
 
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">{{ 'game.messages.compose.body'|trans }}</label>
                     <textarea name="body" rows="6" maxlength="2000" required
                               placeholder="{{ 'game.messages.compose.body_placeholder'|trans }}"
-                              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none resize-y"></textarea>
+                              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-hidden resize-y"></textarea>
                 </div>
 
                 <div class="flex justify-end">

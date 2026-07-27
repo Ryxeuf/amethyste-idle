@@ -10,7 +10,7 @@
     <div class="lg:w-80 flex-shrink-0 flex flex-col bg-gray-900 border border-gray-800 rounded-xl overflow-hidden min-h-[200px] max-h-[40vh] lg:max-h-full">
         <div class="p-3 border-b border-gray-800">
             <input type="text" id="cmd-search" placeholder="Rechercher une commande..."
-                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-hidden focus:ring-1 focus:ring-purple-500">
         </div>
         <div id="cmd-list" class="flex-1 overflow-y-auto p-2 space-y-3 text-sm">
             {% for ns, cmds in grouped %}
@@ -148,7 +148,7 @@
                             <label for="${id}" class="w-40 text-xs text-gray-400 truncate" title="${arg.description}">${arg.name} ${required}</label>
                             <input id="${id}" data-arg="${arg.name}" type="text" value="${arg.default ?? ''}"
                                    placeholder="${arg.description || arg.name}"
-                                   class="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                                   class="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 focus:outline-hidden focus:ring-1 focus:ring-purple-500">
                         </div>`
                 }
             } else {
@@ -168,7 +168,7 @@
                                 <label for="${id}" class="w-40 text-xs text-gray-400 truncate" title="${opt.description}">--${opt.name}${opt.shortcut ? ' (-' + opt.shortcut + ')' : ''}</label>
                                 <input id="${id}" data-opt="${opt.name}" type="text" value="${def}"
                                        placeholder="${opt.description || opt.name}"
-                                       class="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                                       class="flex-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 focus:outline-hidden focus:ring-1 focus:ring-purple-500">
                             </div>`
                     } else {
                         const checked = opt.default === true ? 'checked' : ''

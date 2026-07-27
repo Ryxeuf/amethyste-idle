@@ -103,7 +103,7 @@
                        data-chat-target="playerSearch"
                        data-action="input->chat#searchPlayers"
                        placeholder="{{ 'game.chat.search_placeholder'|trans }}"
-                       class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+                       class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-hidden focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
                 <div data-chat-target="playerResults" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-40 overflow-y-auto"></div>
             </div>
             <span data-chat-target="privateTo" class="self-center text-sm text-pink-400 font-semibold min-w-0 truncate max-w-[150px]"></span>
@@ -121,7 +121,7 @@
                placeholder="{{ 'game.chat.input_placeholder'|trans }}"
                maxlength="500"
                autocomplete="off"
-               class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+               class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-400 focus:outline-hidden focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
         <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors">
             {{ 'game.chat.send'|trans }}
         </button>

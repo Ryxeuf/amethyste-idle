@@ -11,7 +11,7 @@
         {% if field.vars.name != '_token' %}
         <div>
             {{ form_label(field, null, {'attr': {'class': 'block text-sm text-gray-300 mb-1'}}) }}
-            {{ form_widget(field, {'attr': {'class': 'w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none'}}) }}
+            {{ form_widget(field, {'attr': {'class': 'w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-hidden'}}) }}
             {{ form_errors(field) }}
         </div>
         {% endif %}

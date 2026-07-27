@@ -208,7 +208,7 @@
                 {% if entry.count < entry.necessary %}
                     <div class="mt-1 flex gap-1">
                         <input type="text" id="puzzle-answer-{{ entry.pnj_id }}" placeholder="Votre reponse..."
-                               class="flex-1 px-2 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                               class="flex-1 px-2 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-purple-500 focus:outline-hidden">
                         <button onclick="submitPuzzleAnswer({{ entry.pnj_id }})"
                                 class="px-2 py-0.5 text-xs bg-purple-700 hover:bg-purple-600 text-ink-on rounded transition-colors">
                             Repondre

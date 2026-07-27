@@ -5,7 +5,7 @@
                 {% if field.vars.name != '_token' %}
                     <div class="{% if field.vars.name == 'description' %}md:col-span-2{% endif %}">
                         {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
-                        {{ form_widget(field, {'attr': {'class': (field.vars.attr.class ?? '') ~ ' w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500'}}) }}
+                        {{ form_widget(field, {'attr': {'class': (field.vars.attr.class ?? '') ~ ' w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-hidden focus:border-purple-500'}}) }}
                         {{ form_errors(field, {'attr': {'class': 'text-red-400 text-xs mt-1'}}) }}
                     </div>
                 {% endif %}
