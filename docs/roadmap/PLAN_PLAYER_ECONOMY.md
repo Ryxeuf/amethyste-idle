@@ -39,7 +39,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-22 | Tirage de pureté à la récolte |
 | ECO-23 | Pureté au marché et dans les commandes |
 | ECO-24 | Audit de la chaîne de production ✅ |
-| ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur (b) |
+| ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur ✅ (b) |
 | ECO-25 | Chaînage des paliers raffinés |
 | ECO-26 | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
@@ -55,7 +55,7 @@ Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 →
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 → ECO-22 → ECO-23 → ECO-28
-Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b → ECO-25 → ECO-26 → ECO-27
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 → ECO-26 → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
 
@@ -420,16 +420,12 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > **Ouvert par le jalon (ECO-24c)** : `GatherService` n'a aucun gate de compétence, ce qui
 > rend décoratives les six compétences hautes de l'arbre du mineur. Voir BALANCE §21.5.
 
-#### ECO-24b-b — Les cuirs du tanneur (S | ★★ | HAUTE)
-> Même défaut, autre matière : 12 recettes consomment quatre cuirs qu'**aucun monstre ne
-> lâche**. Les séries « durcie » et « dragon » et la cape de maître sont irréalisables.
-> Prérequis : ← ECO-24b-a (la loi transverse et son test existent, il suffit de l'étendre)
-- [ ] Ajouter `leather-bone`, `leather-fang`, `leather-dragon-scale`,
-      `leather-werewolf-fur` aux tables de butin des espèces qui les portent en fiction
-      (loups-garous → fourrure, dragons/drakes → écaille, fauves → croc, squelettes et
-      gibier du désert → os)
-- [ ] Respecter les raretés inversées : l'écaille de dragon reste rare, l'os est commun
-- [ ] Étendre la loi transverse aux cuirs : toute matière de recette est obtenable
+#### ECO-24b-b — Les cuirs du tanneur ✅ (livré 2026-07-28)
+> Livré. Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Piste G débloquée** : avec ECO-24b-a, plus aucune matière de recette du jeu de base
+> n'est sans source, hors réserves d'extension explicites. ECO-25 peut chaîner les paliers
+> sans renforcer un goulot.
 
 ### ECO-25 — Chaînage des paliers raffinés (M | ★★★ | HAUTE)
 > Le cœur du jalon. Changement de **données**, pas de moteur : 6 recettes à corriger.
