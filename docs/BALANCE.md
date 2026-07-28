@@ -1054,3 +1054,69 @@ pas pouvoir gonfler le monde.
 les 34 filons et invalide le tableau de paliers en tete de `config/game/zones/world_1.yaml`.
 Il precede FOY-11 (Paleur) et ECO-22 (purete a la recolte) — sans lui, les deux jalons
 livreraient du code sans effet observable.
+
+### 22.5 Compter la population — la charge, pas les tetes
+
+Le facteur de monde (§ 22.4) et les quotas de Crue reposent sur « la population active ».
+Encore faut-il la definir, car c'est le **denominateur de tout le dimensionnement**.
+
+#### Ce qui ne marche pas
+
+**Les comptes inscrits** : un compte cree puis abandonne pese autant qu'un joueur quotidien.
+Le monde grossirait sur du vide.
+
+**Le proxy actuel.** `InfluenceAntiExploit::hasMinimumActiveMembers()` compte les membres dont
+le `Player.updatedAt` est plus recent que 7 jours, et le commentaire du code l'admet :
+*« Utilise le updatedAt du Player comme proxy d'activite »*. Il n'existe aujourd'hui **aucun
+champ `lastActivityAt`** dans le modele. Ce proxy est acceptable pour un garde-fou binaire
+(« la guilde a-t-elle au moins 3 membres vivants ? ») ; il ne l'est pas pour dimensionner le
+monde, car `updatedAt` est un champ de cycle de vie Doctrine — il bouge des qu'une ecriture
+touche la ligne, y compris une ecriture **systeme** (regeneration, respawn, backfill), et
+**une seule connexion suffit a compter pendant sept jours**.
+
+**Un simple decompte de tetes**, meme corrige, reste faux : cinquante joueurs quotidiens et
+deux cents joueurs hebdomadaires donnent le meme nombre, et exercent une pression totalement
+differente sur les filons.
+
+#### Ce qu'on mesure a la place
+
+> **La population effective se deduit de l'energie depensee, pas des connexions.**
+
+L'energie est la ressource rare fondamentale du jeu : toute action qui pese sur le monde
+(explorer, recolter, combattre) en consomme, et **se connecter n'en consomme pas**.
+
+```
+Charge de monde C     = energie totale depensee par tous les joueurs sur la maree ecoulee
+Population effective  = C / (energie d'un joueur regulier sur une maree)
+```
+
+Un « joueur regulier » depense environ 60 % de sa regeneration quotidienne, soit ~150 points
+par jour et ~4 200 sur une maree de 28 jours. La population effective est donc le nombre de
+joueurs reguliers **equivalents**, pas le nombre de comptes.
+
+#### Pourquoi c'est immunise contre le multi-compte
+
+C'est la propriete qui emporte la decision. Un decompte de tetes se gonfle avec des comptes
+secondaires ; une mesure de **charge**, non — parce qu'un joueur qui fait tourner trois
+comptes a fond **exerce reellement la pression de trois joueurs** sur les filons. Le monde
+doit donc bien se dimensionner pour trois. Il n'y a plus rien a exploiter : on ne peut pas
+gonfler le monde sans produire exactement la charge pour laquelle il se dimensionne.
+
+#### Ce qu'il faut ajouter au modele
+
+| Besoin | Solution |
+|---|---|
+| Dimensionnement du monde (W, quotas) | **`WorldLoadService`** : somme de l'energie depensee sur la maree → population effective |
+| Garde-fou binaire (min. membres actifs) | **`Player.lastActivityAt`** explicite, mis a jour **a la depense d'energie** — remplace le proxy `updatedAt` |
+
+#### Cadence et amorcage
+
+- **Contraction : uniquement a une bascule de maree** (28 jours), pour ne jamais retrecir le
+  monde sous les pieds des joueurs presents.
+- **Expansion : possible a n'importe quel tick quotidien** si la charge franchit un palier.
+  C'est l'asymetrie de § 22.4 — monte vite, redescend lentement — et elle compte pour un
+  jeune serveur qui grandit : attendre 28 jours pour ouvrir le monde serait trop lent.
+- **Plancher de W** et **periode de grace au lancement** : les premieres marees ne contractent
+  jamais. Un serveur qui demarre a cinq joueurs ne doit pas se refermer sur eux.
+
+

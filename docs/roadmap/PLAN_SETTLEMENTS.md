@@ -188,7 +188,14 @@ s'y branche.
 > Le monde doit rester à la taille de son audience sans recalibrage manuel. Conception
 > complète et garde-fous : [../BALANCE.md § 22.4](../BALANCE.md).
 > Prérequis : ∅ — **précède FOY-08, FOY-11 et ECO-22**
-- [ ] `WorldScaleService` : facteur `W` calculé sur les joueurs actifs de la marée écoulée,
+- [ ] **`WorldLoadService`** : population effective = énergie totale dépensée sur la marée ÷
+      énergie d'un joueur régulier (~4 200/marée). **On mesure la charge, pas les têtes**
+      (BALANCE § 22.5) — c'est ce qui immunise le dimensionnement contre le multi-compte
+- [ ] **`Player.lastActivityAt`** explicite, mis à jour **à la dépense d'énergie**. Remplace
+      le proxy `Player.updatedAt` d'`InfluenceAntiExploit::hasMinimumActiveMembers()`, que le
+      code lui-même signale comme approximatif — un champ de cycle de vie Doctrine bouge sur
+      des écritures système et une seule connexion vaut sept jours d'activité
+- [ ] `WorldScaleService` : facteur `W` dérivé de la population effective,
       **par paliers discrets** (0,5 / 0,75 / 1 / 1,5 / 2 / 3…), jamais en continu
 - [ ] **Asymétrie** : monte vite, redescend lentement (moyenne glissante) — une baisse
       passagère ne rétrécit pas le monde sous les pieds des joueurs présents
@@ -197,8 +204,13 @@ s'y branche.
 - [ ] **Interdit, et à verrouiller par un test** : aucun bouclage sur la pression *locale*.
       Vitalité, pureté et Pâleur ne sont jamais mises à l'échelle — ce sont les signaux de jeu.
       Un filon qui donnerait plus à mesure qu'on le presse annulerait sa propre rareté
-- [ ] Recalcul **uniquement** à une bascule de marée, inscrit au journal de monde
-      (« la Concorde s'étend ») — annoncé, jamais silencieux
+- [ ] **Contraction** uniquement à une bascule de marée (28 j) ; **expansion** possible à
+      n'importe quel tick quotidien (`app:season:tick`, 00h05) si la charge franchit un palier
+      — attendre 28 jours pour ouvrir le monde serait trop lent pour un jeune serveur
+- [ ] **Plancher de `W` et période de grâce au lancement** : les premières marées ne
+      contractent jamais. Un serveur qui démarre à cinq joueurs ne doit pas se refermer sur eux
+- [ ] Tout changement inscrit au journal de monde (« la Concorde s'étend ») — annoncé,
+      jamais silencieux
 - [ ] **Verrou manuel admin** : figer `W` pour un événement, un test, ou quand la valeur
       automatique a tort
 - [ ] Anti-abus : même définition de joueur actif que le quota de Crue, via `InfluenceAntiExploit`
