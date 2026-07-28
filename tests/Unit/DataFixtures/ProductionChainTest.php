@@ -370,7 +370,7 @@ class ProductionChainTest extends TestCase
     // =====================================================================
 
     /**
-     * **Aucun craft ne detruit de la valeur.**
+     * Aucun craft ne detruit de la valeur.
      *
      * L'audit d'ECO-27 a trouve **28 recettes sur 84** dont le resultat valait
      * moins que ses intrants — jusqu'a 0,35 pour le lingot d'orichalque, qui se
@@ -423,7 +423,7 @@ class ProductionChainTest extends TestCase
     }
 
     /**
-     * **Aucune ligne de production n'a de palier orphelin.**
+     * Aucune ligne de production n'a de palier orphelin.
      *
      * La loi que le plan demandait, generalisee au-dela de la ligne du metal :
      * toute recette de niveau >= 3 doit consommer au moins un produit
