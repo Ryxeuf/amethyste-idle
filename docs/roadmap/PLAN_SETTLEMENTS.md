@@ -28,7 +28,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 
 | Code | Sujet (résumé) |
 |------|----------------|
-| FOY-01 | Entité `Settlement` — rang, type, quatre indices, seed non nul |
+| FOY-01 | Entité `Settlement` — rang, type, quatre indices, seed non nul ✅ |
 | FOY-02 | Dépôt de sédiment (subscriber sur les events existants) |
 | FOY-03 | Décroissance, calcul du rang et du type (hystérésis) |
 | FOY-04 | Le foyer sur l'écran de zone — chantier lisible |
@@ -47,7 +47,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
 
 ```
-Piste A — Socle du foyer      : FOY-01 → FOY-02 → FOY-03 → FOY-04
+Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 → FOY-03 → FOY-04
 Piste B — Ce que le rang ouvre: FOY-05 → FOY-06 → FOY-07
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
@@ -103,19 +103,9 @@ s'y branche.
 
 ## Piste A — Socle du foyer (séquentiel)
 
-### FOY-01 — Entité `Settlement` (S | ★★ | CRITIQUE)
+### FOY-01 — Entité `Settlement` ✅ (S | ★★ | CRITIQUE)
 > Fondation. Un foyer par zone, avec son rang, son type et ses quatre indices.
-> Prérequis : ∅ (modèle zone livré)
-- [ ] Entité `Settlement` : `zone` (OneToOne), `rank` (0-5), `type` (enum nullable),
-      `sedimentTrade/War/Lore/Rite` (int), `rankedAt`, `decayedAt`, timestamps
-- [ ] Enums `SettlementRank` (Ruine → Métropole) et `SettlementType`
-      (Comptoir/Bastion/Athénée/Sanctuaire)
-- [ ] Migration idempotente (`CREATE TABLE IF NOT EXISTS`, index sur `zone_id` unique)
-- [ ] **Seed du rang de départ** (décision A — incrémental) : chaque zone déjà peuplée
-      démarre au rang correspondant à ce qu'elle offre aujourd'hui. Le Fanal et
-      Quartier des Jardins **n'ont pas de foyer** (§3.4 : bâtis sur la Voûte)
-- [ ] Fichier de paramètres `config/game/settlements.yaml` (seuils, décroissance, quotas)
-- [ ] Tests : création, seed, absence de foyer sur les zones du Sanctuaire
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ### FOY-02 — Dépôt de sédiment (S | ★★★ | CRITIQUE)
 > L'activité des joueurs devient la matière du monde. Aucun event nouveau.
