@@ -26,7 +26,7 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
    matière de haut palier dans très peu (GAME_WORLD §5.1).
 3. **Un objet de désir à chaque horizon** : une zone qui n'offre rien à désirer à la
    semaine, à la marée ou à l'an est une zone morte (GAME_PROGRESSION §6d).
-4. **Le palier est la profondeur de strate** : plus on s'éloigne de Lumière, plus la
+4. **Le palier est la profondeur de strate** : plus on s'éloigne du Fanal, plus la
    strate est ancienne et le danger haut (GAME_WORLD §4.2).
 5. **Les récoltes à portée du hub dès la semaine 1** : minage, herboristerie, pêche,
    dépeçage (GAME_PROGRESSION §6a) — et le **bûcheronnage, décidé le 2026-07-28**
@@ -66,7 +66,7 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
         │  ╲          │
         │   🌾 VALLONS D'AUBÉPINE (à créer)
         │             │
-        │      ✨ VILLAGE DE LUMIÈRE ─ 🏡 Jardins
+        │      ✨ LE FANAL ─ 🏡 Jardins
         │
    🏜 Dunes d'Ambre  →  🧂 Mer de Sel (← Ext. 1)  →  🏛 Cité ensevelie
 ```
@@ -78,7 +78,7 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
 
 | Zone | Région | Palier | Foyer | Ligne de production | Exclusivité (loi 1) |
 |---|---|---|---|---|---|
-| Lumière + Jardins | Sanctuaire | T0 — sûre | non (§3.4) | plancher T1 PNJ, herbes T0 | la sécurité ; le Cristal d'Améthyste |
+| le Fanal + Jardins | Sanctuaire | T0 — sûre | non (§3.4) | plancher T1 PNJ, herbes T0 | la sécurité ; le Cristal d'Améthyste |
 | **Vallons d'Aubépine** | Plaines de l'Éveil | T1 | oui | agriculture, gibier/cuir, pêche de rive, hêtre | **le lin** (fibre), le blé, le gibier de plaine |
 | Forêt des murmures | Plaines de l'Éveil | T1 | oui | herbes, bois, pêche de rivière | le ginseng, le saumon, **le chêne murmurant**, la sylve (Chœur) |
 | Mines profondes | Terres Sauvages | T2 (fond T4) | oui | métal de base, forge | **le fer**, le sombracier, l'anguille |
@@ -93,12 +93,12 @@ Chaque dossier suit le même gabarit : ce que la zone est (biome, loi du temps),
 produit (dont ce qu'il faut ajouter), sa signature d'améthyste, sa faune, et ce qu'on y
 désire à chaque horizon.
 
-### 2.1 Village de Lumière + Quartier des Jardins — le sanctuaire
+### 2.1 Le Fanal + Quartier des Jardins — le sanctuaire
 
 - **Loi du temps** : aucune. La Voûte porte le village : **rien n'y dépose, rien n'y
   pourrit** (GAME_WORLD §4.3). Hors Crue, hors foyer, hors jeu territorial.
 - **Production** : jardins du temple T0 (thym, lavande) + plancher T1 PNJ. Rien d'autre,
-  jamais : Lumière garantit le plancher, jamais le plafond.
+  jamais : le Fanal garantit le plancher, jamais le plafond.
 - **Signature d'améthyste : néant.** C'est la seule zone du monde où **aucune action ne
   rend d'améthyste** — le temps ne s'y dépose pas. Conséquence canon forte : le Cristal
   sous la Voûte est un **cœur**, pas un gisement ; on vit à côté de la plus grande
@@ -113,13 +113,13 @@ désire à chaque horizon.
 > défaut de la loi 5 : le **dépeçage** n'a aujourd'hui aucun terrain d'apprentissage à
 > portée du hub — la faune de la Forêt est trop disputée et trop mêlée de non-dépeçables.
 
-- **Identité** : bocage et rivière à une demi-heure de marche de Lumière. Haies
+- **Identité** : bocage et rivière à une demi-heure de marche du Fanal. Haies
   d'aubépine, prés, vergers, un gué. Le grenier du monde — la première zone « douce »
   après le sanctuaire, et le premier endroit où l'on comprend que le monde se cultive.
 - **Loi du temps** : déposé **régulièrement et récemment** — la strate la plus jeune du
   monde. Danger T1 bas : de quoi apprendre à se battre sans y mourir.
 - **Type / graphe** : `wilderness`, foyer possible (région Plaines de l'Éveil, 5 %).
-  Connexions : Lumière ↔ Vallons (court), Vallons ↔ Forêt (court), Vallons ↔ Marais
+  Connexions : Fanal ↔ Vallons (court), Vallons ↔ Forêt (court), Vallons ↔ Marais
   (moyen). La zone est **sur la route** du sud : le passage y dépose du sédiment (levier
   4 du §5.5).
 - **Production & filons** *(paliers T0/T1 du calibrage — jamais un goulot)* :
@@ -193,7 +193,7 @@ désire à chaque horizon.
   ailleurs**.
 - **Signature d'améthyste** : **erratique** — Trouble le jour, tire haut la nuit. Le
   temps stagnant se dépose mal, mais quand il prend, il prend bien : le Marais nocturne
-  est le premier endroit où un joueur d'Acte II voit du **Pur**. Élément Eau/Ténèbre.
+  est le premier endroit où un joueur d'Acte II voit du **Pur**. Élément Eau/Ténèbres.
   C'est l'information exclusive type du prospecteur (GAME_ZONE_ACTIONS).
 - **Faune** : **non déclarée** — le Marais dépend encore de sa carte TMX d'origine.
   C'est le reste de ZON-26b (Sprint 13), pas un jalon neuf.
@@ -354,12 +354,12 @@ la zone source** quand la matière est marquée par son lieu. Exemples canonique
 | Ressource | Affinité | Pourquoi |
 |---|---|---|
 | Minerais de base (cuivre → cobalt) | Métal | la ligne |
-| Sombracier (fond des Mines) | Ténèbre | la signature du fond |
+| Sombracier (fond des Mines) | Ténèbres | la signature du fond |
 | Mithril (Crête) | Air | le métal que le vent a mis à nu |
 | Platine (Dunes) | Feu | le fond de mer fossile, thème Ambre |
-| Givrecoiffe (Crête) · Belladone, spores (Marais) | Eau · Ténèbre | la signature prime sur la ligne |
+| Givrecoiffe (Crête) · Belladone, spores (Marais) | Eau · Ténèbres | la signature prime sur la ligne |
 | Anguille électrique (Mines) | Air | la foudre dans l'eau noire |
-| Bois tourbé (Marais) · Bois pétrifié (Dunes) | Ténèbre · Terre | idem |
+| Bois tourbé (Marais) · Bois pétrifié (Dunes) | Ténèbres · Terre | idem |
 | Écaille de dragon | Feu | la bête prime la ligne |
 | Rubis · Émeraude · Diamant | Feu · Terre · Lumière | les gemmes sont des concentrés |
 | **Améthyste** | **aucune / toutes** | elle est le **substrat**, pas un flux — canon |

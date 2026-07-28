@@ -54,7 +54,7 @@ ZON-33 en continu
 - [ ] Zone `vallons-d-aubepine` dans `world_1.yaml` : type wilderness, région Plaines de
       l'Éveil, filons aux profils T0/T1 du calibrage (jamais un goulot), faune déclarée,
       2-3 PNJ de fond (fermière, meunier…)
-- [ ] Connexions : Lumière ↔ Vallons (court), Vallons ↔ Forêt (court), Vallons ↔ Marais
+- [ ] Connexions : Fanal ↔ Vallons (court), Vallons ↔ Forêt (court), Vallons ↔ Marais
       (moyen) ; position sur la carte du monde illustrée
 - [ ] Une première recette de cuisine joueur consommant le blé (la chaîne pain cesse
       d'être PNJ-only) et une recette de tannerie consommant le lin
@@ -81,11 +81,11 @@ ZON-33 en continu
 > Prérequis : ← ECO-21 (bandes), ECO-22 (tirage)
 - [ ] Table par zone : quantité relative (modificateur de taux de sous-produit) ×
       fourchette de bande × élément dominant — dans la config de zone, pas en dur
-- [ ] **Lumière + Jardins : zéro améthyste** (canon §2.1 — la Voûte) ; cas testé
+- [ ] **Le Fanal + Jardins : zéro améthyste** (canon §2.1 — la Voûte) ; cas testé
       explicitement
 - [ ] Variations consignées : le Marais tire plus haut la nuit ; les Dunes et la Cité
       rendent par le butin, pas par la récolte
-- [ ] Tests : signature appliquée au tirage, cas Lumière, cas nocturne du Marais
+- [ ] Tests : signature appliquée au tirage, cas Fanal, cas nocturne du Marais
 
 ### ZON-33 — Tests de conformité aux lois de zone (S | ★★ | HAUTE)
 > Les huit lois de GAME_ZONES §0 valent contrat. ‖ au fil des jalons.
