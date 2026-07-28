@@ -23,7 +23,7 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | Code | Brique | Profil | Dépendances |
 |------|--------|--------|-------------|
 | RET-01 | Rotation du `WeeklyChallenge` + restitution | Guilde | ✅ **livré (2026-07-28)** |
-| RET-02 | La Commission de la semaine | Solo | ∅ (crochet sédiment quand FOY-02 arrive) |
+| RET-02 🟡 | La Commission de la semaine | Solo | ∅ (crochet sédiment quand FOY-02 arrive) |
 | RET-03 ✅ | La commande de guilde | Guilde | ECO Piste C ✅ |
 | RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
 | RET-05 | Le chantier de la semaine | Guilde | ← FOY-02, FOY-04 |
@@ -57,24 +57,16 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > génération hebdomadaire ultérieure ; l'idempotence par semaine ISO (`Parameter`) est le
 > mécanisme à réutiliser.
 
-### RET-02 — La Commission de la semaine (M | ★★★ | CRITIQUE)
+### RET-02 — La Commission de la semaine 🟡 (M | ★★★ | CRITIQUE)
 > Le rendez-vous hebdomadaire **personnel**. Générée depuis les domaines et zones du joueur,
 > **livrée à un foyer** — le solo participe au chantier collectif sans guilde.
-> Prérequis : ∅ (le dépôt de sédiment se branche quand FOY-02 existe)
-- [ ] Entité `PlayerWeeklyCommission` : player, semaine, objectif (type + cible + quantité),
-      zone de livraison, progression, état (`open` / `delivered` / `expired`), récompense choisie
-- [ ] Génération à la rotation hebdomadaire : objectif tiré des **domaines travaillés** du
-      joueur et des **tables de la zone** de livraison (mêmes gabarits déclaratifs que les
-      quotidiennes — aucun contenu écrit à la main)
-- [ ] **Livraison à un foyer** : l'objet se remet dans la zone cible, pas à un guichet
-      abstrait. Crochet `SettlementSedimentListener` prêt (no-op tant que FOY-02 n'est pas
-      livré, sédiment réel ensuite)
-- [ ] **Récompense au choix parmi trois** (un plan, une matéria de palier, un lot de
-      ressources à pureté garantie — ce dernier dégradé en lot simple tant qu'ECO-21 n'est
-      pas livré). Un choix hebdomadaire est plus mémorable qu'un dû
-- [ ] Anti-abus : une commission par semaine et par personnage, pas de reroll
-- [ ] UI : carte sur le tableau de bord (hub livré) + écran de zone de la ville cible
-- [ ] Tests : génération depuis les domaines, livraison, choix de récompense, expiration
+>
+> **Socle livré le 2026-07-28** (RET-02a) : entité, pool déclaratif, tirage hebdomadaire
+> déterministe, zone de livraison choisie parmi les foyers, anti-reroll. Détail dans
+> [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [ ] **RET-02b** — avancement branché sur les six événements de jeu, livraison au foyer
+      (dépôt de sédiment), récompense au choix parmi trois, carte sur le tableau de bord et
+      sur l'écran de la zone cible
 
 ### RET-03 — La commande de guilde ✅ (S | ★★ | HAUTE)
 > « On compte sur moi » à cadence fixe, pour le prix d'un canal *guilde* sur un système livré.

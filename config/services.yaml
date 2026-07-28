@@ -53,6 +53,11 @@ services:
     # FOY-01 : seuils de rang, decroissance, table de depot et seed du monde.
     # « Rien en dur » (PLAN_SETTLEMENTS) : recalibrer un foyer ne doit jamais
     # demander de toucher une classe.
+    # RET-02 : pool declaratif des commissions hebdomadaires personnelles.
+    App\GameEngine\Retention\WeeklyCommissionTemplateLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\GameEngine\Settlement\SettlementDefinitionLoader:
         arguments:
             $projectDir: '%kernel.project_dir%'
