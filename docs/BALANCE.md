@@ -1249,6 +1249,14 @@ declarative :
 | Participation a un beat de maree | `rite` | 10 |
 | **Passage** (traversee de zone, `ZoneTravelService`) | reparti | 0,2 |
 
+> **Etat du branchement (FOY-02, 2026-07-28)** : sept lignes de ce tableau sont livrees
+> et deposent reellement — kill, recolte, peche, depecage, craft, quete, passage. Les
+> trois autres (vente conclue a l'HV, materia lue chez les Lecteurs, participation a un
+> beat de maree) n'ont pas encore de point d'accroche et **ne figurent pas** dans
+> `config/game/settlements.yaml` : `SettlementSedimentWiringTest` interdit qu'une ligne y
+> soit chiffree sans etre appelee, precisement pour qu'un depot muet ne puisse pas
+> exister. Elles entreront dans le fichier avec leur listener.
+
 Reperes de flux (§ 1 : ~80 actions/jour a barre pleine ; § 22.5 : le joueur regulier
 depense ~62 % de sa barre) :
 

@@ -47,6 +47,7 @@ class SettlementDefinitionLoader
      *     sediment: array<string, SedimentRule>,
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
+     *     diminishing_factor: float,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -86,6 +87,7 @@ class SettlementDefinitionLoader
      *     sediment: array<string, SedimentRule>,
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
+     *     diminishing_factor: float,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -110,6 +112,7 @@ class SettlementDefinitionLoader
             'sediment' => $this->normalizeSediment($raw['sediment'] ?? null, $source),
             'daily_cap_per_player' => $cap,
             'diminishing_threshold' => $threshold,
+            'diminishing_factor' => $this->normalizeRate($raw['anti_exploit']['diminishing_factor'] ?? null, 'anti_exploit.diminishing_factor', $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
         ];

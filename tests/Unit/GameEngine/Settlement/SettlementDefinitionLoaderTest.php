@@ -42,6 +42,7 @@ class SettlementDefinitionLoaderTest extends TestCase
         self::assertSame(SettlementRank::Hamlet, $result['minimum_type_rank']);
         self::assertSame(60, $result['daily_cap_per_player']);
         self::assertSame(40, $result['diminishing_threshold']);
+        self::assertSame(0.5, $result['diminishing_factor']);
         self::assertSame(SettlementRank::Camp, $result['seed']['marais']['rank']);
         self::assertSame(400, $result['seed']['marais']['stock']);
         self::assertSame('batie sur la Voute', $result['without_settlement']['lumiere']);
@@ -137,6 +138,25 @@ class SettlementDefinitionLoaderTest extends TestCase
         $this->loader->normalize($raw);
     }
 
+    /**
+     * Un facteur de 1 ne ralentit rien et un facteur de 0 coupe net : dans les
+     * deux cas la regle serait ecrite et ne dirait pas ce qu'elle fait.
+     */
+    public function testDiminishingFactorMustBeARate(): void
+    {
+        foreach ([0, 1, 1.5, -0.5, 'moitie'] as $bad) {
+            $raw = $this->validRaw();
+            $raw['anti_exploit']['diminishing_factor'] = $bad;
+
+            try {
+                $this->loader->normalize($raw);
+                self::fail(sprintf('Diminishing factor "%s" should have been rejected.', var_export($bad, true)));
+            } catch (SettlementDefinitionException $e) {
+                self::assertStringContainsString('anti_exploit.diminishing_factor', $e->getMessage());
+            }
+        }
+    }
+
     public function testSeedRankMustBeKnown(): void
     {
         $raw = $this->validRaw();
@@ -182,7 +202,7 @@ class SettlementDefinitionLoaderTest extends TestCase
                 'quest' => ['index' => 'lore', 'grains' => 5],
                 'travel' => ['index' => 'spread', 'grains' => 0.2],
             ],
-            'anti_exploit' => ['daily_cap_per_player' => 60, 'diminishing_threshold' => 40],
+            'anti_exploit' => ['daily_cap_per_player' => 60, 'diminishing_threshold' => 40, 'diminishing_factor' => 0.5],
             'seed' => ['marais' => ['rank' => 'camp', 'stock' => 400]],
             'without_settlement' => ['lumiere' => 'batie sur la Voute'],
         ];
