@@ -995,6 +995,78 @@ améliorant la vie de tout le monde.
 - **Un adversaire d'arc saisonnier** disponible en permanence (*Le Procès de la Fonderie*,
   §8) sans avoir à inventer une menace neuve à chaque marée.
 
+
+### 12.3 L'Autel d'éveil, le Répertoire et l'équilibre *(dossier instruit — recommandations)*
+
+Trois questions ouvertes, posées ensemble parce que leurs réponses s'emboîtent.
+
+#### a) À qui appartient l'Autel d'éveil ?
+
+| Option | Effet | Verdict |
+|---|---|---|
+| **Bâtiment de ville** (service de la Métropole) | Ouvert à tous, la guilde contrôlante le **taxe** | **Recommandé** |
+| Bâtiment de guilde | Un joueur solo ne peut jamais éveiller | Contredit le principe D14 |
+| Bâtiment de joueur (housing) | Privatise l'aboutissement collectif | Contredit le sens de la Métropole |
+
+**Recommandation : un service de la ville, comme le marché ou la banque.** C'est la doctrine
+déjà actée (D14, GCC) : *une guilde taxe, elle ne ferme jamais*. La guilde qui gouverne la
+Métropole prélève sur chaque rite (revenu de trésor, cohérent avec D4) ; n'importe quel
+joueur — guildé ou non — peut éveiller. Et le **type** de foyer garde un rôle : un foyer
+**Sanctuaire** réduit le coût ou le délai des rites — c'est même sa vocation depuis le début
+(§3.2).
+
+#### b) Des matérias exclusives à l'éveil ? Oui — et c'est le débouché collectif de « lire »
+
+L'idée d'avancement de serveur qui « découvre de nouvelles façons de travailler la matière »
+existe déjà dans nos références (A Tale in the Desert, l'avancée technologique collective —
+GAME_INSPIRATIONS §2.1), et elle a **déjà sa source dans nos systèmes** : le choix
+**fondre ou lire** (§12.2).
+
+**Le Répertoire d'éveil.** Chaque matéria **lue** chez les Lecteurs nourrit un savoir
+collectif du serveur. À des seuils donnés, le serveur **retrouve un geste perdu** : une
+recette d'éveil s'ajoute au Répertoire, annoncée au journal de monde (*« les Lecteurs ont
+retrouvé le geste de… »*), et tout le monde peut désormais l'éveiller à l'Autel.
+
+Ce que ça referme d'un coup :
+
+- **« Lire » gagne son enjeu long terme.** Fondre paie l'individu aujourd'hui ; lire ouvre
+  au serveur, pour toujours. L'axe doctrinal cesse d'être un choix de saveur.
+- L'éveil a du contenu **au-delà** du contre-hasard : le catalogue de base par provenance,
+  plus les gestes retrouvés.
+- C'est un moteur de contenu déclaratif : ajouter un geste retrouvé = ajouter une donnée.
+
+#### c) L'équilibre — la règle qui rend tout le reste inoffensif
+
+> **Le Répertoire est latéral, jamais vertical.** Une matéria exclusive à l'éveil est
+> *différente* — un effet nouveau, une variante, un utilitaire, un hybride — jamais
+> strictement *plus forte* qu'une matéria de butin. Le plafond de puissance reste dans le
+> butin et le sertissage.
+
+C'est la même philosophie que « on ne progresse pas en changeant de sort, on progresse en le
+portant mieux » (§2.1) : la puissance vient du support, l'éveil apporte des **options**.
+Conséquences :
+
+- **Pas de déséquilibre butin/éveil possible** : les deux voies mènent au même plafond, par
+  des chemins différents (le hasard généreux contre le choix coûteux).
+- **Pas de déséquilibre entre serveurs qui compte** : un serveur en avance a plus d'*options*,
+  pas plus de *puissance*.
+
+#### d) Entre serveurs : ne pas synchroniser — indexer
+
+**Recommandation : chaque serveur avance seul.** Sans PvP ni compétition inter-serveurs, un
+Répertoire d'avance n'est pas un avantage, c'est une **identité** — « c'est nous qui avons
+retrouvé Éclipse en premier », gravé au journal de monde. Synchroniser tuerait précisément ce
+que le modèle de clonage préserve (§13.4) : des mondes qui écrivent chacun leur histoire.
+
+Deux garde-fous suffisent :
+
+1. **Cumulatif, jamais manqué.** Un geste retrouvé l'est pour toujours ; aucun contenu du
+   Répertoire n'est limité dans le temps. Un serveur jeune rattrape tout, à son rythme.
+2. **Seuils indexés sur la population effective** (le même mécanisme que la Crue et le
+   facteur de monde, BALANCE §22.5) : un petit serveur a besoin de proportionnellement moins
+   de lectures pour retrouver le même geste. Le rythme *vécu* est comparable partout ; seule
+   la date absolue diffère.
+
 ---
 
 ## 13. Peuplement du monde — départ, zones, extensions
