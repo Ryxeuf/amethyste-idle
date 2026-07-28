@@ -174,6 +174,33 @@
         {# ===== COLONNE LATERALE ===== #}
         <div class="space-y-4 sm:space-y-6">
 
+            {# ===== 3 bis. ASSIDUITE (RET-04) — une restitution, pas une relance. #}
+            {# On dit ce qui a ete fait et ce qui reste a portee ; jamais ce qui a #}
+            {# ete manque, jamais la semaine derniere, jamais d'echeance. Un joueur #}
+            {# de retour apres deux semaines lit exactement la meme chose qu'un    #}
+            {# joueur qui n'est jamais parti.                                      #}
+            <div class="game-card">
+                <div class="game-card-header">
+                    <h2 class="ds-name">{{ 'game.home.attendance.title'|trans }}</h2>
+                </div>
+                <div class="game-card-body">
+                    <p class="ds-hint">
+                        {{ 'game.home.attendance.days'|trans({'%count%': attendance.activeDays, '%plural%': attendance.activeDays > 1 ? 's' : ''}) }}
+                    </p>
+                    {% if attendance.hasNextTier %}
+                        <p class="ds-hint mt-1">
+                            {{ 'game.home.attendance.next'|trans({
+                                '%count%': attendance.daysToNextTier,
+                                '%plural%': attendance.daysToNextTier > 1 ? 's' : '',
+                                '%gils%': attendance.nextTierGils,
+                            }) }}
+                        </p>
+                    {% else %}
+                        <p class="ds-hint mt-1">{{ 'game.home.attendance.all_reached'|trans }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
             {# ===== 4. PROGRESSION — la seule mesure d'avancement du jeu ===== #}
             <div class="game-card">
                 <div class="game-card-header flex items-center justify-between">

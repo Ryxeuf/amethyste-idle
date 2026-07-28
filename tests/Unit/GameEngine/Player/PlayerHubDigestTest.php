@@ -21,6 +21,7 @@ use App\GameEngine\Player\HubPendingItem;
 use App\GameEngine\Player\HubResume;
 use App\GameEngine\Player\PlayerHubDigest;
 use App\GameEngine\Quest\PlayerQuestHelper;
+use App\GameEngine\Retention\WeeklyAttendanceService;
 use App\Repository\CraftJobRepository;
 use App\Repository\CraftOrderRepository;
 use App\Repository\GardenPlotRepository;
@@ -462,6 +463,7 @@ class PlayerHubDigestTest extends TestCase
             $journalRepository,
             $overrides['commissionRepository'] ?? $this->createMock(PlayerWeeklyCommissionRepository::class),
             $questHelper,
+            $overrides['weeklyAttendance'] ?? $this->createMock(WeeklyAttendanceService::class),
         );
     }
 

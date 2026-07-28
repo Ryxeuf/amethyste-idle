@@ -468,6 +468,12 @@
         "empty": "No quest in progress",
         "empty_hint": "NPCs in safe zones hand them out.",
         "view_all_short": "Quest journal"
+      },
+      "attendance": {
+        "title": "Your week",
+        "days": "%count% active day%plural% this week.",
+        "next": "%count% more day%plural% for the next tier (%gils% gils).",
+        "all_reached": "Every tier of the week has been reached."
       }
     },
     "footer": {

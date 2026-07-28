@@ -468,6 +468,12 @@
         "empty": "Aucune quête en cours",
         "empty_hint": "Les PNJ des zones sûres en confient.",
         "view_all_short": "Journal de quêtes"
+      },
+      "attendance": {
+        "title": "Votre semaine",
+        "days": "%count% jour%plural% actif%plural% cette semaine.",
+        "next": "Encore %count% jour%plural% pour le prochain palier (%gils% gils).",
+        "all_reached": "Tous les paliers de la semaine sont atteints."
       }
     },
     "footer": {
