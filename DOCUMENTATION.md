@@ -372,6 +372,9 @@ zones:
             chest_gils_max: 30
         gather:                      # filons partagés (optionnel → sérialisé dans gatherConfig.resources)
             - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 18, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
+            # requires_skill (optionnel, ECO-24c) : slug d'une compétence exigée pour CE filon.
+            # Absent = ouvert à tous. Le filon gaté reste visible et nomme ce qu'il demande.
+            - { slug: veine-de-sombracier, item: ore-darksteel, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2, requires_skill: miner-darksteel-xs }
 
 connections:
     - { from: <slug>, to: <slug>, travel_seconds: 300, bidirectional: true, requires_discovery: false, enabled: true }

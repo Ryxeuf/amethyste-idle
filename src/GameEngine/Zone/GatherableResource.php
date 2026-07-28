@@ -14,6 +14,12 @@ use App\Enum\Purity;
  * (GAME_ZONE_ACTIONS § 5.5) — elle ne donne ni energie, ni action, ni butin,
  * elle donne de la **decision**. Nulle pour qui n'a pas travaille son arbre de
  * recolte, et nulle aussi pour les matieres fongibles, qui n'ont pas de bande.
+ *
+ * ECO-24c ajoute `lockedBy` : le nom de la competence qui manque au joueur pour
+ * exploiter le filon, ou `null` s'il peut l'exploiter. Le filon **reste
+ * visible** — la zone montre ce que le personnage sait (GAME_ZONE_ACTIONS § 2),
+ * et un filon qu'on voit sans pouvoir l'ouvrir est une raison de progresser ;
+ * un filon cache n'est rien du tout.
  */
 final readonly class GatherableResource
 {
@@ -26,11 +32,17 @@ final readonly class GatherableResource
         public int $capacity,
         public int $respawnRemaining,
         public ?Purity $purityCeiling = null,
+        public ?string $lockedBy = null,
     ) {
     }
 
     public function isDepleted(): bool
     {
         return $this->stock <= 0;
+    }
+
+    public function isLocked(): bool
+    {
+        return null !== $this->lockedBy;
     }
 }

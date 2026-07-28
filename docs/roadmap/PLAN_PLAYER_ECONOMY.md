@@ -425,8 +425,23 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > - Le goulot annoncé par BALANCE §21.4 reste le **cobalt** (source unique, Crête) : c'est
 >   toujours le point de tension à surveiller au coefficient 1.
 >
-> **Ouvert par le jalon (ECO-24c)** : `GatherService` n'a aucun gate de compétence, ce qui
-> rend décoratives les six compétences hautes de l'arbre du mineur. Voir BALANCE §21.5.
+> <s>**Ouvert par le jalon (ECO-24c)** : `GatherService` n'a aucun gate de compétence, ce qui
+> rend décoratives les six compétences hautes de l'arbre du mineur. Voir BALANCE §21.5.</s>
+> **ECO-24c livré le 2026-07-28** — détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+
+#### ECO-24c — Le gate de compétence sur les filons ✅ (livré 2026-07-28)
+> Livré. Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Arbitrage** : des deux issues laissées ouvertes par BALANCE §21.5 — porter le gate dans le
+> modèle déclaratif, ou assumer que la zone *est* le gate et reconvertir les compétences en
+> bonus de rendement —, c'est la **première** qui est retenue. La seconde aurait supprimé le
+> seul endroit du jeu où un arbre de récolte ouvre une porte plutôt que d'ajouter un
+> pourcentage, et la « zone comme gate » ne tient pas : la Crête et les Mines sont accessibles
+> dès les premières heures, elles ne filtrent personne.
+>
+> **Ce que les jalons suivants héritent** : `requires_skill:` est le vocabulaire du gate de
+> récolte. FOY-11 (Pâleur) et ZON-34 (la ligne du bois) s'y branchent sans moteur nouveau — un
+> filon de bois pétrifié se garde de la même façon qu'un filon d'orichalque.
 
 #### ECO-24b-b — Les cuirs du tanneur ✅ (livré 2026-07-28)
 > Livré. Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).

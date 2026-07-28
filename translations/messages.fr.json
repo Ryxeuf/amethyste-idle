@@ -1432,9 +1432,11 @@
           "in_fight": "Impossible de récolter en plein combat.",
           "no_zone": "Votre personnage n'est rattaché à aucune zone.",
           "unknown_resource": "Cette ressource n'est pas récoltable ici.",
-          "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue."
+          "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue.",
+          "missing_skill": "Ce filon demande un savoir que vous n'avez pas encore."
         },
-        "purity_ceiling": "Ce filon ne rend pas mieux que"
+        "purity_ceiling": "Ce filon ne rend pas mieux que",
+        "locked_by": "Demande :"
       },
       "pnjs": {
         "heading": "Personnages présents",
