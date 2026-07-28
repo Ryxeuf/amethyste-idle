@@ -42,7 +42,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur ✅ (b) |
 | ECO-25 ✅ | Chaînage des paliers raffinés |
 | ECO-26 ✅ | Propagation de la pureté dans la chaîne |
-| ECO-27 | Équilibrage & tests de la chaîne |
+| ECO-27 ✅ | Équilibrage & tests de la chaîne |
 | ECO-28 | Commandes de service — travailler un objet lié |
 | ECO-29 | Cuisinier — le débouché de la pêche et des vivres |
 | ECO-30 | Charpentier — le débouché du bois |
@@ -55,7 +55,7 @@ Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 →
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
-Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
 
@@ -488,16 +488,26 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > donc porteurs d'une bande. La commande étant le canal de l'endgame, y perdre la pureté aurait
 > cassé la chaîne haute exactement là où elle compte le plus.
 
-### ECO-27 — Équilibrage & tests de la chaîne (M | ★★ | HAUTE)
-> Prérequis : ← ECO-25, ← ECO-26
-- [ ] Recalibrer les prix PNJ et les valeurs de référence en tenant compte du coût propagé
-- [ ] Vérifier que la demande en matière de début **croît** avec l'activité de fin de jeu
-      (c'est la propriété qu'on achète : la mesurer, pas la supposer)
-- [ ] Surveiller le risque inverse : une matière de début devenue *goulot* qui bloque la fin
-      de jeu — les paliers T0 du calibrage des filons existent pour ça
-- [ ] Loi transverse à ajouter à `EconomyInvariantTest` : **aucune ligne de production n'a de
-      palier orphelin** (tout palier ≥ 2 consomme le palier inférieur)
-- [ ] Documenter la chaîne finale dans [../BALANCE.md](../BALANCE.md)
+### ECO-27 — Équilibrage & tests de la chaîne ✅ (M | ★★ | HAUTE)
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md), chiffrage dans
+> [../BALANCE.md § 21.6 bis](../BALANCE.md).
+>
+> **Ce que la mesure a montré** : 28 recettes sur 84 rendaient un objet valant **moins que sa
+> matière**. Le défaut préexistait — les prix n'avaient jamais été dérivés d'un coût — et ECO-25
+> l'a rendu mesurable plutôt que créé.
+>
+> **La marge doit être additive.** Le premier calcul appliquait +20 % au-dessus du coût ; en point
+> fixe, la lame de maître passait de 3 500 à 21 700, la marge s'appliquant six fois le long de la
+> chaîne. C'est le piège du coefficient de chaînage (§21.4) sous un autre nom.
+>
+> **Écart au plan, assumé** : la loi des paliers orphelins rejoint `ProductionChainTest` et non
+> `EconomyInvariantTest`. Ce dernier balaie 630 combinaisons de répartition de Gils sans lire
+> aucune fixture ; y greffer une loi qui parse les recettes aurait mélangé deux natures de test.
+>
+> **Reste ouvert, et nommé** : les boutiques PNJ rachètent à 30 % du prix de référence. Le levier
+> contre la dérive de masse monétaire est ce taux, pas le prix — à retendre si §20 le montre.
+>
+> **Piste G complète (ECO-24 → ECO-27).**
 
 ---
 
@@ -566,7 +576,7 @@ Phase 3 (commandes)    : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Phase 4 (échoppes)     : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Phase 5 (équilibrage)  : ECO-14, ECO-15, ECO-16, ECO-17  (parallélisable)
 Phase 6 (pureté)       : ECO-21 → ECO-22 → ECO-23
-Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27
+Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
 ```
 
 **Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le

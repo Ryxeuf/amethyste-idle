@@ -118,6 +118,72 @@ class ProductionChainTest extends TestCase
         return $recipes;
     }
 
+    /**
+     * Slug d'objet => prix de reference.
+     *
+     * Les items vivent dans deux familles de fixtures (PHP heritees et YAML
+     * Alice) : les deux comptent, et n'en lire qu'une ferait passer la loi a
+     * cote de la moitie du catalogue.
+     *
+     * @return array<string, int>
+     */
+    private function prices(): array
+    {
+        $prices = [];
+
+        foreach ((array) glob($this->root() . '/fixtures/game/item/*.yaml') as $file) {
+            $content = (string) file_get_contents((string) $file);
+            preg_match_all("/^  [a-z0-9_]+ \(extends item\):(.*?)(?=^  [a-z0-9_]+ \(extends item\):|\z)/ms", $content, $blocks, \PREG_SET_ORDER);
+            foreach ($blocks as [, $block]) {
+                if (preg_match("/slug: '([a-z0-9-]+)'/", $block, $slug) && preg_match('/price: (\d+)/', $block, $price)) {
+                    $prices[$slug[1]] ??= (int) $price[1];
+                }
+            }
+        }
+
+        $source = (string) file_get_contents($this->root() . '/src/DataFixtures/ItemFixtures.php');
+        preg_match_all("/'[a-z0-9_]+' => \[(.*?)\n            \],/s", $source, $blocks, \PREG_SET_ORDER);
+        foreach ($blocks as [, $block]) {
+            if (preg_match("/'slug' => '([a-z0-9-]+)'/", $block, $slug) && preg_match("/'price' => (\d+)/", $block, $price)) {
+                $prices[$slug[1]] ??= (int) $price[1];
+            }
+        }
+
+        return $prices;
+    }
+
+    /**
+     * Reference de fixture d'objet => slug.
+     *
+     * Les recettes designent leur resultat par **reference**, pas par slug : la
+     * correspondance se lit dans les fixtures plutot que de se deviner en
+     * remplacant les tirets bas.
+     *
+     * @return array<string, string>
+     */
+    private function itemRefToSlug(): array
+    {
+        $map = [];
+
+        foreach ((array) glob($this->root() . '/fixtures/game/item/*.yaml') as $file) {
+            $content = (string) file_get_contents((string) $file);
+            preg_match_all("/^  ([a-z0-9_]+) \(extends item\):.*?\n\s+slug: '([a-z0-9-]+)'/ms", $content, $matches, \PREG_SET_ORDER);
+            foreach ($matches as $match) {
+                $map[$match[1]] ??= $match[2];
+            }
+        }
+
+        $source = (string) file_get_contents($this->root() . '/src/DataFixtures/ItemFixtures.php');
+        preg_match_all("/'([a-z0-9_]+)' => \[(.*?)\n            \],/s", $source, $blocks, \PREG_SET_ORDER);
+        foreach ($blocks as [, $reference, $block]) {
+            if (preg_match("/'slug' => '([a-z0-9-]+)'/", $block, $slug)) {
+                $map[$reference] ??= $slug[1];
+            }
+        }
+
+        return $map;
+    }
+
     public function testTheExtractionSeesEnoughRecipesToJudge(): void
     {
         $this->assertGreaterThan(80, \count($this->recipes()), 'L\'extraction des recettes a echoue : rien n\'est verifie.');
@@ -297,5 +363,127 @@ class ProductionChainTest extends TestCase
             $this->assertArrayHasKey($slug, $produced, sprintf('"%s" n\'est produit par aucune recette.', $slug));
             $this->assertArrayHasKey($slug, $consumed, sprintf('"%s" n\'est consomme par aucune recette.', $slug));
         }
+    }
+
+    // =====================================================================
+    // 4. Les deux lois transverses (ECO-27)
+    // =====================================================================
+
+    /**
+     * Aucun craft ne detruit de la valeur.
+     *
+     * L'audit d'ECO-27 a trouve **28 recettes sur 84** dont le resultat valait
+     * moins que ses intrants — jusqu'a 0,35 pour le lingot d'orichalque, qui se
+     * vendait 750 pour 2 150 de minerai. Raffiner faisait perdre de l'argent,
+     * d'autant plus qu'on montait : l'inverse exact d'une economie ou la
+     * production est le metier des joueurs.
+     *
+     * Le defaut preexistait — les prix n'avaient jamais ete derives d'un cout —
+     * mais ECO-25 l'aggravait mecaniquement, en ajoutant a chaque palier un
+     * intrant chaine que le prix ne refletait pas.
+     *
+     * Les **matieres premieres sont hors loi** : le prix d'un minerai vient de
+     * sa rarete, pas de la transmutation alchimique qui en est une seconde voie
+     * (BALANCE § 19). L'y soumettre ferait grimper `ore-mithril` au cout de son
+     * rituel, et le filon de la Crete avec.
+     */
+    public function testNoCraftDestroysValue(): void
+    {
+        $prices = $this->prices();
+        $refToSlug = $this->itemRefToSlug();
+        $this->assertNotEmpty($prices, 'L\'extraction des prix a echoue : rien n\'est verifie.');
+
+        $offenders = [];
+        foreach ($this->recipes() as $reference => $data) {
+            $slug = $refToSlug[$data['result']] ?? null;
+            if ($slug === null || !isset($prices[$slug]) || str_starts_with($slug, 'ore-')) {
+                continue;
+            }
+
+            $cost = 0;
+            foreach ($data['ingredients'] as $ingredient) {
+                $cost += ($prices[$ingredient] ?? 0) * $this->quantityOf($reference, $ingredient);
+            }
+            if ($cost === 0) {
+                continue;
+            }
+
+            $value = $prices[$slug] * max(1, $this->resultQuantityOf($reference));
+            if ($value < $cost) {
+                $offenders[] = sprintf('%s : vaut %d, coute %d', $reference, $value, $cost);
+            }
+        }
+
+        $this->assertSame(
+            [],
+            $offenders,
+            'Ces recettes rendent un objet qui vaut moins que sa matiere. Personne ne les craftera, et celui qui '
+            . 'les crafte quand meme y perd — ce qui est l\'inverse d\'une economie de production.',
+        );
+    }
+
+    /**
+     * Aucune ligne de production n'a de palier orphelin.
+     *
+     * La loi que le plan demandait, generalisee au-dela de la ligne du metal :
+     * toute recette de niveau >= 3 doit consommer au moins un produit
+     * d'artisanat. Les niveaux 1-2 sont **volontairement** exemptes — le palier
+     * d'entree doit rester realisable en solo (ECO-02), et un debutant qui
+     * devrait deja acheter a un autre joueur serait bloque au premier craft.
+     *
+     * Les recettes de **transmutation** sont exemptes aussi : elles fabriquent
+     * une matiere premiere a partir d'une autre, et exiger d'elles un intrant
+     * d'artisanat n'aurait pas de sens.
+     */
+    public function testNoProductionLineHasAnOrphanTier(): void
+    {
+        $refToSlug = $this->itemRefToSlug();
+        $orphans = [];
+
+        foreach ($this->recipes() as $reference => $data) {
+            if ($data['level'] < 3) {
+                continue;
+            }
+
+            $slug = $refToSlug[$data['result']] ?? '';
+            if (str_starts_with($slug, 'ore-')) {
+                continue;
+            }
+
+            $chained = array_filter(
+                $data['ingredients'],
+                static fn (string $ingredient): bool => str_starts_with($ingredient, 'crafted-'),
+            );
+
+            if ($chained === []) {
+                $orphans[] = sprintf('%s (niv %d)', $reference, $data['level']);
+            }
+        }
+
+        $this->assertSame(
+            [],
+            $orphans,
+            'Ces recettes de niveau >= 3 ne consomment aucun produit d\'artisanat. Une ligne plate verticalement '
+            . 'rend la matiere de debut inutile des que les veterans montent.',
+        );
+    }
+
+    /**
+     * Quantite exigee d'un ingredient par une recette donnee.
+     */
+    private function quantityOf(string $reference, string $ingredient): int
+    {
+        preg_match("/'{$reference}' => \\[(.*?)\\n            \\],/s", $this->source(), $block);
+        preg_match("/'slug' => '{$ingredient}', 'quantity' => (\\d+)/", $block[1] ?? '', $quantity);
+
+        return (int) ($quantity[1] ?? 1);
+    }
+
+    private function resultQuantityOf(string $reference): int
+    {
+        preg_match("/'{$reference}' => \\[(.*?)\\n            \\],/s", $this->source(), $block);
+        preg_match("/'result_quantity' => (\\d+)/", $block[1] ?? '', $quantity);
+
+        return (int) ($quantity[1] ?? 1);
     }
 }
