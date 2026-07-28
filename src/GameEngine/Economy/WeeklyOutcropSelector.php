@@ -4,7 +4,7 @@ namespace App\GameEngine\Economy;
 
 use App\Entity\App\WeeklyOutcrop;
 use App\Entity\App\Zone;
-use App\GameEngine\Retention\WeeklyCommissionGenerator;
+use App\GameEngine\Retention\WeekKey;
 use App\Repository\WeeklyOutcropRepository;
 use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,7 +46,7 @@ class WeeklyOutcropSelector
     public function select(?\DateTimeImmutable $now = null): array
     {
         $now ??= new \DateTimeImmutable();
-        $weekKey = WeeklyCommissionGenerator::weekKey($now);
+        $weekKey = WeekKey::of($now);
 
         $existing = $this->outcropRepository->findForWeek($weekKey);
         if ($existing !== null) {

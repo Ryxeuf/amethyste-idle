@@ -8,6 +8,7 @@ use App\Entity\App\Parameter;
 use App\Entity\App\WeeklyChallenge;
 use App\Enum\InfluenceActivityType;
 use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
+use App\GameEngine\Retention\WeekKey;
 use App\Repository\GuildChallengeProgressRepository;
 use App\Repository\WeeklyChallengeRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,9 +62,14 @@ class WeeklyChallengeRotator
     {
         $now ??= new \DateTimeImmutable();
 
-        $weekStart = $now->modify('monday this week')->setTime(0, 0, 0);
+        // RET-07 — la semaine se calcule a **un seul endroit**. Ce bloc
+        // recopiait la formule de `WeekKey`, et les deux s'accordaient : rien ne
+        // garantissait qu'elles continueraient. Cinq briques hebdomadaires
+        // cohabitent desormais, et le risque nomme par le plan est precisement
+        // « cinq horloges qui derivent ».
+        $weekStart = WeekKey::mondayOf($now);
         $weekEnd = $weekStart->modify('+6 days')->setTime(23, 59, 59);
-        $weekKey = $weekStart->format('o-\WW');
+        $weekKey = WeekKey::of($now);
 
         $parameter = $this->entityManager->getRepository(Parameter::class)->findOneBy([
             'name' => self::PARAMETER_NAME,

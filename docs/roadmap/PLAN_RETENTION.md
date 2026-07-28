@@ -15,10 +15,11 @@
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
 
-> **Avancement : 6/7.** RET-01, RET-02, RET-03, RET-04, RET-05 et RET-06 livrés le 2026-07-28 (détail dans
-> [../ROADMAP_DONE.md](../ROADMAP_DONE.md)). La rotation du lundi 00h00 existe désormais et
-> constitue le **point d'entrée unique** que RET-02, RET-04, RET-05 et RET-06 doivent
-> réutiliser — c'est le contrat transverse de RET-07.
+> **Avancement : 7/7 — plan complet** (2026-07-28 ; détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md)).
+> La bascule du lundi 00h00 est **une** : `WeekKey` en est le point de calcul unique, les quatre
+> rotations tombent le même lundi à des minutes distinctes, et RET-04 n'a même pas de cron — sa
+> remise à zéro est dérivée. Ce que le contrat de RET-07 verrouille désormais par test.
+> Couverture : [RETENTION_TEST_COVERAGE.md](RETENTION_TEST_COVERAGE.md).
 
 | Code | Brique | Profil | Dépendances |
 |------|--------|--------|-------------|
@@ -28,13 +29,13 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | RET-04 ✅ | L'assiduité en paliers | Solo | ✅ **livré (2026-07-28)** |
 | RET-05 ✅ | Le chantier de la semaine | Guilde | ✅ **livré (2026-07-28)** |
 | RET-06 ✅ | L'Affleurement de la semaine | Solo | ✅ **livré (2026-07-28)** |
-| RET-07 | Tests du plan | — | ‖ au fil des jalons |
+| RET-07 ✅ | Tests du plan | — | ✅ **livré (2026-07-28)** |
 
 ```
 Vague 1 (indépendant)   : RET-01 → RET-02 → RET-03
 Vague 2 (après FOY)     : RET-04 ✅, RET-05 ✅
 Vague 3 (après pureté)  : RET-06
-Transverse              : RET-07
+Transverse              : RET-07 ✅
 ```
 
 **Pourquoi cet ordre.** Le critère de priorisation de la colonne
@@ -127,11 +128,22 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > **Reporté à FOY-11** : un filon pâli ne peut pas être tiré. La Pâleur n'existe pas encore ;
 > le filtre s'ajoutera aux candidats sans changer le reste.
 
-### RET-07 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons.
-- [ ] Couverture par brique + un contrat transverse : la rotation du lundi est **une** (un
-      seul point d'entrée pour RET-01/02/04/05/06 — pas cinq crons qui dérivent)
-- [ ] Invariant : aucune brique hebdomadaire ne pénalise une semaine d'absence
+### RET-07 — Tests du plan ✅ (S | ★★ | HAUTE)
+> ‖ au fil des jalons. **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+> Synthèse de couverture : [RETENTION_TEST_COVERAGE.md](RETENTION_TEST_COVERAGE.md).
+>
+> **Le jalon a trouvé ce qu'il cherchait.** « Cinq horloges qui dérivent » n'était pas un risque
+> théorique : la semaine ISO se calculait à **deux** endroits — `WeeklyChallengeRotator` (RET-01)
+> recopiait la formule que les quatre autres briques partageaient. Les deux s'accordaient, ce qui
+> est précisément ce qui rend ce genre de duplication dangereux : elle ne se signale que le jour
+> où elle a déjà divergé. `WeekKey` est désormais le point unique, et un test refuse que le format
+> réapparaisse ailleurs.
+>
+> **Le second invariant est lexical, pas comportemental.** « Aucune brique hebdomadaire ne
+> pénalise une semaine d'absence » ne se teste pas brique par brique — un test de comportement ne
+> voit que ce qu'il connaît, jamais la brique que quelqu'un écrira l'an prochain. Le contrat
+> interdit donc le **vocabulaire** de la série continue dans les moteurs, commentaires exclus :
+> ce plan doit pouvoir nommer par écrit ce qu'il refuse d'implémenter.
 
 ---
 

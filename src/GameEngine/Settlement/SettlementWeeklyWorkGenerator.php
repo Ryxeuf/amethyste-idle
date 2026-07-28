@@ -4,7 +4,7 @@ namespace App\GameEngine\Settlement;
 
 use App\Entity\App\Settlement;
 use App\Entity\App\SettlementWeeklyWork;
-use App\GameEngine\Retention\WeeklyCommissionGenerator;
+use App\GameEngine\Retention\WeekKey;
 use App\Repository\SettlementRepository;
 use App\Repository\SettlementWeeklyWorkRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +42,7 @@ class SettlementWeeklyWorkGenerator
     public function generate(?\DateTimeImmutable $now = null): array
     {
         $now ??= new \DateTimeImmutable();
-        $weekKey = WeeklyCommissionGenerator::weekKey($now);
+        $weekKey = WeekKey::of($now);
         $definition = $this->loader->load()['weekly_work'];
 
         $report = ['created' => 0, 'skipped' => 0, 'without_demand' => 0];

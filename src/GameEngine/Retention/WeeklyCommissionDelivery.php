@@ -46,7 +46,7 @@ class WeeklyCommissionDelivery
     {
         $now ??= new \DateTimeImmutable();
 
-        return $this->commissionRepository->findCurrent($player, WeeklyCommissionGenerator::weekKey($now));
+        return $this->commissionRepository->findCurrent($player, WeekKey::of($now));
     }
 
     /**

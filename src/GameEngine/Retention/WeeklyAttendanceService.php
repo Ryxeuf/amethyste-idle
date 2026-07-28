@@ -77,7 +77,7 @@ class WeeklyAttendanceService
         $now ??= new \DateTimeImmutable();
 
         return $this->repository
-            ->findOneForWeek($player, WeeklyCommissionGenerator::weekKey($now))
+            ->findOneForWeek($player, WeekKey::of($now))
             ?->getActiveDays() ?? 0;
     }
 
@@ -107,7 +107,7 @@ class WeeklyAttendanceService
 
     private function attendanceFor(Player $player, \DateTimeImmutable $now): PlayerWeeklyAttendance
     {
-        $weekKey = WeeklyCommissionGenerator::weekKey($now);
+        $weekKey = WeekKey::of($now);
 
         $attendance = $this->repository->findOneForWeek($player, $weekKey);
         if ($attendance === null) {
