@@ -58,6 +58,12 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // plancher T1 anti cold-start d'ECO-02.
                 RecurringMessage::cron('0 * * * *', new RunCommandMessage('app:shop:restock')),
 
+                // --- Cloture hebdomadaire -----------------------------------
+                // WeeklyChallenge : clôt la semaine de défis écoulée et ouvre
+                // la suivante (RET-01). **Avant** la chaîne de minuit : la
+                // semaine s'ouvre d'abord, le quotidien s'enchaîne dessus.
+                RecurringMessage::cron('0 0 * * 1', new RunCommandMessage('app:weekly-challenge:rotate')),
+
                 // --- Cloture quotidienne ------------------------------------
                 // DailyQuest : rotation des quêtes quotidiennes
                 RecurringMessage::cron('1 0 * * *', new RunCommandMessage('app:daily-quest:rotate')),

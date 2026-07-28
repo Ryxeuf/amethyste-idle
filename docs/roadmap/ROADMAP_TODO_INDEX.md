@@ -48,7 +48,7 @@
 
 | # | Chantier | Contenu | Pourquoi cet ordre |
 |---|----------|---------|--------------------|
-| 1 | **RET-01** | Rotation du WeeklyChallenge (cron + restitution) | Une ligne de scheduler, un systeme livre qui dort |
+| ~~1~~ | ~~**RET-01**~~ ✅ | Rotation du WeeklyChallenge (cron + restitution) | **Livre le 2026-07-28** — point de rotation unique du lundi, reutilise par RET-02/04/05/06 |
 | 2 | **ECO-24b** | Sources des minerais de haut palier + etain (donnees de zone) | Prealable de toute la chaine ; sans lui, chainer renforce un goulot |
 | 3 | **FOY-17** | Facteur de monde, `WorldLoadService`, `Player.lastActivityAt` | Precede FOY-08/11, ECO-22 et le recalibrage |
 | 4 | **Recalibrage filons** | BALANCE §22.3, W=1 a ~50 joueurs/jour | Sans lui, purete et Paleur livreraient du code sans effet observable |
@@ -197,7 +197,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **0/7** : l'horizon le plus fragile de la colonne de progression ; RET-01 (rotation du WeeklyChallenge) est le livrable le moins cher de toute la roadmap
+- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **1/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 livre** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
 - [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **0/16, prochain grand chantier** : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-27)](PLAN_PLAYER_ECONOMY.md) — **Pistes F (purete) et G (chaine de production par paliers) ouvertes** : la Piste G est le levier principal contre le creux du milieu. Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)

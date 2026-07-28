@@ -44,6 +44,12 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # RET-01 : pool declaratif des defis hebdomadaires. Ajouter un defi, c'est
+    # ajouter une entree dans le YAML — pas une classe.
+    App\GameEngine\Guild\WeeklyChallengeTemplateLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\EventListener\LocaleListener:
         arguments:
             $defaultLocale: '%default_locale%'

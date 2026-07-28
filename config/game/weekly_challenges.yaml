@@ -1,0 +1,116 @@
+# =============================================================================
+# Defis hebdomadaires de guilde — pool de gabarits (RET-01)
+# =============================================================================
+# Le defi hebdomadaire existait depuis GCC, mais **rien ne le faisait tourner** :
+# les fixtures posaient les semaines 1 et 2, apres quoi le systeme s'eteignait.
+# `app:weekly-challenge:rotate` pioche ici de quoi remplir la semaine qui
+# commence, chaque lundi 00h00.
+#
+# Regle du fichier : aucun contenu ecrit en dur dans le code. Ajouter un defi,
+# c'est ajouter une entree ici — pas une classe.
+#
+# Champs d'un gabarit :
+#   slug            cle stable, sert a varier les tirages d'une semaine a l'autre
+#   activity        InfluenceActivityType : mob_kill, craft, harvest, fishing,
+#                   butchering, quest (jamais `challenge`, qui est le canal de
+#                   versement des bonus et non une activite de joueur)
+#   title / title_en, description / description_en
+#   target          criteria.target — le compteur a atteindre pour la guilde
+#   bonus_points    points d'influence verses a la completion
+#
+# `per_week` borne le nombre de defis actifs simultanement. C'est un
+# rendez-vous, pas un tableau de bord : trois lignes se lisent d'un coup d'oeil.
+# =============================================================================
+
+per_week: 3
+
+challenges:
+    - slug: chasse-collective
+      activity: mob_kill
+      title: "Chasseur infatigable"
+      title_en: "Tireless Hunter"
+      description: "Eliminez 50 monstres en equipe pour prouver la valeur de votre guilde."
+      description_en: "Defeat 50 monsters as a team to prove your guild's mettle."
+      target: 50
+      bonus_points: 100
+
+    - slug: battue-des-confins
+      activity: mob_kill
+      title: "Battue des confins"
+      title_en: "Beating the Marches"
+      description: "Abattez 80 creatures aux marges de la Concorde."
+      description_en: "Bring down 80 creatures on the edges of the Concord."
+      target: 80
+      bonus_points: 140
+
+    - slug: forge-ardente
+      activity: craft
+      title: "Forge ardente"
+      title_en: "Burning Forge"
+      description: "Fabriquez 20 objets pour renforcer l'arsenal de votre guilde."
+      description_en: "Craft 20 items to strengthen your guild's arsenal."
+      target: 20
+      bonus_points: 80
+
+    - slug: commande-groupee
+      activity: craft
+      title: "Commande groupee"
+      title_en: "Bulk Order"
+      description: "Livrez 40 pieces d'artisanat au profit de la guilde."
+      description_en: "Deliver 40 crafted pieces for the guild."
+      target: 40
+      bonus_points: 130
+
+    - slug: moisson-abondante
+      activity: harvest
+      title: "Moisson abondante"
+      title_en: "Bountiful Harvest"
+      description: "Recoltez 100 ressources dans les champs et forets environnants."
+      description_en: "Gather 100 resources from the surrounding fields and forests."
+      target: 100
+      bonus_points: 60
+
+    - slug: veines-ouvertes
+      activity: harvest
+      title: "Veines ouvertes"
+      title_en: "Open Veins"
+      description: "Tirez 150 ressources des filons de la region."
+      description_en: "Pull 150 resources from the region's veins."
+      target: 150
+      bonus_points: 110
+
+    - slug: peche-de-saison
+      activity: fishing
+      title: "Peche de saison"
+      title_en: "Seasonal Catch"
+      description: "Remontez 40 prises des eaux de la Concorde."
+      description_en: "Land 40 catches from the waters of the Concord."
+      target: 40
+      bonus_points: 70
+
+    - slug: tannerie-active
+      activity: butchering
+      title: "Tannerie active"
+      title_en: "Busy Tannery"
+      description: "Depecez 30 depouilles pour approvisionner les artisans."
+      description_en: "Butcher 30 carcasses to supply the artisans."
+      target: 30
+      bonus_points: 75
+
+    - slug: heros-du-peuple
+      activity: quest
+      title: "Heros du peuple"
+      title_en: "Heroes of the People"
+      description: "Completez 10 quetes pour faire rayonner le nom de votre guilde."
+      description_en: "Complete 10 quests to spread your guild's renown far and wide."
+      target: 10
+      bonus_points: 120
+
+    - slug: dette-de-la-concorde
+      activity: quest
+      title: "Dette de la Concorde"
+      title_en: "The Concord's Debt"
+      description: "Menez 20 quetes a leur terme au nom de la guilde."
+      description_en: "See 20 quests through to the end in the guild's name."
+      target: 20
+      bonus_points: 180

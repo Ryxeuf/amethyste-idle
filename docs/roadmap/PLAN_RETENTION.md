@@ -15,9 +15,14 @@
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
 
+> **Avancement : 1/7.** RET-01 livré le 2026-07-28 (détail dans
+> [../ROADMAP_DONE.md](../ROADMAP_DONE.md)). La rotation du lundi 00h00 existe désormais et
+> constitue le **point d'entrée unique** que RET-02, RET-04, RET-05 et RET-06 doivent
+> réutiliser — c'est le contrat transverse de RET-07.
+
 | Code | Brique | Profil | Dépendances |
 |------|--------|--------|-------------|
-| RET-01 | Rotation du `WeeklyChallenge` + restitution | Guilde | ∅ — **immédiat** |
+| RET-01 | Rotation du `WeeklyChallenge` + restitution | Guilde | ✅ **livré (2026-07-28)** |
 | RET-02 | La Commission de la semaine | Solo | ∅ (crochet sédiment quand FOY-02 arrive) |
 | RET-03 | La commande de guilde | Guilde | ECO Piste C ✅ |
 | RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
@@ -42,18 +47,15 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 
 ## Vague 1 — indépendante de tout chantier en cours
 
-### RET-01 — Rotation du `WeeklyChallenge` & restitution (S | ★★ | CRITIQUE)
-> L'existant est bien conçu (critères, bonus, `weekNumber`) mais **aucune rotation n'est
-> planifiée** dans `DefaultScheduleProvider` : le défi ne tourne pas tout seul. Le livrable
-> le moins cher de tout le plan.
-> Prérequis : ∅
-- [ ] Commande `app:weekly-challenge:rotate` : clôt la semaine écoulée (attribution des
-      `bonusPoints`), active la suivante, en crée une si la saison n'en a plus
-- [ ] Entrée Scheduler : `0 0 * * 1` (lundi 00h00 — avant la chaîne de minuit existante)
-- [ ] Restitution : le défi de la semaine, la progression de la guilde et le temps restant
-      visibles sur l'écran de guilde
-- [ ] Annonce Mercure à la rotation (canal annonces existant)
-- [ ] Tests : rotation, attribution, idempotence (relance le même lundi = no-op)
+### RET-01 — Rotation du `WeeklyChallenge` & restitution ✅ (livré 2026-07-28)
+> Livré. Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Ce que les briques suivantes héritent** : la commande `app:weekly-challenge:rotate`
+> (`0 0 * * 1`) est le **point de rotation unique** du lundi. RET-02, RET-04, RET-05 et
+> RET-06 s'y branchent — elles n'ajoutent pas leur propre cron. Le pool déclaratif
+> `config/game/weekly_challenges.yaml` et son loader donnent le patron pour toute
+> génération hebdomadaire ultérieure ; l'idempotence par semaine ISO (`Parameter`) est le
+> mécanisme à réutiliser.
 
 ### RET-02 — La Commission de la semaine (M | ★★★ | CRITIQUE)
 > Le rendez-vous hebdomadaire **personnel**. Générée depuis les domaines et zones du joueur,
