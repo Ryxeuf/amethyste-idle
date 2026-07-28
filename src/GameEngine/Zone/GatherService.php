@@ -8,7 +8,9 @@ use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
+use App\Enum\Purity;
 use App\Event\Zone\ZoneGatherEvent;
+use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\WorldScaleService;
@@ -55,6 +57,7 @@ class GatherService
         private readonly ActionYieldResolver $yieldResolver,
         private readonly WorldScaleService $worldScaleService,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly PurityDrawer $purityDrawer,
     ) {
     }
 
@@ -64,7 +67,7 @@ class GatherService
      *
      * @return list<GatherableResource>
      */
-    public function getGatherables(Zone $zone): array
+    public function getGatherables(Zone $zone, ?Player $player = null): array
     {
         $now = $this->now();
         $gatherables = [];
@@ -91,10 +94,38 @@ class GatherService
                 $stock,
                 $normalized['capacity'],
                 $stock > 0 ? 0 : $this->respawnRemaining($vein, $normalized['respawn_seconds'], $normalized['capacity'], $now),
+                $this->readableCeiling($player, $normalized['item'], $stock, $normalized['capacity']),
             );
         }
 
         return $gatherables;
+    }
+
+    /**
+     * La bande maximale du filon — **seulement pour qui sait la lire** (ECO-22).
+     *
+     * L'information exclusive du prospecteur (GAME_ZONE_ACTIONS § 5.5) ne donne
+     * ni energie, ni action, ni butin : elle donne de la decision. Elle a donc
+     * sa place ici et nulle part ailleurs, et elle reste **nulle** pour qui n'a
+     * rien travaille — sinon ce ne serait plus une information exclusive, juste
+     * une colonne de plus.
+     *
+     * Le palier se lit sur le bonus de recolte que l'arbre accorde, faute des
+     * quatre paliers de prospection de § 5.5, qui n'existent pas encore. C'est
+     * le seul signal de progression de recolte livre a ce jour ; les paliers les
+     * remplaceront sans changer le contrat de cette methode.
+     */
+    private function readableCeiling(?Player $player, string $itemSlug, int $stock, int $capacity): ?Purity
+    {
+        if (null === $player || !$this->purityDrawer->coversSlug($itemSlug)) {
+            return null;
+        }
+
+        if ($this->yieldResolver->getBonusPercent($player, ActionYieldResolver::CATEGORY_GATHER) <= 0) {
+            return null;
+        }
+
+        return $this->purityDrawer->ceiling($stock, $capacity);
     }
 
     /**
@@ -141,15 +172,24 @@ class GatherService
         // L'energie n'est prelevee qu'une fois la recolte garantie possible.
         $this->actionEnergyManager->spend($player, $this->getGatherCost(), false);
 
-        $quantity = $this->computeYield($player, $resource, $vein->getStock());
-        $remaining = $vein->getStock() - $quantity;
+        $vitalityBefore = $vein->getStock();
+        $quantity = $this->computeYield($player, $resource, $vitalityBefore);
+        $remaining = $vitalityBefore - $quantity;
         $vein->setStock($remaining);
         if ($remaining <= 0) {
             $vein->setDepletedAt($now);
         }
 
+        // ECO-22 : la bande se tire **une fois par lot**, sur la vitalite d'avant
+        // la recolte. La tirer apres ferait payer au joueur l'epuisement qu'il
+        // vient lui-meme de causer ; la tirer par unite ferait d'un seul coup de
+        // pioche une poignee de bandes differentes, ce qui n'a aucun sens en
+        // fiction et eclaterait l'inventaire.
+        $purity = $this->purityDrawer->draw($player, $resource['item'], $vitalityBefore, $resource['capacity']);
+
         for ($i = 0; $i < $quantity; ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($item->getId());
+            $playerItem->setPurity($purity);
             $this->inventoryHelper->addItem($playerItem, false);
         }
 
@@ -163,6 +203,7 @@ class GatherService
             'vein' => $resource['slug'],
             'item' => $resource['item'],
             'quantity' => $quantity,
+            'purity' => $purity?->value,
         ]);
         $this->entityManager->persist($entry);
 

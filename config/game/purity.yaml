@@ -33,3 +33,44 @@ scope:
     # ligne du cristal n'echappe au prefixe. Le jour ou une extension livrera
     # une gemme nommee autrement, elle s'inscrira ici.
     included_slugs: []
+
+# =============================================================================
+# Tirage de la bande a la recolte (ECO-22)
+# =============================================================================
+# D'ou vient la bande. C'est ici que le savoir du prospecteur prend une valeur
+# marchande : deux joueurs qui recoltent le meme filon ne rapportent pas la meme
+# chose, et celui qui sait ou et quand frapper rapporte mieux.
+#
+# Le tirage ne depend **jamais** de la chance seule. Trois facteurs le modulent,
+# et chacun est une decision de jeu :
+#   - la **vitalite** du filon — un filon ereinte ne rend plus que du trouble ;
+#   - le **savoir** du recolteur — l'arbre de recolte deplace les poids vers le
+#     haut, sans jamais garantir quoi que ce soit ;
+#   - le **plafond** de vitalite, qui prime sur tout le reste.
+#
+# La Paleur (FOY-11) posera un second plafond, plus bas, quand elle existera.
+draw:
+    # Poids de base, avant modulation. Le parfait est rare **par construction** :
+    # c'est ce qui rendra la materia rare sans table de drop (GAME_WORLD § 5.4).
+    base_weights:
+        trouble: 60
+        clair: 30
+        pur: 9
+        parfait: 1
+
+    # Plafond impose par la vitalite (stock / capacite). Lu de haut en bas : le
+    # premier seuil atteint gagne. Un filon presse cesse de rendre du parfait
+    # bien avant de cesser de rendre — c'est le signal que ZON-37 a rendu
+    # lisible, et sans lui la couche de rarete resterait inerte.
+    vitality_ceilings:
+        - { at_least: 0.66, band: parfait }
+        - { at_least: 0.33, band: pur }
+        - { at_least: 0.10, band: clair }
+        - { at_least: 0.0, band: trouble }
+
+    # Le savoir du recolteur, lu sur le bonus de recolte que son arbre accorde.
+    # Chaque point de bonus transfere ce nombre de points de poids du trouble
+    # vers le clair, et du clair vers le pur — jamais directement vers le
+    # parfait, qui ne s'achete pas a l'experience.
+    skill_weight_per_point: 1
+    skill_weight_cap: 25

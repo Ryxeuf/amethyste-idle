@@ -1433,7 +1433,8 @@
           "no_zone": "Your character is not attached to any zone.",
           "unknown_resource": "This resource cannot be harvested here.",
           "depleted": "The vein is depleted — wait for it to replenish."
-        }
+        },
+        "purity_ceiling": "This vein yields no better than"
       },
       "pnjs": {
         "heading": "Characters here",

@@ -1433,7 +1433,8 @@
           "no_zone": "Votre personnage n'est rattaché à aucune zone.",
           "unknown_resource": "Cette ressource n'est pas récoltable ici.",
           "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue."
-        }
+        },
+        "purity_ceiling": "Ce filon ne rend pas mieux que"
       },
       "pnjs": {
         "heading": "Personnages présents",

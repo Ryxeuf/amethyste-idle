@@ -640,6 +640,18 @@
                                             </div>
                                             <span class="ds-num ds-num--sm">{{ gatherable.stock }}/{{ gatherable.capacity }}</span>
                                         </div>
+                                        {# ECO-22 — information exclusive du prospecteur. Elle ne #}
+                                        {# donne ni energie, ni action, ni butin : elle donne de   #}
+                                        {# la decision. Absente pour qui n'a pas travaille son     #}
+                                        {# arbre de recolte, et pour les matieres fongibles.       #}
+                                        {% if gatherable.purityCeiling %}
+                                            <p class="ds-hint mt-1">
+                                                {{ 'game.zone.gather.purity_ceiling'|trans }}
+                                                <span class="ds-seal {{ gatherable.purityCeiling.sealClass }}">
+                                                    {{ ('game.purity.band.' ~ gatherable.purityCeiling.value)|trans }}
+                                                </span>
+                                            </p>
+                                        {% endif %}
                                         {% if depleted %}
                                             <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
                                                 {% if gatherable.respawnRemaining > 0 %}
