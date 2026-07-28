@@ -205,11 +205,62 @@ Ce qu'elle produit :
 ### 3.4 Ce qui ne bouge jamais
 
 **Le Village de Lumière n'est pas un foyer.** Il est bâti sur la Voûte ; rien n'y sédimente
-ni ne s'y délite. Il ne monte pas, ne descend pas, n'appartient à personne, et garantit à
-perpétuité le plancher T1 (D1) et les services de base. C'est la protection *cold-start* du
-système : quoi qu'il arrive à la carte politique, un nouveau joueur trouve toujours une
-boutique, un atelier et une quête. La région `sanctuaire-lumiere` est donc
-`isContestable = false` **par nature**, pas par convention.
+ni ne s'y délite. Il ne monte pas, ne descend pas, n'appartient à personne, et **n'occupe
+aucune place dans la Crue**. C'est la protection *cold-start* du système : quoi qu'il arrive
+à la carte politique, un nouveau joueur trouve toujours une boutique, un atelier et une
+quête. La région `sanctuaire-lumiere` est donc `isContestable = false` **par nature**, pas
+par convention. Le Quartier des Jardins est son faubourg, même régime.
+
+> **Règle : Lumière garantit le plancher, jamais le plafond.**
+>
+> Si le hub faisait tout, gratuitement et sans risque, personne ne bâtirait rien. Lumière
+> offre donc le T1 complet, un atelier de base, la banque et les quêtes d'intro — de quoi
+> n'être jamais bloqué. Elle n'offre **pas** de marché de haut palier, **pas** d'ateliers
+> avancés, **pas** d'éveil de matéria. Ces services n'existent que dans les villes que les
+> joueurs ont fait pousser. Le hub est un filet de sécurité, pas une destination.
+
+### 3.5 Pression et régénération — personne n'a besoin de partir
+
+Une erreur de conception à ne pas refaire : **il ne doit jamais exister de « mise en
+jachère »**, c'est-à-dire de stratégie qui demanderait à un serveur entier de s'abstenir
+collectivement d'aller quelque part. Aucune population de MMO ne coordonne ça, et le premier
+nouveau venu qui passe « casse » l'effort des autres — recette parfaite pour la friction
+sociale d'Eco (cf. [GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md) §2.3).
+
+**La régénération n'est pas une phase, c'est un débit permanent.** C'est déjà le modèle du
+calibrage des filons (cf. `config/game/zones/world_1.yaml` et
+[GAME_ZONE_ACTIONS.md](GAME_ZONE_ACTIONS.md) §6.6) : chaque filon rend `R = capacity × 3600 /
+respawn_seconds` unités par heure, en continu, et `capacity` n'est qu'un tampon.
+
+| Pression d'extraction | Ce qui se passe |
+|---|---|
+| **Sous le débit** | La zone se régénère **pendant qu'on y joue**. Personne n'a besoin de partir. |
+| **Au-dessus, ponctuellement** | Le tampon absorbe. Rendement en baisse, retour à la normale tout seul. |
+| **Au-dessus, durablement, sur les mêmes filons** | La **Pâleur** s'installe (§12.1). |
+
+Conséquence décisive, qui se lit dans les chiffres du calibrage : un filon T1 soutient
+**48 récolteurs réguliers**. Quarante débutants dispersés sur six filons ne feront jamais
+pâlir une forêt — c'est mécaniquement hors de portée.
+
+> **La Pâleur est une conséquence du succès, jamais du passage.**
+
+Seule une organisation qui industrialise **le même filon** pendant des semaines y parvient.
+Personne ne pourra donc jamais dire « les débutants ont gâché ma région » : c'est faux par
+construction. Corollaire d'implémentation : **la Pâleur se calcule par filon**
+(`ZoneVein`), pas par zone — l'agrégat de zone n'est qu'un affichage.
+
+**Ce que les joueurs peuvent faire** — quatre leviers, tous **unilatéraux**, aucun ne
+demandant l'accord de qui que ce soit :
+
+1. **S'étaler.** La vitalité d'un filon est partagée : à plusieurs dessus, le rendement de
+   chacun baisse. Aller sur le filon voisin est déjà l'intérêt personnel.
+2. **Investir.** Atelier de la Fonderie (+extraction, +Pâleur) ou des Lecteurs (−Pâleur).
+3. **Payer.** Restauration au trésor de guilde (§12.1).
+4. **Ouvrir ailleurs.** La réponse à une région saturée n'est pas la rotation, c'est
+   l'**expansion** — aller faire pousser un foyer là où personne n'est.
+
+Principe de conception à tenir partout : **ne jamais exiger de coordination ; aligner
+l'intérêt individuel sur le résultat collectif.**
 
 ---
 
@@ -403,7 +454,57 @@ Ce que ça débloque, et c'est beaucoup pour une colonne :
 **Impact modèle** : `PlayerItem.purity` (enum de bande, nullable — `null` = hors périmètre),
 la bande comme critère de pile et de filtre au HV, un modificateur de qualité au craft.
 
-### 5.5 Ce qu'on ne prend pas d'Albion
+### 5.5 Le creux du milieu — la demande ne se décrète pas
+
+Le problème le plus dur du genre, et il faut le nommer honnêtement : **au bout de quelques
+mois, les vétérans sont en fin de jeu et les nouveaux traversent le début en courant. Les
+zones intermédiaires se vident.** Leurs filons repoussent et donnent de la haute pureté —
+mais si personne n'a besoin de ce qu'elles produisent, la haute pureté ne sert à rien.
+
+Le système de foyers redistribue **l'attention** ; il ne crée pas de **demande**. D'où une
+règle de contenu, préalable à tout le reste :
+
+> **Toute zone doit être la source exclusive d'au moins une chose.**
+> Une zone qui produit « la même chose en un peu mieux » que sa voisine mourra, quoi qu'on
+> fasse. C'est une contrainte de level design, pas un réglage.
+
+Cela posé, cinq leviers entretiennent une demande **structurelle** pour le milieu :
+
+**1. Le raffinage consomme le palier inférieur** *(mécanique d'Albion — le levier principal)*
+Raffiner du palier N exige du raffiné N-1 **plus** du brut N. La demande en matière
+intermédiaire devient donc **proportionnelle à l'activité de fin de jeu** : plus il y a de
+vétérans, plus le milieu est sollicité. La ressource mid ne devient jamais obsolète, parce
+qu'elle est un **intrant** et non un **produit fini**.
+*(Chantier économie — à ouvrir dans `PLAN_PLAYER_ECONOMY`, pas dans le plan des foyers.)*
+
+**2. La pureté prime sur le palier** *(décision D, §5.4)*
+Seule l'améthystite **Parfaite** éveille une matéria. Or un filon reposé de palier moyen sort
+du Parfait bien plus souvent qu'un filon éreinté de haut palier. Une zone intermédiaire
+délaissée devient donc **la meilleure source du monde pour la chose la plus précieuse du
+jeu**. C'est la valeur qui suit la *fraîcheur*, pas le palier — et ça, aucun vétéran ne peut
+l'ignorer.
+
+**3. Pas de niveau global** *(règle 6)*
+La progression est par arbres de domaine, séparés. Un vétéran du combat qui monte l'alchimie
+est un débutant en alchimie : il **doit** retourner au milieu. Un MMO à niveau global n'a pas
+cette porte de sortie ; nous l'avons déjà, gratuitement.
+
+**4. Le passage dépose du sédiment**
+Traverser une zone y laisse une trace, faible mais réelle. Une zone posée sur une route
+commerciale vit donc **du trafic**, même si personne n'y farme. Cela transforme la position
+d'une zone dans le graphe en levier de conception : on peut décider qu'un foyer survivra
+parce qu'il est sur le chemin.
+
+**5. La Crue pousse vers l'extérieur**
+Les grandes régions sont plafonnées par le quota. Une guilde ambitieuse qui arrive après les
+autres ne peut pas prendre la place occupée : son seul chemin vers une Cité passe par une
+zone que personne ne veut. Le quota fabrique donc de la demande pour le milieu.
+
+**Et une honnêteté de cadrage** : aucun de ces leviers ne sauve un monde qui a trop de zones
+pour sa population. **Mieux vaut peu de zones profondes que beaucoup de zones minces.** La
+grille d'anticipation (§4.5) est une réserve, pas un programme.
+
+### 5.6 Ce qu'on ne prend pas d'Albion
 
 Le **full loot** et le PvP ouvert, évidemment (règle 11) — mais aussi l'**obsolescence par
 saison** : ici l'équipement ne s'évapore pas à chaque marée. La demande de fond vient des

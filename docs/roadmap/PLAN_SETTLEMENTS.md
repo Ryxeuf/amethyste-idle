@@ -116,6 +116,9 @@ s'y branche.
 - [ ] Résolution de la zone : `player.currentZone` (règle 7 — jamais des coordonnées)
 - [ ] Routage vers l'indice selon le type d'activité (table des conventions ci-dessus)
 - [ ] Passage par `InfluenceAntiExploit` : plafonds journaliers et rendements décroissants
+- [ ] **Sédiment de passage** : traverser une zone y dépose une trace faible mais réelle
+      (`ZoneTravelService`). C'est ce qui fait vivre une zone de transit sans qu'on y farme
+      (GAME_WORLD §5.5, levier 4)
 - [ ] Aucun dépôt sur une zone sans foyer (Sanctuaire, et le Silence — §4.3)
 - [ ] Tests : chaque event alimente le bon indice ; plafond respecté ; zone sans foyer ignorée
 
@@ -221,12 +224,17 @@ s'y branche.
 ### FOY-11 — Pâleur d'une zone (M | ★★★ | MOYENNE)
 > L'extraction laisse une trace. Graduelle, bornée, réversible — jamais une Étale (§12.1).
 > Prérequis : ← FOY-03
-- [ ] `Zone.paleness` (0-100), alimentée par le rapport extraction / vitalité des `ZoneVein`
-      sur la marée
+- [ ] **Calcul par filon** (`ZoneVein.paleness`), jamais par zone : c'est ce qui garantit que
+      la Pâleur ne frappe que l'exploitation **concentrée** et jamais le passage diffus des
+      débutants (GAME_WORLD §3.5). L'agrégat au niveau de la zone n'est qu'un **affichage**
+- [ ] Alimentée par le rapport extraction / débit soutenu `R` du filon sur la marée
 - [ ] Effets progressifs : rendement de récolte en baisse, **bande de pureté plafonnée**
       (§5.4), faune plus rare
-- [ ] **Plancher dur** : une zone pâlie ne devient jamais stérile et ne produit **aucun**
-      Effacé — c'est ce qui la distingue de l'Étale
+- [ ] **Plancher dur** : un filon pâli ne devient jamais stérile, et une zone pâlie ne produit
+      **aucun** Effacé — c'est ce qui la distingue de l'Étale
+- [ ] **Jamais de « jachère »** : aucune mécanique ne doit récompenser l'abstention collective
+      d'un serveur entier (GAME_WORLD §3.5). La régénération est un **débit continu**, pas une
+      phase à protéger — un filon se régénère pendant qu'on y joue
 - [ ] Décroissance naturelle lente si l'extraction cesse
 - [ ] Affichage : la zone se délave visuellement, avec un texte qui dit quoi faire
 - [ ] Tests : montée, plancher, décroissance, effet sur la pureté
@@ -313,6 +321,8 @@ FOY-16 court en parallèle sur les quatre sprints.
 | **Serveur petit → monde figé** | Indexation des quotas sur la population active (FOY-08) |
 | **Régression qui casse le HV** | Le marché local ferme, les annonces **ne sont pas détruites** : elles redeviennent accessibles au retour du rang (à vérifier explicitement en FOY-10) |
 | **Zones délaissées qui ne remontent jamais** | Remontée accélérée (`highestRank`) + marées « conséquence » qui ramènent l'attention (FOY-15) |
+| **Le creux du milieu** : les zones intermédiaires se vident quand les vétérans sont en fin de jeu et les nouveaux courent | **Hors de portée de ce plan seul** — le système redistribue l'attention, il ne crée pas de demande. Traité en amont par les cinq leviers de GAME_WORLD §5.5, dont le principal (raffinage consommant le palier inférieur) relève de `PLAN_PLAYER_ECONOMY`. Ce plan y contribue par le sédiment de passage (FOY-02) et par la Crue qui pousse les guildes vers l'extérieur (FOY-08) |
+| **Attendre l'abstention des joueurs** | Interdit par conception : aucune mécanique ne récompense le fait de ne pas jouer quelque part (GAME_WORLD §3.5) |
 
 ## Ordre d'implémentation recommandé
 
