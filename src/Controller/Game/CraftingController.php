@@ -9,6 +9,7 @@ use App\Enum\CraftSpecialization;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\ExperimentationManager;
+use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\PlayerHelper;
@@ -31,6 +32,7 @@ class CraftingController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly CraftSpecializationService $craftSpecializationService,
         private readonly SettlementWorkshopBonus $workshopBonus,
+        private readonly PurityChain $purityChain,
     ) {
     }
 
@@ -51,6 +53,7 @@ class CraftingController extends AbstractController
         // lui dirait pas quoi faire de l'information.
         $workshopBonusByCraft = [];
         $recipesByCraft = [];
+        $purityPreviewByCraft = [];
         $canCraftByCraft = [];
         $craftLevels = [];
         $craftToolStatus = [];
@@ -72,6 +75,11 @@ class CraftingController extends AbstractController
             foreach ($recipes as $recipe) {
                 $canCraftByCraft[$craft][$recipe->getId()] = $this->craftingManager->canCraft($player, $recipe);
                 $maxCraftByCraft[$craft][$recipe->getId()] = $this->craftingManager->maxCraftable($player, $recipe);
+                // ECO-26 — la regle du maillon faible doit se voir **avant** le
+                // craft. Un joueur qui decouvre a la sortie que son lingot est
+                // trouble, sans savoir lequel de ses six intrants l'a decide,
+                // n'apprend rien et vit la regle comme une punition.
+                $purityPreviewByCraft[$craft][$recipe->getId()] = $this->purityChain->preview($player, $recipe);
             }
         }
 
@@ -111,6 +119,7 @@ class CraftingController extends AbstractController
             'recipesByCraft' => $recipesByCraft,
             'canCraftByCraft' => $canCraftByCraft,
             'maxCraftByCraft' => $maxCraftByCraft,
+            'purityPreviewByCraft' => $purityPreviewByCraft,
             'craftLevels' => $craftLevels,
             'craftToolStatus' => $craftToolStatus,
             'workshopBonusByCraft' => $workshopBonusByCraft,
