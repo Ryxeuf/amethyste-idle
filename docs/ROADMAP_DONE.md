@@ -40,15 +40,22 @@ sait (GAME_ZONE_ACTIONS §2) : un filon qu'on voit sans pouvoir l'ouvrir est une
 d'apprendre, un filon cache n'est rien du tout. Le refus tombe **avant** la depense d'energie —
 un joueur ne paie jamais pour apprendre qu'il ne peut pas.
 
+**La normalisation est une liste blanche, et c'est le test qui l'a dit.** `ZoneDefinitionLoader`
+recopie les filons cle par cle : `requires_skill` etait donc **perdu entre le YAML et la base**, et
+le gate se serait declare sans jamais s'appliquer. Aucun ecran, aucune exception, aucun log — le
+meme silence que le defaut qu'on repare. C'est `VeinSkillGateTest` qui l'a signale, avant la
+premiere lecture en base : d'ou son `assertNotEmpty` d'entree, qui refuse de rendre un verdict
+sur un ensemble vide.
+
 **Restent decoratives, et c'est assume** : `miner-adamantite-xs` et `miner-starmetal-xs`. Leurs
 minerais sont reserves a l'Extension 1 (GAME_ZONES §3) et n'ont donc aucun filon a garder. Elles
 prendront leur gate avec la zone qui portera la matiere, sans changement de moteur.
 
 **Tests** : 6 sur le service (refus sans competence et sans depense d'energie, acces une fois
 apprise, filon non gate ouvert a tous, nom de la competence manquante a l'ecran, aucun verrou
-annonce une fois apprise, aucun verrou en vue anonyme) et 3 sur la donnee
-(`VeinSkillGateTest` : tout gate nomme une competence existante, aucun palier d'entree gate,
-aucune competence ne garde deux portes).
+annonce une fois apprise, aucun verrou en vue anonyme), 3 sur la donnee (`VeinSkillGateTest` :
+tout gate nomme une competence existante, aucun palier d'entree gate, aucune competence ne garde
+deux portes) et 1 sur le round-trip du normaliseur — celui qui a trouve le defaut ci-dessus.
 
 ---
 

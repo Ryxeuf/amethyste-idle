@@ -76,6 +76,33 @@ class ZoneDefinitionLoaderTest extends TestCase
         self::assertSame(3, $zone['gather'][0]['yield_max']);
     }
 
+    /**
+     * ECO-24c — la normalisation est une **liste blanche**.
+     *
+     * Une cle absente du normaliseur est perdue en silence entre le YAML et la
+     * base : le gate se declarerait sans jamais s'appliquer, et rien ne s'en
+     * plaindrait. Le round-trip est donc un test a part entiere.
+     */
+    public function testNormalizeKeepsTheVeinSkillGate(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'mines' => [
+                    'name' => 'Mines',
+                    'gather' => [
+                        ['slug' => 'sombracier', 'item' => 'ore-darksteel', 'profession' => 'mining', 'requires_skill' => 'miner-darksteel-xs'],
+                        ['slug' => 'cuivre', 'item' => 'ore-copper', 'profession' => 'mining'],
+                    ],
+                ],
+            ],
+        ]);
+
+        $gather = $result['zones'][0]['gather'];
+        self::assertSame('miner-darksteel-xs', $gather[0]['requires_skill']);
+        // Le gate est opt-in : un filon qui ne declare rien ne porte pas la cle.
+        self::assertArrayNotHasKey('requires_skill', $gather[1]);
+    }
+
     public function testNormalizeBidirectionalConnection(): void
     {
         $result = $this->loader->normalize([

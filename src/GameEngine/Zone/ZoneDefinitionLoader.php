@@ -229,7 +229,14 @@ class ZoneDefinitionLoader
                     throw new ZoneDefinitionException(sprintf('Gather resource of zone "%s" is missing "%s" in "%s".', $slug, $required, $source));
                 }
             }
-            $resources[] = [
+            // ECO-24c — le gate de competence. La normalisation est une **liste
+            // blanche** : une cle absente d'ici est silencieusement perdue entre
+            // le YAML et la base, et le gate ne s'appliquerait jamais.
+            $requiresSkill = \is_string($resource['requires_skill'] ?? null)
+                ? trim((string) $resource['requires_skill'])
+                : '';
+
+            $normalized = [
                 'slug' => (string) $resource['slug'],
                 'item' => (string) $resource['item'],
                 'profession' => (string) $resource['profession'],
@@ -238,6 +245,15 @@ class ZoneDefinitionLoader
                 'yield_min' => max(1, (int) ($resource['yield_min'] ?? 1)),
                 'yield_max' => max(1, (int) ($resource['yield_max'] ?? 1)),
             ];
+
+            // Absente quand le filon n'est pas gate : le gate est opt-in, et une
+            // cle a `null` partout alourdirait la config serialisee de toutes
+            // les zones pour quatre filons.
+            if ($requiresSkill !== '') {
+                $normalized['requires_skill'] = $requiresSkill;
+            }
+
+            $resources[] = $normalized;
         }
 
         return $resources === [] ? null : $resources;
