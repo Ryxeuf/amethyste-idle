@@ -983,14 +983,74 @@ le rendement varie — cf. GAME_ZONE_ACTIONS §6.6).
 T0 reste le plus genereux : il gate le plancher T1 de l'economie (cuivre, etain, menthe,
 truite) et **ne doit jamais etre un goulot**, meme sous tension.
 
-### 22.4 Indexer plutot que refixer
+### 22.4 Calibrage dynamique — le facteur de monde
 
-Refixer des constantes obligerait a tout retoucher a chaque palier de croissance. Le meme
-mecanisme que le quota de Crue s'applique : **la capacite d'un filon est indexee sur la
-population active**. Un serveur qui double voit ses filons s'epaissir ; un serveur qui se
-vide voit la tension revenir. Le levier economique reste le **debit soutenu**, jamais l'acces.
+Refixer des constantes obligerait a retoucher 34 filons, les quotas et les seuils a chaque
+palier de croissance : une corvee qui ne serait jamais faite, et qui casserait le design en
+silence. Le calibrage doit donc etre **dynamique**. Mais mal concu, il annule exactement la
+tension qu'il sert.
 
-**A faire** : ce recalibrage touche les 34 filons du monde et invalide le tableau de paliers
-en tete de `config/game/zones/world_1.yaml`. Il precede FOY-11 (Paleur) et ECO-22 (purete a
-la recolte) — sans lui, les deux jalons livreraient du code sans effet observable.
+#### L'invariant a servir
 
+> **Le temps qu'il faut pour faire monter un foyer, et la tension ressentie sur un filon,
+> doivent etre les memes a 50 joueurs et a 500.**
+
+Tout le reste en decoule. Ce n'est pas « le monde grossit », c'est « l'experience reste
+constante quand la population change ».
+
+#### Le piege : ne jamais boucler sur la pression locale
+
+Si la capacite d'un filon montait avec le nombre de gens qui l'exploitent, le filon
+**donnerait plus a mesure qu'on le presse** — la rarete s'annulerait toute seule, et la
+vitalite deviendrait un affichage. Regle absolue :
+
+| Doit etre dynamique | Ne doit **jamais** l'etre |
+|---|---|
+| L'**ampleur** du monde, indexee sur la population **globale** | La reponse d'un filon a sa **propre** frequentation |
+| Capacite des filons, seuils de foyer, quotas de Crue | Vitalite, purete, Paleur — ce sont les **signaux de jeu** |
+
+Le facteur global est **aveugle au comportement local**. C'est ce qui garantit que la
+concurrence sur un filon reste une vraie concurrence.
+
+#### Ce qui bouge, et ce qui ne bouge pas
+
+> **Le rythme du monde ne change pas ; seule son ampleur change.**
+
+On multiplie la **`capacity`** d'un filon par le facteur de monde `W`, et on laisse
+**`respawn_seconds` fixe**. Le debit suit mecaniquement (`R = capacity x 3600 / respawn`),
+mais la cadence de repousse — le rythme de la maree, en fiction — reste la meme pour tout le
+monde. Un serveur plus peuple a des filons plus **gros**, pas plus **rapides**.
+
+| Grandeur | Echelle |
+|---|---|
+| `capacity` des filons | x W |
+| Seuils de sediment d'un foyer | x W — c'est ce qui garde constant le **temps** de montee |
+| Quotas de Crue | paliers de population (§ GAME_WORLD 13.4) |
+| `respawn_seconds` | **fixe** |
+| Vitalite, purete, Paleur | **jamais** — ce sont les signaux |
+
+#### Trois garde-fous
+
+1. **Par paliers, pas en continu.** `W` prend des valeurs discretes (0,5 / 0,75 / 1 / 1,5 / 2
+   / 3…) rattachees a des bandes de population. Un reglage qui glisse en permanence rend le
+   savoir du prospecteur — qu'on a rendu monnayable — impossible a constituer.
+2. **Asymetrique.** Monte vite, redescend lentement, sur une moyenne glissante d'une maree.
+   Une baisse passagere de frequentation ne doit jamais retrecir le monde sous les pieds des
+   joueurs presents.
+3. **Annonce, jamais silencieux.** Un changement de `W` ne survient qu'a une bascule de maree
+   et s'inscrit au journal de monde : *la Concorde s'etend*. Meme methode que la Crue — une
+   necessite technique devient un evenement du monde plutot qu'un ajustement subi.
+
+Et un **verrou manuel** : l'admin doit pouvoir figer `W`. Pour un evenement, pour un test, et
+pour le jour ou la valeur automatique aura tort.
+
+#### Anti-abus
+
+`W` se calcule sur la **meme definition de joueur actif** que le quota de Crue, et passe par
+les garde-fous existants (`InfluenceAntiExploit`) : une ferme de comptes secondaires ne doit
+pas pouvoir gonfler le monde.
+
+**A faire** : le recalibrage de base (§ 22.3) fixe `W = 1` a ~50 joueurs quotidiens. Il touche
+les 34 filons et invalide le tableau de paliers en tete de `config/game/zones/world_1.yaml`.
+Il precede FOY-11 (Paleur) et ECO-22 (purete a la recolte) — sans lui, les deux jalons
+livreraient du code sans effet observable.

@@ -1016,7 +1016,17 @@ croise jamais personne. Le graphe supporte déjà le gating (`enabled`, `require
 Ouvrir cinq à six zones au lancement et libérer les suivantes à mesure que la population monte
 — la Concorde qui s'étend — donne un monde plein à chaque étape.
 
-**c) Le calibrage des filons est à refaire de fond en comble.** C'est la conséquence la plus
+**c) Le calibrage devient dynamique.** Le monde doit rester à la taille de son audience sans
+recalibrage manuel à chaque palier de croissance. L'invariant visé : **le temps qu'il faut
+pour faire monter un foyer, et la tension ressentie sur un filon, doivent être les mêmes à 50
+joueurs et à 500.** Un **facteur de monde** indexé sur la population globale met à l'échelle
+la capacité des filons et les seuils de sédiment — mais **jamais** la réponse d'un filon à sa
+propre fréquentation : un filon qui donnerait plus à mesure qu'on le presse annulerait sa
+propre rareté. Et le **rythme** du monde ne change pas, seule son **ampleur** change : la
+capacité s'ajuste, la cadence de repousse reste fixe. Conception et garde-fous dans
+[BALANCE.md § 22.4](BALANCE.md), jalon **FOY-17**.
+
+**d) Le calibrage des filons est à refaire de fond en comble.** C'est la conséquence la plus
 lourde, chiffrée dans [BALANCE.md § 22](BALANCE.md) : en l'état, les filons du monde
 soutiendraient **~2 200 récolteurs réguliers**. À 50 joueurs, ils tournent à **1 % de leur
 charge** — la vitalité ne bouge jamais, la pureté est toujours au maximum, la Pâleur est

@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**16 jalons** (**FOY-01** à **FOY-16**) organisés en 6 pistes.
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes.
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -44,11 +44,12 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-14 | Crédit au journal de monde à la clôture de marée |
 | FOY-15 | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
 | FOY-16 | Tests unitaires du plan |
+| FOY-17 | Facteur de monde — calibrage dynamique |
 
 ```
 Piste A — Socle du foyer      : FOY-01 → FOY-02 → FOY-03 → FOY-04
 Piste B — Ce que le rang ouvre: FOY-05 → FOY-06 → FOY-07
-Piste C — La Crue             : FOY-08 → FOY-09 → FOY-10
+Piste C — La Crue             : FOY-17 → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
 Piste F — Contenu & tests     : FOY-15, FOY-16
@@ -183,9 +184,29 @@ s'y branche.
 
 ## Piste C — La Crue (séquentiel — c'est ce qui rend le pilier politique)
 
+### FOY-17 — Facteur de monde (calibrage dynamique) (M | ★★★ | CRITIQUE)
+> Le monde doit rester à la taille de son audience sans recalibrage manuel. Conception
+> complète et garde-fous : [../BALANCE.md § 22.4](../BALANCE.md).
+> Prérequis : ∅ — **précède FOY-08, FOY-11 et ECO-22**
+- [ ] `WorldScaleService` : facteur `W` calculé sur les joueurs actifs de la marée écoulée,
+      **par paliers discrets** (0,5 / 0,75 / 1 / 1,5 / 2 / 3…), jamais en continu
+- [ ] **Asymétrie** : monte vite, redescend lentement (moyenne glissante) — une baisse
+      passagère ne rétrécit pas le monde sous les pieds des joueurs présents
+- [ ] Application : `capacity` des filons × W, seuils de sédiment × W. **`respawn_seconds`
+      reste fixe** — le rythme du monde ne change pas, seule son ampleur change
+- [ ] **Interdit, et à verrouiller par un test** : aucun bouclage sur la pression *locale*.
+      Vitalité, pureté et Pâleur ne sont jamais mises à l'échelle — ce sont les signaux de jeu.
+      Un filon qui donnerait plus à mesure qu'on le presse annulerait sa propre rareté
+- [ ] Recalcul **uniquement** à une bascule de marée, inscrit au journal de monde
+      (« la Concorde s'étend ») — annoncé, jamais silencieux
+- [ ] **Verrou manuel admin** : figer `W` pour un événement, un test, ou quand la valeur
+      automatique a tort
+- [ ] Anti-abus : même définition de joueur actif que le quota de Crue, via `InfluenceAntiExploit`
+- [ ] Tests : paliers, asymétrie, respawn inchangé, signaux non mis à l'échelle, verrou admin
+
 ### FOY-08 — Quotas indexés sur la population active (M | ★★★ | CRITIQUE)
 > Décision B. Sans quota, tout le monde monte tout et il n'y a pas d'enjeu de territoire.
-> Prérequis : ← FOY-03
+> Prérequis : ← FOY-03, ← FOY-17
 - [ ] `CrueQuotaService` : quotas de base (1 Métropole / 3 Cités / 6 Bourgs) **+ indexation**
       sur les joueurs actifs de la marée écoulée
 - [ ] Blocage de promotion quand le quota est plein — le foyer **reste en attente**, son
@@ -306,7 +327,7 @@ Conforme à la règle 8 de `CLAUDE.md` (aucune phase XL, chaque jalon commitable
 |---|---|---|
 | **Sprint 16** — Socle des foyers | FOY-01 → FOY-05 | Chaque zone a un foyer visible qui monte quand on y joue |
 | **Sprint 17** — Le rang ouvre des portes | FOY-06, FOY-07, FOY-10 | Faire vivre une zone y ouvre un marché et de meilleurs ateliers ; l'abandonner l'endort |
-| **Sprint 18** — La Crue | FOY-08, FOY-09, FOY-14 | Il n'y a pas de place pour deux métropoles, et le journal grave qui a bâti |
+| **Sprint 18** — La Crue | FOY-17, FOY-08, FOY-09, FOY-14 | Il n'y a pas de place pour deux métropoles, et le journal grave qui a bâti |
 | **Sprint 19** — Pâleur & doctrine | FOY-11 → FOY-13, FOY-15 | L'extraction laisse une trace, la guilde choisit sa doctrine et paie la restauration |
 
 FOY-16 court en parallèle sur les quatre sprints.
@@ -319,6 +340,7 @@ FOY-16 court en parallèle sur les quatre sprints.
 | **Le quota vécu comme un bug** | FOY-08 nomme explicitement qui occupe la place, et le sédiment en attente n'est jamais perdu |
 | **Le type de foyer qui clignote** | Hystérésis obligatoire en FOY-03 |
 | **Serveur petit → monde figé** | Indexation des quotas sur la population active (FOY-08) |
+| **Le calibrage dynamique annule la rareté qu'il sert** | FOY-17 : le facteur est **aveugle au local**. Il indexe l'ampleur du monde sur la population globale, jamais la réponse d'un filon à sa propre fréquentation |
 | **Régression qui casse le HV** | Le marché local ferme, les annonces **ne sont pas détruites** : elles redeviennent accessibles au retour du rang (à vérifier explicitement en FOY-10) |
 | **Zones délaissées qui ne remontent jamais** | Remontée accélérée (`highestRank`) + marées « conséquence » qui ramènent l'attention (FOY-15) |
 | **Le creux du milieu** : les zones intermédiaires se vident quand les vétérans sont en fin de jeu et les nouveaux courent | **Hors de portée de ce plan seul** — le système redistribue l'attention, il ne crée pas de demande. Traité en amont par les cinq leviers de GAME_WORLD §5.5, dont le principal (raffinage consommant le palier inférieur) relève de `PLAN_PLAYER_ECONOMY`. Ce plan y contribue par le sédiment de passage (FOY-02) et par la Crue qui pousse les guildes vers l'extérieur (FOY-08) |
@@ -329,7 +351,7 @@ FOY-16 court en parallèle sur les quatre sprints.
 ```
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
-Phase 3 (enjeu)      : FOY-08 → FOY-09 → FOY-14
+Phase 3 (enjeu)      : FOY-17 → FOY-08 → FOY-09 → FOY-14
 Phase 4 (conséquence): FOY-11 → FOY-12 → FOY-13 → FOY-15
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```
