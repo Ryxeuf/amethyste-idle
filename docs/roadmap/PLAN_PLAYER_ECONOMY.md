@@ -10,7 +10,9 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**ECO-01** à **ECO-17**) organisés en 5 pistes.
+**24 jalons** (**ECO-01** à **ECO-17**, puis **ECO-21** à **ECO-27**) organisés en 7 pistes.
+*(ECO-18 à ECO-20 sont nés en cours de campagne et sont tracés dans `ROADMAP_DONE.md` /
+`BALANCE.md` — les numéros ne sont pas réutilisés.)*
 Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité** (GCC ✅),
 **modèle zone** (ZON, Sprints 7-9) pour la segmentation régionale et le time-gating.
 
@@ -33,6 +35,14 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-15 | Gold sinks (durabilité / consommables) |
 | ECO-16 | Modération économique (anti price-fixing / RMT) |
 | ECO-17 | Tests unitaires du plan |
+| ECO-21 | Bandes de pureté & modèle |
+| ECO-22 | Tirage de pureté à la récolte |
+| ECO-23 | Pureté au marché et dans les commandes |
+| ECO-24 | Audit de la chaîne de production ✅ |
+| ECO-24b | Prérequis : sources des minerais & répartition |
+| ECO-25 | Chaînage des paliers raffinés |
+| ECO-26 | Propagation de la pureté dans la chaîne |
+| ECO-27 | Équilibrage & tests de la chaîne |
 
 ```
 Piste A — Socle & liaison        : ECO-01 → ECO-02
@@ -40,6 +50,8 @@ Piste B — HV régional            : ECO-03 → ECO-04
 Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
+Piste F — Pureté des ressources  : ECO-21 → ECO-22 → ECO-23
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -274,6 +286,149 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 
 ---
 
+## Piste F — Pureté des ressources (séquentiel)
+
+> **Décision D** du socle de monde ([../GAME_WORLD.md](../GAME_WORLD.md) §5.4, actée le
+> 2026-07-27) : toute améthystite ne se vaut pas. Emprunt à Star Wars Galaxies, corrigé de
+> son défaut — chez eux *toutes* les ressources avaient des statistiques, ce qui a transformé
+> l'artisanat en tableur. Ici : **la ligne du cristal uniquement**, et **quatre bandes** au
+> lieu d'une note continue.
+
+### ECO-21 — Bandes de pureté & modèle (M | ★★★ | HAUTE)
+> Fondation. Le champ `Recipe.quality` existe déjà et dort : il lui manque son intrant.
+> Prérequis : ∅
+- [ ] Enum `Purity` : `trouble` / `clair` / `pur` / `parfait`
+- [ ] `PlayerItem.purity` (nullable — `null` = hors périmètre, l'immense majorité des objets)
+- [ ] **Périmètre étroit et explicite** : améthystite, minerais, gemmes. Herbes, poissons,
+      cuirs et bois restent fongibles — le plancher T1 (D1) ne doit jamais demander à un
+      débutant de comparer des lots
+- [ ] Règle de pile : deux lots ne fusionnent que **dans la même bande** (c'est la raison
+      d'être des bandes — une note continue éclaterait l'inventaire)
+- [ ] Affichage : sceau de bande sur la ligne d'objet (composants `.ds-*` existants)
+- [ ] Tests : périmètre, piles, sérialisation
+
+### ECO-22 — Tirage de pureté à la récolte (M | ★★★ | HAUTE)
+> D'où vient la bande. C'est ici que le savoir du prospecteur prend une valeur marchande.
+> Prérequis : ← ECO-21
+- [ ] Fourchette de tirage par filon, fonction de : **palier du filon**, **vitalité courante**
+      (un filon éreinté ne rend plus que du trouble), **compétence** du récolteur, **marée**
+      en cours, **biome** (Affleurement et Chœur tirent haut)
+- [ ] Plafond de bande imposé par la **Pâleur** du filon (GAME_WORLD §3.5 — lien avec FOY-11)
+- [ ] Exposition de l'information au prospecteur uniquement, conformément à
+      [../GAME_ZONE_ACTIONS.md](../GAME_ZONE_ACTIONS.md) (information exclusive)
+- [ ] **Seul le `parfait` permet l'éveil d'une matéria** — la rareté de la matéria devient
+      structurelle, sans table de drop
+- [ ] Tests : fourchettes, effet de la vitalité, plafond de Pâleur, gate d'éveil
+
+### ECO-23 — Pureté au marché et dans les commandes (S | ★★ | MOYENNE)
+> Sans ça, la pureté existe mais ne se négocie pas — et le HV reste un tas.
+> Prérequis : ← ECO-21
+- [ ] `AuctionListing` porte la bande ; filtre et tri par bande dans la recherche
+- [ ] `CraftOrder` : **bande minimale exigée** par le client — répond à la question ouverte de
+      [../GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §6
+- [ ] Refus explicite (et lisible) si la matière fournie est sous la bande demandée
+- [ ] Tests : filtre, exigence de commande, refus
+
+---
+
+## Piste G — Chaîne de production par paliers (séquentiel)
+
+> **Le levier principal contre le creux du milieu** (GAME_WORLD §5.5). Mécanique d'Albion :
+> raffiner du palier N consomme du **raffiné N-1** en plus du brut N. La demande en matière
+> intermédiaire devient alors **proportionnelle à l'activité de fin de jeu** — la ressource
+> du début cesse d'être un produit fini pour devenir un **intrant**, et ne meurt jamais.
+>
+> **Le problème est mesurable aujourd'hui** : `recipe_orichalcum_ingot` (niveau 8) ne
+> consomme que de l'orichalque et du métal stellaire. Rien de ce que produit une zone de
+> début n'y entre. Le jour où les vétérans sont tous à l'orichalque, le cuivre ne vaut plus
+> rien et la Forêt des murmures n'intéresse plus personne.
+
+### ECO-24 — Audit de la chaîne de production (S | ★★ | HAUTE) ✅
+> Livré 2026-07-27. Résultats complets : [../BALANCE.md § 21](../BALANCE.md).
+- [x] Cartographie des **82 recettes** livrées, par métier et par niveau
+- [x] **54 chaînées**, 22 orphelines de niveau 1-2 (**voulu** — palier d'entrée solo, ECO-02),
+      et **6 orphelines de niveau ≥ 3** : le défaut réel
+- [x] Chaîne cible posée dans BALANCE § 21.3
+
+> **La chaîne est bâtie horizontalement, plate verticalement.** Les biens finis consomment
+> bien des intermédiaires ; ce sont les intermédiaires qui ne se consomment pas entre eux.
+> **Quatre des six orphelines sont l'échelle de raffinage du métal elle-même** (`cobalt`,
+> `adamantite`, `orichalcum` ingots + `steel_chainmail`) ; les deux autres sont
+> `poison_vial` (niv 3) et `masterwork_drakehide_cloak` (niv **10**, trois cuirs bruts).
+>
+> **Le précédent existe déjà** : `recipe_mithril_ingot` n'est pas orpheline, parce qu'ECO-19
+> a fait de la transmutation alchimique la seule source d'`ore-mithril` (BALANCE § 19). La
+> forme visée est donc déjà appliquée — à un seul palier.
+
+> **Deux défauts découverts en chemin, à traiter avant ECO-25 :**
+>
+> **a) Deux systèmes de récolte coexistent.** `ore-mithril`, `ore-platinum`, `ore-darksteel`,
+> `ore-adamantite`, `ore-starmetal`, `ore-orichalcum` n'ont **aucun filon déclaré** dans
+> `config/game/zones/*.yaml` : ils n'existent que comme `ObjectLayer` hérités (sur `map_4`),
+> encore servis par `HarvestController`. Le **haut de la ligne du métal échappe donc au
+> modèle calibré** — or la pureté (ECO-22) se tire de la vitalité d'un `ZoneVein`, et la
+> Pâleur (FOY-11) se calcule par `ZoneVein`. Ni l'une ni l'autre ne les couvre.
+>
+> **b) L'étain n'a qu'un seul filon au monde** (le cuivre en a deux), alors que le bronze
+> exige les deux à parts égales. D'où une règle de conception ajoutée au socle : **une
+> matière de base doit être présente dans beaucoup de zones, une matière de haut palier dans
+> très peu** — raretés inversées.
+
+### ECO-24b — Prérequis de la chaîne : sources et répartition (S | ★★ | HAUTE)
+> Les deux défauts ci-dessus. Sans eux, chaîner les paliers renforce un goulot au lieu de
+> créer une demande.
+> Prérequis : ← ECO-24 ✅
+- [ ] Déclarer des **filons** (`gather:` dans le YAML de zone) pour les six minerais de haut
+      palier aujourd'hui portés par des `ObjectLayer`, aux paliers T3/T4 du calibrage
+- [ ] Décider du sort du chemin hérité `ObjectLayer` pour ces minerais (retrait, ou maintien
+      en double source assumée et documentée)
+- [ ] Répartir l'**étain** sur au moins une seconde zone
+- [ ] Vérifier la règle des raretés inversées sur toute la ligne du métal
+- [ ] Tests : chaque minerai de recette a au moins une source déclarée (loi transverse)
+
+### ECO-25 — Chaînage des paliers raffinés (M | ★★★ | HAUTE)
+> Le cœur du jalon. Changement de **données**, pas de moteur : 6 recettes à corriger.
+> Prérequis : ← ECO-24 ✅, ← ECO-24b
+- [ ] Chaîne cible de BALANCE § 21.3, au **coefficient 1** : chaque recette de raffinage de
+      palier N consomme **1 seule unité** du raffiné N-1, en plus de son brut N
+- [ ] **Le coefficient est le seul réglage qui compte, et il n'est pas négociable.** L'effet
+      est *multiplicatif* sur la profondeur : à 1, un lingot d'orichalque entraîne 2 cuivre
+      + 2 étain ; à 2, il en entraîne **32**. Chiffré dans BALANCE § 21.4
+- [ ] **Quantités non cumulatives en temps** : le but est de créer de la *demande*, pas
+      d'ajouter cinq minutes d'attente à chaque craft de fin de jeu
+- [ ] **Le chemin du débutant reste intact** : le bronze se forge toujours directement depuis
+      le cuivre et l'étain. Le chaînage ne commence qu'au deuxième palier
+- [ ] **L'artisan de fin de jeu n'est pas censé tout produire lui-même** : il achète le
+      raffiné du dessous au marché. C'est l'interdépendance recherchée (D-WoW §4.6), pas une
+      corvée — à vérifier explicitement en jouant la boucle
+- [ ] Étendre aux lignes non métalliques une fois la ligne du métal validée
+- [ ] Tests : chaîne complète, coût propagé, recette de départ inchangée
+
+### ECO-26 — Propagation de la pureté dans la chaîne (M | ★★★ | MOYENNE)
+> C'est ce qui rend une zone intermédiaire **reposée** indispensable à la fin de jeu.
+> Prérequis : ← ECO-25, ← ECO-22
+- [ ] Un objet raffiné hérite d'une bande dérivée de ses intrants, **par le maillon le plus
+      faible** (une chaîne ne vaut pas mieux que son maillon le plus trouble)
+- [ ] Conséquence recherchée, à vérifier : un équipement de fin de jeu en bande haute exige
+      une **chaîne haute de bout en bout**, donc du cuivre *pur* venu d'une zone de début
+      dont les filons sont reposés
+- [ ] Exposer la chaîne au joueur (d'où vient la bande du résultat) — sinon la règle est
+      opaque et vécue comme une punition
+- [ ] Tests : héritage par maillon faible, chaîne complète, affichage
+
+### ECO-27 — Équilibrage & tests de la chaîne (M | ★★ | HAUTE)
+> Prérequis : ← ECO-25, ← ECO-26
+- [ ] Recalibrer les prix PNJ et les valeurs de référence en tenant compte du coût propagé
+- [ ] Vérifier que la demande en matière de début **croît** avec l'activité de fin de jeu
+      (c'est la propriété qu'on achète : la mesurer, pas la supposer)
+- [ ] Surveiller le risque inverse : une matière de début devenue *goulot* qui bloque la fin
+      de jeu — les paliers T0 du calibrage des filons existent pour ça
+- [ ] Loi transverse à ajouter à `EconomyInvariantTest` : **aucune ligne de production n'a de
+      palier orphelin** (tout palier ≥ 2 consomme le palier inférieur)
+- [ ] Documenter la chaîne finale dans [../BALANCE.md](../BALANCE.md)
+
+---
+
 ## Ordre d'implémentation recommandé
 
 ```
@@ -282,4 +437,18 @@ Phase 2 (HV régional)  : ECO-03 → ECO-04
 Phase 3 (commandes)    : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Phase 4 (échoppes)     : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Phase 5 (équilibrage)  : ECO-14, ECO-15, ECO-16, ECO-17  (parallélisable)
+Phase 6 (pureté)       : ECO-21 → ECO-22 → ECO-23
+Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
 ```
+
+**Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le
+creux du milieu** (GAME_WORLD §5.5) : sans elle, les zones intermédiaires meurent quand les
+vétérans atteignent le dernier palier, et aucun système territorial ne les ranimera — les
+foyers redistribuent l'attention, ils ne créent pas la demande. La Piste F la précède parce
+qu'ECO-26 en dépend, et parce qu'elle réveille à elle seule `Recipe.quality`, la valeur
+marchande du savoir du prospecteur, et l'exigence de qualité dans les commandes.
+
+**Articulation avec le plan des foyers** ([PLAN_SETTLEMENTS.md](PLAN_SETTLEMENTS.md)) :
+ECO-22 lit la Pâleur d'un filon (FOY-11) pour plafonner la bande. Les deux plans peuvent
+avancer en parallèle — seul ce plafond les couple, et il se livre des deux côtés avec une
+valeur par défaut neutre.
