@@ -286,9 +286,10 @@ joueurs viennent du **savoir** et des **relations**, jamais du temps passé.
 
 C'est la raison d'être du document : ces contraintes commandent les zones et les ressources.
 
-**a) À portée du hub, dès la semaine 1**, il faut au minimum : les quatre lignes de récolte
-(minage, herboristerie, pêche, dépeçage), de la faune de niveau d'entrée, un atelier, et une
-première matéria. Sans ça, l'Acte I ne tient pas.
+**a) À portée du hub, dès la semaine 1**, il faut au minimum : les cinq lignes de récolte
+(minage, herboristerie, pêche, dépeçage, bûcheronnage — acté le 2026-07-28, GAME_ZONES
+loi 5), de la faune de niveau d'entrée, un atelier, et une première matéria. Sans ça,
+l'Acte I ne tient pas.
 
 **b) Les 32 domaines ne doivent pas être servis également.** Un joueur en travaille 2 à 4 ; à
 50 joueurs quotidiens, un domaine exotique n'aura aucun praticien. Le contenu (matéria,
@@ -307,9 +308,13 @@ est une zone morte, quelle que soit sa beauté.
 
 ## 7. Ce qui reste ouvert
 
-1. **Le nombre de domaines réellement servis.** 32 arbres existent ; combien méritent du
-   contenu neuf ? Ma recommandation : concentrer sur ~12 (les 4 récoltes, les 4 artisanats, et
-   4 combats couvrant des rôles distincts), les autres restant jouables sans être nourris.
+1. ~~Le nombre de domaines réellement servis~~ — **tranché le 2026-07-28** : ~16 domaines
+   nourris en contenu — **5 récoltes** (mineur, herboriste, pêcheur, dépeceur, bûcheron
+   ← ZON-34), **7 artisanats** (forgeron, tanneur, alchimiste, joaillier + cuisinier,
+   charpentier, tailleur ← Piste H d'ECO), et ~4 combats couvrant des rôles distincts.
+   Les autres arbres restent jouables sans être des chantiers de contenu. L'enchanteur
+   est **en réserve** (amélioration, pas nécessité — l'usage des bandes de pureté vit
+   dans la Piste F).
 2. **La rejouabilité de l'Acte I** sur un second personnage (cf. CLAUDE.md règle 12) :
    intégralement rejoué aujourd'hui (NAR-04). À reconsidérer si l'Acte I s'allonge.
 3. ~~L'horizon hebdomadaire~~ — **tranché et décliné** : les six briques du §3 ter-a/b sont

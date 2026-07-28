@@ -923,6 +923,39 @@ ECO-25 applique la chaine cible (§21.3) au coefficient 1. Avant cela, deux prea
 issus de §21.5 : unifier la source des minerais de haut palier (filon declare plutot que
 spot herite), et repartir l'etain sur au moins une seconde zone.
 
+### 21.7 Second passage d'audit (2026-07-28) — les chaines cassees hors metal
+
+Le premier audit suivait la ligne du metal. Un second passage, croisant **toutes** les
+recettes avec **toutes** les sources (filons, spots herites, butin de monstres, boutiques
+PNJ), a revele que chaque metier a un bout de chaine casse :
+
+- **La peche entiere est sans debouche.** Aucune des 82 recettes ne consomme un poisson
+  (6 especes). Le pecheur ne peut que vendre au PNJ. **Tranche** : le metier de cuisinier
+  (ECO-29, Piste H) devient son debouche.
+- **Aucune armure tissu n'existe.** Sur les 121 items d'equipement, pas une robe ni une
+  piece orientee magie : les domaines de sort s'habillent en cuir et en metal, et aucun
+  metier ne les habille. **Tranche** : le tailleur (ECO-31) cree la categorie tissu
+  depuis le lin des Vallons ; l'item mort `crafted-cloth` s'y reveille.
+- **La joaillerie ne taille aucune gemme.** `recipe-cut-gem-basic` consomme du **cuivre**,
+  la fine de l'**argent**, la rare du **mithril**. Les trois gemmes brutes du monde
+  (rubis, emeraude, diamant) ne sont consommees par **rien** — trois filons declares
+  produisent des items sans usage. A corriger avec ECO-25.
+- **Le tanneur mid/haut est incraftable.** 12 recettes consomment quatre matieres
+  (`leather-bone`, `leather-fang`, `leather-dragon-scale`, `leather-werewolf-fur`)
+  qu'**aucun monstre ne lache** — seuls des objets finis aux noms proches existent en
+  butin. Series « durcie », « dragon » et cape de maitre irrealisables. A corriger par
+  les tables de butin (ECO-24b etendu).
+- **Le lingot de cobalt n'a aucun consommateur** (produit par `recipe-cobalt-ingot`,
+  consomme par rien) — a raccorder avec ECO-25.
+- **La ligne du bois n'existe pas.** L'arc et le baton existent en items (butin, PNJ)
+  mais aucune recette ne les produit, et aucune ressource bois n'existe. Decision du
+  2026-07-28 : creer la recolte du bois (GAME_ZONES §3 bis, jalon ZON-34).
+- **Items morts** (ni source ni usage) : 5 plantes (`dreamlily`, `sunblossom`,
+  `thunderroot`, `whisperweed`, `wolfsbane`), 2 poissons (`moonfish` en spot herite
+  seul, `baby-kraken` sans source), `crafted-iron-ingot`, `crafted-gold-ingot`,
+  `crafted-cloth`, `leather-skin-1/2` (doublons ECO-02). A purger ou a reveiller par
+  les jalons concernes.
+
 ---
 
 ## 22. Calibrage des filons face a la population reelle
