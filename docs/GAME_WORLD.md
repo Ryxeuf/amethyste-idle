@@ -1081,6 +1081,40 @@ améliorant la vie de tout le monde.
   §8) sans avoir à inventer une menace neuve à chaque marée.
 
 
+#### Complément tranché le 2026-07-28 — échelle, contrats, contreparties
+
+**L'intégration est le contraste exact de l'Ombre : la Fonderie s'affiche.** Enseignes,
+comptoirs, recruteurs au carreau des Mines (son siège), visible dans l'écran de factions
+dès le jour 1 — et un argument imparable : c'est elle qui éclaire vos villes. On doit
+pouvoir l'aimer sincèrement ; c'est ce qui rend l'axe doctrinal réel.
+
+**Son système propre : les contrats d'approvisionnement.** Chaque semaine (rotation du
+lundi, RET-07), la Fonderie publie des contrats : gros volumes de matières communes
+(minerai, charbon, hêtre) à prix **garanti mais toujours sous le marché**. Garde-fou
+inverse du receleur (§12.4) : le receleur prend *plus* que la taxe max pour ne jamais
+renverser le HV ; la Fonderie paie *moins* que le HV moyen pour ne jamais le remplacer.
+Ses avantages : zéro friction, régularité, paiement mixte **gils + essence**. Effet
+secondaire : un plancher de demande permanent pour les ressources du milieu (levier
+anti-creux supplémentaire, gratuit).
+
+**L'échelle (latéral pur, §6.4)** :
+
+| Palier | Ce qui s'ouvre |
+|---|---|
+| **Ami** | Contrats d'approvisionnement ; tarif de fonte amélioré |
+| **Honoré** | **Brûleurs d'atelier** (dépenser de l'essence pour accélérer un craft ou tenter la qualité supérieure — un *service*, jamais un objet) ; recettes d'artificier (pétards, signaux, feux de fête) ; tenue d'ouvrier |
+| **Révéré** | **Chariot de la Fonderie** (monture utilitaire : +capacité de cargaison) ; lampe inextinguible ; contrats majeurs |
+| **Exalté** | **Le Grand Fourneau** — vraie zone `interior` au fond des Mines : là où la Fonderie fond ce qu'elle ne montre pas (matière d'arc saisonnier — *Le Procès de la Fonderie*, §8) ; un geste retrouvé à condition Fonderie ; titre |
+
+**Les contreparties** : la tension actée (§6.4 — chaque fonte au-delà d'Ami décote les
+Mages : lectures majorées, Athénée fermé, gestes à condition Lecteurs inaccessibles) ; le
+**Codex n'avance pas** (fondre ne donne jamais d'entrée) ; et le **coût collectif sans
+malus mécanique** : chaque matéria fondue est une lecture perdue pour le Répertoire du
+serveur (§12.3) — la pression sociale naît toute seule. **Hostile chez la Fonderie** :
+elle ne rachète plus votre cristal — le plancher d'achat se ferme (le HV reste ; la
+boucle cœur tient, et un débutant n'est jamais Hostile).
+
+
 ### 12.3 L'Autel d'éveil, le Répertoire et l'équilibre *(dossier instruit — recommandations)*
 
 Trois questions ouvertes, posées ensemble parce que leurs réponses s'emboîtent.
@@ -1280,6 +1314,84 @@ Chevaliers : fouilles systématiques, taxe d'Autel au plafond.
 **Impact modèle** : flag `counterfeit` + état non-identifié sur `PlayerItem`, connexions
 `requires_discovery` nocturnes, une zone `interior` cachée (la Cour), une entité de contrat
 de contrebande/placement, et l'entrée de faction différée (visible après premier contact).
+
+### 12.5 Les trois autres maisons *(tranché le 2026-07-28)*
+
+La même passe que la Fonderie (§12.2) et l'Ombre (§12.4), appliquée aux trois factions
+livrées : un geste quotidien, un système propre, une échelle latérale, des contreparties.
+**Symétrie voulue : chaque Exalté ouvre une porte quelque part** — cinq zones `interior`
+cachées, une par maison.
+
+#### La Guilde des Marchands — hors tension, la maison de tout le monde
+
+- **Gestes** : volume échangé au HV (plafonné/jour), commandes de craft publiques honorées,
+  plus tard les convois. La faction de l'économie vivante.
+- **Système propre : les commissions de négoce.** Des missions d'arbitrage publiées par
+  comptoir : *« achetez ceci ici, livrez-le à tel comptoir régional »* — le jeu apprend
+  l'écart de prix entre régions (D13) en le faisant pratiquer. Précurseur assumé des
+  caravanes.
+- **Échelle** : Ami — remises (livrées) et la **cote des marchés** (prix moyens des autres
+  régions, avec un jour de retard) ; Honoré — commissions majeures, balance de précision
+  (voir la fourchette de pureté d'un lot avant achat) ; Révéré — mule bâtée (monture
+  utilitaire), priorité d'étal (← ECO Piste D) ; Exalté — **la Grande Halle** (zone
+  `interior` : la bourse des maisons marchandes), droit de **charte de caravane** quand
+  elles arriveront, titre.
+- **Contreparties** : aucune décote (hors tension, c'est son identité) — mais tout se paie
+  chez eux, et le patronage Marchands renonce aux quatre autres. **Hostile** (rare —
+  placements de faux découverts, commissions trahies) : surcharge de 10 % chez tous les
+  marchands PNJ du monde.
+
+#### L'Ordre des Chevaliers — la maison du Serment
+
+- **Gestes** : abattre ce qui viole le dépôt (morts-vivants, Effacés), tenir les beats
+  défensifs de marée, **remettre les contrefaçons saisies** (une contrefaçon rapportée à
+  l'Ordre est détruite contre réputation — le miroir vertueux du placement).
+- **Système propre : le tableau des primes.** Des primes hebdomadaires (rotation du lundi)
+  sur des créatures nommées des zones menacées — la chasse au monstre comme service
+  public. Plus tard : l'escorte de caravanes.
+- **Échelle** : Ami — primes ; Honoré — bénédictions (services de soin/préparation avant
+  expédition), héraldique (tabard, recettes d'armurier d'ordre — cosmétique) ; Révéré —
+  monture caparaçonnée, **le garde du corps** (une escorte PNJ par semaine : un voyage
+  sans rencontre hostile) ; Exalté — **la Salle du Serment** (zone `interior` : là où le
+  texte original est gravé — la révélation de *pourquoi* le sang ne se dépose pas), un
+  geste retrouvé à condition Ordre, titre.
+- **Contreparties** : la tension actée (au-delà d'Ami, le marché gris se ferme, les
+  rumeurs se tarissent, les passages dérobés resteront inconnus) ; et la **rigueur** : se
+  faire prendre en contrebande ou en placement décote immédiatement et fortement.
+  **Hostile** : fouilles systématiques, taxe d'Autel au plafond (§12.4).
+
+#### Le Cercle des Mages — les Lecteurs, la maison de la mémoire
+
+- **Gestes** : **lire** des matéria (le geste — qui nourrit aussi le Répertoire du
+  serveur, §12.3), compléter le Codex, participer aux expéditions d'étude.
+- **Système propre : le Programme du Cercle.** Chaque marée, le Cercle publie ses
+  priorités de lecture (*« cette marée, lisez du feu »*) — **l'institution qui incarne
+  l'orientation collective du Répertoire** (§12.3). Lire dans le programme rapporte
+  davantage (réputation et récompenses) ; le pilotage du serveur cesse d'être une
+  consigne de chat pour devenir un système.
+- **Échelle** : Ami — tarif de lecture réduit, accès à la bibliothèque (indices de Codex) ;
+  Honoré — le Programme (primes de lecture alignée), lunettes d'érudit (cosmétique),
+  encres et parchemins (recettes d'appoint) ; Révéré — familier-lanterne (cosmétique),
+  accès aux expéditions d'étude (contenu PvE du Silence, plus tard), l'archive (relecture
+  enrichie de ses entrées de Codex) ; Exalté — **le Scriptorium** (zone `interior` : là où
+  le Répertoire du serveur s'écrit physiquement — on y *voit* l'état des seuils et des
+  dominantes), un geste retrouvé à condition Lecteurs, titre.
+- **Contreparties** : la tension actée (chaque lecture au-delà d'Ami décote la Fonderie —
+  contrats et brûleurs inaccessibles) ; et **l'essence manque** : qui ne fond jamais paie
+  tous les services de commodité en gils pleins. **Hostile** : le Cercle refuse de lire
+  pour vous — il reste la fonte, ou le stock.
+
+#### Les cinq portes
+
+| Maison | Zone Exalté | Ce qu'on y comprend |
+|---|---|---|
+| Ombre | la Cour des Ombres | qui tient vraiment les ruelles |
+| Fonderie | le Grand Fourneau | ce qu'elle fond quand personne ne regarde |
+| Marchands | la Grande Halle | où les prix se décident |
+| Chevaliers | la Salle du Serment | pourquoi le sang ne se dépose pas |
+| Mages | le Scriptorium | ce que le serveur a lu, et ce qu'il lui reste à retrouver |
+
+Cinq récompenses d'exaltation, cinq quartiers de lore, zéro puissance verticale.
 
 ## 13. Peuplement du monde — départ, zones, extensions
 
