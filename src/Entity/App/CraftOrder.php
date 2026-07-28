@@ -4,6 +4,7 @@ namespace App\Entity\App;
 
 use App\Entity\Game\Recipe;
 use App\Enum\CraftOrderStatus;
+use App\Enum\Purity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -107,6 +108,21 @@ class CraftOrder
      */
     #[ORM\Column(name: 'min_quality', type: 'string', length: 20, nullable: true)]
     private ?string $minQuality = null;
+
+    /**
+     * Bande de purete minimale exigee des materiaux (ECO-23).
+     *
+     * Repond a la question laissee ouverte par GAME_PRINCIPLES § 6 : un client
+     * peut-il exiger une matiere d'une certaine purete ? Oui — et c'est ce qui
+     * donne au prospecteur un **client**, pas seulement un marche. Sans cette
+     * exigence, la bande n'aurait de valeur qu'a la revente, et le savoir du
+     * prospecteur resterait speculatif.
+     *
+     * A ne pas confondre avec `minQuality`, qui porte sur l'objet **produit** :
+     * l'un exige de l'artisan, l'autre de la matiere.
+     */
+    #[ORM\Column(name: 'min_purity', type: 'string', length: 20, nullable: true, enumType: Purity::class)]
+    private ?Purity $minPurity = null;
 
     #[ORM\Column(name: 'status', type: 'string', length: 20, enumType: CraftOrderStatus::class)]
     private CraftOrderStatus $status = CraftOrderStatus::Open;
@@ -270,6 +286,18 @@ class CraftOrder
     public function setMinQuality(?string $minQuality): self
     {
         $this->minQuality = $minQuality;
+
+        return $this;
+    }
+
+    public function getMinPurity(): ?Purity
+    {
+        return $this->minPurity;
+    }
+
+    public function setMinPurity(?Purity $minPurity): self
+    {
+        $this->minPurity = $minPurity;
 
         return $this;
     }

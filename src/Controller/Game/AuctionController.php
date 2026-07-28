@@ -6,6 +6,7 @@ use App\Entity\App\PlayerItem;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
+use App\Enum\Purity;
 use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Helper\PlayerHelper;
@@ -41,6 +42,10 @@ class AuctionController extends AbstractController
         $search = $request->query->get('q', '');
         $type = $request->query->get('type', '');
         $rarity = $request->query->get('rarity', '');
+        // ECO-23 : sans filtre de bande, la purete existerait mais ne se
+        // negocierait pas — le HV resterait un tas ou un lot parfait se perd
+        // entre vingt lots troubles du meme nom.
+        $purity = Purity::tryFrom((string) $request->query->get('purity', ''));
         $page = max(1, $request->query->getInt('page', 1));
 
         // ECO-03 : le marche est **local**. La region n'est pas un filtre que le
@@ -55,6 +60,7 @@ class AuctionController extends AbstractController
             $page,
             20,
             $region,
+            $purity,
         );
 
         return $this->render('game/auction/index.html.twig', [
@@ -65,6 +71,8 @@ class AuctionController extends AbstractController
             'search' => $search,
             'type' => $type,
             'rarity' => $rarity,
+            'purity' => $purity,
+            'purities' => Purity::ordered(),
             'player' => $player,
             'region' => $region,
             // ECO-04 : un avantage que le joueur ne voit pas ne l'incite a rien.

@@ -54,7 +54,7 @@ Piste B — HV régional            : ECO-03 → ECO-04
 Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
-Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 → ECO-28
+Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 → ECO-26 → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
@@ -331,14 +331,16 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > **Reporté à FOY-11** : le plafond de **Pâleur**. Le mécanisme de plafond existe et est
 > déclaratif ; la Pâleur y ajoutera une seconde borne, plus basse, quand elle existera.
 
-### ECO-23 — Pureté au marché et dans les commandes (S | ★★ | MOYENNE)
+### ECO-23 — Pureté au marché et dans les commandes ✅ (S | ★★ | MOYENNE)
 > Sans ça, la pureté existe mais ne se négocie pas — et le HV reste un tas.
-> Prérequis : ← ECO-21
-- [ ] `AuctionListing` porte la bande ; filtre et tri par bande dans la recherche
-- [ ] `CraftOrder` : **bande minimale exigée** par le client — répond à la question ouverte de
-      [../GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §6
-- [ ] Refus explicite (et lisible) si la matière fournie est sous la bande demandée
-- [ ] Tests : filtre, exigence de commande, refus
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Correction au plan** : « `AuctionListing` porte la bande » aurait dupliqué la vérité.
+> L'annonce ne porte pas sa pureté, elle porte **l'objet** qui la porte — le filtre passe donc
+> par une jointure qui existait déjà. Deux colonnes à tenir d'accord auraient fini par diverger.
+>
+> **Le refus arrive avant l'escrow**, pas à la livraison : sinon un client immobiliserait
+> matière et commission dans une commande qu'aucun artisan ne pourrait honorer.
 
 ### ECO-28 — Commandes de service : travailler un objet lié (M | ★★★ | HAUTE)
 > Le joaillier améliore les emplacements de matéria d'une pièce qui ne lui appartient pas —

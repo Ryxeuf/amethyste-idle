@@ -71,6 +71,18 @@
                             <option value="{{ r.value }}" {% if rarity == r.value %}selected{% endif %}>{{ r.label }}</option>
                         {% endfor %}
                     </select>
+                    {# ECO-23 : sans filtre de bande, la purete existerait mais ne se
+                       negocierait pas — un lot parfait se perdrait entre vingt lots
+                       troubles portant le meme nom. #}
+                    <select name="purity"
+                            class="bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500">
+                        <option value="">{{ 'game.purity.filter.all'|trans }}</option>
+                        {% for band in purities %}
+                            <option value="{{ band.value }}" {% if purity and purity.value == band.value %}selected{% endif %}>
+                                {{ ('game.purity.band.' ~ band.value)|trans }}
+                            </option>
+                        {% endfor %}
+                    </select>
                     <button type="submit"
                             class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-ink-on text-sm rounded-lg transition-colors">
                         Filtrer
@@ -110,6 +122,11 @@
                                         <span class="px-1.5 py-0.5 bg-gray-800 border border-gray-700 text-gray-400 text-[10px] rounded">
                                             {{ itemTypes[item.type]|default(item.type) }}
                                         </span>
+                                        {% if listing.playerItem.purity %}
+                                            <span class="ds-seal {{ listing.playerItem.purity.sealClass }}">
+                                                {{ ('game.purity.band.' ~ listing.playerItem.purity.value)|trans }}
+                                            </span>
+                                        {% endif %}
                                         {% if listing.isAuction %}
                                             <span class="px-1.5 py-0.5 bg-amber-900/40 border border-amber-700/50 text-amber-300 text-[10px] rounded">
                                                 Enchere
@@ -184,14 +201,14 @@
                 {% if pages > 1 %}
                     <div class="flex items-center justify-center gap-2 mt-4">
                         {% if page > 1 %}
-                            <a href="{{ path('app_game_auction', {q: search, type: type, rarity: rarity, page: page - 1}) }}"
+                            <a href="{{ path('app_game_auction', {q: search, type: type, rarity: rarity, purity: purity ? purity.value : '', page: page - 1}) }}"
                                class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs rounded-lg transition-colors">
                                 Precedent
                             </a>
                         {% endif %}
                         <span class="text-gray-400 text-xs">Page {{ page }}/{{ pages }}</span>
                         {% if page < pages %}
-                            <a href="{{ path('app_game_auction', {q: search, type: type, rarity: rarity, page: page + 1}) }}"
+                            <a href="{{ path('app_game_auction', {q: search, type: type, rarity: rarity, purity: purity ? purity.value : '', page: page + 1}) }}"
                                class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs rounded-lg transition-colors">
                                 Suivant
                             </a>

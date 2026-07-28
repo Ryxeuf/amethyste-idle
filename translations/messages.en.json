@@ -1547,6 +1547,14 @@
         "clair": "Clear",
         "pur": "Pure",
         "parfait": "Flawless"
+      },
+      "filter": {
+        "all": "All purities"
+      },
+      "order": {
+        "label": "Minimum material purity (optional)",
+        "none": "No requirement",
+        "hint": "Applies to the materials you hand over, not to the finished item. Only the crystal line — amethyst, ores, gems — carries a band."
       }
     }
   },

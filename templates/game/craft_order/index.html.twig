@@ -52,6 +52,12 @@
                                 <p class="text-xs text-gray-500 mt-0.5">
                                     <span class="capitalize">{{ recipe.craft }}</span> · niveau {{ recipe.requiredLevel }}
                                     {% if order.minQuality %}· qualite minimale : {{ order.minQuality }}{% endif %}
+                                    {# ECO-23 : la bande exigee se voit **avant** la prise en
+                                       charge. Un artisan qui la decouvrirait au moment de livrer
+                                       aurait travaille pour rien. #}
+                                    {% if order.minPurity %}
+                                        · <span class="ds-seal {{ order.minPurity.sealClass }}">{{ ('game.purity.band.' ~ order.minPurity.value)|trans }}</span>
+                                    {% endif %}
                                     · demandee par {{ order.requester.name }}
                                 </p>
                             </div>
