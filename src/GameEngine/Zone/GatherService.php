@@ -10,6 +10,7 @@ use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\World\WorldScaleService;
 use App\Helper\InventoryHelper;
 use App\Repository\PlayerJournalEntryRepository;
 use App\Repository\ZoneVeinRepository;
@@ -50,6 +51,7 @@ class GatherService
         private readonly InventoryHelper $inventoryHelper,
         private readonly PlayerJournalEntryRepository $journalRepository,
         private readonly ActionYieldResolver $yieldResolver,
+        private readonly WorldScaleService $worldScaleService,
     ) {
     }
 
@@ -298,7 +300,19 @@ class GatherService
             return null;
         }
 
-        $capacity = max(1, (int) ($resource['capacity'] ?? self::DEFAULT_CAPACITY));
+        // FOY-17b — le facteur de monde met a l'echelle l'**ampleur** du filon,
+        // jamais son rythme : `capacity` x W, `respawn_seconds` inchange. Un
+        // serveur plus peuple a des filons plus **gros**, pas plus **rapides**
+        // (BALANCE § 22.4). Le debit suit mecaniquement, mais la cadence de
+        // repousse — le rythme de la maree, en fiction — reste la meme pour tout
+        // le monde.
+        //
+        // W s'indexe sur la population **globale** et reste aveugle a la
+        // frequentation de ce filon-ci : un filon qui donnerait plus a mesure
+        // qu'on le presse annulerait sa propre rarete.
+        $capacity = max(1, (int) round(
+            max(1, (int) ($resource['capacity'] ?? self::DEFAULT_CAPACITY)) * $this->worldScaleService->current(),
+        ));
         $respawn = max(0, (int) ($resource['respawn_seconds'] ?? self::DEFAULT_RESPAWN_SECONDS));
         $yieldMin = max(1, (int) ($resource['yield_min'] ?? self::DEFAULT_YIELD_MIN));
         $yieldMax = max($yieldMin, (int) ($resource['yield_max'] ?? self::DEFAULT_YIELD_MAX));

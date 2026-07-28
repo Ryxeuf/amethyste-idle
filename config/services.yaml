@@ -59,6 +59,26 @@ services:
             $regularPlayerDailyEnergy: 150
             $tideDays: 28
 
+    # FOY-17b : le facteur de monde `W`, par paliers discrets (BALANCE § 22.4).
+    # Ancrage : `W = 1` a ~50 joueurs effectifs, la cible de calibrage (§ 22.3).
+    # Jamais en continu — un reglage qui glisse en permanence rend impossible a
+    # constituer le savoir du prospecteur, qu'on a precisement rendu monnayable.
+    App\GameEngine\World\WorldScaleService:
+        arguments:
+            $bands:
+                - { population: 0, scale: 0.5 }
+                - { population: 15, scale: 0.75 }
+                - { population: 35, scale: 1 }
+                - { population: 80, scale: 1.5 }
+                - { population: 160, scale: 2 }
+                - { population: 320, scale: 3 }
+            # Plancher : un serveur qui demarre a cinq joueurs ne doit pas se
+            # refermer sur eux.
+            $floor: 0.5
+            # Marees completes a mesurer avant qu'une contraction soit permise.
+            $graceTides: 1
+            $tideDays: 28
+
     App\EventListener\LocaleListener:
         arguments:
             $defaultLocale: '%default_locale%'

@@ -14,6 +14,7 @@ use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
 use App\GameEngine\World\WorldLoadService;
+use App\GameEngine\World\WorldScaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,6 +33,7 @@ class SeasonTickCommandTest extends TestCase
     private SeasonResolutionService&MockObject $resolutionService;
     private RankingBaselineService&MockObject $baselineService;
     private WorldLoadService&MockObject $worldLoadService;
+    private WorldScaleService&MockObject $worldScaleService;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -48,6 +50,8 @@ class SeasonTickCommandTest extends TestCase
         // FOY-17 : le tick releve desormais la charge du monde en fin de chaine.
         $this->worldLoadService = $this->createMock(WorldLoadService::class);
         $this->worldLoadService->method('capture')->willReturn($this->createWorldLoadSnapshot());
+        // FOY-17b : le tick evalue le facteur de monde apres la mesure.
+        $this->worldScaleService = $this->createMock(WorldScaleService::class);
         $this->baselineService->method('capture')->willReturn(['kills' => 0, 'quests' => 0, 'xp' => 0]);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
@@ -65,6 +69,7 @@ class SeasonTickCommandTest extends TestCase
             $this->resolutionService,
             $this->baselineService,
             $this->worldLoadService,
+            $this->worldScaleService,
         );
 
         $app = new Application();
@@ -181,6 +186,7 @@ class SeasonTickCommandTest extends TestCase
             $this->resolutionService,
             $baselineService,
             $this->worldLoadService,
+            $this->worldScaleService,
         );
         $app = new Application();
         $app->add($command);
