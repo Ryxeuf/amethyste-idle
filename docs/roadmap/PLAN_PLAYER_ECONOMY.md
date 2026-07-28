@@ -54,7 +54,7 @@ Piste B — HV régional            : ECO-03 → ECO-04
 Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
-Piste F — Pureté & améthyste     : ECO-21 → ECO-22 → ECO-23 → ECO-28
+Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 → ECO-23 → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 → ECO-26 → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
@@ -299,18 +299,20 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > l'artisanat en tableur. Ici : **la ligne du cristal uniquement**, et **quatre bandes** au
 > lieu d'une note continue.
 
-### ECO-21 — Bandes de pureté & modèle (M | ★★★ | HAUTE)
+### ECO-21 — Bandes de pureté & modèle ✅ (M | ★★★ | HAUTE)
 > Fondation. Le champ `Recipe.quality` existe déjà et dort : il lui manque son intrant.
-> Prérequis : ∅
-- [ ] Enum `Purity` : `trouble` / `clair` / `pur` / `parfait`
-- [ ] `PlayerItem.purity` (nullable — `null` = hors périmètre, l'immense majorité des objets)
-- [ ] **Périmètre étroit et explicite** : améthyste, minerais, gemmes. Herbes, poissons,
-      cuirs et bois restent fongibles — le plancher T1 (D1) ne doit jamais demander à un
-      débutant de comparer des lots
-- [ ] Règle de pile : deux lots ne fusionnent que **dans la même bande** (c'est la raison
-      d'être des bandes — une note continue éclaterait l'inventaire)
-- [ ] Affichage : sceau de bande sur la ligne d'objet (composants `.ds-*` existants)
-- [ ] Tests : périmètre, piles, sérialisation
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Correction au plan — la règle de pile.** Dans ce code les objets **ne s'empilent pas** :
+> chaque lot est une ligne de `player_item`, donc « deux lots ne fusionnent que dans la même
+> bande » est vrai par construction. Le vrai risque était ailleurs et silencieux :
+> `removeItemBySlug()` prenait les lots **dans l'ordre du sac**, si bien qu'un lot parfait
+> gardé pour éveiller une matéria aurait fondu dans la première épée venue. La consommation
+> part désormais du **moins pur**.
+>
+> **Hors périmètre, laissé à ECO-22** : aucune bande n'est attribuée. `PlayerItem.purity`
+> reste nul partout — rétro-attribuer une pureté à des lots qui n'en avaient pas reviendrait
+> à inventer un passé au joueur.
 
 ### ECO-22 — Tirage de pureté à la récolte (M | ★★★ | HAUTE)
 > D'où vient la bande. C'est ici que le savoir du prospecteur prend une valeur marchande.

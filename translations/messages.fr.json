@@ -1539,6 +1539,14 @@
         "vigour": "Commission livrée : %grains% grains au foyer, et %energy% points d'énergie rendus.",
         "tribute": "Commission livrée : %grains% grains au foyer. Vous n'avez rien gardé."
       }
+    },
+    "purity": {
+      "band": {
+        "trouble": "Trouble",
+        "clair": "Clair",
+        "pur": "Pur",
+        "parfait": "Parfait"
+      }
     }
   },
   "common": {

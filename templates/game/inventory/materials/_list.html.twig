@@ -43,6 +43,14 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                         </div>
                         <div class="text-xs sm:text-sm text-white font-medium truncate">{{ gi.name }}</div>
+                        {# ECO-21 : le sceau de bande. Il ne s'affiche que sur la #}
+                        {# ligne du cristal — pour tout le reste, `purity` est    #}
+                        {# nulle et le lot reste fongible.                        #}
+                        {% if item.purity %}
+                            <span class="ds-seal {{ item.purity.sealClass }} mt-1">
+                                {{ ('game.purity.band.' ~ item.purity.value)|trans }}
+                            </span>
+                        {% endif %}
                         {% if gi.rarity %}
                             <span class="inline-block mt-1 text-[9px] font-medium uppercase px-1.5 py-0.5 rounded
                                 {% if gi.rarity == 'amethyst' %}bg-fuchsia-900/30 text-fuchsia-400

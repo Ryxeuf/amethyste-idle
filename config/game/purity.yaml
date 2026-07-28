@@ -1,0 +1,35 @@
+# =============================================================================
+# Purete des ressources — perimetre (ECO-21)
+# =============================================================================
+# Decision D du socle de monde (docs/GAME_WORLD.md § 5.4) : toute amethyste ne se
+# vaut pas. Emprunt a Star Wars Galaxies, corrige de son defaut — chez eux
+# *toutes* les ressources avaient des statistiques, ce qui a transforme
+# l'artisanat en tableur.
+#
+# Le perimetre est donc **etroit et explicite**, et il est declare ici plutot
+# que devine dans le code : la ligne du cristal (amethyste, minerais, gemmes)
+# porte une bande, tout le reste est fongible. Herbes, poissons, cuirs et bois
+# n'en portent jamais — le plancher T1 (ECO-02) ne doit pas demander a un
+# debutant de comparer des lots avant de forger sa premiere epee.
+#
+# Ajouter une matiere au perimetre est une decision de conception qui se prend
+# ici, pas une consequence d'un nom de slug bien choisi.
+# =============================================================================
+
+scope:
+    # Toute la ligne du cristal partage le prefixe `ore-` dans le monde livre :
+    # `ore-copper` comme `ore-amethyst-crystal` ou `ore-ruby`. Le prefixe couvre
+    # donc exactement les trois familles voulues — minerais, gemmes, amethyste —
+    # et rien d'autre.
+    slug_prefixes:
+        - 'ore-'
+
+    # Matieres qui portent le prefixe sans appartenir au perimetre. Vide
+    # aujourd'hui ; l'entree existe pour que l'exception se declare au lieu de
+    # se coder.
+    excluded_slugs: []
+
+    # Matieres hors prefixe a inclure malgre tout. Vide aujourd'hui : rien de la
+    # ligne du cristal n'echappe au prefixe. Le jour ou une extension livrera
+    # une gemme nommee autrement, elle s'inscrira ici.
+    included_slugs: []
