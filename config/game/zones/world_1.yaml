@@ -280,6 +280,12 @@ zones:
             - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
             - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            # ECO-24b — le sombracier, au fond des galeries (GAME_ZONES §2.4 et §3).
+            # « Le metal du temps le plus tasse » : la mine est la zone ou le plus
+            # de temps s'est depose, et le fond en est le point extreme.
+            # Intrant du lingot d'adamantite : l'Extension 1 y renverra ses
+            # vetérans — levier 1 contre le creux du milieu (GAME_WORLD §5.5).
+            - { slug: veine-de-sombracier-du-fond, item: ore-darksteel, profession: mining, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
             # L'anguille electrique n'avait aucune source. Les bassins noyes des
             # galeries basses lui donnent son biome, et la mine sa premiere
             # ressource de peche — jusqu'ici l'extraction y etait le seul metier
@@ -385,6 +391,15 @@ zones:
             - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
             - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
             - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            # ECO-24b — le mithril, sur les strates hautes (GAME_ZONES §2.6 et §3).
+            # « Le metal que le vent a mis a nu » : la Crete est le pendant exact
+            # des Mines — peu de matiere, mais la plus nette.
+            #
+            # Ce filon **change une decision** : BALANCE §19 avait fait de la
+            # transmutation alchimique la seule source de mithril, faute de filon.
+            # GAME_ZONES §3 en pose un. La transmutation reste une seconde voie
+            # — c'est ce qui garde a l'alchimie son role economique de haut palier.
+            - { slug: filon-de-mithril-du-sommet, item: ore-mithril, profession: mining, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
 
     quartier-des-jardins:
         name: 'Quartier des Jardins'
@@ -442,6 +457,17 @@ zones:
 
         gather:
             - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            # ECO-24b — le bronze du sud (GAME_ZONES §2.7 et §3).
+            # L'etain n'avait qu'un filon au monde alors que le cuivre en avait
+            # deux, pour une recette qui exige les deux a parts egales : le
+            # bronze etait etrangle par sa moitie la plus rare. La region qui a
+            # deja le cuivre replique recoit l'etain — profil T0, comme aux
+            # Mines : le plancher de l'economie ne doit jamais etre un goulot.
+            - { slug: filon-d-etain-des-dunes, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            # Le platine, « metal du fond de mer fossile ». Intrant du lingot de
+            # mithril avec le mithril de la Crete : le sommet du jeu de base
+            # exige donc un commerce nord-sud (loi des caravanes, GAME_WORLD §5.3).
+            - { slug: filon-de-platine-des-dunes, item: ore-platinum, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
     # === Acte 4 (tache 128b) ===
@@ -498,6 +524,11 @@ zones:
         gather:
             - { slug: fruit-du-vide, item: plant-voidfruit, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
             - { slug: eclat-de-diamant, item: ore-diamond, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            # ECO-24b — l'orichalque, « metal de l'age precedent » (GAME_ZONES
+            # §2.8 et §3). La Cite est un donjon, pas un foyer : on ne s'y
+            # installe pas, on la fouille. D'ou le profil T4 le plus severe du
+            # monde livre — c'est du butin autant que de la recolte.
+            - { slug: filon-d-orichalque-ancien, item: ore-orichalcum, profession: mining, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
 
     pas-de-givre:
         name: 'Pas de Givre'

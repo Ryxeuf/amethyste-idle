@@ -175,7 +175,7 @@ désire à chaque horizon.
 - **Objets de désir** : semaine — le palier de minage suivant ; marée — le foyer (le
   Bastion/Comptoir industriel où se joue la doctrine, §6) ; an — le sombracier et le
   volume d'améthyste.
-- **État** : livré. Manque le filon de sombracier (ECO-24b).
+- **État** : livré. Sombracier posé (ECO-24b, 2026-07-28) — profil T4 au fond des galeries.
 
 ### 2.5 Marais brumeux — l'officine
 
@@ -259,9 +259,18 @@ désire à chaque horizon.
 - **Objets de désir** : semaine — un plan ; marée — l'événement de fouille ; an —
   l'orichalque, dont le lingot attend l'Extension 1 (§3) : le donjon de base reste
   chargé de valeur future.
-- **État** : livré. Orichalque à poser (ECO-24b).
+- **État** : livré. Orichalque posé (ECO-24b, 2026-07-28) — profil T4, le plus sévère du monde livré.
 
-## 3. La carte des minerais — l'entrée d'ECO-24b
+## 3. La carte des minerais — l'entrée d'ECO-24b ✅ *(exécutée le 2026-07-28)*
+
+> **ECO-24b est livré.** Les cinq filons du jeu de base sont posés selon la table
+> ci-dessous ; `ore-adamantite`, `ore-starmetal` et `ore-voidium` restent volontairement
+> sans source (extensions), et `OreSourceReferenceTest` verrouille la loi — tout minerai
+> exigé par une recette est obtenable, sauf réserve d'extension explicitement listée.
+>
+> Une correction au passage : la table annonçait « cuivre 3 sources ». Le monde livré en
+> a **deux** (Mines, Dunes) ; la troisième viendra avec les Vallons d'Aubépine (ZON-30).
+> La loi testée exige donc « au moins deux » pour une matière de base, pas exactement trois.
 
 L'audit (BALANCE §21) a montré six minerais de haut palier sans filon (portés par des
 `ObjectLayer` hérités) et l'étain à source unique. Voici la carte actée — c'est l'entrée

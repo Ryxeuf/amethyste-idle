@@ -39,7 +39,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-22 | Tirage de pureté à la récolte |
 | ECO-23 | Pureté au marché et dans les commandes |
 | ECO-24 | Audit de la chaîne de production ✅ |
-| ECO-24b | Prérequis : sources des minerais & répartition |
+| ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur (b) |
 | ECO-25 | Chaînage des paliers raffinés |
 | ECO-26 | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
@@ -55,7 +55,7 @@ Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 →
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 → ECO-22 → ECO-23 → ECO-28
-Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b → ECO-25 → ECO-26 → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
 
@@ -396,25 +396,40 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > matière de base doit être présente dans beaucoup de zones, une matière de haut palier dans
 > très peu** — raretés inversées.
 
-### ECO-24b — Prérequis de la chaîne : sources et répartition (S | ★★ | HAUTE)
-> Les deux défauts ci-dessus. Sans eux, chaîner les paliers renforce un goulot au lieu de
-> créer une demande. **L'entrée du jalon est la carte des minerais de
-> [../GAME_ZONES.md](../GAME_ZONES.md) §3** (actée : sombracier → Mines, mithril → Crête,
-> platine + 2e étain → Dunes, orichalque → Cité ; adamantite, métal étoilé et voidium
-> réservés aux extensions — la base s'arrête au lingot de mithril).
-> Prérequis : ← ECO-24 ✅
-- [ ] Déclarer des **filons** (`gather:` dans le YAML de zone) pour les minerais de haut
-      palier aujourd'hui portés par des `ObjectLayer`, aux paliers T3/T4 du calibrage et
-      **aux zones de la carte** — ceux des extensions attendent leur zone
-- [ ] Décider du sort du chemin hérité `ObjectLayer` pour ces minerais (retrait, ou maintien
-      en double source assumée et documentée)
-- [ ] Répartir l'**étain** sur les Dunes d'Ambre (profil T0 — jamais un goulot)
-- [ ] **Cuirs spéciaux du tanneur** (audit §21.7 de BALANCE) : `leather-bone`,
-      `leather-fang`, `leather-dragon-scale`, `leather-werewolf-fur` sont consommés par
-      12 recettes et lâchés par **aucun** monstre — ajouter les entrées de butin aux
-      espèces correspondantes (loups-garous → fourrure, dragons → écaille…)
-- [ ] Vérifier la règle des raretés inversées sur toute la ligne du métal
-- [ ] Tests : chaque minerai de recette a au moins une source déclarée (loi transverse)
+### ECO-24b — Prérequis de la chaîne : sources et répartition
+
+> Scindé en deux sous-jalons (règle 8) : le second passage d'audit (BALANCE §21.7) y a
+> ajouté les cuirs du tanneur, qui n'ont rien à voir avec la ligne du métal — matière
+> différente, système différent (tables de butin et non filons de zone), risque différent.
+> Même découpage que ECO-07a/b, ECO-08a/b ou ZON-26b-a/b.
+
+#### ECO-24b-a — La ligne du métal ✅ (livré 2026-07-28)
+> Livré. Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md), carte appliquée dans
+> [../GAME_ZONES.md](../GAME_ZONES.md) §3.
+>
+> **Ce qu'ECO-25 hérite** : chaque palier de la ligne du métal du **jeu de base** a
+> désormais une source, et le chaînage peut s'appuyer dessus sans renforcer un goulot.
+> Deux points à garder en tête au moment de chaîner :
+> - `ore-adamantite` et `ore-starmetal` restent **sans source** (Extension 1). Les recettes
+>   `recipe_adamantite_ingot` et `recipe_orichalcum_ingot` demeurent donc injouables dans le
+>   jeu de base — c'est voulu, et `OreSourceReferenceTest` le documente plutôt que de le
+>   masquer. Chaîner ces deux paliers n'a de sens qu'avec l'extension.
+> - Le goulot annoncé par BALANCE §21.4 reste le **cobalt** (source unique, Crête) : c'est
+>   toujours le point de tension à surveiller au coefficient 1.
+>
+> **Ouvert par le jalon (ECO-24c)** : `GatherService` n'a aucun gate de compétence, ce qui
+> rend décoratives les six compétences hautes de l'arbre du mineur. Voir BALANCE §21.5.
+
+#### ECO-24b-b — Les cuirs du tanneur (S | ★★ | HAUTE)
+> Même défaut, autre matière : 12 recettes consomment quatre cuirs qu'**aucun monstre ne
+> lâche**. Les séries « durcie » et « dragon » et la cape de maître sont irréalisables.
+> Prérequis : ← ECO-24b-a (la loi transverse et son test existent, il suffit de l'étendre)
+- [ ] Ajouter `leather-bone`, `leather-fang`, `leather-dragon-scale`,
+      `leather-werewolf-fur` aux tables de butin des espèces qui les portent en fiction
+      (loups-garous → fourrure, dragons/drakes → écaille, fauves → croc, squelettes et
+      gibier du désert → os)
+- [ ] Respecter les raretés inversées : l'écaille de dragon reste rare, l'os est commun
+- [ ] Étendre la loi transverse aux cuirs : toute matière de recette est obtenable
 
 ### ECO-25 — Chaînage des paliers raffinés (M | ★★★ | HAUTE)
 > Le cœur du jalon. Changement de **données**, pas de moteur : 6 recettes à corriger.
