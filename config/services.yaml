@@ -50,6 +50,13 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # FOY-01 : seuils de rang, decroissance, table de depot et seed du monde.
+    # « Rien en dur » (PLAN_SETTLEMENTS) : recalibrer un foyer ne doit jamais
+    # demander de toucher une classe.
+    App\GameEngine\Settlement\SettlementDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # FOY-17 : denominateur du dimensionnement du monde (BALANCE § 22.5).
     # Un « joueur regulier » depense ~60 % de sa regeneration quotidienne, soit
     # ~150 points/jour et ~4 200 sur une maree de 28 jours. Ces deux nombres

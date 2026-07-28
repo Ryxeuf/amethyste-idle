@@ -1,0 +1,262 @@
+<?php
+
+namespace App\Entity\App;
+
+use App\Enum\SettlementIndex;
+use App\Enum\SettlementRank;
+use App\Enum\SettlementType;
+use App\Repository\SettlementRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+
+/**
+ * Foyer d'une zone (FOY-01).
+ *
+ * Le monde cesse d'etre un decor traverse : l'activite des joueurs y depose du
+ * **sediment**, le foyer monte en rang et ouvre des services, et l'oubli le
+ * fait redescendre. Conception : [GAME_WORLD.md](../../../docs/GAME_WORLD.md)
+ * §3, chiffrage : [BALANCE.md § 23](../../../docs/BALANCE.md).
+ *
+ * **Quatre indices, pas un compteur.** Ils decroissent independamment : le rang
+ * se lit sur leur somme, le type sur le dominant. C'est ce qui permet a deux
+ * villes de meme rang de ne pas se ressembler.
+ *
+ * **Toutes les zones n'ont pas de foyer.** Lumiere et les Jardins sont batis sur
+ * la Voute — rien ne s'y depose (GAME_WORLD §3.4) ; la Cite ensevelie est un
+ * donjon, on la fouille, elle ne monte pas. L'absence d'un `Settlement` est donc
+ * une decision, pas un oubli : `config/game/settlements.yaml` la documente zone
+ * par zone.
+ */
+#[ORM\Entity(repositoryClass: SettlementRepository::class)]
+#[ORM\Table(name: 'settlement')]
+#[ORM\UniqueConstraint(name: 'uq_settlement_zone', columns: ['zone_id'])]
+class Settlement
+{
+    use TimestampableEntity;
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    private ?int $id = null;
+
+    #[ORM\OneToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    private Zone $zone;
+
+    #[ORM\Column(name: 'rank', type: 'string', length: 20, enumType: SettlementRank::class)]
+    private SettlementRank $rank = SettlementRank::Ruin;
+
+    /**
+     * Identite du foyer. `null` tant qu'aucun indice n'a pris l'avantage assez
+     * longtemps — un Campement n'a pas encore d'identite.
+     */
+    #[ORM\Column(name: 'type', type: 'string', length: 20, nullable: true, enumType: SettlementType::class)]
+    private ?SettlementType $type = null;
+
+    #[ORM\Column(name: 'sediment_trade', type: 'integer', options: ['default' => 0])]
+    private int $sedimentTrade = 0;
+
+    #[ORM\Column(name: 'sediment_war', type: 'integer', options: ['default' => 0])]
+    private int $sedimentWar = 0;
+
+    #[ORM\Column(name: 'sediment_lore', type: 'integer', options: ['default' => 0])]
+    private int $sedimentLore = 0;
+
+    #[ORM\Column(name: 'sediment_rite', type: 'integer', options: ['default' => 0])]
+    private int $sedimentRite = 0;
+
+    /**
+     * Plus haut rang jamais atteint.
+     *
+     * Sert a la remontee acceleree de FOY-10 : un foyer qui retombe ne repart
+     * pas de zero en effort. Ce qu'on a bati une fois se rebatit moins cher.
+     */
+    #[ORM\Column(name: 'highest_rank', type: 'string', length: 20, enumType: SettlementRank::class)]
+    private SettlementRank $highestRank = SettlementRank::Ruin;
+
+    #[ORM\Column(name: 'ranked_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $rankedAt = null;
+
+    #[ORM\Column(name: 'decayed_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $decayedAt = null;
+
+    /**
+     * Depuis quand l'indice dominant tient son avance — l'hysteresis du type
+     * (BALANCE § 23.4). Remis a zero des que le dominant change.
+     */
+    #[ORM\Column(name: 'dominant_since', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $dominantSince = null;
+
+    public function __construct(Zone $zone)
+    {
+        $this->zone = $zone;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getZone(): Zone
+    {
+        return $this->zone;
+    }
+
+    public function getRank(): SettlementRank
+    {
+        return $this->rank;
+    }
+
+    public function setRank(SettlementRank $rank): self
+    {
+        $this->rank = $rank;
+
+        if ($rank->isAtLeast($this->highestRank)) {
+            $this->highestRank = $rank;
+        }
+
+        return $this;
+    }
+
+    public function getHighestRank(): SettlementRank
+    {
+        return $this->highestRank;
+    }
+
+    public function setHighestRank(SettlementRank $rank): self
+    {
+        $this->highestRank = $rank;
+
+        return $this;
+    }
+
+    public function getType(): ?SettlementType
+    {
+        return $this->type;
+    }
+
+    public function setType(?SettlementType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getSediment(SettlementIndex $index): int
+    {
+        return match ($index) {
+            SettlementIndex::Trade => $this->sedimentTrade,
+            SettlementIndex::War => $this->sedimentWar,
+            SettlementIndex::Lore => $this->sedimentLore,
+            SettlementIndex::Rite => $this->sedimentRite,
+        };
+    }
+
+    public function setSediment(SettlementIndex $index, int $value): self
+    {
+        $value = max(0, $value);
+
+        match ($index) {
+            SettlementIndex::Trade => $this->sedimentTrade = $value,
+            SettlementIndex::War => $this->sedimentWar = $value,
+            SettlementIndex::Lore => $this->sedimentLore = $value,
+            SettlementIndex::Rite => $this->sedimentRite = $value,
+        };
+
+        return $this;
+    }
+
+    public function addSediment(SettlementIndex $index, int $grains): self
+    {
+        if ($grains !== 0) {
+            $this->setSediment($index, $this->getSediment($index) + $grains);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Les quatre indices, indexes par leur enum.
+     *
+     * @return array<string, int>
+     */
+    public function getAllSediment(): array
+    {
+        $all = [];
+        foreach (SettlementIndex::cases() as $index) {
+            $all[$index->value] = $this->getSediment($index);
+        }
+
+        return $all;
+    }
+
+    /**
+     * Somme des quatre indices — ce sur quoi se lit le rang.
+     */
+    public function getTotalSediment(): int
+    {
+        return $this->sedimentTrade + $this->sedimentWar + $this->sedimentLore + $this->sedimentRite;
+    }
+
+    /**
+     * Indice le plus fourni, ou `null` si le foyer est vierge.
+     *
+     * En cas d'egalite parfaite, aucun ne domine : rendre le premier venu
+     * ferait dependre l'identite d'une ville de l'ordre de declaration d'un enum.
+     */
+    public function getDominantIndex(): ?SettlementIndex
+    {
+        $best = null;
+        $bestValue = 0;
+        $tied = false;
+
+        foreach (SettlementIndex::cases() as $index) {
+            $value = $this->getSediment($index);
+            if ($value > $bestValue) {
+                $best = $index;
+                $bestValue = $value;
+                $tied = false;
+            } elseif ($value === $bestValue && $bestValue > 0) {
+                $tied = true;
+            }
+        }
+
+        return $tied ? null : $best;
+    }
+
+    public function getRankedAt(): ?\DateTimeImmutable
+    {
+        return $this->rankedAt;
+    }
+
+    public function setRankedAt(?\DateTimeImmutable $rankedAt): self
+    {
+        $this->rankedAt = $rankedAt;
+
+        return $this;
+    }
+
+    public function getDecayedAt(): ?\DateTimeImmutable
+    {
+        return $this->decayedAt;
+    }
+
+    public function setDecayedAt(?\DateTimeImmutable $decayedAt): self
+    {
+        $this->decayedAt = $decayedAt;
+
+        return $this;
+    }
+
+    public function getDominantSince(): ?\DateTimeImmutable
+    {
+        return $this->dominantSince;
+    }
+
+    public function setDominantSince(?\DateTimeImmutable $dominantSince): self
+    {
+        $this->dominantSince = $dominantSince;
+
+        return $this;
+    }
+}

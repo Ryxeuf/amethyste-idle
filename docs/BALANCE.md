@@ -1223,6 +1223,14 @@ gonfler le monde sans produire exactement la charge pour laquelle il se dimensio
 > facteur de monde met les seuils a l'echelle (§ 22.4), jamais les taux. Tout est de la
 > **donnee** (`config/game/settlements.yaml`) : ces valeurs sont un point de depart a
 > retendre en observant le serveur, pas des constantes.
+>
+> **Etat (2026-07-28)** : ces valeurs sont **livrees** dans
+> `config/game/settlements.yaml` avec FOY-01 et validees a la lecture par
+> `SettlementDefinitionLoader` — seuils strictement croissants, taux bornes, indice de
+> chaque ligne de la table verifie, et seuil de rendements decroissants force **sous** le
+> plafond journalier. Un parametre faux echoue donc au chargement, pas six semaines plus
+> tard sur un ecran de zone. Le **consommateur** de la table (`sediment`, `decay`,
+> `type`) arrive avec FOY-02 et FOY-03 ; a ce stade, seul le `seed` est joue.
 
 ### 23.1 L'unite : le grain de sediment
 

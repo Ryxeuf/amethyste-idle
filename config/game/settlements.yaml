@@ -1,0 +1,85 @@
+# =============================================================================
+# Foyers — seuils, decroissance, seed du monde livre (FOY-01)
+# =============================================================================
+# Chiffrage complet et sa justification : docs/BALANCE.md § 23.
+#
+# Regle du fichier (PLAN_SETTLEMENTS, « Rien en dur ») : seuils de rang, taux de
+# decroissance, quotas de Crue et couts de restauration sont des **parametres**,
+# jamais des constantes de classe. Le calibrage se fait sans redeploiement.
+#
+# Tout est calibre a **W = 1** (~50 joueurs actifs quotidiens). Le facteur de
+# monde (FOY-17b) met les **seuils** a l'echelle, jamais les **taux** : c'est ce
+# qui garde constant le *temps* de montee d'un foyer quand la population change.
+# =============================================================================
+
+# Somme des quatre indices requise pour tenir un rang (BALANCE § 23.3).
+# Repere d'echeancier : 12 joueurs focalises (480 grains/j) atteignent le Bourg
+# en ~24 jours — le premier marche du serveur est l'evenement de la premiere
+# maree, et c'est l'ancre de tout le chiffrage.
+ranks:
+    camp: 150         # Campement — 3 grains/j : deux joueurs, ou du simple transit
+    hamlet: 1200      # Hameau    — 24 grains/j : un regulier dedie suffit
+    town: 8000        # Bourg     — 160 grains/j : **exige une guilde** (Acte III)
+    city: 25000       # Cite      — 500 grains/j : n'existe qu'avec la croissance
+    metropolis: 60000 # Metropole — 1200 grains/j : le projet d'un serveur qui a reussi
+
+# Decroissance quotidienne de chaque indice (BALANCE § 23.2).
+# Demi-vie ~35 jours, un peu plus d'une maree : un foyer delaisse une maree
+# entiere descend visiblement, un foyer delaisse une semaine ne s'effondre pas.
+# Consequence structurante : le stock d'equilibre vaut 50 x le flux quotidien —
+# le rang est donc, a terme, une photographie de la frequentation reelle.
+decay:
+    daily_rate: 0.02
+
+# Le type s'installe quand l'indice dominant depasse le second de cette marge,
+# **tenue une maree entiere** (BALANCE § 23.4). Sans hysteresis, le type
+# clignote et la ville n'a pas d'identite.
+# En dessous du rang Hameau, pas de type : un Campement n'a pas encore d'identite.
+type:
+    dominance_margin: 0.25
+    sustain_days: 28
+    minimum_rank: hamlet
+
+# Grains deposes par action (BALANCE § 23.1). Aucun evenement domaine nouveau :
+# `InfluenceListener` ecoute deja exactement ces six-la, on branche un second
+# consommateur.
+sediment:
+    mob_kill: { index: war, grains: 1 }
+    harvest: { index: trade, grains: 1 }
+    fishing: { index: trade, grains: 1 }
+    butchering: { index: trade, grains: 1 }
+    craft: { index: trade, grains: 1 }
+    quest: { index: lore, grains: 5 }
+    # Traverser une zone y depose une trace faible mais reelle. C'est ce qui
+    # fait vivre une zone de transit sans qu'on y farme (GAME_WORLD § 5.5,
+    # levier 4) : 20 traversees/jour tiennent un Campement.
+    travel: { index: spread, grains: 0.2 }
+
+# Plafonds anti-exploit, appliques via `InfluenceAntiExploit` — on ne reecrit
+# pas les garde-fous, on s'y branche. Le grind ne bat jamais la regularite.
+anti_exploit:
+    daily_cap_per_player: 60
+    diminishing_threshold: 40
+
+# Seed du monde livre (decision A — **rien n'est retro-gate**, BALANCE § 23.5).
+# Le seed est narratif, pas protecteur : si personne ne frequente les Mines,
+# leur foyer redescendra. Mais les services *existants* ne ferment jamais
+# (garde-fou FOY-05) — la decroissance ne retire que ce que les joueurs ont bati.
+seed:
+    foret-des-murmures: { rank: hamlet, stock: 2000 }
+    mines-profondes: { rank: hamlet, stock: 2000 }
+    marais-brumeux: { rank: camp, stock: 400 }
+    crete-de-ventombre: { rank: camp, stock: 400 }
+    dunes-d-ambre: { rank: camp, stock: 300 }
+    # Les Vallons (ZON-30) demarreront en Ruine : zone neuve, tout est a batir.
+    # C'est le premier chantier collectif offert aux joueurs.
+
+# Zones sans foyer, et pourquoi. Une zone absente de `seed` mais absente d'ici
+# serait une omission ; l'ecrire est ce qui distingue les deux.
+without_settlement:
+    village-de-lumiere: 'batie sur la Voute — rien ne s''y depose (GAME_WORLD § 3.4)'
+    quartier-des-jardins: 'meme Voute que Lumiere'
+    cite-ensevelie: 'donjon, pas foyer : on la fouille, elle ne monte pas (GAME_ZONES § 2.8)'
+    mer-de-sel: 'le Silence / Extension 1 (GAME_WORLD § 4.3)'
+    pas-de-givre: 'Extension 1'
+    glacier-du-silence: 'Extension 1'
