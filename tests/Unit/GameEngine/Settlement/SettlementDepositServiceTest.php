@@ -217,6 +217,59 @@ class SettlementDepositServiceTest extends TestCase
         self::assertSame(0, $contribution->getDailyGrains($this->now()->modify('+1 day')));
     }
 
+    /**
+     * FOY-10 : rebatir est deux fois plus rapide que batir. Le patrimoine,
+     * c'est de la memoire, pas des murs.
+     */
+    public function testASettlementRebuildingCountsEveryGrainTwice(): void
+    {
+        $this->settlementWith(['trade' => 200], SettlementRank::Town);
+        $this->settlement->setRank(SettlementRank::Camp);
+        self::assertTrue($this->settlement->isRebuilding());
+
+        $deposited = $this->service()->deposit($this->player(), 'quest', null, $this->now());
+
+        self::assertSame(10, $deposited);
+        self::assertSame(10, $this->settlement->getSediment(SettlementIndex::Lore));
+    }
+
+    /**
+     * Le plafond mesure ce qu'un **joueur** a fait, pas ce que la ville a recu.
+     * Compter le double contre son quota reviendrait a diviser par deux le temps
+     * de jeu utile de qui aide une ville en difficulte — exactement le contraire
+     * du but.
+     */
+    public function testTheDoubledGrainsDoNotEatThePlayersDailyQuota(): void
+    {
+        $this->settlementWith(['trade' => 200], SettlementRank::Town);
+        $this->settlement->setRank(SettlementRank::Camp);
+
+        $player = $this->player();
+        $this->service()->deposit($player, 'quest', null, $this->now());
+
+        self::assertSame(5, $this->contributionFor($player)->getDailyGrains($this->now()));
+    }
+
+    public function testASettlementAtItsBestGetsNoBonus(): void
+    {
+        $this->settlementWith(['trade' => 200], SettlementRank::Camp);
+        self::assertFalse($this->settlement->isRebuilding());
+
+        self::assertSame(5, $this->service()->deposit($this->player(), 'quest', null, $this->now()));
+    }
+
+    /**
+     * @param array<string, int> $sediment
+     */
+    private function settlementWith(array $sediment, SettlementRank $rank): void
+    {
+        self::assertNotNull($this->settlement);
+        $this->settlement->setRank($rank);
+        foreach (SettlementIndex::cases() as $index) {
+            $this->settlement->setSediment($index, $sediment[$index->value] ?? 0);
+        }
+    }
+
     private function now(): \DateTimeImmutable
     {
         return new \DateTimeImmutable(self::TODAY);
@@ -276,6 +329,8 @@ class SettlementDepositServiceTest extends TestCase
             'daily_cap_per_player' => 60,
             'diminishing_threshold' => 40,
             'diminishing_factor' => 0.5,
+            'grace_days' => 28,
+            'rebuild_multiplier' => 2,
             'seed' => [],
             'without_settlement' => [],
         ]);

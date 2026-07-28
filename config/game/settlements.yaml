@@ -40,6 +40,24 @@ type:
     sustain_days: 28
     minimum_rank: hamlet
 
+# Regression et reascension (BALANCE § 23.6, FOY-10).
+#
+# `grace_days` : une maree entiere pour redresser avant de perdre le rang. Le
+# message est « ce lieu s'endort », jamais « vous avez perdu » — et jamais une
+# retrogradation surprise.
+#
+# `max_ranks_per_tide` : un seul rang perdu a la fois. Recalculer le rang naturel
+# ferait chuter un foyer de trois crans d'un coup, et une ville qui s'effondre en
+# une nuit n'apprend rien a personne.
+#
+# `rebuild_multiplier` : tant que le foyer est sous son plus haut rang, les
+# depots comptent double. Rebatir est deux fois plus rapide que batir — le
+# patrimoine, c'est de la memoire, pas des murs.
+regression:
+    grace_days: 28
+    max_ranks_per_tide: 1
+    rebuild_multiplier: 2
+
 # Grains deposes par action (BALANCE § 23.1). Aucun evenement domaine nouveau :
 # `InfluenceListener` ecoute deja exactement ces six-la, on branche un second
 # consommateur.

@@ -99,6 +99,16 @@ class Settlement
      * l'identite installee. Un pretendant qui ne tient pas la maree repart sans
      * avoir rien change.
      */
+    /**
+     * Depuis quand le foyer est **sous** le seuil de son rang (FOY-10).
+     *
+     * L'etiage s'annonce avant de se payer : une maree entiere pour redresser.
+     * `null` signifie que le foyer tient son rang — le champ se vide des qu'il
+     * repasse au-dessus, ce qui redonne une maree pleine a la fois suivante.
+     */
+    #[ORM\Column(name: 'ebb_since', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $ebbSince = null;
+
     #[ORM\Column(name: 'dominant_candidate', type: 'string', length: 20, nullable: true, enumType: SettlementIndex::class)]
     private ?SettlementIndex $dominantCandidate = null;
 
@@ -273,6 +283,34 @@ class Settlement
         $this->dominantSince = $dominantSince;
 
         return $this;
+    }
+
+    public function getEbbSince(): ?\DateTimeImmutable
+    {
+        return $this->ebbSince;
+    }
+
+    public function setEbbSince(?\DateTimeImmutable $ebbSince): self
+    {
+        $this->ebbSince = $ebbSince;
+
+        return $this;
+    }
+
+    /**
+     * Le foyer est sous son seuil et le sait : l'etiage est annonce.
+     */
+    public function isEbbWarned(): bool
+    {
+        return $this->ebbSince !== null;
+    }
+
+    /**
+     * Le foyer rebatit ce qu'il a deja eu — les depots y comptent double.
+     */
+    public function isRebuilding(): bool
+    {
+        return $this->highestRank->level() > $this->rank->level();
     }
 
     public function getDominantCandidate(): ?SettlementIndex

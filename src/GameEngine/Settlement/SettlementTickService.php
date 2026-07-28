@@ -58,7 +58,7 @@ class SettlementTickService
             $report['decayed'] += $this->applyDecay($settlement, $definition['decay_rate'], $days);
             $this->advanceDecayAnchor($settlement, $now, $days);
 
-            $change = $this->applyRank($settlement, $definition['ranks'], $now);
+            $change = $this->applyRank($settlement, $definition, $now);
             if ($change === 1) {
                 ++$report['promoted'];
             } elseif ($change === -1) {
@@ -135,19 +135,65 @@ class SettlementTickService
     }
 
     /**
-     * @param array<string, int> $thresholds
+     * Le rang, avec l'etiage annonce et le plancher de regression (FOY-10).
+     *
+     * **Ca monte tout de suite, ca descend lentement.** Une montee est immediate :
+     * rien ne gagne a faire attendre une ville qui vient de reussir. Une descente
+     * s'annonce d'abord — le foyer passe en **etiage** — et ne se paie qu'apres
+     * une maree entiere sans redressement. Le message est « ce lieu s'endort »,
+     * jamais « vous avez perdu », et jamais une retrogradation surprise.
+     *
+     * Et quand elle se paie, elle ne coute **qu'un rang**. Appliquer le rang
+     * naturel ferait chuter un foyer neglige de trois crans d'un coup ; une ville
+     * qui s'effondre en une nuit n'apprend rien a personne et ne laisse rien a
+     * rattraper.
+     *
+     * @param array{ranks: array<string, int>, grace_days: int} $definition
      *
      * @return int 1 montee, -1 descente, 0 inchange
      */
-    private function applyRank(Settlement $settlement, array $thresholds, \DateTimeImmutable $now): int
+    private function applyRank(Settlement $settlement, array $definition, \DateTimeImmutable $now): int
     {
         $before = $settlement->getRank();
-        $after = SettlementRankCalculator::rankFor($settlement->getTotalSediment(), $thresholds);
+        $natural = SettlementRankCalculator::rankFor($settlement->getTotalSediment(), $definition['ranks']);
 
-        if ($after === $before) {
+        if ($natural->level() >= $before->level()) {
+            // Au niveau ou au-dessus : l'etiage est leve, et la maree de grace
+            // repart entiere s'il devait revenir.
+            $settlement->setEbbSince(null);
+
+            return $natural === $before ? 0 : $this->commitRank($settlement, $before, $natural, $now);
+        }
+
+        $ebbSince = $settlement->getEbbSince();
+        if ($ebbSince === null) {
+            // Premiere fois sous le seuil : on annonce, on ne prend rien.
+            $settlement->setEbbSince($now);
+
             return 0;
         }
 
+        if ($ebbSince > $now->modify(sprintf('-%d days', $definition['grace_days']))) {
+            return 0;
+        }
+
+        $step = $before->previous();
+        if ($step === null) {
+            return 0;
+        }
+
+        // La maree de grace repart : le rang suivant ne se perdra pas dans la
+        // foulee, meme si le deficit le justifierait deja.
+        $settlement->setEbbSince(null);
+
+        return $this->commitRank($settlement, $before, $step, $now);
+    }
+
+    /**
+     * @return int 1 montee, -1 descente
+     */
+    private function commitRank(Settlement $settlement, SettlementRank $before, SettlementRank $after, \DateTimeImmutable $now): int
+    {
         $settlement->setRank($after);
         $settlement->setRankedAt($now);
 

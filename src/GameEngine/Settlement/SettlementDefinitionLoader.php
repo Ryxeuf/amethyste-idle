@@ -48,6 +48,8 @@ class SettlementDefinitionLoader
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
      *     diminishing_factor: float,
+     *     grace_days: int,
+     *     rebuild_multiplier: int,
      *     services: array<string, SettlementRank>,
      *     never_gated: array<string, string>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
@@ -90,6 +92,8 @@ class SettlementDefinitionLoader
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
      *     diminishing_factor: float,
+     *     grace_days: int,
+     *     rebuild_multiplier: int,
      *     services: array<string, SettlementRank>,
      *     never_gated: array<string, string>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
@@ -120,6 +124,8 @@ class SettlementDefinitionLoader
             'daily_cap_per_player' => $cap,
             'diminishing_threshold' => $threshold,
             'diminishing_factor' => $this->normalizeRate($raw['anti_exploit']['diminishing_factor'] ?? null, 'anti_exploit.diminishing_factor', $source),
+            'grace_days' => $this->normalizePositiveInt($raw['regression']['grace_days'] ?? null, 'regression.grace_days', $source),
+            'rebuild_multiplier' => $this->normalizeMultiplier($raw['regression']['rebuild_multiplier'] ?? null, 'regression.rebuild_multiplier', $source),
             'services' => $services,
             'never_gated' => $neverGated,
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
@@ -173,6 +179,22 @@ class SettlementDefinitionLoader
     {
         if (!is_numeric($value) || (int) $value < 1) {
             throw new SettlementDefinitionException(sprintf('"%s" must be a positive integer in "%s".', $key, $source));
+        }
+
+        return (int) $value;
+    }
+
+    /**
+     * Multiplicateur de reascension : au moins 2.
+     *
+     * A 1 il ne multiplie rien, et la promesse « rebatir est moins cher »
+     * deviendrait une ligne de documentation sans effet — le defaut muet que ce
+     * chargeur existe pour interdire.
+     */
+    private function normalizeMultiplier(mixed $value, string $key, string $source): int
+    {
+        if (!is_numeric($value) || (int) $value < 2) {
+            throw new SettlementDefinitionException(sprintf('"%s" must be an integer of at least 2 in "%s".', $key, $source));
         }
 
         return (int) $value;
