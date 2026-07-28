@@ -299,9 +299,10 @@ une exclusivité de plus :
 
 La Crête et le Silence n'ont **pas** d'arbres (le vent et le gel l'interdisent — la
 fiction et la loi des biomes concordent) : le bois reste une affaire de plaines, de
-sous-bois et de fossiles. Le domaine de récolte (bûcheron) et le métier d'artisanat qui
-consomme le bois relèvent du jalon **ZON-34** ; la décision du métier consommateur
-(charpentier dédié ou extension d'un métier existant) est en cours.
+sous-bois et de fossiles. Le domaine de récolte (bûcheron) et les essences relèvent du
+jalon **ZON-34** ; le métier consommateur est tranché — le **charpentier** (ECO-30,
+Piste H de PLAN_PLAYER_ECONOMY), aux côtés du **cuisinier** (ECO-29, débouché de la
+pêche et du blé) et du **tailleur** (ECO-31, la ligne tissu née du lin des Vallons).
 
 ## 4. Extension 1 — le Silence *(esquisse actée)*
 

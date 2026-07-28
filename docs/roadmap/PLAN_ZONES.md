@@ -97,8 +97,8 @@ ZON-33 en continu
 > Décidé le 2026-07-28 (GAME_ZONES §3 bis) : la récolte du bois devient la cinquième
 > récolte. Aujourd'hui l'arc et le bâton existent en items sans recette productrice, et
 > aucune ressource bois n'existe — la ligne armes de bois + housing est sans matière.
-> Prérequis : décision du métier **consommateur** (charpentier dédié, recommandé, ou
-> extension d'un métier existant) — en discussion.
+> Le métier consommateur est **tranché** : le charpentier (ECO-30, Piste H de
+> PLAN_PLAYER_ECONOMY), qui prend ce jalon en prérequis.
 - [ ] Domaine `lumberjack` (Bûcheron) dans `DomainFixtures` + arbre de récolte (mêmes
       gabarits que mineur/herboriste)
 - [ ] Items : 4 essences de la carte du bois (hêtre T0, chêne murmurant T2, bois tourbé

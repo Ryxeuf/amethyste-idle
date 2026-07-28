@@ -494,11 +494,11 @@ Une ressource ne se trouve pas « un peu partout » : elle appartient à une vei
 
 | Ligne | Biome source | Métier | Débouché |
 |---|---|---|---|
-| Bois & fibre | Forêt, bocage | Herboristerie, bûcheronnage | Armes légères, alchimie |
+| Bois & fibre | Forêt, bocage, Vallons | Bûcheronnage, charpenterie ; le lin → tailleur | Arcs et bâtons, housing, armures tissu |
 | Métal | Mines, faille | Minage, forge | Armures lourdes, armes |
 | Pierre & gemme | Crête, sel | Minage, joaillerie | Sertissage, matéria |
 | Cuir & os | Plaines, dunes | Dépeçage, tannerie | Armures légères |
-| Eau & sel | Marais, mer, rivière | Pêche, alchimie | Consommables perpétuels |
+| Eau & sel | Marais, mer, rivière | Pêche, cuisine, alchimie | Consommables perpétuels, nourriture à effets |
 | Améthyste | Affleurements | Prospection | **Matéria, seul intrant qui ne se substitue pas** |
 
 **Aucun métier n'est autosuffisant** (D-WoW §4.6) et **aucune région n'a tout** : le commerce

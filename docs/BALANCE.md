@@ -930,8 +930,12 @@ recettes avec **toutes** les sources (filons, spots herites, butin de monstres, 
 PNJ), a revele que chaque metier a un bout de chaine casse :
 
 - **La peche entiere est sans debouche.** Aucune des 82 recettes ne consomme un poisson
-  (6 especes). Le pecheur ne peut que vendre au PNJ. Debouche naturel : un metier de
-  cuisine (decision de game design en cours, cf. GAME_ZONES).
+  (6 especes). Le pecheur ne peut que vendre au PNJ. **Tranche** : le metier de cuisinier
+  (ECO-29, Piste H) devient son debouche.
+- **Aucune armure tissu n'existe.** Sur les 121 items d'equipement, pas une robe ni une
+  piece orientee magie : les domaines de sort s'habillent en cuir et en metal, et aucun
+  metier ne les habille. **Tranche** : le tailleur (ECO-31) cree la categorie tissu
+  depuis le lin des Vallons ; l'item mort `crafted-cloth` s'y reveille.
 - **La joaillerie ne taille aucune gemme.** `recipe-cut-gem-basic` consomme du **cuivre**,
   la fine de l'**argent**, la rare du **mithril**. Les trois gemmes brutes du monde
   (rubis, emeraude, diamant) ne sont consommees par **rien** — trois filons declares

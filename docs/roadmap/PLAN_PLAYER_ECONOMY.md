@@ -10,7 +10,7 @@
 
 ## Vue d'ensemble
 
-**25 jalons** (**ECO-01** à **ECO-17**, puis **ECO-21** à **ECO-28**) organisés en 7 pistes.
+**28 jalons** (**ECO-01** à **ECO-17**, puis **ECO-21** à **ECO-31**) organisés en 8 pistes.
 *(ECO-18 à ECO-20 sont nés en cours de campagne et sont tracés dans `ROADMAP_DONE.md` /
 `BALANCE.md` — les numéros ne sont pas réutilisés.)*
 Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité** (GCC ✅),
@@ -44,6 +44,9 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-26 | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
 | ECO-28 | Commandes de service — travailler un objet lié |
+| ECO-29 | Cuisinier — le débouché de la pêche et des vivres |
+| ECO-30 | Charpentier — le débouché du bois |
+| ECO-31 | Tailleur — la ligne tissu et l'armure des mages |
 
 ```
 Piste A — Socle & liaison        : ECO-01 → ECO-02
@@ -53,6 +56,7 @@ Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 → ECO-22 → ECO-23 → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
+Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -458,6 +462,60 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
 - [ ] Loi transverse à ajouter à `EconomyInvariantTest` : **aucune ligne de production n'a de
       palier orphelin** (tout palier ≥ 2 consomme le palier inférieur)
 - [ ] Documenter la chaîne finale dans [../BALANCE.md](../BALANCE.md)
+
+---
+
+## Piste H — Métiers manquants *(validée le 2026-07-28)*
+
+> Le second audit ([../BALANCE.md](../BALANCE.md) §21.7) a montré que des lignes entières
+> n'ont **aucun métier consommateur** : la pêche ne nourrit rien, le bois n'existait pas,
+> et **aucune armure tissu n'existe** parmi les 121 items d'équipement — les mages
+> s'habillent en cuir et en métal. Trois métiers d'artisanat sont actés ; l'**enchanteur**
+> reste en réserve (c'est de l'amélioration, pas de la nécessité — l'usage « améthyste
+> Claire → enchantements » vit déjà dans la Piste F). Le paysage cible : **5 récoltes**
+> (mineur, herboriste, pêcheur, dépeceur, bûcheron ← ZON-34) + **7 artisanats**.
+> Chaque jalon suit le gabarit éprouvé : domaine + arbre, recettes, intrants sourcés,
+> loi transverse testée.
+
+### ECO-29 — Cuisinier : le débouché de la pêche et des vivres (M | ★★★ | HAUTE)
+> Répare d'un coup le défaut le plus large de l'audit : 6 poissons sans débouché. Donne
+> son sens au blé des Vallons et au gibier. La nourriture à effets est le consommable
+> perpétuel idéal (demande de fond, GAME_WORLD §5.6).
+> Prérequis : ∅ (s'enrichit de ZON-30 quand le blé existe)
+- [ ] Domaine `cook` (Cuisinier) + arbre (gabarits des artisanats existants)
+- [ ] Recettes T0→T3 consommant **chaque poisson** (truite → anguille), le gibier
+      (viande via dépeçage) et le blé/farine (← ZON-30) — plus aucun poisson orphelin
+- [ ] Nourriture à effets : buffs temporaires modestes (énergie de confort, bonus de
+      récolte/combat courts) — jamais indispensable, toujours agréable
+- [ ] Le pain et le ragoût des PNJ gagnent leur équivalent joueur (le PNJ reste le
+      plancher T1, règle D1)
+- [ ] Réveiller ou purger `fish-moonfish` / `fish-baby-kraken` au passage
+- [ ] Tests : plus aucun poisson sans consommateur (loi transverse étendue)
+
+### ECO-30 — Charpentier : le débouché du bois (M | ★★★ | HAUTE)
+> Le consommateur de la ligne du bois (ZON-34). L'arc et le bâton existants gagnent
+> leur recette ; le housing (PlayerHouse, mobilier — livré côté code) gagne son métier.
+> Prérequis : ← ZON-34 (essences et filons)
+- [ ] Domaine `carpenter` (Charpentier) + arbre
+- [ ] Recettes d'armes : arc, bâton, baguette par palier d'essence (hêtre → chêne
+      murmurant → bois tourbé → bois pétrifié), lanière de cuir en liant (chaîne croisée
+      avec le tanneur, D-WoW §4.6)
+- [ ] Recettes de mobilier : la ligne `HouseFurnishing` gagne des versions craftées
+- [ ] Flèches consommables pour l'archer (le consommable perpétuel du charpentier)
+- [ ] Tests : chaque essence a ≥ 1 débouché, aucune arme de bois sans recette
+
+### ECO-31 — Tailleur : la ligne tissu et l'armure des mages (M | ★★★ | HAUTE)
+> Le trou béant : **aucune armure tissu n'existe**. Les domaines de sort (pyromancien,
+> hydromancien, nécromancien…) n'ont aucun métier qui les habille. Le lin des Vallons
+> (exclusivité, ZON-30) et l'item mort `crafted-cloth` attendent ce jalon.
+> Prérequis : ← ZON-30 (le lin)
+- [ ] Domaine `tailor` (Tailleur) + arbre
+- [ ] Chaîne : lin → `crafted-cloth` (l'item mort se réveille) → pièces d'armure tissu
+- [ ] **Créer la catégorie d'équipement tissu** : robes, coiffes, gants T1→T4, orientées
+      magie (le pendant exact de la série cuir du tanneur et métal du forgeron)
+- [ ] Paliers hauts croisés : fourrure (tanneur) ou fil d'argent (joaillier) en liant —
+      aucun métier autosuffisant
+- [ ] Tests : chaque pièce a une recette, le lin a ≥ 2 débouchés (tannerie + couture)
 
 ---
 
