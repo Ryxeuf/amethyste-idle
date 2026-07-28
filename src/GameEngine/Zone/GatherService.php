@@ -94,7 +94,7 @@ class GatherService
                 $stock,
                 $normalized['capacity'],
                 $stock > 0 ? 0 : $this->respawnRemaining($vein, $normalized['respawn_seconds'], $normalized['capacity'], $now),
-                $this->readableCeiling($player, $normalized['item'], $stock, $normalized['capacity']),
+                $this->readableCeiling($player, $zone, $normalized['slug'], $normalized['item'], $stock, $normalized['capacity']),
             );
         }
 
@@ -115,7 +115,7 @@ class GatherService
      * le seul signal de progression de recolte livre a ce jour ; les paliers les
      * remplaceront sans changer le contrat de cette methode.
      */
-    private function readableCeiling(?Player $player, string $itemSlug, int $stock, int $capacity): ?Purity
+    private function readableCeiling(?Player $player, Zone $zone, string $veinSlug, string $itemSlug, int $stock, int $capacity): ?Purity
     {
         if (null === $player || !$this->purityDrawer->coversSlug($itemSlug)) {
             return null;
@@ -125,7 +125,7 @@ class GatherService
             return null;
         }
 
-        return $this->purityDrawer->ceiling($stock, $capacity);
+        return $this->purityDrawer->ceiling($stock, $capacity, $zone, $veinSlug);
     }
 
     /**
@@ -185,7 +185,7 @@ class GatherService
         // vient lui-meme de causer ; la tirer par unite ferait d'un seul coup de
         // pioche une poignee de bandes differentes, ce qui n'a aucun sens en
         // fiction et eclaterait l'inventaire.
-        $purity = $this->purityDrawer->draw($player, $resource['item'], $vitalityBefore, $resource['capacity']);
+        $purity = $this->purityDrawer->draw($player, $resource['item'], $vitalityBefore, $resource['capacity'], $zone, $resource['slug']);
 
         for ($i = 0; $i < $quantity; ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($item->getId());

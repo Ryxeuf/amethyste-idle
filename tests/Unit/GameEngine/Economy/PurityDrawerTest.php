@@ -9,6 +9,7 @@ use App\GameEngine\Economy\PurityDefinitionLoader;
 use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Economy\PurityScope;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\Repository\WeeklyOutcropRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -212,6 +213,6 @@ class PurityDrawerTest extends TestCase
             ],
         ]);
 
-        return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver());
+        return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver(), $this->createMock(WeeklyOutcropRepository::class));
     }
 }

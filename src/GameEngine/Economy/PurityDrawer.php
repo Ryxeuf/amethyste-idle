@@ -3,8 +3,11 @@
 namespace App\GameEngine\Economy;
 
 use App\Entity\App\Player;
+use App\Entity\App\Zone;
 use App\Enum\Purity;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\Retention\WeeklyCommissionGenerator;
+use App\Repository\WeeklyOutcropRepository;
 
 /**
  * D'ou vient la bande d'un lot (ECO-22).
@@ -41,6 +44,7 @@ class PurityDrawer
         private readonly PurityScope $scope,
         private readonly PurityDefinitionLoader $loader,
         private readonly ActionYieldResolver $yieldResolver,
+        private readonly WeeklyOutcropRepository $outcropRepository,
     ) {
     }
 
@@ -49,14 +53,14 @@ class PurityDrawer
      *
      * @return Purity|null `null` quand la matiere est hors perimetre
      */
-    public function draw(Player $player, string $itemSlug, int $stock, int $capacity): ?Purity
+    public function draw(Player $player, string $itemSlug, int $stock, int $capacity, ?Zone $zone = null, ?string $veinSlug = null): ?Purity
     {
         if (!$this->scope->coversSlug($itemSlug)) {
             return null;
         }
 
         $weights = $this->weightsFor(
-            $this->ceiling($stock, $capacity),
+            $this->ceiling($stock, $capacity, $zone, $veinSlug),
             $this->yieldResolver->getBonusPercent($player, ActionYieldResolver::CATEGORY_GATHER),
         );
 
@@ -70,7 +74,7 @@ class PurityDrawer
      * prospecteur (GAME_ZONE_ACTIONS § 5.5) : savoir qu'un filon ne rend plus
      * que du clair est une decision, pas un butin.
      */
-    public function ceiling(int $stock, int $capacity): Purity
+    public function ceiling(int $stock, int $capacity, ?Zone $zone = null, ?string $veinSlug = null): Purity
     {
         $vitality = $capacity > 0 ? max(0.0, min(1.0, $stock / $capacity)) : 0.0;
 
@@ -82,7 +86,37 @@ class PurityDrawer
             }
         }
 
+        // RET-06 : l'Affleurement de la semaine monte le plafond d'un cran, sept
+        // jours durant. Il s'applique **apres** la vitalite et non a sa place :
+        // un filon ereinte reste ereinte, l'affleurement ne le ressuscite pas.
+        // C'est ce qui empeche la brique de devenir une dispense de gestion.
+        if ($this->isOutcrop($zone, $veinSlug)) {
+            $ceiling = $ceiling->next() ?? $ceiling;
+        }
+
         return $ceiling;
+    }
+
+    /**
+     * Ce filon est-il l'Affleurement de la semaine ?
+     *
+     * Prive, et il doit le rester : **rien n'annonce l'affleurement**.
+     * L'information se decouvre par prospection sur place — c'est-a-dire en
+     * lisant le plafond du filon — ou s'achete a qui l'a trouvee. L'exposer
+     * publiquement en ferait une ruee, et la brique perdrait la seule chose
+     * qu'elle produit.
+     */
+    private function isOutcrop(?Zone $zone, ?string $veinSlug): bool
+    {
+        if ($zone === null || $veinSlug === null) {
+            return false;
+        }
+
+        $outcrop = $this->outcropRepository->findForWeek(WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable()));
+
+        return $outcrop !== null
+            && $outcrop->getVeinSlug() === $veinSlug
+            && $outcrop->getZone()->getSlug() === $zone->getSlug();
     }
 
     public function coversSlug(string $itemSlug): bool
