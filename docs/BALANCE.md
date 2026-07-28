@@ -900,6 +900,14 @@ Consequence a trancher avant d'aller plus loin : **le haut de la ligne du metal 
 modele calibre**. La purete (ECO-22) se tire depuis la vitalite d'un `ZoneVein`, et la
 Paleur (FOY-11) se calcule par `ZoneVein` — ni l'une ni l'autre ne couvre ces minerais.
 
+**a bis) La ressource-titre du jeu n'a aucun filon.** `ore-amethyst-crystal` existe comme
+objet, mais sa **seule** source au monde est un spot herite (`spot-amethystite-xs`,
+`ObjectLayer` T5, coordonnees `75.2`, Mines profondes). L'amethystite — sur laquelle
+reposent la materia (regle 10) *et* le postulat du monde ([GAME_WORLD.md](GAME_WORLD.md) §1)
+— est donc hors du modele calibre, presente en un seul point, et servie par le chemin
+herite. A trancher au moment de definir les ressources de zone : source unique et rare, ou
+**presente partout, la purete seule variant selon le lieu**.
+
 **b) L'etain n'a qu'un seul filon dans le monde.** Le cuivre en a deux (Mines, Dunes),
 l'etain un seul, et le bronze exige les deux a parts egales. Regle de conception qui en
 decoule :
