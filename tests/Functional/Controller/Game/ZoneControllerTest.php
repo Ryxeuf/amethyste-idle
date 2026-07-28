@@ -14,6 +14,7 @@ use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
@@ -83,6 +84,7 @@ class ZoneControllerTest extends TestCase
     private GroupDungeonClearRepository&MockObject $groupDungeonClearRepository;
     private PlayerShopRepository&MockObject $playerShopRepository;
     private SettlementPanelBuilder&MockObject $settlementPanelBuilder;
+    private WeeklyCommissionDelivery&MockObject $commissionDelivery;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -158,6 +160,11 @@ class ZoneControllerTest extends TestCase
         // Un panneau absent est l'etat normal d'une zone sans foyer.
         $this->settlementPanelBuilder = $this->createMock(SettlementPanelBuilder::class);
         $this->settlementPanelBuilder->method('build')->willReturn(null);
+        // RET-02b : idem pour la commission — ces tests portent sur les actions
+        // de zone. Un joueur sans commission de la semaine est l'etat normal
+        // hors de la fenetre de rotation du lundi.
+        $this->commissionDelivery = $this->createMock(WeeklyCommissionDelivery::class);
+        $this->commissionDelivery->method('current')->willReturn(null);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -183,6 +190,7 @@ class ZoneControllerTest extends TestCase
             new MountTravelSpeed(),
             $this->playerShopRepository,
             $this->settlementPanelBuilder,
+            $this->commissionDelivery,
         );
         $this->controller->setContainer($this->createContainer());
     }
