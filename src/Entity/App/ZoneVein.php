@@ -50,10 +50,28 @@ class ZoneVein
 
     /**
      * Instant d'epuisement (stock tombe a 0). Null tant que le filon n'a
-     * jamais ete vide ; sert de base au calcul du respawn.
+     * jamais ete vide. Sert desormais a l'affichage — « le filon est a sec » —
+     * et non plus au calcul de la repousse.
      */
     #[ORM\Column(name: 'depleted_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $depletedAt = null;
+
+    /**
+     * Ancre de la repousse continue (ZON-37).
+     *
+     * La repousse etait auparavant une **phase** : le filon devait tomber a
+     * zero, attendre `respawn_seconds`, puis revenait plein d'un bloc — et une
+     * entame partielle n'etait jamais reconstituee. Or GAME_WORLD §3.5 pose
+     * l'inverse : « la regeneration n'est pas une phase, c'est un debit
+     * permanent », et c'est sur ce debit que BALANCE §22 calcule tout.
+     *
+     * Cette ancre porte le temps **deja converti en unites**. Elle n'avance pas
+     * jusqu'a `now` mais du nombre entier de secondes consommees par les unites
+     * rendues : le reliquat se reporte, et un filon ne perd pas sa fraction de
+     * repousse a chaque lecture.
+     */
+    #[ORM\Column(name: 'regenerated_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $regeneratedAt = null;
 
     public function __construct(Zone $zone, string $slug, int $stock)
     {
@@ -85,6 +103,18 @@ class ZoneVein
     public function setStock(int $stock): self
     {
         $this->stock = max(0, $stock);
+
+        return $this;
+    }
+
+    public function getRegeneratedAt(): ?\DateTimeImmutable
+    {
+        return $this->regeneratedAt;
+    }
+
+    public function setRegeneratedAt(?\DateTimeImmutable $regeneratedAt): self
+    {
+        $this->regeneratedAt = $regeneratedAt;
 
         return $this;
     }
