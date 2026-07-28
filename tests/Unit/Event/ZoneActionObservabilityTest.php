@@ -28,6 +28,13 @@ use PHPUnit\Framework\TestCase;
  * La liste `NOT_YET_OBSERVABLE` rend cette dette **comptable** : elle ne doit
  * que decroitre. Une entree qui gagne son evenement en sort ;
  * `testNoStaleException` s'en assure.
+ *
+ * **Complementaire de {@see DomainEventDispatchGuardTest}**, pas redondant avec
+ * lui. Celui-la interdit un evenement **sans emetteur** ; celui-ci interdit une
+ * action **sans evenement**. C'est pour cela que le premier n'a rien vu ici :
+ * `SpotHarvestEvent` avait bien un emetteur — `HarvestManager` — mais plus
+ * aucun appelant depuis l'interface. Un chemin de code vivant sur le papier et
+ * mort a l'usage passe entre les deux mailles si l'on n'en tend qu'une.
  */
 class ZoneActionObservabilityTest extends TestCase
 {

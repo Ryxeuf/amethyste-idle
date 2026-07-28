@@ -491,7 +491,7 @@ class GatherServiceTest extends TestCase
         $worldScale = $this->createMock(WorldScaleService::class);
         $worldScale->method('current')->willReturn($scale);
 
-        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale) extends GatherService {
+        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class)) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
