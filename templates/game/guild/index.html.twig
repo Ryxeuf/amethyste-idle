@@ -157,6 +157,54 @@
                 </div>
             </div>
         </div>
+
+        {# RET-01 — Le defi de la semaine, sur l'ecran de guilde #}
+        <div class="game-card mt-4">
+            <div class="game-card-header flex items-center justify-between">
+                <h2 class="text-base font-semibold text-white">Defis de la semaine</h2>
+                <a href="{{ path('app_game_guild_challenges') }}" class="px-2.5 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
+                    Tout voir
+                </a>
+            </div>
+            <div class="game-card-body">
+                {% if weeklyChallenges is empty %}
+                    <p class="text-gray-500 text-sm text-center py-4">
+                        Aucun defi en cours.
+                        <span class="block text-xs mt-1">La semaine suivante s'ouvre lundi a 00h00.</span>
+                    </p>
+                {% else %}
+                    <div class="space-y-3">
+                        {% for entry in weeklyChallenges %}
+                            {% set challenge = entry.challenge %}
+                            <div class="bg-gray-700/30 rounded-lg p-3 border border-gray-700">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <span class="text-purple-400 text-xs font-medium uppercase">{{ challenge.activityType.label }}</span>
+                                        <h3 class="text-white text-sm font-medium mt-0.5">{{ challenge|localized_challenge_title }}</h3>
+                                    </div>
+                                    <div class="text-right shrink-0 ml-2">
+                                        <div class="text-amber-400 text-xs font-mono">+{{ challenge.bonusPoints }} pts</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                                    <span class="font-mono">{{ entry.current }}/{{ entry.target }}</span>
+                                    <span class="font-mono">{{ entry.percentage|number_format(0) }}%</span>
+                                </div>
+                                <div class="w-full bg-gray-800 rounded-full h-2">
+                                    <div class="h-2 rounded-full transition-all duration-300 {% if entry.percentage >= 100 %}bg-green-500{% elseif entry.percentage >= 50 %}bg-amber-500{% else %}bg-purple-500{% endif %}"
+                                         style="width: {{ entry.percentage }}%"></div>
+                                </div>
+
+                                <div class="text-[10px] text-gray-500 mt-1.5">
+                                    Il reste {{ entry.remaining }} — expire le {{ challenge.endsAt|date('d/m/Y H:i') }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     {% else %}
         {# No guild — create form #}
         <div class="game-card">

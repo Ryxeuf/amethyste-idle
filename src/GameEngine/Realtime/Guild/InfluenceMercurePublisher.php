@@ -128,6 +128,53 @@ class InfluenceMercurePublisher
         ]);
     }
 
+    /**
+     * Annonce l'ouverture d'une semaine de defis (RET-01).
+     *
+     * Passe par `event/announce`, le canal d'annonces deja ecoute par
+     * `event_notification_controller.js` : un rendez-vous hebdomadaire qui
+     * s'ouvrirait en silence ne serait pas un rendez-vous.
+     *
+     * @param list<WeeklyChallenge> $challenges
+     */
+    public function publishChallengeRotation(
+        InfluenceSeason $season,
+        array $challenges,
+        \DateTimeInterface $weekStart,
+        \DateTimeInterface $weekEnd,
+    ): void {
+        $payload = [];
+        foreach ($challenges as $challenge) {
+            $payload[] = [
+                'title' => $challenge->getTitle(),
+                'activity' => $challenge->getActivityType()->value,
+                'activityLabel' => $challenge->getActivityType()->label(),
+                'target' => $challenge->getTarget(),
+                'bonusPoints' => $challenge->getBonusPoints(),
+            ];
+        }
+
+        $update = new Update(
+            'event/announce',
+            json_encode([
+                'topic' => 'event/announce',
+                'type' => 'weekly_challenge_rotation',
+                'season' => $season->getName(),
+                'weekNumber' => ($challenges[0] ?? null)?->getWeekNumber(),
+                'startsAt' => $weekStart->format('c'),
+                'endsAt' => $weekEnd->format('c'),
+                'challenges' => $payload,
+            ], JSON_THROW_ON_ERROR),
+        );
+
+        $this->hub->publish($update);
+
+        $this->logger->info('Mercure published weekly_challenge_rotation: {count} challenge(s) for season "{season}"', [
+            'count' => \count($challenges),
+            'season' => $season->getName(),
+        ]);
+    }
+
     private function publishInfluenceUpdate(
         Guild $guild,
         Region $region,

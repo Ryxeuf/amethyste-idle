@@ -2,10 +2,11 @@
 
 namespace App\Entity\App;
 
+use App\Repository\GuildChallengeProgressRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: GuildChallengeProgressRepository::class)]
 #[ORM\Table(name: 'guild_challenge_progress')]
 #[ORM\UniqueConstraint(name: 'uq_guild_challenge_progress', columns: ['guild_id', 'challenge_id'])]
 class GuildChallengeProgress

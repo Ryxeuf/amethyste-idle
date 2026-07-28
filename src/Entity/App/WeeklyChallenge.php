@@ -3,10 +3,11 @@
 namespace App\Entity\App;
 
 use App\Enum\InfluenceActivityType;
+use App\Repository\WeeklyChallengeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: WeeklyChallengeRepository::class)]
 #[ORM\Table(name: 'weekly_challenge')]
 #[ORM\Index(name: 'idx_weekly_challenge_season_week', columns: ['season_id', 'week_number'])]
 class WeeklyChallenge
