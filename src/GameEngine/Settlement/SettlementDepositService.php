@@ -56,12 +56,16 @@ class SettlementDepositService
     /**
      * Depose le sediment d'une action dans le foyer d'une zone.
      *
-     * @param string $action clef de la table `sediment` (BALANCE § 23.1)
-     * @param ?Zone  $zone   zone visee ; a defaut, la zone courante du joueur (regle 7)
+     * @param string $action     clef de la table `sediment` (BALANCE § 23.1)
+     * @param ?Zone  $zone       zone visee ; a defaut, la zone courante du joueur (regle 7)
+     * @param float  $multiplier facteur applique a la ligne de la table. Sert au
+     *                           Tribut d'une commission (RET-02b), ou le joueur
+     *                           renonce a sa part **au profit du foyer** : il ne
+     *                           donne pas en plus, il donne a la place
      *
      * @return int grains entiers reellement deposes — zero est un resultat normal
      */
-    public function deposit(Player $player, string $action, ?Zone $zone = null, ?\DateTimeImmutable $now = null): int
+    public function deposit(Player $player, string $action, ?Zone $zone = null, ?\DateTimeImmutable $now = null, float $multiplier = 1.0): int
     {
         $zone ??= $player->getCurrentZone();
         if ($zone === null) {
@@ -82,7 +86,17 @@ class SettlementDepositService
         $now ??= new \DateTimeImmutable();
         $contribution = $this->contributionFor($settlement, $player);
 
-        $granted = $this->applyAntiExploit($rule->grains, $contribution->getDailyGrains($now), $rules);
+        $grains = $rule->grains * max(0.0, $multiplier);
+
+        // Une action declaree hors plafond echappe au garde-fou journalier. Ce
+        // n'est pas une porte derobee : le plafond existe pour que le grind ne
+        // batte pas la regularite, et une livraison hebdomadaire — une par
+        // semaine, sans reroll — n'est pas grindable. La plafonner mangerait en
+        // silence le rendez-vous d'un joueur qui a beaucoup joue le meme jour.
+        $granted = $rule->capped
+            ? $this->applyAntiExploit($grains, $contribution->getDailyGrains($now), $rules)
+            : $grains;
+
         if ($granted <= 0.0) {
             return 0;
         }
@@ -109,7 +123,12 @@ class SettlementDepositService
 
         if ($deposited > 0) {
             $contribution->addGrains($deposited);
-            $contribution->addDailyGrains($now, (int) ceil($effort));
+            if ($rule->capped) {
+                // Un depot hors plafond ne consomme pas le quota du jour non
+                // plus : le compter reviendrait a plafonner par la bande ce
+                // qu'on vient d'exempter.
+                $contribution->addDailyGrains($now, (int) ceil($effort));
+            }
         }
 
         return $deposited;

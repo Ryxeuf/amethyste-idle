@@ -27,7 +27,7 @@ class WeeklyCommissionTemplateLoader
     }
 
     /**
-     * @return array{per_week: int, commissions: list<WeeklyCommissionTemplate>}
+     * @return array{per_week: int, rewards: array{purse_gils: int, vigour_energy: int, tribute_multiplier: int}, commissions: list<WeeklyCommissionTemplate>}
      *
      * @throws WeeklyCommissionException
      */
@@ -55,7 +55,7 @@ class WeeklyCommissionTemplateLoader
     /**
      * @param array<array-key, mixed> $raw
      *
-     * @return array{per_week: int, commissions: list<WeeklyCommissionTemplate>}
+     * @return array{per_week: int, rewards: array{purse_gils: int, vigour_energy: int, tribute_multiplier: int}, commissions: list<WeeklyCommissionTemplate>}
      */
     public function normalize(array $raw, string $source = '<array>'): array
     {
@@ -120,7 +120,51 @@ class WeeklyCommissionTemplateLoader
             );
         }
 
-        return ['per_week' => (int) $perWeek, 'commissions' => $templates];
+        return [
+            'per_week' => (int) $perWeek,
+            'rewards' => $this->normalizeRewards($raw['rewards'] ?? [], $source),
+            'commissions' => $templates,
+        ];
+    }
+
+    /**
+     * Les trois recompenses (RET-02b).
+     *
+     * Chaque valeur est **exigee** : un defaut silencieux rendrait la livraison
+     * gratuite pour le foyer ou vide pour le joueur, et rien ne le dirait avant
+     * qu'un lundi quelqu'un livre une commission pour zero gil.
+     *
+     * @param array<array-key, mixed>|mixed $rewards
+     *
+     * @return array{purse_gils: int, vigour_energy: int, tribute_multiplier: int}
+     */
+    private function normalizeRewards(mixed $rewards, string $source): array
+    {
+        if (!\is_array($rewards)) {
+            throw new WeeklyCommissionException(sprintf('"rewards" must be a mapping in "%s".', $source));
+        }
+
+        return [
+            'purse_gils' => $this->positive($rewards, 'purse_gils', $source),
+            'vigour_energy' => $this->positive($rewards, 'vigour_energy', $source),
+            // A 1, le Tribut ne donnerait rien de plus au foyer que la bourse :
+            // le joueur renoncerait a sa part pour rien, et l'option qui porte
+            // tout le sens collectif de la commission deviendrait un piege.
+            'tribute_multiplier' => $this->positive($rewards, 'tribute_multiplier', $source, 2),
+        ];
+    }
+
+    /**
+     * @param array<array-key, mixed> $values
+     */
+    private function positive(array $values, string $key, string $source, int $minimum = 1): int
+    {
+        $value = $values[$key] ?? null;
+        if (!is_numeric($value) || (int) $value < $minimum) {
+            throw new WeeklyCommissionException(sprintf('"rewards.%s" must be an integer of at least %d in "%s".', $key, $minimum, $source));
+        }
+
+        return (int) $value;
     }
 
     /**

@@ -10,9 +10,11 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\Enum\WeeklyCommissionReward;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
@@ -81,6 +83,7 @@ class ZoneController extends AbstractController
         private readonly MountTravelSpeed $mountTravelSpeed,
         private readonly PlayerShopRepository $playerShopRepository,
         private readonly SettlementPanelBuilder $settlementPanelBuilder,
+        private readonly WeeklyCommissionDelivery $commissionDelivery,
     ) {
     }
 
@@ -138,6 +141,7 @@ class ZoneController extends AbstractController
                 'zoneChat' => null,
                 'phase' => $this->gameTimeService->getPhase(),
                 'settlement' => null,
+                'commission' => null,
             ]);
         }
 
@@ -202,6 +206,10 @@ class ZoneController extends AbstractController
             // afficher une jauge a zero sur Lumiere laisserait croire a un
             // chantier abandonne alors qu'il n'y a simplement rien a batir.
             'settlement' => $this->settlementPanelBuilder->build($zone, $player),
+            // RET-02b : la commission de la semaine, et ce qui manque pour la
+            // livrer ici. Elle s'affiche dans **toutes** les zones : savoir
+            // qu'il faut aller ailleurs fait partie du rendez-vous.
+            'commission' => $this->buildCommission($player, $zone),
             'expedition' => $this->buildExpedition($player, $zone),
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
             'zoneBoss' => $this->buildZoneBoss($zone),
@@ -546,6 +554,33 @@ class ZoneController extends AbstractController
         ]);
 
         return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * La commission de la semaine, vue depuis cette zone (RET-02b).
+     *
+     * Le blocage est rendu tel quel : un bouton grise sans explication est la
+     * facon la plus sure de faire croire a un bug. « Il faut y aller » est une
+     * information utile ; « impossible » ne l'est pas.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildCommission(Player $player, Zone $zone): ?array
+    {
+        $commission = $this->commissionDelivery->current($player);
+        if (null === $commission) {
+            return null;
+        }
+
+        $deliveryZone = $commission->getDeliveryZone();
+
+        return [
+            'commission' => $commission,
+            'deliveryZone' => $deliveryZone,
+            'here' => null !== $deliveryZone && $deliveryZone->getId() === $zone->getId(),
+            'blocker' => $this->commissionDelivery->blocker($player, $commission),
+            'rewards' => WeeklyCommissionReward::ordered(),
+        ];
     }
 
     /**

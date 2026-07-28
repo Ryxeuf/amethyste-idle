@@ -53,7 +53,7 @@
 | ~~3~~ | ~~**FOY-17**~~ ✅ | Mesure de la charge (a) et facteur `W` (b) | **Livre le 2026-07-28** — `W` s'applique aux capacites de filon, `respawn_seconds` fixe. Debloque FOY-08/11, ECO-22 et le recalibrage |
 | ~~4~~ | ~~**Recalibrage filons**~~ ✅ | BALANCE §22.3, W=1 a ~50 joueurs/jour | **Livre le 2026-07-28**, apres ZON-37 qui en etait le prerequis cache. La couche de rarete cesse d'etre inerte : purete (ECO-22) et Paleur (FOY-11) ont desormais un signal a lire |
 | 5 | **FOY-01 → 05** | Socle des foyers (Sprint 16) | Le pilier territorial commence a exister |
-| 6 | **RET-02 + RET-03** | Commission de la semaine + commande de guilde | Le rendez-vous hebdomadaire personnel et le « on compte sur moi », sans attendre la suite des foyers |
+| ~~6~~ | ~~**RET-02 + RET-03**~~ ✅ | Commission de la semaine + commande de guilde | **Livres le 2026-07-28** — le rendez-vous hebdomadaire personnel et le « on compte sur moi » existent |
 | ~~7~~ | ~~**FOY-06, 07, 10**~~ ✅ | Services gates, bonus d'atelier, regression bornee (Sprint 17) | **Livres le 2026-07-28** — faire vivre une zone y ouvre un marche et de meilleurs ateliers. **Piste B complete** |
 | 8 | **RET-05** | Chantier de la semaine (par foyer) | Depend de FOY-02/04, converge avec RET-02 |
 | 9 | **ECO-21 → 23** | Purete (bandes, tirage, marche/commandes) | Reveille `Recipe.quality`, donne un metier au prospecteur |
@@ -197,7 +197,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **2/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 et RET-03 livres** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
+- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **3/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 et RET-03 livres** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
 - [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **10/17, grand chantier en cours** (socle FOY-01→05 complet, FOY-06, FOY-07, FOY-10, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-27)](PLAN_PLAYER_ECONOMY.md) — **Pistes F (purete) et G (chaine de production par paliers) ouvertes** : la Piste G est le levier principal contre le creux du milieu. Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)

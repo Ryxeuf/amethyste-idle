@@ -253,7 +253,12 @@ class SettlementDefinitionLoader
                 throw new SettlementDefinitionException(sprintf('Sediment rule "%s" needs a positive "grains" value in "%s".', $action, $source));
             }
 
-            $rules[$action] = new SedimentRule($action, $index, (float) $grains);
+            $capped = $entry['capped'] ?? true;
+            if (!\is_bool($capped)) {
+                throw new SettlementDefinitionException(sprintf('Sediment rule "%s" must declare "capped" as a boolean in "%s".', $action, $source));
+            }
+
+            $rules[$action] = new SedimentRule($action, $index, (float) $grains, $capped);
         }
 
         return $rules;

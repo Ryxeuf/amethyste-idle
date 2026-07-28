@@ -3,6 +3,7 @@
 namespace App\Entity\App;
 
 use App\Enum\InfluenceActivityType;
+use App\Enum\WeeklyCommissionReward;
 use App\Enum\WeeklyCommissionStatus;
 use App\Repository\PlayerWeeklyCommissionRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,6 +72,17 @@ class PlayerWeeklyCommission
 
     #[ORM\Column(name: 'delivered_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $deliveredAt = null;
+
+    /**
+     * Recompense choisie a la livraison (RET-02b) — `null` tant que la
+     * commission n'est pas livree.
+     *
+     * Le choix est garde parce qu'il **se lit** : une commission livree doit
+     * pouvoir dire ce qu'elle a rendu, sans quoi le joueur qui revient une
+     * semaine plus tard ne sait plus s'il a pris la bourse ou paye le tribut.
+     */
+    #[ORM\Column(name: 'reward', type: 'string', length: 20, nullable: true, enumType: WeeklyCommissionReward::class)]
+    private ?WeeklyCommissionReward $reward = null;
 
     public function __construct(Player $player, string $weekKey, string $templateSlug, InfluenceActivityType $activity, int $target)
     {
@@ -173,6 +185,18 @@ class PlayerWeeklyCommission
     public function setDeliveredAt(?\DateTimeImmutable $deliveredAt): self
     {
         $this->deliveredAt = $deliveredAt;
+
+        return $this;
+    }
+
+    public function getReward(): ?WeeklyCommissionReward
+    {
+        return $this->reward;
+    }
+
+    public function setReward(?WeeklyCommissionReward $reward): self
+    {
+        $this->reward = $reward;
 
         return $this;
     }

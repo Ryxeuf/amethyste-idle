@@ -443,6 +443,11 @@
           "icon": "✉️",
           "title": "%count% message%plural% non lu%plural%",
           "hint": "Quelqu'un vous a écrit."
+        },
+        "commission_ready": {
+          "icon": "📜",
+          "title": "Commission de la semaine accomplie",
+          "hint": "Portez-la au foyer qui l'attend"
         }
       },
       "recap": {
@@ -1510,6 +1515,29 @@
         "next": "Continuer",
         "shop": "Voir la boutique",
         "end": "Fin de la conversation."
+      }
+    },
+    "commission": {
+      "heading": "Commission de la semaine",
+      "deliver_at": "À livrer à %zone%.",
+      "ready": "Prête à livrer. Que demandez-vous ?",
+      "reward": {
+        "purse": "La bourse — des gils",
+        "vigour": "Le renfort — de l'énergie",
+        "tribute": "Le tribut — tout au foyer"
+      },
+      "error": {
+        "none": "Vous n'avez pas de commission cette semaine.",
+        "closed": "Cette commission est déjà refermée.",
+        "incomplete": "La commission n'est pas encore accomplie.",
+        "elsewhere": "Il faut porter la commission à la zone de livraison.",
+        "no_settlement": "Aucun foyer n'attend cette commission pour l'instant.",
+        "unknown_reward": "Cette récompense n'existe pas."
+      },
+      "delivered": {
+        "purse": "Commission livrée : %grains% grains au foyer, et %gils% gils pour vous.",
+        "vigour": "Commission livrée : %grains% grains au foyer, et %energy% points d'énergie rendus.",
+        "tribute": "Commission livrée : %grains% grains au foyer. Vous n'avez rien gardé."
       }
     }
   },
