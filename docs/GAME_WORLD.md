@@ -753,6 +753,47 @@ La compétition reste **indirecte et PvE** : on ne combat pas la guilde d'en fac
 à la fin de la marée quel pays a mieux vieilli — et lequel a pris le quota de Crue. Le
 **journal de monde** (NAR-07) grave le nom de celle qui gouvernait, en bien comme en mal.
 
+### 6.4 Réputations : la doctrine se compte *(tranché le 2026-07-28)*
+
+Le jeu a trois compteurs de réputation, chacun à sa place, et quatre décisions les
+gouvernent :
+
+**a) La tension par paires.** Sur l'axe doctrinal, progresser chez l'un fait décroître
+chez son opposé **au-delà du palier Ami** : **Fonderie ↔ Cercle des Mages** (Extraire /
+Préserver), **Ordre des Chevaliers ↔ Confrérie des Ombres** (Ordre / Liberté). La
+**Guilde des Marchands est hors tension** — elle vend aux deux, c'est son identité. On
+peut être bien vu de tous jusqu'à Ami ; au-delà, il faut choisir. *(Le précédent du
+genre est le choix Aldor/Scryers de WoW Burning Crusade : l'identité naît de ce qu'on
+renonce.)* Jamais de décroissance par inactivité : la réputation ne descend que par le
+**geste opposé** (principe du plan Rétention — l'absence n'est jamais punie).
+
+**b) Les gestes nourrissent, les quêtes amorcent.** La réputation se gagne d'abord par
+les **actes systémiques quotidiens** : fondre une matéria → Fonderie ; la **lire** →
+Lecteurs (le même geste nourrit le Répertoire du serveur, §12.3 — deux échos d'un même
+acte) ; ventes au HV et caravanes → Marchands ; Effacés abattus et beats de marée →
+Chevaliers ; le marché gris → Ombres. Les quêtes de faction restent l'amorce et la
+narration, jamais le régime de croisière.
+
+**c) Le patronage : une seule faction portée.** Les bonus de statistiques des paliers
+deviennent un **patronage** — on porte les couleurs d'une seule faction à la fois
+(changeable hors combat). Tout le reste des récompenses de palier est **latéral,
+jamais vertical** : recettes exclusives, cosmétiques, montures, teintures, titres,
+**accès secrets** (connexions de graphe cachées via `requires_discovery`, services
+clandestins ou réservés), gestes retrouvés à condition de faction (§12.3). Un palier
+de réputation ouvre des portes ; il n'empile jamais de la puissance.
+
+**d) Hostile a des conséquences réelles.** Le bas de l'échelle n'est pas décoratif :
+prix majorés, portes fermées, services refusés, informations empoisonnées — selon la
+faction. Deux bornes absolues : les conséquences ne bloquent **jamais la boucle cœur**
+(énergie, zones, combat, plancher T1), et ne prennent **jamais la forme d'une agression**
+(le Serment tient, §6.1).
+
+**Les deux autres compteurs** : la réputation d'**artisan** (`CrafterReputation`, par
+métier — livrée) mesure la fiabilité aux commandes ; la **renommée** globale
+(`PlayerRenown`) reste une **vitrine sociale pure** — titres, journal de monde — et ne
+gate jamais rien. Pas de quatrième compteur par foyer : la contribution nominative par
+marée (FOY-04, RET-05) suffit.
+
 ---
 
 ## 7. La trame
