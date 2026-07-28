@@ -69,6 +69,11 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 RecurringMessage::cron('1 0 * * *', new RunCommandMessage('app:daily-quest:rotate')),
                 // SeasonTick : cycle de vie des saisons d'influence
                 RecurringMessage::cron('5 0 * * *', new RunCommandMessage('app:season:tick')),
+                // Foyers : décroissance des indices, rang et type (FOY-03).
+                // **Après** le tick de saison : la marée se clôt d'abord, les
+                // foyers s'amincissent ensuite. L'inverse ferait redescendre un
+                // foyer juste avant que la saison ne compte ce qu'il valait.
+                RecurringMessage::cron('7 0 * * *', new RunCommandMessage('app:settlement:tick')),
                 // GilsSupply : relève la masse monétaire (ECO-15).
                 // Après le tick de saison : les récompenses de clôture doivent
                 // être versées avant qu'on compte, sinon la masse du jour saute

@@ -87,6 +87,21 @@ class Settlement
     #[ORM\Column(name: 'dominant_since', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $dominantSince = null;
 
+    /**
+     * **Quel** indice tient cette avance (FOY-03).
+     *
+     * Sans lui, `dominantSince` serait une date sans sujet : on saurait que
+     * quelqu'un mene depuis vingt jours, sans savoir qui, et un changement de
+     * meneur passerait pour une continuite. Le type s'installerait alors au nom
+     * du mauvais indice.
+     *
+     * Distinct de `$type` : celui-ci est le **pretendant**, celui-la
+     * l'identite installee. Un pretendant qui ne tient pas la maree repart sans
+     * avoir rien change.
+     */
+    #[ORM\Column(name: 'dominant_candidate', type: 'string', length: 20, nullable: true, enumType: SettlementIndex::class)]
+    private ?SettlementIndex $dominantCandidate = null;
+
     public function __construct(Zone $zone)
     {
         $this->zone = $zone;
@@ -256,6 +271,18 @@ class Settlement
     public function setDominantSince(?\DateTimeImmutable $dominantSince): self
     {
         $this->dominantSince = $dominantSince;
+
+        return $this;
+    }
+
+    public function getDominantCandidate(): ?SettlementIndex
+    {
+        return $this->dominantCandidate;
+    }
+
+    public function setDominantCandidate(?SettlementIndex $candidate): self
+    {
+        $this->dominantCandidate = $candidate;
 
         return $this;
     }
