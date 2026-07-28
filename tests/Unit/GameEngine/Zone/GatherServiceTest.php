@@ -12,6 +12,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\World\WorldScaleService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\ZoneActionException;
@@ -35,6 +36,7 @@ class GatherServiceTest extends TestCase
     private PlayerItemGenerator&MockObject $playerItemGenerator;
     private InventoryHelper&MockObject $inventoryHelper;
     private PlayerJournalEntryRepository&MockObject $journalRepository;
+    private WorldScaleService&MockObject $worldScaleService;
 
     /** @var GatherService&object{rolls: list<int>, currentTime: \DateTimeImmutable} */
     private GatherService $service;
@@ -55,8 +57,12 @@ class GatherServiceTest extends TestCase
         $this->playerItemGenerator = $this->createMock(PlayerItemGenerator::class);
         $this->inventoryHelper = $this->createMock(InventoryHelper::class);
         $this->journalRepository = $this->createMock(PlayerJournalEntryRepository::class);
+        // FOY-17b : monde a l'echelle 1 par defaut — ces tests portent sur la
+        // recolte, pas sur le dimensionnement.
+        $this->worldScaleService = $this->createMock(WorldScaleService::class);
+        $this->worldScaleService->method('current')->willReturn(1.0);
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver()) extends GatherService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -307,6 +313,80 @@ class GatherServiceTest extends TestCase
         $this->assertSame(0, $gatherables[1]->stock);
         $this->assertTrue($gatherables[1]->isDepleted());
         $this->assertSame(540, $gatherables[1]->respawnRemaining);
+    }
+
+    /**
+     * FOY-17b — le facteur de monde grossit le filon sans l'accelerer.
+     *
+     * « Un serveur plus peuple a des filons plus **gros**, pas plus
+     * **rapides** » (BALANCE § 22.4). Le debit soutenu suit mecaniquement, mais
+     * la cadence de repousse — le rythme de la maree, en fiction — reste la meme
+     * pour tout le monde.
+     */
+    public function testWorldScaleMultipliesCapacityButNeverTheRespawn(): void
+    {
+        $service = $this->buildServiceWithScale(2.0);
+        $zone = $this->buildZone([$this->ironResource()]);
+
+        $this->itemRepository->method('findOneBy')->willReturnCallback(
+            fn (array $criteria): Item => $this->buildItem(1, $criteria['slug'], strtoupper($criteria['slug'])),
+        );
+
+        $vein = new ZoneVein($zone, 'filon-de-fer', 0);
+        $vein->setDepletedAt($service->currentTime->modify('-60 seconds'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+
+        $gatherables = $service->getGatherables($zone);
+
+        // Capacite declaree 20, respawn declare 900.
+        $this->assertSame(40, $gatherables[0]->capacity, 'La capacite suit le facteur de monde.');
+        $this->assertSame(840, $gatherables[0]->respawnRemaining, 'La repousse, elle, ne bouge pas.');
+    }
+
+    /**
+     * Un monde qui se resserre reduit l'ampleur, jamais en dessous d'une unite :
+     * un filon ne devient pas inexistant parce que le serveur est petit.
+     */
+    public function testAContractedWorldStillLeavesAtLeastOneUnitOfCapacity(): void
+    {
+        $service = $this->buildServiceWithScale(0.01);
+        $zone = $this->buildZone([$this->ironResource()]);
+
+        $this->itemRepository->method('findOneBy')->willReturnCallback(
+            fn (array $criteria): Item => $this->buildItem(1, $criteria['slug'], strtoupper($criteria['slug'])),
+        );
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+
+        $this->assertSame(1, $service->getGatherables($zone)[0]->capacity);
+    }
+
+    /**
+     * @return GatherService&object{rolls: list<int>, currentTime: \DateTimeImmutable}
+     */
+    private function buildServiceWithScale(float $scale): GatherService
+    {
+        $worldScale = $this->createMock(WorldScaleService::class);
+        $worldScale->method('current')->willReturn($scale);
+
+        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale) extends GatherService {
+            /** @var list<int> */
+            public array $rolls = [];
+            public \DateTimeImmutable $currentTime;
+            private int $rollIndex = 0;
+
+            protected function roll(int $max): int
+            {
+                return $this->rolls[$this->rollIndex++] ?? 1;
+            }
+
+            protected function now(): \DateTimeImmutable
+            {
+                return $this->currentTime;
+            }
+        };
+        $service->currentTime = new \DateTimeImmutable('2026-07-24 12:00:00');
+
+        return $service;
     }
 
     public function testGetGatherablesSkipsResourceWithUnknownItem(): void

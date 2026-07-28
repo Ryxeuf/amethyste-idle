@@ -12,6 +12,7 @@ use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
 use App\GameEngine\World\WorldLoadService;
+use App\GameEngine\World\WorldScaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -38,6 +39,7 @@ class SeasonTickCommand extends Command
         private readonly SeasonResolutionService $resolutionService,
         private readonly RankingBaselineService $baselineService,
         private readonly WorldLoadService $worldLoadService,
+        private readonly WorldScaleService $worldScaleService,
     ) {
         parent::__construct();
     }
@@ -47,8 +49,10 @@ class SeasonTickCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $now = new \DateTimeImmutable();
 
-        // 1. End active seasons that have passed their end date
-        $this->handleExpiredSeasons($io, $now);
+        // 1. End active seasons that have passed their end date.
+        //    Une maree qui s'acheve **est** la bascule : c'est le seul moment
+        //    ou le monde a le droit de se contracter (FOY-17b).
+        $tideBoundary = $this->handleExpiredSeasons($io, $now);
 
         // 2. Start scheduled seasons whose start date has arrived
         $this->handleScheduledSeasons($io, $now);
@@ -63,12 +67,12 @@ class SeasonTickCommand extends Command
         //    versements de cloture : ce qu'on mesure est l'energie depensee par
         //    les joueurs, pas les ecritures du tick, mais un releve pris avant
         //    la cloture daterait d'avant le basculement de maree.
-        $this->captureWorldLoad($io, $now);
+        $this->captureWorldLoad($io, $now, $tideBoundary);
 
         return Command::SUCCESS;
     }
 
-    private function captureWorldLoad(SymfonyStyle $io, \DateTimeImmutable $now): void
+    private function captureWorldLoad(SymfonyStyle $io, \DateTimeImmutable $now, bool $tideBoundary): void
     {
         $snapshot = $this->worldLoadService->capture($now);
 
@@ -79,18 +83,29 @@ class SeasonTickCommand extends Command
             $this->worldLoadService->effectivePopulation(),
             $this->worldLoadService->measuredDays(),
         ));
+
+        // FOY-17b — la mise a l'echelle suit immediatement la mesure. Le drapeau
+        // dit si l'on est a une bascule de maree : hors bascule, seule
+        // l'expansion est permise (asymetrie de BALANCE § 22.4).
+        $newScale = $this->worldScaleService->evaluate($tideBoundary);
+        if ($newScale !== null) {
+            $io->success(sprintf('Facteur de monde porte a %.2f.', $newScale));
+        }
     }
 
-    private function handleExpiredSeasons(SymfonyStyle $io, \DateTimeImmutable $now): void
+    /**
+     * @return bool vrai si une maree s'est achevee sur ce tick
+     */
+    private function handleExpiredSeasons(SymfonyStyle $io, \DateTimeImmutable $now): bool
     {
         $activeSeason = $this->seasonManager->getCurrentSeason();
 
         if ($activeSeason === null) {
-            return;
+            return false;
         }
 
         if ($activeSeason->getEndsAt() > $now) {
-            return;
+            return false;
         }
 
         // Attribute region control before ending the season
@@ -148,6 +163,8 @@ class SeasonTickCommand extends Command
             $baselineCounts['quests'] ?? 0,
             $baselineCounts['xp'] ?? 0,
         ));
+
+        return true;
     }
 
     private function handleScheduledSeasons(SymfonyStyle $io, \DateTimeImmutable $now): void
