@@ -1437,7 +1437,9 @@
         "opens": "At the next tier:",
         "summit": "This settlement has reached the top of the scale.",
         "your_share": "Your share",
-        "guild_share": "Your guild"
+        "guild_share": "Your guild",
+        "services": "Settlement services",
+        "service_locked": "%service% — at %required%"
       }
     },
     "settlement": {
@@ -1464,7 +1466,6 @@
       "service": {
         "regional_market": "the regional market",
         "zone_bank": "the zone bank",
-        "group_dungeon": "the group dungeon",
         "rented_stall": "rented stalls",
         "awakening_altar": "the Altar of Awakening"
       },

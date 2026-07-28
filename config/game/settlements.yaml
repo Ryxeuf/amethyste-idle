@@ -98,7 +98,6 @@ anti_exploit:
 services:
     regional_market: { minimum_rank: town }      # Bourg — le 1er marche du serveur
     zone_bank: { minimum_rank: city }
-    group_dungeon: { minimum_rank: city }
     rented_stall: { minimum_rank: city }
     # Metropole — l'Autel d'eveil est un service *de la ville*, ouvert a tous et
     # taxe par la guilde controlante ; il ne ferme jamais une fois ouvert et ne
@@ -109,6 +108,12 @@ services:
 # pas de la documentation : le chargeur refuse qu'ils apparaissent dans
 # `services`, ce qui rend la decision A impossible a contredire par megarde.
 never_gated:
+    # FOY-06, arbitrage : `group_dungeon` figurait dans `services` au rang Cite.
+    # Or les donjons de groupe sont livres depuis ZON-19/20, et aucun foyer du
+    # seed n'atteint la Cite : le gate les aurait tous fermes le jour de sa mise
+    # en service. C'est exactement ce que la decision A interdit, et le premier
+    # jalon qui *applique* le gate est aussi celui qui le decouvre.
+    group_dungeon: 'donjons de groupe livres par ZON-19/20 — aucun foyer du monde livre n''atteint la Cite, les gater les fermerait tous'
     pnj: 'habitants deja poses dans le monde livre — une ville ne perd pas ses gens en maigrissant'
     shop: 'boutiques existantes ; le plancher T1 anti cold-start en depend (ECO-02)'
     workshop: 'etablis deja poses — fermer un metier retirerait une progression acquise'
