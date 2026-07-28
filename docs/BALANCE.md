@@ -922,3 +922,201 @@ decoule :
 ECO-25 applique la chaine cible (§21.3) au coefficient 1. Avant cela, deux prealables
 issus de §21.5 : unifier la source des minerais de haut palier (filon declare plutot que
 spot herite), et repartir l'etain sur au moins une seconde zone.
+
+---
+
+## 22. Calibrage des filons face a la population reelle
+
+> Consequence de la cible de population actee ([GAME_WORLD.md](GAME_WORLD.md) §13.4) :
+> **~50 joueurs actifs quotidiens** comme base de calibrage. Le calibrage actuel a ete pose
+> sans cible chiffree ; confronte a celle-ci, il se revele surdimensionne d'un ordre de
+> grandeur.
+
+### 22.1 Ce que le monde soutient aujourd'hui
+
+34 filons declares dans `config/game/zones/world_1.yaml`. Debit soutenu
+`R = capacity x 3600 / respawn_seconds`, et charge soutenable a 20 recoltes/jour/joueur :
+
+| Palier | Filons | R (u/h) | Recolteurs soutenus **par filon** |
+|---|---:|---:|---:|
+| T0 fondation (72 / 45 min) | 7 | 96,0 | **115** |
+| T1 commun (60 / 45 min) | 10 | 80,0 | **96** |
+| T2 peu commun (32 / 60 min) | 8 | 32,0 | **38** |
+| T3 rare (24 / 90 min) | 8 | 16,0 | **19** |
+| T4 epique (22 / 180 min) | 1 | 7,3 | **9** |
+
+**Total monde : ~1 863 u/h, soit environ 2 200 recolteurs reguliers.**
+
+### 22.2 La charge reelle
+
+En supposant que la moitie des joueurs recolte regulierement :
+
+| Joueurs/jour | Recolteurs | Charge du monde | Effet |
+|---:|---:|---:|---|
+| 30 | 15 | **0,7 %** | vitalite jamais entamee |
+| **50** | **25** | **1,1 %** | vitalite jamais entamee |
+| 100 | 50 | 2,2 % | vitalite jamais entamee |
+| 200 | 100 | 4,5 % | vitalite jamais entamee |
+| 400 | 200 | 8,9 % | vitalite a peine effleuree |
+
+**Toute la couche de rarete est inerte.** La vitalite d'un filon ne descend jamais, donc :
+la purete (ECO-22) est toujours au maximum, la **Paleur est mecaniquement impossible**
+(FOY-11), l'incitation a s'etaler sur les filons voisins n'existe pas, et la restauration
+payee au tresor (FOY-12) n'a rien a reparer. Trois jalons concus pour un monde sous tension
+tourneraient a vide.
+
+### 22.3 Cible proposee
+
+Le bon reglage ne s'exprime pas en capacite absolue mais en **nombre de recolteurs qu'un
+filon soutient**. A 50 joueurs quotidiens, on veut que les filons frequentes montrent une
+tension visible sans jamais bloquer personne (rappel : **une recolte n'echoue jamais**, seul
+le rendement varie — cf. GAME_ZONE_ACTIONS §6.6).
+
+| Palier | Soutenus aujourd'hui | Cible a 50 DAU | Facteur |
+|---|---:|---:|---:|
+| T0 fondation | 115 | **~12** | ÷10 |
+| T1 commun | 96 | **~8** | ÷12 |
+| T2 peu commun | 38 | **~5** | ÷8 |
+| T3 rare | 19 | **~3** | ÷6 |
+| T4 epique | 9 | **~1,5** | ÷6 |
+
+T0 reste le plus genereux : il gate le plancher T1 de l'economie (cuivre, etain, menthe,
+truite) et **ne doit jamais etre un goulot**, meme sous tension.
+
+### 22.4 Calibrage dynamique — le facteur de monde
+
+Refixer des constantes obligerait a retoucher 34 filons, les quotas et les seuils a chaque
+palier de croissance : une corvee qui ne serait jamais faite, et qui casserait le design en
+silence. Le calibrage doit donc etre **dynamique**. Mais mal concu, il annule exactement la
+tension qu'il sert.
+
+#### L'invariant a servir
+
+> **Le temps qu'il faut pour faire monter un foyer, et la tension ressentie sur un filon,
+> doivent etre les memes a 50 joueurs et a 500.**
+
+Tout le reste en decoule. Ce n'est pas « le monde grossit », c'est « l'experience reste
+constante quand la population change ».
+
+#### Le piege : ne jamais boucler sur la pression locale
+
+Si la capacite d'un filon montait avec le nombre de gens qui l'exploitent, le filon
+**donnerait plus a mesure qu'on le presse** — la rarete s'annulerait toute seule, et la
+vitalite deviendrait un affichage. Regle absolue :
+
+| Doit etre dynamique | Ne doit **jamais** l'etre |
+|---|---|
+| L'**ampleur** du monde, indexee sur la population **globale** | La reponse d'un filon a sa **propre** frequentation |
+| Capacite des filons, seuils de foyer, quotas de Crue | Vitalite, purete, Paleur — ce sont les **signaux de jeu** |
+
+Le facteur global est **aveugle au comportement local**. C'est ce qui garantit que la
+concurrence sur un filon reste une vraie concurrence.
+
+#### Ce qui bouge, et ce qui ne bouge pas
+
+> **Le rythme du monde ne change pas ; seule son ampleur change.**
+
+On multiplie la **`capacity`** d'un filon par le facteur de monde `W`, et on laisse
+**`respawn_seconds` fixe**. Le debit suit mecaniquement (`R = capacity x 3600 / respawn`),
+mais la cadence de repousse — le rythme de la maree, en fiction — reste la meme pour tout le
+monde. Un serveur plus peuple a des filons plus **gros**, pas plus **rapides**.
+
+| Grandeur | Echelle |
+|---|---|
+| `capacity` des filons | x W |
+| Seuils de sediment d'un foyer | x W — c'est ce qui garde constant le **temps** de montee |
+| Quotas de Crue | paliers de population (§ GAME_WORLD 13.4) |
+| `respawn_seconds` | **fixe** |
+| Vitalite, purete, Paleur | **jamais** — ce sont les signaux |
+
+#### Trois garde-fous
+
+1. **Par paliers, pas en continu.** `W` prend des valeurs discretes (0,5 / 0,75 / 1 / 1,5 / 2
+   / 3…) rattachees a des bandes de population. Un reglage qui glisse en permanence rend le
+   savoir du prospecteur — qu'on a rendu monnayable — impossible a constituer.
+2. **Asymetrique.** Monte vite, redescend lentement, sur une moyenne glissante d'une maree.
+   Une baisse passagere de frequentation ne doit jamais retrecir le monde sous les pieds des
+   joueurs presents.
+3. **Annonce, jamais silencieux.** Un changement de `W` ne survient qu'a une bascule de maree
+   et s'inscrit au journal de monde : *la Concorde s'etend*. Meme methode que la Crue — une
+   necessite technique devient un evenement du monde plutot qu'un ajustement subi.
+
+Et un **verrou manuel** : l'admin doit pouvoir figer `W`. Pour un evenement, pour un test, et
+pour le jour ou la valeur automatique aura tort.
+
+#### Anti-abus
+
+`W` se calcule sur la **meme definition de joueur actif** que le quota de Crue, et passe par
+les garde-fous existants (`InfluenceAntiExploit`) : une ferme de comptes secondaires ne doit
+pas pouvoir gonfler le monde.
+
+**A faire** : le recalibrage de base (§ 22.3) fixe `W = 1` a ~50 joueurs quotidiens. Il touche
+les 34 filons et invalide le tableau de paliers en tete de `config/game/zones/world_1.yaml`.
+Il precede FOY-11 (Paleur) et ECO-22 (purete a la recolte) — sans lui, les deux jalons
+livreraient du code sans effet observable.
+
+### 22.5 Compter la population — la charge, pas les tetes
+
+Le facteur de monde (§ 22.4) et les quotas de Crue reposent sur « la population active ».
+Encore faut-il la definir, car c'est le **denominateur de tout le dimensionnement**.
+
+#### Ce qui ne marche pas
+
+**Les comptes inscrits** : un compte cree puis abandonne pese autant qu'un joueur quotidien.
+Le monde grossirait sur du vide.
+
+**Le proxy actuel.** `InfluenceAntiExploit::hasMinimumActiveMembers()` compte les membres dont
+le `Player.updatedAt` est plus recent que 7 jours, et le commentaire du code l'admet :
+*« Utilise le updatedAt du Player comme proxy d'activite »*. Il n'existe aujourd'hui **aucun
+champ `lastActivityAt`** dans le modele. Ce proxy est acceptable pour un garde-fou binaire
+(« la guilde a-t-elle au moins 3 membres vivants ? ») ; il ne l'est pas pour dimensionner le
+monde, car `updatedAt` est un champ de cycle de vie Doctrine — il bouge des qu'une ecriture
+touche la ligne, y compris une ecriture **systeme** (regeneration, respawn, backfill), et
+**une seule connexion suffit a compter pendant sept jours**.
+
+**Un simple decompte de tetes**, meme corrige, reste faux : cinquante joueurs quotidiens et
+deux cents joueurs hebdomadaires donnent le meme nombre, et exercent une pression totalement
+differente sur les filons.
+
+#### Ce qu'on mesure a la place
+
+> **La population effective se deduit de l'energie depensee, pas des connexions.**
+
+L'energie est la ressource rare fondamentale du jeu : toute action qui pese sur le monde
+(explorer, recolter, combattre) en consomme, et **se connecter n'en consomme pas**.
+
+```
+Charge de monde C     = energie totale depensee par tous les joueurs sur la maree ecoulee
+Population effective  = C / (energie d'un joueur regulier sur une maree)
+```
+
+Un « joueur regulier » depense environ 60 % de sa regeneration quotidienne, soit ~150 points
+par jour et ~4 200 sur une maree de 28 jours. La population effective est donc le nombre de
+joueurs reguliers **equivalents**, pas le nombre de comptes.
+
+#### Pourquoi c'est immunise contre le multi-compte
+
+C'est la propriete qui emporte la decision. Un decompte de tetes se gonfle avec des comptes
+secondaires ; une mesure de **charge**, non — parce qu'un joueur qui fait tourner trois
+comptes a fond **exerce reellement la pression de trois joueurs** sur les filons. Le monde
+doit donc bien se dimensionner pour trois. Il n'y a plus rien a exploiter : on ne peut pas
+gonfler le monde sans produire exactement la charge pour laquelle il se dimensionne.
+
+#### Ce qu'il faut ajouter au modele
+
+| Besoin | Solution |
+|---|---|
+| Dimensionnement du monde (W, quotas) | **`WorldLoadService`** : somme de l'energie depensee sur la maree → population effective |
+| Garde-fou binaire (min. membres actifs) | **`Player.lastActivityAt`** explicite, mis a jour **a la depense d'energie** — remplace le proxy `updatedAt` |
+
+#### Cadence et amorcage
+
+- **Contraction : uniquement a une bascule de maree** (28 jours), pour ne jamais retrecir le
+  monde sous les pieds des joueurs presents.
+- **Expansion : possible a n'importe quel tick quotidien** si la charge franchit un palier.
+  C'est l'asymetrie de § 22.4 — monte vite, redescend lentement — et elle compte pour un
+  jeune serveur qui grandit : attendre 28 jours pour ouvrir le monde serait trop lent.
+- **Plancher de W** et **periode de grace au lancement** : les premieres marees ne contractent
+  jamais. Un serveur qui demarre a cinq joueurs ne doit pas se refermer sur eux.
+
+

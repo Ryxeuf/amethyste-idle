@@ -31,6 +31,7 @@ L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'
 **Plans annexes :**
 - [PIVOT_PBBG.md](PIVOT_PBBG.md) — decision du pivot, equivalences carte → zones
 - [ZON_CAMPAIGN_RECAP.md](ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis (traites en Sprint 13)
+- [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md) — **0/7** (retention hebdomadaire ; RET-01 immediat)
 - [roadmap/PLAN_SETTLEMENTS.md](roadmap/PLAN_SETTLEMENTS.md) — **0/16, prochain grand chantier** (foyers, Crue, Paleur)
 - [roadmap/PLAN_PLAYER_ECONOMY.md](roadmap/PLAN_PLAYER_ECONOMY.md) — **0/17, prochain grand chantier**
 - [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) ✅ — 14/14

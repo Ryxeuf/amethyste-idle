@@ -52,7 +52,7 @@ place pour deux.
 |---|---|
 | **Sédiment** | Le dépôt laissé par toute chose vécue. Invisible, omniprésent, mesurable. |
 | **Améthystite** | Sédiment durci. Minerai, inerte, commerçable. *(Déjà dans les données : `spot-amethystite-*`.)* |
-| **Matéria** | Améthystite où un geste est resté lisible. Ne se fabrique pas : se trouve, se taille, s'éveille. |
+| **Matéria** | Améthystite où un geste est resté lisible. **Trois verbes distincts, à ne jamais confondre** (§2.1) : on la **trouve** (voie normale et abondante), on l'**accorde** (nœud d'arbre qui apprend à s'en servir), on l'**éveille** (création d'une matéria neuve — voie rare et tardive). |
 | **Veine** | Coulée d'améthystite sous une région. Elle lui donne son élément et son caractère. |
 | **Accord** | Capacité d'entendre une famille de gestes. Ce que font pousser les arbres de talent. |
 | **Foyer** | Le point d'une zone où le sédiment s'accumule. Ce qui devient — ou pas — une ville. **C'est le nœud.** |
@@ -85,6 +85,72 @@ pour devenir une loi du monde.
 | **Saisons de 4 semaines** (D8-D12) | Le cristal respire. À chaque marée, une strate affleure et le monde redevient un mois durant ce qu'il a été. |
 | **Codex** (D11) | Ce n'est pas un menu : c'est **la mémoire que les joueurs sauvent du Reflux**. Ce qui y est inscrit ne pâlit pas. |
 
+### 2.1 La matéria — abondante à la base, rare au sommet
+
+**Règle de conception, au même rang que les règles absolues.** La matéria est la **seule
+source d'actions de combat** (règle 10, héritage de FF7) : sans elle, un personnage n'a que
+l'attaque de base de son arme. Elle n'est donc pas un objet de collection, c'est **le build
+du personnage**. Il en découle une contrainte que rien ne doit contredire :
+
+> **Un joueur qui se spécialise dans le feu doit avoir ses premières matéria de feu au
+> premier jour, pas à la première semaine.** Une matéria de base rare, c'est un personnage
+> sans actions — c'est-à-dire pas de jeu.
+
+**Les trois verbes, et ce que chacun gate :**
+
+| Verbe | Ce que c'est | Rareté |
+|---|---|---|
+| **Trouver** | La matéria existe déjà dans le monde : butin de créature, coffre, récompense, marché | **Abondante.** Voie normale, dès le jour 1 |
+| **Accorder** | Apprendre à s'en servir — le nœud d'arbre (`materia.unlock`) | **Gratuit et précoce.** Les nœuds d'entrée d'un domaine sont à 0 point |
+| **Éveiller** | Créer une matéria **neuve** à partir d'améthystite *Parfaite* | **Rare et tardif.** Service de grande cité, matéria de haut palier |
+
+Le jeu livré respecte déjà cette règle : 69 matéria tombent des créatures à 4-10 %, et l'arbre
+de Pyromancie ouvre **deux matéria de feu à 0 point requis**. Ce document ne l'invente pas —
+il la **fige**, pour qu'on ne la casse pas en la resserrant plus tard.
+
+**Où porte la rareté, alors ?** Sur trois choses, jamais sur le sort de base :
+
+1. **Les matéria de haut palier** — les gestes rares, les variantes puissantes.
+2. **Les emplacements de sertissage** — l'équipement de haut niveau offre **plus
+   d'emplacements** et de **meilleurs bonus sur les mêmes matéria** que l'équipement commun.
+3. **L'éveil** — fabriquer une matéria neuve reste un acte exceptionnel.
+
+D'où le principe qui en découle, et qui vaut d'être tenu :
+
+> **On ne progresse pas en changeant de sort, on progresse en le portant mieux.**
+
+**Pas d'évolution sur place — mais une maturation, et une fusion.** Une matéria ne monte pas
+de niveau : le geste qu'elle contient est figé, c'est toute la fiction (§1). Ce qui existe,
+et que le code livré porte déjà :
+
+- **La maturation.** Une matéria sertie accumule de l'expérience en combat
+  (`MateriaXpGranter`, vivant — +25 % si l'élément du porteur s'accorde). Cette expérience
+  n'améliore pas le sort : elle mesure combien le geste a été *porté*. Son seul débouché est
+  la fusion, qui l'additionne.
+- **La fusion** (`MateriaFusionManager` — **écrit mais jamais branché** : aucun contrôleur ne
+  l'appelle, les joueurs n'y ont pas accès). Deux voies déjà codées :
+  - **même élément** : deux matérias fondues donnent la matéria du **palier supérieur** — ce
+    qui est exactement « une matéria plus puissante », pas une évolution sur place ;
+  - **éléments croisés** : **14 combinaisons** définies (feu+air → Inferno, eau+air →
+    Blizzard, lumière+ténèbre → Éclipse, terre+feu → Magma…), qui produisent des matérias
+    **hybrides** n'appartenant à aucun des huit éléments de base.
+
+En fiction, la fusion ne contredit pas « on n'invente pas un geste » : deux gestes déposés
+l'un sur l'autre **se tassent en un seul** — c'est de la sédimentation, pas de l'invention.
+
+**Réserve d'extension — les domaines hybrides.** Les 14 fusions croisées sont la porte des
+extensions : chaque hybride (Magma, Éclipse…) peut ouvrir à terme un **domaine** propre, avec
+son arbre et ses accords, au-delà des huit éléments de base. Rien n'est à construire
+aujourd'hui ; il faut seulement **ne pas fermer la porte** — l'enum `Element` et le format
+des domaines doivent tolérer des éléments composés le jour venu. La fusion elle-même est un
+**contenu d'extension**, pas de lancement : au lancement, la progression du build passe par
+les paliers et le sertissage, pas par la fusion.
+
+La boule de feu du jour 1 reste utile au mois 6 : ce qui a changé, c'est le nombre
+d'emplacements, la qualité du support et les bonus qui l'entourent. Cela évite d'obsolescer
+la matéria fétiche d'un joueur — le défaut qu'on refuse déjà pour l'équipement
+([GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md) §5).
+
 ---
 
 ## 3. Les foyers — le monde que les joueurs construisent
@@ -112,7 +178,7 @@ Le rang du foyer détermine **ce que la zone offre** :
 | **Hameau** | Boutique T1 (plancher D1), premier atelier, quêtes locales. |
 | **Bourg** | **Marché local** (le HV régional s'y ouvre), ateliers de palier 2, parcelles d'habitation, échoppes. |
 | **Cité** | Ateliers de haut palier, banque, donjon de groupe accessible, quêtes de faction, étals loués. |
-| **Métropole** | Éveil de matéria, plans de fin de jeu, boss de région, services uniques au monde. |
+| **Métropole** | **Éveil** de matéria (création de matéria neuve — *pas* leur usage, cf. §2.1), plans de fin de jeu, boss de région, services uniques au monde. |
 
 **Un foyer qui ne reçoit plus rien redescend.** Pas de siège, pas de destruction : de
 l'oubli. C'est la version douce et PvE de la destruction de nœud — et c'est exactement le
@@ -142,7 +208,7 @@ n'enlève rien à personne : le système de foyer est **incrémental**.
   aujourd'hui (Forêt des murmures, Mines profondes… = Hameau ; les zones de l'Acte 4 =
   Campement).
 - Seuls les **services nouveaux** — marché local, ateliers de haut palier, parcelles,
-  étals, éveil de matéria, boss de région — sont gardés par le rang.
+  étals, **éveil** de matéria (création, jamais usage — §2.1), boss de région — sont gardés par le rang.
 - Conséquence : le pilier territorial peut se livrer **par tranches**, sans jamais casser
   une zone existante ni migrer les fixtures de PNJ.
 
@@ -436,7 +502,7 @@ incomparables :
 | **Trouble** | Le geste est illisible | Fonte, consommables, matériaux de base |
 | **Clair** | Lisible mais confus | Artisanat courant |
 | **Pur** | Net | Haut palier, commandes exigeantes |
-| **Parfait** | On entend qui l'a fait | **Seule bande qui permet d'éveiller une matéria** |
+| **Parfait** | On entend qui l'a fait | **Seule bande qui permet d'*éveiller* une matéria neuve** (§2.1 — n'affecte ni la trouver ni l'utiliser) |
 
 La pureté d'un lot se tire à la récolte, dans une fourchette donnée par : le **palier du
 filon**, sa **vitalité** au moment où l'on récolte (un filon éreinté ne rend plus que du
@@ -457,8 +523,10 @@ Ce que ça débloque, et c'est beaucoup pour une colonne :
 - **`Recipe.quality` se réveille.** Le champ existe et dort ; il trouve son intrant.
 - **Les commandes de craft peuvent exiger une bande minimale** — ce qui répond à la question
   ouverte de [GAME_PRINCIPLES.md](GAME_PRINCIPLES.md) §6.
-- **La matéria devient rare par construction**, sans table de drop : il faut du *Parfait*,
-  et le Parfait ne se force pas.
+- **L'*éveil* de matéria devient rare par construction** : il faut du *Parfait*, et le Parfait
+  ne se force pas. **La table de butin existante reste la voie normale** — on ne resserre pas
+  l'accès aux matéria de base (§2.1), on rend seulement la *création* d'une matéria neuve
+  exceptionnelle.
 
 **Impact modèle** : `PlayerItem.purity` (enum de bande, nullable — `null` = hors périmètre),
 la bande comme critère de pile et de filtre au HV, un modificateur de qualité au craft.
@@ -487,7 +555,7 @@ qu'elle est un **intrant** et non un **produit fini**.
 *(Chantier économie — à ouvrir dans `PLAN_PLAYER_ECONOMY`, pas dans le plan des foyers.)*
 
 **2. La pureté prime sur le palier** *(décision D, §5.4)*
-Seule l'améthystite **Parfaite** éveille une matéria. Or un filon reposé de palier moyen sort
+Seule l'améthystite **Parfaite** permet d'éveiller une matéria neuve. Or un filon reposé de palier moyen sort
 du Parfait bien plus souvent qu'un filon éreinté de haut palier. Une zone intermédiaire
 délaissée devient donc **la meilleure source du monde pour la chose la plus précieuse du
 jeu**. C'est la valeur qui suit la *fraîcheur*, pas le palier — et ça, aucun vétéran ne peut
@@ -960,23 +1028,94 @@ Trois conséquences, et c'est ce qui emporte la décision :
 - **La pureté trouve son sens plein** : ce n'est plus une statistique de minerai, c'est la
   qualité de la mémoire d'un lieu — ce que le postulat dit depuis le début.
 
+### 13.4 Dimensionnement — la cible de population *(actée)*
+
+> **Cible retenue : ~50 joueurs actifs quotidiens.** Pas un plafond : une **base de
+> calibrage**. Tout ce qui dépend du nombre de joueurs est indexé dessus et s'ouvre quand le
+> serveur grandit. En cas de succès franc, on **clone le serveur** plutôt que d'étirer le monde.
+
+Le raisonnement : la plupart des PBBG indépendants vivent entre 20 et 100 joueurs quotidiens.
+Concevoir pour 300 et lancer avec 30 produit un monde vide ; concevoir pour 50 et en accueillir
+300 produit un monde qui s'ouvre. **On calibre pour ce qui va arriver, pas pour ce qu'on espère.**
+
+**Pourquoi cloner plutôt qu'étirer.** Notre monde est petit et profond — peu de zones, chacune
+avec son exclusivité. Absorber dix fois plus de joueurs demanderait de multiplier le *contenu*,
+ce qui est cher. Cloner un serveur est presque gratuit, et **préserve la tension de la Crue** :
+la rareté d'une Métropole n'a de sens que par rapport à une population qui se connaît. C'est
+l'inverse du choix d'EVE (univers unique), et c'est le bon pour nous.
+
+#### L'échelle d'ouverture
+
+La Crue n'est pas qu'une contrainte territoriale : **c'est le régulateur de liquidité de
+l'économie**, puisque le marché local ouvre au rang Bourg. Le quota de Bourgs *est* le nombre
+de marchés du monde.
+
+| Palier | S'ouvre à (joueurs actifs quotidiens) |
+|---|---:|
+| Marché de Lumière | **toujours** — hors quota, c'est le plancher (D1) |
+| 1er Bourg (1er marché de foyer) | 40 |
+| 2e Bourg | 80 |
+| 1re Cité | 120 |
+| 3e Bourg | 160 |
+| 2e Cité | 220 |
+| **Métropole** | 300 |
+
+Deux propriétés recherchées :
+
+- **À 50 joueurs, le monde est petit et dense** : le hub, un seul foyer bâti par les joueurs,
+  et une vraie compétition entre deux ou trois guildes pour cet unique Bourg. C'est plus tendu,
+  et plus lisible, qu'un monde à six marchés à moitié vides.
+- **La Métropole n'existe pas tant que le serveur n'a pas réussi.** Le sommet de l'échelle est
+  débloqué par la croissance de la communauté, pas par un joueur. C'est la meilleure
+  récompense collective qu'on puisse offrir, et elle ne coûte rien à produire.
+
+Les seuils sont de la **donnée** (`config/game/settlements.yaml`) : ils se retendent sans
+redéploiement.
+
+#### Ce que la cible impose au reste
+
+**a) Jamais de contenu synchrone.** À 50 joueurs quotidiens connectés 10-15 minutes, on tourne
+autour d'**1 à 2 joueurs simultanés**, 5 au pic. Toute fonctionnalité exigeant trois personnes
+en même temps est morte-née. Cela valide rétroactivement le choix des boss de monde à
+**contribution asynchrone**, et pose une règle : plus jamais de contenu synchrone.
+
+**b) Le monde s'ouvre progressivement.** Onze zones pour 50 joueurs, c'est un désert : on n'y
+croise jamais personne. Le graphe supporte déjà le gating (`enabled`, `requires_discovery`).
+Ouvrir cinq à six zones au lancement et libérer les suivantes à mesure que la population monte
+— la Concorde qui s'étend — donne un monde plein à chaque étape.
+
+**c) Le calibrage devient dynamique.** Le monde doit rester à la taille de son audience sans
+recalibrage manuel à chaque palier de croissance. L'invariant visé : **le temps qu'il faut
+pour faire monter un foyer, et la tension ressentie sur un filon, doivent être les mêmes à 50
+joueurs et à 500.** Un **facteur de monde** indexé sur la population globale met à l'échelle
+la capacité des filons et les seuils de sédiment — mais **jamais** la réponse d'un filon à sa
+propre fréquentation : un filon qui donnerait plus à mesure qu'on le presse annulerait sa
+propre rareté. Et le **rythme** du monde ne change pas, seule son **ampleur** change : la
+capacité s'ajuste, la cadence de repousse reste fixe. Conception et garde-fous dans
+[BALANCE.md § 22.4](BALANCE.md), jalon **FOY-17**.
+
+**d) Le calibrage des filons est à refaire de fond en comble.** C'est la conséquence la plus
+lourde, chiffrée dans [BALANCE.md § 22](BALANCE.md) : en l'état, les filons du monde
+soutiendraient **~2 200 récolteurs réguliers**. À 50 joueurs, ils tournent à **1 % de leur
+charge** — la vitalité ne bouge jamais, la pureté est toujours au maximum, la Pâleur est
+impossible, et l'incitation à s'étaler n'existe pas. **Toute la couche de rareté est inerte.**
+
+---
+
 ---
 
 ## 14. Ce qui reste à cadrer avant d'écrire du contenu
 
-Trois entrées manquent, et deux d'entre elles commandent les tableaux du §13. Elles sont
-**au-dessus** de ce document, pas dedans.
+Une entrée manque encore. Elle est **au-dessus** de ce document, pas dedans.
 
-1. **La population cible.** Le nombre de zones n'est pas une affaire de goût mais une
-   **fonction** du nombre de joueurs actifs attendus. Huit zones pour cinquante joueurs et
-   huit zones pour cinq mille, ce sont deux jeux différents — et la règle « peu de zones
-   profondes » (§5.5) est inapplicable sans ce chiffre. Il commande aussi le calibrage des
-   filons et les quotas de Crue (§3.3).
+1. ~~La population cible~~ — **tranchée** : ~50 joueurs actifs quotidiens comme base de
+   calibrage, tout étant indexé dessus (§13.4).
 
-2. **La colonne vertébrale de progression.** Aucun document du projet ne dit ce qu'un joueur
-   fait au jour 1, au jour 40, au mois 6. Les piliers systémiques et la trame existent ; la
-   **forme d'une vie de joueur**, non. C'est le plus gros manque du cadrage, et il devrait
-   être écrit **avant** de figer les zones — puisque c'est lui qui dira à quoi elles servent.
+2. ~~La colonne vertébrale de progression~~ — **écrite** : [GAME_PROGRESSION.md](GAME_PROGRESSION.md).
+   Cinq horizons emboîtés (session, jour, semaine, marée, an), quatre actes dans la vie d'un
+   joueur, et le **passage critique des semaines 3 à 6** où tout se joue. Le §6 de ce document
+   énonce ce que la colonne impose aux zones et aux ressources — c'est l'entrée qui manquait
+   pour figer le §13.
 
 3. **La source de l'améthystite** (§13.3) — recommandation posée, décision à prendre.
 
