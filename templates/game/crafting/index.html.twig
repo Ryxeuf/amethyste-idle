@@ -110,6 +110,46 @@
                 </div>
             {% endif %}
 
+            {# Bonus d'atelier du foyer (FOY-07) ─────────────────────────── #}
+            {# Une ville est bonne a quelque chose de precis : le bloc dit ce #}
+            {# que le lieu ajoute a ce metier, et d'ou ca vient. Sans la      #}
+            {# composition, le joueur ne peut pas arbitrer ou crafter — et    #}
+            {# c'est cet arbitrage que le jalon existe pour creer.            #}
+            {% set workshop = workshopBonusByCraft[craft] ?? null %}
+            {% if workshop and not workshop.isZero %}
+                <div class="ds-banner mb-4">
+                    <span>
+                        {{ 'game.crafting.workshop.here'|trans({
+                            '%zone%': currentZone ? currentZone.localizedName(app.request.locale) : '',
+                            '%points%': workshop.total,
+                        }) }}
+                        <span class="ds-hint">
+                            {%- if workshop.settlementRank %}
+                                {{ 'game.crafting.workshop.from_rank'|trans({
+                                    '%rank%': ('game.settlement.rank.' ~ workshop.settlementRank.value)|trans,
+                                    '%points%': workshop.rank,
+                                }) }}
+                            {%- endif %}
+                            {%- if workshop.type > 0 and workshop.settlementType %}
+                                · {{ 'game.crafting.workshop.from_type'|trans({
+                                    '%type%': ('game.settlement.type.' ~ workshop.settlementType.value)|trans,
+                                    '%points%': workshop.type,
+                                }) }}
+                            {%- endif %}
+                            {%- if workshop.line > 0 and workshop.productionLine %}
+                                · {{ 'game.crafting.workshop.from_line'|trans({
+                                    '%line%': ('game.settlement.line.' ~ workshop.productionLine)|trans,
+                                    '%points%': workshop.line,
+                                }) }}
+                            {%- endif %}
+                            {%- if workshop.capped %}
+                                · {{ 'game.crafting.workshop.capped'|trans }}
+                            {%- endif %}
+                        </span>
+                    </span>
+                </div>
+            {% endif %}
+
             {# Indicateur de progression #}
             {% set nextUnlock = nextUnlockByCraft[craft] ?? {nextLevel: null, count: 0, totalLocked: 0} %}
             {% if nextUnlock.nextLevel is not null %}

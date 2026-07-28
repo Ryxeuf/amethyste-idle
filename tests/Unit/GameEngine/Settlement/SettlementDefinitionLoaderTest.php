@@ -193,6 +193,65 @@ class SettlementDefinitionLoaderTest extends TestCase
     }
 
     /**
+     * Le bloc d'atelier est **facultatif** : un monde sans bonus reste jouable,
+     * et le refuser aurait fait echouer le chargement de toute configuration
+     * anterieure a FOY-07.
+     */
+    public function testTheWorkshopBlockIsOptional(): void
+    {
+        $workshop = $this->loader->normalize($this->validRaw())['workshop'];
+
+        self::assertSame(0, $workshop['cap']);
+        self::assertSame([], $workshop['zone_line']);
+    }
+
+    /**
+     * Le defaut que ce chargeur existe pour attraper : une **ligne muette**. Une
+     * zone qui nomme une ligne inconnue continuerait de fonctionner, n'accorderait
+     * jamais son bonus, et personne ne s'en apercevrait avant de se demander
+     * pourquoi une Metropole ne donne rien.
+     */
+    public function testAZoneCannotNameAProductionLineThatDoesNotExist(): void
+    {
+        $raw = $this->validRaw();
+        $raw['workshop'] = [
+            'line_bonus' => ['metal' => ['forgeron' => 3]],
+            'zone_line' => ['mines' => 'obsidienne'],
+        ];
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/absent from "workshop.line_bonus"/');
+
+        $this->loader->normalize($raw);
+    }
+
+    public function testAnUnknownSettlementTypeIsRefusedInTheWorkshopTable(): void
+    {
+        $raw = $this->validRaw();
+        $raw['workshop'] = ['type_bonus' => ['comptoir' => ['forgeron' => 3]]];
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/unknown settlement type/');
+
+        $this->loader->normalize($raw);
+    }
+
+    /**
+     * Le foyer ajoute, il ne retranche jamais : une ville qui rendrait un etabli
+     * moins bon qu'ailleurs serait une punition pour l'avoir frequentee.
+     */
+    public function testAWorkshopBonusCannotBeNegative(): void
+    {
+        $raw = $this->validRaw();
+        $raw['workshop'] = ['rank_bonus' => ['town' => -1]];
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/must be a non-negative integer/');
+
+        $this->loader->normalize($raw);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function validRaw(): array

@@ -116,6 +116,27 @@ class SettlementLabelCoverageTest extends TestCase
     }
 
     /**
+     * Meme defaut, meme loi, pour les lignes de production (FOY-07) : l'ecran
+     * d'artisanat compose `'game.settlement.line.' ~ ligne`. Une ligne sans
+     * libelle s'afficherait en clair a cote du bonus qu'elle accorde.
+     */
+    public function testEveryProductionLineHasALabelInBothLocales(): void
+    {
+        $lines = array_keys((new SettlementDefinitionLoader(\dirname(__DIR__, 3)))->load()['workshop']['line_bonus']);
+        self::assertNotEmpty($lines);
+
+        foreach (['fr', 'en'] as $locale) {
+            $missing = array_values(array_diff($lines, array_keys($this->labels($locale, 'line'))));
+
+            self::assertSame([], $missing, sprintf(
+                'Lignes de production sans libelle en "%s" : %s.',
+                $locale,
+                implode(', ', $missing),
+            ));
+        }
+    }
+
+    /**
      * L'inverse compte aussi : un libelle qui ne correspond a aucun service
      * declare est un vestige, et un vestige finit par etre pris pour une
      * intention.

@@ -856,7 +856,14 @@
         "crafted_done": "crafted!",
         "connection_error": "Connection error."
       },
-      "rank_short": "Rank %rank%"
+      "rank_short": "Rank %rank%",
+      "workshop": {
+        "here": "Here, in %zone%: +%points% points of higher-quality chance.",
+        "from_rank": "%rank% +%points%",
+        "from_type": "%type% +%points%",
+        "from_line": "%line% +%points%",
+        "capped": "capped"
+      }
     },
     "notifications": {
       "title": "Notifications",
@@ -1471,6 +1478,14 @@
       },
       "gate": {
         "closed": "This service opens at %required%; the settlement is %current%."
+      },
+      "line": {
+        "metal": "Metal",
+        "leather": "Leather & bone",
+        "stone": "Stone & gem",
+        "water": "Water & salt",
+        "wood": "Wood & fibre",
+        "amethyst": "Amethyst"
       }
     },
     "world_map": {

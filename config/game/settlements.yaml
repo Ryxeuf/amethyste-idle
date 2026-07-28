@@ -120,6 +120,64 @@ never_gated:
     gathering: 'les filons appartiennent a la zone, pas au foyer'
     travel: 'fermer un voyage enfermerait un joueur dans une zone qui decline'
 
+# Bonus d'atelier (FOY-07). Conception : GAME_WORLD § 5.2.
+#
+# « Une ville est bonne a quelque chose de precis. » Le bonus se lit sur trois
+# choses, et **jamais sur le joueur** : le rang du foyer, son type, et la ligne
+# de production de la zone (§ 5.1). Consequence recherchee : on voyage pour
+# crafter, et une guilde qui fait monter un foyer choisit litteralement le
+# metier de sa region.
+#
+# L'unite est le **point de chance de qualite superieure**, la meme que le bonus
+# de specialisation de metier auquel il s'additionne. Deux unites differentes se
+# seraient melangees tot ou tard, et rien ne l'aurait signale.
+workshop:
+    # Ce que le rang seul accorde, sur tous les metiers : un etabli de Metropole
+    # vaut mieux qu'un etabli de Hameau, quoi qu'on y forge. En dessous du
+    # Hameau, rien — un Campement n'a pas encore d'atelier a offrir.
+    rank_bonus:
+        hamlet: 1
+        town: 2
+        city: 3
+        metropolis: 4
+
+    # Ce que le **type** accorde, au metier qu'il sert. Le type ne se choisit
+    # pas : il se deduit de l'indice dominant (FOY-03). C'est donc la
+    # frequentation qui decide du metier favorise, pas une decision de guilde.
+    type_bonus:
+        trading: { tanneur: 3 }      # Comptoir  — cuirs et marchandises
+        bastion: { forgeron: 3 }     # Bastion   — on y forge des armes
+        athenaeum: { alchimiste: 3 } # Athenee   — le savoir, donc la transmutation
+        sanctuary: { joaillier: 3 }  # Sanctuaire — sertissage et materia
+
+    # Ce que la **ligne de production** de la zone accorde (§ 5.1) : une epee se
+    # forge mieux la ou le metal sort. Une ligne sans metier en face n'est pas
+    # une omission — le bois et l'amethyste attendent leurs metiers (ECO-29→31
+    # pour le charpentier et le tailleur ; la prospection n'a pas d'etabli).
+    line_bonus:
+        metal: { forgeron: 3 }
+        leather: { tanneur: 3 }
+        stone: { joaillier: 3 }
+        water: { alchimiste: 3 }
+        wood: {}
+        amethyst: {}
+
+    # Plafond du cumul. Ce n'est pas un detail de calibrage : sans lui, une
+    # Metropole batie sur sa propre ligne accorderait 10 points, soit davantage
+    # que la specialisation de metier — un choix irreversible paye en experience
+    # de domaine. Un lieu ne doit pas valoir plus qu'une carriere.
+    cap: 8
+
+    # Ligne de production de chaque zone (§ 5.1). Une zone absente n'apporte que
+    # son rang : le refuser bloquerait la livraison d'une zone neuve pour une
+    # raison de calibrage.
+    zone_line:
+        foret-des-murmures: wood
+        mines-profondes: metal
+        marais-brumeux: water
+        crete-de-ventombre: stone
+        dunes-d-ambre: leather
+
 # Seed du monde livre (decision A — **rien n'est retro-gate**, BALANCE § 23.5).
 # Le seed est narratif, pas protecteur : si personne ne frequente les Mines,
 # leur foyer redescendra. Mais les services *existants* ne ferment jamais
