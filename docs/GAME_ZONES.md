@@ -23,10 +23,12 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
    semaine, à la marée ou à l'an est une zone morte (GAME_PROGRESSION §6d).
 4. **Le palier est la profondeur de strate** : plus on s'éloigne de Lumière, plus la
    strate est ancienne et le danger haut (GAME_WORLD §4.2).
-5. **Les quatre récoltes à portée du hub dès la semaine 1** : minage, herboristerie,
-   pêche, dépeçage (GAME_PROGRESSION §6a). *Il n'existe pas de domaine de bûcheronnage :
-   la ligne « bois & fibre » du §5.1 est portée par l'herboristerie (fibres) et le
-   dépeçage n'a pas de filon — il se pratique sur la faune.*
+5. **Les récoltes à portée du hub dès la semaine 1** : minage, herboristerie, pêche,
+   dépeçage (GAME_PROGRESSION §6a) — et le **bûcheronnage, décidé le 2026-07-28**
+   (cinquième récolte, domaine à créer) : l'arc, le bâton et la baguette existent en
+   items sans qu'aucune recette ne les produise, et le housing attendra la même matière.
+   La carte des essences est en §3 bis ; le dépeçage, lui, n'a pas de filon — il se
+   pratique sur la faune.
 6. **La récolte n'échoue jamais** : vitalité partagée et fatigue personnelle modulent le
    rendement, jamais l'accès (GAME_ZONE_ACTIONS).
 7. **Peu de zones profondes** plutôt que beaucoup de zones minces : le jeu de base
@@ -64,12 +66,12 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
 | Zone | Région | Palier | Foyer | Ligne de production | Exclusivité (loi 1) |
 |---|---|---|---|---|---|
 | Lumière + Jardins | Sanctuaire | T0 — sûre | non (§3.4) | plancher T1 PNJ, herbes T0 | la sécurité ; le Cristal d'Améthyste |
-| **Vallons d'Aubépine** | Plaines de l'Éveil | T1 | oui | agriculture, gibier/cuir, pêche de rive | **le lin** (fibre), le blé, le gibier de plaine |
-| Forêt des murmures | Plaines de l'Éveil | T1 | oui | herbes, fibres, pêche de rivière | le ginseng, le saumon, la sylve (Chœur) |
+| **Vallons d'Aubépine** | Plaines de l'Éveil | T1 | oui | agriculture, gibier/cuir, pêche de rive, hêtre | **le lin** (fibre), le blé, le gibier de plaine |
+| Forêt des murmures | Plaines de l'Éveil | T1 | oui | herbes, bois, pêche de rivière | le ginseng, le saumon, **le chêne murmurant**, la sylve (Chœur) |
 | Mines profondes | Terres Sauvages | T2 (fond T4) | oui | métal de base, forge | **le fer**, le sombracier, l'anguille |
-| Marais brumeux | Terres Sauvages | T2 | oui | alchimie, toxines | la ligne des poisons (mandragore, belladone, spores) |
+| Marais brumeux | Terres Sauvages | T2 | oui | alchimie, toxines, bois noir | la ligne des poisons, **le bois tourbé** |
 | Crête de Ventombre | Terres Sauvages | T3 (sommet T4) | oui | pierre, gemme, haute forge | **le cobalt**, le mithril, la givrecoiffe |
-| Dunes d'Ambre | l'Ambre | T3 | oui | cuir/os, bronze du sud | **l'ambre fossile**, l'os, le platine |
+| Dunes d'Ambre | l'Ambre | T3 | oui | cuir/os, bronze du sud | **l'ambre fossile**, l'os, le platine, **le bois pétrifié** |
 | Cité ensevelie | l'Ambre | T4 — donjon | non | reliques | **les plans anciens**, l'orichalque, le diamant |
 
 ## 2. Les huit zones
@@ -281,6 +283,25 @@ chaque alliage T4 exige deux zones, et les paliers d'extension enjambent la fron
 Rien à inventer : il suffit de **placer les filons là où les recettes l'exigent déjà**.
 La règle des raretés inversées est respectée sur toute la ligne : cuivre 3 sources,
 étain 2, fer 1 (T2, exclusivité assumée), T3/T4 une source chacun.
+
+## 3 bis. La carte du bois — la ligne à créer *(décidé le 2026-07-28)*
+
+Aucune ressource bois n'existait ; la ligne entière (armes de bois, housing) était sans
+matière. Quatre essences, raretés inversées respectées, chaque zone forestière gagnant
+une exclusivité de plus :
+
+| Essence | Palier | Zones | Débouchés visés |
+|---|---|---|---|
+| Bois de hêtre | T0 | Vallons **+** Forêt (deux sources — jamais un goulot) | manches d'outils, flèches, meubles simples |
+| Chêne murmurant | T2 | Forêt (exclusif — l'arbre de la zone-titre) | arcs, bâtons, baguettes |
+| Bois tourbé | T3 | Marais (exclusif — noirci par l'eau morte) | baguettes sombres, teintures, housing |
+| Bois pétrifié | T4 | Dunes (exclusif — l'âge précédent, thème Ambre) | armes de maître, mobilier de prestige |
+
+La Crête et le Silence n'ont **pas** d'arbres (le vent et le gel l'interdisent — la
+fiction et la loi des biomes concordent) : le bois reste une affaire de plaines, de
+sous-bois et de fossiles. Le domaine de récolte (bûcheron) et le métier d'artisanat qui
+consomme le bois relèvent du jalon **ZON-34** ; la décision du métier consommateur
+(charpentier dédié ou extension d'un métier existant) est en cours.
 
 ## 4. Extension 1 — le Silence *(esquisse actée)*
 

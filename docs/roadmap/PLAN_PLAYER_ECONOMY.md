@@ -405,6 +405,10 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
 - [ ] Décider du sort du chemin hérité `ObjectLayer` pour ces minerais (retrait, ou maintien
       en double source assumée et documentée)
 - [ ] Répartir l'**étain** sur les Dunes d'Ambre (profil T0 — jamais un goulot)
+- [ ] **Cuirs spéciaux du tanneur** (audit §21.7 de BALANCE) : `leather-bone`,
+      `leather-fang`, `leather-dragon-scale`, `leather-werewolf-fur` sont consommés par
+      12 recettes et lâchés par **aucun** monstre — ajouter les entrées de butin aux
+      espèces correspondantes (loups-garous → fourrure, dragons → écaille…)
 - [ ] Vérifier la règle des raretés inversées sur toute la ligne du métal
 - [ ] Tests : chaque minerai de recette a au moins une source déclarée (loi transverse)
 
@@ -424,6 +428,12 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
       raffiné du dessous au marché. C'est l'interdépendance recherchée (D-WoW §4.6), pas une
       corvée — à vérifier explicitement en jouant la boucle
 - [ ] Étendre aux lignes non métalliques une fois la ligne du métal validée
+- [ ] **La taille de gemme consomme des gemmes** (audit §21.7 de BALANCE) : les recettes
+      de taille consomment aujourd'hui du métal (cuivre/argent/mithril) et les trois
+      gemmes brutes (rubis, émeraude, diamant) n'ont **aucun** consommateur — corriger
+      les intrants pour que les filons de gemmes servent
+- [ ] **Raccorder le lingot de cobalt** (produit, jamais consommé) et réveiller ou purger
+      les lingots morts (`crafted-iron-ingot`, `crafted-gold-ingot`)
 - [ ] Tests : chaîne complète, coût propagé, recette de départ inchangée
 
 ### ECO-26 — Propagation de la pureté dans la chaîne (M | ★★★ | MOYENNE)

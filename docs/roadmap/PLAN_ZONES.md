@@ -11,7 +11,7 @@
 
 ## Vue d'ensemble
 
-**4 jalons** (**ZON-30** à **ZON-33**), plus trois chantiers **référencés** qui vivent
+**5 jalons** (**ZON-30** à **ZON-34**), plus trois chantiers **référencés** qui vivent
 dans leurs plans d'origine :
 
 | Code | Livrable | Taille | Dépendances |
@@ -20,6 +20,7 @@ dans leurs plans d'origine :
 | ZON-31 | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
 | ZON-32 | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
+| ZON-34 | La ligne du bois (domaine, essences, recettes) | M | décision métier consommateur |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -91,6 +92,22 @@ ZON-33 en continu
 - [ ] Loi transverse re-vérifiée après chaque jalon : aucun item de recette sans source
 - [ ] Le graphe reste connexe et la liaison Dunes → Cité existe tant que la Mer de Sel
       n'a pas rejoint l'Extension 1 (GAME_ZONES §1, note de graphe)
+
+### ZON-34 — La ligne du bois (M | ★★★ | HAUTE)
+> Décidé le 2026-07-28 (GAME_ZONES §3 bis) : la récolte du bois devient la cinquième
+> récolte. Aujourd'hui l'arc et le bâton existent en items sans recette productrice, et
+> aucune ressource bois n'existe — la ligne armes de bois + housing est sans matière.
+> Prérequis : décision du métier **consommateur** (charpentier dédié, recommandé, ou
+> extension d'un métier existant) — en discussion.
+- [ ] Domaine `lumberjack` (Bûcheron) dans `DomainFixtures` + arbre de récolte (mêmes
+      gabarits que mineur/herboriste)
+- [ ] Items : 4 essences de la carte du bois (hêtre T0, chêne murmurant T2, bois tourbé
+      T3, bois pétrifié T4)
+- [ ] Filons `profession: woodcutting` aux zones de la carte (Vallons + Forêt pour le
+      hêtre ; Forêt, Marais, Dunes pour les exclusifs), profils de palier standard
+- [ ] Recettes : l'arc et le bâton existants gagnent une recette productrice ; au moins
+      une recette par essence (une exclusivité sans débouché est un mensonge)
+- [ ] Tests : sources, débouchés, loi transverse
 
 ---
 
