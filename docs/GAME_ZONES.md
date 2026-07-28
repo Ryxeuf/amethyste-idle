@@ -37,6 +37,14 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
 8. **L'améthyste n'a pas de filon** : sous-produit universel de toute action ; chaque zone
    porte une **signature** (tendance de bande, élément) — jamais un point de farm
    (GAME_WORLD §13.3).
+9. **Le compte d'un domaine de récolte suit les artisanats qu'il nourrit** *(acté le
+   2026-07-28)* : une ressource n'existe que si un artisanat l'attend. Trois invariants
+   communs à tous les domaines : échelle **T0→T4 sans trou**, chaque ressource a
+   **≥ 1 débouché**, un **plancher T0 à portée du hub**. Détail par domaine en §3 ter.
+10. **Toute ressource porte une affinité de domaine élémentaire** *(acté le 2026-07-28,
+    GAME_WORLD §2.2)* : dérivée de la **signature de sa zone source** — une règle, pas
+    une table arbitraire. La donnée se pose dans les fixtures dès maintenant (ZON-36) ;
+    les systèmes la consommeront à leur rythme.
 
 ## 1. Vue d'ensemble
 
@@ -303,6 +311,49 @@ sous-bois et de fossiles. Le domaine de récolte (bûcheron) et les essences rel
 jalon **ZON-34** ; le métier consommateur est tranché — le **charpentier** (ECO-30,
 Piste H de PLAN_PLAYER_ECONOMY), aux côtés du **cuisinier** (ECO-29, débouché de la
 pêche et du blé) et du **tailleur** (ECO-31, la ligne tissu née du lin des Vallons).
+
+## 3 ter. Récoltes harmonisées & affinités élémentaires *(acté le 2026-07-28)*
+
+### Le compte par domaine (loi 9)
+
+L'audit a montré un ratio de 5 contre 1 entre l'herboriste (22 plantes, dont 12 sans
+débouché ou sans source) et le bûcheron (4 essences). L'harmonisation ne vise pas
+l'égalité brute : **le compte suit les artisanats nourris**.
+
+| Domaine | Nourrit | Cible base | Action |
+|---|---|---|---|
+| Mineur | forge + joaillerie (+ liants) | 10–13 | rien — gabarit de référence |
+| Herboriste | alchimie + épices de cuisine | 8–12 | **élaguer de 22** : 5 mortes purgées, 7 sans débouché raccordées (banales → épices ECO-29, rares → alchimie haute) ou fusionnées |
+| Dépeceur | tannerie (+ liants) | 6–8 | rien après ECO-24b ; le trou T1 se comble par le gibier des Vallons |
+| Pêcheur | cuisine | 5–6 | **+1 T4** : le poisson-lune (item mort) se réveille en pêche nocturne rare du Marais — un mort ressuscité, un trou comblé, une signature de zone servie |
+| Bûcheron | charpenterie + housing | 4–6 | rien — le hêtre couvre T0–T1 |
+
+Jalon d'exécution : **ZON-35**.
+
+### L'affinité élémentaire (loi 10)
+
+Chaque ressource est la matérialisation mineure d'un flux (GAME_WORLD §2.2). **La règle
+de dérivation** : l'affinité par défaut vient de la **ligne** (métal → Métal, plantes et
+gibier → Bête, poissons → Eau, bois → Bête ou Terre) et se **corrige par la signature de
+la zone source** quand la matière est marquée par son lieu. Exemples canoniques :
+
+| Ressource | Affinité | Pourquoi |
+|---|---|---|
+| Minerais de base (cuivre → cobalt) | Métal | la ligne |
+| Sombracier (fond des Mines) | Ténèbre | la signature du fond |
+| Mithril (Crête) | Air | le métal que le vent a mis à nu |
+| Platine (Dunes) | Feu | le fond de mer fossile, thème Ambre |
+| Givrecoiffe (Crête) · Belladone, spores (Marais) | Eau · Ténèbre | la signature prime sur la ligne |
+| Anguille électrique (Mines) | Air | la foudre dans l'eau noire |
+| Bois tourbé (Marais) · Bois pétrifié (Dunes) | Ténèbre · Terre | idem |
+| Écaille de dragon | Feu | la bête prime la ligne |
+| Rubis · Émeraude · Diamant | Feu · Terre · Lumière | les gemmes sont des concentrés |
+| **Améthyste** | **aucune / toutes** | elle est le **substrat**, pas un flux — canon |
+
+Ce que la donnée prépare (aucun système à construire maintenant) : l'héritage d'affinité
+au craft (une robe cousue de matières Feu servira le pyromancien), les buffs élémentaires
+de cuisine, les **intrants de fusion** (fusionner vers Blizzard demandera des matières
+Eau et Air), et l'orientation des lectures du Répertoire. Jalon : **ZON-36**.
 
 ## 4. Extension 1 — le Silence *(esquisse actée)*
 

@@ -11,7 +11,7 @@
 
 ## Vue d'ensemble
 
-**5 jalons** (**ZON-30** à **ZON-34**), plus trois chantiers **référencés** qui vivent
+**7 jalons** (**ZON-30** à **ZON-36**), plus trois chantiers **référencés** qui vivent
 dans leurs plans d'origine :
 
 | Code | Livrable | Taille | Dépendances |
@@ -20,7 +20,9 @@ dans leurs plans d'origine :
 | ZON-31 | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
 | ZON-32 | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
-| ZON-34 | La ligne du bois (domaine, essences, recettes) | M | décision métier consommateur |
+| ZON-34 | La ligne du bois (domaine, essences, recettes) | M | → ECO-30 (charpentier) |
+| ZON-35 | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
+| ZON-36 | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -108,6 +110,35 @@ ZON-33 en continu
 - [ ] Recettes : l'arc et le bâton existants gagnent une recette productrice ; au moins
       une recette par essence (une exclusivité sans débouché est un mensonge)
 - [ ] Tests : sources, débouchés, loi transverse
+
+### ZON-35 — Harmonisation des récoltes (S | ★★ | MOYENNE)
+> Applique la loi 9 (GAME_ZONES §3 ter) : le compte d'un domaine suit les artisanats
+> qu'il nourrit, échelle T0→T4 sans trou, tout a un débouché.
+> Prérequis : ← ECO-29 (le cuisinier absorbe les herbes banales en épices)
+- [ ] Purger les 5 plantes mortes (`dreamlily`, `sunblossom`, `thunderroot`,
+      `whisperweed`, `wolfsbane`) — ou en réaffecter au plus 2 si un besoin réel existe
+- [ ] Raccorder les 7 plantes sans débouché : banales → épices de cuisine (ECO-29),
+      rares (spores, givrecoiffe, fruit du vide) → intrants d'alchimie haute
+- [ ] Réveiller le **poisson-lune** en T4 : pêche nocturne rare du Marais (profil T4 du
+      calibrage, tirage restreint à la nuit) ; purger `fish-baby-kraken`
+- [ ] Vérifier l'échelle T0→T4 de chaque domaine après ZON-30/31/34 (le trou T1 du
+      dépeçage se comble par le gibier des Vallons, celui du bois par le hêtre T0–T1)
+- [ ] Tests : invariants de la loi 9 (échelle, débouché, plancher hub) par domaine
+
+### ZON-36 — Affinités élémentaires des ressources (S | ★★ | MOYENNE)
+> Applique la loi 10 (GAME_ZONES §3 ter, GAME_WORLD §2.2) : chaque ressource porte une
+> affinité de flux, dérivée de la signature de sa zone source. **Donnée pure** — aucun
+> système consommateur à construire ici.
+> Prérequis : ∅
+- [ ] Champ d'affinité déclaratif sur les items de ressource (fixtures YAML/PHP — même
+      enum `Element` que les domaines, nullable : `null` = améthyste/hors périmètre)
+- [ ] Application de la règle de dérivation (ligne par défaut, signature de zone en
+      correction) sur toutes les ressources du jeu de base — table canonique de
+      GAME_ZONES §3 ter
+- [ ] L'améthyste reste **sans affinité** (substrat, canon §2.2) — cas testé
+- [ ] Documentation : quels futurs systèmes liront la donnée (craft, cuisine, fusion,
+      lectures) — pointeurs, pas d'implémentation
+- [ ] Tests : toute ressource de récolte a une affinité ou un `null` justifié
 
 ---
 

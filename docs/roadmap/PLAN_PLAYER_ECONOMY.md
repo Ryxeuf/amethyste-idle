@@ -489,6 +489,8 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
       récolte/combat courts) — jamais indispensable, toujours agréable
 - [ ] Le pain et le ragoût des PNJ gagnent leur équivalent joueur (le PNJ reste le
       plancher T1, règle D1)
+- [ ] **Épices** : les herbes banales sans débouché (pissenlit, romarin, échinacée,
+      ortie) deviennent des intrants de cuisine (← ZON-35, loi 9)
 - [ ] Réveiller ou purger `fish-moonfish` / `fish-baby-kraken` au passage
 - [ ] Tests : plus aucun poisson sans consommateur (loi transverse étendue)
 

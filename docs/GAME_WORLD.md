@@ -205,6 +205,50 @@ d'emplacements, la qualité du support et les bonus qui l'entourent. Cela évite
 la matéria fétiche d'un joueur — le défaut qu'on refuse déjà pour l'équipement
 ([GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md) §5).
 
+### 2.2 La roue des domaines — des flux, pas des écoles *(nuance actée le 2026-07-28)*
+
+Les huit domaines élémentaires ne sont pas des écoles de magie abstraites : ce sont des
+**flux naturels qui traversent tout le monde** et se matérialisent partout. Chacun a une
+histoire, des affinités, des opposés, une vie propre — et tous remontent à l'améthyste :
+
+> **Le temps vécu est le substrat ; les huit flux en sont les couleurs.** L'améthyste est
+> le dépôt neutre du temps vécu (§1) ; feu, eau, terre, air, métal, bête, lumière et
+> ténèbre sont les **manières dont ce temps s'exprime** quand il circule encore. La
+> matéria est la cristallisation la plus pure d'un flux ; l'équipement, les
+> spécialisations de métier et les ressources en sont des matérialisations mineures.
+> C'est *pourquoi* on trouve de l'améthyste partout — et pourquoi tout le reste doit se
+> rattacher à un flux.
+
+**La roue.** Quatre paires d'opposés structurent les huit flux :
+
+| Opposition | Lecture |
+|---|---|
+| Feu ↔ Eau | ce qui consume ↔ ce qui dissout |
+| Terre ↔ Air | ce qui pèse ↔ ce qui s'arrache |
+| Lumière ↔ Ténèbre | ce qui révèle ↔ ce qui recouvre |
+| Métal ↔ Bête | l'inerte façonné ↔ le vivant sauvage |
+
+**Les hybrides sont anticipés, pas construits.** La table de fusion dormante
+(`MateriaFusionManager`, §2.1) écrit déjà la suite : air + eau = **Blizzard** (la glace),
+terre + feu = **Magma** (la lave), et douze autres. Chaque hybride peut devenir à terme un
+domaine propre (réserve d'extension, §2.1). Rien à construire au lancement — seulement ne
+pas fermer la porte.
+
+**La fusion d'opposés est l'exception, et c'est un canon.** La table dormante le dit
+d'elle-même : lumière + ténèbre existe (l'Éclipse — et elle **coûte**, le lanceur y laisse
+du sang, c'est déjà codé), terre + air existe (la Tempête de sable, instable) — mais
+**feu + eau et métal + bête n'y figurent pas**. Consigné comme lore : ces deux fusions
+sont des **gestes perdus par excellence**, que seul le Répertoire d'éveil (§12.3)
+pourra retrouver, au prix de conditions rares. On ne comble pas ce trou de données : on
+le raconte.
+
+**Conséquence sur les ressources** : toute ressource de récolte est la matérialisation
+mineure d'un flux, et porte donc une **affinité de domaine** — dérivée de la signature de
+sa zone, pas d'une table arbitraire. Application et modèle :
+[GAME_ZONES.md](GAME_ZONES.md) §3 ter, jalon ZON-36. Les systèmes la consommeront
+progressivement (héritage au craft, cuisine à buffs élémentaires, intrants de fusion,
+orientation des lectures) — la donnée se pose maintenant, les effets attendront leur jalon.
+
 ---
 
 ## 3. Les foyers — le monde que les joueurs construisent
