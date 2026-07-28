@@ -1035,7 +1035,30 @@ la purete (ECO-22) est toujours au maximum, la **Paleur est mecaniquement imposs
 payee au tresor (FOY-12) n'a rien a reparer. Trois jalons concus pour un monde sous tension
 tourneraient a vide.
 
-### 22.3 Cible proposee
+### 22.3 Cible proposee — ✅ **appliquee le 2026-07-28**
+
+> **Livree.** Les 39 filons de `config/game/zones/world_1.yaml` sont passes aux cinq
+> profils recalibres ; chaque palier atterrit a moins de 4 % de sa cible. Le levier
+> retenu est la **periode**, pas la capacite : les tampons sont verrouilles par le bas
+> (GAME_ZONE_ACTIONS §6.5, contrainte 1 — resister a la rafale d'un joueur seul), et les
+> etrangler ferait revenir le defaut de la calibration d'origine.
+>
+> | Palier | capacite | periode | 1 unite / | R (u/h) | recolteurs (cible) |
+> |---|---:|---:|---:|---:|---:|
+> | T0 | 72 | 7 h | 5 min 50 | 10,3 | 12,3 (12) |
+> | T1 | 60 | 9 h | 9 min | 6,7 | 8,0 (8) |
+> | T2 | 32 | 8 h | 15 min | 4,0 | 4,8 (5) |
+> | T3 | 24 | 10 h | 25 min | 2,4 | 2,9 (3) |
+> | T4 | 22 | 18 h | 49 min | 1,2 | 1,5 (1,5) |
+>
+> **Ce recalibrage n'etait applicable qu'apres ZON-37.** Sous l'ancien moteur — repousse
+> tout-ou-rien declenchee au zero seulement — ces memes chiffres auraient rendu un filon
+> T0 vide **muet pendant sept heures** avant de resurgir plein d'un coup. La repousse
+> etant desormais continue, la meme division du debit produit une tension **douce** : le
+> rendement baisse quand le filon est presse, et remonte tout seul.
+>
+> Le facteur de monde (FOY-17b) met ces capacites a l'echelle de la population reelle :
+> ce calibrage est celui de `W = 1`.
 
 Le bon reglage ne s'exprime pas en capacite absolue mais en **nombre de recolteurs qu'un
 filon soutient**. A 50 joueurs quotidiens, on veut que les filons frequentes montrent une

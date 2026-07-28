@@ -263,12 +263,15 @@ class OreSourceReferenceTest extends TestCase
      */
     public function testEveryOreVeinUsesACalibratedTierProfile(): void
     {
+        // Recalibrage du 2026-07-28 (BALANCE §22.3) : les periodes ont ete
+        // allongees d'un facteur 9 a 13 selon le palier, les tampons non —
+        // ils sont verrouilles par le bas (GAME_ZONE_ACTIONS §6.5).
         $profiles = [
-            '72/2700' => 'T0 fondation',
-            '60/2700' => 'T1 commun',
-            '32/3600' => 'T2 peu commun',
-            '24/5400' => 'T3 rare',
-            '22/10800' => 'T4 epique',
+            '72/25200' => 'T0 fondation',
+            '60/32400' => 'T1 commun',
+            '32/28800' => 'T2 peu commun',
+            '24/36000' => 'T3 rare',
+            '22/64800' => 'T4 epique',
         ];
 
         $offenders = [];
