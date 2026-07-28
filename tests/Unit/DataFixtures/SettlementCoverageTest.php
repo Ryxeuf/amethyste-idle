@@ -52,7 +52,8 @@ class SettlementCoverageTest extends TestCase
      */
     private function realZoneSlugs(): array
     {
-        $world = (new ZoneDefinitionLoader($this->projectDir()))->load();
+        $loader = new ZoneDefinitionLoader($this->projectDir());
+        $world = $loader->loadFile($loader->defaultFile());
 
         $slugs = [];
         foreach ($world['zones'] as $zone) {
@@ -88,7 +89,7 @@ class SettlementCoverageTest extends TestCase
 
         self::assertSame([], $uncovered, sprintf(
             "Ces zones n'ont ni foyer seede ni raison ecrite de ne pas en avoir : %s.\n"
-            . "Ajoutez-les a `seed` ou a `without_settlement` dans config/game/settlements.yaml.",
+            . 'Ajoutez-les a `seed` ou a `without_settlement` dans config/game/settlements.yaml.',
             implode(', ', $uncovered),
         ));
     }
