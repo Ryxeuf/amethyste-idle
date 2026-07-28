@@ -7,8 +7,8 @@ namespace App\GameEngine\Player;
 use App\Entity\App\Player;
 use App\Entity\Game\Quest;
 use App\GameEngine\Quest\PlayerQuestHelper;
+use App\GameEngine\Retention\WeekKey;
 use App\GameEngine\Retention\WeeklyAttendanceService;
-use App\GameEngine\Retention\WeeklyCommissionGenerator;
 use App\Repository\CraftJobRepository;
 use App\Repository\CraftOrderRepository;
 use App\Repository\GardenPlotRepository;
@@ -170,7 +170,7 @@ final class PlayerHubDigest
         // semaine attend d'etre refermee.
         $commission = $this->commissionRepository->findCurrent(
             $player,
-            WeeklyCommissionGenerator::weekKey($now),
+            WeekKey::of($now),
         );
         if (null !== $commission && $commission->isComplete()) {
             $items[] = new HubPendingItem(

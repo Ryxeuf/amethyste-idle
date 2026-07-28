@@ -63,7 +63,7 @@
 | 13 | **FOY-11 → 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste |
 | 14 | **ZON-30 → 33** | Contenu des zones : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste ([PLAN_ZONES.md](PLAN_ZONES.md)) | **Debloque** : definitions actees dans [docs/GAME_ZONES.md](../GAME_ZONES.md) (2026-07-28). ZON-30/31 sont independants et peuvent s'intercaler plus tot si besoin de contenu ; ZON-32 attend ECO-21/22 |
 
-Transverse, au fil de l'eau : FOY-16 et RET-07 (tests), mise a jour de `ROADMAP_DONE.md`
+Transverse, au fil de l'eau : FOY-16 (tests ; **RET-07 livre**), mise a jour de `ROADMAP_DONE.md`
 a chaque jalon livre (regle 13 de CLAUDE.md).
 
 ---
@@ -197,7 +197,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **6/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 et RET-03 livres** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
+- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) ✅ — **7/7, plan complet** : l'horizon le plus fragile de la colonne de progression. La bascule du lundi est **une** — `WeekKey` en est le point de calcul unique, verrouille par `RetentionPlanContractTest`
 - [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **13/17, grand chantier en cours** (socle FOY-01→05 complet, Pistes B et C completes : FOY-06, FOY-07, FOY-08, FOY-09, FOY-10, FOY-14, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-27)](PLAN_PLAYER_ECONOMY.md) — **Pistes F (purete) et G (chaine de production par paliers) ouvertes** : la Piste G est le levier principal contre le creux du milieu. Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)

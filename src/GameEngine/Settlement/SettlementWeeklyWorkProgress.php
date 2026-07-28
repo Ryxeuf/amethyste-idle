@@ -7,7 +7,7 @@ use App\Entity\App\SettlementWeeklyWork;
 use App\Entity\App\SettlementWeeklyWorkContribution;
 use App\Entity\App\Zone;
 use App\Enum\InfluenceActivityType;
-use App\GameEngine\Retention\WeeklyCommissionGenerator;
+use App\GameEngine\Retention\WeekKey;
 use App\Repository\SettlementWeeklyWorkContributionRepository;
 use App\Repository\SettlementWeeklyWorkRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,7 +57,7 @@ class SettlementWeeklyWorkProgress
         }
 
         $now ??= new \DateTimeImmutable();
-        $work = $this->workRepository->findCurrentForZone($zone, WeeklyCommissionGenerator::weekKey($now));
+        $work = $this->workRepository->findCurrentForZone($zone, WeekKey::of($now));
         if ($work === null || $work->getCompletedAt() !== null) {
             return false;
         }

@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\Game\Domain;
 use App\Enum\InfluenceActivityType;
 use App\Enum\WeeklyCommissionStatus;
+use App\GameEngine\Retention\WeekKey;
 use App\GameEngine\Retention\WeeklyCommissionGenerator;
 use App\GameEngine\Retention\WeeklyCommissionTemplate;
 use App\GameEngine\Retention\WeeklyCommissionTemplateLoader;
@@ -54,10 +55,10 @@ class WeeklyCommissionGeneratorTest extends TestCase
     {
         // Meme forme que `WeeklyChallengeRotator` : les deux rendez-vous
         // tombent le meme lundi, sur la meme clef ISO.
-        self::assertSame('2026-W31', WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable(self::MONDAY)));
+        self::assertSame('2026-W31', WeekKey::of(new \DateTimeImmutable(self::MONDAY)));
         self::assertSame(
-            WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable(self::MONDAY)),
-            WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable('2026-07-31 18:00:00')),
+            WeekKey::of(new \DateTimeImmutable(self::MONDAY)),
+            WeekKey::of(new \DateTimeImmutable('2026-07-31 18:00:00')),
         );
     }
 

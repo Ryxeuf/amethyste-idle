@@ -45,7 +45,7 @@ class WeeklyCommissionProgress
         }
 
         $now ??= new \DateTimeImmutable();
-        $commission = $this->commissionRepository->findCurrent($player, WeeklyCommissionGenerator::weekKey($now));
+        $commission = $this->commissionRepository->findCurrent($player, WeekKey::of($now));
 
         if ($commission === null || $commission->getActivity() !== $activity) {
             return false;

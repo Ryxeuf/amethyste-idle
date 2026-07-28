@@ -6,7 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Enum\Purity;
 use App\GameEngine\Progression\ActionYieldResolver;
-use App\GameEngine\Retention\WeeklyCommissionGenerator;
+use App\GameEngine\Retention\WeekKey;
 use App\Repository\WeeklyOutcropRepository;
 
 /**
@@ -112,7 +112,7 @@ class PurityDrawer
             return false;
         }
 
-        $outcrop = $this->outcropRepository->findForWeek(WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable()));
+        $outcrop = $this->outcropRepository->findForWeek(WeekKey::of(new \DateTimeImmutable()));
 
         return $outcrop !== null
             && $outcrop->getVeinSlug() === $veinSlug

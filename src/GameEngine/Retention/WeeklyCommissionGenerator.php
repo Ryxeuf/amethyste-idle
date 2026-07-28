@@ -45,7 +45,7 @@ class WeeklyCommissionGenerator
     public function generateFor(array $players, ?\DateTimeImmutable $now = null): array
     {
         $now ??= new \DateTimeImmutable();
-        $weekKey = self::weekKey($now);
+        $weekKey = WeekKey::of($now);
         $pool = $this->loader->load()['commissions'];
 
         $report = ['created' => 0, 'skipped' => 0, 'expired' => 0, 'unassigned' => 0];
@@ -100,15 +100,6 @@ class WeeklyCommissionGenerator
         $this->entityManager->flush();
 
         return $report;
-    }
-
-    /**
-     * Semaine ISO — la meme clef que la rotation des defis de guilde, pour que
-     * les deux rendez-vous tombent le meme lundi.
-     */
-    public static function weekKey(\DateTimeImmutable $now): string
-    {
-        return $now->modify('monday this week')->setTime(0, 0, 0)->format('o-\WW');
     }
 
     /**

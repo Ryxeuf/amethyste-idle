@@ -8,7 +8,7 @@ use App\Entity\App\Zone;
 use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\GameEngine\Guild\GuildManager;
-use App\GameEngine\Retention\WeeklyCommissionGenerator;
+use App\GameEngine\Retention\WeekKey;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use App\Repository\SettlementWeeklyWorkContributionRepository;
@@ -190,7 +190,7 @@ class SettlementPanelBuilder
      */
     private function weeklyWork(Zone $zone): ?array
     {
-        $work = $this->workRepository->findCurrentForZone($zone, WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable()));
+        $work = $this->workRepository->findCurrentForZone($zone, WeekKey::of(new \DateTimeImmutable()));
         if ($work === null) {
             return null;
         }
