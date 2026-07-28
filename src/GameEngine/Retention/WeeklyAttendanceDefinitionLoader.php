@@ -86,19 +86,10 @@ class WeeklyAttendanceDefinitionLoader
 
             $days = (int) ($row['days'] ?? 0);
             if ($days <= $previous) {
-                throw new WeeklyAttendanceException(sprintf(
-                    'Attendance tiers of "%s" must be strictly increasing; got %d after %d.',
-                    $source,
-                    $days,
-                    $previous,
-                ));
+                throw new WeeklyAttendanceException(sprintf('Attendance tiers of "%s" must be strictly increasing; got %d after %d.', $source, $days, $previous));
             }
             if ($days > self::MAX_TIER_DAYS) {
-                throw new WeeklyAttendanceException(sprintf(
-                    'Attendance tier of "%s" asks for %d days: a tier at 7 turns a missed day into a loss.',
-                    $source,
-                    $days,
-                ));
+                throw new WeeklyAttendanceException(sprintf('Attendance tier of "%s" asks for %d days: a tier at 7 turns a missed day into a loss.', $source, $days));
             }
 
             $tiers[] = new WeeklyAttendanceTier(
