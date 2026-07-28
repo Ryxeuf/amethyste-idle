@@ -1423,6 +1423,47 @@
         "shop": "Shop",
         "shop_closed": "Shop closed",
         "talk": "Talk"
+      },
+      "settlement": {
+        "heading": "Settlement",
+        "ebbing": "This settlement was once a %rank%; it is slipping.",
+        "to_next": "%count% grains to %rank%",
+        "opens": "At the next tier:",
+        "summit": "This settlement has reached the top of the scale.",
+        "your_share": "Your share",
+        "guild_share": "Your guild"
+      }
+    },
+    "settlement": {
+      "rank": {
+        "ruin": "Ruin",
+        "camp": "Camp",
+        "hamlet": "Hamlet",
+        "town": "Town",
+        "city": "City",
+        "metropolis": "Metropolis"
+      },
+      "type": {
+        "trading": "Trading Post",
+        "bastion": "Bastion",
+        "athenaeum": "Athenaeum",
+        "sanctuary": "Sanctuary"
+      },
+      "index": {
+        "trade": "Trade",
+        "war": "War",
+        "lore": "Lore",
+        "rite": "Rite"
+      },
+      "service": {
+        "regional_market": "the regional market",
+        "zone_bank": "the zone bank",
+        "group_dungeon": "the group dungeon",
+        "rented_stall": "rented stalls",
+        "awakening_altar": "the Altar of Awakening"
+      },
+      "gate": {
+        "closed": "This service opens at %required%; the settlement is %current%."
       }
     },
     "world_map": {
