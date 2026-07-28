@@ -66,6 +66,37 @@ anti_exploit:
     # il cesse simplement de distancer celui qui joue tous les jours.
     diminishing_factor: 0.5
 
+# Services ouverts par le rang du foyer (FOY-05).
+#
+# **Decision A — rien n'est retro-gate.** Cette table ne contient que des
+# services *nouveaux*, qui n'existaient pas avant le pilier. Un service deja
+# pose dans le monde livre (un PNJ, une boutique, un etabli) n'a rien a faire
+# ici : il resterait ouvert de toute facon, et l'y ecrire laisserait croire
+# qu'un jour il pourrait fermer. `never_gated` ci-dessous rend ce refus
+# executable — le chargeur rejette toute intersection entre les deux listes.
+#
+# Un service **absent** de cette table est ouvert partout. C'est le defaut, et
+# c'est voulu : gater se declare, s'ouvrir ne se declare pas.
+services:
+    regional_market: { minimum_rank: town }      # Bourg — le 1er marche du serveur
+    zone_bank: { minimum_rank: city }
+    group_dungeon: { minimum_rank: city }
+    rented_stall: { minimum_rank: city }
+    # Metropole — l'Autel d'eveil est un service *de la ville*, ouvert a tous et
+    # taxe par la guilde controlante ; il ne ferme jamais une fois ouvert et ne
+    # gate ni l'obtention ni l'usage d'une materia (GAME_WORLD § 12.3, § 2.1).
+    awakening_altar: { minimum_rank: metropolis }
+
+# Services que le rang ne fermera jamais, et pourquoi. Les inscrire ici n'est
+# pas de la documentation : le chargeur refuse qu'ils apparaissent dans
+# `services`, ce qui rend la decision A impossible a contredire par megarde.
+never_gated:
+    pnj: 'habitants deja poses dans le monde livre — une ville ne perd pas ses gens en maigrissant'
+    shop: 'boutiques existantes ; le plancher T1 anti cold-start en depend (ECO-02)'
+    workshop: 'etablis deja poses — fermer un metier retirerait une progression acquise'
+    gathering: 'les filons appartiennent a la zone, pas au foyer'
+    travel: 'fermer un voyage enfermerait un joueur dans une zone qui decline'
+
 # Seed du monde livre (decision A — **rien n'est retro-gate**, BALANCE § 23.5).
 # Le seed est narratif, pas protecteur : si personne ne frequente les Mines,
 # leur foyer redescendra. Mais les services *existants* ne ferment jamais
