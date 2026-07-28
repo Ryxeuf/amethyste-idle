@@ -10,9 +10,9 @@ use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
 use App\Enum\CraftSpecialization;
+use App\Repository\PlayerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Repository\PlayerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
