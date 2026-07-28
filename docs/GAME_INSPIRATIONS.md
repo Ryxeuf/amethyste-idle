@@ -140,7 +140,7 @@ avis, **le meilleur rapport valeur/effort de toute cette revue** (§4).
 
 Classées par rapport valeur/effort, la première étant celle que je pousserais en premier.
 
-1. **Qualité variable de l'améthystite** *(SWG)* — un filon produit de la matière **notée**,
+1. **Qualité variable de l'améthyste** *(SWG)* — un filon produit de la matière **notée**,
    variable selon la zone, la marée et la vitalité du filon. Effets en chaîne : le HV cesse
    d'être un tas fongible ; le prospecteur a enfin un métier dont le savoir vaut de l'argent ;
    `Recipe.quality` — qui existe déjà et dort — trouve son intrant ; et les commandes de craft

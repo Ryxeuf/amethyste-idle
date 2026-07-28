@@ -24,7 +24,7 @@
 Trois affirmations, dont tout le reste découle :
 
 1. **Le temps vécu ne disparaît pas : il se dépose.** Ce qui a été fait longtemps, ou
-   intensément, se tasse en une matière dure et translucide — **l'améthystite**. Le sol est
+   intensément, se tasse en une matière dure et translucide — **l'améthyste**. Le sol est
    de la mémoire tassée. La magie est un geste conservé dans un cristal. On n'invente pas un
    sort : on hérite de celui d'un mort.
 
@@ -51,9 +51,9 @@ place pour deux.
 | Terme | Sens |
 |---|---|
 | **Sédiment** | Le dépôt laissé par toute chose vécue. Invisible, omniprésent, mesurable. |
-| **Améthystite** | Sédiment durci. Minerai, inerte, commerçable. *(Déjà dans les données : `spot-amethystite-*`.)* |
-| **Matéria** | Améthystite où un geste est resté lisible. **Trois verbes distincts, à ne jamais confondre** (§2.1) : on la **trouve** (voie normale et abondante), on l'**accorde** (nœud d'arbre qui apprend à s'en servir), on l'**éveille** (création d'une matéria neuve — voie rare et tardive). |
-| **Veine** | Coulée d'améthystite sous une région. Elle lui donne son élément et son caractère. |
+| **Améthyste** | Sédiment durci. Minerai, inerte, commerçable. La ressource porte le nom du monde parce que c'est **la même matière** que le grand cristal — seule l'échelle change. Le cristal sous Lumière se dit toujours avec la majuscule et l'article : **l'Améthyste**, ou le Cristal d'Améthyste. *(Slug hérité : `ore-amethyst-crystal`, spots `spot-amethystite-*` — à renommer avec le contenu de zone.)* |
+| **Matéria** | Améthyste où un geste est resté lisible. **Trois verbes distincts, à ne jamais confondre** (§2.1) : on la **trouve** (voie normale et abondante), on l'**accorde** (nœud d'arbre qui apprend à s'en servir), on l'**éveille** (création d'une matéria neuve — voie rare et tardive). |
+| **Veine** | Coulée d'améthyste sous une région. Elle lui donne son élément et son caractère. |
 | **Accord** | Capacité d'entendre une famille de gestes. Ce que font pousser les arbres de talent. |
 | **Foyer** | Le point d'une zone où le sédiment s'accumule. Ce qui devient — ou pas — une ville. **C'est le nœud.** |
 | **Crue** | La loi qui limite le nombre de grandes cités. Nommée d'après ce qui a tué l'âge précédent. |
@@ -78,7 +78,7 @@ pour devenir une loi du monde.
 | **Compétences passives** (règle 9) | Un arbre n'enseigne pas un sort : il apprend à **entendre** une famille de gestes. Sans accord, la matéria reste une pierre muette. |
 | **Pas de PvP** (règle 11) | Le **Serment** : *« le sang versé ne se dépose pas »*. Tuer un vivant retire sa durée du monde — le seul acte irréversible là où tout laisse une trace. Les cités s'y sont liées ; les Chevaliers le font tenir. |
 | **Position = zone** (règle 7) | On ne se situe pas par des coordonnées mais par **la strate sur laquelle on se tient**. Une zone est une profondeur de temps. |
-| **Économie joueur, plans = découvertes** (D1-D2) | L'améthystite se travaille à la main ou pas du tout. Un plan n'est pas une information, c'est un geste retrouvé : ça se trouve, ça ne s'achète pas. |
+| **Économie joueur, plans = découvertes** (D1-D2) | L'améthyste se travaille à la main ou pas du tout. Un plan n'est pas une information, c'est un geste retrouvé : ça se trouve, ça ne s'achète pas. |
 | **Objets liés au commanditaire** (D5) | Une pièce faite *pour quelqu'un* prend sa durée en se formant. La liaison est une propriété physique, pas une restriction. |
 | **Marchés régionaux** (D13) | Un marché est la bouche d'un foyer. Il n'existe pas de marché « du monde », parce qu'il n'existe pas de lieu qui soit partout. |
 | **Contrôle de cité par l'influence** (GCC) | Une cité n'appartient pas à qui la prend, mais à qui l'a **faite monter**. |
@@ -102,7 +102,7 @@ du personnage**. Il en découle une contrainte que rien ne doit contredire :
 |---|---|---|
 | **Trouver** | La matéria existe déjà dans le monde : butin de créature, coffre, récompense, marché | **Abondante.** Voie normale, dès le jour 1 |
 | **Accorder** | Apprendre à s'en servir — le nœud d'arbre (`materia.unlock`) | **Gratuit et précoce.** Les nœuds d'entrée d'un domaine sont à 0 point |
-| **Éveiller** | Créer une matéria **neuve** à partir d'améthystite *Parfaite* | **Rare et tardif.** Service de grande cité, matéria de haut palier |
+| **Éveiller** | Créer une matéria **neuve** à partir d'améthyste *Parfaite* | **Rare et tardif.** Service de grande cité, matéria de haut palier |
 
 Le jeu livré respecte déjà cette règle : 69 matéria tombent des créatures à 4-10 %, et l'arbre
 de Pyromancie ouvre **deux matéria de feu à 0 point requis**. Ce document ne l'invente pas —
@@ -137,6 +137,40 @@ et que le code livré porte déjà :
 
 En fiction, la fusion ne contredit pas « on n'invente pas un geste » : deux gestes déposés
 l'un sur l'autre **se tassent en un seul** — c'est de la sédimentation, pas de l'invention.
+
+**Ce qu'est l'éveil, précisément.** Dans un lot d'améthyste *Parfaite*, un geste ancien est
+resté **lisible** — c'est la définition de la bande. L'éveil est le rite qui le fait
+remonter : on choisit, dans une liste déterminée par l'**élément** et la **provenance** du
+lot, le geste qu'on réveille — et il devient une matéria neuve. Mécaniquement, c'est le
+passage de *« la matéria que le monde veut bien te donner »* (le butin, soumis au hasard) à
+*« la matéria que tu as choisie »* : le seul moyen **délibéré** de produire une matéria
+précise. C'est pour cela qu'il est cher, tardif et rituel — s'il était banal, il remplacerait
+le butin au lieu de le couronner. Le Limpide ne dépose rien : il ne crée pas le geste, il
+**réveille celui d'un mort** — l'éveil reste un héritage, jamais une invention.
+
+**L'échelle d'usage — chaque bande sert quelque chose.** L'améthyste n'est pas un trophée :
+c'est le sang du système matéria, et chaque bande de pureté (§5.4) alimente un étage du build :
+
+| Bande | Usage | Qui la consomme |
+|---|---|---|
+| **Trouble** | **Fondue** → essence (réparations, entretien de foyer, accélérations) | La Fonderie — le « pétrole » du monde |
+| **Claire** | **Enchantements et consommables** (le système `Enchantment` existe, elle s'ajoute à ses ingrédients) | Alchimiste, joaillier |
+| **Pure** | **Le sertissage** : tailler, ajouter et améliorer les **emplacements de matéria** sur l'équipement | **Le joaillier** — le métier du build |
+| **Parfaite** | **L'éveil** (ci-dessus) | Rite de Métropole |
+
+Un usage quotidien dès le jour 1 (fondre du Trouble), un débouché à chaque niveau de jeu, et
+le choix fondre/lire (§12.2) qui prend une gradation naturelle : fondre du Trouble est banal,
+fondre du Pur fait mal, fondre du Parfait est un acte politique.
+
+**Le sertissage d'un objet lié — la commande de service.** Le joaillier travaille sur des
+pièces qui appartiennent à d'autres, y compris des pièces **liées** (bind on pickup). Aucun
+transfert de propriété n'est nécessaire : le canal des **commandes de craft** (ECO Piste C,
+livré) s'étend aux **commandes de service** — le client place *sa* pièce en escrow avec la
+commission et l'améthyste Pure, l'artisan exécute le travail, la pièce **revient à son
+propriétaire**, améliorée. L'objet ne change jamais de mains au sens de la liaison :
+l'escrow système le tient, l'artisan ne peut ni l'équiper ni le garder, et la liaison n'est
+jamais violée. En fiction : la pièce est liée parce qu'elle a pris la durée de son porteur —
+le joaillier ne la possède pas, il **travaille dessus**. (Jalon : ECO-28.)
 
 **Réserve d'extension — les domaines hybrides.** Les 14 fusions croisées sont la porte des
 extensions : chaque hybride (Magma, Éclipse…) peut ouvrir à terme un **domaine** propre, avec
@@ -402,7 +436,7 @@ Chacun est **une mécanique**, pas une couleur de fond :
 
 | Biome | Ce qu'on y voit | Ce qu'il fait au jeu |
 |---|---|---|
-| **Affleurement** | Veine à ciel ouvert, bêtes prises dans le cristal | Améthystite brute, très haut rendement, **vitalité de filon fragile** — le levier de sur-extraction |
+| **Affleurement** | Veine à ciel ouvert, bêtes prises dans le cristal | Améthyste brute, très haut rendement, **vitalité de filon fragile** — le levier de sur-extraction |
 | **Étale** | Rien. Ni couleur, ni bruit, ni faune | Biome **d'absence** : aucune récolte, aucun PNJ, aucun foyer — seulement des Effacés. On n'y récolte pas, **on y retrouve** (§12.1) |
 | **Zone pâlie** | Les couleurs se délavent, les filons rendent trouble | **État**, pas biome : superposable à n'importe quelle zone, réversible contre paiement au trésor (§12.1) |
 | **Ambre** | Choses conservées en plein geste | Butin de l'âge précédent ; **toute récolte réveille ce qui était conservé** |
@@ -445,7 +479,7 @@ Une ressource ne se trouve pas « un peu partout » : elle appartient à une vei
 | Pierre & gemme | Crête, sel | Minage, joaillerie | Sertissage, matéria |
 | Cuir & os | Plaines, dunes | Dépeçage, tannerie | Armures légères |
 | Eau & sel | Marais, mer, rivière | Pêche, alchimie | Consommables perpétuels |
-| Améthystite | Affleurements | Prospection | **Matéria, seul intrant qui ne se substitue pas** |
+| Améthyste | Affleurements | Prospection | **Matéria, seul intrant qui ne se substitue pas** |
 
 **Aucun métier n'est autosuffisant** (D-WoW §4.6) et **aucune région n'a tout** : le commerce
 entre régions n'est pas un bonus, c'est une nécessité.
@@ -487,13 +521,13 @@ est donc un métier. Version PvE de la caravane d'Albion :
 C'est le gold sink et le sink de temps que réclame §4.7 de GAME_PRINCIPLES, sous une forme
 qui produit du jeu au lieu d'une taxe.
 
-### 5.4 La pureté — toute améthystite ne se vaut pas *(tranché)*
+### 5.4 La pureté — toute améthyste ne se vaut pas *(tranché)*
 
 Emprunt à Star Wars Galaxies (cf. [GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md) §2.6), adapté
 pour éviter son défaut : chez eux *toutes* les ressources avaient des statistiques, ce qui a
 transformé l'artisanat en tableur.
 
-**Un lot d'améthystite porte une pureté.** Elle se lit sur quatre bandes plutôt que sur une
+**Un lot d'améthyste porte une pureté.** Elle se lit sur quatre bandes plutôt que sur une
 note continue — c'est ce qui évite d'éclater les piles d'inventaire en mille lots
 incomparables :
 
@@ -510,7 +544,7 @@ trouble), la **compétence** du récolteur, la **marée** en cours et le **biome
 Affleurement ou un Chœur tirent haut).
 
 **Le périmètre est volontairement étroit** : la pureté ne s'applique qu'à la **ligne du
-cristal** — améthystite, minerais, gemmes. Les herbes, poissons, cuirs et bois restent
+cristal** — améthyste, minerais, gemmes. Les herbes, poissons, cuirs et bois restent
 fongibles. Le plancher T1 (D1) ne doit jamais demander à un débutant de comparer des lots.
 
 Ce que ça débloque, et c'est beaucoup pour une colonne :
@@ -555,7 +589,7 @@ qu'elle est un **intrant** et non un **produit fini**.
 *(Chantier économie — à ouvrir dans `PLAN_PLAYER_ECONOMY`, pas dans le plan des foyers.)*
 
 **2. La pureté prime sur le palier** *(décision D, §5.4)*
-Seule l'améthystite **Parfaite** permet d'éveiller une matéria neuve. Or un filon reposé de palier moyen sort
+Seule l'améthyste **Parfaite** permet d'éveiller une matéria neuve. Or un filon reposé de palier moyen sort
 du Parfait bien plus souvent qu'un filon éreinté de haut palier. Une zone intermédiaire
 délaissée devient donc **la meilleure source du monde pour la chose la plus précieuse du
 jeu**. C'est la valeur qui suit la *fraîcheur*, pas le palier — et ça, aucun vétéran ne peut
@@ -1004,27 +1038,27 @@ zones neuves. Modèle **expédition**, sans foyer, haut palier (§4.3). À moiti
 **Extension 2 — L'Étale** : la frontière. Source exclusive de plans et de matéria perdue,
 Effacés (§12.1, §7.4). Extension de fin de jeu, déjà conçue.
 
-### 13.3 L'améthystite — recommandation
+### 13.3 L'améthyste — recommandation
 
 L'audit de la chaîne de production a montré que la **ressource-titre du jeu n'a aucun filon** :
 `ore-amethyst-crystal` n'existe que via un spot hérité dans les Mines
 (cf. [BALANCE.md § 21.5](BALANCE.md)). Il faut donc trancher sa source au moment de définir
 les ressources de zone. Recommandation :
 
-> **L'améthystite est partout, mais la pureté dépend du lieu.**
+> **L'améthyste est partout, mais la pureté dépend du lieu.**
 
 Le postulat dit que le temps se dépose *partout* : il serait incohérent qu'il n'y ait qu'un
-seul endroit où le ramasser. Chaque zone porte donc sa veine d'améthystite ; ce qui change
+seul endroit où le ramasser. Chaque zone porte donc sa veine d'améthyste ; ce qui change
 d'une zone à l'autre, c'est la **bande** qu'elle peut atteindre (§5.4) — le *Parfait* n'étant
 accessible que dans les Affleurements, les Chœurs, et les zones reposées.
 
 Trois conséquences, et c'est ce qui emporte la décision :
 
 - **Chaque zone devient définitivement pertinente pour la fin de jeu**, puisque la matéria
-  vient de l'améthystite. Le creux du milieu (§5.5) se règle à la racine plutôt que par des
+  vient de l'améthyste. Le creux du milieu (§5.5) se règle à la racine plutôt que par des
   leviers compensatoires.
 - **La règle de l'exclusivité devient facile à tenir** : chaque zone a sa ligne de production
-  *et* sa signature d'améthystite.
+  *et* sa signature d'améthyste.
 - **La pureté trouve son sens plein** : ce n'est plus une statistique de minerai, c'est la
   qualité de la mémoire d'un lieu — ce que le postulat dit depuis le début.
 
@@ -1117,7 +1151,7 @@ Une entrée manque encore. Elle est **au-dessus** de ce document, pas dedans.
    énonce ce que la colonne impose aux zones et aux ressources — c'est l'entrée qui manquait
    pour figer le §13.
 
-3. **La source de l'améthystite** (§13.3) — recommandation posée, décision à prendre.
+3. **La source de l'améthyste** (§13.3) — recommandation posée, décision à prendre.
 
 > **Note de méthode.** L'ordre sain reste macro → micro. Le détour par le micro (audit de la
 > chaîne, ECO-24) était néanmoins rentable : il a **falsifié** trois hypothèses du macro —

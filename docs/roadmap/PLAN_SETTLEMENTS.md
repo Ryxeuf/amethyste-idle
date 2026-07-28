@@ -167,7 +167,7 @@ s'y branche.
 - [ ] **Bourg** : ouverture du marché local (le HV régional devient consultable depuis la zone)
 - [ ] **Cité** : banque de zone, donjon de groupe, étals loués (← ECO Piste D si livrée)
 - [ ] **Métropole** : **éveil** de matéria — *création* d'une matéria neuve à partir
-      d'améthystite *Parfaite*. **Ne gate jamais l'obtention ni l'usage d'une matéria**
+      d'améthyste *Parfaite*. **Ne gate jamais l'obtention ni l'usage d'une matéria**
       (GAME_WORLD §2.1) : sans ça, à 50 joueurs quotidiens aucune Métropole n'existe et le
       système de build serait verrouillé. Plus les plans de fin de jeu
 - [ ] Chaque ouverture publie une annonce Mercure sur la zone (le palier se **voit**)

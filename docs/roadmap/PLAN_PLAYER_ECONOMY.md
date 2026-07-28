@@ -10,7 +10,7 @@
 
 ## Vue d'ensemble
 
-**24 jalons** (**ECO-01** à **ECO-17**, puis **ECO-21** à **ECO-27**) organisés en 7 pistes.
+**25 jalons** (**ECO-01** à **ECO-17**, puis **ECO-21** à **ECO-28**) organisés en 7 pistes.
 *(ECO-18 à ECO-20 sont nés en cours de campagne et sont tracés dans `ROADMAP_DONE.md` /
 `BALANCE.md` — les numéros ne sont pas réutilisés.)*
 Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité** (GCC ✅),
@@ -43,6 +43,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-25 | Chaînage des paliers raffinés |
 | ECO-26 | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
+| ECO-28 | Commandes de service — travailler un objet lié |
 
 ```
 Piste A — Socle & liaison        : ECO-01 → ECO-02
@@ -50,7 +51,7 @@ Piste B — HV régional            : ECO-03 → ECO-04
 Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
-Piste F — Pureté des ressources  : ECO-21 → ECO-22 → ECO-23
+Piste F — Pureté & améthyste     : ECO-21 → ECO-22 → ECO-23 → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
 ```
 
@@ -289,7 +290,7 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
 ## Piste F — Pureté des ressources (séquentiel)
 
 > **Décision D** du socle de monde ([../GAME_WORLD.md](../GAME_WORLD.md) §5.4, actée le
-> 2026-07-27) : toute améthystite ne se vaut pas. Emprunt à Star Wars Galaxies, corrigé de
+> 2026-07-27) : toute améthyste ne se vaut pas. Emprunt à Star Wars Galaxies, corrigé de
 > son défaut — chez eux *toutes* les ressources avaient des statistiques, ce qui a transformé
 > l'artisanat en tableur. Ici : **la ligne du cristal uniquement**, et **quatre bandes** au
 > lieu d'une note continue.
@@ -299,7 +300,7 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
 > Prérequis : ∅
 - [ ] Enum `Purity` : `trouble` / `clair` / `pur` / `parfait`
 - [ ] `PlayerItem.purity` (nullable — `null` = hors périmètre, l'immense majorité des objets)
-- [ ] **Périmètre étroit et explicite** : améthystite, minerais, gemmes. Herbes, poissons,
+- [ ] **Périmètre étroit et explicite** : améthyste, minerais, gemmes. Herbes, poissons,
       cuirs et bois restent fongibles — le plancher T1 (D1) ne doit jamais demander à un
       débutant de comparer des lots
 - [ ] Règle de pile : deux lots ne fusionnent que **dans la même bande** (c'est la raison
@@ -328,6 +329,23 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
       [../GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §6
 - [ ] Refus explicite (et lisible) si la matière fournie est sous la bande demandée
 - [ ] Tests : filtre, exigence de commande, refus
+
+### ECO-28 — Commandes de service : travailler un objet lié (M | ★★★ | HAUTE)
+> Le joaillier améliore les emplacements de matéria d'une pièce qui ne lui appartient pas —
+> y compris une pièce **liée**. Réponse au problème structurel : sans ce canal, tout
+> l'artisanat de service sur le stuff HL lié est impossible (GAME_WORLD §2.1).
+> Prérequis : ← ECO-05..09 ✅ (commandes & escrow), ← ECO-21 (bandes de pureté)
+- [ ] `CraftOrder` étendu : type `service` — la commande cible un **`PlayerItem` du client**
+      (placé en escrow) au lieu de produire un objet neuf
+- [ ] **La liaison n'est jamais violée** : l'objet reste lié à son propriétaire pendant tout
+      le processus ; l'artisan ne peut ni l'équiper, ni le vendre, ni le garder ; à la
+      livraison (ou à l'expiration) il **revient au client**, amélioré ou intact
+- [ ] Premier service : le **sertissage** — ajouter/améliorer un emplacement de matéria,
+      consomme de l'améthyste **Pure** fournie par le client (+ commission)
+- [ ] Restitution garantie à l'expiration/annulation (mêmes invariants d'escrow qu'ECO-09)
+- [ ] Loi transverse à ajouter à `EconomyInvariantTest` : un objet en escrow de service
+      conserve son propriétaire de liaison, quel que soit le chemin de sortie
+- [ ] Tests : liaison préservée, escrow, restitution, refus si bande insuffisante
 
 ---
 
