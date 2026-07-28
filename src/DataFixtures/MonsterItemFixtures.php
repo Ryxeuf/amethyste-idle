@@ -496,6 +496,60 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'stone_golem', 'item' => 'golem_heart_shield', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3, 'minDifficulty' => 3],
 
+            // =================================================================
+            // ECO-24b-b — Les cuirs du tanneur
+            // =================================================================
+            // Le second passage d'audit (BALANCE §21.7) a trouve 12 recettes
+            // consommant quatre matieres qu'**aucun monstre ne lachait** : les
+            // series « durcie » et « dragon » et la cape de maitre etaient
+            // irrealisables. Meme famille de defaut qu'ECO-02 (les betes
+            // lachaient des doublons sans consommateur) — a ceci pres qu'ici,
+            // il n'y avait aucune source du tout.
+            //
+            // Raretes inversees (loi 2 de GAME_ZONES §0) : l'os et le croc sont
+            // communs et largement repartis, la fourrure et l'ecaille sont
+            // concentrees sur les especes qui les portent en fiction. Le prix
+            // du catalogue dit le meme ordre : 6 / 8 / 150 / 200 Gils.
+
+            // --- Os (`leather-bone`, 6 G) : squelettes, morts-vivants,
+            //     grandes carcasses et faune du desert. La faune de l'Ambre se
+            //     depece en os, pas en cuir souple (GAME_ZONES §2.7).
+            ['monster' => 'skeleton', 'item' => 'leather_bone', 'probability' => 60],
+            ['monster' => 'zombie', 'item' => 'leather_bone', 'probability' => 25],
+            ['monster' => 'troll', 'item' => 'leather_bone', 'probability' => 35],
+            ['monster' => 'minotaur', 'item' => 'leather_bone', 'probability' => 40],
+            ['monster' => 'cursed_knight', 'item' => 'leather_bone', 'probability' => 30],
+            ['monster' => 'lesser_lich', 'item' => 'leather_bone', 'probability' => 45],
+            ['monster' => 'sand_stalker', 'item' => 'leather_bone', 'probability' => 45],
+            ['monster' => 'basilisk', 'item' => 'leather_bone', 'probability' => 40],
+
+            // --- Croc (`leather-fang`, 8 G) : tout ce qui mord.
+            ['monster' => 'wolf', 'item' => 'leather_fang', 'probability' => 30],
+            ['monster' => 'alpha_wolf', 'item' => 'leather_fang', 'probability' => 45],
+            ['monster' => 'werewolf', 'item' => 'leather_fang', 'probability' => 40],
+            ['monster' => 'venom_snake', 'item' => 'leather_fang', 'probability' => 35],
+            ['monster' => 'spider', 'item' => 'leather_fang', 'probability' => 25],
+            ['monster' => 'naga', 'item' => 'leather_fang', 'probability' => 35],
+            ['monster' => 'frost_warg', 'item' => 'leather_fang', 'probability' => 50],
+            ['monster' => 'basilisk', 'item' => 'leather_fang', 'probability' => 30],
+
+            // --- Fourrure de loup-garou (`leather-werewolf-fur`, 150 G) : deux
+            //     especes seulement. Le loup-garou est de niveau 3, donc
+            //     farmable tot — c'est ce qui rend la serie « durcie »
+            //     realisable sans attendre la fin de jeu, malgre 2 a 3 unites
+            //     par recette.
+            ['monster' => 'werewolf', 'item' => 'leather_werewolf_fur', 'probability' => 25],
+            ['monster' => 'frost_warg', 'item' => 'leather_werewolf_fur', 'probability' => 15],
+
+            // --- Ecaille de dragon (`leather-dragon-scale`, 200 G) : la plus
+            //     rare des quatre, reservee aux draconiques. Les recettes en
+            //     demandent jusqu'a 4 : la rarete se regle par le **niveau des
+            //     especes** porteuses, pas en etranglant la probabilite.
+            ['monster' => 'dragon', 'item' => 'leather_dragon_scale', 'probability' => 30],
+            ['monster' => 'wyvern', 'item' => 'leather_dragon_scale', 'probability' => 20],
+            ['monster' => 'ancient_wyrm', 'item' => 'leather_dragon_scale', 'probability' => 45],
+            ['monster' => 'rime_drake', 'item' => 'leather_dragon_scale', 'probability' => 40],
+
             // --- Boss de donjon : Racine Ancienne (tache 84) ---
             ['monster' => 'ancient_root', 'item' => 'healing_potion_major', 'probability' => 80],
             ['monster' => 'ancient_root', 'item' => 'energy_potion_small', 'probability' => 60],
