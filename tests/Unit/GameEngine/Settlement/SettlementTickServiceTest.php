@@ -113,6 +113,8 @@ class SettlementTickServiceTest extends TestCase
             SettlementRank::Hamlet,
             $this->now()->modify('-1 day'),
         );
+        // L'etiage a ete annonce il y a une maree : le delai est echu.
+        $settlement->setEbbSince($this->now()->modify('-29 days'));
 
         $report = $this->service()->tick($this->now());
 
@@ -137,6 +139,7 @@ class SettlementTickServiceTest extends TestCase
             SettlementRank::Hamlet,
             $this->now()->modify('-1 day'),
         );
+        $settlement->setEbbSince($this->now()->modify('-29 days'));
 
         $this->service()->tick($this->now());
 
@@ -270,6 +273,7 @@ class SettlementTickServiceTest extends TestCase
         $settlement->setType(SettlementType::Trading);
         $settlement->setDominantCandidate(SettlementIndex::Trade);
         $settlement->setDominantSince($this->now()->modify('-100 days'));
+        $settlement->setEbbSince($this->now()->modify('-29 days'));
 
         $report = $this->service()->tick($this->now());
 
@@ -298,6 +302,115 @@ class SettlementTickServiceTest extends TestCase
         self::assertSame(0, $report['decayed']);
         self::assertSame(SettlementRank::Hamlet, $settlement->getRank());
         self::assertSame(1, $report['promoted']);
+    }
+
+    /**
+     * FOY-10. Le message est « ce lieu s'endort », jamais « vous avez perdu ».
+     * Passer sous le seuil **annonce** l'etiage ; le rang ne tombe pas encore.
+     */
+    public function testFallingBelowAThresholdOnlyAnnouncesTheEbb(): void
+    {
+        $settlement = $this->settlement(
+            ['trade' => 1220],
+            SettlementRank::Hamlet,
+            $this->now()->modify('-1 day'),
+        );
+
+        $report = $this->service()->tick($this->now());
+
+        self::assertSame(SettlementRank::Hamlet, $settlement->getRank());
+        self::assertTrue($settlement->isEbbWarned());
+        self::assertEquals($this->now(), $settlement->getEbbSince());
+        self::assertSame(0, $report['demoted']);
+        self::assertSame([], $this->dispatched);
+    }
+
+    /**
+     * Le foyer a une maree entiere pour redresser. A vingt-sept jours, il l'a
+     * encore.
+     */
+    public function testTheGraceTideIsAFullTide(): void
+    {
+        $settlement = $this->settlement(
+            ['trade' => 1220],
+            SettlementRank::Hamlet,
+            $this->now()->modify('-1 day'),
+        );
+        $settlement->setEbbSince($this->now()->modify('-27 days'));
+
+        $this->service()->tick($this->now());
+
+        self::assertSame(SettlementRank::Hamlet, $settlement->getRank());
+    }
+
+    /**
+     * Redresser lave l'ardoise : la maree de grace repart entiere la fois
+     * suivante. Sinon un foyer qui frole le seuil chaque mois finirait par
+     * tomber sans jamais avoir eu son delai.
+     */
+    public function testRecoveringClearsTheEbbEntirely(): void
+    {
+        $settlement = $this->settlement(
+            ['trade' => 2000],
+            SettlementRank::Hamlet,
+            $this->now()->modify('-1 day'),
+        );
+        $settlement->setEbbSince($this->now()->modify('-27 days'));
+
+        $this->service()->tick($this->now());
+
+        self::assertFalse($settlement->isEbbWarned());
+        self::assertSame(SettlementRank::Hamlet, $settlement->getRank());
+    }
+
+    /**
+     * Une ville qui s'effondre en une nuit n'apprend rien a personne : un seul
+     * rang par maree, quel que soit le deficit.
+     */
+    public function testOnlyOneRankIsLostAtATimeHoweverDeepTheDeficit(): void
+    {
+        // Une Metropole tombee a 100 grains : son rang naturel est Ruine.
+        $settlement = $this->settlement(['trade' => 100], SettlementRank::Metropolis, $this->now()->modify('-1 day'));
+        $settlement->setEbbSince($this->now()->modify('-29 days'));
+
+        $report = $this->service()->tick($this->now());
+
+        self::assertSame(SettlementRank::City, $settlement->getRank());
+        self::assertSame(1, $report['demoted']);
+        self::assertSame(SettlementRank::Metropolis, $this->dispatched[0]->getFrom());
+        self::assertSame(SettlementRank::City, $this->dispatched[0]->getTo());
+    }
+
+    /**
+     * Et le rang suivant ne se perd pas dans la foulee : la grace repart, meme
+     * si le deficit la justifierait deja.
+     */
+    public function testTheNextRankIsNotLostInTheSameBreath(): void
+    {
+        $settlement = $this->settlement(['trade' => 100], SettlementRank::Metropolis, $this->now()->modify('-1 day'));
+        $settlement->setEbbSince($this->now()->modify('-29 days'));
+
+        $service = $this->service();
+        $service->tick($this->now());
+        $service->tick($this->now()->modify('+1 day'), true);
+
+        self::assertSame(SettlementRank::City, $settlement->getRank());
+        self::assertTrue($settlement->isEbbWarned());
+    }
+
+    /**
+     * Ca monte tout de suite, ca descend lentement : rien ne gagne a faire
+     * attendre une ville qui vient de reussir.
+     */
+    public function testAPromotionNeverWaitsForATide(): void
+    {
+        $settlement = $this->settlement(['trade' => 9000], SettlementRank::Hamlet, $this->now()->modify('-1 day'));
+
+        $report = $this->service()->tick($this->now());
+
+        self::assertSame(SettlementRank::Town, $settlement->getRank());
+        self::assertSame(1, $report['promoted']);
+        self::assertFalse($settlement->isEbbWarned());
     }
 
     private function now(): \DateTimeImmutable
@@ -350,6 +463,8 @@ class SettlementTickServiceTest extends TestCase
             'daily_cap_per_player' => 60,
             'diminishing_threshold' => 40,
             'diminishing_factor' => 0.5,
+            'grace_days' => 28,
+            'rebuild_multiplier' => 2,
             'seed' => [],
             'without_settlement' => [],
         ]);

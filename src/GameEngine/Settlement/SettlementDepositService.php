@@ -39,7 +39,8 @@ class SettlementDepositService
      *     sediment: array<string, SedimentRule>,
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
-     *     diminishing_factor: float
+     *     diminishing_factor: float,
+     *     rebuild_multiplier: int
      * }|null
      */
     private ?array $rules = null;
@@ -87,13 +88,28 @@ class SettlementDepositService
         }
 
         $index = $rule->index;
+        // FOY-10 : tant que le foyer est sous son plus haut rang, les depots
+        // comptent double. Rebatir est deux fois plus rapide que batir — le
+        // patrimoine, c'est de la memoire, pas des murs.
+        //
+        // Le multiplicateur s'applique **apres** le plafond, et le compteur
+        // journalier retient l'effort d'avant multiplication. Le plafond mesure
+        // ce qu'un joueur a fait, pas ce que la ville a recu : l'inverse
+        // reviendrait a diviser par deux le temps de jeu utile d'un joueur qui
+        // aide une ville en difficulte, ce qui est exactement le contraire du
+        // but.
+        $effort = $granted;
+        if ($settlement->isRebuilding()) {
+            $granted *= $rules['rebuild_multiplier'];
+        }
+
         $deposited = $index === null
             ? $this->depositSpread($settlement, $contribution, $granted)
             : $this->depositOn($settlement, $contribution, $index, $granted);
 
         if ($deposited > 0) {
             $contribution->addGrains($deposited);
-            $contribution->addDailyGrains($now, $deposited);
+            $contribution->addDailyGrains($now, (int) ceil($effort));
         }
 
         return $deposited;
@@ -180,7 +196,8 @@ class SettlementDepositService
      *     sediment: array<string, SedimentRule>,
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
-     *     diminishing_factor: float
+     *     diminishing_factor: float,
+     *     rebuild_multiplier: int
      * }
      */
     private function rules(): array
@@ -192,6 +209,7 @@ class SettlementDepositService
                 'daily_cap_per_player' => $definition['daily_cap_per_player'],
                 'diminishing_threshold' => $definition['diminishing_threshold'],
                 'diminishing_factor' => $definition['diminishing_factor'],
+                'rebuild_multiplier' => $definition['rebuild_multiplier'],
             ];
         }
 

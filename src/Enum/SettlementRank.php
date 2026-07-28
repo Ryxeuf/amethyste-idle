@@ -70,6 +70,26 @@ enum SettlementRank: string
     }
 
     /**
+     * Rang immediatement inferieur, ou `null` au bas de l'echelle.
+     *
+     * Sert au plancher de regression (FOY-10) : un foyer ne perd **qu'un** rang
+     * par maree, quel que soit son deficit. Recalculer le rang naturel le
+     * ferait chuter de trois crans d'un coup, et une ville qui s'effondre en
+     * une nuit n'apprend rien a personne.
+     */
+    public function previous(): ?self
+    {
+        return match ($this) {
+            self::Ruin => null,
+            self::Camp => self::Ruin,
+            self::Hamlet => self::Camp,
+            self::Town => self::Hamlet,
+            self::City => self::Town,
+            self::Metropolis => self::City,
+        };
+    }
+
+    /**
      * Rangs ordonnes du plus bas au plus haut.
      *
      * @return list<self>

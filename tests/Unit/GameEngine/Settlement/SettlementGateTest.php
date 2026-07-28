@@ -146,6 +146,7 @@ class SettlementGateTest extends TestCase
             'type' => ['dominance_margin' => 0.25, 'sustain_days' => 28, 'minimum_rank' => 'hamlet'],
             'sediment' => ['mob_kill' => ['index' => 'war', 'grains' => 1]],
             'anti_exploit' => ['daily_cap_per_player' => 60, 'diminishing_threshold' => 40, 'diminishing_factor' => 0.5],
+            'regression' => ['grace_days' => 28, 'max_ranks_per_tide' => 1, 'rebuild_multiplier' => 2],
             'services' => ['shop' => ['minimum_rank' => 'town']],
             'never_gated' => ['shop' => 'boutiques existantes'],
         ]);

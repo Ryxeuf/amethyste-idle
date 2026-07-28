@@ -43,6 +43,8 @@ class SettlementDefinitionLoaderTest extends TestCase
         self::assertSame(60, $result['daily_cap_per_player']);
         self::assertSame(40, $result['diminishing_threshold']);
         self::assertSame(0.5, $result['diminishing_factor']);
+        self::assertSame(28, $result['grace_days']);
+        self::assertSame(2, $result['rebuild_multiplier']);
         self::assertSame(SettlementRank::Camp, $result['seed']['marais']['rank']);
         self::assertSame(400, $result['seed']['marais']['stock']);
         self::assertSame('batie sur la Voute', $result['without_settlement']['lumiere']);
@@ -205,6 +207,7 @@ class SettlementDefinitionLoaderTest extends TestCase
                 'travel' => ['index' => 'spread', 'grains' => 0.2],
             ],
             'anti_exploit' => ['daily_cap_per_player' => 60, 'diminishing_threshold' => 40, 'diminishing_factor' => 0.5],
+            'regression' => ['grace_days' => 28, 'max_ranks_per_tide' => 1, 'rebuild_multiplier' => 2],
             'services' => ['regional_market' => ['minimum_rank' => 'town']],
             'never_gated' => ['shop' => 'boutiques existantes'],
             'seed' => ['marais' => ['rank' => 'camp', 'stock' => 400]],

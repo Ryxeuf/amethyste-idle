@@ -37,7 +37,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-07 | Bonus d'atelier par foyer (ligne de production × type) |
 | FOY-08 | Crue — quotas indexés sur la population active |
 | FOY-09 | Zone d'influence & vassalité |
-| FOY-10 | Étiage & régression bornée |
+| FOY-10 ✅ | Étiage & régression bornée |
 | FOY-11 | Pâleur — état de zone, effets sur rendement et pureté |
 | FOY-12 | Restauration payée au trésor de guilde |
 | FOY-13 | Ateliers de doctrine (Fonderie / Lecteurs) |
@@ -261,17 +261,13 @@ s'y branche.
 - [ ] Tests : plafonnement, libération quand la métropole tombe, pas de cascade au-delà des
       voisins directs
 
-### FOY-10 — Étiage & régression bornée (M | ★★★ | HAUTE)
+### FOY-10 — Étiage & régression bornée ✅ (M | ★★★ | HAUTE)
 > Décision C. Le message est « ce lieu s'endort », jamais « vous avez perdu ».
-> Prérequis : ← FOY-03
-- [ ] **Étiage** : passage sous le seuil → état annoncé, avec **une marée entière** pour
-      redresser avant la perte du rang
-- [ ] Notification aux contributeurs récents et à la guilde contrôlante
-- [ ] **Le patrimoine survit** : upgrades payés, parcelles, échoppes et stocks sont conservés
-      et redeviennent actifs au retour du rang
-- [ ] **Remontée accélérée** : seuils réduits pour un rang déjà atteint une fois
-      (`Settlement.highestRank`)
-- [ ] Tests : étiage → délai → régression, patrimoine intact, remontée moins chère
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Reste ouvert** : la notification aux contributeurs récents et à la guilde contrôlante,
+> qui demande le canal Mercure de FOY-04b. Le patrimoine (upgrades, parcelles, échoppes)
+> survit déjà par construction — FOY-05 interdit de gater un service existant.
 
 ---
 
