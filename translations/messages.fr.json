@@ -1437,7 +1437,9 @@
         "opens": "Au palier suivant :",
         "summit": "Ce foyer a atteint le sommet de l'échelle.",
         "your_share": "Votre apport",
-        "guild_share": "Votre guilde"
+        "guild_share": "Votre guilde",
+        "services": "Services du foyer",
+        "service_locked": "%service% — au %required%"
       }
     },
     "settlement": {
@@ -1464,7 +1466,6 @@
       "service": {
         "regional_market": "le marché régional",
         "zone_bank": "la banque de zone",
-        "group_dungeon": "le donjon de groupe",
         "rented_stall": "les étals loués",
         "awakening_altar": "l'Autel d'éveil"
       },

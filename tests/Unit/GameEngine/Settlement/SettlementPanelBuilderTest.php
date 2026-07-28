@@ -14,6 +14,7 @@ use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementGate;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
+use App\GameEngine\Settlement\SettlementServiceDirectory;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use PHPUnit\Framework\TestCase;
@@ -143,6 +144,23 @@ class SettlementPanelBuilderTest extends TestCase
         self::assertNotNull($panel['next']);
         self::assertNotContains('regional_market', $panel['next']['opens']);
         self::assertContains('zone_bank', $panel['next']['opens']);
+    }
+
+    /**
+     * La ligne « au palier suivant » promet ; le bloc des services donne la
+     * porte (FOY-06). Les deux doivent tenir sur le meme panneau, sinon le
+     * joueur lit une promesse sans jamais voir ce qu'elle a deja tenu.
+     */
+    public function testThePanelCarriesTheDoorsTheRankHasAlreadyOpened(): void
+    {
+        $this->settlementWith(['trade' => 9000], SettlementRank::Town);
+
+        $panel = $this->builder()->build($this->zone);
+
+        self::assertNotNull($panel);
+
+        $open = array_column(array_filter($panel['services'], static fn (array $row): bool => $row['open']), 'service');
+        self::assertSame(['regional_market'], array_values($open));
     }
 
     public function testASettlementAtTheSummitHasNoNextTier(): void
@@ -280,12 +298,15 @@ class SettlementPanelBuilderTest extends TestCase
         $loader = $this->createMock(SettlementDefinitionLoader::class);
         $loader->method('load')->willReturn($definition);
 
+        $gate = new SettlementGate($settlementRepository, $loader);
+
         return new SettlementPanelBuilder(
             $settlementRepository,
             $contributionRepository,
             $loader,
-            new SettlementGate($settlementRepository, $loader),
+            $gate,
             $guildManager,
+            new SettlementServiceDirectory($gate),
         );
     }
 }

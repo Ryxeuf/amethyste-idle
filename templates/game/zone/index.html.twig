@@ -186,6 +186,33 @@
                             <p class="ds-hint mt-1">{{ 'game.zone.settlement.summit'|trans }}</p>
                         {% endif %}
 
+                        {# ── Ce que le rang ouvre (FOY-06) ───────────────── #}
+                        {# Les services fermes restent visibles avec leur rang  #}
+                        {# manquant : c'est ce qui transforme un chiffre qui    #}
+                        {# monte en projet. Aucun d'eux ne ferme un ecran       #}
+                        {# existant — le HV et la banque restent joignables par #}
+                        {# le menu, quel que soit le rang (decision A).         #}
+                        {% if settlement.services is not empty %}
+                            <div class="ds-divider my-2"></div>
+                            <p class="ds-label">{{ 'game.zone.settlement.services'|trans }}</p>
+                            <div class="mt-1 space-y-1">
+                                {% for service in settlement.services %}
+                                    {% if service.open %}
+                                        <a href="{{ path(service.route) }}" class="ds-btn ds-btn--secondary ds-btn--sm w-full">
+                                            {{ ('game.settlement.service.' ~ service.service)|trans }}
+                                        </a>
+                                    {% else %}
+                                        <p class="ds-hint">
+                                            {{ 'game.zone.settlement.service_locked'|trans({
+                                                '%service%': ('game.settlement.service.' ~ service.service)|trans,
+                                                '%required%': ('game.settlement.rank.' ~ service.required.value)|trans,
+                                            }) }}
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                         <div class="ds-divider my-2"></div>
 
                         {% for row in settlement.indices %}

@@ -34,6 +34,7 @@ class SettlementPanelBuilder
         private readonly SettlementDefinitionLoader $loader,
         private readonly SettlementGate $gate,
         private readonly GuildManager $guildManager,
+        private readonly SettlementServiceDirectory $serviceDirectory,
     ) {
     }
 
@@ -44,6 +45,7 @@ class SettlementPanelBuilder
      *     total: int,
      *     indices: list<array{index: SettlementIndex, value: int, share: int}>,
      *     next: ?array{rank: SettlementRank, threshold: int, missing: int, progress: int, opens: list<string>},
+     *     services: list<array{service: string, required: SettlementRank, open: bool, route: string}>,
      *     contribution: int,
      *     guildContribution: int,
      *     ebbing: bool,
@@ -82,6 +84,11 @@ class SettlementPanelBuilder
             'total' => $total,
             'indices' => $this->indices($settlement->getAllSediment(), $total),
             'next' => $this->nextStep($rank, $total, $definition['ranks']),
+            // FOY-06 : ce que le rang a **deja** ouvert, et ou cela mene. La
+            // ligne `next.opens` promet ; celle-ci donne la porte. Les services
+            // fermes restent affiches avec leur rang manquant — les masquer
+            // rendrait le palier suivant abstrait au moment ou il compte le plus.
+            'services' => $this->serviceDirectory->forZone($zone),
             'contribution' => $contribution,
             'guildContribution' => $guildContribution,
             // Le foyer a decroche : il a deja ete plus haut. Le signaler prepare

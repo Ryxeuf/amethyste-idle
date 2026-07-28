@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes.
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **9 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -33,7 +33,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-03 ✅ | Décroissance, calcul du rang et du type (hystérésis) |
 | FOY-04 ✅ | Le foyer sur l'écran de zone — chantier lisible |
 | FOY-05 ✅ | Gate déclaratif des services par rang |
-| FOY-06 | Services gatés : marché local, banque, éveil (création) de matéria |
+| FOY-06 ✅ | Services gatés : marché local, banque (l'éveil de matéria passe à ECO-22) |
 | FOY-07 | Bonus d'atelier par foyer (ligne de production × type) |
 | FOY-08 | Crue — quotas indexés sur la population active |
 | FOY-09 | Zone d'influence & vassalité |
@@ -48,7 +48,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 
 ```
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
-Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 → FOY-07
+Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
@@ -139,17 +139,20 @@ s'y branche.
 > Décision A : **rien n'est rétro-gaté**. Le gate ne s'applique qu'aux services nouveaux.
 > **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### FOY-06 — Services gatés par rang (M | ★★★ | HAUTE)
+### FOY-06 — Services gatés par rang ✅ (M | ★★★ | HAUTE)
 > Le rang cesse d'être un chiffre : il ouvre des portes.
-> Prérequis : ← FOY-05, ← FOY-04
-- [ ] **Bourg** : ouverture du marché local (le HV régional devient consultable depuis la zone)
-- [ ] **Cité** : banque de zone, donjon de groupe, étals loués (← ECO Piste D si livrée)
-- [ ] **Métropole** : l'**Autel d'éveil** — un **service de la ville, ouvert à tous et taxé
-      par la guilde contrôlante** (jamais fermé : doctrine D14, cf. GAME_WORLD §12.3). Un
-      foyer de type **Sanctuaire** réduit coût/délai des rites. **Ne gate jamais l'obtention
-      ni l'usage d'une matéria** (§2.1). Plus les plans de fin de jeu
-- [ ] Chaque ouverture publie une annonce Mercure sur la zone (le palier se **voit**)
-- [ ] Tests : chaque service par rang, fermeture après régression
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Arbitrage** : `group_dungeon` figurait dans `services` au rang Cité depuis FOY-05. Les
+> donjons de groupe sont livrés depuis ZON-19/20 et aucun foyer du monde livré n'atteint la
+> Cité : appliquer le gate les aurait **tous** fermés — ce que la décision A interdit. Le
+> service rejoint `never_gated`. Un gate déclaré mais jamais appliqué ne peut pas se tromper ;
+> le premier jalon qui l'applique est donc aussi celui qui le découvre.
+>
+> **Reporté à ECO-22** : l'**Autel d'éveil** reste une promesse de palier (déclaré, non
+> branché). Sans bande `parfait` (pureté), un rite d'éveil n'aurait rien à consommer, et le
+> gate d'éveil figure déjà au cahier des charges d'ECO-22. Même statut pour l'**étal loué**,
+> qui attend ECO Piste D.
 
 ### FOY-07 — Bonus d'atelier par foyer (M | ★★★ | HAUTE)
 > On voyage pour crafter. C'est ce qui donne une identité économique aux régions.
