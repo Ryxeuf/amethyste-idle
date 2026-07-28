@@ -87,8 +87,10 @@ class WeeklyOutcropSelector
             }
 
             foreach ($zone->getGatherResources() as $resource) {
-                $slug = \is_array($resource) && isset($resource['slug']) ? (string) $resource['slug'] : '';
-                $item = \is_array($resource) && isset($resource['item']) ? (string) $resource['item'] : '';
+                // `getGatherResources()` rend deja une liste de tableaux : le
+                // verifier ici serait une garde morte, et PHPStan le dit.
+                $slug = isset($resource['slug']) ? (string) $resource['slug'] : '';
+                $item = isset($resource['item']) ? (string) $resource['item'] : '';
                 if ($slug === '' || !$this->scope->coversSlug($item)) {
                     continue;
                 }
