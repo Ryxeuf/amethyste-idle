@@ -55,6 +55,7 @@ class SettlementDefinitionLoader
      *     never_gated: array<string, string>,
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
+     *     crue: array<string, int>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -101,6 +102,7 @@ class SettlementDefinitionLoader
      *     never_gated: array<string, string>,
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
+     *     crue: array<string, int>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -135,6 +137,7 @@ class SettlementDefinitionLoader
             'never_gated' => $neverGated,
             'workshop' => $this->normalizeWorkshop($raw['workshop'] ?? [], $source),
             'weekly_work' => $this->normalizeWeeklyWork($raw['weekly_work'] ?? [], $source),
+            'crue' => $this->normalizeCrue($raw['crue'] ?? [], $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
         ];
@@ -465,6 +468,44 @@ class SettlementDefinitionLoader
             'targets' => $targets,
             'rank_multipliers' => $multipliers,
         ];
+    }
+
+    /**
+     * Les quotas de la Crue (FOY-08).
+     *
+     * @return array<string, int> rang => actifs requis par foyer de ce rang ou plus
+     */
+    private function normalizeCrue(mixed $crue, string $source): array
+    {
+        if (!\is_array($crue)) {
+            throw new SettlementDefinitionException(sprintf('"crue" must be a mapping in "%s".', $source));
+        }
+
+        $quotas = [];
+        $previous = 0;
+        foreach (SettlementRank::ordered() as $rank) {
+            $value = $crue['actives_per_settlement'][$rank->value] ?? null;
+            if ($value === null) {
+                continue;
+            }
+            if (!is_numeric($value) || (int) $value < 1) {
+                throw new SettlementDefinitionException(sprintf('"crue.actives_per_settlement.%s" must be a positive integer in "%s".', $rank->value, $source));
+            }
+
+            $value = (int) $value;
+            if ($value <= $previous) {
+                // Un rang superieur moins exigeant qu'un rang inferieur rendrait
+                // le quota du haut plus large que celui du bas : une Metropole
+                // serait plus facile a tenir qu'un Bourg, et l'echelle
+                // d'ouverture s'inverserait sans que rien ne le dise.
+                throw new SettlementDefinitionException(sprintf('"crue.actives_per_settlement" must increase with rank: "%s" (%d) is not above the previous (%d) in "%s".', $rank->value, $value, $previous, $source));
+            }
+
+            $quotas[$rank->value] = $value;
+            $previous = $value;
+        }
+
+        return $quotas;
     }
 
     /**

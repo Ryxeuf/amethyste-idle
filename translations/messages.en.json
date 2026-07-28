@@ -1457,6 +1457,10 @@
           "heading": "This week's work",
           "complete": "The list is filled. The settlement got its relief.",
           "thanks": "Pushed by:"
+        },
+        "crue": {
+          "waiting": "This settlement has enough to become %rank%, but the Concord allows only %quota% for now.",
+          "held_by": "The place is held by:"
         }
       }
     },

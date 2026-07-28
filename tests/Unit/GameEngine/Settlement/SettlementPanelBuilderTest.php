@@ -11,6 +11,7 @@ use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\Enum\SettlementType;
 use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Settlement\CrueQuotaService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementGate;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
@@ -311,6 +312,7 @@ class SettlementPanelBuilderTest extends TestCase
             new SettlementServiceDirectory($gate),
             $this->workRepository(),
             $this->createMock(SettlementWeeklyWorkContributionRepository::class),
+            $this->crueQuota(),
         );
     }
 
@@ -324,5 +326,19 @@ class SettlementPanelBuilderTest extends TestCase
         $repository->method('findCurrentForZone')->willReturn(null);
 
         return $repository;
+    }
+
+    /**
+     * FOY-08 : ces tests portent sur le foyer, pas sur la Crue. Un quota qui
+     * autorise tout laisse le panneau sans bloc d'attente — l'etat d'un monde
+     * qui n'a pas encore de concurrence pour ses places.
+     */
+    private function crueQuota(): CrueQuotaService
+    {
+        $quota = $this->createMock(CrueQuotaService::class);
+        $quota->method('allows')->willReturn(true);
+        $quota->method('occupants')->willReturn([]);
+
+        return $quota;
     }
 }

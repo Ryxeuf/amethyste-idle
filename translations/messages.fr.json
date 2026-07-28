@@ -1457,6 +1457,10 @@
           "heading": "Chantier de la semaine",
           "complete": "La liste est remplie. Le foyer a reçu son renfort.",
           "thanks": "Poussé par :"
+        },
+        "crue": {
+          "waiting": "Ce foyer a de quoi devenir %rank%, mais la Concorde n'en autorise que %quota% pour l'instant.",
+          "held_by": "La place est tenue par :"
         }
       }
     },
