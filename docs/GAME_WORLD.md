@@ -1188,6 +1188,99 @@ Deux garde-fous suffisent :
 
 ---
 
+### 12.4 La Confrérie des Ombres *(dossier instruit — tranché le 2026-07-28)*
+
+#### Le problème, et la clé
+
+Une faction de voleurs dans un jeu coopératif sans PvP n'a pas de victimes : on ne vole pas
+un joueur, on ne l'assassine pas — le Serment tient pour tout le monde (l'Ombre pratique le
+vol et le faux, **jamais le sang**). La clé : **l'Ombre ne vole pas les joueurs, elle vole
+le système** — la taxe, l'information, la nuit. C'est ce qui la rend politique sans une
+goutte de PvP.
+
+#### On ne la trouve pas : c'est elle qui vous trouve
+
+Invisible dans l'écran des factions jusqu'au premier contact. Pas de tableau de quêtes, pas
+de recruteur. En façade, ses agents ont des métiers honnêtes — et ils existent déjà dans
+les fixtures : Tancrède le veilleur de nuit de Lumière (échoppe ouverte 20 h-6 h), Kolm le
+porteur de lanterne des Mines. Après des gestes qualifiants (explorer la nuit à plusieurs
+reprises, découvrir une contrefaçon, acheter à un étal nocturne), un PNJ vous glisse un
+mot : une chaîne narrative nocturne de 3-4 étapes, et la faction apparaît, à Neutre.
+Publiquement, la réputation ne s'affiche jamais en clair — le titre d'Exalté au journal de
+monde est un euphémisme (« Ami des ruelles »).
+
+#### Les quatre piliers
+
+**a) Le receleur (marché gris).** Vendre hors taxe de cité, contre une coupe fixe qui va à
+la Confrérie au lieu du trésor de la guilde contrôlante. **Garde-fous, pour que le marché
+gris ne renverse jamais le HV** : la coupe (**15 %**) est toujours *supérieure* à la taxe
+maximale d'une cité (10 % — bornes 1-10 % dans le code livré), l'accès exige Ami, et un
+**plafond de ~5 lots/semaine/joueur** (paramètre) borne le volume — la Confrérie n'aime
+pas les gros volumes, ça se voit. En gils, le receleur est toujours perdant ; ses seuls
+avantages sont politiques (assécher le trésor de la guilde en place), pratiques (écouler ce
+que le HV refuse, au-delà de la région — un filet, jamais un canal de masse) et
+l'anonymat. Il ne gagne économiquement que face aux guildes gourmandes : **l'arme du
+peuple contre la mauvaise gouvernance.**
+
+**b) Le réseau d'oreilles.** L'information est déjà une marchandise (savoir du prospecteur,
+Affleurement de la semaine — jamais annoncé, découvert ou *acheté*). L'Ombre en est le
+marché : des **rumeurs** achetables — où la bande tire haut cette marée, où un filon
+repose, ce que la nuit cache.
+
+**c) La contrefaçon.** « Une contrefaçon marche neuf fois et vous trahit à la dixième » —
+mécanique complète ci-dessous.
+
+**d) Les passages dérobés et la contrebande.** Le graphe supporte les connexions cachées
+(`requires_discovery`) : l'Ombre en détient, certaines n'existant que la nuit. Les
+**contrats de contrebande** — livrer discrètement une cargaison de nuit, moins de capacité,
+pas d'escorte — sont un **système propre à l'Ombre**, créé avec elle (pas un dérivé des
+caravanes).
+
+#### La contrefaçon, mécanique
+
+- **Indiscernable tant que non identifiée** — l'état « non identifié » n'existe que sur les
+  lots du marché gris et le butin, **jamais entre joueurs**.
+- Elle se sertit et lance normalement, avec un **compteur caché** (~8-12 utilisations, tiré
+  à la création). Au déclenchement : le sort **échoue au pire moment**, un contrecoup frappe
+  le lanceur (dégâts ou statut — le prix du faux geste), et la matéria **se brise** en
+  améthyste Trouble.
+- **L'œil du faussaire** (Honoré) identifie avant sertissage ; le **désamorçage** (Révéré)
+  démonte une contrefaçon identifiée en composants (améthyste Trouble + essence).
+- **La main du faussaire** (recette, Révéré) : améthyste Trouble + éclats d'une matéria
+  brisée → une contrefaçon. Débouché **jamais un joueur** : les **contrats de placement**
+  (écouler ses faux via les contacts PNJ de la Confrérie — rémunérateur, chaque placement
+  risque la fouille : confiscation, amende, grosse décote Chevaliers).
+- **Canaux verrouillés** : le HV refuse toute contrefaçon (flag, testable) ; l'échange
+  direct l'affiche en rouge — impossible de la déguiser. La borne absolue tient : **un
+  joueur ne peut jamais tromper un autre joueur.**
+
+#### L'échelle des récompenses (latéral pur — §6.4)
+
+| Palier | Ce qui s'ouvre |
+|---|---|
+| **Ami** | Le receleur ; premières rumeurs |
+| **Honoré** | L'œil du faussaire ; recettes de teintures sombres et poisons du Marais ; capuche de la Confrérie (cosmétique) |
+| **Révéré** | Premiers passages dérobés ; monture discrète ; le désamorçage ; la main du faussaire |
+| **Exalté** | **La Cour des Ombres** — vraie zone du graphe (`interior`, cachée, réservée aux Exaltés) ; un geste retrouvé du Répertoire à condition Ombre ; « Ami des ruelles » au journal |
+
+#### Les contreparties (jouer l'Ombre se paie)
+
+1. La **tension actée** (§6.4) : chaque geste au-delà d'Ami décote les Chevaliers —
+   bénédictions, quêtes d'ordre et patronage inaccessibles.
+2. Les **fouilles** aux portes des zones à foyer de type Bastion : surcoût de voyage, et un
+   contrat de contrebande peut être **confisqué** (la cargaison du contrat, jamais
+   l'inventaire).
+3. La **taxe majorée à l'Autel** d'éveil — la ville se méfie de vous.
+4. Le **patronage exclusif** : porter les couleurs de l'Ombre, c'est renoncer aux autres.
+
+**Hostile chez l'Ombre** : prix majorés, portes fermées — et surtout **les rumeurs qu'on
+vous vend sont fausses**. L'Ombre ne vous attaque pas, elle vous ment. Le miroir chez les
+Chevaliers : fouilles systématiques, taxe d'Autel au plafond.
+
+**Impact modèle** : flag `counterfeit` + état non-identifié sur `PlayerItem`, connexions
+`requires_discovery` nocturnes, une zone `interior` cachée (la Cour), une entité de contrat
+de contrebande/placement, et l'entrée de faction différée (visible après premier contact).
+
 ## 13. Peuplement du monde — départ, zones, extensions
 
 > **Statut : acté le 2026-07-28.** Les deux entrées attendues (§14) sont closes, et les
