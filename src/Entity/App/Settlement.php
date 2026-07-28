@@ -112,6 +112,22 @@ class Settlement
     #[ORM\Column(name: 'dominant_candidate', type: 'string', length: 20, nullable: true, enumType: SettlementIndex::class)]
     private ?SettlementIndex $dominantCandidate = null;
 
+    /**
+     * Rang tenu a l'ouverture de la maree en cours (FOY-14).
+     *
+     * Le seul champ du foyer qui soit de **l'histoire** et non de l'etat : la
+     * chronique compare ce rang au rang courant a la cloture, et c'est de la
+     * qu'elle tire « ce lieu a grandi » ou « ce lieu s'est endormi ». Tout le
+     * reste du pilier se derive (le plafond de Crue, la vassalite, le rang
+     * lui-meme) ; une photographie datee, non.
+     *
+     * `null` tant qu'aucune maree ne s'est achevee depuis la creation du foyer.
+     * La premiere cloture pose le repere sans rien ecrire — le seed du monde
+     * livre n'est l'œuvre de personne, et le crediter serait un mensonge.
+     */
+    #[ORM\Column(name: 'tide_start_rank', type: 'string', length: 20, nullable: true, enumType: SettlementRank::class)]
+    private ?SettlementRank $tideStartRank = null;
+
     public function __construct(Zone $zone)
     {
         $this->zone = $zone;
@@ -321,6 +337,18 @@ class Settlement
     public function setDominantCandidate(?SettlementIndex $candidate): self
     {
         $this->dominantCandidate = $candidate;
+
+        return $this;
+    }
+
+    public function getTideStartRank(): ?SettlementRank
+    {
+        return $this->tideStartRank;
+    }
+
+    public function setTideStartRank(?SettlementRank $rank): self
+    {
+        $this->tideStartRank = $rank;
 
         return $this;
     }

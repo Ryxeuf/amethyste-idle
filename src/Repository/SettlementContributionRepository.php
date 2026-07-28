@@ -47,6 +47,42 @@ class SettlementContributionRepository extends ServiceEntityRepository
     }
 
     /**
+     * La guilde qui a le plus bati ce foyer, ou `null` si personne (FOY-14).
+     *
+     * C'est **elle** que la chronique credite a la cloture d'une maree, et non
+     * la guilde qui controle la region : le controle se gagne a l'influence de
+     * saison, la ville se batit au sediment. Crediter le vainqueur d'une
+     * election pour un chantier qu'une autre guilde a porte serait exactement
+     * le genre de mensonge qu'un journal de monde ne peut pas se permettre.
+     *
+     * Les depots des joueurs **sans guilde** ne comptent pour personne : ils ont
+     * bati la ville, mais aucun nom collectif ne peut se l'attribuer.
+     */
+    public function findLeadingGuildName(Settlement $settlement): ?string
+    {
+        /** @var list<array{name: string, id: int}> $rows */
+        $rows = $this->createQueryBuilder('c')
+            ->select('g.name AS name', 'g.id AS id')
+            ->addSelect('SUM(c.grains) AS HIDDEN total')
+            ->join(GuildMember::class, 'm', 'WITH', 'm.player = c.player')
+            ->join('m.guild', 'g')
+            ->where('c.settlement = :settlement')
+            ->andWhere('c.grains > 0')
+            ->setParameter('settlement', $settlement)
+            ->groupBy('g.id')
+            ->addGroupBy('g.name')
+            ->orderBy('total', 'DESC')
+            // Depart. Une egalite parfaite est improbable, mais un ordre non
+            // determine ferait clignoter le nom credite d'une cloture a l'autre.
+            ->addOrderBy('g.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+
+        return $rows[0]['name'] ?? null;
+    }
+
+    /**
      * Les plus gros contributeurs d'un foyer — l'entree de l'ecran de zone
      * (FOY-04) et des credits narratifs de cite.
      *
