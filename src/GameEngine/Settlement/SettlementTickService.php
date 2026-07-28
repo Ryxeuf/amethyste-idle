@@ -35,6 +35,7 @@ class SettlementTickService
         private readonly SettlementDefinitionLoader $loader,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly CrueQuotaService $crueQuota,
+        private readonly VassalageService $vassalage,
     ) {
     }
 
@@ -173,7 +174,14 @@ class SettlementTickService
             // autorise plutot que refuser en bloc : un foyer qui merite la Cite
             // sans pouvoir l'avoir doit quand meme devenir Bourg si la place
             // existe, sinon il paierait deux fois le succes des autres.
-            $allowed = $this->crueQuota->highestAllowed($settlement, $natural);
+            // FOY-09 : une grande voisine boit la croissance. Le plafond de
+            // vassalite s'applique **avant** la Crue — les deux sont des
+            // plafonds, et le plus bas gagne. Il ne descend jamais sous le rang
+            // deja tenu : le vassal garde son marche et son identite.
+            $allowed = $this->crueQuota->highestAllowed(
+                $settlement,
+                $this->vassalage->clamp($settlement, $natural),
+            );
             if ($allowed->level() <= $before->level()) {
                 return 0;
             }

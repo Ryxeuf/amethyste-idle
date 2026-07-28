@@ -1461,7 +1461,8 @@
         "crue": {
           "waiting": "This settlement has enough to become %rank%, but the Concord allows only %quota% for now.",
           "held_by": "The place is held by:"
-        }
+        },
+        "overlord": "%zone% is %rank%: while it holds, this settlement will not rise above %cap%. Its market and identity remain its own."
       }
     },
     "settlement": {
@@ -1525,7 +1526,8 @@
         "locked": "Undiscovered",
         "event": "Active event",
         "expedition": "Expedition"
-      }
+      },
+      "vassal_of": "under %zone%"
     },
     "pnj": {
       "talk": {

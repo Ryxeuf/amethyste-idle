@@ -3,11 +3,13 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\Zone;
+use App\GameEngine\Settlement\VassalageService;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerVisitedZoneRepository;
+use App\Repository\SettlementRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +35,8 @@ class WorldMapController extends AbstractController
         private readonly ZoneTravelService $zoneTravelService,
         private readonly ZoneEventService $zoneEventService,
         private readonly ExpeditionService $expeditionService,
+        private readonly SettlementRepository $settlementRepository,
+        private readonly VassalageService $vassalage,
     ) {
     }
 
@@ -67,6 +71,22 @@ class WorldMapController extends AbstractController
             }
         }
 
+        // FOY-09 : rang et suzeraine, lus une fois pour toute la carte.
+        $settlementRanks = [];
+        $overlords = [];
+        foreach ($placedZones as $zone) {
+            $settlement = $this->settlementRepository->findOneByZone($zone);
+            if (null === $settlement) {
+                continue;
+            }
+
+            $settlementRanks[$zone->getId()] = $settlement->getRank()->value;
+            $overlord = $this->vassalage->overlordOf($settlement);
+            if (null !== $overlord) {
+                $overlords[$zone->getId()] = $overlord->getZone()->getName();
+            }
+        }
+
         $nodes = [];
         foreach ($placedZones as $zone) {
             $id = $zone->getId();
@@ -84,6 +104,11 @@ class WorldMapController extends AbstractController
                 'hasEvent' => $discovered && [] !== $this->zoneEventService->getActiveEventsForZone($zone),
                 'expedition' => $id === $expeditionZoneId,
                 'travelConnectionId' => $reachable[$id] ?? null,
+                // FOY-09 : le rang du foyer et sa suzeraine eventuelle. La carte
+                // est le seul ecran d'ou la relation se **voit** — sur l'ecran de
+                // zone on lit une phrase, ici on lit une geographie.
+                'settlementRank' => $discovered ? $settlementRanks[$id] ?? null : null,
+                'overlord' => $discovered ? $overlords[$id] ?? null : null,
             ];
         }
 

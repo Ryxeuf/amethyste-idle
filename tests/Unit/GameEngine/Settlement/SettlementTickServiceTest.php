@@ -11,6 +11,7 @@ use App\Event\Zone\SettlementRankChangedEvent;
 use App\GameEngine\Settlement\CrueQuotaService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementTickService;
+use App\GameEngine\Settlement\VassalageService;
 use App\Repository\SettlementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -472,7 +473,14 @@ class SettlementTickServiceTest extends TestCase
             'without_settlement' => [],
         ]);
 
-        return new SettlementTickService($entityManager, $repository, $loader, $dispatcher, $this->crueQuota());
+        return new SettlementTickService(
+            $entityManager,
+            $repository,
+            $loader,
+            $dispatcher,
+            $this->crueQuota(),
+            $this->vassalage(),
+        );
     }
 
     /**
@@ -489,5 +497,21 @@ class SettlementTickServiceTest extends TestCase
         $quota->method('allows')->willReturn(true);
 
         return $quota;
+    }
+
+    /**
+     * FOY-09 : ces tests portent sur la decroissance et le rang, pas sur le
+     * voisinage. Un foyer sans grande voisine monte selon son seul sediment —
+     * l'etat de bordure, et celui de tout le monde tant qu'aucune capitale
+     * n'existe.
+     */
+    private function vassalage(): VassalageService
+    {
+        $vassalage = $this->createMock(VassalageService::class);
+        $vassalage->method('clamp')->willReturnCallback(
+            static fn (Settlement $settlement, SettlementRank $natural): SettlementRank => $natural,
+        );
+
+        return $vassalage;
     }
 }
