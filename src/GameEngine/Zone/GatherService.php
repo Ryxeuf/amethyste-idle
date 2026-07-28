@@ -8,6 +8,7 @@ use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
+use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\WorldScaleService;
@@ -15,6 +16,7 @@ use App\Helper\InventoryHelper;
 use App\Repository\PlayerJournalEntryRepository;
 use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Action Recolter (pivot PBBG, ZON-10).
@@ -52,6 +54,7 @@ class GatherService
         private readonly PlayerJournalEntryRepository $journalRepository,
         private readonly ActionYieldResolver $yieldResolver,
         private readonly WorldScaleService $worldScaleService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -165,6 +168,14 @@ class GatherService
 
         $this->entityManager->flush();
         $this->journalRepository->enforceEntryLimit($player);
+
+        // ZON-38 : la recolte redevient observable. L'evenement part **apres**
+        // le flush — un abonne qui lit l'inventaire ou le stock du filon doit
+        // voir l'etat d'apres la recolte, pas celui d'avant.
+        $this->eventDispatcher->dispatch(
+            new ZoneGatherEvent($player, $zone, $resource['slug'], $resource['item'], $quantity),
+            ZoneGatherEvent::NAME,
+        );
 
         return new GatherResult(
             $resource['slug'],
