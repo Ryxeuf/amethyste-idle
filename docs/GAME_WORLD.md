@@ -960,18 +960,78 @@ Trois conséquences, et c'est ce qui emporte la décision :
 - **La pureté trouve son sens plein** : ce n'est plus une statistique de minerai, c'est la
   qualité de la mémoire d'un lieu — ce que le postulat dit depuis le début.
 
+### 13.4 Dimensionnement — la cible de population *(actée)*
+
+> **Cible retenue : ~50 joueurs actifs quotidiens.** Pas un plafond : une **base de
+> calibrage**. Tout ce qui dépend du nombre de joueurs est indexé dessus et s'ouvre quand le
+> serveur grandit. En cas de succès franc, on **clone le serveur** plutôt que d'étirer le monde.
+
+Le raisonnement : la plupart des PBBG indépendants vivent entre 20 et 100 joueurs quotidiens.
+Concevoir pour 300 et lancer avec 30 produit un monde vide ; concevoir pour 50 et en accueillir
+300 produit un monde qui s'ouvre. **On calibre pour ce qui va arriver, pas pour ce qu'on espère.**
+
+**Pourquoi cloner plutôt qu'étirer.** Notre monde est petit et profond — peu de zones, chacune
+avec son exclusivité. Absorber dix fois plus de joueurs demanderait de multiplier le *contenu*,
+ce qui est cher. Cloner un serveur est presque gratuit, et **préserve la tension de la Crue** :
+la rareté d'une Métropole n'a de sens que par rapport à une population qui se connaît. C'est
+l'inverse du choix d'EVE (univers unique), et c'est le bon pour nous.
+
+#### L'échelle d'ouverture
+
+La Crue n'est pas qu'une contrainte territoriale : **c'est le régulateur de liquidité de
+l'économie**, puisque le marché local ouvre au rang Bourg. Le quota de Bourgs *est* le nombre
+de marchés du monde.
+
+| Palier | S'ouvre à (joueurs actifs quotidiens) |
+|---|---:|
+| Marché de Lumière | **toujours** — hors quota, c'est le plancher (D1) |
+| 1er Bourg (1er marché de foyer) | 40 |
+| 2e Bourg | 80 |
+| 1re Cité | 120 |
+| 3e Bourg | 160 |
+| 2e Cité | 220 |
+| **Métropole** | 300 |
+
+Deux propriétés recherchées :
+
+- **À 50 joueurs, le monde est petit et dense** : le hub, un seul foyer bâti par les joueurs,
+  et une vraie compétition entre deux ou trois guildes pour cet unique Bourg. C'est plus tendu,
+  et plus lisible, qu'un monde à six marchés à moitié vides.
+- **La Métropole n'existe pas tant que le serveur n'a pas réussi.** Le sommet de l'échelle est
+  débloqué par la croissance de la communauté, pas par un joueur. C'est la meilleure
+  récompense collective qu'on puisse offrir, et elle ne coûte rien à produire.
+
+Les seuils sont de la **donnée** (`config/game/settlements.yaml`) : ils se retendent sans
+redéploiement.
+
+#### Ce que la cible impose au reste
+
+**a) Jamais de contenu synchrone.** À 50 joueurs quotidiens connectés 10-15 minutes, on tourne
+autour d'**1 à 2 joueurs simultanés**, 5 au pic. Toute fonctionnalité exigeant trois personnes
+en même temps est morte-née. Cela valide rétroactivement le choix des boss de monde à
+**contribution asynchrone**, et pose une règle : plus jamais de contenu synchrone.
+
+**b) Le monde s'ouvre progressivement.** Onze zones pour 50 joueurs, c'est un désert : on n'y
+croise jamais personne. Le graphe supporte déjà le gating (`enabled`, `requires_discovery`).
+Ouvrir cinq à six zones au lancement et libérer les suivantes à mesure que la population monte
+— la Concorde qui s'étend — donne un monde plein à chaque étape.
+
+**c) Le calibrage des filons est à refaire de fond en comble.** C'est la conséquence la plus
+lourde, chiffrée dans [BALANCE.md § 22](BALANCE.md) : en l'état, les filons du monde
+soutiendraient **~2 200 récolteurs réguliers**. À 50 joueurs, ils tournent à **1 % de leur
+charge** — la vitalité ne bouge jamais, la pureté est toujours au maximum, la Pâleur est
+impossible, et l'incitation à s'étaler n'existe pas. **Toute la couche de rareté est inerte.**
+
+---
+
 ---
 
 ## 14. Ce qui reste à cadrer avant d'écrire du contenu
 
-Trois entrées manquent, et deux d'entre elles commandent les tableaux du §13. Elles sont
-**au-dessus** de ce document, pas dedans.
+Deux entrées manquent encore. Elles sont **au-dessus** de ce document, pas dedans.
 
-1. **La population cible.** Le nombre de zones n'est pas une affaire de goût mais une
-   **fonction** du nombre de joueurs actifs attendus. Huit zones pour cinquante joueurs et
-   huit zones pour cinq mille, ce sont deux jeux différents — et la règle « peu de zones
-   profondes » (§5.5) est inapplicable sans ce chiffre. Il commande aussi le calibrage des
-   filons et les quotas de Crue (§3.3).
+1. ~~La population cible~~ — **tranchée** : ~50 joueurs actifs quotidiens comme base de
+   calibrage, tout étant indexé dessus (§13.4).
 
 2. **La colonne vertébrale de progression.** Aucun document du projet ne dit ce qu'un joueur
    fait au jour 1, au jour 40, au mois 6. Les piliers systémiques et la trame existent ; la

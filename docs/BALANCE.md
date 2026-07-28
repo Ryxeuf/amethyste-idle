@@ -922,3 +922,75 @@ decoule :
 ECO-25 applique la chaine cible (§21.3) au coefficient 1. Avant cela, deux prealables
 issus de §21.5 : unifier la source des minerais de haut palier (filon declare plutot que
 spot herite), et repartir l'etain sur au moins une seconde zone.
+
+---
+
+## 22. Calibrage des filons face a la population reelle
+
+> Consequence de la cible de population actee ([GAME_WORLD.md](GAME_WORLD.md) §13.4) :
+> **~50 joueurs actifs quotidiens** comme base de calibrage. Le calibrage actuel a ete pose
+> sans cible chiffree ; confronte a celle-ci, il se revele surdimensionne d'un ordre de
+> grandeur.
+
+### 22.1 Ce que le monde soutient aujourd'hui
+
+34 filons declares dans `config/game/zones/world_1.yaml`. Debit soutenu
+`R = capacity x 3600 / respawn_seconds`, et charge soutenable a 20 recoltes/jour/joueur :
+
+| Palier | Filons | R (u/h) | Recolteurs soutenus **par filon** |
+|---|---:|---:|---:|
+| T0 fondation (72 / 45 min) | 7 | 96,0 | **115** |
+| T1 commun (60 / 45 min) | 10 | 80,0 | **96** |
+| T2 peu commun (32 / 60 min) | 8 | 32,0 | **38** |
+| T3 rare (24 / 90 min) | 8 | 16,0 | **19** |
+| T4 epique (22 / 180 min) | 1 | 7,3 | **9** |
+
+**Total monde : ~1 863 u/h, soit environ 2 200 recolteurs reguliers.**
+
+### 22.2 La charge reelle
+
+En supposant que la moitie des joueurs recolte regulierement :
+
+| Joueurs/jour | Recolteurs | Charge du monde | Effet |
+|---:|---:|---:|---|
+| 30 | 15 | **0,7 %** | vitalite jamais entamee |
+| **50** | **25** | **1,1 %** | vitalite jamais entamee |
+| 100 | 50 | 2,2 % | vitalite jamais entamee |
+| 200 | 100 | 4,5 % | vitalite jamais entamee |
+| 400 | 200 | 8,9 % | vitalite a peine effleuree |
+
+**Toute la couche de rarete est inerte.** La vitalite d'un filon ne descend jamais, donc :
+la purete (ECO-22) est toujours au maximum, la **Paleur est mecaniquement impossible**
+(FOY-11), l'incitation a s'etaler sur les filons voisins n'existe pas, et la restauration
+payee au tresor (FOY-12) n'a rien a reparer. Trois jalons concus pour un monde sous tension
+tourneraient a vide.
+
+### 22.3 Cible proposee
+
+Le bon reglage ne s'exprime pas en capacite absolue mais en **nombre de recolteurs qu'un
+filon soutient**. A 50 joueurs quotidiens, on veut que les filons frequentes montrent une
+tension visible sans jamais bloquer personne (rappel : **une recolte n'echoue jamais**, seul
+le rendement varie — cf. GAME_ZONE_ACTIONS §6.6).
+
+| Palier | Soutenus aujourd'hui | Cible a 50 DAU | Facteur |
+|---|---:|---:|---:|
+| T0 fondation | 115 | **~12** | ÷10 |
+| T1 commun | 96 | **~8** | ÷12 |
+| T2 peu commun | 38 | **~5** | ÷8 |
+| T3 rare | 19 | **~3** | ÷6 |
+| T4 epique | 9 | **~1,5** | ÷6 |
+
+T0 reste le plus genereux : il gate le plancher T1 de l'economie (cuivre, etain, menthe,
+truite) et **ne doit jamais etre un goulot**, meme sous tension.
+
+### 22.4 Indexer plutot que refixer
+
+Refixer des constantes obligerait a tout retoucher a chaque palier de croissance. Le meme
+mecanisme que le quota de Crue s'applique : **la capacite d'un filon est indexee sur la
+population active**. Un serveur qui double voit ses filons s'epaissir ; un serveur qui se
+vide voit la tension revenir. Le levier economique reste le **debit soutenu**, jamais l'acces.
+
+**A faire** : ce recalibrage touche les 34 filons du monde et invalide le tableau de paliers
+en tete de `config/game/zones/world_1.yaml`. Il precede FOY-11 (Paleur) et ECO-22 (purete a
+la recolte) — sans lui, les deux jalons livreraient du code sans effet observable.
+
