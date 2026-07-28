@@ -1027,13 +1027,45 @@ collectif du serveur. À des seuils donnés, le serveur **retrouve un geste perd
 recette d'éveil s'ajoute au Répertoire, annoncée au journal de monde (*« les Lecteurs ont
 retrouvé le geste de… »*), et tout le monde peut désormais l'éveiller à l'Autel.
 
-Ce que ça referme d'un coup :
+**Le Répertoire est orienté par les lectures** *(nuance actée)*. Ce ne sont pas des seuils
+génériques qui débloquent une liste fixe : **ce qu'un serveur retrouve dépend de ce qu'il a
+lu** — quelles matérias, où, à quelle intensité, à quel moment. Le mécanisme est le même que
+le type d'un foyer (§3.2) : l'agrégat des lectures a des dominantes (élément, provenance,
+lieu de lecture), et quand un seuil tombe, le geste retrouvé est tiré du **bassin qui
+correspond à la dominante**. Un serveur qui lit surtout des matérias de feu dans les Mines
+retrouve d'abord des gestes de feu et de métal ; son voisin, qui lit de l'eau au Marais,
+retrouve tout autre chose.
+
+- **La divergence entre serveurs devient organique** : même bassin de contenu, ordres de
+  déblocage différents, sans une ligne de branche écrite. Deux serveurs d'un an n'ont pas le
+  même Répertoire parce qu'ils n'ont pas vécu pareil.
+- **Orienter le Répertoire est un projet collectif légitime** : une guilde ou un serveur peut
+  faire campagne — *« cette marée, lisez du feu »* — pour tirer le prochain geste vers ce
+  qu'il veut. Ce n'est pas un abus, c'est de la politique ; les plafonds anti-exploit
+  existants suffisent à empêcher le forçage par spam.
+- En fiction, c'est le postulat lui-même : **ce qu'un serveur lit est ce dont il se
+  souvient** — chaque monde se souvient différemment.
+
+Deux règles pour que ça reste tenable :
+
+1. **Un seul bassin, écrit une fois.** Les gestes retrouvés sont un contenu global (chaque
+   entrée taguée : éléments, provenances, conditions) ; les serveurs le traversent dans des
+   ordres différents. On n'écrit jamais du contenu pour *un* serveur — le coût est amorti
+   partout. Une petite part du bassin porte des conditions assez rares pour que la plupart
+   des serveurs ne voient jamais tout : l'exclusivité naît des conditions, pas d'un
+   marquage par serveur.
+2. **La règle latérale (c) s'applique intégralement** : les chemins divergent en *options*,
+   jamais en *puissance*.
+
+Ce que le Répertoire referme d'un coup :
 
 - **« Lire » gagne son enjeu long terme.** Fondre paie l'individu aujourd'hui ; lire ouvre
-  au serveur, pour toujours. L'axe doctrinal cesse d'être un choix de saveur.
+  au serveur, pour toujours — et **oriente** ce qui s'ouvre. L'axe doctrinal cesse d'être un
+  choix de saveur.
 - L'éveil a du contenu **au-delà** du contre-hasard : le catalogue de base par provenance,
   plus les gestes retrouvés.
-- C'est un moteur de contenu déclaratif : ajouter un geste retrouvé = ajouter une donnée.
+- C'est un moteur de contenu déclaratif : ajouter un geste retrouvé = ajouter une donnée
+  taguée dans le bassin.
 
 #### c) L'équilibre — la règle qui rend tout le reste inoffensif
 
@@ -1061,7 +1093,9 @@ que le modèle de clonage préserve (§13.4) : des mondes qui écrivent chacun l
 Deux garde-fous suffisent :
 
 1. **Cumulatif, jamais manqué.** Un geste retrouvé l'est pour toujours ; aucun contenu du
-   Répertoire n'est limité dans le temps. Un serveur jeune rattrape tout, à son rythme.
+   Répertoire n'est limité dans le temps. Un serveur jeune peut tout retrouver, à son rythme
+   et **dans son propre ordre** (b) — sauf les gestes à conditions rares, qui restent rares
+   partout.
 2. **Seuils indexés sur la population effective** (le même mécanisme que la Crue et le
    facteur de monde, BALANCE §22.5) : un petit serveur a besoin de proportionnellement moins
    de lectures pour retrouver le même geste. Le rythme *vécu* est comparable partout ; seule
