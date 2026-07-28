@@ -19,6 +19,7 @@ use App\GameEngine\Crafting\RecipeUnlockCatalog;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\InventoryHelper;
 use App\Repository\CraftJobRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -77,6 +78,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createMock(CraftSpecializationService::class),
             $this->createMock(RecipeUnlockCatalog::class),
             $this->createMock(CraftJobRepository::class),
+            $this->createMock(SettlementWorkshopBonus::class),
         );
 
         $result = $craftingManager->craft($player, $recipe);
@@ -133,6 +135,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createMock(CraftSpecializationService::class),
             $this->createMock(RecipeUnlockCatalog::class),
             $this->createMock(CraftJobRepository::class),
+            $this->createMock(SettlementWorkshopBonus::class),
         );
 
         $result = $manager->craft($player, $recipe);

@@ -4,6 +4,7 @@ namespace App\GameEngine\Settlement;
 
 use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
+use App\Enum\SettlementType;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -52,6 +53,7 @@ class SettlementDefinitionLoader
      *     rebuild_multiplier: int,
      *     services: array<string, SettlementRank>,
      *     never_gated: array<string, string>,
+     *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -96,6 +98,7 @@ class SettlementDefinitionLoader
      *     rebuild_multiplier: int,
      *     services: array<string, SettlementRank>,
      *     never_gated: array<string, string>,
+     *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -128,6 +131,7 @@ class SettlementDefinitionLoader
             'rebuild_multiplier' => $this->normalizeMultiplier($raw['regression']['rebuild_multiplier'] ?? null, 'regression.rebuild_multiplier', $source),
             'services' => $services,
             'never_gated' => $neverGated,
+            'workshop' => $this->normalizeWorkshop($raw['workshop'] ?? [], $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
         ];
@@ -317,6 +321,119 @@ class SettlementDefinitionLoader
             }
 
             $normalized[$service] = $this->normalizeRank($entry['minimum_rank'] ?? null, sprintf('services.%s.minimum_rank', $service), $source);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Bonus d'atelier (FOY-07).
+     *
+     * Deux verifications portent tout le poids de cette methode, et ce sont
+     * celles qui attrapent des **lignes muettes** — des reglages ecrits de bonne
+     * foi qui n'agiront jamais, et dont l'absence d'effet ne se remarquerait
+     * qu'au moment ou quelqu'un se demanderait pourquoi sa Metropole ne donne
+     * rien : une zone qui nomme une ligne de production inconnue de
+     * `line_bonus`, et un type de foyer qui n'existe pas.
+     *
+     * Le bloc entier est **facultatif**. Un monde sans bonus d'atelier est un
+     * monde jouable ; le refuser aurait fait echouer le chargement de toute
+     * configuration anterieure a ce jalon.
+     *
+     * @return array{
+     *     rank_bonus: array<string, int>,
+     *     type_bonus: array<string, array<string, int>>,
+     *     line_bonus: array<string, array<string, int>>,
+     *     cap: int,
+     *     zone_line: array<string, string>
+     * }
+     */
+    private function normalizeWorkshop(mixed $workshop, string $source): array
+    {
+        if (!\is_array($workshop)) {
+            throw new SettlementDefinitionException(sprintf('"workshop" must be a mapping in "%s".', $source));
+        }
+
+        $rankBonus = [];
+        foreach ($this->mapping($workshop['rank_bonus'] ?? [], 'workshop.rank_bonus', $source) as $rank => $points) {
+            $this->normalizeRank($rank, sprintf('workshop.rank_bonus.%s', $rank), $source);
+            $rankBonus[$rank] = $this->normalizeBonusPoints($points, sprintf('workshop.rank_bonus.%s', $rank), $source);
+        }
+
+        $lineBonus = [];
+        foreach ($this->mapping($workshop['line_bonus'] ?? [], 'workshop.line_bonus', $source) as $line => $crafts) {
+            $lineBonus[$line] = $this->normalizeCraftBonus($crafts, sprintf('workshop.line_bonus.%s', $line), $source);
+        }
+
+        $typeBonus = [];
+        foreach ($this->mapping($workshop['type_bonus'] ?? [], 'workshop.type_bonus', $source) as $type => $crafts) {
+            if (SettlementType::tryFrom($type) === null) {
+                throw new SettlementDefinitionException(sprintf('"workshop.type_bonus" names an unknown settlement type "%s" in "%s".', $type, $source));
+            }
+            $typeBonus[$type] = $this->normalizeCraftBonus($crafts, sprintf('workshop.type_bonus.%s', $type), $source);
+        }
+
+        $zoneLine = [];
+        foreach ($this->mapping($workshop['zone_line'] ?? [], 'workshop.zone_line', $source) as $slug => $line) {
+            if (!\is_string($line) || !isset($lineBonus[$line])) {
+                throw new SettlementDefinitionException(sprintf('Zone "%s" names a production line ("%s") absent from "workshop.line_bonus" in "%s".', $slug, \is_string($line) ? $line : '?', $source));
+            }
+            $zoneLine[$slug] = $line;
+        }
+
+        return [
+            'rank_bonus' => $rankBonus,
+            'type_bonus' => $typeBonus,
+            'line_bonus' => $lineBonus,
+            'cap' => $this->normalizeBonusPoints($workshop['cap'] ?? 0, 'workshop.cap', $source),
+            'zone_line' => $zoneLine,
+        ];
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function normalizeCraftBonus(mixed $crafts, string $key, string $source): array
+    {
+        $normalized = [];
+        foreach ($this->mapping($crafts, $key, $source) as $craft => $points) {
+            $normalized[$craft] = $this->normalizeBonusPoints($points, sprintf('%s.%s', $key, $craft), $source);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Un bonus **negatif** est refuse : le foyer ajoute, il ne retranche jamais.
+     * Une ville qui rendrait un etabli moins bon qu'ailleurs serait une punition
+     * pour l'avoir frequentee.
+     */
+    private function normalizeBonusPoints(mixed $value, string $key, string $source): int
+    {
+        if (!is_numeric($value) || (int) $value < 0) {
+            throw new SettlementDefinitionException(sprintf('"%s" must be a non-negative integer in "%s".', $key, $source));
+        }
+
+        return (int) $value;
+    }
+
+    /**
+     * Sous-tableau a clefs de chaine, ou tableau vide.
+     *
+     * @return array<string, mixed>
+     */
+    private function mapping(mixed $value, string $key, string $source): array
+    {
+        if (!\is_array($value)) {
+            throw new SettlementDefinitionException(sprintf('"%s" must be a mapping in "%s".', $key, $source));
+        }
+
+        $normalized = [];
+        foreach ($value as $entry => $content) {
+            if (!\is_string($entry) || trim($entry) === '') {
+                throw new SettlementDefinitionException(sprintf('Keys of "%s" must be names in "%s".', $key, $source));
+            }
+            $normalized[$entry] = $content;
         }
 
         return $normalized;

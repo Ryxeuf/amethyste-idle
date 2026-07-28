@@ -18,6 +18,7 @@ use App\GameEngine\Crafting\RecipeUnlockCatalog;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Repository\CraftJobRepository;
@@ -62,6 +63,7 @@ class CraftingManagerTest extends TestCase
             $this->createMock(CraftSpecializationService::class),
             $this->createMock(RecipeUnlockCatalog::class),
             $this->createMock(CraftJobRepository::class),
+            $this->createMock(SettlementWorkshopBonus::class),
         );
     }
 

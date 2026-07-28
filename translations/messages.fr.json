@@ -856,7 +856,14 @@
         "crafted_done": "fabriques !",
         "connection_error": "Erreur de connexion."
       },
-      "rank_short": "Rang %rank%"
+      "rank_short": "Rang %rank%",
+      "workshop": {
+        "here": "Ici, à %zone% : +%points% points de chance de qualité supérieure.",
+        "from_rank": "%rank% +%points%",
+        "from_type": "%type% +%points%",
+        "from_line": "%line% +%points%",
+        "capped": "plafonné"
+      }
     },
     "notifications": {
       "title": "Notifications",
@@ -1471,6 +1478,14 @@
       },
       "gate": {
         "closed": "Ce service ouvre au rang %required% ; le foyer est %current%."
+      },
+      "line": {
+        "metal": "Métal",
+        "leather": "Cuir & os",
+        "stone": "Pierre & gemme",
+        "water": "Eau & sel",
+        "wood": "Bois & fibre",
+        "amethyst": "Améthyste"
       }
     },
     "world_map": {

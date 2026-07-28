@@ -10,6 +10,7 @@ use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\ExperimentationManager;
 use App\GameEngine\Enchantment\EnchantmentManager;
+use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +30,7 @@ class CraftingController extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly PlayerHelper $playerHelper,
         private readonly CraftSpecializationService $craftSpecializationService,
+        private readonly SettlementWorkshopBonus $workshopBonus,
     ) {
     }
 
@@ -44,6 +46,10 @@ class CraftingController extends AbstractController
         $activeJob = $this->craftingManager->getActiveJob($player);
 
         $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier'];
+        // FOY-07 : le bonus que le lieu accorde, metier par metier. Le joueur
+        // doit pouvoir arbitrer *ou* crafter — un total sans sa composition ne
+        // lui dirait pas quoi faire de l'information.
+        $workshopBonusByCraft = [];
         $recipesByCraft = [];
         $canCraftByCraft = [];
         $craftLevels = [];
@@ -53,6 +59,7 @@ class CraftingController extends AbstractController
         $nextUnlockByCraft = [];
 
         foreach ($crafts as $craft) {
+            $workshopBonusByCraft[$craft] = $this->workshopBonus->describe($player->getCurrentZone(), $craft);
             $recipes = $this->craftingManager->getAvailableRecipes($player, $craft);
             $recipesByCraft[$craft] = $recipes;
             $canCraftByCraft[$craft] = [];
@@ -106,6 +113,8 @@ class CraftingController extends AbstractController
             'maxCraftByCraft' => $maxCraftByCraft,
             'craftLevels' => $craftLevels,
             'craftToolStatus' => $craftToolStatus,
+            'workshopBonusByCraft' => $workshopBonusByCraft,
+            'currentZone' => $player->getCurrentZone(),
             'lockedRecipesByCraft' => $lockedRecipesByCraft,
             'nextUnlockByCraft' => $nextUnlockByCraft,
             'player' => $player,

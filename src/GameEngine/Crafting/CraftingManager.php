@@ -11,6 +11,7 @@ use App\Event\Game\DomainLevelUpEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Repository\CraftJobRepository;
@@ -31,6 +32,7 @@ class CraftingManager
         private readonly CraftSpecializationService $craftSpecializationService,
         private readonly RecipeUnlockCatalog $recipeUnlockCatalog,
         private readonly CraftJobRepository $craftJobRepository,
+        private readonly SettlementWorkshopBonus $workshopBonus,
     ) {
     }
 
@@ -236,10 +238,17 @@ class CraftingManager
      */
     public function computeQuality(Player $player, Recipe $recipe): string
     {
+        $craft = $recipe->getCraft();
+
+        // FOY-07 : le lieu compte. Le bonus d'atelier du foyer s'ajoute a celui
+        // de la specialisation, dans la meme unite — c'est ce qui fait du
+        // deplacement une decision plutot qu'une formalite. Il se lit sur la
+        // **zone courante** : il n'y a pas d'atelier a distance.
         return $this->qualityCalculator->calculateQuality(
             $recipe->getQuality() ?? QualityCalculator::QUALITY_NORMAL,
-            $this->getCraftingLevel($player, $recipe->getCraft()),
-            $this->craftSpecializationService->getQualityBonusFor($player, $recipe->getCraft())
+            $this->getCraftingLevel($player, $craft),
+            $this->craftSpecializationService->getQualityBonusFor($player, $craft)
+                + $this->workshopBonus->bonusFor($player->getCurrentZone(), $craft)
         );
     }
 

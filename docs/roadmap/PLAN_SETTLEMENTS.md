@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **9 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **10 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -34,7 +34,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-04 ✅ | Le foyer sur l'écran de zone — chantier lisible |
 | FOY-05 ✅ | Gate déclaratif des services par rang |
 | FOY-06 ✅ | Services gatés : marché local, banque (l'éveil de matéria passe à ECO-22) |
-| FOY-07 | Bonus d'atelier par foyer (ligne de production × type) |
+| FOY-07 ✅ | Bonus d'atelier par foyer (ligne de production × type) |
 | FOY-08 | Crue — quotas indexés sur la population active |
 | FOY-09 | Zone d'influence & vassalité |
 | FOY-10 ✅ | Étiage & régression bornée |
@@ -48,7 +48,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 
 ```
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
-Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07
+Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
@@ -154,14 +154,19 @@ s'y branche.
 > gate d'éveil figure déjà au cahier des charges d'ECO-22. Même statut pour l'**étal loué**,
 > qui attend ECO Piste D.
 
-### FOY-07 — Bonus d'atelier par foyer (M | ★★★ | HAUTE)
+### FOY-07 — Bonus d'atelier par foyer ✅ (M | ★★★ | HAUTE)
 > On voyage pour crafter. C'est ce qui donne une identité économique aux régions.
-> Prérequis : ← FOY-06
-- [ ] Multiplicateur d'artisanat lu depuis le foyer : **ligne de production de la veine**
-      (§5.1) × **type de foyer**
-- [ ] Effets : rendement de matière, chance de qualité supérieure, palier de recette accessible
-- [ ] Affichage du bonus dans l'écran d'artisanat (le joueur doit pouvoir arbitrer *où* crafter)
-- [ ] Tests : bonus appliqué, absent hors zone concernée, cumul plafonné
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Périmètre tenu, et ce qui en sort** : des trois effets annoncés (rendement de matière,
+> chance de qualité supérieure, palier de recette accessible), seul le **second** est livré.
+> C'est le seul qui s'additionne à une grandeur existante (`CraftSpecializationService`) sans
+> inventer d'unité, et donc le seul calibrable dès aujourd'hui. Le rendement de matière et le
+> palier de recette touchent au coût et au déblocage — ils relèvent de la chaîne de production
+> (ECO-25→27) et se calibreront avec elle.
+>
+> **Piste B complète (FOY-05 → 07)** : faire vivre une zone y ouvre un marché *et* de meilleurs
+> ateliers.
 
 ---
 
