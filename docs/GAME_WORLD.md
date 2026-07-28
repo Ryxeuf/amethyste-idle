@@ -119,6 +119,33 @@ D'où le principe qui en découle, et qui vaut d'être tenu :
 
 > **On ne progresse pas en changeant de sort, on progresse en le portant mieux.**
 
+**Pas d'évolution sur place — mais une maturation, et une fusion.** Une matéria ne monte pas
+de niveau : le geste qu'elle contient est figé, c'est toute la fiction (§1). Ce qui existe,
+et que le code livré porte déjà :
+
+- **La maturation.** Une matéria sertie accumule de l'expérience en combat
+  (`MateriaXpGranter`, vivant — +25 % si l'élément du porteur s'accorde). Cette expérience
+  n'améliore pas le sort : elle mesure combien le geste a été *porté*. Son seul débouché est
+  la fusion, qui l'additionne.
+- **La fusion** (`MateriaFusionManager` — **écrit mais jamais branché** : aucun contrôleur ne
+  l'appelle, les joueurs n'y ont pas accès). Deux voies déjà codées :
+  - **même élément** : deux matérias fondues donnent la matéria du **palier supérieur** — ce
+    qui est exactement « une matéria plus puissante », pas une évolution sur place ;
+  - **éléments croisés** : **14 combinaisons** définies (feu+air → Inferno, eau+air →
+    Blizzard, lumière+ténèbre → Éclipse, terre+feu → Magma…), qui produisent des matérias
+    **hybrides** n'appartenant à aucun des huit éléments de base.
+
+En fiction, la fusion ne contredit pas « on n'invente pas un geste » : deux gestes déposés
+l'un sur l'autre **se tassent en un seul** — c'est de la sédimentation, pas de l'invention.
+
+**Réserve d'extension — les domaines hybrides.** Les 14 fusions croisées sont la porte des
+extensions : chaque hybride (Magma, Éclipse…) peut ouvrir à terme un **domaine** propre, avec
+son arbre et ses accords, au-delà des huit éléments de base. Rien n'est à construire
+aujourd'hui ; il faut seulement **ne pas fermer la porte** — l'enum `Element` et le format
+des domaines doivent tolérer des éléments composés le jour venu. La fusion elle-même est un
+**contenu d'extension**, pas de lancement : au lancement, la progression du build passe par
+les paliers et le sertissage, pas par la fusion.
+
 La boule de feu du jour 1 reste utile au mois 6 : ce qui a changé, c'est le nombre
 d'emplacements, la qualité du support et les bonus qui l'entourent. Cela évite d'obsolescer
 la matéria fétiche d'un joueur — le défaut qu'on refuse déjà pour l'équipement

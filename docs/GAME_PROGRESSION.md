@@ -146,6 +146,15 @@ La boule de feu du jour 1 sert encore au mois 6. La progression passe par les
 sort. C'est ce qui évite d'obsolescer la matéria fétiche d'un joueur — et c'est cohérent avec
 le refus de l'obsolescence d'équipement à chaque saison.
 
+**Nuance actée : pas d'évolution sur place.** Un joueur qui progresse préfère débloquer par
+son arbre des matérias plus puissantes plutôt que faire « monter » sa boule de feu — et c'est
+ce que le jeu fait déjà. La matéria sertie accumule bien de l'expérience en combat
+(`MateriaXpGranter`), mais cette expérience ne change pas le sort : c'est une **maturation**,
+dont le seul débouché est la **fusion** (deux matérias fondues → palier supérieur, ou hybride
+croisé). La fusion est un contenu d'**extension** — le système est déjà écrit
+(`MateriaFusionManager`, 14 hybrides définis) mais volontairement non branché au lancement.
+Détail : [GAME_WORLD.md §2.1](GAME_WORLD.md).
+
 ---
 
 ## 3 ter. Les tâches système — la rétention qu'on n'écrit pas à la main
@@ -176,6 +185,64 @@ contraire d'un PBBG.
 d'attachement : une tâche générée ne fait pas qu'on compte sur toi. L'horizon de la semaine a
 besoin d'**au moins un objet social** — une commande de craft à honorer, un palier de foyer à
 faire tomber avec sa guilde. La tâche système est le plancher, pas le plafond.
+
+### 3 ter-a. Propositions — la semaine du joueur solo
+
+Trois briques, chacune passée au test des horizons (*qu'est-ce qu'elle clôt, qu'est-ce
+qu'elle laisse ?*) :
+
+**S1 — La Commission de la semaine.** Une tâche personnelle générée depuis les domaines et
+les zones du joueur (« livrer 10 potions au foyer du Marais », « rapporter 15 sauges d'au
+moins bande Claire »). Deux choix de conception qui font tout :
+
+- Elle se **livre à un foyer**, jamais à un guichet abstrait : la livraison dépose du
+  sédiment. **Le joueur solo participe donc au chantier collectif sans guilde** — sa
+  commission est sa passerelle vers l'acte III.
+- La récompense est **au choix parmi trois** (un plan, une matéria de palier, un lot de
+  pureté garantie) : un choix hebdomadaire est plus mémorable qu'une récompense fixe.
+
+*Clôt : la commission. Laisse : la récompense, et du sédiment visible dans une ville.*
+
+**S2 — L'Affleurement de la semaine.** Chaque semaine, quelque part dans le monde, **un filon
+monte d'une bande de pureté** pendant sept jours. L'information ne s'affiche pas : elle se
+**découvre** par prospection — ou s'achète à un prospecteur. C'est la rotation hebdomadaire
+du monde (levier Ryzom, coût d'écriture nul) : une raison de voyager chaque semaine, et le
+savoir du prospecteur qui redevient monnayable à cadence fixe.
+
+*Clôt : la fenêtre de sept jours. Laisse : le stock récolté, et le savoir de qui a trouvé.*
+
+**S3 — L'assiduité en paliers, jamais en série.** Récompenses à 2, 4 et 6 jours de présence
+**dans la semaine** — pas de série continue qui casse. Une semaine ratée ne détruit rien :
+on récompense la présence, on ne sanctionne jamais l'absence. (Une série qui repart de zéro
+transforme un PBBG en corvée — c'est exactement l'inverse du contrat du genre.)
+
+*Clôt : la semaine. Laisse : le bonus du palier atteint.*
+
+### 3 ter-b. Propositions — la semaine du joueur en guilde
+
+**G1 — Réparer l'existant d'abord.** `WeeklyChallenge` est bien conçu (critères, bonus,
+`weekNumber`) mais **aucune rotation n'est planifiée** dans `DefaultScheduleProvider` : le
+défi ne tourne pas tout seul. Une ligne de cron et un écran de restitution — c'est le
+premier livrable, et le moins cher de toute cette liste.
+
+**G2 — Le chantier de la semaine.** Chaque foyer où une guilde est active affiche une
+**liste de besoins hebdomadaire** (matériaux, kills, patrouilles — à la Restauration
+d'Ishgard) : contributions nominatives, jauge visible, bonus de sédiment si la liste est
+remplie. C'est le pont entre l'horizon hebdomadaire et le pilier territorial — la marée dit
+*où va* la ville, le chantier dit *ce qu'elle attend cette semaine*.
+
+*Clôt : la liste. Laisse : la ville qui monte, avec les noms de qui l'a remplie.*
+
+**G3 — La commande de guilde.** Un officier poste une **commande interne** par semaine
+(l'équipement d'une recrue, le stock de potions du climax à venir) ; les membres la servent
+via le système de commandes existant (ECO Piste C, livré). C'est « on compte sur moi » à
+cadence fixe — et ça ne demande qu'un canal *guilde* sur les commandes de craft.
+
+*Clôt : la commande. Laisse : la réputation d'artisan, et une recrue équipée.*
+
+**L'articulation des deux :** S1 fait toucher le collectif au solo (sa commission nourrit un
+foyer) ; G2 donne au guildé sa raison hebdomadaire de récolter ; S2 alimente les deux en
+opportunités. Aucune de ces briques n'exige de présence simultanée.
 
 ---
 
@@ -245,8 +312,11 @@ est une zone morte, quelle que soit sa beauté.
    4 combats couvrant des rôles distincts), les autres restant jouables sans être nourris.
 2. **La rejouabilité de l'Acte I** sur un second personnage (cf. CLAUDE.md règle 12) :
    intégralement rejoué aujourd'hui (NAR-04). À reconsidérer si l'Acte I s'allonge.
-3. **L'horizon hebdomadaire reste le plus fragile** (§3 ter). Le défi hebdomadaire existant
-   est collectif et ne tourne pas ; il manque une tâche **personnelle** répétable *et* un
-   objet **social** à cet horizon. C'est le premier chantier de design à ouvrir.
+3. **L'horizon hebdomadaire** : six briques proposées (§3 ter-a/b — Commission,
+   Affleurement, assiduité en paliers ; rotation du WeeklyChallenge, chantier de la semaine,
+   commande de guilde). **À trancher**, puis à décliner en jalons.
+4. **La fusion de matéria** (extension) : le système est codé mais dormant. À garder fermé au
+   lancement, et à ne pas casser — l'enum `Element` et le format des domaines doivent
+   tolérer des éléments composés le jour venu (GAME_WORLD §2.1).
 4. **Les paliers de métier ne sont pas calibrés** contre le budget d'énergie réel. À faire en
    même temps que le recalibrage des filons (BALANCE § 22.3).
