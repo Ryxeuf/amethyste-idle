@@ -15,6 +15,33 @@ progression par arbres, sorts actifs uniquement via matéria) restent définies 
 
 ---
 
+## 0. Le principe fondateur — on est et on devient ce qu'on fait *(consigné le 2026-07-28)*
+
+> **« C'est en forgeant qu'on devient forgeron » est le principe même du jeu.**
+
+Toute progression, toute identité, tout déblocage **découle d'un geste répété** — jamais
+d'un choix de menu, d'un achat, ou d'un point dépensé dans l'abstrait :
+
+- **Plus on utilise une matéria, plus on progresse dans son domaine** (XP de matéria,
+  accords d'arbre — le sort qu'on lance est celui qu'on apprend).
+- **Plus on fait une action, mieux on la fait** (arbres de récolte et d'artisanat,
+  fatigue et rendement, qualité au craft).
+- **Plus on fait certaines actions, plus on débloque** — y compris du contenu secret :
+  l'approche de l'Ombre après des gestes nocturnes, les passages dérobés, les gestes
+  retrouvés du Répertoire orientés par ce que le serveur **lit** réellement
+  ([GAME_WORLD.md](GAME_WORLD.md) §12.3), le type d'un foyer décidé par ce qu'on y
+  **fait** (§3.2), la réputation nourrie par les gestes et non par les quêtes (§6.4).
+
+C'est aussi le pont exact entre la mécanique et la fiction : le postulat du monde — *le
+temps vécu se dépose* (GAME_WORLD §0) — est ce principe **raconté**. Le sédiment des
+foyers, l'améthyste laissée par toute action, le Répertoire du serveur : à chaque échelle
+(personnage, foyer, serveur), le monde est la somme de ce qui y a été fait.
+
+**Le test à appliquer à toute fonctionnalité nouvelle** : *quel geste répété la nourrit ?*
+Une progression qui ne découle pas d'un geste (un palier acheté, un déblocage par simple
+attente, un choix dans un menu sans pratique derrière) est suspecte par défaut et doit se
+justifier.
+
 ## 1. Cadre général
 
 Amethyste-Idle est un **PBBG** (persistent browser-based game) coopératif PvE :

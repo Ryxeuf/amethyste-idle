@@ -42,6 +42,11 @@ La troisième est le cœur. Elle donne à un MMO **sans PvP** un enjeu de territ
 on ne prend pas la cité du voisin, on fait monter la sienne en sachant qu'il n'y a pas de
 place pour deux.
 
+> Ces trois affirmations sont la version **racontée** du principe fondateur du jeu — *on
+> est et on devient ce qu'on fait* ([GAME_PRINCIPLES.md](GAME_PRINCIPLES.md) §0). La
+> mécanique et la fiction disent la même chose, à toutes les échelles : le personnage
+> (matéria, arbres), le foyer (sédiment), le serveur (Répertoire).
+
 ---
 
 ## 1. Vocabulaire canonique
