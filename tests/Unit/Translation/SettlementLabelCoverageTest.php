@@ -50,9 +50,11 @@ class SettlementLabelCoverageTest extends TestCase
         $catalog = $this->catalog($locale);
         $labels = $catalog['game']['settlement'][$group] ?? null;
 
+        // Annotation portee par le type de retour de la methode : un
+        // `/** @var */` pose ici ne precederait aucune affectation, et
+        // PHP-CS-Fixer le degraderait en commentaire ordinaire.
         self::assertIsArray($labels, sprintf('Le groupe "game.settlement.%s" manque en "%s".', $group, $locale));
 
-        /** @var array<string, string> $labels */
         return $labels;
     }
 
