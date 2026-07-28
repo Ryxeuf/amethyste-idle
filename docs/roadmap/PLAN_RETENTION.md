@@ -24,7 +24,7 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 |------|--------|--------|-------------|
 | RET-01 | Rotation du `WeeklyChallenge` + restitution | Guilde | ✅ **livré (2026-07-28)** |
 | RET-02 | La Commission de la semaine | Solo | ∅ (crochet sédiment quand FOY-02 arrive) |
-| RET-03 | La commande de guilde | Guilde | ECO Piste C ✅ |
+| RET-03 ✅ | La commande de guilde | Guilde | ECO Piste C ✅ |
 | RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
 | RET-05 | Le chantier de la semaine | Guilde | ← FOY-02, FOY-04 |
 | RET-06 | L'Affleurement de la semaine | Solo | ← ECO-21, ECO-22 (pureté) |
@@ -76,17 +76,9 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 - [ ] UI : carte sur le tableau de bord (hub livré) + écran de zone de la ville cible
 - [ ] Tests : génération depuis les domaines, livraison, choix de récompense, expiration
 
-### RET-03 — La commande de guilde (S | ★★ | HAUTE)
+### RET-03 — La commande de guilde ✅ (S | ★★ | HAUTE)
 > « On compte sur moi » à cadence fixe, pour le prix d'un canal *guilde* sur un système livré.
-> Prérequis : ECO Piste C ✅ (CraftOrder, escrow, réputation)
-- [ ] `CraftOrder.guild` (nullable) + visibilité : une commande de guilde n'est prenable que
-      par un membre
-- [ ] Droit de poste : rôle officier ; financement possible par le `GuildVault` (escrow
-      inchangé — on réutilise, on ne réécrit pas)
-- [ ] Cadence : plafond d'une commande de guilde **active** par semaine (paramètre) — c'est
-      un rendez-vous, pas un tableau infini
-- [ ] Restitution sur l'écran de guilde : la commande de la semaine, qui l'a servie
-- [ ] Tests : visibilité membre, escrow via trésor, plafond hebdomadaire
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ---
 

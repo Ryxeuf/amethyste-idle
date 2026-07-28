@@ -15,6 +15,7 @@ use App\Entity\App\Region;
 use App\Entity\App\RegionControl;
 use App\Entity\App\WeeklyChallenge;
 use App\Enum\SeasonStatus;
+use App\GameEngine\Crafting\GuildCraftOrderManager;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\GuildQuestManager;
 use App\GameEngine\Guild\GuildVaultManager;
@@ -36,6 +37,7 @@ class GuildController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly GuildManager $guildManager,
+        private readonly GuildCraftOrderManager $guildOrderManager,
         private readonly GuildVaultManager $vaultManager,
         private readonly GuildQuestManager $guildQuestManager,
         private readonly SeasonManager $seasonManager,
@@ -63,7 +65,12 @@ class GuildController extends AbstractController
             $weekly = $this->buildChallengeEntries($guild, $season, new \DateTime());
         }
 
+        // RET-03 : la commande de la semaine, et qui l'a prise. Un rendez-vous
+        // dont on ne voit jamais le resultat cesse vite d'en etre un.
+        $guildOrders = $guild !== null ? $this->guildOrderManager->openOrdersFor($guild) : [];
+
         return $this->render('game/guild/index.html.twig', [
+            'guildOrders' => $guildOrders,
             'guild' => $guild,
             'membership' => $membership,
             'invitations' => $invitations,

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\App\CraftOrder;
+use App\Entity\App\Guild;
 use App\Entity\App\Player;
 use App\Entity\App\Region;
 use App\Enum\CraftOrderStatus;
@@ -89,6 +90,10 @@ class CraftOrderRepository extends ServiceEntityRepository
             ->join('o.requester', 'p')->addSelect('p')
             ->where('o.status = :open')
             ->andWhere('o.targetCrafter IS NULL')
+            // RET-03 : une commande de guilde ne parait jamais au tableau
+            // regional. La retirer ici plutot que de la filtrer a l'affichage
+            // est ce qui garantit qu'elle ne fuit par aucun autre appelant.
+            ->andWhere('o.guild IS NULL')
             ->andWhere('o.expiresAt > :now')
             ->setParameter('open', CraftOrderStatus::Open)
             ->setParameter('now', new \DateTimeImmutable())
@@ -106,6 +111,51 @@ class CraftOrderRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Commandes ouvertes d'une guilde — le canal interne de RET-03.
+     *
+     * @return CraftOrder[]
+     */
+    public function findOpenForGuild(Guild $guild, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('o')
+            ->join('o.recipe', 'r')->addSelect('r')
+            ->join('o.requester', 'p')->addSelect('p')
+            ->where('o.guild = :guild')
+            ->andWhere('o.status = :open')
+            ->andWhere('o.expiresAt > :now')
+            ->setParameter('guild', $guild)
+            ->setParameter('open', CraftOrderStatus::Open)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('o.createdAt', 'DESC')
+            ->setMaxResults(max(1, $limit))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Commandes de guilde encore **vivantes** depuis une date : ouvertes ou
+     * prises, mais pas encore reglees.
+     *
+     * Le plafond hebdomadaire compte celles-ci, pas celles qui sont livrees ou
+     * expirees : une commande servie mardi doit liberer la place pour la
+     * suivante, sinon le rendez-vous devient une punition pour les guildes
+     * efficaces.
+     */
+    public function countActiveForGuildSince(Guild $guild, \DateTimeImmutable $since): int
+    {
+        return (int) $this->createQueryBuilder('o')
+            ->select('COUNT(o.id)')
+            ->where('o.guild = :guild')
+            ->andWhere('o.status IN (:alive)')
+            ->andWhere('o.createdAt >= :since')
+            ->setParameter('guild', $guild)
+            ->setParameter('alive', [CraftOrderStatus::Open, CraftOrderStatus::Claimed])
+            ->setParameter('since', $since)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**
