@@ -87,7 +87,7 @@ class GatherService
                 $normalized['profession'],
                 $stock,
                 $normalized['capacity'],
-                $stock > 0 ? 0 : $this->respawnRemaining($vein, $normalized['respawn_seconds'], $now),
+                $stock > 0 ? 0 : $this->respawnRemaining($vein, $normalized['respawn_seconds'], $normalized['capacity'], $now),
             );
         }
 
@@ -128,10 +128,12 @@ class GatherService
 
         $now = $this->now();
         $vein = $this->resolveVein($zone, $resource, $now);
-        if ($vein->getStock() <= 0) {
-            // Filon epuise : refus sans depenser d'energie (respawn en attente).
-            throw new ZoneActionException('game.zone.gather.error.depleted');
-        }
+
+        // ZON-37 : **une recolte n'echoue jamais** (GAME_ZONE_ACTIONS, loi 5).
+        // Le service refusait ici quand le stock etait a zero ; la loi dit que
+        // la vitalite module le **rendement**, pas l'acces, avec un plancher
+        // d'une unite. Un filon a sec rend donc peu, il ne ferme pas la porte —
+        // c'est ce qui protege le joueur occasionnel de la saturation.
 
         // L'energie n'est prelevee qu'une fois la recolte garantie possible.
         $this->actionEnergyManager->spend($player, $this->getGatherCost(), false);
@@ -202,8 +204,19 @@ class GatherService
             return $vein;
         }
 
-        if ($this->hasRespawned($vein, $resource['respawn_seconds'], $now)) {
-            $vein->setStock($resource['capacity']);
+        // ZON-37 : la repousse deja due est encaissee avant la recolte, et
+        // l'ancre avance du temps reellement converti en unites.
+        $regenerated = self::regenerate(
+            $vein->getStock(),
+            $resource['capacity'],
+            $resource['respawn_seconds'],
+            $vein->getRegeneratedAt() ?? $vein->getDepletedAt(),
+            $now,
+        );
+
+        $vein->setStock($regenerated['stock']);
+        $vein->setRegeneratedAt($regenerated['anchor']);
+        if ($regenerated['stock'] > 0) {
             $vein->setDepletedAt(null);
         }
 
@@ -215,39 +228,87 @@ class GatherService
         if (null === $vein) {
             return $capacity;
         }
-        if ($vein->getStock() > 0) {
-            return min($vein->getStock(), $capacity);
-        }
 
-        return $this->hasRespawned($vein, $respawnSeconds, $now) ? $capacity : 0;
+        // Lecture sans effet de bord : la repousse est appliquee en memoire.
+        return self::regenerate(
+            $vein->getStock(),
+            $capacity,
+            $respawnSeconds,
+            $vein->getRegeneratedAt() ?? $vein->getDepletedAt(),
+            $now,
+        )['stock'];
     }
 
-    private function respawnRemaining(?ZoneVein $vein, int $respawnSeconds, \DateTimeImmutable $now): int
+    /**
+     * Repousse continue d'un filon (ZON-37).
+     *
+     * > « La regeneration n'est pas une phase, c'est un debit permanent […]
+     * > chaque filon rend `R = capacity x 3600 / respawn_seconds` unites par
+     * > heure, **en continu**, et `capacity` n'est qu'un tampon. »
+     * > — [GAME_WORLD.md](../../../docs/GAME_WORLD.md) §3.5
+     *
+     * Le moteur faisait l'inverse : un filon ne repoussait que s'il tombait
+     * **exactement a zero**, attendait le delai plein, puis revenait plein d'un
+     * bloc. Une entame partielle n'etait **jamais** reconstituee — un filon
+     * descendu de 72 a 42 y restait indefiniment. Tout le calibrage de
+     * BALANCE §22 decrivait donc un systeme qui n'existait pas.
+     *
+     * L'ancre n'avance **pas** jusqu'a `now` : elle avance du temps exactement
+     * consomme par les unites rendues. Sans cela, chaque lecture jetterait la
+     * fraction en cours et un filon souvent consulte ne repousserait jamais.
+     *
+     * @param \DateTimeImmutable|null $anchor derniere conversion temps -> unites
+     *
+     * @return array{stock: int, anchor: \DateTimeImmutable}
+     */
+    public static function regenerate(int $stock, int $capacity, int $respawnSeconds, ?\DateTimeImmutable $anchor, \DateTimeImmutable $now): array
+    {
+        $stock = max(0, min($stock, $capacity));
+
+        // Sans ancre, le filon est repute a jour : on ne lui doit rien.
+        if (null === $anchor || $respawnSeconds <= 0 || $capacity <= 0 || $stock >= $capacity) {
+            return ['stock' => $stock, 'anchor' => $now];
+        }
+
+        $elapsed = $now->getTimestamp() - $anchor->getTimestamp();
+        if ($elapsed <= 0) {
+            return ['stock' => $stock, 'anchor' => $anchor];
+        }
+
+        // Secondes que coute une unite : `respawn_seconds` remplit `capacity`.
+        $secondsPerUnit = $respawnSeconds / $capacity;
+        $units = (int) floor($elapsed / $secondsPerUnit);
+
+        if ($units <= 0) {
+            return ['stock' => $stock, 'anchor' => $anchor];
+        }
+
+        $granted = min($units, $capacity - $stock);
+
+        return [
+            'stock' => $stock + $granted,
+            // Le reliquat se reporte : on n'avance que du temps facture.
+            'anchor' => $anchor->modify(sprintf('+%d seconds', (int) round($granted * $secondsPerUnit))),
+        ];
+    }
+
+    private function respawnRemaining(?ZoneVein $vein, int $respawnSeconds, int $capacity, \DateTimeImmutable $now): int
     {
         if (null === $vein) {
             return 0;
         }
-        $depletedAt = $vein->getDepletedAt();
-        if (null === $depletedAt) {
+        $anchor = $vein->getRegeneratedAt() ?? $vein->getDepletedAt();
+        if (null === $anchor || $respawnSeconds <= 0) {
             return 0;
         }
 
-        $respawnAt = $depletedAt->getTimestamp() + $respawnSeconds;
+        // ZON-37 : ce n'est plus « quand le filon reviendra plein » mais
+        // « quand tombe la prochaine unite ». La repousse etant continue, la
+        // seconde question est la seule qui ait encore un sens.
+        $secondsPerUnit = $respawnSeconds / max(1, $capacity);
+        $elapsed = max(0, $now->getTimestamp() - $anchor->getTimestamp());
 
-        return max(0, $respawnAt - $now->getTimestamp());
-    }
-
-    private function hasRespawned(ZoneVein $vein, int $respawnSeconds, \DateTimeImmutable $now): bool
-    {
-        if ($vein->getStock() > 0) {
-            return false;
-        }
-        $depletedAt = $vein->getDepletedAt();
-        if (null === $depletedAt) {
-            return false;
-        }
-
-        return $now->getTimestamp() >= $depletedAt->getTimestamp() + $respawnSeconds;
+        return max(0, (int) ceil($secondsPerUnit - fmod($elapsed, $secondsPerUnit)));
     }
 
     /**
@@ -269,7 +330,19 @@ class GatherService
 
         $yield = $this->yieldResolver->applyBonus($player, ActionYieldResolver::CATEGORY_GATHER, $yield);
 
-        return max(1, min($yield, $stock));
+        // ZON-37 — la vitalite module le rendement (GAME_ZONE_ACTIONS, loi 5).
+        // Jusqu'ici le stock ne servait qu'a **plafonner** : un filon a 70/72 et
+        // un filon a 3/72 rendaient autant, et la rarete ne se voyait qu'au
+        // moment ou l'acces se fermait. Desormais le filon presse rend moins,
+        // continument — c'est le signal que la purete (ECO-22) et la Paleur
+        // (FOY-11) liront, et sans lui les deux jalons tourneraient a vide.
+        $capacity = $resource['capacity'];
+        if ($capacity > 0 && $stock < $capacity) {
+            $yield = (int) round($yield * ($stock / $capacity));
+        }
+
+        // Plancher d'une unite : une recolte n'echoue jamais, meme a sec.
+        return max(1, $stock > 0 ? min($yield, $stock) : 1);
     }
 
     /**

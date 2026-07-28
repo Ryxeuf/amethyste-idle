@@ -23,6 +23,7 @@ dans leurs plans d'origine :
 | ZON-34 | La ligne du bois (domaine, essences, recettes) | M | → ECO-30 (charpentier) |
 | ZON-35 | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
 | ZON-36 | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
+| ZON-37 | La régénération d'un filon devient un débit ✅ | M | ∅ — **prérequis du recalibrage** |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des

@@ -154,20 +154,31 @@ class GatherServiceTest extends TestCase
         $this->service->gather($player, 'filon-inexistant');
     }
 
-    public function testRefusesDepletedVeinWithoutSpendingEnergy(): void
+    /**
+     * ZON-37 — **une recolte n'echoue jamais** (GAME_ZONE_ACTIONS, loi 5).
+     *
+     * Le service refusait ici. La loi dit que la vitalite module le
+     * **rendement**, pas l'acces, avec un plancher d'une unite : un filon a sec
+     * rend peu, il ne ferme pas la porte. C'est ce qui protege le joueur
+     * occasionnel de la saturation par les habitues.
+     */
+    public function testADepletedVeinStillYieldsTheFloorOfOneUnit(): void
     {
         $player = $this->buildPlayerIn([$this->ironResource()]);
         $zone = $player->getCurrentZone();
 
-        // Filon vide, epuise il y a 10 s (respawn 900 s) : pas encore reconstitue.
+        // Filon vide, epuise il y a 10 s : trop tot pour rendre une unite
+        // (respawn 900 s pour 20 unites, soit 45 s par unite).
         $vein = new ZoneVein($zone, 'filon-de-fer', 0);
         $vein->setDepletedAt($this->service->currentTime->modify('-10 seconds'));
         $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
         $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(1, 'ore-iron', 'Minerai de fer'));
 
-        $this->actionEnergyManager->expects($this->never())->method('spend');
-        $this->expectExceptionMessage('game.zone.gather.error.depleted');
-        $this->service->gather($player, 'filon-de-fer');
+        $this->actionEnergyManager->expects($this->once())->method('spend');
+
+        $result = $this->service->gather($player, 'filon-de-fer');
+
+        $this->assertSame(1, $result->quantity, 'Le plancher d\'une unite s\'applique.');
     }
 
     public function testGatherGrantsItemsDecrementsSharedStockAndWritesJournal(): void
@@ -228,21 +239,90 @@ class GatherServiceTest extends TestCase
      */
     public function testYieldBonusCannotExceedTheSharedStock(): void
     {
-        $player = $this->buildPlayerIn([$this->ironResource()]);
+        // Petit filon (capacite 3) : c'est la borne de stock qui mord ici, pas
+        // la modulation par la vitalite.
+        $player = $this->buildPlayerIn([['slug' => 'filon-de-fer', 'item' => 'ore-iron', 'profession' => 'mining', 'capacity' => 3, 'respawn_seconds' => 900, 'yield_min' => 1, 'yield_max' => 3]]);
         $skill = new Skill();
         $skill->setActions(['yield' => ['gather_percent' => 100]]);
         $player->addSkill($skill);
 
         $zone = $player->getCurrentZone();
-        $vein = new ZoneVein($zone, 'filon-de-fer', 2); // deux restants
+        $vein = new ZoneVein($zone, 'filon-de-fer', 2); // deux restants sur trois
         $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
         $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
-        $this->service->rolls = [3]; // 3 doubles a 6, mais le stock plafonne a 2
+        $this->service->rolls = [3]; // 3 double a 6, module a 4 par la vitalite, borne a 2 par le stock
 
         $result = $this->service->gather($player, 'filon-de-fer');
 
         $this->assertSame(2, $result->quantity);
         $this->assertSame(0, $result->remainingStock);
+    }
+
+    /**
+     * ZON-37 — la vitalite module le rendement (GAME_ZONE_ACTIONS, loi 5).
+     *
+     * Le stock ne servait qu'a **plafonner** : un filon a 18/20 et un filon a
+     * 3/20 rendaient autant, et la rarete ne se voyait qu'au moment ou l'acces
+     * se fermait. C'est ce signal continu que liront la purete (ECO-22) et la
+     * Paleur (FOY-11) — sans lui, les deux jalons tourneraient a vide.
+     */
+    public function testAPressedVeinYieldsLessThanARestedOne(): void
+    {
+        $rested = $this->gatherFromVeinAt(18);
+        $pressed = $this->gatherFromVeinAt(4);
+
+        $this->assertGreaterThan(
+            $pressed,
+            $rested,
+            'Un filon repose doit rendre davantage qu\'un filon presse, a tirage egal.',
+        );
+        $this->assertGreaterThanOrEqual(1, $pressed, 'Le plancher d\'une unite tient toujours.');
+    }
+
+    /**
+     * Recolte une fois sur un filon dont la vitalite est fixee, avec des mocks
+     * neufs : configurer deux fois le meme laisserait la premiere reponse
+     * gagner, et les deux mesures seraient identiques par construction.
+     */
+    private function gatherFromVeinAt(int $stock): int
+    {
+        $veinRepository = $this->createMock(ZoneVeinRepository::class);
+        $itemRepository = $this->createMock(EntityRepository::class);
+        $parameterRepository = $this->createMock(EntityRepository::class);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getRepository')->willReturnMap([
+            [Parameter::class, $parameterRepository],
+            [Item::class, $itemRepository],
+        ]);
+
+        $worldScale = $this->createMock(WorldScaleService::class);
+        $worldScale->method('current')->willReturn(1.0);
+
+        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale) extends GatherService {
+            /** @var list<int> */
+            public array $rolls = [];
+            public \DateTimeImmutable $currentTime;
+            private int $rollIndex = 0;
+
+            protected function roll(int $max): int
+            {
+                return $this->rolls[$this->rollIndex++] ?? 1;
+            }
+
+            protected function now(): \DateTimeImmutable
+            {
+                return $this->currentTime;
+            }
+        };
+        $service->currentTime = new \DateTimeImmutable('2026-07-24 12:00:00');
+        $service->rolls = [3];
+
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $vein = new ZoneVein($player->getCurrentZone(), 'filon-de-fer', $stock);
+        $veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+        $itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+
+        return $service->gather($player, 'filon-de-fer')->quantity;
     }
 
     public function testGatherBoundsYieldByRemainingStockAndMarksDepleted(): void
@@ -293,9 +373,11 @@ class GatherServiceTest extends TestCase
             return $this->buildItem(1, $criteria['slug'], strtoupper($criteria['slug']));
         });
 
-        // Fer : jamais recolte -> plein. Cuivre : vide depuis 60 s (respawn 600) -> epuise, 540 s restantes.
+        // Fer : jamais recolte -> plein. Cuivre : vide depuis 30 s. Capacite 10
+        // pour 600 s de repousse, soit une unite toutes les 60 s (ZON-37) : il
+        // reste donc 30 s avant que la prochaine tombe.
         $copperVein = new ZoneVein($zone, 'filon-de-cuivre', 0);
-        $copperVein->setDepletedAt($this->service->currentTime->modify('-60 seconds'));
+        $copperVein->setDepletedAt($this->service->currentTime->modify('-30 seconds'));
         $this->veinRepository->method('findOneByZoneAndSlug')->willReturnCallback(function (Zone $z, string $slug) use ($copperVein): ?ZoneVein {
             return 'filon-de-cuivre' === $slug ? $copperVein : null;
         });
@@ -312,7 +394,7 @@ class GatherServiceTest extends TestCase
         $this->assertSame('filon-de-cuivre', $gatherables[1]->slug);
         $this->assertSame(0, $gatherables[1]->stock);
         $this->assertTrue($gatherables[1]->isDepleted());
-        $this->assertSame(540, $gatherables[1]->respawnRemaining);
+        $this->assertSame(30, $gatherables[1]->respawnRemaining, 'Le compte a rebours porte sur la prochaine unite, plus sur un retour a plein.');
     }
 
     /**
@@ -332,15 +414,14 @@ class GatherServiceTest extends TestCase
             fn (array $criteria): Item => $this->buildItem(1, $criteria['slug'], strtoupper($criteria['slug'])),
         );
 
-        $vein = new ZoneVein($zone, 'filon-de-fer', 0);
-        $vein->setDepletedAt($service->currentTime->modify('-60 seconds'));
-        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
 
         $gatherables = $service->getGatherables($zone);
 
-        // Capacite declaree 20, respawn declare 900.
+        // Capacite declaree 20 : le tampon double, le `respawn_seconds` du YAML
+        // n'est jamais touche (le temps de remplissage complet reste le meme —
+        // cf. testFullRefillAlwaysTakesTheDeclaredRespawnPeriod).
         $this->assertSame(40, $gatherables[0]->capacity, 'La capacite suit le facteur de monde.');
-        $this->assertSame(840, $gatherables[0]->respawnRemaining, 'La repousse, elle, ne bouge pas.');
     }
 
     /**
