@@ -1446,7 +1446,8 @@
           "missing_skill": "Ce filon demande un savoir que vous n'avez pas encore."
         },
         "purity_ceiling": "Ce filon ne rend pas mieux que",
-        "locked_by": "Demande :"
+        "locked_by": "Demande :",
+        "paleness": "Filon délavé (%percent% %) — il rend moins et se refait tout seul si on le laisse respirer."
       },
       "pnjs": {
         "heading": "Personnages présents",

@@ -9,7 +9,9 @@ use App\GameEngine\Economy\PurityDefinitionLoader;
 use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Economy\PurityScope;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\Repository\WeeklyOutcropRepository;
+use App\Repository\ZoneVeinRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -213,6 +215,30 @@ class PurityDrawerTest extends TestCase
             ],
         ]);
 
-        return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver(), $this->createMock(WeeklyOutcropRepository::class));
+        return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver(), $this->createMock(WeeklyOutcropRepository::class), ...$this->palenessStubs());
+    }
+
+    /**
+     * FOY-11 : ces tests portent sur l'affleurement et le tirage, pas sur la
+     * Paleur. Un depot sans filon pali laisse la seconde borne inactive — l'etat
+     * normal d'un monde qu'on n'a pas encore ereinte.
+     *
+     * @return array{0: ZoneVeinRepository, 1: SettlementDefinitionLoader}
+     */
+    private function palenessStubs(): array
+    {
+        $veinRepository = $this->createMock(ZoneVeinRepository::class);
+        $veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+
+        $settlementLoader = $this->createMock(SettlementDefinitionLoader::class);
+        $settlementLoader->method('load')->willReturn(['paleness' => [
+            'rise_per_pressure' => 0.08,
+            'daily_recovery' => 0.04,
+            'max' => 0.6,
+            'visible_from' => 0.1,
+            'dulls_purity_from' => 0.3,
+        ]]);
+
+        return [$veinRepository, $settlementLoader];
     }
 }

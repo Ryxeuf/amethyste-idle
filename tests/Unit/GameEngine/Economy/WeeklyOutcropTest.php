@@ -10,8 +10,10 @@ use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Economy\PurityScope;
 use App\GameEngine\Economy\WeeklyOutcropSelector;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\Repository\WeeklyOutcropRepository;
 use App\Repository\ZoneRepository;
+use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -218,6 +220,7 @@ class WeeklyOutcropTest extends TestCase
             $zoneRepository,
             $outcropRepository,
             new PurityScope($loader),
+            ...$this->palenessStubs(),
         );
     }
 
@@ -229,7 +232,7 @@ class WeeklyOutcropTest extends TestCase
         $outcropRepository = $this->createMock(WeeklyOutcropRepository::class);
         $outcropRepository->method('findForWeek')->willReturn($outcrop);
 
-        return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver(), $outcropRepository);
+        return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver(), $outcropRepository, ...$this->palenessStubs());
     }
 
     /**
@@ -251,5 +254,29 @@ class WeeklyOutcropTest extends TestCase
                 'skill_weight_cap' => 25,
             ],
         ];
+    }
+
+    /**
+     * FOY-11 : ces tests portent sur l'affleurement et le tirage, pas sur la
+     * Paleur. Un depot sans filon pali laisse la seconde borne inactive — l'etat
+     * normal d'un monde qu'on n'a pas encore ereinte.
+     *
+     * @return array{0: ZoneVeinRepository, 1: SettlementDefinitionLoader}
+     */
+    private function palenessStubs(): array
+    {
+        $veinRepository = $this->createMock(ZoneVeinRepository::class);
+        $veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+
+        $settlementLoader = $this->createMock(SettlementDefinitionLoader::class);
+        $settlementLoader->method('load')->willReturn(['paleness' => [
+            'rise_per_pressure' => 0.08,
+            'daily_recovery' => 0.04,
+            'max' => 0.6,
+            'visible_from' => 0.1,
+            'dulls_purity_from' => 0.3,
+        ]]);
+
+        return [$veinRepository, $settlementLoader];
     }
 }

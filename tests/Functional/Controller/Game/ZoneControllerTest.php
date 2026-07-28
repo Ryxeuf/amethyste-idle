@@ -15,6 +15,7 @@ use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
@@ -191,6 +192,7 @@ class ZoneControllerTest extends TestCase
             $this->playerShopRepository,
             $this->settlementPanelBuilder,
             $this->commissionDelivery,
+            $this->settlementLoader(),
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -769,5 +771,23 @@ class ZoneControllerTest extends TestCase
         $container->method('get')->willReturnCallback(fn (string $id) => $services[$id] ?? null);
 
         return $container;
+    }
+
+    /**
+     * FOY-11 : ces tests portent sur les actions de zone, pas sur la Paleur.
+     * Seul le seuil d'affichage est lu par le controleur.
+     */
+    private function settlementLoader(): SettlementDefinitionLoader
+    {
+        $loader = $this->createMock(SettlementDefinitionLoader::class);
+        $loader->method('load')->willReturn(['paleness' => [
+            'rise_per_pressure' => 0.08,
+            'daily_recovery' => 0.04,
+            'max' => 0.6,
+            'visible_from' => 0.1,
+            'dulls_purity_from' => 0.3,
+        ]]);
+
+        return $loader;
     }
 }

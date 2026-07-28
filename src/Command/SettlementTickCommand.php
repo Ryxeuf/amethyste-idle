@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\GameEngine\Settlement\SettlementTickService;
+use App\GameEngine\Settlement\VeinPalenessService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,6 +30,7 @@ class SettlementTickCommand extends Command
 {
     public function __construct(
         private readonly SettlementTickService $tickService,
+        private readonly VeinPalenessService $palenessService,
     ) {
         parent::__construct();
     }
@@ -43,6 +45,20 @@ class SettlementTickCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $report = $this->tickService->tick(null, (bool) $input->getOption('force'));
+
+        // FOY-11 — la Paleur vieillit au meme tick que les foyers, et pour la
+        // meme raison : c'est le moment ou le monde encaisse ce qu'on lui a
+        // fait de la journee. Une horloge de plus n'aurait rien apporte qu'une
+        // horloge de plus a tenir d'accord.
+        $paleness = $this->palenessService->tick();
+        if ($paleness['dulled'] > 0 || $paleness['recovered'] > 0) {
+            $io->info(sprintf(
+                'Paleur : %d filon(s) delave(s), %d reposé(s) sur %d.',
+                $paleness['dulled'],
+                $paleness['recovered'],
+                $paleness['processed'],
+            ));
+        }
 
         if ($report['processed'] === 0) {
             $io->note(sprintf('Aucun foyer a traiter (%d deja a jour).', $report['skipped']));

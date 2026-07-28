@@ -15,6 +15,7 @@ use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
@@ -84,6 +85,7 @@ class ZoneController extends AbstractController
         private readonly PlayerShopRepository $playerShopRepository,
         private readonly SettlementPanelBuilder $settlementPanelBuilder,
         private readonly WeeklyCommissionDelivery $commissionDelivery,
+        private readonly SettlementDefinitionLoader $settlementLoader,
     ) {
     }
 
@@ -124,6 +126,7 @@ class ZoneController extends AbstractController
                 'huntCost' => $this->huntService->getHuntCost(),
                 'gatherables' => [],
                 'gatherCost' => $this->gatherService->getGatherCost(),
+                'palenessVisibleFrom' => $this->palenessVisibleFrom(),
                 'poiLabels' => [],
                 'typeLabels' => [],
                 'travel' => null,
@@ -188,6 +191,7 @@ class ZoneController extends AbstractController
             'huntCost' => $this->huntService->getHuntCost(),
             'gatherables' => $this->gatherService->getGatherables($zone, $player),
             'gatherCost' => $this->gatherService->getGatherCost(),
+            'palenessVisibleFrom' => $this->palenessVisibleFrom(),
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
             'justArrived' => $arrived,
@@ -791,5 +795,17 @@ class ZoneController extends AbstractController
         return [
             ['key' => 'explore', 'label' => 'game.zone.actions.explore', 'enabled' => true, 'cost' => $this->exploreService->getExploreCost()],
         ];
+    }
+
+    /**
+     * Seuil a partir duquel la Paleur se voit (FOY-11).
+     *
+     * Il vit dans `settlements.yaml` et non dans le gabarit : sous ce seuil, la
+     * Paleur existe mais ne fait rien, et un filon normalement frequente ne doit
+     * pas porter un etat d'alerte pour une trace que personne ne ressent.
+     */
+    private function palenessVisibleFrom(): float
+    {
+        return $this->settlementLoader->load()['paleness']['visible_from'];
     }
 }

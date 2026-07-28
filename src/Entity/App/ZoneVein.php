@@ -73,6 +73,32 @@ class ZoneVein
     #[ORM\Column(name: 'regenerated_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $regeneratedAt = null;
 
+    /**
+     * Paleur du filon, de 0 (intact) a `paleness.max` (FOY-11).
+     *
+     * **Par filon, jamais par zone**, et c'est la decision qui porte le jalon :
+     * seule l'exploitation *concentree* pallit un lieu, jamais le passage
+     * diffus des debutants (GAME_WORLD §3.5). L'agregat au niveau de la zone
+     * n'est qu'un affichage.
+     *
+     * Bornee et **reversible** : un filon pali n'est jamais sterile et se refait
+     * des qu'on cesse de le presser. C'est ce qui le distingue d'une Etale, qui
+     * est un lieu ancien et permanent (§12.1).
+     */
+    #[ORM\Column(name: 'paleness', type: 'float', options: ['default' => 0])]
+    private float $paleness = 0.0;
+
+    /**
+     * Unites extraites depuis le dernier tick quotidien (FOY-11).
+     *
+     * Le compteur se compare au **debit soutenu** du filon sur la meme journee :
+     * au-dessus, on prend plus vite que ca ne repousse. Il se remet a zero a
+     * chaque tick — ce qui se mesure est un *rythme*, pas un cumul historique,
+     * et un cumul ferait payer eternellement une ruee d'un soir.
+     */
+    #[ORM\Column(name: 'extracted_since_tick', type: 'integer', options: ['default' => 0])]
+    private int $extractedSinceTick = 0;
+
     public function __construct(Zone $zone, string $slug, int $stock)
     {
         $this->zone = $zone;
@@ -129,5 +155,34 @@ class ZoneVein
         $this->depletedAt = $depletedAt;
 
         return $this;
+    }
+
+    public function getPaleness(): float
+    {
+        return $this->paleness;
+    }
+
+    public function setPaleness(float $paleness): self
+    {
+        $this->paleness = max(0.0, $paleness);
+
+        return $this;
+    }
+
+    public function getExtractedSinceTick(): int
+    {
+        return $this->extractedSinceTick;
+    }
+
+    public function setExtractedSinceTick(int $units): self
+    {
+        $this->extractedSinceTick = max(0, $units);
+
+        return $this;
+    }
+
+    public function addExtracted(int $units): self
+    {
+        return $this->setExtractedSinceTick($this->extractedSinceTick + max(0, $units));
     }
 }

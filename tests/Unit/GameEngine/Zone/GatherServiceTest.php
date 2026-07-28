@@ -657,6 +657,64 @@ class GatherServiceTest extends TestCase
         $this->assertFalse($this->service->getGatherables($zone)[0]->isLocked());
     }
 
+    // =====================================================================
+    // FOY-11 — la Paleur module le rendement, sans jamais steriliser
+    // =====================================================================
+
+    public function testAPaleVeinYieldsLess(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $zone = $player->getCurrentZone();
+        $vein = new ZoneVein($zone, 'filon-de-fer', 20);
+        $vein->setPaleness(0.5);
+
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [3]; // rendement brut 3, palit de moitie -> 2 (arrondi)
+
+        self::assertSame(2, $this->service->gather($player, 'filon-de-fer')->quantity);
+    }
+
+    /**
+     * Le plancher dur du socle de monde : un filon pali ne devient **jamais**
+     * sterile. C'est ce qui le distingue d'une Etale (GAME_WORLD § 12.1).
+     */
+    public function testAVeinAtMaximumPalenessStillYieldsSomething(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $zone = $player->getCurrentZone();
+        $vein = new ZoneVein($zone, 'filon-de-fer', 20);
+        $vein->setPaleness(0.99);
+
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [1];
+
+        self::assertSame(1, $this->service->gather($player, 'filon-de-fer')->quantity);
+    }
+
+    /**
+     * Ce qu'on prend se compte : c'est le numerateur de la pression que le tick
+     * quotidien comparera au debit soutenu du filon.
+     */
+    public function testHarvestingCountsTowardsTheDailyExtraction(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $zone = $player->getCurrentZone();
+        $vein = new ZoneVein($zone, 'filon-de-fer', 20);
+
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn($vein);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [3];
+
+        $result = $this->service->gather($player, 'filon-de-fer');
+
+        self::assertSame($result->quantity, $vein->getExtractedSinceTick());
+    }
+
     /**
      * ECO-22 : ces tests portent sur la recolte, pas sur la purete. Un tireur
      * qui ne rend rien laisse les lots sans bande — l'etat normal de tout ce qui
