@@ -71,6 +71,9 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // (RET-05). En dernier des trois : il lit le **type** du foyer,
                 // que le tick de saison n'a pas encore touche a cette heure-ci.
                 RecurringMessage::cron('4 0 * * 1', new RunCommandMessage('app:settlement-work:rotate')),
+                // WeeklyOutcrop : le filon qui rend un cran plus haut cette
+                // semaine (RET-06). Personne n'en est informe — c'est le point.
+                RecurringMessage::cron('6 0 * * 1', new RunCommandMessage('app:weekly-outcrop:rotate')),
 
                 // --- Cloture quotidienne ------------------------------------
                 // DailyQuest : rotation des quêtes quotidiennes

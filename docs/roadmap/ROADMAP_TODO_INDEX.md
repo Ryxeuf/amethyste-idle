@@ -57,7 +57,7 @@
 | ~~7~~ | ~~**FOY-06, 07, 10**~~ ✅ | Services gates, bonus d'atelier, regression bornee (Sprint 17) | **Livres le 2026-07-28** — faire vivre une zone y ouvre un marche et de meilleurs ateliers. **Piste B complete** |
 | ~~8~~ | ~~**RET-05**~~ ✅ | Chantier de la semaine (par foyer) | **Livre le 2026-07-28** — le foyer demande, et nomme ceux qui repondent |
 | ~~9~~ | ~~**ECO-21 → 22 → 23**~~ ✅ | Purete (bandes, tirage, marche/commandes) | **Livres le 2026-07-28.** Reveille `Recipe.quality`, donne un metier au prospecteur |
-| 10 | **RET-06** | Affleurement de la semaine | Depend de la purete |
+| ~~10~~ | ~~**RET-06**~~ ✅ | Affleurement de la semaine | **Livre le 2026-07-28** — et personne n'en est informe, c'est le point |
 | 11 | **FOY-08, 09, 14 + RET-04** | La Crue + assiduite (Sprint 18) | L'enjeu politique, une fois le socle vivant |
 | 12 | **ECO-25 → 27** | Chaine de production par paliers | Le levier anti-creux-du-milieu |
 | 13 | **FOY-11 → 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste |
@@ -197,7 +197,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **4/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 et RET-03 livres** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
+- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **5/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 et RET-03 livres** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
 - [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **10/17, grand chantier en cours** (socle FOY-01→05 complet, FOY-06, FOY-07, FOY-10, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-27)](PLAN_PLAYER_ECONOMY.md) — **Pistes F (purete) et G (chaine de production par paliers) ouvertes** : la Piste G est le levier principal contre le creux du milieu. Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)

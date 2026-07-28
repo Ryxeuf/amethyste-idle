@@ -15,7 +15,7 @@
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
 
-> **Avancement : 4/7.** RET-01, RET-02, RET-03 et RET-05 livrés le 2026-07-28 (détail dans
+> **Avancement : 5/7.** RET-01, RET-02, RET-03, RET-05 et RET-06 livrés le 2026-07-28 (détail dans
 > [../ROADMAP_DONE.md](../ROADMAP_DONE.md)). La rotation du lundi 00h00 existe désormais et
 > constitue le **point d'entrée unique** que RET-02, RET-04, RET-05 et RET-06 doivent
 > réutiliser — c'est le contrat transverse de RET-07.
@@ -27,7 +27,7 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | RET-03 ✅ | La commande de guilde | Guilde | ECO Piste C ✅ |
 | RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
 | RET-05 ✅ | Le chantier de la semaine | Guilde | ✅ **livré (2026-07-28)** |
-| RET-06 | L'Affleurement de la semaine | Solo | ← ECO-21, ECO-22 (pureté) |
+| RET-06 ✅ | L'Affleurement de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-07 | Tests du plan | — | ‖ au fil des jalons |
 
 ```
@@ -109,16 +109,17 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 
 ## Vague 3 — après la pureté
 
-### RET-06 — L'Affleurement de la semaine (M | ★★★ | MOYENNE)
+### RET-06 — L'Affleurement de la semaine ✅ (M | ★★★ | MOYENNE)
 > La rotation hebdomadaire du monde, à coût d'écriture nul (levier Ryzom). Le savoir du
 > prospecteur redevient monnayable à cadence fixe.
-> Prérequis : ← ECO-21, ECO-22 (bandes de pureté au filon)
-- [ ] À la rotation hebdomadaire : tirage d'**un filon** du monde dont la bande maximale
-      monte d'un cran pendant 7 jours (jamais deux semaines de suite la même zone)
-- [ ] **Aucune annonce publique** : l'information se découvre par prospection sur place —
-      ou s'achète à qui l'a trouvée. C'est le point de la brique ; l'afficher la tuerait
-- [ ] Interaction Pâleur (quand FOY-11 existe) : un filon pâli ne peut pas être tiré
-- [ ] Tests : tirage, fenêtre de 7 jours, non-répétition, discrétion (rien dans l'API publique)
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **La discrétion est rendue exécutable** : un test parcourt contrôleurs, gabarits et assets
+> et échoue si l'un d'eux nomme l'affleurement. La commande de rotation elle-même ne nomme pas
+> le filon tiré — les journaux d'exploitation finissent par être lus et recopiés.
+>
+> **Reporté à FOY-11** : un filon pâli ne peut pas être tiré. La Pâleur n'existe pas encore ;
+> le filtre s'ajoutera aux candidats sans changer le reste.
 
 ### RET-07 — Tests du plan (S | ★★ | HAUTE)
 > ‖ au fil des jalons.
