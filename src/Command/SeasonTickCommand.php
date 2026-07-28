@@ -11,6 +11,7 @@ use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
+use App\GameEngine\Settlement\SettlementChronicleService;
 use App\GameEngine\World\WorldLoadService;
 use App\GameEngine\World\WorldScaleService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,6 +41,7 @@ class SeasonTickCommand extends Command
         private readonly RankingBaselineService $baselineService,
         private readonly WorldLoadService $worldLoadService,
         private readonly WorldScaleService $worldScaleService,
+        private readonly SettlementChronicleService $chronicleService,
     ) {
         parent::__construct();
     }
@@ -123,6 +125,15 @@ class SeasonTickCommand extends Command
         // Credits narratifs : la guilde controlante s'inscrit au journal de monde (NAR-11)
         $factsRecorded = $this->resolutionService->resolve($activeSeason, $results);
 
+        // FOY-14 : la chronique des foyers, **apres** la resolution de saison.
+        // Les deux ecrivent au meme journal, mais ne racontent pas la meme
+        // chose : la resolution dit qui tient une region a l'issue d'une
+        // election d'influence, la chronique dit qui y a bati. Une guilde peut
+        // parfaitement avoir perdu le controle d'une region dont elle a fait
+        // monter le foyer — c'est meme exactement le genre de fait qui merite
+        // d'etre grave.
+        $settlementFacts = $this->chronicleService->recordTide($activeSeason);
+
         // Reference du classement (tache 132) : **apres** l'archivage et les
         // titres. La saison qui s'acheve se juge sur la reference de la
         // precedente ; figer avant remettrait tout le monde a zero.
@@ -149,6 +160,8 @@ class SeasonTickCommand extends Command
         ));
 
         $io->info(sprintf('Journal de monde : %d fait(s) de résolution enregistré(s).', $factsRecorded));
+
+        $io->info(sprintf('Chronique des foyers : %d changement(s) de rang gravé(s).', $settlementFacts));
 
         $io->info(sprintf(
             'Titres du podium attribués : %d kills, %d quêtes, %d XP.',

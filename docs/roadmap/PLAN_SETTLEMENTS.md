@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **12 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **13 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -41,7 +41,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-11 | Pâleur — état de zone, effets sur rendement et pureté |
 | FOY-12 | Restauration payée au trésor de guilde |
 | FOY-13 | Ateliers de doctrine (Fonderie / Lecteurs) |
-| FOY-14 | Crédit au journal de monde à la clôture de marée |
+| FOY-14 ✅ | Crédit au journal de monde à la clôture de marée |
 | FOY-15 | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
 | FOY-16 | Tests unitaires du plan |
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
@@ -51,7 +51,7 @@ Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → F
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
 Piste D — Pâleur              : FOY-11 → FOY-12
-Piste E — Doctrine & guilde   : FOY-13 → FOY-14
+Piste E — Doctrine & guilde   : FOY-13 → FOY-14 ✅
 Piste F — Contenu & tests     : FOY-15, FOY-16
 ```
 
@@ -328,15 +328,24 @@ s'y branche.
 - [ ] Réutilise le mécanisme d'upgrade existant (`RegionUpgrade` / `RegionUpgradeManager`)
 - [ ] Tests : effets opposés, exclusivité, conservation à la régression (FOY-10)
 
-### FOY-14 — Crédit au journal de monde (S | ★★ | MOYENNE)
+### FOY-14 — Crédit au journal de monde ✅ (S | ★★ | MOYENNE)
 > Le serveur garde la trace de qui a bâti quoi — en bien comme en mal.
-> Prérequis : ← FOY-08, ← NAR-07 (livré)
-- [ ] À la clôture d'une marée, `WorldFactService::recordWorldFact()` pour chaque
-      promotion/chute de rang marquante, avec `creditedGuildName`
-- [ ] Gate **canon** (`InfluenceSeason::isCanon()`, NAR-12) : une marée non-canon ne laisse
-      pas de trace durable
-- [ ] Idempotent par slug (convention NAR-07)
-- [ ] Tests : fait écrit sur marée canon, aucun sinon, idempotence
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Le seul champ stocké du pilier, et pourquoi.** Tout le reste se dérive — le plafond de
+> Crue, la vassalité, le rang lui-même —, et c'est ce qui rend les libérations automatiques.
+> `Settlement::tideStartRank` fait exception parce qu'il est de **l'histoire** et non de
+> l'état : pour dire « ce lieu a grandi », il faut avoir gardé ce qu'il était avant. Le repère
+> roule à chaque clôture, si bien qu'une marée se compare à **une** marée, et qu'il n'y a
+> qu'un seul point d'écriture — celui-là même qui lit.
+>
+> **Correction au plan** : « avec `creditedGuildName` » restait muet sur *quelle* guilde.
+> C'est la **bâtisseuse** (celle qui a le plus déposé de sédiment), pas la contrôlante :
+> `SeasonResolutionService` crédite déjà celle qui *tient* la région à l'issue de l'élection
+> d'influence. Ce ne sont pas les mêmes guildes, et une guilde qui a fait monter une ville dont
+> elle a perdu le contrôle est précisément le fait qui mérite d'être gravé.
+>
+> **Piste E à moitié** : reste FOY-13 (ateliers de doctrine).
 
 ---
 
@@ -396,7 +405,7 @@ FOY-16 court en parallèle sur les quatre sprints.
 ```
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
-Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14
+Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14 ✅
 Phase 4 (conséquence): FOY-11 → FOY-12 → FOY-13 → FOY-15
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```

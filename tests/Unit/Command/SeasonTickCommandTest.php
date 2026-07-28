@@ -13,6 +13,7 @@ use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
+use App\GameEngine\Settlement\SettlementChronicleService;
 use App\GameEngine\World\WorldLoadService;
 use App\GameEngine\World\WorldScaleService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,6 +35,7 @@ class SeasonTickCommandTest extends TestCase
     private RankingBaselineService&MockObject $baselineService;
     private WorldLoadService&MockObject $worldLoadService;
     private WorldScaleService&MockObject $worldScaleService;
+    private SettlementChronicleService&MockObject $chronicleService;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -53,6 +55,9 @@ class SeasonTickCommandTest extends TestCase
         // FOY-17b : le tick evalue le facteur de monde apres la mesure.
         $this->worldScaleService = $this->createMock(WorldScaleService::class);
         $this->baselineService->method('capture')->willReturn(['kills' => 0, 'quests' => 0, 'xp' => 0]);
+        // FOY-14 : la chronique des foyers s'ecrit a la cloture, juste apres la
+        // resolution de saison.
+        $this->chronicleService = $this->createMock(SettlementChronicleService::class);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
         $this->em->method('getRepository')
@@ -70,6 +75,7 @@ class SeasonTickCommandTest extends TestCase
             $this->baselineService,
             $this->worldLoadService,
             $this->worldScaleService,
+            $this->chronicleService,
         );
 
         $app = new Application();
@@ -126,6 +132,59 @@ class SeasonTickCommandTest extends TestCase
         $this->assertStringContainsString('Classement archivé', $this->tester->getDisplay());
         $this->assertStringContainsString('Titres du podium attribués', $this->tester->getDisplay());
         $this->assertStringContainsString('Références de classement figées', $this->tester->getDisplay());
+    }
+
+    /**
+     * FOY-14 — la chronique des foyers s'ecrit a la cloture, et nulle part
+     * ailleurs.
+     *
+     * Elle ne double pas la resolution de saison : celle-la dit qui **tient**
+     * une region a l'issue d'une election d'influence, celle-ci dit qui l'a
+     * **batie**. Une guilde peut parfaitement avoir perdu le controle d'une
+     * region dont elle a fait monter le foyer.
+     */
+    public function testTheSettlementChronicleIsWrittenWhenTheTideCloses(): void
+    {
+        $season = $this->createSeason(1, SeasonStatus::Active, '-1 day', '-1 hour');
+
+        $callCount = 0;
+        $this->seasonManager->method('getCurrentSeason')
+            ->willReturnCallback(function () use ($season, &$callCount) {
+                ++$callCount;
+
+                return $callCount <= 1 ? $season : null;
+            });
+
+        $this->townControlManager->method('attributeControl')->willReturn([]);
+        $this->rankingSnapshotService->method('snapshot')->willReturn(['kills' => 0, 'quests' => 0, 'xp' => 0]);
+        $this->rewardsManager->method('awardPodium')->willReturn(['kills' => 0, 'quests' => 0, 'xp' => 0]);
+        $this->seasonRepo->method('findOneBy')->willReturn(null);
+        $this->seasonManager->method('getOrCreateNextSeason')
+            ->willReturn($this->createSeason(2, SeasonStatus::Scheduled, '+1 day', '+29 days'));
+
+        $this->chronicleService->expects($this->once())
+            ->method('recordTide')
+            ->with($season)
+            ->willReturn(2);
+
+        $this->tester->execute([]);
+
+        $this->assertStringContainsString('Chronique des foyers : 2', $this->tester->getDisplay());
+    }
+
+    /**
+     * Une saison qui n'est pas arrivee a terme n'ecrit aucune chronique : le
+     * repere de maree ne doit avancer qu'a la bascule.
+     */
+    public function testNoChronicleWhileTheSeasonStillRuns(): void
+    {
+        $season = $this->createSeason(1, SeasonStatus::Active, '-7 days', '+21 days');
+        $this->seasonManager->method('getCurrentSeason')->willReturn($season);
+        $this->seasonRepo->method('findOneBy')->willReturn($season);
+
+        $this->chronicleService->expects($this->never())->method('recordTide');
+
+        $this->tester->execute([]);
     }
 
     /**
@@ -187,6 +246,7 @@ class SeasonTickCommandTest extends TestCase
             $baselineService,
             $this->worldLoadService,
             $this->worldScaleService,
+            $this->chronicleService,
         );
         $app = new Application();
         $app->add($command);
