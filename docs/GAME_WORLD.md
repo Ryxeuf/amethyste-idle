@@ -138,15 +138,35 @@ et que le code livré porte déjà :
 En fiction, la fusion ne contredit pas « on n'invente pas un geste » : deux gestes déposés
 l'un sur l'autre **se tassent en un seul** — c'est de la sédimentation, pas de l'invention.
 
-**Ce qu'est l'éveil, précisément.** Dans un lot d'améthyste *Parfaite*, un geste ancien est
-resté **lisible** — c'est la définition de la bande. L'éveil est le rite qui le fait
-remonter : on choisit, dans une liste déterminée par l'**élément** et la **provenance** du
-lot, le geste qu'on réveille — et il devient une matéria neuve. Mécaniquement, c'est le
-passage de *« la matéria que le monde veut bien te donner »* (le butin, soumis au hasard) à
-*« la matéria que tu as choisie »* : le seul moyen **délibéré** de produire une matéria
-précise. C'est pour cela qu'il est cher, tardif et rituel — s'il était banal, il remplacerait
-le butin au lieu de le couronner. Le Limpide ne dépose rien : il ne crée pas le geste, il
-**réveille celui d'un mort** — l'éveil reste un héritage, jamais une invention.
+**Ce qu'est l'éveil — concrètement.** L'éveil ne crée **pas de nouveau sort** : il produit
+un **exemplaire neuf d'une matéria du catalogue existant**, choisie par le joueur. C'est un
+**craft de matéria**, ni plus ni moins — le seul du jeu, puisque la matéria ne se fabrique
+pas autrement (elle se trouve). Déroulé en jeu :
+
+1. **Le service.** Une Métropole (rang 5) ouvre un atelier de plus : l'**Autel d'éveil** —
+   même modèle qu'une forge ou un laboratoire, un écran de craft.
+2. **Les intrants.** Le joueur apporte : des lots d'améthyste **Parfaite** (l'ingrédient —
+   plusieurs lots pour une matéria haute), des gils (le coût du rite), et du temps réel
+   (time-gating, comme `craftingTime` — un éveil se compte en heures ou en jours).
+3. **Le choix.** L'écran liste les matérias éveillables : celles dont l'**élément**
+   correspond à la **provenance** des lots apportés (de l'améthyste Parfaite des Mines ouvre
+   la liste métal/terre, de la Forêt la liste bois/feu). Le palier accessible dépend du
+   nombre de lots. On choisit **une** matéria dans la liste — c'est tout l'intérêt.
+4. **Le résultat.** À la fin du délai, l'objet matéria (le même `Item` que celui qui aurait
+   pu tomber en butin) est dans l'inventaire. Il se sertit, s'utilise, se fond ou se lit
+   comme n'importe quel autre. Pour s'en servir, il faut toujours l'**accord** de l'arbre —
+   l'éveil ne dispense de rien.
+
+**À quoi ça sert, en une phrase :** passer de *« la matéria que le monde veut bien te
+donner »* (le butin, 4-10 % de chance) à *« la matéria que tu as choisie »*. C'est la seule
+production **délibérée** de matéria du jeu — le contre-hasard de l'endgame. Effets
+économiques : un vrai débouché au Parfait, et un **plafond de prix naturel** pour les
+matérias rares au marché (personne ne paie plus cher que le coût d'un éveil).
+
+S'il était banal, il remplacerait le butin au lieu de le couronner — d'où son coût, son délai
+et son gate de Métropole. Et la fiction reste droite : le Limpide ne crée pas le geste, il
+**réveille celui d'un mort** resté lisible dans le Parfait — un héritage, jamais une
+invention.
 
 **L'échelle d'usage — chaque bande sert quelque chose.** L'améthyste n'est pas un trophée :
 c'est le sang du système matéria, et chaque bande de pureté (§5.4) alimente un étage du build :
@@ -818,6 +838,7 @@ consommateur sur des événements déjà émis.
 | D | Qualité variable des ressources ? | **Oui**, sur la ligne du cristal uniquement, en quatre bandes (§5.4). |
 | E | Le « Blanc » : sanction ou frontière ? | **Les deux, séparés et nommés** — la **Pâleur** (état de zone, réversible, réparable contre paiement) et **l'Étale** (lieu ancien, permanent, frontière de fin de jeu). Aucun vivant ne cause une Étale (§12.1). |
 | F | La Fonderie : jouable ou lointaine ? | **Jouable dès le début**, et sans méchanceté. Levier retenu : **fondre ou lire** une matéria (§12.2). |
+| G | La source de l'améthyste ? | **Aucun gisement.** L'améthyste est un **sous-produit universel** : toute action, partout, peut en rendre, en quantité et bande variables selon la zone, la fraîcheur et la marée (§13.3). Elle est au monde ce que le sang est au corps — et une trame scénaristique est à tisser autour (le Cristal d'Améthyste de Lumière en est déjà le centre, Actes 1-3). |
 
 ### Encore ouvert
 
@@ -1038,29 +1059,37 @@ zones neuves. Modèle **expédition**, sans foyer, haut palier (§4.3). À moiti
 **Extension 2 — L'Étale** : la frontière. Source exclusive de plans et de matéria perdue,
 Effacés (§12.1, §7.4). Extension de fin de jeu, déjà conçue.
 
-### 13.3 L'améthyste — recommandation
+### 13.3 L'améthyste — sans gisement *(tranché)*
 
-L'audit de la chaîne de production a montré que la **ressource-titre du jeu n'a aucun filon** :
-`ore-amethyst-crystal` n'existe que via un spot hérité dans les Mines
-(cf. [BALANCE.md § 21.5](BALANCE.md)). Il faut donc trancher sa source au moment de définir
-les ressources de zone. Recommandation :
+**Il n'existe aucun filon d'améthyste.** Ce n'est pas un minerai qu'on va chercher à un
+endroit : c'est **le sang du monde** — la mémoire, la trace que le monde laisse dans
+lui-même. Elle se **trouve partout, en quantité et en qualité variables** :
 
-> **L'améthyste est partout, mais la pureté dépend du lieu.**
+- **Toute action peut en rendre** : une récolte, un combat, une exploration laissent parfois
+  affleurer un éclat d'améthyste **en plus** de leur butin normal. C'est un sous-produit
+  universel, jamais une cible qu'on farme à un point fixe.
+- **La bande dépend du lieu et du moment** : la signature de la zone, la fraîcheur (un lieu
+  reposé rend plus pur — §3.5), la marée en cours, et le biome (Affleurement, Chœur). Le
+  *Parfait* ne se force pas : il se rencontre là où le monde a bien dormi.
+- **La quantité suit l'intensité** : un boss en rend plus qu'un loup, un filon profond plus
+  qu'une cueillette — ce qui a coûté du temps vécu en rend davantage. C'est le postulat,
+  appliqué mécaniquement.
 
-Le postulat dit que le temps se dépose *partout* : il serait incohérent qu'il n'y ait qu'un
-seul endroit où le ramasser. Chaque zone porte donc sa veine d'améthyste ; ce qui change
-d'une zone à l'autre, c'est la **bande** qu'elle peut atteindre (§5.4) — le *Parfait* n'étant
-accessible que dans les Affleurements, les Chœurs, et les zones reposées.
+Conséquences de conception :
 
-Trois conséquences, et c'est ce qui emporte la décision :
+- Le mineur n'a **pas le monopole** de l'améthyste : chacun en ramasse en jouant sa propre
+  boucle. Le **prospecteur** garde son métier — savoir *où et quand* les bandes hautes
+  affleurent — mais personne n'est bloqué.
+- ECO-22 (tirage de pureté) s'applique à l'améthyste **sur toute action**, pas seulement à la
+  récolte ; les minerais et gemmes classiques, eux, gardent leurs filons et leur tirage à la
+  récolte.
+- Le spot hérité `spot-amethystite-xs` (unique source actuelle) disparaît avec le contenu de
+  zone ; l'objet est renommé (améthystite → améthyste).
 
-- **Chaque zone devient définitivement pertinente pour la fin de jeu**, puisque la matéria
-  vient de l'améthyste. Le creux du milieu (§5.5) se règle à la racine plutôt que par des
-  leviers compensatoires.
-- **La règle de l'exclusivité devient facile à tenir** : chaque zone a sa ligne de production
-  *et* sa signature d'améthyste.
-- **La pureté trouve son sens plein** : ce n'est plus une statistique de minerai, c'est la
-  qualité de la mémoire d'un lieu — ce que le postulat dit depuis le début.
+**Trame à tisser** *(note narrative)* : le Cristal d'Améthyste sous Lumière (Actes 1-3, la
+Convergence) est le **cœur** dont toute l'améthyste du monde est la circulation — la fuite du
+coffre (§7.3). Le lien entre « la ressource qu'on ramasse chaque jour » et « la pierre sous
+la Voûte » est un fil scénaristique à part entière, à poser dans les marées et le Codex.
 
 ### 13.4 Dimensionnement — la cible de population *(actée)*
 
