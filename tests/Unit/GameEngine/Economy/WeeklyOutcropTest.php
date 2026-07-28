@@ -261,7 +261,7 @@ class WeeklyOutcropTest extends TestCase
      * Paleur. Un depot sans filon pali laisse la seconde borne inactive — l'etat
      * normal d'un monde qu'on n'a pas encore ereinte.
      *
-     * @return array{0: \App\Repository\ZoneVeinRepository, 1: \App\GameEngine\Settlement\SettlementDefinitionLoader}
+     * @return array{0: ZoneVeinRepository, 1: SettlementDefinitionLoader}
      */
     private function palenessStubs(): array
     {

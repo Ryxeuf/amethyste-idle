@@ -135,7 +135,7 @@ class PurityDrawer
     }
 
     /**
-     * Ce filon est-il assez pali pour que sa bande en souffre ? (FOY-11)
+     * Ce filon est-il assez pali pour que sa bande en souffre (FOY-11) ?
      *
      * Le seuil est declaratif : sous lui, la Paleur existe mais ne fait rien.
      * Un filon normalement frequente ne doit pas voir sa bande tomber pour une

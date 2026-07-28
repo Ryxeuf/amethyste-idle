@@ -53,7 +53,7 @@ final readonly class GatherableResource
     }
 
     /**
-     * La Paleur se voit-elle ? (FOY-11)
+     * La Paleur se voit-elle (FOY-11) ?
      *
      * Sous le seuil, elle ne fait rien et ne s'affiche pas : un filon
      * normalement frequente ne doit pas porter un etat d'alerte. Le seuil vit
