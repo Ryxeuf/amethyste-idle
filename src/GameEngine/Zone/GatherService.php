@@ -8,6 +8,7 @@ use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
+use App\Entity\Game\Skill;
 use App\Enum\Purity;
 use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Economy\PurityDrawer;
@@ -33,6 +34,10 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * Definition declarative par zone via `Zone::gatherConfig` ; l'etat runtime du
  * stock partage vit dans `ZoneVein`, cree paresseusement a la premiere recolte.
  * Ajouter une ressource = ajouter de la donnee, pas du code.
+ *
+ * ECO-24c ajoute la seule condition d'acces du moteur : `requires_skill:` sur un
+ * filon. Elle est **opt-in** — un filon qui ne la declare pas reste ouvert a
+ * tous — et le refus tombe avant la depense d'energie.
  */
 class GatherService
 {
@@ -95,10 +100,42 @@ class GatherService
                 $normalized['capacity'],
                 $stock > 0 ? 0 : $this->respawnRemaining($vein, $normalized['respawn_seconds'], $normalized['capacity'], $now),
                 $this->readableCeiling($player, $zone, $normalized['slug'], $normalized['item'], $stock, $normalized['capacity']),
+                $this->missingSkillName($player, $normalized['requires_skill']),
             );
         }
 
         return $gatherables;
+    }
+
+    /**
+     * Nom lisible de la competence qui manque au joueur, ou `null` s'il l'a
+     * (ou si le filon n'en demande aucune).
+     *
+     * Sans joueur — vue anonyme, admin — le filon n'est jamais annonce comme
+     * verrouille : il n'y a personne dont on puisse dire ce qu'il sait.
+     */
+    private function missingSkillName(?Player $player, ?string $requiredSkill): ?string
+    {
+        if (null === $player || null === $requiredSkill || $this->hasSkillSlug($player, $requiredSkill)) {
+            return null;
+        }
+
+        $skill = $this->entityManager->getRepository(Skill::class)->findOneBy(['slug' => $requiredSkill]);
+
+        // Le slug sert de repli : une config qui cite une competence inexistante
+        // doit se voir a l'ecran plutot que de s'afficher comme un blanc.
+        return null !== $skill ? $skill->getTitle() : $requiredSkill;
+    }
+
+    private function hasSkillSlug(Player $player, string $slug): bool
+    {
+        foreach ($player->getSkills() as $skill) {
+            if ($skill->getSlug() === $slug) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -158,6 +195,25 @@ class GatherService
         if (null === $item) {
             // Config de zone incoherente (item inexistant) : refus sans cout.
             throw new ZoneActionException('game.zone.gather.error.unknown_resource');
+        }
+
+        // ECO-24c — le gate de competence, et le seul du moteur de recolte.
+        //
+        // Les six competences hautes de l'arbre du mineur declaraient des
+        // `spots` de l'ancien systeme de carte : elles ne gataient plus rien
+        // depuis le pivot PBBG, et le service rendait les filons d'une zone
+        // sans jamais consulter le joueur (BALANCE §21.5). Un filon declare
+        // etait donc accessible a quiconque avait l'energie.
+        //
+        // Le gate vit dans la **donnee de zone** (`requires_skill:`), pas dans
+        // l'arbre : c'est le filon qui sait ce qu'il exige, et la meme
+        // competence peut en ouvrir plusieurs sans qu'aucune liste n'ait a
+        // rester d'accord avec une autre.
+        //
+        // Le refus arrive **avant** la depense d'energie : un joueur ne paie
+        // jamais pour apprendre qu'il ne peut pas.
+        if (null !== $resource['requires_skill'] && !$this->hasSkillSlug($player, $resource['requires_skill'])) {
+            throw new ZoneActionException('game.zone.gather.error.missing_skill');
         }
 
         $now = $this->now();
@@ -244,7 +300,7 @@ class GatherService
     /**
      * Charge (ou cree) le filon partage et applique un respawn eventuel.
      *
-     * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int} $resource
+     * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null} $resource
      */
     private function resolveVein(Zone $zone, array $resource, \DateTimeImmutable $now): ZoneVein
     {
@@ -371,7 +427,7 @@ class GatherService
      * action rapporte, il ne permet pas de prendre plus que ce que le filon
      * contient — le stock partage reste le point de tension de la ressource.
      *
-     * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int} $resource
+     * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null} $resource
      */
     private function computeYield(Player $player, array $resource, int $stock): int
     {
@@ -398,7 +454,7 @@ class GatherService
     }
 
     /**
-     * @return array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int}|null
+     * @return array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null}|null
      */
     private function findResource(Zone $zone, string $slug): ?array
     {
@@ -415,7 +471,7 @@ class GatherService
     /**
      * @param array<array-key, mixed> $resource
      *
-     * @return array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int}|null
+     * @return array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null}|null
      */
     private function normalize(array $resource): ?array
     {
@@ -442,6 +498,11 @@ class GatherService
         $yieldMin = max(1, (int) ($resource['yield_min'] ?? self::DEFAULT_YIELD_MIN));
         $yieldMax = max($yieldMin, (int) ($resource['yield_max'] ?? self::DEFAULT_YIELD_MAX));
 
+        // ECO-24c — un filon sans `requires_skill` reste ouvert a tous. Le gate
+        // est **opt-in** : rien de ce qui etait accessible ne se ferme (meme
+        // decision A que le gate de services des foyers, FOY-05).
+        $requiresSkill = isset($resource['requires_skill']) ? (string) $resource['requires_skill'] : '';
+
         return [
             'slug' => $slug,
             'item' => $item,
@@ -450,6 +511,7 @@ class GatherService
             'respawn_seconds' => $respawn,
             'yield_min' => $yieldMin,
             'yield_max' => $yieldMax,
+            'requires_skill' => '' !== $requiresSkill ? $requiresSkill : null,
         ];
     }
 

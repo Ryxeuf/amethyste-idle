@@ -49,7 +49,7 @@
 | # | Chantier | Contenu | Pourquoi cet ordre |
 |---|----------|---------|--------------------|
 | ~~1~~ | ~~**RET-01**~~ ✅ | Rotation du WeeklyChallenge (cron + restitution) | **Livre le 2026-07-28** — point de rotation unique du lundi, reutilise par RET-02/04/05/06 |
-| ~~2~~ | ~~**ECO-24b**~~ ✅ | Sources des minerais de haut palier + etain, puis cuirs du tanneur | **Livre le 2026-07-28** (a + b) — carte de GAME_ZONES §3 appliquee, tables de butin posees. Plus aucune matiere de recette sans source hors reserves d'extension. Reste **ECO-24c** (gate de competence sur les filons) |
+| ~~2~~ | ~~**ECO-24b**~~ ✅ | Sources des minerais de haut palier + etain, puis cuirs du tanneur | **Livre le 2026-07-28** (a + b) — carte de GAME_ZONES §3 appliquee, tables de butin posees. Plus aucune matiere de recette sans source hors reserves d'extension. **ECO-24c livre le 2026-07-28** (gate de competence sur les filons) |
 | ~~3~~ | ~~**FOY-17**~~ ✅ | Mesure de la charge (a) et facteur `W` (b) | **Livre le 2026-07-28** — `W` s'applique aux capacites de filon, `respawn_seconds` fixe. Debloque FOY-08/11, ECO-22 et le recalibrage |
 | ~~4~~ | ~~**Recalibrage filons**~~ ✅ | BALANCE §22.3, W=1 a ~50 joueurs/jour | **Livre le 2026-07-28**, apres ZON-37 qui en etait le prerequis cache. La couche de rarete cesse d'etre inerte : purete (ECO-22) et Paleur (FOY-11) ont desormais un signal a lire |
 | 5 | **FOY-01 → 05** | Socle des foyers (Sprint 16) | Le pilier territorial commence a exister |

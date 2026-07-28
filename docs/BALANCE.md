@@ -915,7 +915,17 @@ tombe au milieu de l'echelle, la ou l'on veut precisement garder de l'activite.
 > moitie haute de la ligne du metal — donc les lingots d'adamantite et d'orichalque —
 > etait donc hors d'atteinte, en silence. Meme famille qu'ECO-02 et ECO-19.
 >
-> **Reste ouvert (a nommer ECO-24c)** : les six competences hautes de l'arbre du mineur
+> **Resolu par ECO-24c (2026-07-28)** : la premiere des deux issues ci-dessous est retenue —
+> le gate vit dans le modele declaratif (`requires_skill:` sur un filon de `world_1.yaml`), et
+> `GatherService` refuse avant la depense d'energie. Quatre filons de haut palier sont gates
+> (sombracier, mithril, platine, orichalque) ; l'adamantite et le metal etoile n'ayant pas de
+> filon dans le jeu de base, leurs deux competences restent sans porte a garder jusqu'a
+> l'Extension 1. La seconde issue — reconvertir ces competences en bonus de rendement — est
+> ecartee : elle aurait supprime le seul endroit du jeu ou un arbre de recolte ouvre une porte,
+> et la « zone comme gate » ne tient pas, la Crete et les Mines etant accessibles des les
+> premieres heures. Detail dans [ROADMAP_DONE.md](ROADMAP_DONE.md).
+>
+> **Etat d'origine, conserve pour reference** : les six competences hautes de l'arbre du mineur
 > gatent des `spot-*` d'`ObjectLayer` (`miner-mithril-xs`, `miner-platinum-xs`,
 > `miner-darksteel-xs`, `miner-adamantite-xs`, `miner-starmetal-xs`,
 > `miner-orichalcum-xs`). Or `GatherService` **n'a aucun gate de competence** : il rend

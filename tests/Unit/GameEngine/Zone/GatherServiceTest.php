@@ -33,6 +33,7 @@ class GatherServiceTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private EntityRepository&MockObject $parameterRepository;
     private EntityRepository&MockObject $itemRepository;
+    private EntityRepository&MockObject $skillRepository;
     private ActionEnergyManager&MockObject $actionEnergyManager;
     private ZoneTravelService&MockObject $zoneTravelService;
     private ZoneVeinRepository&MockObject $veinRepository;
@@ -52,9 +53,11 @@ class GatherServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->parameterRepository = $this->createMock(EntityRepository::class);
         $this->itemRepository = $this->createMock(EntityRepository::class);
+        $this->skillRepository = $this->createMock(EntityRepository::class);
         $this->entityManager->method('getRepository')->willReturnMap([
             [Parameter::class, $this->parameterRepository],
             [Item::class, $this->itemRepository],
+            [Skill::class, $this->skillRepository],
         ]);
 
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
@@ -534,6 +537,124 @@ class GatherServiceTest extends TestCase
         $this->parameterRepository->method('findOneBy')->willReturn(null);
 
         $this->assertSame(GatherService::DEFAULT_COST, $this->service->getGatherCost());
+    }
+
+    // =====================================================================
+    // ECO-24c — le gate de competence declaratif
+    // =====================================================================
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function gatedResource(): array
+    {
+        return ['slug' => 'veine-de-sombracier', 'item' => 'ore-darksteel', 'profession' => 'mining', 'capacity' => 22, 'respawn_seconds' => 64800, 'yield_min' => 1, 'yield_max' => 2, 'requires_skill' => 'miner-darksteel-xs'];
+    }
+
+    private function minerSkill(string $slug, ?string $title = null): Skill
+    {
+        $skill = new Skill();
+        $skill->setSlug($slug);
+        if (null !== $title) {
+            $skill->setTitle($title);
+        }
+
+        return $skill;
+    }
+
+    /**
+     * Le refus tombe **avant** la depense d'energie : un joueur ne paie jamais
+     * pour apprendre qu'il ne peut pas.
+     */
+    public function testGatherRefusesAGatedVeinWithoutTheSkillAndSpendsNoEnergy(): void
+    {
+        $player = $this->buildPlayerIn([$this->gatedResource()]);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(9, 'ore-darksteel', 'Sombracier'));
+
+        $this->actionEnergyManager->expects($this->never())->method('spend');
+        $this->expectException(ZoneActionException::class);
+        $this->expectExceptionMessage('game.zone.gather.error.missing_skill');
+
+        $this->service->gather($player, 'veine-de-sombracier');
+    }
+
+    public function testGatherAllowsAGatedVeinToWhoeverLearnedTheSkill(): void
+    {
+        $player = $this->buildPlayerIn([$this->gatedResource()]);
+        $player->addSkill($this->minerSkill('miner-darksteel-xs'));
+
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(9, 'ore-darksteel', 'Sombracier'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [1];
+
+        $this->actionEnergyManager->expects($this->once())->method('spend');
+
+        $this->assertSame(1, $this->service->gather($player, 'veine-de-sombracier')->quantity);
+    }
+
+    /**
+     * Le gate est **opt-in** : un filon qui ne declare rien reste ouvert a tous.
+     * Rien de ce qui etait accessible ne se ferme (decision A, FOY-05).
+     */
+    public function testAnUngatedVeinStaysOpenToEveryone(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [1];
+
+        $this->assertSame(1, $this->service->gather($player, 'filon-de-fer')->quantity);
+    }
+
+    /**
+     * Le filon gate **reste visible**, et dit ce qu'il demande. Le cacher aurait
+     * retire au joueur la seule raison d'aller chercher la competence.
+     */
+    public function testGatherablesNameTheMissingSkillWithoutHidingTheVein(): void
+    {
+        $player = $this->buildPlayerIn([$this->gatedResource()]);
+        $zone = $player->getCurrentZone();
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(9, 'ore-darksteel', 'Sombracier'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->skillRepository->method('findOneBy')
+            ->willReturn($this->minerSkill('miner-darksteel-xs', 'Minage du sombracier'));
+
+        $gatherables = $this->service->getGatherables($zone, $player);
+
+        $this->assertCount(1, $gatherables);
+        $this->assertTrue($gatherables[0]->isLocked());
+        $this->assertSame('Minage du sombracier', $gatherables[0]->lockedBy);
+    }
+
+    public function testGatherablesReportNoLockOnceTheSkillIsLearned(): void
+    {
+        $player = $this->buildPlayerIn([$this->gatedResource()]);
+        $player->addSkill($this->minerSkill('miner-darksteel-xs'));
+        $zone = $player->getCurrentZone();
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(9, 'ore-darksteel', 'Sombracier'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+
+        $this->skillRepository->expects($this->never())->method('findOneBy');
+
+        $gatherables = $this->service->getGatherables($zone, $player);
+
+        $this->assertFalse($gatherables[0]->isLocked());
+        $this->assertNull($gatherables[0]->lockedBy);
+    }
+
+    /**
+     * Sans joueur — vue anonyme, admin — le filon n'est jamais annonce comme
+     * verrouille : il n'y a personne dont on puisse dire ce qu'il sait.
+     */
+    public function testGatherablesWithoutPlayerNeverReportALock(): void
+    {
+        $zone = $this->buildZone([$this->gatedResource()]);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(9, 'ore-darksteel', 'Sombracier'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+
+        $this->assertFalse($this->service->getGatherables($zone)[0]->isLocked());
     }
 
     /**

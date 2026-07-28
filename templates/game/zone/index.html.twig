@@ -723,7 +723,14 @@
                                                 </span>
                                             </p>
                                         {% endif %}
-                                        {% if depleted %}
+                                        {# ECO-24c — le filon gate reste visible, et dit ce   #}
+                                        {# qu'il demande. Le cacher aurait retire au joueur   #}
+                                        {# la seule raison d'aller chercher la competence.    #}
+                                        {% if gatherable.locked %}
+                                            <p class="ds-hint mt-1">
+                                                🔒 {{ 'game.zone.gather.locked_by'|trans }} {{ gatherable.lockedBy }}
+                                            </p>
+                                        {% elseif depleted %}
                                             <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
                                                 {% if gatherable.respawnRemaining > 0 %}
                                                     {{ 'game.zone.gather.respawn_in'|trans({'%minutes%': (gatherable.respawnRemaining / 60)|round(0, 'ceil')}) }}

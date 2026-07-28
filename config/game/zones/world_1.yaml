@@ -23,6 +23,13 @@
 #       etait sinon derive de `Mob.map` via `Zone::sourceMap`.
 #     gather:                       filons recoltables partages (optionnel)
 #       - { slug, item, profession, capacity, respawn_seconds, yield_min, yield_max }
+#         requires_skill            (optionnel, ECO-24c) slug d'une competence
+#                                   exigee pour exploiter CE filon. Absent = filon
+#                                   ouvert a tous : le gate est opt-in, rien de ce
+#                                   qui etait accessible ne se ferme. Le filon reste
+#                                   VISIBLE pour qui ne l'a pas — la zone montre ce
+#                                   que le personnage sait, et un filon qu'on voit
+#                                   sans pouvoir l'ouvrir est une raison d'apprendre.
 #
 #       CALIBRAGE DES FILONS — cf. docs/GAME_ZONE_ACTIONS.md §6.5-6.6
 #       Ne pas poser de valeurs a la main : reprendre un profil de palier.
@@ -301,7 +308,10 @@ zones:
             # de temps s'est depose, et le fond en est le point extreme.
             # Intrant du lingot d'adamantite : l'Extension 1 y renverra ses
             # vetérans — levier 1 contre le creux du milieu (GAME_WORLD §5.5).
-            - { slug: veine-de-sombracier-du-fond, item: ore-darksteel, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
+            # ECO-24c — le premier filon gate du monde. `miner-darksteel-xs`
+            # cessait d'ouvrir quoi que ce soit depuis le pivot : elle citait un
+            # `spot-*` de l'ancien systeme de carte.
+            - { slug: veine-de-sombracier-du-fond, item: ore-darksteel, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2, requires_skill: miner-darksteel-xs }
             # L'anguille electrique n'avait aucune source. Les bassins noyes des
             # galeries basses lui donnent son biome, et la mine sa premiere
             # ressource de peche — jusqu'ici l'extraction y etait le seul metier
@@ -415,7 +425,7 @@ zones:
             # transmutation alchimique la seule source de mithril, faute de filon.
             # GAME_ZONES §3 en pose un. La transmutation reste une seconde voie
             # — c'est ce qui garde a l'alchimie son role economique de haut palier.
-            - { slug: filon-de-mithril-du-sommet, item: ore-mithril, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-mithril-du-sommet, item: ore-mithril, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2, requires_skill: miner-mithril-xs }
 
     quartier-des-jardins:
         name: 'Quartier des Jardins'
@@ -483,7 +493,7 @@ zones:
             # Le platine, « metal du fond de mer fossile ». Intrant du lingot de
             # mithril avec le mithril de la Crete : le sommet du jeu de base
             # exige donc un commerce nord-sud (loi des caravanes, GAME_WORLD §5.3).
-            - { slug: filon-de-platine-des-dunes, item: ore-platinum, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-platine-des-dunes, item: ore-platinum, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2, requires_skill: miner-platinum-xs }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
     # === Acte 4 (tache 128b) ===
@@ -544,7 +554,7 @@ zones:
             # §2.8 et §3). La Cite est un donjon, pas un foyer : on ne s'y
             # installe pas, on la fouille. D'ou le profil T4 le plus severe du
             # monde livre — c'est du butin autant que de la recolte.
-            - { slug: filon-d-orichalque-ancien, item: ore-orichalcum, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-orichalque-ancien, item: ore-orichalcum, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2, requires_skill: miner-orichalcum-xs }
 
     pas-de-givre:
         name: 'Pas de Givre'
