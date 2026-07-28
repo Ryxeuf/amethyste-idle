@@ -20,6 +20,7 @@ use App\GameEngine\Crafting\CrafterReputationManager;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Crafting\QualityCalculator;
+use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\TownControlManager;
@@ -109,7 +110,21 @@ class CraftOrderManagerTest extends TestCase
             $this->guildManager,
             $this->itemGenerator,
             new NullLogger(),
+            $this->purityChain(),
         );
+    }
+
+    /**
+     * ECO-26 : ces tests portent sur l'escrow et la reputation, pas sur la
+     * purete. Des lots sans bande rendent `null`, ce qui est l'etat normal de
+     * l'immense majorite des commandes.
+     */
+    private function purityChain(): PurityChain
+    {
+        $chain = $this->createMock(PurityChain::class);
+        $chain->method('weakestOf')->willReturn(null);
+
+        return $chain;
     }
 
     public function testCreateOrderEscrowsMaterialsAndCommission(): void
@@ -338,7 +353,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $orderRepository = $this->createMock(CraftOrderRepository::class);
         $orderRepository->method('countActiveByRequester')->willReturn(CraftOrderManager::MAX_ACTIVE_ORDERS);
-        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain());
 
         $requester = $this->createPlayer(1, 1_000);
         $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
@@ -371,7 +386,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $craftingManager = $this->createMock(CraftingManager::class);
         $craftingManager->method('getCraftingLevel')->willReturn(2);
-        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain());
 
         $order = $this->openOrder($this->createPlayer(1, 1_000), 5);
 
@@ -1030,7 +1045,7 @@ class CraftOrderManagerTest extends TestCase
         $craftingManager->method('getCraftingLevel')->willReturn(99);
         $craftingManager->method('isRecipeUnlocked')->willReturn(false);
 
-        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain());
 
         $order = $this->openOrder($this->createPlayer(1, 1_000));
 

@@ -6,8 +6,10 @@ use App\Entity\App\CraftJob;
 use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\Enum\Purity;
 use App\Event\CraftEvent;
 use App\Event\Game\DomainLevelUpEvent;
+use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
@@ -33,6 +35,7 @@ class CraftingManager
         private readonly RecipeUnlockCatalog $recipeUnlockCatalog,
         private readonly CraftJobRepository $craftJobRepository,
         private readonly SettlementWorkshopBonus $workshopBonus,
+        private readonly PurityChain $purityChain,
     ) {
     }
 
@@ -317,8 +320,12 @@ class CraftingManager
             return ['success' => false, 'job' => null, 'message' => 'Ingredients manquants : ' . implode(', ', $missing)];
         }
 
+        // ECO-26 — la bande du lot est celle de son maillon le plus trouble,
+        // toutes pieces confondues. Une bande **par piece** supposerait que le
+        // metal se souvienne de quel minerai il vient ; il est fondu ensemble.
+        $purity = null;
         for ($i = 0; $i < $affordable; ++$i) {
-            $this->removeIngredients($player, $recipe);
+            $purity = $this->purityChain->combine($purity, $this->removeIngredients($player, $recipe));
         }
 
         $this->wearCraftTool($recipe, $affordable);
@@ -327,6 +334,7 @@ class CraftingManager
         $job->setPlayer($player);
         $job->setRecipe($recipe);
         $job->setQuantity($affordable);
+        $job->setPurity($purity);
         // Un lot de dix occupe dix fois plus longtemps : c'est ce qui donne son
         // sens a la quantite, au lieu de dix crafts instantanes enchaines.
         $job->setReadyAt(new \DateTimeImmutable(sprintf('+%d seconds', max(1, $recipe->getCraftingTime()) * $affordable)));
@@ -367,6 +375,9 @@ class CraftingManager
         for ($i = 0; $i < $units; ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($resultItem->getId());
             $playerItem->setCraftQuality($this->computeQuality($player, $recipe));
+            // ECO-26 : la bande vient de la matiere, la qualite du savoir-faire.
+            // Les deux se posent ici, et ne se confondent jamais.
+            $playerItem->setPurity($job->getPurity());
             $this->inventoryHelper->addItem($playerItem, false);
         }
 
@@ -473,7 +484,7 @@ class CraftingManager
         }
 
         // Retirer les ingredients de l'inventaire
-        $this->removeIngredients($player, $recipe);
+        $purity = $this->removeIngredients($player, $recipe);
 
         $finalQuality = $this->computeQuality($player, $recipe);
 
@@ -486,6 +497,7 @@ class CraftingManager
             // ECO-20 : la qualite calculee survit desormais au craft. Elle etait
             // affichee une fois dans le message de retour, puis perdue.
             $playerItem->setCraftQuality($finalQuality);
+            $playerItem->setPurity($purity);
             $this->inventoryHelper->addItem($playerItem, false);
             $lastPlayerItem = $playerItem;
         }
@@ -584,9 +596,23 @@ class CraftingManager
     }
 
     /**
-     * Retire les ingredients de l'inventaire du joueur.
+     * Retire les ingredients de l'inventaire, et rend la bande du resultat.
+     *
+     * **Deux corrections en une (ECO-26).**
+     *
+     * La consommation partait de l'**ordre du sac**. C'est exactement le defaut
+     * qu'ECO-21 avait corrige dans `InventoryHelper::removeItemBySlug()` — mais
+     * cette boucle-ci en etait une copie, restee en arriere : un joueur qui
+     * gardait un lot **parfait** pour eveiller une materia le voyait fondre dans
+     * la premiere epee venue, sur le chemin le plus emprunte du jeu. La regle de
+     * pile vit desormais a un seul endroit, et c'est celui d'ECO-21.
+     *
+     * Et la bande se perdait. Un objet raffine herite d'une bande derivee de ses
+     * intrants, **par le maillon le plus faible** : c'est ce qui fait qu'un
+     * equipement de fin de jeu en bande haute exige une chaine haute de bout en
+     * bout, donc du cuivre pur venu d'une zone de debut reposee.
      */
-    private function removeIngredients(Player $player, Recipe $recipe): void
+    private function removeIngredients(Player $player, Recipe $recipe): ?Purity
     {
         $inventory = null;
         foreach ($player->getInventories() as $inv) {
@@ -600,23 +626,26 @@ class CraftingManager
             throw new \RuntimeException('Inventaire non trouve.');
         }
 
+        $consumed = [];
+
         foreach ($recipe->getIngredients() as $ingredient) {
             $slug = $ingredient['slug'];
             $remainingToRemove = $ingredient['quantity'] ?? 1;
 
-            foreach ($inventory->getItems()->toArray() as $playerItem) {
+            foreach ($this->inventoryHelper->consumptionOrder($inventory->getItems()->toArray(), $slug) as $playerItem) {
                 if ($remainingToRemove <= 0) {
                     break;
                 }
 
-                if ($playerItem->getGenericItem()->getSlug() === $slug) {
-                    $inventory->removeItem($playerItem);
-                    $playerItem->setInventory(null);
-                    $this->entityManager->remove($playerItem);
-                    --$remainingToRemove;
-                }
+                $consumed[] = $playerItem;
+                $inventory->removeItem($playerItem);
+                $playerItem->setInventory(null);
+                $this->entityManager->remove($playerItem);
+                --$remainingToRemove;
             }
         }
+
+        return $this->purityChain->weakestOf($consumed);
     }
 
     /**

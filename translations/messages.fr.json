@@ -874,6 +874,10 @@
         "from_type": "%type% +%points%",
         "from_line": "%line% +%points%",
         "capped": "plafonné"
+      },
+      "purity": {
+        "result": "Rendra au mieux :",
+        "weak_link": "le maillon faible est %item%."
       }
     },
     "notifications": {

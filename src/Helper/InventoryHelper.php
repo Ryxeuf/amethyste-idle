@@ -137,11 +137,18 @@ class InventoryHelper
      * (tout ce qui est hors perimetre) gardent leur ordre d'origine : pour eux,
      * la fonction ne change rien.
      *
+     * **Publique depuis ECO-26**, et c'est un correctif autant qu'une commodite :
+     * `CraftingManager::removeIngredients()` avait sa propre boucle, restee dans
+     * l'ordre du sac — le defaut qu'ECO-21 croyait avoir corrige survivait donc
+     * sur le chemin le plus emprunte du jeu. Une seule regle de pile, un seul
+     * endroit. `PurityChain::preview()` s'en sert aussi, pour regarder les lots
+     * que le craft prendra **reellement** et non les plus beaux du sac.
+     *
      * @param list<PlayerItem> $items
      *
      * @return list<PlayerItem>
      */
-    private function consumptionOrder(array $items, string $slug): array
+    public function consumptionOrder(array $items, string $slug): array
     {
         $matching = array_values(array_filter(
             $items,

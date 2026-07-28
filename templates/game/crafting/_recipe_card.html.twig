@@ -47,6 +47,19 @@
         </div>
     </div>
 
+    {# ECO-26 — d'ou viendra la bande, et qui la decide. La regle du maillon #}
+    {# faible doit se lire AVANT le craft : « ce lingot sera trouble » est une #}
+    {# sanction, « a cause de ce cuivre-la » est une decision.                 #}
+    {% if purityPreview is defined and purityPreview %}
+        <p class="ds-hint mb-3">
+            {{ 'game.crafting.purity.result'|trans }}
+            <span class="ds-seal {{ purityPreview.band.sealClass }}">
+                {{ ('game.purity.band.' ~ purityPreview.band.value)|trans }}
+            </span>
+            — {{ 'game.crafting.purity.weak_link'|trans({'%item%': purityPreview.weakLinkName}) }}
+        </p>
+    {% endif %}
+
     {# Ingredients #}
     <div class="mb-3">
         <h4 class="ds-label mb-2">Ingredients</h4>

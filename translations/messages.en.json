@@ -874,6 +874,10 @@
         "from_type": "%type% +%points%",
         "from_line": "%line% +%points%",
         "capped": "capped"
+      },
+      "purity": {
+        "result": "Will yield at best:",
+        "weak_link": "the weak link is %item%."
       }
     },
     "notifications": {

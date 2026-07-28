@@ -3,6 +3,7 @@
 namespace App\Entity\App;
 
 use App\Entity\Game\Recipe;
+use App\Enum\Purity;
 use App\Repository\CraftJobRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -45,6 +46,22 @@ class CraftJob
 
     #[ORM\Column(name: 'ready_at', type: 'datetime_immutable')]
     private \DateTimeImmutable $readyAt;
+
+    /**
+     * Bande heritee des intrants consommes au lancement (ECO-26).
+     *
+     * L'etabli est temporise : les ingredients sont consommes **au depart** et
+     * l'objet nait a la collecte. Sans ce champ, la bande mourrait entre les
+     * deux — et la propagation ne survivrait que sur le chemin immediat, qu'aucune
+     * route n'expose.
+     *
+     * Une bande **par lot**, pas par piece : contrairement a la qualite, qui se
+     * tire a la collecte et fait voir le savoir-faire de l'artisan, la purete
+     * vient de la matiere. Un lot fondu ensemble ne peut pas etre plus pur d'un
+     * cote que de l'autre.
+     */
+    #[ORM\Column(name: 'purity', type: 'string', length: 20, nullable: true, enumType: Purity::class)]
+    private ?Purity $purity = null;
 
     public function getId(): ?int
     {
@@ -90,6 +107,18 @@ class CraftJob
     public function getReadyAt(): \DateTimeImmutable
     {
         return $this->readyAt;
+    }
+
+    public function getPurity(): ?Purity
+    {
+        return $this->purity;
+    }
+
+    public function setPurity(?Purity $purity): self
+    {
+        $this->purity = $purity;
+
+        return $this;
     }
 
     public function setReadyAt(\DateTimeImmutable $readyAt): self

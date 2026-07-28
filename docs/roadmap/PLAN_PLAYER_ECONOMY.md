@@ -41,7 +41,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-24 | Audit de la chaîne de production ✅ |
 | ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur ✅ (b) |
 | ECO-25 ✅ | Chaînage des paliers raffinés |
-| ECO-26 | Propagation de la pureté dans la chaîne |
+| ECO-26 ✅ | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
 | ECO-28 | Commandes de service — travailler un objet lié |
 | ECO-29 | Cuisinier — le débouché de la pêche et des vivres |
@@ -55,7 +55,7 @@ Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 →
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
-Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 → ECO-27
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
 
@@ -471,17 +471,22 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > débutant au lingot d'orichalque. C'est elle que la pureté va remonter maillon par maillon —
 > sans elle, « le maillon le plus faible » n'aurait eu qu'un seul maillon à juger.
 
-### ECO-26 — Propagation de la pureté dans la chaîne (M | ★★★ | MOYENNE)
+### ECO-26 — Propagation de la pureté dans la chaîne ✅ (M | ★★★ | MOYENNE)
 > C'est ce qui rend une zone intermédiaire **reposée** indispensable à la fin de jeu.
-> Prérequis : ← ECO-25, ← ECO-22
-- [ ] Un objet raffiné hérite d'une bande dérivée de ses intrants, **par le maillon le plus
-      faible** (une chaîne ne vaut pas mieux que son maillon le plus trouble)
-- [ ] Conséquence recherchée, à vérifier : un équipement de fin de jeu en bande haute exige
-      une **chaîne haute de bout en bout**, donc du cuivre *pur* venu d'une zone de début
-      dont les filons sont reposés
-- [ ] Exposer la chaîne au joueur (d'où vient la bande du résultat) — sinon la règle est
-      opaque et vécue comme une punition
-- [ ] Tests : héritage par maillon faible, chaîne complète, affichage
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Précision au plan — ce que « maillon le plus faible » ne doit pas vouloir dire.** Une
+> matière fongible n'a pas de bande, et son absence ne compte **pas** comme « trouble » :
+> presque toutes les recettes mélangent du fongible et du cristal, et la lecture naïve aurait
+> fait rendre du trouble à presque tout. `null` signifie « pas de bande », jamais « bande nulle ».
+>
+> **Défaut trouvé en chemin** : `CraftingManager::removeIngredients()` avait sa propre boucle de
+> consommation, restée dans l'ordre du sac — le défaut qu'ECO-21 croyait avoir corrigé survivait
+> sur le chemin le plus emprunté du jeu. La règle de pile vit désormais à un seul endroit.
+>
+> **Périmètre étendu au canal des commandes** : les matériaux d'escrow sont des `PlayerItem`,
+> donc porteurs d'une bande. La commande étant le canal de l'endgame, y perdre la pureté aurait
+> cassé la chaîne haute exactement là où elle compte le plus.
 
 ### ECO-27 — Équilibrage & tests de la chaîne (M | ★★ | HAUTE)
 > Prérequis : ← ECO-25, ← ECO-26
@@ -561,7 +566,7 @@ Phase 3 (commandes)    : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Phase 4 (échoppes)     : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Phase 5 (équilibrage)  : ECO-14, ECO-15, ECO-16, ECO-17  (parallélisable)
 Phase 6 (pureté)       : ECO-21 → ECO-22 → ECO-23
-Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 → ECO-27
+Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27
 ```
 
 **Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le

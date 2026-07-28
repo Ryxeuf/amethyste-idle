@@ -174,7 +174,8 @@
                         {% include 'game/crafting/_recipe_card.html.twig' with {
                             recipe: recipe,
                             craftCheck: craftCheck,
-                            maxCraft: maxCraft
+                            maxCraft: maxCraft,
+                            purityPreview: purityPreviewByCraft[craft][recipe.id] ?? null
                         } %}
                     {% endfor %}
                 </div>

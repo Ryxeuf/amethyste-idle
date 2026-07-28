@@ -12,6 +12,7 @@ use App\Enum\CraftOrderStatus;
 use App\Enum\Purity;
 use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Auction\AuctionSettlement;
+use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\RegionBonusProvider;
@@ -66,6 +67,7 @@ class CraftOrderManager
         private readonly GuildManager $guildManager,
         private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly LoggerInterface $logger,
+        private readonly PurityChain $purityChain,
     ) {
     }
 
@@ -392,8 +394,15 @@ class CraftOrderManager
             return null;
         }
 
+        // ECO-26 — la bande se lit **avant** que l'escrow ne parte : les
+        // materiaux sont des `PlayerItem`, et les detruire d'abord effacerait
+        // ce dont l'objet doit heriter. La commande est le canal de l'endgame ;
+        // y perdre la purete casserait la chaine haute exactement la ou elle
+        // compte le plus.
+        $purity = $this->purityChain->weakestOf($order->getMaterials());
+
         $this->consumeEscrowMaterials($order);
-        $this->deliverResult($order, $requester, $quality);
+        $this->deliverResult($order, $requester, $quality, $purity);
 
         // La guilde controlante est resolue **une seule fois** : la repartition
         // et le versement en ont tous deux besoin, et deux lectures laisseraient
@@ -460,7 +469,7 @@ class CraftOrderManager
      * par lui aurait lie l'objet a celui qui le fabrique au lieu de celui qui
      * l'a commande : exactement l'inverse de ce que ce canal doit produire.
      */
-    private function deliverResult(CraftOrder $order, Player $requester, string $quality): void
+    private function deliverResult(CraftOrder $order, Player $requester, string $quality, ?Purity $purity = null): void
     {
         $recipe = $order->getRecipe();
         $result = $recipe->getResult();
@@ -470,6 +479,7 @@ class CraftOrderManager
             $playerItem = $this->playerItemGenerator->generateFromItemId($result->getId());
             $playerItem->setInventory($bag);
             $playerItem->setCraftQuality($quality);
+            $playerItem->setPurity($purity);
 
             if ($result->isBoundOnPickup()) {
                 $playerItem->setBoundToPlayerId($requester->getId());
