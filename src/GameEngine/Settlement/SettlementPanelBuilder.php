@@ -7,8 +7,11 @@ use App\Entity\App\Zone;
 use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Retention\WeeklyCommissionGenerator;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
+use App\Repository\SettlementWeeklyWorkContributionRepository;
+use App\Repository\SettlementWeeklyWorkRepository;
 
 /**
  * Ce que l'ecran de zone montre du foyer (FOY-04).
@@ -35,6 +38,8 @@ class SettlementPanelBuilder
         private readonly SettlementGate $gate,
         private readonly GuildManager $guildManager,
         private readonly SettlementServiceDirectory $serviceDirectory,
+        private readonly SettlementWeeklyWorkRepository $workRepository,
+        private readonly SettlementWeeklyWorkContributionRepository $workContributionRepository,
     ) {
     }
 
@@ -46,6 +51,7 @@ class SettlementPanelBuilder
      *     indices: list<array{index: SettlementIndex, value: int, share: int}>,
      *     next: ?array{rank: SettlementRank, threshold: int, missing: int, progress: int, opens: list<string>},
      *     services: list<array{service: string, required: SettlementRank, open: bool, route: string}>,
+     *     work: ?array{needs: list<array{activity: string, target: int, progress: int}>, percent: int, complete: bool, contributors: list<array{name: string, units: int}>},
      *     contribution: int,
      *     guildContribution: int,
      *     ebbing: bool,
@@ -89,6 +95,9 @@ class SettlementPanelBuilder
             // fermes restent affiches avec leur rang manquant — les masquer
             // rendrait le palier suivant abstrait au moment ou il compte le plus.
             'services' => $this->serviceDirectory->forZone($zone),
+            // RET-05 : ce que la ville attend **cette semaine**. La maree dit
+            // ou va la ville ; le chantier dit ce qu'elle demande maintenant.
+            'work' => $this->weeklyWork($zone),
             'contribution' => $contribution,
             'guildContribution' => $guildContribution,
             // Le foyer a decroche : il a deja ete plus haut. Le signaler prepare
@@ -96,6 +105,38 @@ class SettlementPanelBuilder
             // etre une surprise.
             'ebbing' => $settlement->getHighestRank()->level() > $rank->level(),
             'highestRank' => $settlement->getHighestRank(),
+        ];
+    }
+
+    /**
+     * Le chantier de la semaine, et ceux qui l'ont pousse (RET-05).
+     *
+     * Les contributeurs sont **nommes**, et bornes : nommer tout le monde ne
+     * nomme personne, et une liste de quarante lignes noierait exactement la
+     * reconnaissance qu'elle porte.
+     *
+     * @return ?array{needs: list<array{activity: string, target: int, progress: int}>, percent: int, complete: bool, contributors: list<array{name: string, units: int}>}
+     */
+    private function weeklyWork(Zone $zone): ?array
+    {
+        $work = $this->workRepository->findCurrentForZone($zone, WeeklyCommissionGenerator::weekKey(new \DateTimeImmutable()));
+        if ($work === null) {
+            return null;
+        }
+
+        $contributors = [];
+        foreach ($this->workContributionRepository->findTopFor($work) as $contribution) {
+            $contributors[] = [
+                'name' => $contribution->getPlayer()->getName(),
+                'units' => $contribution->getUnits(),
+            ];
+        }
+
+        return [
+            'needs' => $work->getNeeds(),
+            'percent' => $work->getProgressPercent(),
+            'complete' => $work->getCompletedAt() !== null,
+            'contributors' => $contributors,
         ];
     }
 

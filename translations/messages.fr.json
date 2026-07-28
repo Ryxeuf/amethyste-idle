@@ -1452,7 +1452,12 @@
         "your_share": "Votre apport",
         "guild_share": "Votre guilde",
         "services": "Services du foyer",
-        "service_locked": "%service% — au %required%"
+        "service_locked": "%service% — au %required%",
+        "work": {
+          "heading": "Chantier de la semaine",
+          "complete": "La liste est remplie. Le foyer a reçu son renfort.",
+          "thanks": "Poussé par :"
+        }
       }
     },
     "settlement": {
@@ -1492,6 +1497,16 @@
         "water": "Eau & sel",
         "wood": "Bois & fibre",
         "amethyst": "Améthyste"
+      },
+      "work": {
+        "need": {
+          "harvest": "Matière à prélever",
+          "craft": "Ouvrage à livrer",
+          "mob_kill": "Abords à tenir",
+          "quest": "Affaires à régler",
+          "fishing": "Prises à rapporter",
+          "butchering": "Dépouilles à traiter"
+        }
       }
     },
     "world_map": {

@@ -15,7 +15,7 @@
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
 
-> **Avancement : 3/7.** RET-01, RET-02 et RET-03 livrés le 2026-07-28 (détail dans
+> **Avancement : 4/7.** RET-01, RET-02, RET-03 et RET-05 livrés le 2026-07-28 (détail dans
 > [../ROADMAP_DONE.md](../ROADMAP_DONE.md)). La rotation du lundi 00h00 existe désormais et
 > constitue le **point d'entrée unique** que RET-02, RET-04, RET-05 et RET-06 doivent
 > réutiliser — c'est le contrat transverse de RET-07.
@@ -26,7 +26,7 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | RET-02 ✅ | La Commission de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-03 ✅ | La commande de guilde | Guilde | ECO Piste C ✅ |
 | RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
-| RET-05 | Le chantier de la semaine | Guilde | ← FOY-02, FOY-04 |
+| RET-05 ✅ | Le chantier de la semaine | Guilde | ✅ **livré (2026-07-28)** |
 | RET-06 | L'Affleurement de la semaine | Solo | ← ECO-21, ECO-22 (pureté) |
 | RET-07 | Tests du plan | — | ‖ au fil des jalons |
 
@@ -89,17 +89,21 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 - [ ] Restitution discrète sur le tableau de bord (pas de compteur culpabilisant)
 - [ ] Tests : comptage par jour, paliers, absence d'effet inter-semaines
 
-### RET-05 — Le chantier de la semaine (M | ★★★ | HAUTE)
+### RET-05 — Le chantier de la semaine ✅ (M | ★★★ | HAUTE)
 > La liste de besoins hebdomadaire d'un foyer, à la Restauration d'Ishgard. La marée dit *où
 > va* la ville ; le chantier dit *ce qu'elle attend cette semaine*.
-> Prérequis : ← FOY-02 (sédiment), FOY-04 (bloc foyer sur l'écran de zone)
-- [ ] `SettlementWeeklyWork` : foyer, semaine, liste de besoins (générée depuis les tables de
-      zone et le **type** du foyer — un Comptoir demande de la matière, un Bastion des kills)
-- [ ] Contributions **nominatives**, jauge visible dans le bloc foyer (FOY-04)
-- [ ] Liste remplie → bonus de sédiment au foyer + mention des contributeurs
-- [ ] La Commission (RET-02) d'un joueur peut pointer sur le chantier de sa zone : les deux
-      systèmes convergent au même guichet
-- [ ] Tests : génération par type de foyer, contribution, bonus, rotation
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Correction au plan** : les besoins sont générés depuis le **type** du foyer et son rang,
+> pas depuis « les tables de zone ». Le type se déduit de l'indice dominant (FOY-03) — donc de
+> la fréquentation passée —, ce qui rend la demande lisible et non arbitraire. Les tables de
+> zone auraient lié le chantier à ce qu'on peut y récolter, alors que le sens du jalon est que
+> la ville demande selon **ce qu'elle est devenue**.
+>
+> **Reporté** : la convergence Commission ↔ chantier (une Commission qui pointe sur le chantier
+> de sa zone). Les deux systèmes existent et se remplissent des mêmes six événements ; les
+> faire converger demande de décider si une même action compte deux fois, ce qui est une
+> question d'équilibrage et non de plomberie.
 
 ---
 

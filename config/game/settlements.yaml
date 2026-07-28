@@ -81,6 +81,10 @@ sediment:
     # silence le rendez-vous d'un joueur qui a beaucoup joue le meme jour, ce qui
     # punirait exactement le comportement qu'on cherche a obtenir.
     commission: { index: spread, grains: 24, capped: false }
+    # Cloture d'un chantier de la semaine (RET-05). Reparti sur les quatre
+    # indices, et hors plafond pour la meme raison que la commission : un
+    # chantier collectif se remplit une fois par semaine et n'est pas grindable.
+    settlement_work: { index: spread, grains: 120, capped: false }
 
 # Plafonds anti-exploit, appliques via `InfluenceAntiExploit` — on ne reecrit
 # pas les garde-fous, on s'y branche. Le grind ne bat jamais la regularite.
@@ -186,6 +190,47 @@ workshop:
         marais-brumeux: water
         crete-de-ventombre: stone
         dunes-d-ambre: leather
+
+# Chantier de la semaine (RET-05). A la maniere de la Restauration d'Ishgard :
+# la maree dit **ou va** la ville, le chantier dit **ce qu'elle attend cette
+# semaine**. C'est ce qui donne une voix au foyer — jusqu'ici il encaissait le
+# sediment en silence, sans rien demander a personne.
+weekly_work:
+    # Ce que chaque **type** de foyer demande. Le type se deduit de l'indice
+    # dominant (FOY-03) : c'est donc la frequentation passee qui decide de ce que
+    # la ville reclame, et personne ne le choisit.
+    #
+    # `none` couvre les foyers sous le Hameau, qui n'ont pas encore d'identite :
+    # ils demandent le minimum vital. Les omettre les aurait laisses sans
+    # chantier, c'est-a-dire sans le seul rendez-vous collectif qu'un Campement
+    # puisse offrir.
+    demands:
+        trading: [harvest, craft]      # Comptoir  — de la matiere et de l'ouvrage
+        bastion: [mob_kill]            # Bastion   — qu'on tienne les abords
+        athenaeum: [quest]             # Athenee   — qu'on regle les affaires
+        sanctuary: [craft, quest]      # Sanctuaire — de l'ouvrage et du service
+        none: [harvest]
+
+    # Cible de base par activite, avant mise a l'echelle par le rang.
+    targets:
+        harvest: 200
+        craft: 40
+        mob_kill: 150
+        quest: 15
+        fishing: 60
+        butchering: 60
+
+    # Une grande ville demande davantage. Le multiplicateur porte sur la
+    # **cible**, jamais sur la recompense : un chantier de Metropole est plus
+    # long, il ne rapporte pas proportionnellement plus a chacun.
+    rank_multipliers:
+        ruin: 1
+        camp: 1
+        hamlet: 1
+        town: 2
+        city: 3
+        metropolis: 4
+
 
 # Seed du monde livre (decision A — **rien n'est retro-gate**, BALANCE § 23.5).
 # Le seed est narratif, pas protecteur : si personne ne frequente les Mines,

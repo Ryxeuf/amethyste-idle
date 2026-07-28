@@ -67,6 +67,10 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // Après le défi de guilde : les deux s'ouvrent le même lundi,
                 // le collectif d'abord.
                 RecurringMessage::cron('2 0 * * 1', new RunCommandMessage('app:weekly-commission:rotate')),
+                // SettlementWork : ce que chaque foyer attend cette semaine
+                // (RET-05). En dernier des trois : il lit le **type** du foyer,
+                // que le tick de saison n'a pas encore touche a cette heure-ci.
+                RecurringMessage::cron('4 0 * * 1', new RunCommandMessage('app:settlement-work:rotate')),
 
                 // --- Cloture quotidienne ------------------------------------
                 // DailyQuest : rotation des quêtes quotidiennes
