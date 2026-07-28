@@ -71,7 +71,7 @@ App\Entity\Game\Item:
     description: "Un plastron de cuir bouilli et renforce d'os, offrant une protection superieure tout en restant leger"
     type: "gear"
     slug: 'hardened-vest'
-    price: 150
+    price: 160
     gear_location: 'chest'
     nbUsages: 150
     rarity: 'uncommon'
@@ -146,7 +146,7 @@ App\Entity\Game\Item:
     description: "Un plastron taille dans la fourrure de loup-garou, impregne d'une resistance surnaturelle"
     type: "gear"
     slug: 'exotic-leather-vest'
-    price: 400
+    price: 420
     gear_location: 'chest'
     nbUsages: 200
     rarity: 'rare'
@@ -238,7 +238,7 @@ App\Entity\Game\Item:
     description: "Un heaume forge dans le mithril, un alliage rare aussi leger que resistant. Brille d'un eclat argente."
     type: "gear"
     slug: 'mithril-helm'
-    price: 400
+    price: 1350
     gear_location: 'head'
     nbUsages: 200
     rarity: 'rare'
@@ -251,7 +251,7 @@ App\Entity\Game\Item:
     description: "Une cuirasse en mithril etincelante, presque aussi legere que le cuir mais infiniment plus solide."
     type: "gear"
     slug: 'mithril-cuirass'
-    price: 550
+    price: 2700
     gear_location: 'chest'
     nbUsages: 200
     rarity: 'rare'
@@ -264,7 +264,7 @@ App\Entity\Game\Item:
     description: "Des greves en mithril finement ouvragees, offrant une mobilite remarquable pour leur niveau de protection."
     type: "gear"
     slug: 'mithril-greaves'
-    price: 380
+    price: 1450
     gear_location: 'leg'
     nbUsages: 200
     rarity: 'rare'
@@ -277,7 +277,7 @@ App\Entity\Game\Item:
     description: "Des bottes de mithril aux reflets lunaires, silencieuses malgre leur solidite."
     type: "gear"
     slug: 'mithril-sabatons'
-    price: 320
+    price: 1350
     gear_location: 'foot'
     nbUsages: 200
     rarity: 'rare'
@@ -289,7 +289,7 @@ App\Entity\Game\Item:
     description: "Des gantelets de mithril aux articulations souples, permettant une dexterite parfaite au combat."
     type: "gear"
     slug: 'mithril-gauntlets'
-    price: 350
+    price: 1350
     gear_location: 'hand'
     nbUsages: 200
     rarity: 'rare'
@@ -301,7 +301,7 @@ App\Entity\Game\Item:
     description: "Des epaulieres de mithril ornees de motifs elfiques, aussi belles que fonctionnelles."
     type: "gear"
     slug: 'mithril-pauldrons'
-    price: 400
+    price: 2000
     gear_location: 'shoulder'
     nbUsages: 200
     rarity: 'rare'
@@ -503,7 +503,7 @@ App\Entity\Game\Item:
     description: "Les memes anneaux, mais trempes : l'acier ne cede pas la ou le fer plie"
     type: "gear"
     slug: 'steel-chainmail'
-    price: 260
+    price: 430
     gear_location: 'chest'
     nbUsages: 180
     rarity: 'uncommon'

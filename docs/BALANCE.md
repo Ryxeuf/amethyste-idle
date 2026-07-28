@@ -976,6 +976,39 @@ decoule :
 > sur la carte au lieu de l'ecraser sur une zone, et ce qui pousse les joueurs vers
 > l'exterieur.
 
+### 21.6 bis Prix de reference et cout propage (ECO-27, 2026-07-28)
+
+**Le constat.** Croisement des 84 recettes avec le prix de reference de leurs intrants :
+**28 recettes rendaient un objet valant moins que sa matiere**, de 0,35 (lingot d'orichalque :
+750 pour 2 150 de minerai) a 0,98. Raffiner faisait perdre de l'argent, **d'autant plus qu'on
+montait** — l'inverse exact d'une economie ou la production est le metier des joueurs.
+
+Le defaut **preexistait** : les prix n'avaient jamais ete derives d'un cout. ECO-25 ne l'a pas
+cree, il l'a rendu mesurable — et l'a aggrave mecaniquement, en ajoutant a chaque palier un
+intrant chaine que le prix ne refletait pas.
+
+**La regle appliquee** : `prix = cout des intrants + 10 x niveau de recette`, arrondi (au pas de
+5 sous 100, de 10 sous 1 000, de 50 au-dela). 43 objets recalibres, point fixe atteint en deux
+passes.
+
+**Pourquoi une marge additive, et non un pourcentage.** C'est le meme piege que le coefficient de
+chainage (§21.4), et il se manifeste de la meme facon : **une marge en pourcentage compose sur la
+profondeur**. A +20 % par palier, la lame de maitre passait de 3 500 a **21 700** — non parce
+qu'elle contient plus, mais parce que la marge s'applique six fois. La marge additive est bornee
+par construction : chaque palier ajoute une fois le travail de l'artisan, jamais un facteur.
+
+**Les matieres premieres sont hors regle.** Le prix d'un minerai vient de sa rarete, pas de la
+recette qui peut accessoirement le produire. Soumettre `ore-mithril` a la loi l'aurait aligne sur
+le cout de sa transmutation alchimique — qui est une **seconde voie** (§19), pas la source de sa
+valeur — et le filon de la Crete aurait suivi.
+
+**Consequence a surveiller : le robinet de Gils.** Les boutiques PNJ rachetent a **30 %** du prix
+de reference (`ShopController`). Multiplier par 3 a 5 la valeur des objets de haut palier
+multiplie d'autant ce rachat. Le levier n'est pas le prix — qui dit maintenant la verite sur ce
+que contient l'objet — mais **le taux de rachat**, a retendre si la masse monetaire (§20) derive.
+Ce jalon ne le touche pas : il corrige d'abord ce qui etait faux, et nomme ce qu'il faudra
+regarder.
+
 ### 21.6 Suite
 
 ECO-25 applique la chaine cible (§21.3) au coefficient 1. Avant cela, deux prealables
