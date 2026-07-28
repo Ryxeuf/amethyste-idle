@@ -3,6 +3,7 @@
 namespace App\Entity\App;
 
 use App\Entity\Game\Item;
+use App\Enum\Purity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -165,6 +166,22 @@ class PlayerItem
 
     #[ORM\Column(name: 'custom_name', type: 'string', length: 100, nullable: true)]
     private ?string $customName = null;
+
+    /**
+     * Bande de purete du lot (ECO-21).
+     *
+     * **`null` est le cas normal**, et de tres loin : seule la ligne du cristal
+     * — amethyste, minerais, gemmes — porte une bande. Herbes, poissons, cuirs
+     * et bois restent fongibles, parce qu'un plancher T1 qui demanderait a un
+     * debutant de comparer des lots avant sa premiere epee serait un mur, pas
+     * un plancher (ECO-02).
+     *
+     * Le perimetre ne se lit pas ici : il se declare dans `config/game/purity.yaml`
+     * et se decide dans `PurityScope`. Un lot hors perimetre porte `null`, et
+     * c'est le seul endroit ou cette regle s'ecrit.
+     */
+    #[ORM\Column(name: 'purity', type: 'string', length: 20, nullable: true, enumType: Purity::class)]
+    private ?Purity $purity = null;
 
     public function __construct()
     {
@@ -367,6 +384,16 @@ class PlayerItem
     public function setCraftQuality(?string $craftQuality): void
     {
         $this->craftQuality = $craftQuality;
+    }
+
+    public function getPurity(): ?Purity
+    {
+        return $this->purity;
+    }
+
+    public function setPurity(?Purity $purity): void
+    {
+        $this->purity = $purity;
     }
 
     /**

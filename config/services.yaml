@@ -62,6 +62,13 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # ECO-21 : le perimetre de la purete. Etroit et **declare** — la ligne du
+    # cristal seule porte une bande, et cette decision se prend dans un fichier
+    # de configuration, pas dans un nom de slug bien choisi.
+    App\GameEngine\Economy\PurityDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # FOY-17 : denominateur du dimensionnement du monde (BALANCE § 22.5).
     # Un « joueur regulier » depense ~60 % de sa regeneration quotidienne, soit
     # ~150 points/jour et ~4 200 sur une maree de 28 jours. Ces deux nombres

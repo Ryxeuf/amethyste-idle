@@ -106,15 +106,14 @@ class InventoryHelper
         $bag = $this->playerHelper->getBagInventory();
         $removed = 0;
 
-        foreach ($bag->getItems()->toArray() as $item) {
+        foreach ($this->consumptionOrder($bag->getItems()->toArray(), $slug) as $item) {
             if ($removed >= $quantity) {
                 break;
             }
-            if ($item->getGenericItem()->getSlug() === $slug) {
-                $bag->removeItem($item);
-                $this->entityManager->remove($item);
-                ++$removed;
-            }
+
+            $bag->removeItem($item);
+            $this->entityManager->remove($item);
+            ++$removed;
         }
 
         if ($removed > 0) {
@@ -122,6 +121,36 @@ class InventoryHelper
         }
 
         return $removed;
+    }
+
+    /**
+     * Lots de ce slug, **du moins pur au plus pur** (ECO-21).
+     *
+     * C'est la regle de pile de ce jalon, appliquee la ou elle se joue
+     * reellement. Les objets ne s'empilent pas en base — chaque lot est une
+     * ligne — mais une recette qui demande « 3 minerais de cuivre » les prenait
+     * dans l'ordre du sac : un joueur qui gardait un lot **parfait** pour eveiller
+     * une materia le voyait fondre dans la premiere epee venue, sans avertissement
+     * et sans recours.
+     *
+     * Le tri est stable pour les lots de meme bande, et les lots sans bande
+     * (tout ce qui est hors perimetre) gardent leur ordre d'origine : pour eux,
+     * la fonction ne change rien.
+     *
+     * @param list<PlayerItem> $items
+     *
+     * @return list<PlayerItem>
+     */
+    private function consumptionOrder(array $items, string $slug): array
+    {
+        $matching = array_values(array_filter(
+            $items,
+            static fn (PlayerItem $item): bool => $item->getGenericItem()->getSlug() === $slug,
+        ));
+
+        usort($matching, static fn (PlayerItem $a, PlayerItem $b): int => ($a->getPurity()?->level() ?? -1) <=> ($b->getPurity()?->level() ?? -1));
+
+        return $matching;
     }
 
     private function hasItemInInventory(Inventory $inventory, PlayerItem $playerItem): bool

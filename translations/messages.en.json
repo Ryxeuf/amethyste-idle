@@ -1539,6 +1539,14 @@
         "vigour": "Commission delivered: %grains% grains to the settlement, and %energy% energy restored.",
         "tribute": "Commission delivered: %grains% grains to the settlement. You kept nothing."
       }
+    },
+    "purity": {
+      "band": {
+        "trouble": "Murky",
+        "clair": "Clear",
+        "pur": "Pure",
+        "parfait": "Flawless"
+      }
     }
   },
   "common": {
