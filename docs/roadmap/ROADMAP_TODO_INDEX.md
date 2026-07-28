@@ -49,7 +49,7 @@
 | # | Chantier | Contenu | Pourquoi cet ordre |
 |---|----------|---------|--------------------|
 | ~~1~~ | ~~**RET-01**~~ ✅ | Rotation du WeeklyChallenge (cron + restitution) | **Livre le 2026-07-28** — point de rotation unique du lundi, reutilise par RET-02/04/05/06 |
-| 2 | **ECO-24b** | Sources des minerais de haut palier + etain (donnees de zone) | Prealable de toute la chaine ; sans lui, chainer renforce un goulot |
+| ~~2~~ | ~~**ECO-24b-a**~~ ✅ | Sources des minerais de haut palier + etain (donnees de zone) | **Livre le 2026-07-28** — carte de GAME_ZONES §3 appliquee. Reste **ECO-24b-b** (cuirs du tanneur) et **ECO-24c** (gate de competence sur les filons) |
 | 3 | **FOY-17** | Facteur de monde, `WorldLoadService`, `Player.lastActivityAt` | Precede FOY-08/11, ECO-22 et le recalibrage |
 | 4 | **Recalibrage filons** | BALANCE §22.3, W=1 a ~50 joueurs/jour | Sans lui, purete et Paleur livreraient du code sans effet observable |
 | 5 | **FOY-01 → 05** | Socle des foyers (Sprint 16) | Le pilier territorial commence a exister |

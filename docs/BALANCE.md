@@ -711,6 +711,16 @@ Le mithril devient ainsi un produit d'artisanat, pas de recolte : il oblige un
 forgeron a passer par un alchimiste, et donne a l'alchimie un role economique au
 palier haut qu'elle n'avait pas.
 
+> **Amende par ECO-24b (2026-07-28)** : la transmutation n'est plus la **seule** source.
+> La carte des minerais ([GAME_ZONES.md](GAME_ZONES.md) §3) pose un filon de mithril T4 au
+> sommet de la Crete de Ventombre — « le metal que le vent a mis a nu ». Ce qui motivait
+> le choix d'ECO-19 tient toujours : le mithril reste rare (profil T4, source unique) et
+> l'alchimie garde son debouche de haut palier, en **seconde** voie. Ce qui a change,
+> c'est le constat de depart — « aucun filon du monde livre n'en donne » etait vrai des
+> filons declares, mais deux spots `ObjectLayer` de mithril existaient bel et bien sur
+> `map_4` : la premiere phrase de ce paragraphe decrivait la moitie du monde que le jalon
+> regardait.
+
 ---
 
 ## 20. Masse monetaire et inflation (economie joueur, ECO-15)
@@ -888,6 +898,33 @@ intermediaire a filon unique. C'est une bonne nouvelle de conception — le poin
 tombe au milieu de l'echelle, la ou l'on veut precisement garder de l'activite.
 
 ### 21.5 Deux defauts decouverts en chemin
+
+> **Statut (2026-07-28, ECO-24b livre)** : les defauts **a** et **b** sont corriges pour le
+> jeu de base. Cinq filons poses selon la carte des minerais
+> ([GAME_ZONES.md](GAME_ZONES.md) §3) — sombracier (Mines, fond, T4), mithril (Crete,
+> sommet, T4), platine et 2e etain (Dunes, T3/T0), orichalque (Cite ensevelie, T4).
+> `ore-adamantite` et `ore-starmetal` restent sans source **a dessein** : la carte les
+> reserve a l'Extension 1. La loi transverse est verrouillee par
+> `OreSourceReferenceTest`, dont la liste de reserves d'extension doit rester courte et
+> se vider a mesure que les extensions sortent.
+>
+> **Ce que la mesure a montre en plus** : le chemin herite n'etait pas seulement « hors du
+> modele calibre », il etait **injouable**. Ni `/game/harvest/{spotId}` ni
+> `/api/gathering/harvest/{spotId}` n'est cite par un gabarit ou un controleur Stimulus
+> depuis le pivot ; l'ecran de zone se contente de **compter** les points d'interet. La
+> moitie haute de la ligne du metal — donc les lingots d'adamantite et d'orichalque —
+> etait donc hors d'atteinte, en silence. Meme famille qu'ECO-02 et ECO-19.
+>
+> **Reste ouvert (a nommer ECO-24c)** : les six competences hautes de l'arbre du mineur
+> gatent des `spot-*` d'`ObjectLayer` (`miner-mithril-xs`, `miner-platinum-xs`,
+> `miner-darksteel-xs`, `miner-adamantite-xs`, `miner-starmetal-xs`,
+> `miner-orichalcum-xs`). Or `GatherService` **n'a aucun gate de competence** : il rend
+> les filons d'une zone sans jamais consulter le joueur. Un filon declare est donc
+> accessible a quiconque a l'energie, et ces six competences sont **decoratives** — elles
+> ne survivent que dans l'ecran d'information de domaine. Deux issues possibles : porter
+> le gate dans le modele declaratif (`requires_skill:` sur un filon), ou assumer que la
+> zone **est** le gate (survivre au Glacier vaut bien un palier de competence) et
+> reconvertir ces competences en bonus de rendement. Le choix n'appartient pas a ECO-24b.
 
 **a) Deux systemes de recolte coexistent.** Les filons calibres vivent dans
 `config/game/zones/*.yaml` (`ZoneVein`, vitalite partagee, paliers T0-T4). Mais

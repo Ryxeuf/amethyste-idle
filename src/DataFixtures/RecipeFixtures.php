@@ -1379,8 +1379,11 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'ore-gold', 'quantity' => 2],
                     ['slug' => 'crafted-gem-rare', 'quantity' => 1],
                 ],
-                // Seule source de mithril du monde livre : la transmutation est
-                // la reponse alchimique a un minerai qu'aucun filon ne donne.
+                // ECO-24b : ce n'est plus la **seule** source de mithril. La
+                // carte des minerais (GAME_ZONES §3) en pose un filon T4 au
+                // sommet de la Crete de Ventombre. La transmutation reste la
+                // seconde voie, et c'est ce qui garde a l'alchimie le role
+                // economique de haut palier que lui donnait ECO-19.
                 'result_ref' => 'ore_mithril',
                 'result_quantity' => 2,
                 'crafting_time' => 40,
