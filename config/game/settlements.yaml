@@ -191,6 +191,22 @@ workshop:
         crete-de-ventombre: stone
         dunes-d-ambre: leather
 
+# La Crue (FOY-08). Decision B du socle de monde : sans quota, tout le monde
+# monte tout et il n'y a pas d'enjeu de territoire.
+#
+# L'echelle d'ouverture est celle de GAME_WORLD § 13.4, exprimee en **population
+# effective** (BALANCE § 22.5) : on mesure la charge, pas les tetes — c'est ce
+# qui immunise le dimensionnement contre le multi-compte.
+#
+# Chaque entree dit combien d'actifs il faut **par foyer** ayant atteint ce rang
+# ou davantage. A 50 actifs, le monde a donc droit a **un** Bourg : c'est
+# l'unique enjeu territorial du serveur, et c'est voulu.
+crue:
+    actives_per_settlement:
+        town: 40
+        city: 120
+        metropolis: 300
+
 # Chantier de la semaine (RET-05). A la maniere de la Restauration d'Ishgard :
 # la maree dit **ou va** la ville, le chantier dit **ce qu'elle attend cette
 # semaine**. C'est ce qui donne une voix au foyer — jusqu'ici il encaissait le

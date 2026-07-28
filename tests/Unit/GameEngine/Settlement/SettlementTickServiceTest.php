@@ -8,6 +8,7 @@ use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\Enum\SettlementType;
 use App\Event\Zone\SettlementRankChangedEvent;
+use App\GameEngine\Settlement\CrueQuotaService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementTickService;
 use App\Repository\SettlementRepository;
@@ -441,7 +442,9 @@ class SettlementTickServiceTest extends TestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
         $repository = $this->createMock(SettlementRepository::class);
-        $repository->method('findAll')->willReturnCallback(fn (): array => $this->settlements);
+        // FOY-08 : le tick lit desormais les foyers du plus fourni au moins
+        // fourni, pour que la liberation d'une place profite au mieux place.
+        $repository->method('findAllRanked')->willReturnCallback(fn (): array => $this->settlements);
 
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher->method('dispatch')->willReturnCallback(function (object $event): object {
@@ -469,6 +472,22 @@ class SettlementTickServiceTest extends TestCase
             'without_settlement' => [],
         ]);
 
-        return new SettlementTickService($entityManager, $repository, $loader, $dispatcher);
+        return new SettlementTickService($entityManager, $repository, $loader, $dispatcher, $this->crueQuota());
+    }
+
+    /**
+     * FOY-08 : ces tests portent sur la decroissance et le rang, pas sur la
+     * Crue. Un quota qui autorise tout laisse le tick se comporter comme avant
+     * le jalon — l'etat normal d'un monde qui n'a pas encore de concurrence.
+     */
+    private function crueQuota(): CrueQuotaService
+    {
+        $quota = $this->createMock(CrueQuotaService::class);
+        $quota->method('highestAllowed')->willReturnCallback(
+            static fn (Settlement $settlement, SettlementRank $natural): SettlementRank => $natural,
+        );
+        $quota->method('allows')->willReturn(true);
+
+        return $quota;
     }
 }

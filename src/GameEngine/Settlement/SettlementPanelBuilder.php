@@ -3,6 +3,7 @@
 namespace App\GameEngine\Settlement;
 
 use App\Entity\App\Player;
+use App\Entity\App\Settlement;
 use App\Entity\App\Zone;
 use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
@@ -40,6 +41,7 @@ class SettlementPanelBuilder
         private readonly SettlementServiceDirectory $serviceDirectory,
         private readonly SettlementWeeklyWorkRepository $workRepository,
         private readonly SettlementWeeklyWorkContributionRepository $workContributionRepository,
+        private readonly CrueQuotaService $crueQuota,
     ) {
     }
 
@@ -52,6 +54,7 @@ class SettlementPanelBuilder
      *     next: ?array{rank: SettlementRank, threshold: int, missing: int, progress: int, opens: list<string>},
      *     services: list<array{service: string, required: SettlementRank, open: bool, route: string}>,
      *     work: ?array{needs: list<array{activity: string, target: int, progress: int}>, percent: int, complete: bool, contributors: list<array{name: string, units: int}>},
+     *     crue: ?array{rank: SettlementRank, quota: int, occupants: list<string>},
      *     contribution: int,
      *     guildContribution: int,
      *     ebbing: bool,
@@ -98,6 +101,9 @@ class SettlementPanelBuilder
             // RET-05 : ce que la ville attend **cette semaine**. La maree dit
             // ou va la ville ; le chantier dit ce qu'elle demande maintenant.
             'work' => $this->weeklyWork($zone),
+            // FOY-08 : le foyer merite un rang que la Crue lui refuse. La
+            // competition doit se **voir**, sinon elle est vecue comme un bug.
+            'crue' => $this->crueWait($settlement, $rank, $definition['ranks']),
             'contribution' => $contribution,
             'guildContribution' => $guildContribution,
             // Le foyer a decroche : il a deja ete plus haut. Le signaler prepare
@@ -105,6 +111,43 @@ class SettlementPanelBuilder
             // etre une surprise.
             'ebbing' => $settlement->getHighestRank()->level() > $rank->level(),
             'highestRank' => $settlement->getHighestRank(),
+        ];
+    }
+
+    /**
+     * Le rang que la Crue refuse, et qui occupe la place (FOY-08).
+     *
+     * **Derive, jamais stocke.** L'attente se lit en comparant le rang naturel
+     * — celui que le sediment merite — au rang tenu : une colonne de plus aurait
+     * fallu tenir d'accord avec un calcul qui, lui, ne peut pas se tromper.
+     *
+     * Rend `null` quand rien n'attend, ce qui est le cas ordinaire.
+     *
+     * @param array<string, int> $thresholds
+     *
+     * @return ?array{rank: SettlementRank, quota: int, occupants: list<string>}
+     */
+    private function crueWait(Settlement $settlement, SettlementRank $rank, array $thresholds): ?array
+    {
+        $natural = SettlementRankCalculator::rankFor($settlement->getTotalSediment(), $thresholds);
+        if ($natural->level() <= $rank->level()) {
+            return null;
+        }
+
+        $wanted = $rank->next();
+        if ($wanted === null || $this->crueQuota->allows($settlement, $wanted)) {
+            return null;
+        }
+
+        $quota = $this->crueQuota->quotaFor($wanted);
+
+        return [
+            'rank' => $wanted,
+            'quota' => $quota ?? 0,
+            'occupants' => array_map(
+                static fn (Settlement $occupant): string => $occupant->getZone()->getName(),
+                $this->crueQuota->occupants($wanted, $settlement),
+            ),
         ];
     }
 

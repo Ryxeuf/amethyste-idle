@@ -239,6 +239,25 @@
                             <p class="ds-hint mt-1">{{ 'game.zone.settlement.summit'|trans }}</p>
                         {% endif %}
 
+                        {# ── La Crue (FOY-08) ────────────────────────────── #}
+                        {# Le foyer merite un rang que le quota lui refuse. La   #}
+                        {# competition doit se voir et nommer qui occupe la      #}
+                        {# place : une attente muette est vecue comme un bug.    #}
+                        {% if settlement.crue %}
+                            <p class="ds-hint mt-1">
+                                {{ 'game.zone.settlement.crue.waiting'|trans({
+                                    '%rank%': ('game.settlement.rank.' ~ settlement.crue.rank.value)|trans,
+                                    '%quota%': settlement.crue.quota,
+                                }) }}
+                                {% if settlement.crue.occupants is not empty %}
+                                    {{ 'game.zone.settlement.crue.held_by'|trans }}
+                                    {%- for occupant in settlement.crue.occupants %}
+                                        {{ occupant }}{{ not loop.last ? ',' : '' }}
+                                    {%- endfor %}
+                                {% endif %}
+                            </p>
+                        {% endif %}
+
                         {# ── Chantier de la semaine (RET-05) ─────────────── #}
                         {# La maree dit ou va la ville ; le chantier dit ce      #}
                         {# qu'elle attend cette semaine. Les contributeurs sont  #}

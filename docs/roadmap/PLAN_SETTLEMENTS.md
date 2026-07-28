@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **10 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **11 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -35,7 +35,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-05 ✅ | Gate déclaratif des services par rang |
 | FOY-06 ✅ | Services gatés : marché local, banque (l'éveil de matéria passe à ECO-22) |
 | FOY-07 ✅ | Bonus d'atelier par foyer (ligne de production × type) |
-| FOY-08 | Crue — quotas indexés sur la population active |
+| FOY-08 ✅ | Crue — quotas indexés sur la population active |
 | FOY-09 | Zone d'influence & vassalité |
 | FOY-10 ✅ | Étiage & régression bornée |
 | FOY-11 | Pâleur — état de zone, effets sur rendement et pureté |
@@ -49,7 +49,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 ```
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
-Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
+Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 → FOY-10 ✅
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
 Piste F — Contenu & tests     : FOY-15, FOY-16
@@ -245,19 +245,18 @@ s'y branche.
 
 </details>
 
-### FOY-08 — Quotas indexés sur la population active (M | ★★★ | CRITIQUE)
+### FOY-08 — Quotas indexés sur la population active ✅ (M | ★★★ | CRITIQUE)
 > Décision B. Sans quota, tout le monde monte tout et il n'y a pas d'enjeu de territoire.
-> Prérequis : ← FOY-03, ← FOY-17
-- [ ] `CrueQuotaService` : **l'échelle d'ouverture actée** (GAME_WORLD §13.4 — 1er Bourg à
-      40 actifs, 1re Cité à 120, Métropole à 300), mesurée en **population effective**
-      (BALANCE §22.5) sur la marée écoulée. À 50 actifs, le monde a droit à **un** Bourg
-      de foyer — c'est l'unique enjeu territorial du serveur, et c'est voulu
-- [ ] Blocage de promotion quand le quota est plein — le foyer **reste en attente**, son
-      sédiment n'est pas perdu
-- [ ] Message joueur **nommant qui occupe la place** : la compétition doit être lisible, sinon
-      elle est vécue comme un bug
-- [ ] Libération du quota → promotion du foyer en attente le mieux placé, au tick suivant
-- [ ] Tests : quota plein, indexation, libération, sédiment conservé en attente
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Aucun champ ajouté** : l'attente est **dérivée** (rang naturel > rang tenu, et quota
+> plein). Le sédiment n'est jamais perdu parce que le rang **se lit** dessus au lieu de le
+> consommer — une colonne « en attente » aurait fallu tenir d'accord avec un calcul qui ne
+> peut pas se tromper.
+>
+> **Refus partiel, pas refus en bloc** : une montée qui franchit plusieurs crans redescend au
+> premier rang autorisé. Un foyer qui mérite la Cité sans pouvoir l'avoir devient quand même
+> Bourg si la place existe — tout refuser lui ferait payer deux fois le succès des autres.
 
 ### FOY-09 — Zone d'influence & vassalité (M | ★★ | MOYENNE)
 > Une grande ville boit la croissance de ses voisines.

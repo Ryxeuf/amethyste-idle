@@ -34,6 +34,7 @@ class SettlementTickService
         private readonly SettlementRepository $settlementRepository,
         private readonly SettlementDefinitionLoader $loader,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly CrueQuotaService $crueQuota,
     ) {
     }
 
@@ -47,7 +48,11 @@ class SettlementTickService
 
         $report = ['processed' => 0, 'decayed' => 0, 'promoted' => 0, 'demoted' => 0, 'typed' => 0, 'skipped' => 0];
 
-        foreach ($this->settlementRepository->findAll() as $settlement) {
+        // FOY-08 : du plus fourni au moins fourni. C'est ce qui fait que la
+        // liberation d'une place de Crue profite au foyer **le mieux place** et
+        // non au premier venu de la base — l'ordre d'insertion n'est pas un
+        // arbitrage, et une competition arbitrée au hasard est vecue comme un bug.
+        foreach ($this->settlementRepository->findAllRanked() as $settlement) {
             $days = $this->daysSinceLastTick($settlement, $now);
 
             if ($days < 1 && !$force) {
@@ -162,7 +167,18 @@ class SettlementTickService
             // repart entiere s'il devait revenir.
             $settlement->setEbbSince(null);
 
-            return $natural === $before ? 0 : $this->commitRank($settlement, $before, $natural, $now);
+            // FOY-08 : la Crue borne la montee. Le sediment n'est pas perdu — le
+            // rang se lit dessus, il ne le consomme pas — et le foyer prendra sa
+            // place des qu'une se liberera. Redescendre au plus haut rang
+            // autorise plutot que refuser en bloc : un foyer qui merite la Cite
+            // sans pouvoir l'avoir doit quand meme devenir Bourg si la place
+            // existe, sinon il paierait deux fois le succes des autres.
+            $allowed = $this->crueQuota->highestAllowed($settlement, $natural);
+            if ($allowed->level() <= $before->level()) {
+                return 0;
+            }
+
+            return $this->commitRank($settlement, $before, $allowed, $now);
         }
 
         $ebbSince = $settlement->getEbbSince();
