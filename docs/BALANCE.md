@@ -1153,3 +1153,116 @@ gonfler le monde sans produire exactement la charge pour laquelle il se dimensio
   jamais. Un serveur qui demarre a cinq joueurs ne doit pas se refermer sur eux.
 
 
+
+---
+
+## 23. Chiffrage des foyers — seuils, decroissance, echeanciers (2026-07-28)
+
+> L'entree numerique de la Piste A du plan des foyers (FOY-01 → FOY-03) et de la Crue
+> (FOY-08). Tout est calibre a **W = 1** (~50 joueurs actifs quotidiens, § 22.5) ; le
+> facteur de monde met les seuils a l'echelle (§ 22.4), jamais les taux. Tout est de la
+> **donnee** (`config/game/settlements.yaml`) : ces valeurs sont un point de depart a
+> retendre en observant le serveur, pas des constantes.
+
+### 23.1 L'unite : le grain de sediment
+
+Un **grain** est la trace qu'une action laisse dans un foyer. La table de depot est
+declarative :
+
+| Action (event existant) | Indice | Grains |
+|---|---|---:|
+| Kill (`MobDeadEvent`) | `war` | 1 |
+| Recolte / peche / depecage (`SpotHarvestEvent`, `FishingEvent`, `ButcheringEvent`) | `trade` | 1 |
+| Craft (`CraftEvent`) | `trade` | 1 |
+| Vente HV conclue dans la region | `trade` | 1 par 100 gils, plafonne a 5 |
+| Quete achevee (`QuestCompletedEvent`) | `lore` | 5 |
+| Entree de Codex / premiere visite | `lore` | 5 |
+| Materia **lue** chez les Lecteurs | `rite` | 20 |
+| Participation a un beat de maree | `rite` | 10 |
+| **Passage** (traversee de zone, `ZoneTravelService`) | reparti | 0,2 |
+
+Reperes de flux (§ 1 : ~80 actions/jour a barre pleine ; § 22.5 : le joueur regulier
+depense ~62 % de sa barre) :
+
+- **Joueur regulier** : ~30 grains/jour dans sa zone principale.
+- **Joueur assidu focalise** : ~50 grains/jour.
+- **Plafond anti-exploit** (`InfluenceAntiExploit`) : **60 grains/jour/joueur/foyer**,
+  rendements decroissants au-dela de 40. Le grind ne bat jamais la regularite.
+- **Zone de pur transit** (20 traversees/jour) : ~4 grains/jour — assez pour tenir un
+  Campement (§ 23.3), c'est le levier 4 de GAME_WORLD § 5.5, chiffre.
+
+### 23.2 La decroissance : -2 % par jour
+
+Chaque indice perd **2 % de son stock par jour** (tick quotidien, `app:settlement:tick`).
+Demi-vie ≈ 35 jours — un peu plus d'une maree : un foyer delaisse une maree entiere
+descend visiblement, un foyer delaisse une semaine ne s'effondre pas.
+
+Consequence structurante : le stock d'equilibre d'un foyer vaut **50 x son flux
+quotidien**. Le rang d'un foyer est donc, a terme, une photographie de sa frequentation
+reelle — exactement l'indice d'activite decroissant emprunte a EVE
+(GAME_INSPIRATIONS § 2.4).
+
+### 23.3 Les seuils de rang (somme des quatre indices, W = 1)
+
+| Rang | Seuil | Pour le tenir (flux) | Ce que ca veut dire a 50 j/j |
+|---|---:|---:|---|
+| Ruine (0) | — | — | l'etat de depart d'une zone neuve |
+| Campement (1) | 150 | 3 grains/j | 2 joueurs y jouent 2-3 jours, ou du simple transit |
+| Hameau (2) | 1 200 | 24 grains/j | 1 regulier dedie + du passage |
+| Bourg (3) | 8 000 | 160 grains/j | ~6 reguliers constants ; **l'effort d'une maree pour une guilde de 12** |
+| Cite (4) | 25 000 | 500 grains/j | ~17 reguliers dedies — n'existe qu'avec la croissance (quota a 120 actifs) |
+| Metropole (5) | 60 000 | 1 200 grains/j | ~40 reguliers dedies — le projet d'un serveur qui a reussi (quota a 300) |
+
+Verification d'echeancier (flux constant F, stock(t) = 50F x (1 - e^(-0,02t))) :
+
+- 12 joueurs focalises (480 grains/j) atteignent **le Bourg en ~24 jours** — le 1er
+  marche du serveur est **l'evenement de la premiere maree**, dispute entre 2-3 guildes
+  (GAME_WORLD § 13.4). C'est l'ancre de tout le chiffrage.
+- 8 reguliers non coordonnes (240/j) plafonnent vers 12 000 : Hameau solide, Bourg hors
+  de portee sans coordination. **Le Bourg exige une guilde** ; c'est voulu (Acte III).
+- Un regulier isole (30/j) tient un Hameau a lui seul a l'equilibre (1 500) : un joueur
+  fidele **suffit a faire vivre un petit foyer** ; c'est voulu aussi (« on compte sur
+  moi » commence la).
+
+### 23.4 Le type : hysteresis chiffree
+
+Le type (Comptoir/Bastion/Athenee/Sanctuaire) s'installe quand l'indice dominant depasse
+le second de **25 %**, **tenu une maree entiere** (28 jours glissants). Il ne se perd que
+si un autre indice le depasse dans les memes conditions. En dessous du rang Hameau, pas
+de type : un Campement n'a pas encore d'identite.
+
+### 23.5 Seed du monde livre (decision A — rien n'est retro-gate)
+
+| Zone | Rang seed | Stock seed | Pourquoi |
+|---|---|---:|---|
+| Foret des murmures | Hameau (2) | 2 000 | PNJ, quetes d'acte, la zone-ecole |
+| Mines profondes | Hameau (2) | 2 000 | PNJ, ateliers, le coeur industriel |
+| Marais brumeux | Campement (1) | 400 | PNJ d'acte, pas de bourg constitue |
+| Crete de Ventombre | Campement (1) | 400 | idem |
+| Dunes d'Ambre | Campement (1) | 300 | deux habitants, un caravanserail |
+| Vallons d'Aubepine (ZON-30) | **Ruine (0)** | 0 | zone neuve : **tout est a batir** — le premier chantier collectif offert aux joueurs |
+| Lumiere + Jardins | *pas de foyer* | — | la Voute (§ 3.4) |
+| Cite ensevelie | *pas de foyer* | — | donjon (GAME_ZONES § 2.8) |
+| Mer de Sel, Pas de Givre, Glacier | *pas de foyer* | — | le Silence / Ext. 1 (§ 4.3) |
+
+Le seed est **narratif, pas protecteur** : si personne ne frequente les Mines, leur foyer
+redescendra — mais les services *existants* (PNJ, boutiques) ne ferment jamais
+(garde-fou FOY-05). La decroissance ne retire que ce que les joueurs ont bati.
+
+### 23.6 Regression et reascension (FOY-10, chiffre)
+
+- **Annonce** : un foyer qui passera sous un seuil au tick de maree est signale **une
+  maree a l'avance** (« l'etiage guette X ») — jamais de retrogradation surprise.
+- **Plancher de maree** : au plus **un rang perdu par maree**, quel que soit le deficit.
+- **Reascension acceleree** : tant que `rank < highestRank`, les depots comptent
+  **double**. Rebatir est deux fois plus rapide que batir — le patrimoine, c'est de la
+  memoire, pas des murs.
+
+### 23.7 La Crue : l'echelle actee, rappel
+
+L'echelle d'ouverture est celle de GAME_WORLD § 13.4 (1er Bourg a 40 actifs → Metropole
+a 300), mesuree en **population effective** (§ 22.5). Elle remplace toute notion de
+« quota de base » anterieure : a 50 actifs, le monde a droit a **un** Bourg de foyer, et
+c'est l'unique enjeu territorial du serveur — exactement la tension voulue. Periode de
+grace au lancement : pendant les **deux premieres marees**, aucune retrogradation et
+aucune contraction de W (§ 22.4).
