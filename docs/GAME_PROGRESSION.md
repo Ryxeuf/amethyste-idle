@@ -116,7 +116,7 @@ jamais et il part au mois 2.
 Le joueur a une fonction reconnue : il gouverne une cité, il est l'artisan qu'on va chercher,
 il complète le Codex, il explore l'Étale.
 
-**Les jalons de l'acte :** une **matéria éveillée** (exige une Métropole et de l'améthystite
+**Les jalons de l'acte :** une **matéria éveillée** (exige une Métropole et de l'améthyste
 Parfaite — donc un serveur qui a réussi *et* un savoir de prospecteur) ; un **nom au journal
 de monde** ; un plan de fin de jeu.
 
@@ -273,7 +273,7 @@ trois événements de la semaine 3 vaut mieux que celle qui ajoute du contenu au
 |---|---|---|
 | Un palier de métier de récolte | ~1 à 2 semaines d'une partie du budget | Le joueur travaille 2-3 domaines à la fois, jamais un seul |
 | Faire monter un foyer d'un rang | plusieurs joueurs × une marée | Personne ne fait monter une ville seul — c'est voulu (épreuve collective, cf. A Tale in the Desert) |
-| Un lot d'améthystite *Parfaite* | rare, et dépend du lieu et de la vitalité | Ce n'est pas un coût d'énergie, c'est un savoir |
+| Un lot d'améthyste *Parfaite* | rare, et dépend du lieu et de la vitalité | Ce n'est pas un coût d'énergie, c'est un savoir |
 
 **La conséquence à ne pas manquer :** l'énergie étant plafonnée et régénérée, **on ne peut pas
 rattraper son retard en jouant plus**. C'est une propriété précieuse — elle protège le joueur

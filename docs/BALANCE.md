@@ -902,7 +902,7 @@ Paleur (FOY-11) se calcule par `ZoneVein` — ni l'une ni l'autre ne couvre ces 
 
 **a bis) La ressource-titre du jeu n'a aucun filon.** `ore-amethyst-crystal` existe comme
 objet, mais sa **seule** source au monde est un spot herite (`spot-amethystite-xs`,
-`ObjectLayer` T5, coordonnees `75.2`, Mines profondes). L'amethystite — sur laquelle
+`ObjectLayer` T5, coordonnees `75.2`, Mines profondes). L'amethyste — sur laquelle
 reposent la materia (regle 10) *et* le postulat du monde ([GAME_WORLD.md](GAME_WORLD.md) §1)
 — est donc hors du modele calibre, presente en un seul point, et servie par le chemin
 herite. A trancher au moment de definir les ressources de zone : source unique et rare, ou
