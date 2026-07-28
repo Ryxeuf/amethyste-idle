@@ -70,6 +70,18 @@ class CraftOrder
     #[ORM\JoinColumn(name: 'target_crafter_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Player $targetCrafter = null;
 
+    /**
+     * Guilde commanditaire (RET-03), ou `null` pour une commande ordinaire.
+     *
+     * Une commande de guilde n'est **pas** une commande ordinaire mieux payee :
+     * elle est invisible au tableau regional et n'est prenable que par un
+     * membre. C'est ce qui en fait un rendez-vous interne — « on compte sur
+     * moi » a cadence fixe — plutot qu'une enchere de plus.
+     */
+    #[ORM\ManyToOne(targetEntity: Guild::class)]
+    #[ORM\JoinColumn(name: 'guild_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Guild $guild = null;
+
     #[ORM\ManyToOne(targetEntity: Region::class)]
     #[ORM\JoinColumn(name: 'region_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Region $region = null;
@@ -180,6 +192,23 @@ class CraftOrder
     public function isDirect(): bool
     {
         return null !== $this->targetCrafter;
+    }
+
+    public function getGuild(): ?Guild
+    {
+        return $this->guild;
+    }
+
+    public function setGuild(?Guild $guild): self
+    {
+        $this->guild = $guild;
+
+        return $this;
+    }
+
+    public function isGuildOrder(): bool
+    {
+        return $this->guild !== null;
     }
 
     public function getRegion(): ?Region

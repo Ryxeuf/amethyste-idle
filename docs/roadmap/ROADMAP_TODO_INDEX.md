@@ -197,7 +197,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **1/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 livre** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
+- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **2/7** : l'horizon le plus fragile de la colonne de progression ; **RET-01 et RET-03 livres** (2026-07-28), la rotation du lundi 00h00 existe et sert de point d'entree unique aux briques suivantes
 - [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **7/17, grand chantier en cours** (socle FOY-01→05 complet, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-27)](PLAN_PLAYER_ECONOMY.md) — **Pistes F (purete) et G (chaine de production par paliers) ouvertes** : la Piste G est le levier principal contre le creux du milieu. Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)

@@ -222,6 +222,16 @@ class CraftOrderManager
             throw new \InvalidArgumentException('Cette commande est adressee a un artisan en particulier.');
         }
 
+        // RET-03 : meme raisonnement pour la commande de la semaine. Le tableau
+        // regional ne la montre pas, mais un identifiant devine ou reste d'un
+        // ancien affichage suffirait a la prendre — la visibilite n'est pas une
+        // autorisation, et une regle qui ne vit que dans une requete de lecture
+        // ne protege rien.
+        $orderGuild = $order->getGuild();
+        if (null !== $orderGuild && $this->guildManager->getPlayerGuild($crafter) !== $orderGuild) {
+            throw new \InvalidArgumentException('Cette commande est reservee aux membres de la guilde qui l\'a posee.');
+        }
+
         // ECO-09 : le plafond par couple mord ici et non a la livraison. Une
         // commande prise immobilise le tableau ; refuser au dernier moment
         // aurait laisse l'artisan travailler pour rien.

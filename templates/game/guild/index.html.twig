@@ -158,6 +158,37 @@
             </div>
         </div>
 
+        {# RET-03 — La commande de la semaine, et qui l'a prise #}
+        {# Un rendez-vous dont on ne voit jamais le resultat cesse vite d'en #}
+        {# etre un : la commande figure ici meme une fois servie.            #}
+        <div class="game-card mt-4">
+            <div class="game-card-header">
+                <h2 class="text-base font-semibold text-white">{{ 'game.guild.order.heading'|trans }}</h2>
+            </div>
+            <div class="game-card-body">
+                {% if guildOrders is empty %}
+                    <p class="text-gray-500 text-sm text-center py-4">
+                        {{ 'game.guild.order.empty'|trans }}
+                    </p>
+                {% else %}
+                    <ul class="space-y-2">
+                        {% for order in guildOrders %}
+                            <li class="flex items-baseline justify-between gap-2">
+                                <span class="text-sm text-gray-200">{{ order.recipe.name }}</span>
+                                <span class="ds-num ds-num--sm ds-num--muted">
+                                    {% if order.crafter %}
+                                        {{ 'game.guild.order.taken_by'|trans({'%player%': order.crafter.name}) }}
+                                    {% else %}
+                                        {{ 'game.guild.order.open'|trans }}
+                                    {% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+
         {# RET-01 — Le defi de la semaine, sur l'ecran de guilde #}
         <div class="game-card mt-4">
             <div class="game-card-header flex items-center justify-between">

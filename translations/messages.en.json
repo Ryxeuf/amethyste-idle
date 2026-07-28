@@ -1191,6 +1191,12 @@
         "remaining_minutes": "%count% minute left|%count% minutes left",
         "remaining_ended": "ended",
         "expires_at": "expires %date%"
+      },
+      "order": {
+        "heading": "Order of the week",
+        "empty": "No guild order in progress.",
+        "open": "open",
+        "taken_by": "taken by %player%"
       }
     },
     "zone": {
