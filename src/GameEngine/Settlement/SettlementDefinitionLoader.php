@@ -48,6 +48,8 @@ class SettlementDefinitionLoader
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
      *     diminishing_factor: float,
+     *     services: array<string, SettlementRank>,
+     *     never_gated: array<string, string>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -88,6 +90,8 @@ class SettlementDefinitionLoader
      *     daily_cap_per_player: int,
      *     diminishing_threshold: int,
      *     diminishing_factor: float,
+     *     services: array<string, SettlementRank>,
+     *     never_gated: array<string, string>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -103,6 +107,9 @@ class SettlementDefinitionLoader
             throw new SettlementDefinitionException(sprintf('"anti_exploit.diminishing_threshold" (%d) must stay below "daily_cap_per_player" (%d) in "%s".', $threshold, $cap, $source));
         }
 
+        $neverGated = $this->normalizeWithout($raw['never_gated'] ?? [], $source, 'never_gated');
+        $services = $this->normalizeServices($raw['services'] ?? [], $neverGated, $source);
+
         return [
             'ranks' => $this->normalizeRanks($raw['ranks'] ?? null, $source),
             'decay_rate' => $this->normalizeRate($raw['decay']['daily_rate'] ?? null, 'decay.daily_rate', $source),
@@ -113,6 +120,8 @@ class SettlementDefinitionLoader
             'daily_cap_per_player' => $cap,
             'diminishing_threshold' => $threshold,
             'diminishing_factor' => $this->normalizeRate($raw['anti_exploit']['diminishing_factor'] ?? null, 'anti_exploit.diminishing_factor', $source),
+            'services' => $services,
+            'never_gated' => $neverGated,
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
         ];
@@ -255,12 +264,49 @@ class SettlementDefinitionLoader
     }
 
     /**
-     * @return array<string, string> slug de zone => raison de l'absence de foyer
+     * Services ouverts par le rang (FOY-05).
+     *
+     * La verification qui compte n'est pas que le rang existe : c'est qu'un
+     * service **deja pose dans le monde** ne se retrouve jamais ici. La decision
+     * A — rien n'est retro-gate — serait sinon annulable par une ligne de YAML
+     * ecrite de bonne foi, et le jour ou elle le serait, des joueurs perdraient
+     * l'acces a une boutique qu'ils utilisaient la veille.
+     *
+     * @param array<string, string> $neverGated
+     *
+     * @return array<string, SettlementRank>
      */
-    private function normalizeWithout(mixed $without, string $source): array
+    private function normalizeServices(mixed $services, array $neverGated, string $source): array
+    {
+        if (!\is_array($services)) {
+            throw new SettlementDefinitionException(sprintf('"services" must be a mapping in "%s".', $source));
+        }
+
+        $normalized = [];
+        foreach ($services as $service => $entry) {
+            if (!\is_string($service) || trim($service) === '') {
+                throw new SettlementDefinitionException(sprintf('Service keys must be names in "%s".', $source));
+            }
+            if (isset($neverGated[$service])) {
+                throw new SettlementDefinitionException(sprintf('Service "%s" is declared never gated (%s) and cannot be gated in "%s".', $service, $neverGated[$service], $source));
+            }
+            if (!\is_array($entry)) {
+                throw new SettlementDefinitionException(sprintf('Service "%s" must be a mapping in "%s".', $service, $source));
+            }
+
+            $normalized[$service] = $this->normalizeRank($entry['minimum_rank'] ?? null, sprintf('services.%s.minimum_rank', $service), $source);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return array<string, string> clef => raison ecrite
+     */
+    private function normalizeWithout(mixed $without, string $source, string $key = 'without_settlement'): array
     {
         if (!\is_array($without)) {
-            throw new SettlementDefinitionException(sprintf('"without_settlement" must be a mapping in "%s".', $source));
+            throw new SettlementDefinitionException(sprintf('"%s" must be a mapping in "%s".', $key, $source));
         }
 
         $normalized = [];
@@ -268,7 +314,7 @@ class SettlementDefinitionLoader
             if (!\is_string($slug) || !\is_string($reason) || trim($reason) === '') {
                 // Exiger une raison ecrite est le point : sans elle, on ne
                 // distingue pas une zone volontairement sans foyer d'un oubli.
-                throw new SettlementDefinitionException(sprintf('Zone "%s" must state why it has no settlement in "%s".', \is_string($slug) ? $slug : '?', $source));
+                throw new SettlementDefinitionException(sprintf('Entry "%s" of "%s" must state its reason in writing, in "%s".', \is_string($slug) ? $slug : '?', $key, $source));
             }
             $normalized[$slug] = $reason;
         }

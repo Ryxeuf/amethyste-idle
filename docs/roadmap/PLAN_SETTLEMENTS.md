@@ -32,7 +32,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-02 ✅ | Dépôt de sédiment (subscriber sur les events existants) |
 | FOY-03 ✅ | Décroissance, calcul du rang et du type (hystérésis) |
 | FOY-04 | Le foyer sur l'écran de zone — chantier lisible |
-| FOY-05 | Gate déclaratif des services par rang |
+| FOY-05 ✅ | Gate déclaratif des services par rang |
 | FOY-06 | Services gatés : marché local, banque, éveil (création) de matéria |
 | FOY-07 | Bonus d'atelier par foyer (ligne de production × type) |
 | FOY-08 | Crue — quotas indexés sur la population active |
@@ -48,7 +48,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 
 ```
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04
-Piste B — Ce que le rang ouvre: FOY-05 → FOY-06 → FOY-07
+Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 → FOY-07
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
@@ -140,15 +140,9 @@ s'y branche.
 
 ## Piste B — Ce que le rang ouvre (séquentiel)
 
-### FOY-05 — Gate déclaratif des services (S | ★★ | HAUTE)
+### FOY-05 — Gate déclaratif des services ✅ (S | ★★ | HAUTE)
 > Décision A : **rien n'est rétro-gaté**. Le gate ne s'applique qu'aux services nouveaux.
-> Prérequis : ← FOY-01
-- [ ] Service `SettlementGate::allows(Zone, string $service): bool`, table de correspondance
-      **déclarative** (`settlements.yaml`) service → rang minimum
-- [ ] Garde-fou explicite : un service **existant** (PNJ, boutique, atelier déjà posés) n'est
-      jamais gaté, quel que soit le rang
-- [ ] Message joueur uniforme quand un service est fermé : *pourquoi*, et *ce qui manque*
-- [ ] Tests : service existant toujours ouvert, service nouveau gaté, message
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ### FOY-06 — Services gatés par rang (M | ★★★ | HAUTE)
 > Le rang cesse d'être un chiffre : il ouvre des portes.

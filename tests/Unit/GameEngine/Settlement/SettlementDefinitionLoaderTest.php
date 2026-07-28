@@ -46,6 +46,8 @@ class SettlementDefinitionLoaderTest extends TestCase
         self::assertSame(SettlementRank::Camp, $result['seed']['marais']['rank']);
         self::assertSame(400, $result['seed']['marais']['stock']);
         self::assertSame('batie sur la Voute', $result['without_settlement']['lumiere']);
+        self::assertSame(SettlementRank::Town, $result['services']['regional_market']);
+        self::assertSame(['shop' => 'boutiques existantes'], $result['never_gated']);
     }
 
     public function testSpreadIsNotAFifthIndex(): void
@@ -177,7 +179,7 @@ class SettlementDefinitionLoaderTest extends TestCase
         $raw['without_settlement']['lumiere'] = '   ';
 
         $this->expectException(SettlementDefinitionException::class);
-        $this->expectExceptionMessageMatches('/must state why/');
+        $this->expectExceptionMessageMatches('/must state its reason in writing/');
         $this->loader->normalize($raw);
     }
 
@@ -203,6 +205,8 @@ class SettlementDefinitionLoaderTest extends TestCase
                 'travel' => ['index' => 'spread', 'grains' => 0.2],
             ],
             'anti_exploit' => ['daily_cap_per_player' => 60, 'diminishing_threshold' => 40, 'diminishing_factor' => 0.5],
+            'services' => ['regional_market' => ['minimum_rank' => 'town']],
+            'never_gated' => ['shop' => 'boutiques existantes'],
             'seed' => ['marais' => ['rank' => 'camp', 'stock' => 400]],
             'without_settlement' => ['lumiere' => 'batie sur la Voute'],
         ];
