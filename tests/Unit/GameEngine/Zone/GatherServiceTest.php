@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
+use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\WorldScaleService;
@@ -24,6 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class GatherServiceTest extends TestCase
 {
@@ -37,6 +39,9 @@ class GatherServiceTest extends TestCase
     private InventoryHelper&MockObject $inventoryHelper;
     private PlayerJournalEntryRepository&MockObject $journalRepository;
     private WorldScaleService&MockObject $worldScaleService;
+    private EventDispatcherInterface&MockObject $eventDispatcher;
+    /** @var list<object> */
+    private array $dispatched = [];
 
     /** @var GatherService&object{rolls: list<int>, currentTime: \DateTimeImmutable} */
     private GatherService $service;
@@ -61,8 +66,15 @@ class GatherServiceTest extends TestCase
         // recolte, pas sur le dimensionnement.
         $this->worldScaleService = $this->createMock(WorldScaleService::class);
         $this->worldScaleService->method('current')->willReturn(1.0);
+        $this->dispatched = [];
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->eventDispatcher->method('dispatch')->willReturnCallback(function (object $event): object {
+            $this->dispatched[] = $event;
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService) extends GatherService {
+            return $event;
+        });
+
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService, $this->eventDispatcher) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -210,6 +222,36 @@ class GatherServiceTest extends TestCase
     }
 
     /**
+     * ZON-38 : la recolte redevient observable.
+     *
+     * L'evenement est ce qui rebranche l'influence de guilde — et, demain, le
+     * sediment des foyers. Sans lui, la boucle la plus jouee du jeu ne
+     * rapportait rien a la guilde, en silence, depuis le pivot.
+     */
+    public function testGatherAnnouncesTheHarvest(): void
+    {
+        $player = $this->buildPlayerIn([$this->ironResource()]);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [3];
+
+        $this->service->gather($player, 'filon-de-fer');
+
+        $events = array_values(array_filter(
+            $this->dispatched,
+            static fn (object $e): bool => $e instanceof ZoneGatherEvent,
+        ));
+
+        self::assertCount(1, $events);
+        self::assertSame($player, $events[0]->getPlayer());
+        self::assertSame($player->getCurrentZone(), $events[0]->getZone());
+        self::assertSame('filon-de-fer', $events[0]->getVeinSlug());
+        self::assertSame('ore-iron', $events[0]->getItemSlug());
+        self::assertSame(3, $events[0]->getQuantity());
+    }
+
+    /**
      * Rendement par point d'energie : le budget d'energie reste egalitaire, c'est
      * ce qu'une action rapporte qui recompense l'investissement.
      */
@@ -298,7 +340,7 @@ class GatherServiceTest extends TestCase
         $worldScale = $this->createMock(WorldScaleService::class);
         $worldScale->method('current')->willReturn(1.0);
 
-        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale) extends GatherService {
+        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class)) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;

@@ -11,6 +11,7 @@ use App\Event\Game\QuestCompletedEvent;
 use App\Event\Map\ButcheringEvent;
 use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
+use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Guild\InfluenceManager;
 use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use App\Helper\PlayerHelper;
@@ -36,6 +37,7 @@ class InfluenceListener implements EventSubscriberInterface
             FishingEvent::NAME => 'onFishing',
             ButcheringEvent::NAME => 'onButchering',
             QuestCompletedEvent::NAME => 'onQuestCompleted',
+            ZoneGatherEvent::NAME => 'onZoneGather',
         ];
     }
 
@@ -110,6 +112,31 @@ class InfluenceListener implements EventSubscriberInterface
             ['item_count' => $itemCount],
             $region,
             ['spot' => $event->getObjectLayer()->getSlug(), 'items' => $itemCount],
+        );
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Recolte du modele zone (ZON-38).
+     *
+     * `onSpotHarvest` ci-dessus ecoute encore l'ancien chemin de la carte
+     * navigable : il n'est plus atteignable depuis l'interface, mais le
+     * supprimer depasse ce jalon. Celui-ci ecoute la boucle **vivante**, celle
+     * qui recolte sur les filons declares de la zone.
+     */
+    public function onZoneGather(ZoneGatherEvent $event): void
+    {
+        if ($event->getQuantity() <= 0) {
+            return;
+        }
+
+        $this->awardForPlayer(
+            $event->getPlayer(),
+            InfluenceActivityType::Harvest,
+            ['item_count' => $event->getQuantity()],
+            $event->getZone()->getSourceMap()?->getRegion(),
+            ['vein' => $event->getVeinSlug(), 'items' => $event->getQuantity()],
         );
 
         $this->entityManager->flush();
