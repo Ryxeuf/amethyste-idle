@@ -14,6 +14,7 @@ use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -81,6 +82,7 @@ class ZoneControllerTest extends TestCase
     private GroupDungeonCombatService&MockObject $groupDungeonCombatService;
     private GroupDungeonClearRepository&MockObject $groupDungeonClearRepository;
     private PlayerShopRepository&MockObject $playerShopRepository;
+    private SettlementPanelBuilder&MockObject $settlementPanelBuilder;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -152,6 +154,10 @@ class ZoneControllerTest extends TestCase
         $this->groupDungeonClearRepository = $this->createMock(GroupDungeonClearRepository::class);
         $this->playerShopRepository = $this->createMock(PlayerShopRepository::class);
         $this->playerShopRepository->method('findOpenInZone')->willReturn([]);
+        // FOY-04 : ces tests portent sur les actions de zone, pas sur le foyer.
+        // Un panneau absent est l'etat normal d'une zone sans foyer.
+        $this->settlementPanelBuilder = $this->createMock(SettlementPanelBuilder::class);
+        $this->settlementPanelBuilder->method('build')->willReturn(null);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -176,6 +182,7 @@ class ZoneControllerTest extends TestCase
             $this->groupDungeonClearRepository,
             new MountTravelSpeed(),
             $this->playerShopRepository,
+            $this->settlementPanelBuilder,
         );
         $this->controller->setContainer($this->createContainer());
     }
