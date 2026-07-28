@@ -1105,8 +1105,10 @@ Deux garde-fous suffisent :
 
 ## 13. Peuplement du monde — départ, zones, extensions
 
-> **Statut : proposition**, en attente de deux entrées (§14). Le raisonnement est consigné
-> ici pour ne pas être reperdu ; les tableaux de zones ne sont pas actés.
+> **Statut : acté le 2026-07-28.** Les deux entrées attendues (§14) sont closes, et les
+> tableaux ci-dessous sont devenus des définitions opposables, zone par zone, dans
+> [GAME_ZONES.md](GAME_ZONES.md) (jalons : [roadmap/PLAN_ZONES.md](roadmap/PLAN_ZONES.md)).
+> Ce paragraphe reste la version macro ; en cas d'écart, GAME_ZONES.md fait foi.
 
 ### 13.1 Un seul point de réveil
 
@@ -1275,7 +1277,8 @@ impossible, et l'incitation à s'étaler n'existe pas. **Toute la couche de rare
 
 ## 14. Ce qui reste à cadrer avant d'écrire du contenu
 
-Une entrée manque encore. Elle est **au-dessus** de ce document, pas dedans.
+**Plus rien.** Les trois entrées sont closes, et le §13 est passé de proposition à
+définitions actées ([GAME_ZONES.md](GAME_ZONES.md)) :
 
 1. ~~La population cible~~ — **tranchée** : ~50 joueurs actifs quotidiens comme base de
    calibrage, tout étant indexé dessus (§13.4).
@@ -1286,7 +1289,8 @@ Une entrée manque encore. Elle est **au-dessus** de ce document, pas dedans.
    énonce ce que la colonne impose aux zones et aux ressources — c'est l'entrée qui manquait
    pour figer le §13.
 
-3. **La source de l'améthyste** (§13.3) — recommandation posée, décision à prendre.
+3. ~~La source de l'améthyste~~ — **tranchée** (décision G, §13.3) : aucun gisement,
+   sous-produit universel de toute action.
 
 > **Note de méthode.** L'ordre sain reste macro → micro. Le détour par le micro (audit de la
 > chaîne, ECO-24) était néanmoins rentable : il a **falsifié** trois hypothèses du macro —

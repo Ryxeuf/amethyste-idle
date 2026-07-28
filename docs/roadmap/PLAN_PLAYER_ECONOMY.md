@@ -394,13 +394,17 @@ Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO
 
 ### ECO-24b — Prérequis de la chaîne : sources et répartition (S | ★★ | HAUTE)
 > Les deux défauts ci-dessus. Sans eux, chaîner les paliers renforce un goulot au lieu de
-> créer une demande.
+> créer une demande. **L'entrée du jalon est la carte des minerais de
+> [../GAME_ZONES.md](../GAME_ZONES.md) §3** (actée : sombracier → Mines, mithril → Crête,
+> platine + 2e étain → Dunes, orichalque → Cité ; adamantite, métal étoilé et voidium
+> réservés aux extensions — la base s'arrête au lingot de mithril).
 > Prérequis : ← ECO-24 ✅
-- [ ] Déclarer des **filons** (`gather:` dans le YAML de zone) pour les six minerais de haut
-      palier aujourd'hui portés par des `ObjectLayer`, aux paliers T3/T4 du calibrage
+- [ ] Déclarer des **filons** (`gather:` dans le YAML de zone) pour les minerais de haut
+      palier aujourd'hui portés par des `ObjectLayer`, aux paliers T3/T4 du calibrage et
+      **aux zones de la carte** — ceux des extensions attendent leur zone
 - [ ] Décider du sort du chemin hérité `ObjectLayer` pour ces minerais (retrait, ou maintien
       en double source assumée et documentée)
-- [ ] Répartir l'**étain** sur au moins une seconde zone
+- [ ] Répartir l'**étain** sur les Dunes d'Ambre (profil T0 — jamais un goulot)
 - [ ] Vérifier la règle des raretés inversées sur toute la ligne du métal
 - [ ] Tests : chaque minerai de recette a au moins une source déclarée (loi transverse)
 

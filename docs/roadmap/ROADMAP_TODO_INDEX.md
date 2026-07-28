@@ -61,7 +61,7 @@
 | 11 | **FOY-08, 09, 14 + RET-04** | La Crue + assiduite (Sprint 18) | L'enjeu politique, une fois le socle vivant |
 | 12 | **ECO-25 → 27** | Chaine de production par paliers | Le levier anti-creux-du-milieu |
 | 13 | **FOY-11 → 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste |
-| 14 | **Zones & ressources** | Vallons (zone de niveau 2), ressources par zone, amethystite | ⚠️ **Bloque** par la derniere decision ouverte : la source de l'amethystite (GAME_WORLD §13.3 — recommandation : partout, la purete variant) |
+| 14 | **ZON-30 → 33** | Contenu des zones : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste ([PLAN_ZONES.md](PLAN_ZONES.md)) | **Debloque** : definitions actees dans [docs/GAME_ZONES.md](../GAME_ZONES.md) (2026-07-28). ZON-30/31 sont independants et peuvent s'intercaler plus tot si besoin de contenu ; ZON-32 attend ECO-21/22 |
 
 Transverse, au fil de l'eau : FOY-16 et RET-07 (tests), mise a jour de `ROADMAP_DONE.md`
 a chaque jalon livre (regle 13 de CLAUDE.md).
