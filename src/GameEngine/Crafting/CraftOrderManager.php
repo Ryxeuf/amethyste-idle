@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftOrderStatus;
+use App\Enum\Purity;
 use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Auction\AuctionSettlement;
 use App\GameEngine\Generator\PlayerItemGenerator;
@@ -81,6 +82,7 @@ class CraftOrderManager
         ?string $minQuality = null,
         int $durationHours = self::DEFAULT_DURATION_HOURS,
         ?Player $targetCrafter = null,
+        ?Purity $minPurity = null,
     ): CraftOrder {
         if ($commission < 1) {
             throw new \InvalidArgumentException('La commission doit etre superieure a 0.');
@@ -96,6 +98,7 @@ class CraftOrderManager
 
         $this->assertMaterialsBelongTo($requester, $materials);
         $this->assertMaterialsCoverRecipe($recipe, $materials);
+        $this->assertMaterialsMeetPurity($materials, $minPurity);
 
         if (null !== $targetCrafter) {
             $this->assertTargetIsAcceptable($requester, $targetCrafter);
@@ -112,6 +115,7 @@ class CraftOrderManager
         $order->setRecipe($recipe);
         $order->setCommission($commission);
         $order->setMinQuality($minQuality);
+        $order->setMinPurity($minPurity);
         $order->setTargetCrafter($targetCrafter);
         $order->setRegion($this->regionResolver->resolve($requester));
         $order->setStatus(CraftOrderStatus::Open);
@@ -650,6 +654,38 @@ class CraftOrderManager
 
         $requester->addGils($order->getCommission());
         $order->setStatus($status);
+    }
+
+    /**
+     * La bande exigee est verifiee **a la creation**, sur les materiaux confies
+     * (ECO-23).
+     *
+     * La verifier plus tard reviendrait a laisser un client immobiliser sa
+     * matiere et sa commission dans une commande qu'aucun artisan ne pourrait
+     * honorer sans faute de sa part. Le refus arrive donc avant l'escrow, quand
+     * il ne coute encore rien.
+     *
+     * Une matiere **hors perimetre** ne peut pas satisfaire une exigence de
+     * bande : elle n'en a pas. Le dire explicitement vaut mieux que de la
+     * laisser passer, ce qui reviendrait a offrir un contournement a qui
+     * fournirait des herbes.
+     *
+     * @param list<PlayerItem> $materials
+     */
+    private function assertMaterialsMeetPurity(array $materials, ?Purity $minPurity): void
+    {
+        if (null === $minPurity) {
+            return;
+        }
+
+        foreach ($materials as $material) {
+            $purity = $material->getPurity();
+            if (null === $purity || !$purity->isAtLeast($minPurity)) {
+                $supplied = null === $purity ? 'sans bande' : $purity->value;
+
+                throw new \InvalidArgumentException(sprintf('Cette commande exige de la matiere « %s » : « %s » ne convient pas.', $minPurity->value, $supplied));
+            }
+        }
     }
 
     /**

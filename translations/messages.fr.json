@@ -1547,6 +1547,14 @@
         "clair": "Clair",
         "pur": "Pur",
         "parfait": "Parfait"
+      },
+      "filter": {
+        "all": "Toutes puretés"
+      },
+      "order": {
+        "label": "Pureté minimale de la matière (optionnel)",
+        "none": "Aucune exigence",
+        "hint": "Porte sur la matière que vous confiez, pas sur l'objet produit. Seule la ligne du cristal — améthyste, minerais, gemmes — porte une bande."
       }
     }
   },

@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Region;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
+use App\Enum\Purity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,7 +32,7 @@ class AuctionListingRepository extends ServiceEntityRepository
      *
      * @return array{items: AuctionListing[], total: int, pages: int, page: int}
      */
-    public function findActiveListings(?string $search, ?string $type, ?string $rarity, int $page = 1, int $limit = 20, ?Region $region = null): array
+    public function findActiveListings(?string $search, ?string $type, ?string $rarity, int $page = 1, int $limit = 20, ?Region $region = null, ?Purity $purity = null): array
     {
         $qb = $this->createQueryBuilder('l')
             ->join('l.playerItem', 'pi')->addSelect('pi')
@@ -64,6 +65,15 @@ class AuctionListingRepository extends ServiceEntityRepository
         if ($rarity !== null && $rarity !== '') {
             $qb->andWhere('gi.rarity = :rarity')
                 ->setParameter('rarity', $rarity);
+        }
+
+        // ECO-23 : la bande se lit **sur le lot mis en vente**, jamais recopiee
+        // sur l'annonce. Une annonce ne porte pas sa purete : elle porte l'objet
+        // qui la porte, et dupliquer la colonne aurait cree deux verites a tenir
+        // d'accord — pour une jointure qui existait deja.
+        if ($purity !== null) {
+            $qb->andWhere('pi.purity = :purity')
+                ->setParameter('purity', $purity);
         }
 
         $countQb = clone $qb;

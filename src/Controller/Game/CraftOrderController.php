@@ -6,6 +6,7 @@ use App\Entity\App\CraftOrder;
 use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\Enum\Purity;
 use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Helper\PlayerHelper;
@@ -198,6 +199,9 @@ class CraftOrderController extends AbstractController
             // ECO-12b : la vitrine d'un artisan renvoie ici avec son nom. Le
             // champ reste editable — c'est une suggestion, pas un verrou.
             'targetCrafter' => trim((string) $request->query->get('crafter', '')),
+            // ECO-23 : exiger une bande donne au prospecteur un **client**, pas
+            // seulement un marche.
+            'purities' => Purity::ordered(),
         ]);
     }
 
@@ -253,6 +257,7 @@ class CraftOrderController extends AbstractController
                 $request->request->getInt('commission'),
                 '' !== $minQuality ? $minQuality : null,
                 targetCrafter: $targetCrafter,
+                minPurity: Purity::tryFrom((string) $request->request->get('min_purity', '')),
             );
             $this->addFlash('success', null !== $targetCrafter
                 ? sprintf('Commande adressee a %s : materiaux et commission sont bloques jusqu\'a la livraison.', $targetCrafter->getName())

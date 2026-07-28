@@ -14,6 +14,7 @@ use App\Entity\Game\Recipe;
 use App\Entity\User;
 use App\Enum\BindType;
 use App\Enum\CraftOrderStatus;
+use App\Enum\Purity;
 use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Crafting\CrafterReputationManager;
 use App\GameEngine\Crafting\CraftingManager;
@@ -128,6 +129,84 @@ class CraftOrderManagerTest extends TestCase
             self::assertNull($material->getInventory(), 'Le materiau quitte l\'inventaire : c\'est ce qui rend l\'escrow reel.');
             self::assertSame($order, $material->getCraftOrder());
         }
+    }
+
+    /**
+     * ECO-23 : exiger une bande donne au prospecteur un **client**, pas seulement
+     * un marche. Sans cette exigence, la bande n'aurait de valeur qu'a la revente
+     * et le savoir du prospecteur resterait speculatif.
+     */
+    public function testAnOrderCanDemandAMinimumPurityBand(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
+        foreach ($materials as $material) {
+            $material->setPurity(Purity::Pur);
+        }
+        $recipe = $this->createRecipe([['slug' => 'ore-iron', 'quantity' => 2]]);
+
+        $order = $this->manager->createOrder($requester, $recipe, $materials, 300, minPurity: Purity::Clair);
+
+        self::assertSame(Purity::Clair, $order->getMinPurity());
+    }
+
+    /**
+     * Le refus arrive **avant** l'escrow, quand il ne coute encore rien : le
+     * verifier plus tard laisserait un client immobiliser sa matiere et sa
+     * commission dans une commande qu'aucun artisan ne pourrait honorer.
+     */
+    public function testMaterialUnderTheDemandedBandIsRefusedBeforeAnythingIsLocked(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
+        $materials[0]->setPurity(Purity::Parfait);
+        $materials[1]->setPurity(Purity::Trouble);
+        $recipe = $this->createRecipe([['slug' => 'ore-iron', 'quantity' => 2]]);
+
+        try {
+            $this->manager->createOrder($requester, $recipe, $materials, 300, minPurity: Purity::Pur);
+            self::fail('Une matiere sous la bande demandee doit etre refusee.');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('pur', $e->getMessage());
+        }
+
+        self::assertSame(1_000, $requester->getGils(), 'La commission ne doit pas avoir quitte la bourse.');
+        foreach ($materials as $material) {
+            self::assertNotNull($material->getInventory(), 'Le materiau doit rester dans l\'inventaire.');
+        }
+    }
+
+    /**
+     * Une matiere **hors perimetre** n'a pas de bande, donc ne peut satisfaire
+     * aucune exigence. La laisser passer offrirait un contournement a qui
+     * fournirait des herbes.
+     */
+    public function testAMaterialWithoutABandCannotSatisfyADemand(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $materials = $this->createMaterials($requester, ['herb-sage', 'herb-sage']);
+        $recipe = $this->createRecipe([['slug' => 'herb-sage', 'quantity' => 2]]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/sans bande/');
+
+        $this->manager->createOrder($requester, $recipe, $materials, 300, minPurity: Purity::Clair);
+    }
+
+    /**
+     * Le defaut reste **aucune exigence** : la plupart des commandes ne
+     * demandent rien de particulier, et une exigence implicite fermerait le
+     * plancher T1 aux debutants.
+     */
+    public function testWithoutADemandAnyMaterialPasses(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $materials = $this->createMaterials($requester, ['herb-sage', 'herb-sage']);
+        $recipe = $this->createRecipe([['slug' => 'herb-sage', 'quantity' => 2]]);
+
+        $order = $this->manager->createOrder($requester, $recipe, $materials, 300);
+
+        self::assertNull($order->getMinPurity());
     }
 
     /**

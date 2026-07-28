@@ -60,6 +60,23 @@
                     </p>
                 </div>
 
+                {# ECO-23 : exiger une bande donne au prospecteur un client, pas
+                   seulement un marche. A ne pas confondre avec la qualite
+                   ci-dessus : l'une exige de l'artisan, l'autre de la matiere. #}
+                <div>
+                    <label for="min_purity" class="block text-xs text-gray-400 mb-1">{{ 'game.purity.order.label'|trans }}</label>
+                    <select name="min_purity" id="min_purity"
+                            class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                        <option value="">{{ 'game.purity.order.none'|trans }}</option>
+                        {% for band in purities %}
+                            <option value="{{ band.value }}">{{ ('game.purity.band.' ~ band.value)|trans }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-xs text-gray-600 mt-1">
+                        {{ 'game.purity.order.hint'|trans }}
+                    </p>
+                </div>
+
                 {# ECO-07b : nommer un artisan transforme la commande en commande directe. #}
                 <div>
                     <label for="target_crafter" class="block text-xs text-gray-400 mb-1">Artisan (optionnel)</label>
