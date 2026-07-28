@@ -112,7 +112,7 @@ s'y branche.
       (Comptoir/Bastion/Athénée/Sanctuaire)
 - [ ] Migration idempotente (`CREATE TABLE IF NOT EXISTS`, index sur `zone_id` unique)
 - [ ] **Seed du rang de départ** (décision A — incrémental) : chaque zone déjà peuplée
-      démarre au rang correspondant à ce qu'elle offre aujourd'hui. Village de Lumière et
+      démarre au rang correspondant à ce qu'elle offre aujourd'hui. Le Fanal et
       Quartier des Jardins **n'ont pas de foyer** (§3.4 : bâtis sur la Voûte)
 - [ ] Fichier de paramètres `config/game/settlements.yaml` (seuils, décroissance, quotas)
 - [ ] Tests : création, seed, absence de foyer sur les zones du Sanctuaire

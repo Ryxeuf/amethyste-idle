@@ -387,9 +387,9 @@ distance ait un cout.
 
 | Region | Cartes | Taxe | Role |
 |--------|--------|------|------|
-| Plaines de l'Eveil | Village de Lumiere (capitale), Foret des murmures | 5 % | Marche de depart : la demande, les nouveaux joueurs |
+| Plaines de l'Eveil | le Fanal (capitale), Foret des murmures | 5 % | Marche de depart : la demande, les nouveaux joueurs |
 | Terres Sauvages | Mines profondes, Marais Brumeux, Crete de Ventombre | 8 % | Front pionnier : la matiere premiere rare |
-| Sanctuaire de Lumiere | *(aucune carte)* | 0 % | Region declaree, non contestable, sans contenu a ce jour |
+| Sanctuaire de la Voute | *(aucune carte)* | 0 % | Region declaree, non contestable, sans contenu a ce jour |
 
 **L'ecart de taxe est le levier d'arbitrage** : la matiere se recolte au nord (8 %),
 la demande est au sud (5 %). Vendre sur place est immediat mais coute plus cher ;
@@ -1301,7 +1301,7 @@ de type : un Campement n'a pas encore d'identite.
 | Crete de Ventombre | Campement (1) | 400 | idem |
 | Dunes d'Ambre | Campement (1) | 300 | deux habitants, un caravanserail |
 | Vallons d'Aubepine (ZON-30) | **Ruine (0)** | 0 | zone neuve : **tout est a batir** — le premier chantier collectif offert aux joueurs |
-| Lumiere + Jardins | *pas de foyer* | — | la Voute (§ 3.4) |
+| le Fanal + Jardins | *pas de foyer* | — | la Voute (§ 3.4) |
 | Cite ensevelie | *pas de foyer* | — | donjon (GAME_ZONES § 2.8) |
 | Mer de Sel, Pas de Givre, Glacier | *pas de foyer* | — | le Silence / Ext. 1 (§ 4.3) |
 

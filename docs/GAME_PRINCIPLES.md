@@ -27,7 +27,7 @@ d'un choix de menu, d'un achat, ou d'un point dépensé dans l'abstrait :
 - **Plus on fait une action, mieux on la fait** (arbres de récolte et d'artisanat,
   fatigue et rendement, qualité au craft).
 - **Plus on fait certaines actions, plus on débloque** — y compris du contenu secret :
-  l'approche de l'Ombre après des gestes nocturnes, les passages dérobés, les gestes
+  l'approche de la Confrérie des Ruelles après des gestes nocturnes, les passages dérobés, les gestes
   retrouvés du Répertoire orientés par ce que le serveur **lit** réellement
   ([GAME_WORLD.md](GAME_WORLD.md) §12.3), le type d'un foyer décidé par ce qu'on y
   **fait** (§3.2), la réputation nourrie par les gestes et non par les quêtes (§6.4).

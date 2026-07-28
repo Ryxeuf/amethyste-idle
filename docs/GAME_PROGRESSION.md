@@ -63,7 +63,7 @@ jeu** — ce qui fait revenir n'est pas le même à la semaine 1 et au mois 6.
 
 ### Acte I — Les premiers jours (j1 → j7) : « je comprends »
 
-Le Limpide s'éveille à Lumière, l'arc d'introduction (livré, NAR-03) l'emmène de la première
+Le Limpide s'éveille au Fanal, l'arc d'introduction (livré, NAR-03) l'emmène de la première
 exploration à la première potion, puis vers une guilde.
 
 **Ce qu'il doit avoir à la fin de la semaine 1 :**

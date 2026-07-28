@@ -5,7 +5,7 @@
 
 > Décline les décisions du 2026-07-28 : [../GAME_WORLD.md](../GAME_WORLD.md) **§6.4**
 > (tension par paires, gestes, patronage, Hostile à conséquences), **§12.2** (la Fonderie
-> complétée), **§12.4** (la Confrérie des Ombres), **§12.5** (les trois autres maisons,
+> complétée), **§12.4** (la Confrérie des Ruelles), **§12.5** (les trois autres maisons,
 > les cinq portes). Le socle code est **livré** : `Faction`, `PlayerFaction` (7 paliers),
 > `FactionReward`, `ReputationListener` (kills + quêtes), `CrafterReputation`,
 > `PlayerRenown`. Ce plan **transforme** un système de boutiques tièdes en pilier
@@ -22,16 +22,16 @@
 | FAC-03 | Hostile à conséquences | S | ← FAC-01 |
 | FAC-04 | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
 | FAC-05 | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
-| FAC-06 | L'Ombre : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
+| FAC-06 | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
 | FAC-07 | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
-| FAC-08 | Contrebande & placements (système Ombre) | M | ← FAC-06, FAC-07 |
+| FAC-08 | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
 | FAC-09 | Échelles latérales + les cinq portes | L → par maison | ← FAC-01→03 |
 | FAC-10 | Tests du plan | S | ‖ |
 
 ```
 Piste A — Le système   : FAC-01 → FAC-02 → FAC-03
 Piste B — La Fonderie  : FAC-04 → FAC-05
-Piste C — L'Ombre      : FAC-06 → FAC-07 → FAC-08
+Piste C — Les Ruelles  : FAC-06 → FAC-07 → FAC-08
 Piste D — Les échelles : FAC-09, FAC-10
 ```
 
@@ -49,7 +49,7 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 > GAME_WORLD §6.4 a/c. Le cœur du rework : l'identité naît de ce qu'on renonce.
 > Prérequis : ∅
 - [ ] Paires de tension en config (`config/game/factions.yaml`) : `fonderie ↔ mages`,
-      `chevaliers ↔ ombres` ; Marchands hors tension. **Rien en dur**
+      `chevaliers ↔ ruelles` (slug de code hérité : `ombres`) ; Marchands hors tension. **Rien en dur**
 - [ ] Décote : tout gain au-delà du palier Ami chez l'un retire une fraction (paramètre,
       ~50 %) chez l'opposé. Jamais de décroissance par inactivité (principe RET)
 - [ ] **Patronage** : une seule faction portée (choix du joueur, changeable hors combat) ;
@@ -72,7 +72,7 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 > §6.4 d. Bornes absolues : jamais la boucle cœur, jamais une agression.
 > Prérequis : ← FAC-01
 - [ ] Table déclarative par faction : Marchands = surcharge 10 % PNJ ; Chevaliers =
-      fouilles (surcoût de voyage vers zones Bastion) + taxe d'Autel au plafond ; Ombre =
+      fouilles (surcoût de voyage vers zones Bastion) + taxe d'Autel au plafond ; Ruelles =
       rumeurs empoisonnées ; Fonderie = plancher de rachat fermé ; Mages = lecture refusée
 - [ ] Garde-fou testé : aucun Hostile ne bloque énergie, voyage de base, combat, plancher T1
 - [ ] Tests : chaque conséquence, et le garde-fou
@@ -99,14 +99,14 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 - [ ] Garde-fou : prix contractuel < médiane HV de la matière (vérifié au tirage)
 - [ ] Tests : rotation, garde-fou de prix, paiement mixte
 
-## Piste C — L'Ombre
+## Piste C — Les Ruelles
 
 ### FAC-06 — L'approche, le receleur, les rumeurs (M | ★★★ | HAUTE)
 > §12.4. La faction invisible jusqu'au premier contact.
 > Prérequis : ← FAC-01
 - [ ] Entrée différée : gestes qualifiants (nuits d'exploration, étal nocturne,
       contrefaçon découverte) → chaîne nocturne de 3-4 étapes → la faction apparaît.
-      Façades : Tancrède (Lumière), Kolm (Mines) — PNJ existants, seconde vie
+      Façades : Tancrède (le Fanal), Kolm (Mines) — PNJ existants, seconde vie
 - [ ] **Receleur** : vente hors taxe, coupe 15 % (toujours > taxe max de cité, 10 %),
       plafond ~5 lots/semaine/joueur, accès Ami+ — les trois garde-fous en config
 - [ ] **Rumeurs** : achat d'informations (bandes hautes, filons reposés, Affleurement) ;
@@ -126,7 +126,7 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 - [ ] Tests : trahison, identification, les verrous de canaux
 
 ### FAC-08 — Contrebande & placements (M | ★★ | MOYENNE)
-> §12.4 d. Le système propre de l'Ombre — créé avec elle, pas dérivé des caravanes.
+> §12.4 d. Le système propre de la Confrérie — créé avec elle, pas dérivé des caravanes.
 > Prérequis : ← FAC-06, FAC-07 ; les fouilles exigent les types de foyer (FOY-03)
 - [ ] Contrats de contrebande : cargaison de nuit, capacité réduite, confiscation possible
       à la fouille (la cargaison du contrat, jamais l'inventaire)
@@ -138,11 +138,11 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 
 ### FAC-09 — Échelles latérales & les cinq portes (L — par maison | ★★★ | HAUTE)
 > §12.5. Un sous-jalon **par maison** (09a Marchands, 09b Chevaliers, 09c Mages,
-> 09d Fonderie, 09e Ombre), chacun commitable seul : récompenses de palier latérales
+> 09d Fonderie, 09e Ruelles), chacun commitable seul : récompenses de palier latérales
 > (recettes, cosmétiques, montures, accès) + le système propre restant (commissions de
 > négoce, tableau des primes, Programme du Cercle) + la zone `interior` d'Exalté.
 > Prérequis : ← FAC-01→03 ; les zones passent par le chemin déclaratif de `world_1.yaml`
-- [ ] Les cinq portes : Cour des Ombres, Grand Fourneau, Grande Halle, Salle du Serment,
+- [ ] Les cinq portes : Cour des Miracles, Grand Fourneau, Grande Halle, Salle du Serment,
       Scriptorium — zones `interior` cachées, gate de réputation Exalté
 - [ ] Aucune récompense verticale : revue systématique contre §6.4 c
 - [ ] Tests : gates d'accès, exclusivité des portes

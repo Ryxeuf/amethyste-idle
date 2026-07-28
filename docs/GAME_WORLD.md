@@ -53,10 +53,23 @@ place pour deux.
 
 À figer maintenant, il ruisselle partout ensuite.
 
+> **Loi de nommage** *(actée le 2026-07-28)* : **aucun nom propre** (ville, faction,
+> zone, région, PNJ majeur) **ne réutilise un nom d'élément** (Feu, Eau, Terre, Air,
+> Métal, Bête, Lumière, Ténèbres), **d'hybride réservé** (Blizzard, Magma, Éclipse…, §2.2)
+> **ni de bande de pureté** (Trouble, Clair, Pur, Parfait). L'élément dark se dit
+> **Ténèbres**, jamais « Ombre ». Renommages appliqués en conséquence : le **Village de
+> Lumière** devient **le Fanal** (sa description l'appelait déjà « un fanal dressé contre
+> les ténèbres »), la région **Sanctuaire de Lumière** devient **Sanctuaire de la Voûte**,
+> la **Confrérie des Ombres** devient la **Confrérie des Ruelles**, sa zone d'Exalté est
+> **la Cour des Miracles**. Les mots composés restent tolérés (Crête de Ventombre). Les
+> **slugs de code** (`village-de-lumiere`, faction `ombres`, commentaire « Ombre » des
+> domaines dark) sont hérités — à migrer en session code ; les documents **historiques**
+> (`ROADMAP_DONE.md`, archives) gardent les anciens noms.
+
 | Terme | Sens |
 |---|---|
 | **Sédiment** | Le dépôt laissé par toute chose vécue. Invisible, omniprésent, mesurable. |
-| **Améthyste** | Sédiment durci. Minerai, inerte, commerçable. La ressource porte le nom du monde parce que c'est **la même matière** que le grand cristal — seule l'échelle change. Le cristal sous Lumière se dit toujours avec la majuscule et l'article : **l'Améthyste**, ou le Cristal d'Améthyste. *(Slug hérité : `ore-amethyst-crystal`, spots `spot-amethystite-*` — à renommer avec le contenu de zone.)* |
+| **Améthyste** | Sédiment durci. Minerai, inerte, commerçable. La ressource porte le nom du monde parce que c'est **la même matière** que le grand cristal — seule l'échelle change. Le cristal sous le Fanal se dit toujours avec la majuscule et l'article : **l'Améthyste**, ou le Cristal d'Améthyste. *(Slug hérité : `ore-amethyst-crystal`, spots `spot-amethystite-*` — à renommer avec le contenu de zone.)* |
 | **Matéria** | Améthyste où un geste est resté lisible. **Trois verbes distincts, à ne jamais confondre** (§2.1) : on la **trouve** (voie normale et abondante), on l'**accorde** (nœud d'arbre qui apprend à s'en servir), on l'**éveille** (création d'une matéria neuve — voie rare et tardive). |
 | **Veine** | Coulée d'améthyste sous une région. Elle lui donne son élément et son caractère. |
 | **Accord** | Capacité d'entendre une famille de gestes. Ce que font pousser les arbres de talent. |
@@ -230,7 +243,7 @@ histoire, des affinités, des opposés, une vie propre — et tous remontent à 
 |---|---|
 | Feu ↔ Eau | ce qui consume ↔ ce qui dissout |
 | Terre ↔ Air | ce qui pèse ↔ ce qui s'arrache |
-| Lumière ↔ Ténèbre | ce qui révèle ↔ ce qui recouvre |
+| Lumière ↔ Ténèbres | ce qui révèle ↔ ce qui recouvre |
 | Métal ↔ Bête | l'inerte façonné ↔ le vivant sauvage |
 
 **Les hybrides sont anticipés, pas construits.** La table de fusion dormante
@@ -373,16 +386,16 @@ Ce qu'elle produit :
 
 ### 3.4 Ce qui ne bouge jamais
 
-**Le Village de Lumière n'est pas un foyer.** Il est bâti sur la Voûte ; rien n'y sédimente
+**Le Fanal (le village du hub) n'est pas un foyer.** Il est bâti sur la Voûte ; rien n'y sédimente
 ni ne s'y délite. Il ne monte pas, ne descend pas, n'appartient à personne, et **n'occupe
 aucune place dans la Crue**. C'est la protection *cold-start* du système : quoi qu'il arrive
 à la carte politique, un nouveau joueur trouve toujours une boutique, un atelier et une
 quête. La région `sanctuaire-lumiere` est donc `isContestable = false` **par nature**, pas
 par convention. Le Quartier des Jardins est son faubourg, même régime.
 
-> **Règle : Lumière garantit le plancher, jamais le plafond.**
+> **Règle : le Fanal garantit le plancher, jamais le plafond.**
 >
-> Si le hub faisait tout, gratuitement et sans risque, personne ne bâtirait rien. Lumière
+> Si le hub faisait tout, gratuitement et sans risque, personne ne bâtirait rien. Le Fanal
 > offre donc le T1 complet, un atelier de base, la banque et les quêtes d'intro — de quoi
 > n'être jamais bloqué. Elle n'offre **pas** de marché de haut palier, **pas** d'ateliers
 > avancés, **pas** d'éveil de matéria. Ces services n'existent que dans les villes que les
@@ -471,7 +484,7 @@ Le graphe actuel — un centre et deux bras — est repris tel quel :
    🏜 Dunes d'Ambre  →  🧂 Mer de Sel  →  🏛 Cité ensevelie     l'Ambre — le temps épuisé
 ```
 
-**Plus on s'éloigne de Lumière, plus la strate sous les pieds est ancienne et abîmée.** Le
+**Plus on s'éloigne du Fanal, plus la strate sous les pieds est ancienne et abîmée.** Le
 bras nord monte vers ce qui s'est figé, le bras sud descend vers ce qui s'est tari. Les
 deux finissent au bord de l'Étale. C'est aussi la lecture du **palier de danger** : la
 profondeur de strate *est* le tier de la zone, à la manière des anneaux d'Albion.
@@ -483,9 +496,9 @@ une est réservée.
 
 | Région | Veine | Caractère | Zones | Contestable | Enjeu |
 |---|---|---|---|---|---|
-| **Sanctuaire de Lumière** | *aucune* (la Voûte) | Rien n'y dépose, rien n'y pourrit | Village de Lumière, Quartier des Jardins | Non | Siège de la Concorde, plancher T1 garanti |
+| **Sanctuaire de la Voûte** | *aucune* (la Voûte) | Rien n'y dépose, rien n'y pourrit | le Fanal, Quartier des Jardins | Non | Siège de la Concorde, plancher T1 garanti |
 | **Plaines de l'Éveil** | Bois / Bête, peu profonde | Dépôt récent, veine fine mais sûre | Forêt des murmures *(+ bocage, rivière à venir)* | Oui — 5 % | Le grenier. On s'y dispute la régularité. |
-| **Terres Sauvages** | Métal, Eau/Ténèbre, Air | Strates ouvertes, veines épaisses | Mines profondes, Marais brumeux, Crête de Ventombre | Oui — 8 % | Cœur industriel : **c'est là que se joue la doctrine** (§6) |
+| **Terres Sauvages** | Métal, Eau/Ténèbres, Air | Strates ouvertes, veines épaisses | Mines profondes, Marais brumeux, Crête de Ventombre | Oui — 8 % | Cœur industriel : **c'est là que se joue la doctrine** (§6) |
 | **L'Ambre** *(à créer)* | Feu / Terre, épuisée | Ancien fond de mer, temps fossilisé | Dunes d'Ambre, Mer de Sel, Cité ensevelie | Oui — 10 % | Les reliques de l'âge précédent |
 | **Le Silence** *(à créer)* | Eau / Lumière, figée | Le temps s'y est arrêté en plein geste | Pas de Givre, Glacier du Silence | **Non** — 0 % | Aucun foyer ne tient : on y monte des **expéditions** |
 | **L'Étale** *(réservée)* | *néant* | Ce que le Reflux a repris | *(expansion)* | Sans objet | La frontière |
@@ -523,7 +536,7 @@ Chacun est **une mécanique**, pas une couleur de fond :
 | Côte vivante / archipel | Vraie pêche, navigation, second grand foyer | Eau | Fort |
 | Volcan / champ de scories | Forge de haut palier | Feu/Métal | Fort (l'Ambre le prépare) |
 | Canopée / sylve ancienne | Verticalité, herboristerie haute, faune Bête | Bois/Bête | Moyen |
-| Karst / grottes noyées | Donjons naturels | Eau/Ténèbre | Moyen |
+| Karst / grottes noyées | Donjons naturels | Eau/Ténèbres | Moyen |
 | Steppe / badlands | Montures, caravanes longues | Terre/Air | Faible |
 | L'Étale | Frontière, endgame, expansion | *néant* | Réservé |
 
@@ -718,7 +731,7 @@ La question politique n'est pas qui règne, c'est **que fait-on du cristal ?**
               Cercle des Mages│(Lecteurs)
                               │
     ORDRE ────────────────────┼──────────────────── LIBERTÉ
-       Ordre des Chevaliers   │   Confrérie des Ombres
+       Ordre des Chevaliers   │   Confrérie des Ruelles
                               │
                    La Fonderie│  Guilde des Marchands
                               │
@@ -735,7 +748,7 @@ La question politique n'est pas qui règne, c'est **que fait-on du cristal ?**
   le temps d'attendre le long terme.
 - **La Guilde des Marchands** — vend aux deux, de préférence en même temps. Elle tient les
   prix, donc le monde.
-- **La Confrérie des Ombres** — trafique la matéria volée et, pire, **la fausse** : un
+- **La Confrérie des Ruelles** — trafique la matéria volée et, pire, **la fausse** : un
   cristal où l'on a mis le mauvais geste. Une contrefaçon marche neuf fois et vous trahit à
   la dixième.
 - **L'Ordre des Chevaliers** — ne prend pas parti sur la doctrine, seulement sur le sang. Ce
@@ -765,7 +778,7 @@ gouvernent :
 
 **a) La tension par paires.** Sur l'axe doctrinal, progresser chez l'un fait décroître
 chez son opposé **au-delà du palier Ami** : **Fonderie ↔ Cercle des Mages** (Extraire /
-Préserver), **Ordre des Chevaliers ↔ Confrérie des Ombres** (Ordre / Liberté). La
+Préserver), **Ordre des Chevaliers ↔ Confrérie des Ruelles** (Ordre / Liberté). La
 **Guilde des Marchands est hors tension** — elle vend aux deux, c'est son identité. On
 peut être bien vu de tous jusqu'à Ami ; au-delà, il faut choisir. *(Le précédent du
 genre est le choix Aldor/Scryers de WoW Burning Crusade : l'identité naît de ce qu'on
@@ -776,7 +789,7 @@ renonce.)* Jamais de décroissance par inactivité : la réputation ne descend q
 les **actes systémiques quotidiens** : fondre une matéria → Fonderie ; la **lire** →
 Lecteurs (le même geste nourrit le Répertoire du serveur, §12.3 — deux échos d'un même
 acte) ; ventes au HV et caravanes → Marchands ; Effacés abattus et beats de marée →
-Chevaliers ; le marché gris → Ombres. Les quêtes de faction restent l'amorce et la
+Chevaliers ; le marché gris → Ruelles. Les quêtes de faction restent l'amorce et la
 narration, jamais le régime de croisière.
 
 **c) Le patronage : une seule faction portée.** Les bonus de statistiques des paliers
@@ -814,7 +827,7 @@ marée (FOY-04, RET-05) suffit.
 
 | Horizon | Contenu | Cadence | Support code |
 |---|---|---|---|
-| **Acte d'introduction** | *Le réveil du Limpide.* Un être sans passé ouvre les yeux à Lumière, rassemble quatre fragments, atteint la Voûte — et découvre qu'elle est **fermée de l'intérieur**. | Une fois par personnage | Arc `intro` + Actes 2-3 (livrés) |
+| **Acte d'introduction** | *Le réveil du Limpide.* Un être sans passé ouvre les yeux au Fanal, rassemble quatre fragments, atteint la Voûte — et découvre qu'elle est **fermée de l'intérieur**. | Une fois par personnage | Arc `intro` + Actes 2-3 (livrés) |
 | **Marées** | Un épisode par mois : une strate affleure, une menace monte, un climax se combat, une résolution s'inscrit. Résoluble, oubliable. | 4 semaines | `InfluenceSeason` + 4 `GameEvent` (livré) |
 | **Le Reflux** | La ligne longue : la Pâleur gagne, la Fonderie accélère, les foyers montent et tombent, la Voûte s'ouvrira. N'avance que par **basculements canon rares**. | Années | `is_canon` + journal de monde (livré) |
 
@@ -882,7 +895,7 @@ climax → résolution, livré) ; seule la strate change.
 | **Le Chœur** | Deux veines entrent en phase | Boss à double élément | Synergie élémentaire poussée à l'extrême |
 | **La Pâleur** | *Rien ne remonte* — une zone se délave | Empêcher un foyer de tomber | **Conséquence directe** de la sur-extraction du mois précédent |
 | **L'Appel de la Crue** | Le quota se libère | Faire monter un foyer avant les autres | Course de nœuds entre guildes, sans un coup échangé |
-| **La Contrefaçon** | Les Ombres inondent le marché de fausses matérias | Remonter à l'atelier | Marée **économique** : le HV est le terrain |
+| **La Contrefaçon** | Les Ruelles inondent le marché de fausses matérias | Remonter à l'atelier | Marée **économique** : le HV est le terrain |
 
 Deux propriétés à tenir : environ une marée sur trois est **canon** (D9/D12) ; et les marées
 « conséquence » (*la Pâleur*, *Appel de la Crue*) doivent être **déclenchées par ce que les
@@ -1088,7 +1101,7 @@ améliorant la vie de tout le monde.
 
 #### Complément tranché le 2026-07-28 — échelle, contrats, contreparties
 
-**L'intégration est le contraste exact de l'Ombre : la Fonderie s'affiche.** Enseignes,
+**L'intégration est le contraste exact des Ruelles : la Fonderie s'affiche.** Enseignes,
 comptoirs, recruteurs au carreau des Mines (son siège), visible dans l'écran de factions
 dès le jour 1 — et un argument imparable : c'est elle qui éclaire vos villes. On doit
 pouvoir l'aimer sincèrement ; c'est ce qui rend l'axe doctrinal réel.
@@ -1227,13 +1240,13 @@ Deux garde-fous suffisent :
 
 ---
 
-### 12.4 La Confrérie des Ombres *(dossier instruit — tranché le 2026-07-28)*
+### 12.4 La Confrérie des Ruelles *(dossier instruit — tranché le 2026-07-28)*
 
 #### Le problème, et la clé
 
 Une faction de voleurs dans un jeu coopératif sans PvP n'a pas de victimes : on ne vole pas
-un joueur, on ne l'assassine pas — le Serment tient pour tout le monde (l'Ombre pratique le
-vol et le faux, **jamais le sang**). La clé : **l'Ombre ne vole pas les joueurs, elle vole
+un joueur, on ne l'assassine pas — le Serment tient pour tout le monde (la Confrérie pratique le
+vol et le faux, **jamais le sang**). La clé : **la Confrérie ne vole pas les joueurs, elle vole
 le système** — la taxe, l'information, la nuit. C'est ce qui la rend politique sans une
 goutte de PvP.
 
@@ -1241,7 +1254,7 @@ goutte de PvP.
 
 Invisible dans l'écran des factions jusqu'au premier contact. Pas de tableau de quêtes, pas
 de recruteur. En façade, ses agents ont des métiers honnêtes — et ils existent déjà dans
-les fixtures : Tancrède le veilleur de nuit de Lumière (échoppe ouverte 20 h-6 h), Kolm le
+les fixtures : Tancrède le veilleur de nuit du Fanal (échoppe ouverte 20 h-6 h), Kolm le
 porteur de lanterne des Mines. Après des gestes qualifiants (explorer la nuit à plusieurs
 reprises, découvrir une contrefaçon, acheter à un étal nocturne), un PNJ vous glisse un
 mot : une chaîne narrative nocturne de 3-4 étapes, et la faction apparaît, à Neutre.
@@ -1262,7 +1275,7 @@ l'anonymat. Il ne gagne économiquement que face aux guildes gourmandes : **l'ar
 peuple contre la mauvaise gouvernance.**
 
 **b) Le réseau d'oreilles.** L'information est déjà une marchandise (savoir du prospecteur,
-Affleurement de la semaine — jamais annoncé, découvert ou *acheté*). L'Ombre en est le
+Affleurement de la semaine — jamais annoncé, découvert ou *acheté*). La Confrérie en est le
 marché : des **rumeurs** achetables — où la bande tire haut cette marée, où un filon
 repose, ce que la nuit cache.
 
@@ -1270,9 +1283,9 @@ repose, ce que la nuit cache.
 mécanique complète ci-dessous.
 
 **d) Les passages dérobés et la contrebande.** Le graphe supporte les connexions cachées
-(`requires_discovery`) : l'Ombre en détient, certaines n'existant que la nuit. Les
+(`requires_discovery`) : la Confrérie en détient, certaines n'existant que la nuit. Les
 **contrats de contrebande** — livrer discrètement une cargaison de nuit, moins de capacité,
-pas d'escorte — sont un **système propre à l'Ombre**, créé avec elle (pas un dérivé des
+pas d'escorte — sont un **système propre à la Confrérie**, créé avec elle (pas un dérivé des
 caravanes).
 
 #### La contrefaçon, mécanique
@@ -1300,9 +1313,9 @@ caravanes).
 | **Ami** | Le receleur ; premières rumeurs |
 | **Honoré** | L'œil du faussaire ; recettes de teintures sombres et poisons du Marais ; capuche de la Confrérie (cosmétique) |
 | **Révéré** | Premiers passages dérobés ; monture discrète ; le désamorçage ; la main du faussaire |
-| **Exalté** | **La Cour des Ombres** — vraie zone du graphe (`interior`, cachée, réservée aux Exaltés) ; un geste retrouvé du Répertoire à condition Ombre ; « Ami des ruelles » au journal |
+| **Exalté** | **La Cour des Miracles** — vraie zone du graphe (`interior`, cachée, réservée aux Exaltés) ; un geste retrouvé du Répertoire à condition Ruelles ; « Ami des ruelles » au journal |
 
-#### Les contreparties (jouer l'Ombre se paie)
+#### Les contreparties (jouer les Ruelles se paie)
 
 1. La **tension actée** (§6.4) : chaque geste au-delà d'Ami décote les Chevaliers —
    bénédictions, quêtes d'ordre et patronage inaccessibles.
@@ -1310,10 +1323,10 @@ caravanes).
    contrat de contrebande peut être **confisqué** (la cargaison du contrat, jamais
    l'inventaire).
 3. La **taxe majorée à l'Autel** d'éveil — la ville se méfie de vous.
-4. Le **patronage exclusif** : porter les couleurs de l'Ombre, c'est renoncer aux autres.
+4. Le **patronage exclusif** : porter les couleurs de la Confrérie, c'est renoncer aux autres.
 
-**Hostile chez l'Ombre** : prix majorés, portes fermées — et surtout **les rumeurs qu'on
-vous vend sont fausses**. L'Ombre ne vous attaque pas, elle vous ment. Le miroir chez les
+**Hostile chez les Ruelles** : prix majorés, portes fermées — et surtout **les rumeurs qu'on
+vous vend sont fausses**. La Confrérie ne vous attaque pas, elle vous ment. Le miroir chez les
 Chevaliers : fouilles systématiques, taxe d'Autel au plafond.
 
 **Impact modèle** : flag `counterfeit` + état non-identifié sur `PlayerItem`, connexions
@@ -1322,7 +1335,7 @@ de contrebande/placement, et l'entrée de faction différée (visible après pre
 
 ### 12.5 Les trois autres maisons *(tranché le 2026-07-28)*
 
-La même passe que la Fonderie (§12.2) et l'Ombre (§12.4), appliquée aux trois factions
+La même passe que la Fonderie (§12.2) et les Ruelles (§12.4), appliquée aux trois factions
 livrées : un geste quotidien, un système propre, une échelle latérale, des contreparties.
 **Symétrie voulue : chaque Exalté ouvre une porte quelque part** — cinq zones `interior`
 cachées, une par maison.
@@ -1390,7 +1403,7 @@ cachées, une par maison.
 
 | Maison | Zone Exalté | Ce qu'on y comprend |
 |---|---|---|
-| Ombre | la Cour des Ombres | qui tient vraiment les ruelles |
+| Ruelles | la Cour des Miracles | qui tient vraiment les ruelles |
 | Fonderie | le Grand Fourneau | ce qu'elle fond quand personne ne regarde |
 | Marchands | la Grande Halle | où les prix se décident |
 | Chevaliers | la Salle du Serment | pourquoi le sang ne se dépose pas |
@@ -1447,7 +1460,7 @@ qu'une, et réserve les nouvelles aux extensions.
 
 | Zone | Ligne de production | État |
 |---|---|---|
-| Lumière + Quartier des Jardins | *aucune* — plancher garanti, pas de foyer (§3.4) | existe |
+| le Fanal + Quartier des Jardins | *aucune* — plancher garanti, pas de foyer (§3.4) | existe |
 | Forêt des murmures | bois, fibre, herbes | existe |
 | Mines profondes | métal de base (cuivre, étain, fer) | existe |
 | Marais brumeux | alchimie, poisons, eau | existe |
@@ -1489,7 +1502,7 @@ Conséquences de conception :
 - Le spot hérité `spot-amethystite-xs` (unique source actuelle) disparaît avec le contenu de
   zone ; l'objet est renommé (améthystite → améthyste).
 
-**Trame à tisser** *(note narrative)* : le Cristal d'Améthyste sous Lumière (Actes 1-3, la
+**Trame à tisser** *(note narrative)* : le Cristal d'Améthyste sous le Fanal (Actes 1-3, la
 Convergence) est le **cœur** dont toute l'améthyste du monde est la circulation — la fuite du
 coffre (§7.3). Le lien entre « la ressource qu'on ramasse chaque jour » et « la pierre sous
 la Voûte » est un fil scénaristique à part entière, à poser dans les marées et le Codex.
@@ -1518,7 +1531,7 @@ de marchés du monde.
 
 | Palier | S'ouvre à (joueurs actifs quotidiens) |
 |---|---:|
-| Marché de Lumière | **toujours** — hors quota, c'est le plancher (D1) |
+| Marché du Fanal | **toujours** — hors quota, c'est le plancher (D1) |
 | 1er Bourg (1er marché de foyer) | 40 |
 | 2e Bourg | 80 |
 | 1re Cité | 120 |
