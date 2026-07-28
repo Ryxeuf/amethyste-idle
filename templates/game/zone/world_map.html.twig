@@ -72,6 +72,18 @@
                             <span class="mt-1 px-1 text-[9px] sm:text-[10px] leading-tight text-center whitespace-nowrap {{ node.discovered ? 'text-gray-200' : 'text-gray-600' }}">
                                 {{ node.discovered ? node.name : '???' }}
                             </span>
+                            {# FOY-08/09 : le rang du foyer, et la suzeraine qui plafonne
+                               sa croissance. La carte est le seul ecran d'ou la relation
+                               se **voit** — ailleurs on en lit la phrase, ici la
+                               geographie. #}
+                            {% if node.settlementRank %}
+                                <span class="px-1 text-[8px] sm:text-[9px] leading-tight text-center whitespace-nowrap text-gray-400">
+                                    {{ ('game.settlement.rank.' ~ node.settlementRank)|trans }}
+                                    {%- if node.overlord %}
+                                        · {{ 'game.world_map.vassal_of'|trans({'%zone%': node.overlord}) }}
+                                    {%- endif %}
+                                </span>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>

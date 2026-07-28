@@ -42,6 +42,7 @@ class SettlementPanelBuilder
         private readonly SettlementWeeklyWorkRepository $workRepository,
         private readonly SettlementWeeklyWorkContributionRepository $workContributionRepository,
         private readonly CrueQuotaService $crueQuota,
+        private readonly VassalageService $vassalage,
     ) {
     }
 
@@ -55,6 +56,7 @@ class SettlementPanelBuilder
      *     services: list<array{service: string, required: SettlementRank, open: bool, route: string}>,
      *     work: ?array{needs: list<array{activity: string, target: int, progress: int}>, percent: int, complete: bool, contributors: list<array{name: string, units: int}>},
      *     crue: ?array{rank: SettlementRank, quota: int, occupants: list<string>},
+     *     overlord: ?array{zone: string, rank: SettlementRank, cap: SettlementRank},
      *     contribution: int,
      *     guildContribution: int,
      *     ebbing: bool,
@@ -104,6 +106,9 @@ class SettlementPanelBuilder
             // FOY-08 : le foyer merite un rang que la Crue lui refuse. La
             // competition doit se **voir**, sinon elle est vecue comme un bug.
             'crue' => $this->crueWait($settlement, $rank, $definition['ranks']),
+            // FOY-09 : une grande voisine boit la croissance. Le dire est ce
+            // qui transforme un plafond subi en decision de lieu.
+            'overlord' => $this->overlord($settlement),
             'contribution' => $contribution,
             'guildContribution' => $guildContribution,
             // Le foyer a decroche : il a deja ete plus haut. Le signaler prepare
@@ -111,6 +116,29 @@ class SettlementPanelBuilder
             // etre une surprise.
             'ebbing' => $settlement->getHighestRank()->level() > $rank->level(),
             'highestRank' => $settlement->getHighestRank(),
+        ];
+    }
+
+    /**
+     * La voisine qui plafonne ce foyer, si elle existe (FOY-09).
+     *
+     * **Derive, jamais stocke** : le jour ou la capitale tombe, la mention
+     * disparait d'elle-meme, sans qu'aucun champ n'ait a etre remis a zero.
+     *
+     * @return ?array{zone: string, rank: SettlementRank, cap: SettlementRank}
+     */
+    private function overlord(Settlement $settlement): ?array
+    {
+        $overlord = $this->vassalage->overlordOf($settlement);
+        $cap = $this->vassalage->capFor($settlement);
+        if ($overlord === null || $cap === null) {
+            return null;
+        }
+
+        return [
+            'zone' => $overlord->getZone()->getName(),
+            'rank' => $overlord->getRank(),
+            'cap' => $cap,
         ];
     }
 

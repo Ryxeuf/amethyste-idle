@@ -16,6 +16,7 @@ use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementGate;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\SettlementServiceDirectory;
+use App\GameEngine\Settlement\VassalageService;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use App\Repository\SettlementWeeklyWorkContributionRepository;
@@ -313,6 +314,7 @@ class SettlementPanelBuilderTest extends TestCase
             $this->workRepository(),
             $this->createMock(SettlementWeeklyWorkContributionRepository::class),
             $this->crueQuota(),
+            $this->vassalage(),
         );
     }
 
@@ -340,5 +342,19 @@ class SettlementPanelBuilderTest extends TestCase
         $quota->method('occupants')->willReturn([]);
 
         return $quota;
+    }
+
+    /**
+     * FOY-09 : ces tests portent sur le foyer, pas sur son voisinage. Une zone
+     * sans grande voisine est l'etat de bordure — celui de la plupart des
+     * foyers tant que le monde n'a pas de capitale.
+     */
+    private function vassalage(): VassalageService
+    {
+        $vassalage = $this->createMock(VassalageService::class);
+        $vassalage->method('overlordOf')->willReturn(null);
+        $vassalage->method('capFor')->willReturn(null);
+
+        return $vassalage;
     }
 }

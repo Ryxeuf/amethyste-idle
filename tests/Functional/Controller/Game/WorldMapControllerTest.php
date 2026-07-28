@@ -6,11 +6,13 @@ use App\Controller\Game\WorldMapController;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\GameEngine\Settlement\VassalageService;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerVisitedZoneRepository;
+use App\Repository\SettlementRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,6 +35,8 @@ class WorldMapControllerTest extends TestCase
     private ZoneTravelService&MockObject $zoneTravelService;
     private ZoneEventService&MockObject $zoneEventService;
     private ExpeditionService&MockObject $expeditionService;
+    private SettlementRepository&MockObject $settlementRepository;
+    private VassalageService&MockObject $vassalage;
     private WorldMapController $controller;
 
     /** @var array<string, mixed>|null */
@@ -49,6 +53,11 @@ class WorldMapControllerTest extends TestCase
         $this->zoneEventService->method('getActiveEventsForZone')->willReturn([]);
         $this->expeditionService = $this->createMock(ExpeditionService::class);
         $this->expeditionService->method('getActive')->willReturn(null);
+        // FOY-09 : ces tests portent sur le graphe et la decouverte, pas sur les
+        // foyers. Une carte sans foyer est l'etat d'un monde neuf.
+        $this->settlementRepository = $this->createMock(SettlementRepository::class);
+        $this->settlementRepository->method('findOneByZone')->willReturn(null);
+        $this->vassalage = $this->createMock(VassalageService::class);
 
         $this->controller = new WorldMapController(
             $this->playerHelper,
@@ -58,6 +67,8 @@ class WorldMapControllerTest extends TestCase
             $this->zoneTravelService,
             $this->zoneEventService,
             $this->expeditionService,
+            $this->settlementRepository,
+            $this->vassalage,
         );
         $this->controller->setContainer($this->createContainer());
     }

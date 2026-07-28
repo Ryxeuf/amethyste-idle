@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **11 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **12 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -36,7 +36,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-06 ✅ | Services gatés : marché local, banque (l'éveil de matéria passe à ECO-22) |
 | FOY-07 ✅ | Bonus d'atelier par foyer (ligne de production × type) |
 | FOY-08 ✅ | Crue — quotas indexés sur la population active |
-| FOY-09 | Zone d'influence & vassalité |
+| FOY-09 ✅ | Zone d'influence & vassalité |
 | FOY-10 ✅ | Étiage & régression bornée |
 | FOY-11 | Pâleur — état de zone, effets sur rendement et pureté |
 | FOY-12 | Restauration payée au trésor de guilde |
@@ -49,7 +49,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 ```
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
-Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 → FOY-10 ✅
+Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
 Piste F — Contenu & tests     : FOY-15, FOY-16
@@ -258,15 +258,22 @@ s'y branche.
 > premier rang autorisé. Un foyer qui mérite la Cité sans pouvoir l'avoir devient quand même
 > Bourg si la place existe — tout refuser lui ferait payer deux fois le succès des autres.
 
-### FOY-09 — Zone d'influence & vassalité (M | ★★ | MOYENNE)
+### FOY-09 — Zone d'influence & vassalité ✅ (M | ★★ | MOYENNE)
 > Une grande ville boit la croissance de ses voisines.
-> Prérequis : ← FOY-08
-- [ ] Un foyer de rang N plafonne ses voisins **directs du graphe de zones** au rang N-1
-- [ ] Le vassal garde son marché, son type et son identité — seule sa **croissance** est
-      plafonnée
-- [ ] Affichage de la relation sur l'écran de zone et sur la carte du monde
-- [ ] Tests : plafonnement, libération quand la métropole tombe, pas de cascade au-delà des
-      voisins directs
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Le plafond est dérivé, jamais stocké** : il se relit à chaque tick sur le rang *tenu* des
+> voisins directs. C'est ce qui rend la libération automatique — le jour où la capitale
+> tombe, ses vassales montent au tick suivant sans qu'aucun champ n'ait à être remis à zéro,
+> et sans commande de rattrapage.
+>
+> **Seule la croissance est plafonnée.** Un rang déjà tenu n'est jamais retiré : le vassal
+> garde son marché, son type et son identité. C'est la décision A du pilier (FOY-05) appliquée
+> au voisinage — on borne ce qui reste à acquérir, on ne reprend pas ce qui est acquis.
+>
+> **Un voisin de même rang ne domine pas.** Il faut le dépasser strictement. Sans cette règle,
+> deux bourgs voisins se plafonneraient mutuellement au Hameau et aucun des deux ne pourrait
+> plus grandir — un blocage réciproque que rien ne viendrait dénouer.
 
 ### FOY-10 — Étiage & régression bornée ✅ (M | ★★★ | HAUTE)
 > Décision C. Le message est « ce lieu s'endort », jamais « vous avez perdu ».
@@ -389,7 +396,7 @@ FOY-16 court en parallèle sur les quatre sprints.
 ```
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
-Phase 3 (enjeu)      : FOY-17 → FOY-08 → FOY-09 → FOY-14
+Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14
 Phase 4 (conséquence): FOY-11 → FOY-12 → FOY-13 → FOY-15
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```

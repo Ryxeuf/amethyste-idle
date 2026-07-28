@@ -1461,7 +1461,8 @@
         "crue": {
           "waiting": "Ce foyer a de quoi devenir %rank%, mais la Concorde n'en autorise que %quota% pour l'instant.",
           "held_by": "La place est tenue par :"
-        }
+        },
+        "overlord": "%zone% est %rank% : tant qu'elle le reste, ce foyer ne dépassera pas %cap%. Son marché et son identité lui restent acquis."
       }
     },
     "settlement": {
@@ -1525,7 +1526,8 @@
         "locked": "Non decouverte",
         "event": "Evenement actif",
         "expedition": "Expedition"
-      }
+      },
+      "vassal_of": "sous %zone%"
     },
     "pnj": {
       "talk": {

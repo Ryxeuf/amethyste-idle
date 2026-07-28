@@ -239,6 +239,20 @@
                             <p class="ds-hint mt-1">{{ 'game.zone.settlement.summit'|trans }}</p>
                         {% endif %}
 
+                        {# ── Vassalite (FOY-09) ──────────────────────────── #}
+                        {# Une grande voisine boit la croissance. Le dire est ce #}
+                        {# qui transforme un plafond subi en decision de lieu :  #}
+                        {# batir a l'ombre d'une capitale coute plus cher.       #}
+                        {% if settlement.overlord %}
+                            <p class="ds-hint mt-1">
+                                {{ 'game.zone.settlement.overlord'|trans({
+                                    '%zone%': settlement.overlord.zone,
+                                    '%rank%': ('game.settlement.rank.' ~ settlement.overlord.rank.value)|trans,
+                                    '%cap%': ('game.settlement.rank.' ~ settlement.overlord.cap.value)|trans,
+                                }) }}
+                            </p>
+                        {% endif %}
+
                         {# ── La Crue (FOY-08) ────────────────────────────── #}
                         {# Le foyer merite un rang que le quota lui refuse. La   #}
                         {# competition doit se voir et nommer qui occupe la      #}
