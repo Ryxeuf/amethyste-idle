@@ -29,7 +29,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | Code | Sujet (résumé) |
 |------|----------------|
 | FOY-01 | Entité `Settlement` — rang, type, quatre indices, seed non nul ✅ |
-| FOY-02 | Dépôt de sédiment (subscriber sur les events existants) |
+| FOY-02 ✅ | Dépôt de sédiment (subscriber sur les events existants) |
 | FOY-03 | Décroissance, calcul du rang et du type (hystérésis) |
 | FOY-04 | Le foyer sur l'écran de zone — chantier lisible |
 | FOY-05 | Gate déclaratif des services par rang |
@@ -47,7 +47,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
 
 ```
-Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 → FOY-03 → FOY-04
+Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 → FOY-04
 Piste B — Ce que le rang ouvre: FOY-05 → FOY-06 → FOY-07
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
@@ -107,20 +107,12 @@ s'y branche.
 > Fondation. Un foyer par zone, avec son rang, son type et ses quatre indices.
 > **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### FOY-02 — Dépôt de sédiment (S | ★★★ | CRITIQUE)
+### FOY-02 — Dépôt de sédiment ✅ (S | ★★★ | CRITIQUE)
 > L'activité des joueurs devient la matière du monde. Aucun event nouveau.
-> Prérequis : ← FOY-01
-- [ ] `SettlementSedimentListener` branché sur les **six events déjà émis**
-      (`MobDeadEvent`, `CraftEvent`, `SpotHarvestEvent`, `FishingEvent`, `ButcheringEvent`,
-      `QuestCompletedEvent`)
-- [ ] Résolution de la zone : `player.currentZone` (règle 7 — jamais des coordonnées)
-- [ ] Routage vers l'indice selon le type d'activité (table des conventions ci-dessus)
-- [ ] Passage par `InfluenceAntiExploit` : plafonds journaliers et rendements décroissants
-- [ ] **Sédiment de passage** : traverser une zone y dépose une trace faible mais réelle
-      (`ZoneTravelService`). C'est ce qui fait vivre une zone de transit sans qu'on y farme
-      (GAME_WORLD §5.5, levier 4)
-- [ ] Aucun dépôt sur une zone sans foyer (Sanctuaire, et le Silence — §4.3)
-- [ ] Tests : chaque event alimente le bon indice ; plafond respecté ; zone sans foyer ignorée
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Correction au plan** : « aucun event nouveau » était vrai avant le pivot PBBG et ne
+> l'était plus. `GatherService` n'émettait rien ; ZON-38 l'a rebranché avant ce jalon.
 
 ### FOY-03 — Décroissance, rang et type (M | ★★★ | CRITIQUE)
 > Ce qui n'est plus fréquenté s'amincit. Et le type se décide tout seul.

@@ -60,6 +60,11 @@ sediment:
 anti_exploit:
     daily_cap_per_player: 60
     diminishing_threshold: 40
+    # Au-dela du seuil, chaque grain ne compte plus que pour moitie. Plus doux
+    # que le 0,1 de l'influence de guilde, et voulu : un foyer se batit en
+    # frequentant, pas en optimisant. Le joueur qui depasse 40 n'est pas puni,
+    # il cesse simplement de distancer celui qui joue tous les jours.
+    diminishing_factor: 0.5
 
 # Seed du monde livre (decision A — **rien n'est retro-gate**, BALANCE § 23.5).
 # Le seed est narratif, pas protecteur : si personne ne frequente les Mines,
