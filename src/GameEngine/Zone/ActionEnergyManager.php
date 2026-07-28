@@ -106,6 +106,18 @@ class ActionEnergyManager
             $player->setActionEnergyUpdatedAt(new \DateTimeImmutable());
         }
 
+        // FOY-17 — c'est ici, et nulle part ailleurs, que se mesure l'activite.
+        // `spend()` est le passage oblige de toute action qui pese sur le monde
+        // (explorer, chasser, recolter, rejoindre un evenement) ; se connecter
+        // n'y passe pas, et c'est exactement ce qu'on veut : on compte la
+        // charge, pas les tetes (BALANCE § 22.5).
+        //
+        // Une depense nulle ne vaut pas activite : elle ne pese sur rien.
+        if ($cost > 0) {
+            $player->setLastActivityAt(new \DateTimeImmutable());
+            $player->addActionEnergySpent($cost);
+        }
+
         if ($flush) {
             $this->entityManager->flush();
         }

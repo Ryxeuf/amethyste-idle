@@ -49,6 +49,9 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setGils(100000);
         $playerRemy->setCreatedAt(new \DateTime());
         $playerRemy->setUpdatedAt(new \DateTime());
+        // FOY-17 : sans activite datee, `InfluenceAntiExploit` compte zero
+        // membre actif et bloque toute l'influence de la guilde.
+        $playerRemy->setLastActivityAt(new \DateTimeImmutable());
         $playerRemy->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
         $playerRemy->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
         // ECO-20 : depuis que le gardien « plan appris » est branche, un
@@ -80,6 +83,9 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo->setRace($this->getReference('race_human', Race::class));
         $playerDemo->setCreatedAt(new \DateTime());
         $playerDemo->setUpdatedAt(new \DateTime());
+        // FOY-17 : sans activite datee, `InfluenceAntiExploit` compte zero
+        // membre actif et bloque toute l'influence de la guilde.
+        $playerDemo->setLastActivityAt(new \DateTimeImmutable());
 
         // Ajout des compétences
         $playerDemo->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
@@ -114,6 +120,9 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo2->setRace($this->getReference('race_human', Race::class));
         $playerDemo2->setCreatedAt(new \DateTime());
         $playerDemo2->setUpdatedAt(new \DateTime());
+        // FOY-17 : sans activite datee, `InfluenceAntiExploit` compte zero
+        // membre actif et bloque toute l'influence de la guilde.
+        $playerDemo2->setLastActivityAt(new \DateTimeImmutable());
 
         // Ajout des compétences
         $playerDemo2->addSkill($this->getReference('pyro_apprenti_1', Skill::class));

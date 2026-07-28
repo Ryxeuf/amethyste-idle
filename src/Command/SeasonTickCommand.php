@@ -11,6 +11,7 @@ use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
+use App\GameEngine\World\WorldLoadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -36,6 +37,7 @@ class SeasonTickCommand extends Command
         private readonly SeasonRewardsManager $rewardsManager,
         private readonly SeasonResolutionService $resolutionService,
         private readonly RankingBaselineService $baselineService,
+        private readonly WorldLoadService $worldLoadService,
     ) {
         parent::__construct();
     }
@@ -57,7 +59,26 @@ class SeasonTickCommand extends Command
         // 4. Ensure a next season is always scheduled
         $this->ensureNextSeasonExists($io);
 
+        // 5. Releve de la charge du monde (FOY-17). En fin de chaine, apres les
+        //    versements de cloture : ce qu'on mesure est l'energie depensee par
+        //    les joueurs, pas les ecritures du tick, mais un releve pris avant
+        //    la cloture daterait d'avant le basculement de maree.
+        $this->captureWorldLoad($io, $now);
+
         return Command::SUCCESS;
+    }
+
+    private function captureWorldLoad(SymfonyStyle $io, \DateTimeImmutable $now): void
+    {
+        $snapshot = $this->worldLoadService->capture($now);
+
+        $io->info(sprintf(
+            'Charge du monde au %s : %d point(s) d\'energie depensee, population effective %.1f (%d jour(s) mesures).',
+            $snapshot->getDay()->format('d/m/Y'),
+            $snapshot->getDailyEnergy(),
+            $this->worldLoadService->effectivePopulation(),
+            $this->worldLoadService->measuredDays(),
+        ));
     }
 
     private function handleExpiredSeasons(SymfonyStyle $io, \DateTimeImmutable $now): void
