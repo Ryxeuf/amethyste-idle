@@ -4,10 +4,9 @@ namespace App\Tests\Unit\GameEngine\World;
 
 use App\Entity\App\WorldLoadSnapshot;
 use App\GameEngine\World\WorldLoadService;
+use App\Repository\PlayerRepository;
 use App\Repository\WorldLoadSnapshotRepository;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -25,6 +24,7 @@ class WorldLoadServiceTest extends TestCase
 
     private EntityManagerInterface&MockObject $em;
     private WorldLoadSnapshotRepository&MockObject $repository;
+    private PlayerRepository&MockObject $playerRepository;
 
     /** @var list<object> */
     private array $persisted = [];
@@ -33,6 +33,7 @@ class WorldLoadServiceTest extends TestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->repository = $this->createMock(WorldLoadSnapshotRepository::class);
+        $this->playerRepository = $this->createMock(PlayerRepository::class);
         $this->em->method('persist')->willReturnCallback(function (object $entity): void {
             $this->persisted[] = $entity;
         });
@@ -40,17 +41,15 @@ class WorldLoadServiceTest extends TestCase
 
     private function service(int $totalEnergySpent = 0): WorldLoadService
     {
-        $query = $this->createMock(AbstractQuery::class);
-        $query->method('getSingleScalarResult')->willReturn($totalEnergySpent);
+        $this->playerRepository->method('sumActionEnergySpent')->willReturn($totalEnergySpent);
 
-        $qb = $this->createMock(QueryBuilder::class);
-        $qb->method('select')->willReturnSelf();
-        $qb->method('from')->willReturnSelf();
-        $qb->method('getQuery')->willReturn($query);
-
-        $this->em->method('createQueryBuilder')->willReturn($qb);
-
-        return new WorldLoadService($this->em, $this->repository, self::DAILY_ENERGY, self::TIDE_DAYS);
+        return new WorldLoadService(
+            $this->em,
+            $this->repository,
+            $this->playerRepository,
+            self::DAILY_ENERGY,
+            self::TIDE_DAYS,
+        );
     }
 
     // -----------------------------------------------------------------

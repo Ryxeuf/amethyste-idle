@@ -40,6 +40,11 @@ class PlayerFactory
         $player->setRace($race);
         $player->setClassType('player');
         $player->setAvatarAppearance($this->normalizeAppearance($appearance, $race));
+        // FOY-17 : creer un personnage est un acte, pas une connexion. Sans ce
+        // point de depart, une guilde fondee par des joueurs neufs n'aurait
+        // aucun membre actif au sens d'`InfluenceAntiExploit` — elle naitrait
+        // morte, jusqu'a la premiere depense d'energie de chacun.
+        $player->setLastActivityAt(new \DateTimeImmutable());
 
         $modifiers = $race->getStatModifiers();
         $lifeMod = (int) ($modifiers['life'] ?? 0);

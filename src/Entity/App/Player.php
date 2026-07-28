@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Enum\CraftSpecialization;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Repository\PlayerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -21,7 +22,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(columns: ['fight_id'], name: 'idx_player_fight')]
 #[ORM\Index(columns: ['user_id'], name: 'idx_player_user')]
 #[ORM\Index(columns: ['updated_at'], name: 'idx_player_updated_at')]
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: PlayerRepository::class)]
 class Player implements CharacterInterface
 {
     use CharacterStatsTrait;

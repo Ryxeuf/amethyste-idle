@@ -2,8 +2,8 @@
 
 namespace App\GameEngine\World;
 
-use App\Entity\App\Player;
 use App\Entity\App\WorldLoadSnapshot;
+use App\Repository\PlayerRepository;
 use App\Repository\WorldLoadSnapshotRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -28,6 +28,7 @@ class WorldLoadService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly WorldLoadSnapshotRepository $snapshotRepository,
+        private readonly PlayerRepository $playerRepository,
         /** Energie qu'un joueur regulier depense par jour (BALANCE § 22.5 : ~60 % de sa regen). */
         private readonly int $regularPlayerDailyEnergy,
         /** Duree d'une maree, en jours (`SeasonManager::SEASON_DURATION_DAYS`). */
@@ -44,7 +45,7 @@ class WorldLoadService
         $now ??= new \DateTimeImmutable();
         $day = $now->setTime(0, 0, 0);
 
-        $cumulative = $this->totalEnergySpent();
+        $cumulative = $this->playerRepository->sumActionEnergySpent();
         $previous = $this->snapshotRepository->findLatestBefore($day);
 
         // Difference avec le dernier instantane connu — pas avec « hier ». Un
@@ -108,16 +109,5 @@ class WorldLoadService
     public function measuredDays(): int
     {
         return \count($this->snapshotRepository->findRecent($this->tideDays));
-    }
-
-    private function totalEnergySpent(): int
-    {
-        $sum = $this->entityManager->createQueryBuilder()
-            ->select('COALESCE(SUM(p.actionEnergySpentTotal), 0)')
-            ->from(Player::class, 'p')
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return \is_numeric($sum) ? (int) $sum : 0;
     }
 }
