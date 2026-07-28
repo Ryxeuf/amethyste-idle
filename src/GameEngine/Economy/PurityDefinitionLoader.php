@@ -157,7 +157,8 @@ class PurityDefinitionLoader
             $previous = $threshold;
             $ceilings[] = ['at_least' => $threshold, 'band' => $band];
         }
-        if ($previous === null || $previous > 0.0) {
+        $lowest = end($ceilings);
+        if ($lowest === false || $lowest['at_least'] > 0.0) {
             throw new PurityDefinitionException(sprintf('"draw.vitality_ceilings" must end at 0 in "%s": an exhausted vein still yields a band.', $source));
         }
 
