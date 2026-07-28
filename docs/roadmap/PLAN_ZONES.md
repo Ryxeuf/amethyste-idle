@@ -48,12 +48,15 @@ ZON-33 en continu
 > Prérequis : ∅
 - [ ] Items : `plant-wheat` (T0), `plant-flax` (T1 — **exclusivité de la zone**),
       `fish-perch` (T1) dans `fixtures/game/item/`
-- [ ] Monstres : sanglier, cerf (gibier T1 dépeçable → `leather-raw`), renard ; réutiliser
-      le loup existant en lisière ; **aucun nocturne agressif** (contraste voulu avec la
-      Forêt)
+- [ ] Monstres : la table actée de GAME_ZONES §2.2 (« Faune & habitants ») — sanglier
+      des haies, cerf d'aubépine (cuir à taux plein), renarde des vergers, corbeau
+      moissonneur (plumes → flèches), loup réutilisé en lisière ; **aucun nocturne
+      agressif** (contraste voulu avec la Forêt)
 - [ ] Zone `vallons-d-aubepine` dans `world_1.yaml` : type wilderness, région Plaines de
       l'Éveil, filons aux profils T0/T1 du calibrage (jamais un goulot), faune déclarée,
-      2-3 PNJ de fond (fermière, meunier…)
+      les 3 PNJ actés (Perrette la meunière — plancher d'achat du blé —, Aubin le
+      haiier, la Vieille Brune) et les micro-lieux (le Gué, le Vieux Moulin en ruine —
+      le cœur du futur foyer)
 - [ ] Connexions : Fanal ↔ Vallons (court), Vallons ↔ Forêt (court), Vallons ↔ Marais
       (moyen) ; position sur la carte du monde illustrée
 - [ ] Une première recette de cuisine joueur consommant le blé (la chaîne pain cesse
