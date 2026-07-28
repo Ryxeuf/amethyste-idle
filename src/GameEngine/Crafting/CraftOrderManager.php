@@ -681,11 +681,9 @@ class CraftOrderManager
         foreach ($materials as $material) {
             $purity = $material->getPurity();
             if (null === $purity || !$purity->isAtLeast($minPurity)) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Cette commande exige de la matiere « %s » : « %s » ne convient pas.',
-                    $minPurity->value,
-                    $purity?->value ?? 'sans bande',
-                ));
+                $supplied = null === $purity ? 'sans bande' : $purity->value;
+
+                throw new \InvalidArgumentException(sprintf('Cette commande exige de la matiere « %s » : « %s » ne convient pas.', $minPurity->value, $supplied));
             }
         }
     }
