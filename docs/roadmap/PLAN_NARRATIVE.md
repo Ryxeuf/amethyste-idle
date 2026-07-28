@@ -244,3 +244,25 @@ Phase 5 (fond & tests) : NAR-13, NAR-14  (parallélisable)
 - [ ] Foire : foyer hôte tiré, étals éphémères par artisan (réutilise les échoppes,
       ECO Piste D), fenêtre de prix — précurseur des caravanes
 - [ ] Tests : tirage de zone/foyer, fenêtres, récompenses
+
+### NAR-20 — Révision de l'acte d'introduction : le réveil au Fanal (M | ★★ | MOYENNE)
+> L'acte 1 (5 quêtes tutoriel « L'Éveil ») et les Fragments sont livrés et **gardent leur
+> structure** — cette révision est un alignement de contenu sur le canon acté depuis :
+> aucune mécanique neuve.
+> Prérequis : ∅ (textes) ; le crochet foyer d'attache s'active avec la création de
+> personnage par race (CLAUDE.md règle 12)
+- [ ] **Renommage narratif** : le réveil se passe **au Fanal**, la **Voûte** est nommée
+      et montrée, le joueur est dit **Limpide** (GAME_WORLD §7.2) — textes des 5 quêtes
+      d'acte 1 et dialogues des 7 PNJ du hub alignés (loi de nommage, §1)
+- [ ] **Le teaser du Cristal** : l'acte 1 plante le fil « l'améthyste qu'on ramasse est
+      la même matière que le Cristal sous la Voûte » (trame §13.3) — une réplique et une
+      entrée de Codex, pas plus
+- [ ] **La première matéria dans l'acte** : vérifier que la chaîne la met en main avec
+      son accord à 0 point expliqué (doctrine §2.1 — jour 1, jamais gaté)
+- [ ] **La lettre du foyer d'attache** : l'acte 1 se clôt par une lettre selon la race
+      (Nain → Mines, Elfe → Forêt, Orc → Crête/Dunes, Humain → libre — §13.1) : première
+      destination, kit, et **les 3-4 arbres du foyer montrés en premier** (le mur des 32
+      arbres est le risque n° 1 de l'Acte I, GAME_PROGRESSION §3)
+- [ ] **Rejouabilité second personnage inchangée** (règle 12) — notée, pas retouchée
+- [ ] Tests : textes alignés (aucune occurrence des anciens noms dans les quêtes d'acte),
+      lettre par race, matéria garantie

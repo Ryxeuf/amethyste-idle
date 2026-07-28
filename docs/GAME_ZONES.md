@@ -143,6 +143,39 @@ désire à chaque horizon.
   demande en lin et en cuir l'y ramène (leviers 1 et 3 du §5.5).
 - **État** : à créer entièrement — jalon **ZON-30**.
 
+#### Faune & habitants des Vallons *(détail acté le 2026-07-28 — l'entrée de ZON-30)*
+
+**La faune** — quatre espèces neuves + le loup réutilisé, toutes T1, toutes **dépeçables**
+(c'est la zone-école du dépeceur) :
+
+| Espèce | Niveau | Dépeçage | Note |
+|---|---|---|---|
+| Sanglier des haies | 2-3 | cuir brut, viande de gibier (→ cuisinier) | la rencontre type ; charge, encaisse |
+| Cerf d'aubépine | 3 | **cuir brut à taux plein**, ramure (→ os léger) | fuyard — se chasse, ne s'affronte pas |
+| Renarde des vergers | 1-2 | fourrure fine | la première proie du débutant |
+| Corbeau moissonneur | 1 | **plumes** (→ flèches du charpentier, ECO-30) | en nuée au-dessus des carrés de blé |
+| Loup (existant) | 3-4 | cuir brut | en lisière seulement — la Forêt déborde |
+
+La nuit reste **calme** (aucun nocturne agressif, acté) : on entend la hulotte, on ne la
+combat pas.
+
+**Les habitants** — trois figures de fond (le porteur de quêtes d'acte viendra avec la
+narration, pas avec ZON-30) :
+
+- **Perrette, meunière du Vieux Moulin** — tient le gué. Achète le blé (le plancher
+  d'achat agricole, comme la Fonderie pour le cristal), vend du pain et de la farine tant
+  que le cuisinier joueur n'existe pas (plancher T1, règle D1).
+- **Aubin le haiier** — plante et taille les haies d'aubépine. Vend graines et gaules,
+  raconte le bocage ; c'est lui qui montrera les linières au premier venu.
+- **La Vieille Brune** — éleveuse et dépeceuse. Achète le gibier, vend le couteau de
+  dépeçage T1 ; la tutrice naturelle de la 4e récolte.
+
+**Les micro-lieux** (des repères d'écran de zone, pas des sous-zones) : **le Gué** (la
+pêche à la perche), **le Vieux Moulin** (une ruine — le cœur du futur foyer : les joueurs
+le rebâtiront, la zone naît en Ruine, BALANCE §23.5), **les Vergers**, **la Halle à
+foin**. Note d'événement : les Vallons sont l'hôte naturel de la première **Foire
+Franche** (GAME_SEASONS §2).
+
 ### 2.3 Forêt des murmures — l'école
 
 - **Loi du temps** : déposé régulièrement. La zone-école : on y apprend le combat,
