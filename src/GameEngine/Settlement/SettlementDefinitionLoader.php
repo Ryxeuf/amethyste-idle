@@ -57,7 +57,8 @@ class SettlementDefinitionLoader
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
-     *     without_settlement: array<string, string>
+     *     without_settlement: array<string, string>,
+     *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float}
      * }
      *
      * @throws SettlementDefinitionException si le fichier est absent, illisible ou invalide
@@ -104,7 +105,8 @@ class SettlementDefinitionLoader
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
-     *     without_settlement: array<string, string>
+     *     without_settlement: array<string, string>,
+     *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float}
      * }
      */
     public function normalize(array $raw, string $source = '<array>'): array
@@ -140,6 +142,7 @@ class SettlementDefinitionLoader
             'crue' => $this->normalizeCrue($raw['crue'] ?? [], $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
+            'paleness' => $this->normalizePaleness($raw['paleness'] ?? [], $source),
         ];
     }
 
@@ -577,5 +580,55 @@ class SettlementDefinitionLoader
         }
 
         return $normalized;
+    }
+
+    /**
+     * Les cinq curseurs de la Paleur (FOY-11).
+     *
+     * Deux invariants sont verifies ici parce qu'ils ne se voient nulle part
+     * ailleurs : la recuperation doit rester **plus lente** que la montee
+     * (abimer va plus vite que reparer, sinon la trace n'en est pas une), et
+     * aucun seuil d'effet ne doit se trouver **au-dessus du plafond** — il ne
+     * se declencherait jamais, et rien ne le dirait.
+     *
+     * Le plancher dur du socle de monde — un filon pali n'est **jamais**
+     * sterile, ce qui le distingue d'une Etale (GAME_WORLD § 12.1) — est deja
+     * garanti par `normalizeRate`, qui refuse tout taux hors de ]0, 1[. Le
+     * redire ici serait un garde-fou qui ne peut pas se declencher.
+     *
+     * @param array<array-key, mixed> $raw
+     *
+     * @return array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float}
+     */
+    private function normalizePaleness(array $raw, string $source): array
+    {
+        $rise = $this->normalizeRate($raw['rise_per_pressure'] ?? null, 'paleness.rise_per_pressure', $source);
+        $recovery = $this->normalizeRate($raw['daily_recovery'] ?? null, 'paleness.daily_recovery', $source);
+        $max = $this->normalizeRate($raw['max'] ?? null, 'paleness.max', $source);
+
+        if ($recovery >= $rise) {
+            throw new SettlementDefinitionException(sprintf('"paleness.daily_recovery" (%.2f) must stay below "paleness.rise_per_pressure" (%.2f) in "%s" : abimer doit aller plus vite que reparer.', $recovery, $rise, $source));
+        }
+
+        $visible = $this->normalizeRate($raw['visible_from'] ?? null, 'paleness.visible_from', $source);
+        $dulls = $this->normalizeRate($raw['dulls_purity_from'] ?? null, 'paleness.dulls_purity_from', $source);
+
+        // Un seuil au-dessus du plafond ne se declenche **jamais** : l'effet
+        // serait declare, jamais applique, et rien ne le dirait. C'est
+        // exactement la famille de defaut muet que ce projet passe son temps a
+        // deterrer.
+        foreach (['paleness.visible_from' => $visible, 'paleness.dulls_purity_from' => $dulls] as $key => $threshold) {
+            if ($threshold > $max) {
+                throw new SettlementDefinitionException(sprintf('"%s" (%.2f) is above "paleness.max" (%.2f) in "%s" : le seuil ne serait jamais atteint.', $key, $threshold, $max, $source));
+            }
+        }
+
+        return [
+            'rise_per_pressure' => $rise,
+            'daily_recovery' => $recovery,
+            'max' => $max,
+            'visible_from' => $visible,
+            'dulls_purity_from' => $dulls,
+        ];
     }
 }

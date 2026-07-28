@@ -723,6 +723,15 @@
                                                 </span>
                                             </p>
                                         {% endif %}
+                                        {# FOY-11 — la Paleur se voit, et dit quoi faire. Le  #}
+                                        {# message n'accuse personne et ne demande a personne #}
+                                        {# de s'abstenir : le filon se refait pendant qu'on   #}
+                                        {# joue, simplement plus lentement qu'il ne s'abime.  #}
+                                        {% if gatherable.isPale(palenessVisibleFrom) %}
+                                            <p class="ds-hint mt-1">
+                                                🌫️ {{ 'game.zone.gather.paleness'|trans({'%percent%': gatherable.palenessPercent}) }}
+                                            </p>
+                                        {% endif %}
                                         {# ECO-24c — le filon gate reste visible, et dit ce   #}
                                         {# qu'il demande. Le cacher aurait retire au joueur   #}
                                         {# la seule raison d'aller chercher la competence.    #}

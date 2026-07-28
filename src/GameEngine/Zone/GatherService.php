@@ -101,6 +101,7 @@ class GatherService
                 $stock > 0 ? 0 : $this->respawnRemaining($vein, $normalized['respawn_seconds'], $normalized['capacity'], $now),
                 $this->readableCeiling($player, $zone, $normalized['slug'], $normalized['item'], $stock, $normalized['capacity']),
                 $this->missingSkillName($player, $normalized['requires_skill']),
+                $vein?->getPaleness() ?? 0.0,
             );
         }
 
@@ -229,12 +230,17 @@ class GatherService
         $this->actionEnergyManager->spend($player, $this->getGatherCost(), false);
 
         $vitalityBefore = $vein->getStock();
-        $quantity = $this->computeYield($player, $resource, $vitalityBefore);
+        $quantity = $this->computeYield($player, $resource, $vitalityBefore, $vein->getPaleness());
         $remaining = $vitalityBefore - $quantity;
         $vein->setStock($remaining);
         if ($remaining <= 0) {
             $vein->setDepletedAt($now);
         }
+
+        // FOY-11 — ce qu'on prend se compte, pour etre compare au debit soutenu
+        // du filon au tick quotidien. La Paleur ne mesure pas un cumul mais un
+        // **rythme** : le compteur repart a zero chaque jour.
+        $vein->addExtracted($quantity);
 
         // ECO-22 : la bande se tire **une fois par lot**, sur la vitalite d'avant
         // la recolte. La tirer apres ferait payer au joueur l'epuisement qu'il
@@ -429,7 +435,7 @@ class GatherService
      *
      * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null} $resource
      */
-    private function computeYield(Player $player, array $resource, int $stock): int
+    private function computeYield(Player $player, array $resource, int $stock, float $paleness = 0.0): int
     {
         $min = $resource['yield_min'];
         $max = $resource['yield_max'];
@@ -449,7 +455,17 @@ class GatherService
             $yield = (int) round($yield * ($stock / $capacity));
         }
 
-        // Plancher d'une unite : une recolte n'echoue jamais, meme a sec.
+        // FOY-11 — un filon pali rend moins. L'effet s'applique **apres** la
+        // vitalite et avant le plancher : les deux disent des choses
+        // differentes — la vitalite dit « il est presse en ce moment », la
+        // Paleur dit « on l'a trop presse ces jours-ci ».
+        if ($paleness > 0.0) {
+            $yield = (int) round($yield * (1.0 - $paleness));
+        }
+
+        // Plancher d'une unite : une recolte n'echoue jamais, meme a sec, et un
+        // filon pali ne devient **jamais** sterile (GAME_WORLD § 12.1). C'est ce
+        // qui distingue la Paleur d'une Etale.
         return max(1, $stock > 0 ? min($yield, $stock) : 1);
     }
 

@@ -7,7 +7,9 @@ use App\Entity\App\Zone;
 use App\Enum\Purity;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\Retention\WeekKey;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\Repository\WeeklyOutcropRepository;
+use App\Repository\ZoneVeinRepository;
 
 /**
  * D'ou vient la bande d'un lot (ECO-22).
@@ -45,6 +47,8 @@ class PurityDrawer
         private readonly PurityDefinitionLoader $loader,
         private readonly ActionYieldResolver $yieldResolver,
         private readonly WeeklyOutcropRepository $outcropRepository,
+        private readonly ZoneVeinRepository $veinRepository,
+        private readonly SettlementDefinitionLoader $settlementLoader,
     ) {
     }
 
@@ -94,6 +98,17 @@ class PurityDrawer
             $ceiling = $ceiling->next() ?? $ceiling;
         }
 
+        // FOY-11 : la seconde borne, celle qu'ECO-22 avait laissee en attente.
+        // Elle vient **en dernier** et rabat tout ce qui precede : un filon pali
+        // ne rend pas mieux que du clair, meme plein, meme affleurant. Vitalite
+        // et Paleur ne disent pas la meme chose — l'une dit « il est presse en
+        // ce moment », l'autre « on l'a trop presse ces jours-ci » — et c'est la
+        // seconde qui doit gagner, sinon un filon abime se racheterait en une
+        // nuit de repousse.
+        if ($this->isDulled($zone, $veinSlug) && $ceiling->level() > Purity::Clair->level()) {
+            $ceiling = Purity::Clair;
+        }
+
         return $ceiling;
     }
 
@@ -117,6 +132,27 @@ class PurityDrawer
         return $outcrop !== null
             && $outcrop->getVeinSlug() === $veinSlug
             && $outcrop->getZone()->getSlug() === $zone->getSlug();
+    }
+
+    /**
+     * Ce filon est-il assez pali pour que sa bande en souffre ? (FOY-11)
+     *
+     * Le seuil est declaratif : sous lui, la Paleur existe mais ne fait rien.
+     * Un filon normalement frequente ne doit pas voir sa bande tomber pour une
+     * trace que personne ne voit.
+     */
+    private function isDulled(?Zone $zone, ?string $veinSlug): bool
+    {
+        if ($zone === null || $veinSlug === null) {
+            return false;
+        }
+
+        $vein = $this->veinRepository->findOneByZoneAndSlug($zone, $veinSlug);
+        if ($vein === null) {
+            return false;
+        }
+
+        return $vein->getPaleness() >= $this->settlementLoader->load()['paleness']['dulls_purity_from'];
     }
 
     public function coversSlug(string $itemSlug): bool

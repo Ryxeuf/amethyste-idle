@@ -60,7 +60,7 @@
 | ~~10~~ | ~~**RET-06**~~ ✅ | Affleurement de la semaine | **Livre le 2026-07-28** — et personne n'en est informe, c'est le point |
 | 11 | **FOY-08 ✅, 09 ✅, 14 + RET-04** | La Crue + assiduite (Sprint 18) | **FOY-08, FOY-09 et FOY-14 livres le 2026-07-28** — l'enjeu politique existe, une grande ville plafonne desormais ses voisines (**Piste C complete**), et le journal de monde grave qui a bati quoi a chaque cloture de maree. **RET-04 livre le 2026-07-28** — l'assiduite en paliers. Bloc complet |
 | 12 | **ECO-25 ✅, 26 ✅, 27 ✅** | Chaine de production par paliers | Le levier anti-creux-du-milieu. **ECO-25 livre le 2026-07-28** — l'echelle du metal est continue du cuivre a l'orichalque, coefficient 1. **ECO-26 livre le 2026-07-28** — la purete remonte la chaine par le maillon le plus faible. **ECO-27 livre le 2026-07-28** — aucun craft ne detruit de la valeur. **Piste G complete** |
-| 13 | **FOY-11 → 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste |
+| 13 | **FOY-11 ✅, 12, 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste. **FOY-11 livre le 2026-07-28** : l'extraction laisse une trace, par filon et jamais par zone |
 | 14 | **ZON-30 → 33** | Contenu des zones : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste ([PLAN_ZONES.md](PLAN_ZONES.md)) | **Debloque** : definitions actees dans [docs/GAME_ZONES.md](../GAME_ZONES.md) (2026-07-28). ZON-30/31 sont independants et peuvent s'intercaler plus tot si besoin de contenu ; ZON-32 attend ECO-21/22 |
 
 Transverse, au fil de l'eau : FOY-16 (tests ; **RET-07 livre**), mise a jour de `ROADMAP_DONE.md`
@@ -198,7 +198,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
 - [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) ✅ — **7/7, plan complet** : l'horizon le plus fragile de la colonne de progression. La bascule du lundi est **une** — `WeekKey` en est le point de calcul unique, verrouille par `RetentionPlanContractTest`
-- [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **13/17, grand chantier en cours** (socle FOY-01→05 complet, Pistes B et C completes : FOY-06, FOY-07, FOY-08, FOY-09, FOY-10, FOY-14, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
+- [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **14/17, grand chantier en cours** (socle FOY-01→05 complet, Pistes B et C completes : FOY-06, FOY-07, FOY-08, FOY-09, FOY-10, FOY-14, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-31)](PLAN_PLAYER_ECONOMY.md) — **Piste G complete (2026-07-28)** : la chaine de production a une verticale, la purete la remonte par le maillon le plus faible, et aucun craft ne detruit de la valeur. Pistes A, B, C, D et E **completes** ; Piste F 3/4 (reste ECO-28) ; **Piste H ouverte** (metiers manquants : cuisinier, charpentier, tailleur)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)
 - [Controle de cite par les guildes (GCC-01 a GCC-20)](PLAN_GUILD_CITY_CONTROL.md) ✅

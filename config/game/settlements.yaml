@@ -270,3 +270,47 @@ without_settlement:
     mer-de-sel: 'le Silence / Extension 1 (GAME_WORLD § 4.3)'
     pas-de-givre: 'Extension 1'
     glacier-du-silence: 'Extension 1'
+
+# =============================================================================
+# Paleur des filons (FOY-11)
+# =============================================================================
+# L'extraction laisse une trace. Graduelle, bornee, reversible — jamais une
+# Etale (GAME_WORLD §12.1).
+#
+# **Par filon, jamais par zone**, et c'est la decision qui porte tout le jalon :
+# c'est ce qui garantit que la Paleur ne frappe que l'exploitation *concentree*
+# et jamais le passage diffus des debutants (GAME_WORLD §3.5). L'agregat au
+# niveau de la zone n'est qu'un **affichage**.
+#
+# La pression se lit sur le rapport entre ce qu'on a pris et ce que le filon
+# rend de lui-meme : `pression = extrait du jour / debit soutenu quotidien`.
+# Au-dessus de 1, on prend plus vite que ca ne repousse ; en dessous, le filon
+# se refait.
+#
+# **Jamais de jachere** (GAME_WORLD §3.5) : aucune ligne de ce bloc ne
+# recompense l'abstention collective d'un serveur. La recuperation est un debit
+# continu qui court **pendant qu'on joue** ; elle est simplement plus lente que
+# la montee.
+paleness:
+    # Ce qu'un jour de surexploitation ajoute, par point de pression au-dessus
+    # de 1. Une journee a pression 2 ajoute donc 0,08.
+    rise_per_pressure: 0.08
+
+    # Ce qu'un jour rend quand la pression est sous 1. Deux fois plus lent que
+    # la montee : abimer va plus vite que reparer, sinon la trace ne serait pas
+    # une trace.
+    daily_recovery: 0.04
+
+    # Plancher dur (GAME_WORLD §12.1) : **un filon pali ne devient jamais
+    # sterile**, et une zone palie ne produit aucun Efface. C'est ce qui la
+    # distingue d'une Etale, lieu ancien et permanent.
+    max: 0.60
+
+    # En dessous de ce seuil, la Paleur ne se voit pas et ne fait rien : un
+    # filon normalement frequente ne doit pas afficher un etat d'alerte.
+    visible_from: 0.10
+
+    # A partir de ce seuil, la bande de purete est plafonnee au « clair »
+    # (ECO-22 avait laisse cette seconde borne en attente), et l'Affleurement
+    # de la semaine ne peut plus tirer ce filon (RET-06).
+    dulls_purity_from: 0.30

@@ -50,6 +50,8 @@ class SettlementDefinitionLoaderTest extends TestCase
         self::assertSame('batie sur la Voute', $result['without_settlement']['lumiere']);
         self::assertSame(SettlementRank::Town, $result['services']['regional_market']);
         self::assertSame(['shop' => 'boutiques existantes'], $result['never_gated']);
+        self::assertSame(0.08, $result['paleness']['rise_per_pressure']);
+        self::assertSame(0.60, $result['paleness']['max']);
     }
 
     public function testSpreadIsNotAFifthIndex(): void
@@ -254,6 +256,52 @@ class SettlementDefinitionLoaderTest extends TestCase
     /**
      * @return array<string, mixed>
      */
+    /**
+     * FOY-11 — abimer doit aller plus vite que reparer, sinon la trace n'en
+     * est pas une : elle s'effacerait aussi vite qu'elle se pose.
+     */
+    public function testPalenessRecoveryMustStayBelowTheRise(): void
+    {
+        $raw = $this->validRaw();
+        $raw['paleness']['daily_recovery'] = 0.10;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/abimer doit aller plus vite que reparer/');
+
+        $this->loader->normalize($raw);
+    }
+
+    /**
+     * Le plancher dur du socle de monde : un filon pali n'est **jamais**
+     * sterile, ce qui le distingue d'une Etale (GAME_WORLD § 12.1). Le taux
+     * doit donc rester dans ]0, 1[.
+     */
+    public function testPalenessCannotReachTotalSterility(): void
+    {
+        $raw = $this->validRaw();
+        $raw['paleness']['max'] = 1.0;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/strictly between 0 and 1/');
+
+        $this->loader->normalize($raw);
+    }
+
+    /**
+     * Un seuil d'effet au-dessus du plafond ne se declencherait **jamais** :
+     * l'effet serait declare et jamais applique, sans que rien ne le dise.
+     */
+    public function testAnEffectThresholdAboveTheCapIsRefused(): void
+    {
+        $raw = $this->validRaw();
+        $raw['paleness']['dulls_purity_from'] = 0.90;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/jamais atteint/');
+
+        $this->loader->normalize($raw);
+    }
+
     private function validRaw(): array
     {
         return [
@@ -271,6 +319,13 @@ class SettlementDefinitionLoaderTest extends TestCase
             'never_gated' => ['shop' => 'boutiques existantes'],
             'seed' => ['marais' => ['rank' => 'camp', 'stock' => 400]],
             'without_settlement' => ['lumiere' => 'batie sur la Voute'],
+            'paleness' => [
+                'rise_per_pressure' => 0.08,
+                'daily_recovery' => 0.04,
+                'max' => 0.60,
+                'visible_from' => 0.10,
+                'dulls_purity_from' => 0.30,
+            ],
         ];
     }
 }

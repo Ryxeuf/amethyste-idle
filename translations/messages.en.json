@@ -1446,7 +1446,8 @@
           "missing_skill": "This vein calls for knowledge you have not learned yet."
         },
         "purity_ceiling": "This vein yields no better than",
-        "locked_by": "Requires:"
+        "locked_by": "Requires:",
+        "paleness": "Vein gone pale (%percent% %) — it yields less, and mends on its own if given room to breathe."
       },
       "pnjs": {
         "heading": "Characters here",

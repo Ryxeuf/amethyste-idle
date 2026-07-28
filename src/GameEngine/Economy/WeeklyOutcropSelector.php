@@ -5,8 +5,10 @@ namespace App\GameEngine\Economy;
 use App\Entity\App\WeeklyOutcrop;
 use App\Entity\App\Zone;
 use App\GameEngine\Retention\WeekKey;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\Repository\WeeklyOutcropRepository;
 use App\Repository\ZoneRepository;
+use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -37,6 +39,8 @@ class WeeklyOutcropSelector
         private readonly ZoneRepository $zoneRepository,
         private readonly WeeklyOutcropRepository $outcropRepository,
         private readonly PurityScope $scope,
+        private readonly ZoneVeinRepository $veinRepository,
+        private readonly SettlementDefinitionLoader $settlementLoader,
     ) {
     }
 
@@ -95,6 +99,14 @@ class WeeklyOutcropSelector
                     continue;
                 }
 
+                // FOY-11 — un filon pali ne peut pas etre tire. Le report que
+                // RET-06 avait nomme : offrir un cran de bande a un filon qu'on
+                // vient d'ereinter serait exactement la dispense de gestion que
+                // la brique refuse d'etre.
+                if ($this->isDulled($zone, $slug)) {
+                    continue;
+                }
+
                 $candidates[] = [$zone, $slug];
             }
         }
@@ -105,5 +117,20 @@ class WeeklyOutcropSelector
         usort($candidates, static fn (array $a, array $b): int => [$a[0]->getSlug(), $a[1]] <=> [$b[0]->getSlug(), $b[1]]);
 
         return $candidates;
+    }
+
+    /**
+     * Un filon trop pali sort du tirage (FOY-11).
+     *
+     * Le seuil est le meme que celui du plafond de bande : au-dela, le filon
+     * ne rend plus que du clair, et un affleurement qui le designerait
+     * promettrait un cran que la Paleur reprendrait aussitot.
+     */
+    private function isDulled(Zone $zone, string $veinSlug): bool
+    {
+        $vein = $this->veinRepository->findOneByZoneAndSlug($zone, $veinSlug);
+
+        return $vein !== null
+            && $vein->getPaleness() >= $this->settlementLoader->load()['paleness']['dulls_purity_from'];
     }
 }

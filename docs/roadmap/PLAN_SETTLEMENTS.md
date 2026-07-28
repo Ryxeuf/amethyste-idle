@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **13 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **14 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -38,7 +38,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-08 ✅ | Crue — quotas indexés sur la population active |
 | FOY-09 ✅ | Zone d'influence & vassalité |
 | FOY-10 ✅ | Étiage & régression bornée |
-| FOY-11 | Pâleur — état de zone, effets sur rendement et pureté |
+| FOY-11 ✅ | Pâleur — état de zone, effets sur rendement et pureté |
 | FOY-12 | Restauration payée au trésor de guilde |
 | FOY-13 | Ateliers de doctrine (Fonderie / Lecteurs) |
 | FOY-14 ✅ | Crédit au journal de monde à la clôture de marée |
@@ -50,7 +50,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
-Piste D — Pâleur              : FOY-11 → FOY-12
+Piste D — Pâleur              : FOY-11 ✅ → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14 ✅
 Piste F — Contenu & tests     : FOY-15, FOY-16
 ```
@@ -287,23 +287,20 @@ s'y branche.
 
 ## Piste D — Pâleur (séquentiel)
 
-### FOY-11 — Pâleur d'une zone (M | ★★★ | MOYENNE)
+### FOY-11 — Pâleur d'une zone ✅ (M | ★★★ | MOYENNE)
 > L'extraction laisse une trace. Graduelle, bornée, réversible — jamais une Étale (§12.1).
-> Prérequis : ← FOY-03
-- [ ] **Calcul par filon** (`ZoneVein.paleness`), jamais par zone : c'est ce qui garantit que
-      la Pâleur ne frappe que l'exploitation **concentrée** et jamais le passage diffus des
-      débutants (GAME_WORLD §3.5). L'agrégat au niveau de la zone n'est qu'un **affichage**
-- [ ] Alimentée par le rapport extraction / débit soutenu `R` du filon sur la marée
-- [ ] Effets progressifs : rendement de récolte en baisse, **bande de pureté plafonnée**
-      (§5.4), faune plus rare
-- [ ] **Plancher dur** : un filon pâli ne devient jamais stérile, et une zone pâlie ne produit
-      **aucun** Effacé — c'est ce qui la distingue de l'Étale
-- [ ] **Jamais de « jachère »** : aucune mécanique ne doit récompenser l'abstention collective
-      d'un serveur entier (GAME_WORLD §3.5). La régénération est un **débit continu**, pas une
-      phase à protéger — un filon se régénère pendant qu'on y joue
-- [ ] Décroissance naturelle lente si l'extraction cesse
-- [ ] Affichage : la zone se délave visuellement, avec un texte qui dit quoi faire
-- [ ] Tests : montée, plancher, décroissance, effet sur la pureté
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Périmètre tenu, et ce qui en sort.** Des effets annoncés, le rendement et la bande de
+> pureté sont livrés, plus le filtre sur l'Affleurement (le report nommé par RET-06). La
+> **faune plus rare** est écartée, avec sa raison : la Pâleur est **par filon** par conception —
+> c'est ce qui garantit qu'elle ne frappe que l'exploitation concentrée — alors que la faune est
+> par zone. L'y appliquer ferait de l'agrégat de zone une *mécanique*, là où ce plan dit qu'il ne
+> doit rester qu'un *affichage*, et ferait retomber sur le passage diffus la sanction réservée à
+> l'exploitation concentrée.
+>
+> **Ce que FOY-12 hérite** : `ZoneVein.paleness` est la grandeur sur laquelle indexer le coût de
+> restauration, et `settlements.yaml` porte déjà le bloc `paleness:` où ce coût trouvera sa place.
 
 ### FOY-12 — Restauration payée au trésor (M | ★★★ | MOYENNE)
 > Mécanique de Wakfu : la sanction devient une **dépense politique**, pas une perte sèche.
@@ -406,6 +403,6 @@ FOY-16 court en parallèle sur les quatre sprints.
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
 Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14 ✅
-Phase 4 (conséquence): FOY-11 → FOY-12 → FOY-13 → FOY-15
+Phase 4 (conséquence): FOY-11 ✅ → FOY-12 → FOY-13 → FOY-15
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```
