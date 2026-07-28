@@ -74,7 +74,7 @@ class SettlementWeeklyWorkGenerator
     /**
      * Les besoins d'un foyer, tels que son type et son rang les dictent.
      *
-     * @param array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>, completion_grains: int} $definition
+     * @param array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>} $definition
      *
      * @return list<array{activity: string, target: int, progress: int}>
      */
@@ -84,7 +84,8 @@ class SettlementWeeklyWorkGenerator
         // Sous le Hameau, un foyer n'a pas encore d'identite (FOY-03) : il
         // demande le minimum vital. Le laisser sans chantier l'aurait prive du
         // seul rendez-vous collectif qu'un Campement puisse offrir.
-        $demands = $definition['demands'][$type?->value ?? 'none'] ?? [];
+        $identity = null === $type ? 'none' : $type->value;
+        $demands = $definition['demands'][$identity] ?? [];
 
         $multiplier = $definition['rank_multipliers'][$settlement->getRank()->value] ?? 1;
 
