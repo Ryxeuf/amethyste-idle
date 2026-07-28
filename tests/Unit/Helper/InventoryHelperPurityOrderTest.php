@@ -35,8 +35,12 @@ class InventoryHelperPurityOrderTest extends TestCase
         $removed = $this->helper($bag)->removeItemBySlug('ore-copper', 2);
 
         self::assertSame(2, $removed);
+
+        // Le sac garde son ordre d'insertion — seul l'ordre de **consommation**
+        // change. Ce qui reste, ce sont donc les deux lots les plus purs, dans
+        // l'ordre ou le joueur les avait.
         self::assertSame(
-            [Purity::Pur, Purity::Parfait],
+            [Purity::Parfait, Purity::Pur],
             array_values(array_map(
                 static fn (PlayerItem $item): ?Purity => $item->getPurity(),
                 $bag->getItems()->toArray(),
@@ -82,8 +86,12 @@ class InventoryHelperPurityOrderTest extends TestCase
         $removed = $this->helper($bag)->removeItemBySlug('ore-copper', 5);
 
         self::assertSame(2, $removed);
-        self::assertCount(1, $bag->getItems());
-        self::assertSame('ore-tin', $bag->getItems()->toArray()[0]->getGenericItem()->getSlug());
+
+        // `removeElement` laisse des trous de clefs : c'est `array_values` qui
+        // rend la liste, pas l'indexation directe.
+        $remaining = array_values($bag->getItems()->toArray());
+        self::assertCount(1, $remaining);
+        self::assertSame('ore-tin', $remaining[0]->getGenericItem()->getSlug());
     }
 
     /**
