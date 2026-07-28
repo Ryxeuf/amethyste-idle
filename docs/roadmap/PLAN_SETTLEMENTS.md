@@ -8,7 +8,7 @@
 > du sédiment sur le **foyer** d'une zone, le foyer monte en rang et ouvre des services, la
 > **Crue** limite le nombre de grandes cités, et l'oubli fait redescendre. Décisions de
 > conception : [../GAME_WORLD.md](../GAME_WORLD.md) §3 (foyers), §5 (économie territoriale),
-> §12.1 (Pâleur et Étale) — décisions **A → F** actées le 2026-07-27.
+> §12.1 (Pâleur et Étale) — décisions **A → G** actées les 2026-07-27/28.
 > Références du genre : [../GAME_INSPIRATIONS.md](../GAME_INSPIRATIONS.md) (Ashes of
 > Creation, EVE, FFXIV/Ishgard, Black Desert, Wakfu, SWG).
 

@@ -286,9 +286,10 @@ joueurs viennent du **savoir** et des **relations**, jamais du temps passé.
 
 C'est la raison d'être du document : ces contraintes commandent les zones et les ressources.
 
-**a) À portée du hub, dès la semaine 1**, il faut au minimum : les quatre lignes de récolte
-(minage, herboristerie, pêche, dépeçage), de la faune de niveau d'entrée, un atelier, et une
-première matéria. Sans ça, l'Acte I ne tient pas.
+**a) À portée du hub, dès la semaine 1**, il faut au minimum : les cinq lignes de récolte
+(minage, herboristerie, pêche, dépeçage, bûcheronnage — acté le 2026-07-28, GAME_ZONES
+loi 5), de la faune de niveau d'entrée, un atelier, et une première matéria. Sans ça,
+l'Acte I ne tient pas.
 
 **b) Les 32 domaines ne doivent pas être servis également.** Un joueur en travaille 2 à 4 ; à
 50 joueurs quotidiens, un domaine exotique n'aura aucun praticien. Le contenu (matéria,
