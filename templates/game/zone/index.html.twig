@@ -136,6 +136,80 @@
                     </div>
                 {% endif %}
 
+                {# ── Foyer de la zone (FOY-04) ────────────────────── #}
+                {# Un compteur qui monte n'est pas un jeu ; un chantier visible #}
+                {# en est un. La jauge se lit entre deux paliers, jamais depuis  #}
+                {# zero : au Bourg, une barre partant de zero serait pleine a    #}
+                {# 97 % et ne bougerait plus, alors que le chemin vers la Cite   #}
+                {# reste presque entier.                                         #}
+                {% if settlement %}
+                    <div class="ds-card p-3 mb-4">
+                        <div class="flex items-baseline justify-between gap-2">
+                            <p class="ds-label">{{ 'game.zone.settlement.heading'|trans }}</p>
+                            <span class="ds-num ds-num--sm ds-num--muted">{{ settlement.total }}</span>
+                        </div>
+
+                        <p class="text-sm font-semibold text-ink mt-1">
+                            {{ ('game.settlement.rank.' ~ settlement.rank.value)|trans }}
+                            {%- if settlement.type %}
+                                — {{ ('game.settlement.type.' ~ settlement.type.value)|trans }}
+                            {%- endif %}
+                        </p>
+
+                        {% if settlement.ebbing %}
+                            <p class="ds-hint mt-1">
+                                {{ 'game.zone.settlement.ebbing'|trans({
+                                    '%rank%': ('game.settlement.rank.' ~ settlement.highestRank.value)|trans,
+                                }) }}
+                            </p>
+                        {% endif %}
+
+                        {% if settlement.next %}
+                            <div class="ds-meter mt-2">
+                                <div class="ds-meter__fill" style="width: {{ settlement.next.progress }}%"></div>
+                            </div>
+                            <p class="ds-num ds-num--sm ds-num--muted text-left mt-1">
+                                {{ 'game.zone.settlement.to_next'|trans({
+                                    '%count%': settlement.next.missing,
+                                    '%rank%': ('game.settlement.rank.' ~ settlement.next.rank.value)|trans,
+                                }) }}
+                            </p>
+                            {% if settlement.next.opens is not empty %}
+                                <p class="ds-hint mt-1">
+                                    {{ 'game.zone.settlement.opens'|trans }}
+                                    {% for service in settlement.next.opens %}
+                                        {{- ('game.settlement.service.' ~ service)|trans }}{{ not loop.last ? ', ' : '' }}
+                                    {%- endfor %}
+                                </p>
+                            {% endif %}
+                        {% else %}
+                            <p class="ds-hint mt-1">{{ 'game.zone.settlement.summit'|trans }}</p>
+                        {% endif %}
+
+                        <div class="ds-divider my-2"></div>
+
+                        {% for row in settlement.indices %}
+                            <div class="flex items-baseline justify-between gap-2">
+                                <span class="text-xs text-ink-soft">{{ ('game.settlement.index.' ~ row.index.value)|trans }}</span>
+                                <span class="ds-num ds-num--sm ds-num--muted">{{ row.value }}</span>
+                            </div>
+                        {% endfor %}
+
+                        <div class="ds-divider my-2"></div>
+
+                        <div class="flex items-baseline justify-between gap-2">
+                            <span class="text-xs text-ink-soft">{{ 'game.zone.settlement.your_share'|trans }}</span>
+                            <span class="ds-num ds-num--sm">{{ settlement.contribution }}</span>
+                        </div>
+                        {% if settlement.guildContribution > 0 %}
+                            <div class="flex items-baseline justify-between gap-2">
+                                <span class="text-xs text-ink-soft">{{ 'game.zone.settlement.guild_share'|trans }}</span>
+                                <span class="ds-num ds-num--sm">{{ settlement.guildContribution }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
                 {# ── Expedition time-gated (ZON-13) ──────────────── #}
                 {% if expedition %}
                     {% if expedition.active %}

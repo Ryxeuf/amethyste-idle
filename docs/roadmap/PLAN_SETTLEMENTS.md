@@ -31,7 +31,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-01 | Entité `Settlement` — rang, type, quatre indices, seed non nul ✅ |
 | FOY-02 ✅ | Dépôt de sédiment (subscriber sur les events existants) |
 | FOY-03 ✅ | Décroissance, calcul du rang et du type (hystérésis) |
-| FOY-04 | Le foyer sur l'écran de zone — chantier lisible |
+| FOY-04 ✅ | Le foyer sur l'écran de zone — chantier lisible |
 | FOY-05 ✅ | Gate déclaratif des services par rang |
 | FOY-06 | Services gatés : marché local, banque, éveil (création) de matéria |
 | FOY-07 | Bonus d'atelier par foyer (ligne de production × type) |
@@ -47,7 +47,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
 
 ```
-Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04
+Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 → FOY-07
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
@@ -125,16 +125,11 @@ s'y branche.
 > **Hors périmètre, laissé à FOY-10** : le plancher d'un rang perdu par marée et l'annonce
 > d'étiage une marée à l'avance (§23.6). Le rang se calcule ici directement sur les seuils.
 
-### FOY-04 — Le foyer sur l'écran de zone (M | ★★★ | HAUTE)
-> Un compteur qui monte n'est pas un jeu ; un chantier visible en est un
-> (modèle FFXIV/Ishgard, cf. GAME_INSPIRATIONS §3).
-> Prérequis : ← FOY-03
-- [ ] Bloc « foyer » sur `/game/zone` : rang, type, jauge vers le palier suivant, et **ce que
-      le prochain palier ouvrira**
-- [ ] Contribution du joueur et de sa guilde à la marée en cours
-- [ ] État d'étiage signalé quand le foyer décroche (prépare FOY-10)
-- [ ] Composants `.ds-*` du système de design ; un seul chiffre par ligne, en monospace
-- [ ] Tests fonctionnels : affichage par rang, zone sans foyer, jauge
+### FOY-04 — Le foyer sur l'écran de zone ✅ (M | ★★★ | HAUTE)
+> Un compteur qui monte n'est pas un jeu ; un chantier visible en est un.
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Piste A complète (FOY-01 → 04)** ; avec FOY-05, le socle du foyer est livré.
 
 ---
 

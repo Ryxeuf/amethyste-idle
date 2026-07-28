@@ -13,6 +13,7 @@ use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -79,6 +80,7 @@ class ZoneController extends AbstractController
         private readonly GroupDungeonClearRepository $groupDungeonClearRepository,
         private readonly MountTravelSpeed $mountTravelSpeed,
         private readonly PlayerShopRepository $playerShopRepository,
+        private readonly SettlementPanelBuilder $settlementPanelBuilder,
     ) {
     }
 
@@ -135,6 +137,7 @@ class ZoneController extends AbstractController
                 'gameHour' => $this->gameTimeService->getHour(),
                 'zoneChat' => null,
                 'phase' => $this->gameTimeService->getPhase(),
+                'settlement' => null,
             ]);
         }
 
@@ -195,6 +198,10 @@ class ZoneController extends AbstractController
                 'nextPointIn' => $this->lifeRegenManager->secondsUntilNextPoint($player),
                 'fullIn' => $this->lifeRegenManager->secondsUntilFull($player),
             ],
+            // FOY-04 : le foyer de la zone. `null` quand la zone n'en a pas —
+            // afficher une jauge a zero sur Lumiere laisserait croire a un
+            // chantier abandonne alors qu'il n'y a simplement rien a batir.
+            'settlement' => $this->settlementPanelBuilder->build($zone, $player),
             'expedition' => $this->buildExpedition($player, $zone),
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
             'zoneBoss' => $this->buildZoneBoss($zone),
