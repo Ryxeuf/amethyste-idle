@@ -63,6 +63,10 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // la suivante (RET-01). **Avant** la chaîne de minuit : la
                 // semaine s'ouvre d'abord, le quotidien s'enchaîne dessus.
                 RecurringMessage::cron('0 0 * * 1', new RunCommandMessage('app:weekly-challenge:rotate')),
+                // WeeklyCommission : le rendez-vous **personnel** (RET-02).
+                // Après le défi de guilde : les deux s'ouvrent le même lundi,
+                // le collectif d'abord.
+                RecurringMessage::cron('2 0 * * 1', new RunCommandMessage('app:weekly-commission:rotate')),
 
                 // --- Cloture quotidienne ------------------------------------
                 // DailyQuest : rotation des quêtes quotidiennes

@@ -1,0 +1,116 @@
+# =============================================================================
+# Commissions hebdomadaires personnelles — pool de gabarits (RET-02)
+# =============================================================================
+# Le rendez-vous hebdomadaire **personnel**, pendant du defi de guilde (RET-01).
+# Le solo participe au chantier collectif sans avoir a rejoindre une guilde :
+# la commission se livre a un **foyer** (FOY-01), pas a un guichet abstrait.
+#
+# Regle du fichier, identique a celle des defis : aucun contenu ecrit en dur
+# dans le code. Ajouter une commission, c'est ajouter une entree ici.
+#
+# Champs d'un gabarit :
+#   slug            cle stable, sert a varier les tirages d'une semaine a l'autre
+#   activity        InfluenceActivityType : mob_kill, craft, harvest, fishing,
+#                   butchering, quest. Jamais `challenge`, qui est le canal de
+#                   versement des bonus de guilde et non une activite de joueur
+#   domain          slug du domaine de talent auquel la commission se rattache.
+#                   C'est ce qui permet de tirer un objectif **dans ce que le
+#                   joueur travaille deja** : proposer de la peche a qui n'a
+#                   jamais peche transforme un rendez-vous en corvee.
+#                   /!\ `Domain::getSlug()` est **derive du titre affiche**
+#                   (minuscules, espaces en tirets, accents conserves) : le slug
+#                   de « Pêcheur » est `pêcheur`. Renommer un domaine change donc
+#                   son slug en silence — `WeeklyCommissionDomainTest` compare
+#                   cette colonne aux domaines reellement livres pour que la
+#                   rupture se voie en CI et non un lundi matin.
+#   title / title_en, description / description_en
+#   target          compteur a atteindre dans la semaine
+#
+# `per_week: 1` est une regle de conception, pas un reglage : une commission par
+# semaine et par personnage, sans reroll. Ce qui se choisit une fois se retient ;
+# ce qui se rejoue jusqu'a tomber juste ne se retient pas.
+# =============================================================================
+
+per_week: 1
+
+commissions:
+    - slug: gibier-de-la-semaine
+      activity: mob_kill
+      domain: chasseur
+      title: "Le gibier de la semaine"
+      title_en: "This Week's Quarry"
+      description: "Abattez 40 creatures et rapportez-en la preuve au foyer."
+      description_en: "Bring down 40 creatures and carry the proof to the settlement."
+      target: 40
+
+    - slug: ronde-des-confins
+      activity: mob_kill
+      domain: soldat
+      title: "La ronde des confins"
+      title_en: "The Marches Patrol"
+      description: "Tenez les abords : 60 creatures abattues cette semaine."
+      description_en: "Hold the outskirts: 60 creatures felled this week."
+      target: 60
+
+    - slug: filon-de-la-semaine
+      activity: harvest
+      domain: mineur
+      title: "Le filon de la semaine"
+      title_en: "This Week's Vein"
+      description: "Prelevez 60 unites de ressource et livrez-les au foyer."
+      description_en: "Extract 60 units of resource and deliver them to the settlement."
+      target: 60
+
+    - slug: cueillette-reguliere
+      activity: harvest
+      domain: herboriste
+      title: "La cueillette reguliere"
+      title_en: "The Steady Gathering"
+      description: "Une cueillette suivie vaut mieux qu'une razzia : 50 unites."
+      description_en: "Steady gathering beats a raid: 50 units."
+      target: 50
+
+    - slug: table-du-foyer
+      activity: fishing
+      domain: pêcheur
+      title: "La table du foyer"
+      title_en: "The Settlement's Table"
+      description: "Vingt prises pour nourrir ceux qui batissent."
+      description_en: "Twenty catches to feed those who build."
+      target: 20
+
+    - slug: cuir-de-la-semaine
+      activity: butchering
+      domain: dépeceur
+      title: "Le cuir de la semaine"
+      title_en: "This Week's Hide"
+      description: "Depecez 25 depouilles pour l'atelier du foyer."
+      description_en: "Skin 25 carcasses for the settlement's workshop."
+      target: 25
+
+    - slug: commande-de-l-etabli
+      activity: craft
+      domain: forgeron
+      title: "La commande de l'etabli"
+      title_en: "The Workbench Order"
+      description: "Quinze pieces sorties de l'etabli, livrees au foyer."
+      description_en: "Fifteen pieces off the bench, delivered to the settlement."
+      target: 15
+
+    - slug: ouvrage-d-alchimie
+      activity: craft
+      domain: alchimiste
+      title: "L'ouvrage d'alchimie"
+      title_en: "The Alchemist's Work"
+      description: "Douze preparations pour les reserves du foyer."
+      description_en: "Twelve preparations for the settlement's stores."
+      target: 12
+
+    - slug: affaires-courantes
+      activity: quest
+      domain: vagabond
+      title: "Les affaires courantes"
+      title_en: "Standing Business"
+      description: "Cinq requetes reglees pour ceux qui vivent ici."
+      description_en: "Five requests settled for those who live here."
+      target: 5
