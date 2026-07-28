@@ -739,8 +739,6 @@ demande que trois réponses :
 
 > *Quelle veine ? Comment le temps s'y est-il déposé ? Que peut-on y bâtir ?*
 
----
-
 ## 12. Dossiers instruits *(tranchés le 2026-07-27)*
 
 Deux notions étaient citées sans être définies. Le raisonnement qui a mené à la décision est
@@ -873,3 +871,117 @@ améliorant la vie de tout le monde.
   devient un bâtiment qu'on voit sur l'écran de zone.
 - **Un adversaire d'arc saisonnier** disponible en permanence (*Le Procès de la Fonderie*,
   §8) sans avoir à inventer une menace neuve à chaque marée.
+
+---
+
+## 13. Peuplement du monde — départ, zones, extensions
+
+> **Statut : proposition**, en attente de deux entrées (§14). Le raisonnement est consigné
+> ici pour ne pas être reperdu ; les tableaux de zones ne sont pas actés.
+
+### 13.1 Un seul point de réveil
+
+**Ne pas éparpiller les départs au lancement.** Éparpiller résout un problème de
+**surpeuplement** — c'est-à-dire un problème de succès. Au lancement, le danger est
+l'inverse : un monde vide. Et surtout, l'éparpillement **combat le pilier des foyers**, qui
+a besoin de concentration pour que quoi que ce soit pousse : cent joueurs répartis sur huit
+zones de départ ne font monter aucun foyer, chaque zone paraît morte, et le pilier ne se
+démontre jamais. Plusieurs MMO du genre ont dû fusionner leurs zones de départ après coup.
+
+Le monde le dit déjà : **un Limpide s'éveille là où est la Voûte.** Le point de réveil unique
+est canon (§7.2), pas un compromis technique.
+
+**Différencier par la destination, pas par l'origine.** La race donne un **foyer d'attache** —
+la communauté qui recueille le nouveau venu — qui détermine sa première destination, son kit,
+sa réputation de départ et sa première chaîne de quêtes :
+
+| Race | Foyer d'attache | Première destination |
+|---|---|---|
+| Nain | les mineurs | Mines profondes |
+| Elfe | les herboristes | Forêt des murmures |
+| Orc | les chasseurs | Crête de Ventombre / Dunes |
+| Humain | les marchands | libre — le hub est sa maison |
+
+Le joueur se **sent** distinct dès la création ; la population **reste** groupée au moment où
+elle est la plus petite.
+
+**Et l'éparpillement s'indexe sur la population**, exactement comme le quota de Crue (§3.3) :
+quand le serveur grossit, des foyers d'attache deviennent de vrais points de réveil. Aucune
+mécanique nouvelle, et le sens de la marche est le bon — on ajoute toujours un point de
+départ facilement, on n'en retire jamais sans douleur.
+
+### 13.2 Architecture proposée — base + deux extensions
+
+Rappel des deux règles qui contraignent l'exercice : **toute zone doit être la source
+exclusive d'au moins une chose** (§5.5), et **mieux vaut peu de zones profondes que beaucoup
+de zones minces** (§5.5). Le monde livré compte onze zones : la proposition n'en ajoute
+qu'une, et réserve les nouvelles aux extensions.
+
+**Jeu de base — 8 zones** (1 sanctuaire + 6 foyers + 1 donjon) :
+
+| Zone | Ligne de production | État |
+|---|---|---|
+| Lumière + Quartier des Jardins | *aucune* — plancher garanti, pas de foyer (§3.4) | existe |
+| Forêt des murmures | bois, fibre, herbes | existe |
+| Mines profondes | métal de base (cuivre, étain, fer) | existe |
+| Marais brumeux | alchimie, poisons, eau | existe |
+| Crête de Ventombre | pierre, gemme, cobalt | existe |
+| **Vallons / rivière** | agriculture, pêche, cuir | **à créer** — comble le trou de niveau 2 identifié en §4.5 |
+| Dunes d'Ambre | cuir, os, sel, ambre | existe |
+| Cité ensevelie | ruines, plans anciens (donjon) | existe |
+
+**Extension 1 — Le Silence** : Pas de Givre, Glacier du Silence, Mer de Sel, plus une ou deux
+zones neuves. Modèle **expédition**, sans foyer, haut palier (§4.3). À moitié écrite.
+
+**Extension 2 — L'Étale** : la frontière. Source exclusive de plans et de matéria perdue,
+Effacés (§12.1, §7.4). Extension de fin de jeu, déjà conçue.
+
+### 13.3 L'améthystite — recommandation
+
+L'audit de la chaîne de production a montré que la **ressource-titre du jeu n'a aucun filon** :
+`ore-amethyst-crystal` n'existe que via un spot hérité dans les Mines
+(cf. [BALANCE.md § 21.5](BALANCE.md)). Il faut donc trancher sa source au moment de définir
+les ressources de zone. Recommandation :
+
+> **L'améthystite est partout, mais la pureté dépend du lieu.**
+
+Le postulat dit que le temps se dépose *partout* : il serait incohérent qu'il n'y ait qu'un
+seul endroit où le ramasser. Chaque zone porte donc sa veine d'améthystite ; ce qui change
+d'une zone à l'autre, c'est la **bande** qu'elle peut atteindre (§5.4) — le *Parfait* n'étant
+accessible que dans les Affleurements, les Chœurs, et les zones reposées.
+
+Trois conséquences, et c'est ce qui emporte la décision :
+
+- **Chaque zone devient définitivement pertinente pour la fin de jeu**, puisque la matéria
+  vient de l'améthystite. Le creux du milieu (§5.5) se règle à la racine plutôt que par des
+  leviers compensatoires.
+- **La règle de l'exclusivité devient facile à tenir** : chaque zone a sa ligne de production
+  *et* sa signature d'améthystite.
+- **La pureté trouve son sens plein** : ce n'est plus une statistique de minerai, c'est la
+  qualité de la mémoire d'un lieu — ce que le postulat dit depuis le début.
+
+---
+
+## 14. Ce qui reste à cadrer avant d'écrire du contenu
+
+Trois entrées manquent, et deux d'entre elles commandent les tableaux du §13. Elles sont
+**au-dessus** de ce document, pas dedans.
+
+1. **La population cible.** Le nombre de zones n'est pas une affaire de goût mais une
+   **fonction** du nombre de joueurs actifs attendus. Huit zones pour cinquante joueurs et
+   huit zones pour cinq mille, ce sont deux jeux différents — et la règle « peu de zones
+   profondes » (§5.5) est inapplicable sans ce chiffre. Il commande aussi le calibrage des
+   filons et les quotas de Crue (§3.3).
+
+2. **La colonne vertébrale de progression.** Aucun document du projet ne dit ce qu'un joueur
+   fait au jour 1, au jour 40, au mois 6. Les piliers systémiques et la trame existent ; la
+   **forme d'une vie de joueur**, non. C'est le plus gros manque du cadrage, et il devrait
+   être écrit **avant** de figer les zones — puisque c'est lui qui dira à quoi elles servent.
+
+3. **La source de l'améthystite** (§13.3) — recommandation posée, décision à prendre.
+
+> **Note de méthode.** L'ordre sain reste macro → micro. Le détour par le micro (audit de la
+> chaîne, ECO-24) était néanmoins rentable : il a **falsifié** trois hypothèses du macro —
+> deux systèmes de récolte coexistants, l'étain à filon unique, et la ressource-titre sans
+> source. Du micro qui invalide du macro est le micro le moins cher qui soit ; du micro qui
+> ne fait que le décorer est à repousser.
