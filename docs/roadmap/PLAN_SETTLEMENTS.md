@@ -30,7 +30,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 |------|----------------|
 | FOY-01 | Entité `Settlement` — rang, type, quatre indices, seed non nul ✅ |
 | FOY-02 ✅ | Dépôt de sédiment (subscriber sur les events existants) |
-| FOY-03 | Décroissance, calcul du rang et du type (hystérésis) |
+| FOY-03 ✅ | Décroissance, calcul du rang et du type (hystérésis) |
 | FOY-04 | Le foyer sur l'écran de zone — chantier lisible |
 | FOY-05 | Gate déclaratif des services par rang |
 | FOY-06 | Services gatés : marché local, banque, éveil (création) de matéria |
@@ -47,7 +47,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
 
 ```
-Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 → FOY-04
+Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04
 Piste B — Ce que le rang ouvre: FOY-05 → FOY-06 → FOY-07
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
@@ -114,18 +114,16 @@ s'y branche.
 > **Correction au plan** : « aucun event nouveau » était vrai avant le pivot PBBG et ne
 > l'était plus. `GatherService` n'émettait rien ; ZON-38 l'a rebranché avant ce jalon.
 
-### FOY-03 — Décroissance, rang et type (M | ★★★ | CRITIQUE)
+### FOY-03 — Décroissance, rang et type ✅ (M | ★★★ | CRITIQUE)
 > Ce qui n'est plus fréquenté s'amincit. Et le type se décide tout seul.
-> Prérequis : ← FOY-02
-- [ ] `SettlementRankCalculator` : rang = seuils sur la somme des indices ; type = indice
-      dominant
-- [ ] **Hystérésis sur le type** : il faut dépasser le second indice d'une marge donnée et
-      la tenir une marée entière — sinon le type clignote et la ville n'a pas d'identité
-- [ ] Décroissance périodique des indices (commande `app:settlement:tick`, branchée sur le
-      cron existant)
-- [ ] Publication d'un événement domaine `SettlementRankChangedEvent` (montée **et** descente)
-- [ ] Tests : franchissement de seuil, décroissance, non-clignotement du type,
-      idempotence du tick
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Arbitrage** : BALANCE §23.4 pose côte à côte « le type ne se perd qu'en le cédant à un
+> autre » et « en dessous du Hameau, pas de type ». La seconde l'emporte — un Campement qui
+> se souviendrait d'avoir été un Comptoir afficherait une identité que plus rien ne soutient.
+>
+> **Hors périmètre, laissé à FOY-10** : le plancher d'un rang perdu par marée et l'annonce
+> d'étiage une marée à l'avance (§23.6). Le rang se calcule ici directement sur les seuils.
 
 ### FOY-04 — Le foyer sur l'écran de zone (M | ★★★ | HAUTE)
 > Un compteur qui monte n'est pas un jeu ; un chantier visible en est un
