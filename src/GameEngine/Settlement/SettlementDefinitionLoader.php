@@ -54,6 +54,7 @@ class SettlementDefinitionLoader
      *     services: array<string, SettlementRank>,
      *     never_gated: array<string, string>,
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
+     *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -99,6 +100,7 @@ class SettlementDefinitionLoader
      *     services: array<string, SettlementRank>,
      *     never_gated: array<string, string>,
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
+     *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>
      * }
@@ -132,6 +134,7 @@ class SettlementDefinitionLoader
             'services' => $services,
             'never_gated' => $neverGated,
             'workshop' => $this->normalizeWorkshop($raw['workshop'] ?? [], $source),
+            'weekly_work' => $this->normalizeWeeklyWork($raw['weekly_work'] ?? [], $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
         ];
@@ -392,6 +395,75 @@ class SettlementDefinitionLoader
             'line_bonus' => $lineBonus,
             'cap' => $this->normalizeBonusPoints($workshop['cap'] ?? 0, 'workshop.cap', $source),
             'zone_line' => $zoneLine,
+        ];
+    }
+
+    /**
+     * Le chantier de la semaine (RET-05).
+     *
+     * Trois refus, chacun contre une ligne qui ne s'appliquerait jamais :
+     *
+     * - un **type sans demande** laisserait les foyers de ce type sans chantier,
+     *   c'est-a-dire sans le seul rendez-vous collectif qu'ils puissent offrir,
+     *   et rien ne le dirait ;
+     * - une **demande sans cible** produirait un besoin a zero, donc rempli
+     *   d'avance — un chantier qui se termine sans que personne n'y touche ;
+     * - un **rang sans multiplicateur** ferait tomber le calcul sur un defaut
+     *   muet plutot que sur une decision de calibrage.
+     *
+     * Le bonus de cloture n'est pas ici : c'est un depot, et il vit avec le reste
+     * de la table `sediment` (ligne `settlement_work`), comme celui de la
+     * commission. Un chiffrage de depot a deux endroits aurait fini par diverger.
+     *
+     * Le bloc entier est facultatif : un monde sans chantier reste jouable.
+     *
+     * @return array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>}
+     */
+    private function normalizeWeeklyWork(mixed $work, string $source): array
+    {
+        if (!\is_array($work)) {
+            throw new SettlementDefinitionException(sprintf('"weekly_work" must be a mapping in "%s".', $source));
+        }
+
+        $targets = [];
+        foreach ($this->mapping($work['targets'] ?? [], 'weekly_work.targets', $source) as $activity => $target) {
+            if (!is_numeric($target) || (int) $target < 1) {
+                throw new SettlementDefinitionException(sprintf('"weekly_work.targets.%s" must be a positive integer in "%s".', $activity, $source));
+            }
+            $targets[$activity] = (int) $target;
+        }
+
+        $demands = [];
+        foreach ($this->mapping($work['demands'] ?? [], 'weekly_work.demands', $source) as $type => $activities) {
+            if (!\is_array($activities) || $activities === []) {
+                throw new SettlementDefinitionException(sprintf('"weekly_work.demands.%s" must list at least one activity in "%s".', $type, $source));
+            }
+
+            $list = [];
+            foreach ($activities as $activity) {
+                if (!\is_string($activity) || !isset($targets[$activity])) {
+                    throw new SettlementDefinitionException(sprintf('"weekly_work.demands.%s" names an activity without a target in "%s".', $type, $source));
+                }
+                $list[] = $activity;
+            }
+            $demands[$type] = $list;
+        }
+
+        $multipliers = [];
+        if ($demands !== []) {
+            foreach (SettlementRank::cases() as $rank) {
+                $value = $work['rank_multipliers'][$rank->value] ?? null;
+                if (!is_numeric($value) || (int) $value < 1) {
+                    throw new SettlementDefinitionException(sprintf('Rank "%s" needs a positive "weekly_work.rank_multipliers" entry in "%s".', $rank->value, $source));
+                }
+                $multipliers[$rank->value] = (int) $value;
+            }
+        }
+
+        return [
+            'demands' => $demands,
+            'targets' => $targets,
+            'rank_multipliers' => $multipliers,
         ];
     }
 

@@ -17,6 +17,8 @@ use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\SettlementServiceDirectory;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
+use App\Repository\SettlementWeeklyWorkContributionRepository;
+use App\Repository\SettlementWeeklyWorkRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -307,6 +309,20 @@ class SettlementPanelBuilderTest extends TestCase
             $gate,
             $guildManager,
             new SettlementServiceDirectory($gate),
+            $this->workRepository(),
+            $this->createMock(SettlementWeeklyWorkContributionRepository::class),
         );
+    }
+
+    /**
+     * RET-05 : ces tests portent sur le foyer, pas sur son chantier. Une zone
+     * sans chantier ouvert est l'etat normal avant le premier lundi.
+     */
+    private function workRepository(): SettlementWeeklyWorkRepository
+    {
+        $repository = $this->createMock(SettlementWeeklyWorkRepository::class);
+        $repository->method('findCurrentForZone')->willReturn(null);
+
+        return $repository;
     }
 }

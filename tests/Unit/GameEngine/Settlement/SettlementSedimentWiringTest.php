@@ -62,6 +62,7 @@ class SettlementSedimentWiringTest extends TestCase
     private const DEPOSIT_CALLERS = [
         'src/EventListener/SettlementSedimentListener.php',
         'src/GameEngine/Retention/WeeklyCommissionDelivery.php',
+        'src/GameEngine/Settlement/SettlementWeeklyWorkProgress.php',
     ];
 
     /**

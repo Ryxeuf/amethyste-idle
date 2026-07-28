@@ -1452,7 +1452,12 @@
         "your_share": "Your share",
         "guild_share": "Your guild",
         "services": "Settlement services",
-        "service_locked": "%service% — at %required%"
+        "service_locked": "%service% — at %required%",
+        "work": {
+          "heading": "This week's work",
+          "complete": "The list is filled. The settlement got its relief.",
+          "thanks": "Pushed by:"
+        }
       }
     },
     "settlement": {
@@ -1492,6 +1497,16 @@
         "water": "Water & salt",
         "wood": "Wood & fibre",
         "amethyst": "Amethyst"
+      },
+      "work": {
+        "need": {
+          "harvest": "Material to gather",
+          "craft": "Work to deliver",
+          "mob_kill": "Outskirts to hold",
+          "quest": "Business to settle",
+          "fishing": "Catches to bring in",
+          "butchering": "Carcasses to work"
+        }
       }
     },
     "world_map": {
