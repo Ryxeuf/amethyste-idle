@@ -194,3 +194,53 @@ Phase 3 (Codex)        : NAR-05 → NAR-06 → NAR-07
 Phase 4 (saisons)      : NAR-08 → NAR-09 → NAR-10 → NAR-11 → NAR-12
 Phase 5 (fond & tests) : NAR-13, NAR-14  (parallélisable)
 ```
+
+---
+
+## Vague 2 — l'an 1 des marées (NAR-15 → NAR-19, ouverte le 2026-07-28)
+
+> Décline [../GAME_SEASONS.md](../GAME_SEASONS.md) (la partition de l'an 1 : colonne
+> vertébrale canon, rotation par indice mondial le plus faible, conséquences
+> déclenchées). Le moteur d'arc est livré (vague 1) — cette vague écrit du **contenu**
+> et branche la **règle de tirage**.
+
+### NAR-15 — Le tireur de marées (M | ★★★ | HAUTE)
+> La partition §0 devient un système : conséquence déclenchée > colonne datée > rotation.
+> Prérequis : moteur d'arc livré ; conditions Pâleur/Crue ← FOY-11 / FOY-08
+- [ ] Sélection de la marée suivante à la bascule de saison : priorité conséquences
+      (conditions vraies), puis colonne vertébrale (créneaux M2/M4/M8/M13), puis rotation
+      au **plus faible indice de sédiment mondial**
+- [ ] Gabarits en données (`config/game/tides.yaml`) : thème, indice nourri, beats types
+- [ ] La Pâleur passe avant l'Appel si les deux conditions sont vraies
+- [ ] Tests : priorités, tirage par indice, déclencheurs
+
+### NAR-16 — La Première Pierre (M | ★★★ | HAUTE)
+> M2 — le premier Bourg comme événement fondateur. Se cale sur BALANCE §23.3.
+- [ ] 4 beats (annonce, chantiers rivaux à jauges publiques, dernière semaine, consécration)
+- [ ] Le nom de la guilde bâtisseuse au journal de monde (canon)
+- [ ] Tests : jauges, résolution, entrée canon
+
+### NAR-17 — Le Procès de la Fonderie (M | ★★★ | HAUTE)
+> M4 — l'axe doctrinal s'ouvre. Fondre/lire compte double au dossier pendant la marée.
+> Prérequis : ← FAC-04 (fondre/lire)
+- [ ] 4 beats (incident, instruction, audience, verdict = la dominante du serveur)
+- [ ] Résolution : doctrine inscrite au journal, atelier de doctrine au foyer vainqueur
+      (← FOY-13), démarrage du Programme du Cercle
+- [ ] Tests : comptage double, verdict dérivé des gestes réels
+
+### NAR-18 — La Marée Basse et le Grand Inventaire (M | ★★ | MOYENNE)
+> M8 (le premier cran du Reflux — jamais résolu entièrement) et M13 (l'anniversaire).
+- [ ] M8 : baisse globale d'une bande d'améthyste pendant la marée, premier Effacé hors
+      de la Cité, entrée de Codex scellée — **aucune résolution complète** (signature du
+      méta-arc, un seul cran par an)
+- [ ] M13 : rétrospective jouable (défis rejouant l'année), monument de l'an 1 au Fanal
+      dérivé du journal réel du serveur, récompenses annuelles en paliers (jamais de série)
+- [ ] Tests : cran de méta-arc unique, monument dérivé des données
+
+### NAR-19 — La Grande Battue & la Foire Franche (M | ★★ | MOYENNE)
+> Les deux gabarits neufs — un par indice manquant (`war`, `trade`).
+- [ ] Battue : faune débordante déclarative dans une zone tirée, tableau des primes
+      (réutilise le système Chevaliers, FAC-09b), trophées de bestiaire
+- [ ] Foire : foyer hôte tiré, étals éphémères par artisan (réutilise les échoppes,
+      ECO Piste D), fenêtre de prix — précurseur des caravanes
+- [ ] Tests : tirage de zone/foyer, fenêtres, récompenses
