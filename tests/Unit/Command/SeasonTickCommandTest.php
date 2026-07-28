@@ -4,6 +4,7 @@ namespace App\Tests\Unit\Command;
 
 use App\Command\SeasonTickCommand;
 use App\Entity\App\InfluenceSeason;
+use App\Entity\App\WorldLoadSnapshot;
 use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
@@ -12,6 +13,7 @@ use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
+use App\GameEngine\World\WorldLoadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,6 +31,7 @@ class SeasonTickCommandTest extends TestCase
     private SeasonRewardsManager&MockObject $rewardsManager;
     private SeasonResolutionService&MockObject $resolutionService;
     private RankingBaselineService&MockObject $baselineService;
+    private WorldLoadService&MockObject $worldLoadService;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -42,6 +45,9 @@ class SeasonTickCommandTest extends TestCase
         $this->rewardsManager = $this->createMock(SeasonRewardsManager::class);
         $this->resolutionService = $this->createMock(SeasonResolutionService::class);
         $this->baselineService = $this->createMock(RankingBaselineService::class);
+        // FOY-17 : le tick releve desormais la charge du monde en fin de chaine.
+        $this->worldLoadService = $this->createMock(WorldLoadService::class);
+        $this->worldLoadService->method('capture')->willReturn($this->createWorldLoadSnapshot());
         $this->baselineService->method('capture')->willReturn(['kills' => 0, 'quests' => 0, 'xp' => 0]);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
@@ -58,6 +64,7 @@ class SeasonTickCommandTest extends TestCase
             $this->rewardsManager,
             $this->resolutionService,
             $this->baselineService,
+            $this->worldLoadService,
         );
 
         $app = new Application();
@@ -173,6 +180,7 @@ class SeasonTickCommandTest extends TestCase
             $this->rewardsManager,
             $this->resolutionService,
             $baselineService,
+            $this->worldLoadService,
         );
         $app = new Application();
         $app->add($command);
@@ -363,5 +371,16 @@ class SeasonTickCommandTest extends TestCase
         $season->setUpdatedAt(new \DateTime());
 
         return $season;
+    }
+
+    private function createWorldLoadSnapshot(): WorldLoadSnapshot
+    {
+        $snapshot = new WorldLoadSnapshot();
+        $snapshot->setDay(new \DateTimeImmutable('today'));
+        $snapshot->setCumulativeEnergy(0);
+        $snapshot->setDailyEnergy(0);
+        $snapshot->setCapturedAt(new \DateTimeImmutable());
+
+        return $snapshot;
     }
 }

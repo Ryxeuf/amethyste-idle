@@ -44,12 +44,12 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-14 | Crédit au journal de monde à la clôture de marée |
 | FOY-15 | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
 | FOY-16 | Tests unitaires du plan |
-| FOY-17 | Facteur de monde — calibrage dynamique |
+| FOY-17 | Facteur de monde — mesure ✅ (a) puis échelle (b) |
 
 ```
 Piste A — Socle du foyer      : FOY-01 → FOY-02 → FOY-03 → FOY-04
 Piste B — Ce que le rang ouvre: FOY-05 → FOY-06 → FOY-07
-Piste C — La Crue             : FOY-17 → FOY-08 → FOY-09 → FOY-10
+Piste C — La Crue             : FOY-17a ✅ → FOY-17b → FOY-08 → FOY-09 → FOY-10
 Piste D — Pâleur              : FOY-11 → FOY-12
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14
 Piste F — Contenu & tests     : FOY-15, FOY-16
@@ -195,7 +195,39 @@ s'y branche.
 
 ## Piste C — La Crue (séquentiel — c'est ce qui rend le pilier politique)
 
-### FOY-17 — Facteur de monde (calibrage dynamique) (M | ★★★ | CRITIQUE)
+### FOY-17 — Facteur de monde (calibrage dynamique)
+
+> **Scindé en deux (règle 8)** : le jalon porte deux choses de nature différente — une
+> **mesure** (d'où vient le nombre) et une **échelle** (ce qu'on en fait). La première est
+> livrable et testable seule, et elle a une valeur propre : elle corrige au passage le
+> garde-fou anti-exploit des guildes.
+
+#### FOY-17a — La mesure de la charge ✅ (livré 2026-07-28)
+> Livré. Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Ce que FOY-17b hérite** : `WorldLoadService::effectivePopulation()` rend le
+> dénominateur de tout le dimensionnement, et `measuredDays()` dit sur combien de jours il
+> est établi — c'est ce qui permettra à la période de grâce de refuser une contraction sur
+> une fenêtre incomplète.
+
+#### FOY-17b — Le facteur `W` et sa mise à l'échelle (M | ★★★ | CRITIQUE)
+> Prérequis : ← FOY-17a
+- [ ] `WorldScaleService` : facteur `W` par **paliers discrets** (0,5 / 0,75 / 1 / 1,5 /
+      2 / 3…) ancrés sur la population effective, `W = 1` à ~50 joueurs (BALANCE § 22.3)
+- [ ] **Asymétrie** : monte vite (n'importe quel tick quotidien), redescend lentement
+      (bascule de marée uniquement), sur moyenne glissante
+- [ ] **Plancher de `W` et période de grâce** : les premières marées ne contractent jamais
+- [ ] Application : `capacity` des filons × W ; **`respawn_seconds` reste fixe** — le
+      rythme du monde ne change pas, seule son ampleur change
+- [ ] **Interdit, à verrouiller par un test** : aucun bouclage sur la pression *locale*.
+      Vitalité, pureté et Pâleur ne sont jamais mises à l'échelle
+- [ ] Verrou manuel admin + inscription au journal de monde à chaque changement
+- [ ] Tests : paliers, asymétrie, respawn inchangé, signaux non mis à l'échelle, verrou
+
+<details>
+<summary>Cahier des charges d'origine (conservé pour référence)</summary>
+
+**FOY-17 — Facteur de monde (calibrage dynamique) (M | ★★★ | CRITIQUE)**
 > Le monde doit rester à la taille de son audience sans recalibrage manuel. Conception
 > complète et garde-fous : [../BALANCE.md § 22.4](../BALANCE.md).
 > Prérequis : ∅ — **précède FOY-08, FOY-11 et ECO-22**
@@ -226,6 +258,8 @@ s'y branche.
       automatique a tort
 - [ ] Anti-abus : même définition de joueur actif que le quota de Crue, via `InfluenceAntiExploit`
 - [ ] Tests : paliers, asymétrie, respawn inchangé, signaux non mis à l'échelle, verrou admin
+
+</details>
 
 ### FOY-08 — Quotas indexés sur la population active (M | ★★★ | CRITIQUE)
 > Décision B. Sans quota, tout le monde monte tout et il n'y a pas d'enjeu de territoire.

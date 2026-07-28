@@ -141,4 +141,71 @@ class ActionEnergyManagerTest extends TestCase
 
         $this->assertSame(ActionEnergyManager::DEFAULT_REGEN_SECONDS, $this->manager->getRegenSeconds());
     }
+
+    // -----------------------------------------------------------------
+    // FOY-17 — la depense d'energie est le point de mesure de l'activite
+    // -----------------------------------------------------------------
+
+    /**
+     * `spend()` est le passage oblige de toute action qui pese sur le monde.
+     * C'est donc la, et nulle part ailleurs, que se datent l'activite et se
+     * cumule la charge — se connecter ne passe pas par ici, et c'est le point
+     * (BALANCE § 22.5 : on compte la charge, pas les tetes).
+     */
+    public function testSpendStampsActivityAndAccumulatesSpentEnergy(): void
+    {
+        $player = $this->buildPlayer(50);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        $this->manager->spend($player, 3, false);
+
+        $this->assertNotNull($player->getLastActivityAt());
+        $this->assertSame(3, $player->getActionEnergySpentTotal());
+    }
+
+    public function testSpentEnergyAccumulatesAcrossActions(): void
+    {
+        $player = $this->buildPlayer(50);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        $this->manager->spend($player, 3, false);
+        $this->manager->spend($player, 5, false);
+        $this->manager->spend($player, 2, false);
+
+        $this->assertSame(10, $player->getActionEnergySpentTotal());
+    }
+
+    /**
+     * Une depense nulle ne vaut pas activite : elle ne pese sur rien, et la
+     * compter permettrait de se declarer actif sans jamais toucher au monde.
+     */
+    public function testAZeroCostActionIsNotActivity(): void
+    {
+        $player = $this->buildPlayer(50);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        $this->manager->spend($player, 0, false);
+
+        $this->assertNull($player->getLastActivityAt());
+        $this->assertSame(0, $player->getActionEnergySpentTotal());
+    }
+
+    /**
+     * Une action refusee faute d'energie ne compte pas non plus.
+     */
+    public function testARefusedActionLeavesActivityUntouched(): void
+    {
+        $player = $this->buildPlayer(1);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        try {
+            $this->manager->spend($player, 5, false);
+            $this->fail('La depense aurait du etre refusee.');
+        } catch (NotEnoughActionEnergyException) {
+            // attendu
+        }
+
+        $this->assertNull($player->getLastActivityAt());
+        $this->assertSame(0, $player->getActionEnergySpentTotal());
+    }
 }

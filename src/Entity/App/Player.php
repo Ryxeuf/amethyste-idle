@@ -145,6 +145,35 @@ class Player implements CharacterInterface
     private ?\DateTimeImmutable $actionEnergyUpdatedAt = null;
 
     /**
+     * Derniere activite reelle du personnage (FOY-17).
+     *
+     * Mis a jour a la **depense d'energie**, jamais a la connexion : agir sur le
+     * monde coute de l'energie, s'y connecter non. Remplace le proxy
+     * `Player::updatedAt` qu'utilisait `InfluenceAntiExploit`, et que le code
+     * lui-meme signalait comme approximatif — `updatedAt` est un champ de cycle
+     * de vie Doctrine, il bouge sur des ecritures **systeme** (regeneration,
+     * respawn, backfill), si bien qu'une seule connexion valait sept jours
+     * d'activite.
+     */
+    #[ORM\Column(name: 'last_activity_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $lastActivityAt = null;
+
+    /**
+     * Cumul de l'energie d'action depensee depuis la creation (FOY-17).
+     *
+     * C'est la matiere premiere du dimensionnement du monde : la somme sur tous
+     * les personnages, relevee chaque jour par `WorldLoadService`, donne la
+     * charge du monde (BALANCE § 22.5). Porte par le joueur et non par un
+     * compteur global pour ne pas faire d'une ligne unique un point de
+     * contention sur le chemin le plus chaud du jeu.
+     *
+     * Monotone croissante : jamais remise a zero, la difference entre deux
+     * releves suffit.
+     */
+    #[ORM\Column(name: 'action_energy_spent_total', type: 'bigint', options: ['default' => 0])]
+    private string $actionEnergySpentTotal = '0';
+
+    /**
      * Ancre de la regeneration paresseuse des PV hors combat (ZON-12).
      * Reinitialisee a la sortie de chaque combat : la regen ne compte le temps
      * ecoule qu'a partir du moment ou le joueur quitte le combat blesse.
@@ -376,6 +405,39 @@ class Player implements CharacterInterface
     public function setActionEnergyUpdatedAt(?\DateTimeImmutable $actionEnergyUpdatedAt): void
     {
         $this->actionEnergyUpdatedAt = $actionEnergyUpdatedAt;
+    }
+
+    public function getLastActivityAt(): ?\DateTimeImmutable
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeImmutable $lastActivityAt): self
+    {
+        $this->lastActivityAt = $lastActivityAt;
+
+        return $this;
+    }
+
+    public function getActionEnergySpentTotal(): int
+    {
+        return (int) $this->actionEnergySpentTotal;
+    }
+
+    public function setActionEnergySpentTotal(int $total): self
+    {
+        $this->actionEnergySpentTotal = (string) max(0, $total);
+
+        return $this;
+    }
+
+    public function addActionEnergySpent(int $amount): self
+    {
+        if ($amount > 0) {
+            $this->actionEnergySpentTotal = (string) ($this->getActionEnergySpentTotal() + $amount);
+        }
+
+        return $this;
     }
 
     public function getLifeUpdatedAt(): ?\DateTimeImmutable

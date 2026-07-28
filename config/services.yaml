@@ -50,6 +50,15 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # FOY-17 : denominateur du dimensionnement du monde (BALANCE § 22.5).
+    # Un « joueur regulier » depense ~60 % de sa regeneration quotidienne, soit
+    # ~150 points/jour et ~4 200 sur une maree de 28 jours. Ces deux nombres
+    # sont a retendre en observant le serveur, jamais a coder en dur.
+    App\GameEngine\World\WorldLoadService:
+        arguments:
+            $regularPlayerDailyEnergy: 150
+            $tideDays: 28
+
     App\EventListener\LocaleListener:
         arguments:
             $defaultLocale: '%default_locale%'
