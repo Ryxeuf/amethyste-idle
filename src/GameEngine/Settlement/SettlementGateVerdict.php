@@ -42,14 +42,17 @@ final readonly class SettlementGateVerdict
      */
     public function messageParams(): array
     {
-        if ($this->allowed || $this->required === null) {
+        // `closed()` pose toujours les deux rangs ensemble : les tester tous
+        // les deux ici n'est pas de la prudence superflue, c'est ce qui evite un
+        // acces nullsafe dont l'analyse statique montre qu'il ne sert a rien.
+        if ($this->allowed || $this->required === null || $this->current === null) {
             return [];
         }
 
         return [
             '%service%' => $this->service,
             '%required%' => $this->required->value,
-            '%current%' => $this->current?->value ?? SettlementRank::Ruin->value,
+            '%current%' => $this->current->value,
         ];
     }
 
@@ -59,10 +62,10 @@ final readonly class SettlementGateVerdict
      */
     public function missingRanks(): int
     {
-        if ($this->allowed || $this->required === null) {
+        if ($this->allowed || $this->required === null || $this->current === null) {
             return 0;
         }
 
-        return max(0, $this->required->level() - ($this->current?->level() ?? 0));
+        return max(0, $this->required->level() - $this->current->level());
     }
 }
