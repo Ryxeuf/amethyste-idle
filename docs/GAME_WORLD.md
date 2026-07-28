@@ -1038,15 +1038,16 @@ impossible, et l'incitation à s'étaler n'existe pas. **Toute la couche de rare
 
 ## 14. Ce qui reste à cadrer avant d'écrire du contenu
 
-Deux entrées manquent encore. Elles sont **au-dessus** de ce document, pas dedans.
+Une entrée manque encore. Elle est **au-dessus** de ce document, pas dedans.
 
 1. ~~La population cible~~ — **tranchée** : ~50 joueurs actifs quotidiens comme base de
    calibrage, tout étant indexé dessus (§13.4).
 
-2. **La colonne vertébrale de progression.** Aucun document du projet ne dit ce qu'un joueur
-   fait au jour 1, au jour 40, au mois 6. Les piliers systémiques et la trame existent ; la
-   **forme d'une vie de joueur**, non. C'est le plus gros manque du cadrage, et il devrait
-   être écrit **avant** de figer les zones — puisque c'est lui qui dira à quoi elles servent.
+2. ~~La colonne vertébrale de progression~~ — **écrite** : [GAME_PROGRESSION.md](GAME_PROGRESSION.md).
+   Cinq horizons emboîtés (session, jour, semaine, marée, an), quatre actes dans la vie d'un
+   joueur, et le **passage critique des semaines 3 à 6** où tout se joue. Le §6 de ce document
+   énonce ce que la colonne impose aux zones et aux ressources — c'est l'entrée qui manquait
+   pour figer le §13.
 
 3. **La source de l'améthystite** (§13.3) — recommandation posée, décision à prendre.
 
