@@ -132,6 +132,27 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Allie cuivre et étain pour forger un lingot de bronze.',
                 'name_translations' => ['en' => 'Bronze Ingot'],
             ],
+            // ECO-25 — le barreau manquant de l'echelle. `crafted-iron-ingot`
+            // existait comme objet sans producteur ni consommateur : la fonte du
+            // fer, le geste le plus banal d'une forge, n'existait pas. C'est lui
+            // qui rend l'echelle **continue** — bronze, fer, cobalt, mithril —
+            // et qui fait qu'un lingot de haut palier doit quelque chose au
+            // cuivre d'un debutant.
+            'recipe_iron_ingot' => [
+                'name' => 'Lingot de fer',
+                'slug' => 'recipe-iron-ingot',
+                'craft' => 'forgeron',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 3],
+                    ['slug' => 'crafted-bronze-ingot', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_iron_ingot',
+                'crafting_time' => 7,
+                'xp_reward' => 18,
+                'description' => 'Fond le fer sur un lit de bronze pour en tirer un lingot regulier.',
+                'name_translations' => ['en' => 'Iron Ingot'],
+            ],
             'recipe_cobalt_ingot' => [
                 'name' => 'Lingot de cobalt',
                 'slug' => 'recipe-cobalt-ingot',
@@ -139,6 +160,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'required_level' => 3,
                 'ingredients' => [
                     ['slug' => 'ore-cobalt', 'quantity' => 3],
+                    ['slug' => 'crafted-iron-ingot', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_cobalt_ingot',
                 'crafting_time' => 10,
@@ -154,6 +176,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-mithril', 'quantity' => 3],
                     ['slug' => 'ore-platinum', 'quantity' => 1],
+                    ['slug' => 'crafted-cobalt-ingot', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_mithril_ingot',
                 'crafting_time' => 15,
@@ -169,6 +192,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-adamantite', 'quantity' => 3],
                     ['slug' => 'ore-darksteel', 'quantity' => 2],
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_adamantite_ingot',
                 'crafting_time' => 20,
@@ -184,6 +208,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-orichalcum', 'quantity' => 3],
                     ['slug' => 'ore-starmetal', 'quantity' => 2],
+                    ['slug' => 'crafted-adamantite-ingot', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_orichalcum_ingot',
                 'crafting_time' => 25,
@@ -688,6 +713,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'plant-nightshade', 'quantity' => 2],
                     ['slug' => 'poisonous-mushroom', 'quantity' => 1],
+                    // ECO-25 — un poison se dilue. La fiole partait de plantes
+                    // brutes au niveau 3, sans rien devoir a la paillasse d'en
+                    // dessous ; la base de potion (niveau 1) est ce support.
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
                 ],
                 'result_ref' => 'poison_vial',
                 'crafting_time' => 7,
@@ -848,12 +877,38 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-silver', 'quantity' => 2],
                     ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                    // ECO-25 — les trois gemmes brutes du monde (rubis, emeraude,
+                    // diamant) n'etaient consommees par **rien** : trois filons
+                    // declares produisaient un objet sans usage. Elles entrent
+                    // ici, la ou le joaillier voyage deja — le palier d'entree
+                    // (`recipe-cut-gem-basic`, niveau 1) reste sur du metal,
+                    // parce qu'aucune gemme n'affleure pres du hub.
+                    ['slug' => 'ore-ruby', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_gem_fine',
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Affine une gemme basique avec des outils d\'argent pour révéler sa clarté.',
                 'name_translations' => ['en' => 'Fine Gem'],
+            ],
+            // ECO-25 — second item mort reveille. Le joaillier fondait son or
+            // directement dans la piece finie ; le lingot lui donne son palier
+            // intermediaire, et un debouche au lingot de fer du forgeron
+            // (aucun metier n'est autosuffisant, D-WoW § 4.6).
+            'recipe_gold_ingot' => [
+                'name' => 'Lingot d\'or',
+                'slug' => 'recipe-gold-ingot',
+                'craft' => 'joaillier',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'ore-gold', 'quantity' => 3],
+                    ['slug' => 'crafted-iron-ingot', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_gold_ingot',
+                'crafting_time' => 9,
+                'xp_reward' => 26,
+                'description' => 'Coule l\'or dans un moule de fer pour en tirer un lingot de bijoutier.',
+                'name_translations' => ['en' => 'Gold Ingot'],
             ],
             'recipe_gold_ring' => [
                 'name' => 'Anneau d\'or serti',
@@ -895,7 +950,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'craft' => 'joaillier',
                 'required_level' => 4,
                 'ingredients' => [
-                    ['slug' => 'ore-gold', 'quantity' => 5],
+                    ['slug' => 'crafted-gold-ingot', 'quantity' => 2],
                     ['slug' => 'crafted-gem-fine', 'quantity' => 2],
                 ],
                 'result_ref' => 'gold_crown',
@@ -914,6 +969,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-mithril', 'quantity' => 1],
                     ['slug' => 'crafted-gem-fine', 'quantity' => 2],
+                    ['slug' => 'ore-emerald', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_gem_rare',
                 'crafting_time' => 12,
@@ -933,6 +989,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     // l'alchimiste — et la boucle se referme, chaque metier
                     // consommant la sortie d'un autre.
                     ['slug' => 'crafted-potion-base', 'quantity' => 1],
+                    ['slug' => 'ore-diamond', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_gem_enchanted',
                 'crafting_time' => 15,
@@ -1051,6 +1108,12 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'leather-dragon-scale', 'quantity' => 4],
                     ['slug' => 'leather-werewolf-fur', 'quantity' => 2],
                     ['slug' => 'leather-bone', 'quantity' => 2],
+                    // ECO-25 — l'orpheline la plus voyante de l'audit : trois
+                    // cuirs bruts pour une piece de niveau 10. Les lanieres sont
+                    // ce qui tient un manteau, et elles se taillent au niveau 1 :
+                    // le sommet du tanneur doit desormais quelque chose a son
+                    // premier geste.
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 4],
                 ],
                 'result_ref' => 'masterwork_drakehide_cloak',
                 'crafting_time' => 30,
@@ -1190,9 +1253,12 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'recipe-steel-chainmail',
                 'craft' => 'forgeron',
                 'required_level' => 4,
+                // ECO-25 — l'acier est un **alliage**, pas un tas de minerai.
+                // La recette partait du brut alors qu'elle est de niveau 4 :
+                // elle ne devait donc rien a la forge d'en dessous.
                 'ingredients' => [
-                    ['slug' => 'ore-iron', 'quantity' => 5],
-                    ['slug' => 'ore-cobalt', 'quantity' => 2],
+                    ['slug' => 'crafted-iron-ingot', 'quantity' => 2],
+                    ['slug' => 'crafted-cobalt-ingot', 'quantity' => 1],
                 ],
                 'result_ref' => 'steel_chainmail',
                 'crafting_time' => 18,

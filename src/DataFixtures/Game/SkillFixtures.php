@@ -4506,7 +4506,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 // dans les arbres de recolte. Sans lui, `CraftingManager::checkCraftTool`
                 // refusait tout artisanat — l'emplacement s'ouvrait, aucun outil n'y
                 // entrait, et les quatre metiers etaient injouables.
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger', 'recipe-short-sword', 'recipe-bronze-ingot']], ['action' => 'tool_slot.unlock', 'slot' => 'hammer'], ['action' => 'equip.tool', 'slugs' => ['hammer-bronze']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger', 'recipe-short-sword', 'recipe-bronze-ingot', 'recipe-iron-ingot']], ['action' => 'tool_slot.unlock', 'slot' => 'hammer'], ['action' => 'equip.tool', 'slugs' => ['hammer-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -5041,7 +5041,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'jewel-ring-gold',
                 'title' => 'Fabrication d\'anneaux en or',
                 'description' => 'Permet de fabriquer des anneaux en or sertis de gemmes',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-gold-ring', 'recipe-gold-amulet']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-gold-ingot', 'recipe-gold-ring', 'recipe-gold-amulet']]],
                 'requiredPoints' => 30,
                 'domain' => $d,
                 'requirements' => ['jewel_amulet_basic'],
