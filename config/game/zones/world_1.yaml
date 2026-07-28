@@ -24,7 +24,7 @@
 #     gather:                       filons recoltables partages (optionnel)
 #       - { slug, item, profession, capacity, respawn_seconds, yield_min, yield_max }
 #
-#       CALIBRAGE DES FILONS — cf. docs/GAME_ZONE_ACTIONS.md §6.6
+#       CALIBRAGE DES FILONS — cf. docs/GAME_ZONE_ACTIONS.md §6.5-6.6
 #       Ne pas poser de valeurs a la main : reprendre un profil de palier.
 #       Le levier economique est le **debit soutenu** R = capacity x 3600 /
 #       respawn_seconds (unites/heure). `capacity` n'est qu'un **tampon** : ce
@@ -33,18 +33,34 @@
 #       d'origine — fait qu'un seul joueur vide le filon, et le joueur
 #       occasionnel ne voit plus jamais la ressource.
 #
-#       | Palier          | capacity | respawn | rendement | R (u/h) | recolteurs |
-#       |-----------------|---------:|--------:|-----------|--------:|-----------:|
-#       | T0 fondation    |       72 |  45 min | 1-3       |      96 |         58 |
-#       | T1 commun       |       60 |  45 min | 1-3       |      80 |         48 |
-#       | T2 peu commun   |       32 |  60 min | 1-2       |      32 |         26 |
-#       | T3 rare         |       24 |  90 min | 1-2       |      16 |         13 |
-#       | T4 epique       |       22 | 180 min | 1-2       |     7.3 |          6 |
+#       Depuis ZON-37 la repousse est un **debit continu** : le stock remonte au
+#       prorata du temps ecoule, il n'y a plus de phase de respawn. Le nombre
+#       parlant est donc l'**intervalle de goutte** (respawn / capacity) ; la
+#       periode de remplissage complet n'est plus qu'une consequence.
+#
+#       Recalibrage du 2026-07-28 (BALANCE §22.3, cible ~50 joueurs/jour) : le
+#       monde soutenait 2 200 recolteurs pour une charge reelle de 25, soit 1 %
+#       d'utilisation. Toute la couche de rarete etait inerte — purete toujours
+#       au maximum, Paleur mecaniquement impossible.
+#
+#       | Palier          | capacity | periode | 1 unite / | rendement | R (u/h) | recolteurs |
+#       |-----------------|---------:|--------:|----------:|-----------|--------:|-----------:|
+#       | T0 fondation    |       72 |     7 h |  5 min 50 | 1-3       |    10,3 |       12,3 |
+#       | T1 commun       |       60 |     9 h |     9 min | 1-3       |     6,7 |        8,0 |
+#       | T2 peu commun   |       32 |     8 h |    15 min | 1-2       |     4,0 |        4,8 |
+#       | T3 rare         |       24 |    10 h |    25 min | 1-2       |     2,4 |        2,9 |
+#       | T4 epique       |       22 |    18 h |    49 min | 1-2       |     1,2 |        1,5 |
+#
+#       La **periode** n'est pas monotone (9 h en T1 contre 8 h en T2) : c'est
+#       normal, elle n'est pas la variable de conception. Le tampon decroit plus
+#       vite que le debit vise d'un palier a l'autre, parce qu'il est verrouille
+#       par le bas (GAME_ZONE_ACTIONS §6.5 : il doit resister a la rafale d'un
+#       joueur seul, ~30 unites). L'intervalle de goutte, lui, est bien monotone.
 #
 #       « recolteurs » = joueurs reguliers soutenus, a 20 recoltes/jour sur ce
 #       filon (un joueur dispose de 80 recoltes/jour a 240 energie / 3).
-#       T0 est reserve aux ressources qui gatent le plancher T1 de l'economie
-#       (cuivre, etain, menthe, truite) : elles ne doivent jamais etre un goulot.
+#       T0 reste le plus genereux : il gate le plancher T1 de l'economie
+#       (cuivre, etain, menthe, truite) et ne doit jamais etre un goulot.
 #       La rarete se regle par le **palier** et le **gate de competence**, pas en
 #       etranglant la capacite.
 #   connections:
@@ -95,8 +111,8 @@ zones:
             # (niveau 2, 2x thym), plus `recipe-elixir-defense` (niveau 3, 2x
             # thym). Les poser en zone sure au palier T0, c'est garantir que le
             # plancher T1 de l'economie ne dependra jamais d'une zone hostile.
-            - { slug: carre-de-thym, item: plant-thyme, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: bordure-de-lavande, item: plant-lavender, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: carre-de-thym, item: plant-thyme, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            - { slug: bordure-de-lavande, item: plant-lavender, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
         pnjs:
             # Habitants declares (ZON-26b-b). Ils **completent** les sept PNJ de
             # `VillageHubPnjFixtures` (forgeron, alchimiste, marchand, maitresse
@@ -166,30 +182,30 @@ zones:
                 # avoir ete peuple : le bloc `mobs:` ci-dessous le corrige.
                 mob_slugs: [ghost, skeleton]
         gather:
-            - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: ginseng-des-sous-bois, item: plant-ginseng, profession: herbalism, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
-            - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            - { slug: ginseng-des-sous-bois, item: plant-ginseng, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
             # ECO-02 : la camomille n'avait aucune source dans le monde livre, ce
             # qui rendait `recipe_potion_base` — la premiere recette d'alchimie —
             # impossible a realiser.
-            - { slug: camomille-des-clairieres, item: plant-chamomile, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: camomille-des-clairieres, item: plant-chamomile, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # Correctif 128b : ces herbes nourrissaient 8 recettes d'alchimie de
             # niveau 2 a 10 et n'etaient recoltables nulle part. Elles rejoignent
             # les zones de depart — les gater derriere l'Acte 4 aurait mis une
             # recette de niveau 2 hors de portee jusqu'au niveau 30.
-            - { slug: aloes-des-clairieres, item: plant-aloe-vera, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: aloes-des-clairieres, item: plant-aloe-vera, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # Meme correctif, applique aux plantes restees orphelines : le romarin
             # alimente un enchantement, le pissenlit et l'echinacee ne poussaient
             # nulle part. La foret est leur biome naturel — et la premiere zone
             # ou un joueur ouvre l'arbre d'herboristerie.
-            - { slug: romarin-des-lisieres, item: plant-rosemary, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: pissenlits-des-clairieres, item: plant-dandelion, profession: herbalism, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: echinacee-des-fourres, item: plant-echinacea, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: romarin-des-lisieres, item: plant-rosemary, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            - { slug: pissenlits-des-clairieres, item: plant-dandelion, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            - { slug: echinacee-des-fourres, item: plant-echinacea, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # Le second poisson de la riviere, palier T2 : la truite nourrit le
             # plancher, le saumon donne une raison de revenir avec un meilleur
             # niveau de peche.
-            - { slug: saumons-des-rapides, item: fish-salmon, profession: fishing, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: saumons-des-rapides, item: fish-salmon, profession: fishing, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
         # Population declaree (ZON-26b). Elle remplace les spawns que
         # `MobFixtures` posait sur la carte TMX `map_3` : deux sources de verite
         # pour un meme contenu, dont une invisible depuis ce fichier.
@@ -273,25 +289,25 @@ zones:
                 chest_gils_max: 60
                 mob_slugs: [clay_golem, rusty_automaton, stone_golem]
         gather:
-            - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
             # ECO-02 : l'etain n'avait aucune source. Sans lui, pas de lingot de
             # bronze — donc aucun outil de bronze, et toute la chaine d'outillage
             # T1 restait hors d'atteinte.
-            - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
             # ECO-24b — le sombracier, au fond des galeries (GAME_ZONES §2.4 et §3).
             # « Le metal du temps le plus tasse » : la mine est la zone ou le plus
             # de temps s'est depose, et le fond en est le point extreme.
             # Intrant du lingot d'adamantite : l'Extension 1 y renverra ses
             # vetérans — levier 1 contre le creux du milieu (GAME_WORLD §5.5).
-            - { slug: veine-de-sombracier-du-fond, item: ore-darksteel, profession: mining, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
+            - { slug: veine-de-sombracier-du-fond, item: ore-darksteel, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
             # L'anguille electrique n'avait aucune source. Les bassins noyes des
             # galeries basses lui donnent son biome, et la mine sa premiere
             # ressource de peche — jusqu'ici l'extraction y etait le seul metier
             # de recolte represente. Palier T3 : on ne descend pas pecher par
             # hasard.
-            - { slug: bassins-aux-anguilles, item: fish-electric-eel, profession: fishing, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: bassins-aux-anguilles, item: fish-electric-eel, profession: fishing, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
         # Population declaree (ZON-26b), en remplacement des spawns de la carte
         # TMX `map_4`. La mine monte plus haut que la foret : on y croise du
         # niveau 1 pres du carreau et du niveau 24 au fond.
@@ -358,13 +374,13 @@ zones:
                 chest_gils_max: 45
                 mob_slugs: [will_o_wisp, creeping_shadow, specter]
         gather:
-            - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: valeriane-des-tourbieres, item: plant-valerian, profession: herbalism, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            - { slug: valeriane-des-tourbieres, item: plant-valerian, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # Pire cas des quatre : une quete en demande deux exemplaires.
-            - { slug: mandragore-des-tourbieres, item: plant-mandrake, profession: herbalism, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
-            - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
-            - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
-            - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: mandragore-des-tourbieres, item: plant-mandrake, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
+            - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
 
     crete-de-ventombre:
         name: 'Crête de Ventombre'
@@ -388,9 +404,9 @@ zones:
                 chest_gils_max: 80
                 mob_slugs: [gargoyle, wyvern, griffin]
         gather:
-            - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
-            - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
-            - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
             # ECO-24b — le mithril, sur les strates hautes (GAME_ZONES §2.6 et §3).
             # « Le metal que le vent a mis a nu » : la Crete est le pendant exact
             # des Mines — peu de matiere, mais la plus nette.
@@ -399,7 +415,7 @@ zones:
             # transmutation alchimique la seule source de mithril, faute de filon.
             # GAME_ZONES §3 en pose un. La transmutation reste une seconde voie
             # — c'est ce qui garde a l'alchimie son role economique de haut palier.
-            - { slug: filon-de-mithril-du-sommet, item: ore-mithril, profession: mining, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-mithril-du-sommet, item: ore-mithril, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
 
     quartier-des-jardins:
         name: 'Quartier des Jardins'
@@ -456,18 +472,18 @@ zones:
               greeting: 'Les scorpions sortent au crepuscule. Les ombres, elles, ne dorment jamais.'
 
         gather:
-            - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 60, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # ECO-24b — le bronze du sud (GAME_ZONES §2.7 et §3).
             # L'etain n'avait qu'un filon au monde alors que le cuivre en avait
             # deux, pour une recette qui exige les deux a parts egales : le
             # bronze etait etrangle par sa moitie la plus rare. La region qui a
             # deja le cuivre replique recoit l'etain — profil T0, comme aux
             # Mines : le plancher de l'economie ne doit jamais etre un goulot.
-            - { slug: filon-d-etain-des-dunes, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 2700, yield_min: 1, yield_max: 3 }
+            - { slug: filon-d-etain-des-dunes, item: ore-tin, profession: mining, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
             # Le platine, « metal du fond de mer fossile ». Intrant du lingot de
             # mithril avec le mithril de la Crete : le sommet du jeu de base
             # exige donc un commerce nord-sud (loi des caravanes, GAME_WORLD §5.3).
-            - { slug: filon-de-platine-des-dunes, item: ore-platinum, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-platine-des-dunes, item: ore-platinum, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
     # === Acte 4 (tache 128b) ===
@@ -499,7 +515,7 @@ zones:
             - { monster: basilisk, count: 2 }
             - { monster: dune_wraith, count: 2, nocturnal: true }
         gather:
-            - { slug: gemme-de-sel, item: ore-ruby, profession: mining, capacity: 32, respawn_seconds: 3600, yield_min: 1, yield_max: 2 }
+            - { slug: gemme-de-sel, item: ore-ruby, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
 
     cite-ensevelie:
         name: 'Cite Ensevelie'
@@ -522,13 +538,13 @@ zones:
             - { monster: basilisk, count: 3 }
             - { monster: sand_stalker, count: 3, group_tag: pillards }
         gather:
-            - { slug: fruit-du-vide, item: plant-voidfruit, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
-            - { slug: eclat-de-diamant, item: ore-diamond, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: fruit-du-vide, item: plant-voidfruit, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
+            - { slug: eclat-de-diamant, item: ore-diamond, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
             # ECO-24b — l'orichalque, « metal de l'age precedent » (GAME_ZONES
             # §2.8 et §3). La Cite est un donjon, pas un foyer : on ne s'y
             # installe pas, on la fouille. D'ou le profil T4 le plus severe du
             # monde livre — c'est du butin autant que de la recolte.
-            - { slug: filon-d-orichalque-ancien, item: ore-orichalcum, profession: mining, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-orichalque-ancien, item: ore-orichalcum, profession: mining, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
 
     pas-de-givre:
         name: 'Pas de Givre'
@@ -551,8 +567,8 @@ zones:
             - { monster: winter_harpy, count: 3 }
             - { monster: hoarfrost_shade, count: 2, nocturnal: true }
         gather:
-            - { slug: fleur-de-lune-des-neiges, item: plant-moonflower, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
-            - { slug: filon-d-emeraude, item: ore-emerald, profession: mining, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
+            - { slug: fleur-de-lune-des-neiges, item: plant-moonflower, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-emeraude, item: ore-emerald, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
 
     glacier-du-silence:
         name: 'Glacier du Silence'
@@ -576,8 +592,8 @@ zones:
             - { monster: rime_drake, count: 2 }
             - { monster: winter_harpy, count: 2, nocturnal: true }
         gather:
-            - { slug: feuille-de-dragon-gelee, item: plant-dragonleaf, profession: herbalism, capacity: 24, respawn_seconds: 5400, yield_min: 1, yield_max: 2 }
-            - { slug: fleur-de-phenix, item: plant-phoenixflower, profession: herbalism, capacity: 22, respawn_seconds: 10800, yield_min: 1, yield_max: 2 }
+            - { slug: feuille-de-dragon-gelee, item: plant-dragonleaf, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
+            - { slug: fleur-de-phenix, item: plant-phoenixflower, profession: herbalism, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
 
 connections:
     - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }

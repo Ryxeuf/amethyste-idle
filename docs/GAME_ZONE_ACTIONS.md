@@ -325,13 +325,24 @@ compétence (§6.6), jamais en étranglant la capacité.**
 
 **Cinq profils, appliqués sans exception :**
 
+> **Recalibré le 2026-07-28** (BALANCE §22.3). Les valeurs ci-dessous sont celles
+> d'origine, posées sans cible chiffrée ; confrontées aux ~50 joueurs quotidiens actés
+> depuis, elles se révélaient surdimensionnées d'un ordre de grandeur — le monde soutenait
+> 2 200 récolteurs pour une charge réelle de 25. Le tableau en vigueur vit en tête de
+> `config/game/zones/world_1.yaml`.
+>
+> Deux choses n'ont **pas** bougé, à dessein : les **tampons** (verrouillés par la
+> contrainte 1 ci-dessous) et les **rendements**. Seules les périodes se sont allongées,
+> d'un facteur 9 à 13 selon le palier. Et depuis ZON-37 la repousse étant un débit
+> continu, le nombre parlant est l'**intervalle de goutte**, pas la période.
+
 | Palier | `capacity` | `respawn` | rendement | R (u/h) | unités/jour | récolteurs soutenus | filons |
 |--------|-----------:|----------:|-----------|--------:|------------:|--------------------:|-------:|
-| **T0** fondation | 72 | 45 min | 1-3 | 96 | 2304 | **58** | 4 |
-| **T1** commun | 60 | 45 min | 1-3 | 80 | 1920 | **48** | 8 |
-| **T2** peu commun | 32 | 60 min | 1-2 | 32 | 768 | **26** | 7 |
-| **T3** rare | 24 | 90 min | 1-2 | 16 | 384 | **13** | 7 |
-| **T4** épique | 22 | 180 min | 1-2 | 7,3 | 176 | **6** | 1 |
+| **T0** fondation | 72 | ~~45 min~~ **7 h** | 1-3 | ~~96~~ **10,3** | ~~2304~~ 247 | ~~58~~ **12,3** | 8 |
+| **T1** commun | 60 | ~~45 min~~ **9 h** | 1-3 | ~~80~~ **6,7** | ~~1920~~ 160 | ~~48~~ **8,0** | 10 |
+| **T2** peu commun | 32 | ~~60 min~~ **8 h** | 1-2 | ~~32~~ **4,0** | ~~768~~ 96 | ~~26~~ **4,8** | 8 |
+| **T3** rare | 24 | ~~90 min~~ **10 h** | 1-2 | ~~16~~ **2,4** | ~~384~~ 58 | ~~13~~ **2,9** | 9 |
+| **T4** épique | 22 | ~~180 min~~ **18 h** | 1-2 | ~~7,3~~ **1,2** | ~~176~~ 29 | ~~6~~ **1,5** | 4 |
 
 « Récolteurs soutenus » = joueurs réguliers qui consacrent **20 récoltes par jour**
 à *ce* filon — un joueur en a 80 au total, à répartir entre filons, zones et autres
