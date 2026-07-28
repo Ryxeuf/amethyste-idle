@@ -59,7 +59,7 @@
 | ~~9~~ | ~~**ECO-21 → 22 → 23**~~ ✅ | Purete (bandes, tirage, marche/commandes) | **Livres le 2026-07-28.** Reveille `Recipe.quality`, donne un metier au prospecteur |
 | ~~10~~ | ~~**RET-06**~~ ✅ | Affleurement de la semaine | **Livre le 2026-07-28** — et personne n'en est informe, c'est le point |
 | 11 | **FOY-08 ✅, 09 ✅, 14 + RET-04** | La Crue + assiduite (Sprint 18) | **FOY-08, FOY-09 et FOY-14 livres le 2026-07-28** — l'enjeu politique existe, une grande ville plafonne desormais ses voisines (**Piste C complete**), et le journal de monde grave qui a bati quoi a chaque cloture de maree. **RET-04 livre le 2026-07-28** — l'assiduite en paliers. Bloc complet |
-| 12 | **ECO-25 → 27** | Chaine de production par paliers | Le levier anti-creux-du-milieu |
+| 12 | **ECO-25 ✅, 26, 27** | Chaine de production par paliers | Le levier anti-creux-du-milieu. **ECO-25 livre le 2026-07-28** — l'echelle du metal est continue du cuivre a l'orichalque, coefficient 1. Restent la purete propagee (ECO-26) et le recalibrage (ECO-27) |
 | 13 | **FOY-11 → 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste |
 | 14 | **ZON-30 → 33** | Contenu des zones : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste ([PLAN_ZONES.md](PLAN_ZONES.md)) | **Debloque** : definitions actees dans [docs/GAME_ZONES.md](../GAME_ZONES.md) (2026-07-28). ZON-30/31 sont independants et peuvent s'intercaler plus tot si besoin de contenu ; ZON-32 attend ECO-21/22 |
 

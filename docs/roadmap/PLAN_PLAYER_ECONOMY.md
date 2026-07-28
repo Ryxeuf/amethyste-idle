@@ -40,7 +40,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-23 | Pureté au marché et dans les commandes |
 | ECO-24 | Audit de la chaîne de production ✅ |
 | ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur ✅ (b) |
-| ECO-25 | Chaînage des paliers raffinés |
+| ECO-25 ✅ | Chaînage des paliers raffinés |
 | ECO-26 | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
 | ECO-28 | Commandes de service — travailler un objet lié |
@@ -55,7 +55,7 @@ Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 →
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
-Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 → ECO-26 → ECO-27
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
 
@@ -450,29 +450,26 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > n'est sans source, hors réserves d'extension explicites. ECO-25 peut chaîner les paliers
 > sans renforcer un goulot.
 
-### ECO-25 — Chaînage des paliers raffinés (M | ★★★ | HAUTE)
-> Le cœur du jalon. Changement de **données**, pas de moteur : 6 recettes à corriger.
-> Prérequis : ← ECO-24 ✅, ← ECO-24b
-- [ ] Chaîne cible de BALANCE § 21.3, au **coefficient 1** : chaque recette de raffinage de
-      palier N consomme **1 seule unité** du raffiné N-1, en plus de son brut N
-- [ ] **Le coefficient est le seul réglage qui compte, et il n'est pas négociable.** L'effet
-      est *multiplicatif* sur la profondeur : à 1, un lingot d'orichalque entraîne 2 cuivre
-      + 2 étain ; à 2, il en entraîne **32**. Chiffré dans BALANCE § 21.4
-- [ ] **Quantités non cumulatives en temps** : le but est de créer de la *demande*, pas
-      d'ajouter cinq minutes d'attente à chaque craft de fin de jeu
-- [ ] **Le chemin du débutant reste intact** : le bronze se forge toujours directement depuis
-      le cuivre et l'étain. Le chaînage ne commence qu'au deuxième palier
-- [ ] **L'artisan de fin de jeu n'est pas censé tout produire lui-même** : il achète le
-      raffiné du dessous au marché. C'est l'interdépendance recherchée (D-WoW §4.6), pas une
-      corvée — à vérifier explicitement en jouant la boucle
-- [ ] Étendre aux lignes non métalliques une fois la ligne du métal validée
-- [ ] **La taille de gemme consomme des gemmes** (audit §21.7 de BALANCE) : les recettes
-      de taille consomment aujourd'hui du métal (cuivre/argent/mithril) et les trois
-      gemmes brutes (rubis, émeraude, diamant) n'ont **aucun** consommateur — corriger
-      les intrants pour que les filons de gemmes servent
-- [ ] **Raccorder le lingot de cobalt** (produit, jamais consommé) et réveiller ou purger
-      les lingots morts (`crafted-iron-ingot`, `crafted-gold-ingot`)
-- [ ] Tests : chaîne complète, coût propagé, recette de départ inchangée
+### ECO-25 — Chaînage des paliers raffinés ✅ (M | ★★★ | HAUTE)
+> Le cœur du jalon. Changement de **données**, pas de moteur.
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Correction à la chaîne cible** : BALANCE §21.3 chaînait le cobalt sur le bronze, sautant le
+> fer — parce que `crafted-iron-ingot` était un **objet mort** et qu'on ne chaîne pas sur ce qui
+> n'existe pas. La fonte du fer, le geste le plus banal d'une forge, n'existait pas dans le jeu.
+> ECO-25 l'écrit : l'échelle devient continue (bronze → fer → cobalt → mithril → adamantite →
+> orichalque), le bronze garde un consommateur, et l'ordre des niveaux est respecté. §21.3 a été
+> mis à jour en conséquence.
+>
+> **Périmètre tenu, et ce qui en sort.** Le palier d'entrée de la taille de gemme
+> (`recipe-cut-gem-basic`, niveau 1) reste sur du métal : **aucune gemme n'affleure près du
+> hub**, et l'y exiger fermerait la première recette du joaillier. Les trois gemmes brutes
+> entrent aux rangs supérieurs, où le métier voyage déjà. Poser un filon de gemme au départ
+> relève du contenu de zone (PLAN_ZONES), pas de ce jalon.
+>
+> **Ce qu'ECO-26 hérite** : une chaîne verticale complète sur la ligne du métal, du cuivre d'un
+> débutant au lingot d'orichalque. C'est elle que la pureté va remonter maillon par maillon —
+> sans elle, « le maillon le plus faible » n'aurait eu qu'un seul maillon à juger.
 
 ### ECO-26 — Propagation de la pureté dans la chaîne (M | ★★★ | MOYENNE)
 > C'est ce qui rend une zone intermédiaire **reposée** indispensable à la fin de jeu.
@@ -564,7 +561,7 @@ Phase 3 (commandes)    : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Phase 4 (échoppes)     : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Phase 5 (équilibrage)  : ECO-14, ECO-15, ECO-16, ECO-17  (parallélisable)
 Phase 6 (pureté)       : ECO-21 → ECO-22 → ECO-23
-Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
+Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 → ECO-27
 ```
 
 **Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le

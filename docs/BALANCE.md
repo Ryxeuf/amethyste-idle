@@ -862,15 +862,27 @@ parce qu'ECO-19 a fait de la transmutation alchimique la seule source de `ore-mi
 (cf. §19). Le mithril est donc deja un produit d'artisanat et non de recolte — c'est
 exactement la forme visee, appliquee a un seul palier.
 
-### 21.3 Chaine cible (ligne du metal)
+### 21.3 Chaine cible (ligne du metal) — ✅ **appliquee le 2026-07-28 (ECO-25)**
 
 ```
 bronze (niv 1)  <- ore-copper x2 + ore-tin x2                     [inchangee : palier d'entree]
-cobalt (niv 3)  <- ore-cobalt x3      + 1 lingot de bronze
-mithril (niv 4) <- ore-mithril x3     + 1 lingot de cobalt        [ore-mithril = transmutation, §19]
-adamantite (6)  <- ore-adamantite x3  + 1 lingot de mithril
-orichalque (8)  <- ore-orichalcum x3  + 1 lingot d'adamantite
+fer (niv 2)     <- ore-iron x3        + 1 lingot de bronze        [barreau ajoute par ECO-25]
+cobalt (niv 3)  <- ore-cobalt x3      + 1 lingot de fer
+mithril (niv 4) <- ore-mithril x3 + ore-platinum x1 + 1 lingot de cobalt
+adamantite (6)  <- ore-adamantite x3 + ore-darksteel x2 + 1 lingot de mithril
+orichalque (8)  <- ore-orichalcum x3 + ore-starmetal x2 + 1 lingot d'adamantite
 ```
+
+**Ecart assume : le cobalt se chaine sur le fer, pas sur le bronze.** La chaine cible
+d'origine sautait le fer parce que `crafted-iron-ingot` etait un **objet mort** — ni
+producteur, ni consommateur (§21.7) — et qu'on ne chaine pas sur ce qui n'existe pas.
+ECO-25 le reveille : la fonte du fer, le geste le plus banal d'une forge, manquait au jeu.
+L'echelle devient **continue** (bronze → fer → cobalt → mithril → adamantite → orichalque),
+le bronze garde un consommateur, et l'ordre des niveaux (1 → 2 → 3) est respecte.
+
+Le **platine** et le **sombracier** restent dans leurs recettes : ECO-24b-a les a poses en
+filons precisement pour que le sommet du jeu de base exige un commerce nord-sud, et qu'un
+lingot d'extension doive quelque chose au jeu de base (§21.5).
 
 ### 21.4 Le coefficient est le seul reglage qui compte
 
