@@ -10,6 +10,11 @@
 > Les jalons d'exécution sont dans [roadmap/PLAN_ZONES.md](roadmap/PLAN_ZONES.md) (ZON-30+).
 > Ce document décrit **ce que chaque zone est** ; il ne pose aucune valeur de calibrage —
 > les profils de palier de `config/game/zones/world_1.yaml` restent la seule référence.
+>
+> **Support visuel** : [atlas-zones-ressources.html](atlas-zones-ressources.html) — la carte
+> du monde (topologie, régions, paliers) et l'inventaire croisé des ressources avec l'état
+> des défauts relevés à l'audit du 2026-07-28 (photographie datée : les défauts se résorbent
+> au fil des jalons, le document de référence reste celui-ci).
 
 ## 0. Les lois que chaque zone doit respecter
 

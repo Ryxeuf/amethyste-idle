@@ -86,6 +86,15 @@ le **type** sur le dominant :
 restauration sont des **paramètres** (`config/game/settlements.yaml` + `BALANCE.md`), jamais
 des constantes de classe. Le calibrage se fait sans redéploiement de code.
 
+**Le chiffrage est fait.** [BALANCE.md §23](../BALANCE.md) (2026-07-28) donne toutes les
+valeurs de départ à W = 1 : le **grain** de sédiment et sa table de dépôt (§23.1), la
+décroissance de 2 %/jour (§23.2), les seuils de rang avec leurs échéanciers vérifiés —
+le 1er Bourg = l'effort d'une marée pour une guilde de 12 (§23.3) —, l'hystérésis du
+type à 25 % tenus une marée (§23.4), le **seed du monde livré** zone par zone (§23.5,
+les Vallons naissent en Ruine : tout est à bâtir), la régression bornée à un rang par
+marée avec réascension à dépôts doublés (§23.6), et la période de grâce des deux
+premières marées (§23.7). FOY-01, 02, 03, 08 et 10 consomment ces valeurs.
+
 **Anti-exploit réutilisé.** Le dépôt de sédiment passe par `InfluenceAntiExploit`
 (plafonds journaliers, rendements décroissants) : on ne réécrit pas les garde-fous, on
 s'y branche.
@@ -221,8 +230,10 @@ s'y branche.
 ### FOY-08 — Quotas indexés sur la population active (M | ★★★ | CRITIQUE)
 > Décision B. Sans quota, tout le monde monte tout et il n'y a pas d'enjeu de territoire.
 > Prérequis : ← FOY-03, ← FOY-17
-- [ ] `CrueQuotaService` : quotas de base (1 Métropole / 3 Cités / 6 Bourgs) **+ indexation**
-      sur les joueurs actifs de la marée écoulée
+- [ ] `CrueQuotaService` : **l'échelle d'ouverture actée** (GAME_WORLD §13.4 — 1er Bourg à
+      40 actifs, 1re Cité à 120, Métropole à 300), mesurée en **population effective**
+      (BALANCE §22.5) sur la marée écoulée. À 50 actifs, le monde a droit à **un** Bourg
+      de foyer — c'est l'unique enjeu territorial du serveur, et c'est voulu
 - [ ] Blocage de promotion quand le quota est plein — le foyer **reste en attente**, son
       sédiment n'est pas perdu
 - [ ] Message joueur **nommant qui occupe la place** : la compétition doit être lisible, sinon

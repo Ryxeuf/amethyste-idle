@@ -1,0 +1,403 @@
+<title>Atlas d'Améthyste — zones & ressources</title>
+<style>
+  :root {
+    --parchemin: #efe6d3;
+    --carte: #f6efe0;
+    --encre: #2a2318;
+    --encre-2: #6b5f4a;
+    --trait: #d8cbb0;
+    --amethyste: #7c5cb0;
+    --amethyste-doux: #ece4f4;
+    --or: #b8902e;
+    --plaines: #5f8a4a;
+    --sauvages: #56707e;
+    --ambre: #b5772f;
+    --silence: #6f9ab5;
+    --ok: #4a7d43;
+    --alerte: #b3641e;
+    --casse: #a83232;
+    --mort: #8a7f6d;
+    --chip-ok-bg: #e2ecdc;
+    --chip-alerte-bg: #f4e4d2;
+    --chip-casse-bg: #f3dcda;
+    --chip-mort-bg: #e8e2d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --parchemin: #211b12;
+      --carte: #2a2317;
+      --encre: #e6dcc6;
+      --encre-2: #a3967c;
+      --trait: #453b2a;
+      --amethyste: #a98fd6;
+      --amethyste-doux: #352b45;
+      --or: #d4ad4a;
+      --plaines: #86b06e;
+      --sauvages: #8aa5b3;
+      --ambre: #d2954e;
+      --silence: #8fb6d1;
+      --ok: #7fae76;
+      --alerte: #d69154;
+      --casse: #d47a72;
+      --mort: #948a77;
+      --chip-ok-bg: #2b3626;
+      --chip-alerte-bg: #3e2f1e;
+      --chip-casse-bg: #422522;
+      --chip-mort-bg: #322d24;
+    }
+  }
+  :root[data-theme="dark"] {
+    --parchemin: #211b12; --carte: #2a2317; --encre: #e6dcc6; --encre-2: #a3967c;
+    --trait: #453b2a; --amethyste: #a98fd6; --amethyste-doux: #352b45; --or: #d4ad4a;
+    --plaines: #86b06e; --sauvages: #8aa5b3; --ambre: #d2954e; --silence: #8fb6d1;
+    --ok: #7fae76; --alerte: #d69154; --casse: #d47a72; --mort: #948a77;
+    --chip-ok-bg: #2b3626; --chip-alerte-bg: #3e2f1e; --chip-casse-bg: #422522; --chip-mort-bg: #322d24;
+  }
+  :root[data-theme="light"] {
+    --parchemin: #efe6d3; --carte: #f6efe0; --encre: #2a2318; --encre-2: #6b5f4a;
+    --trait: #d8cbb0; --amethyste: #7c5cb0; --amethyste-doux: #ece4f4; --or: #b8902e;
+    --plaines: #5f8a4a; --sauvages: #56707e; --ambre: #b5772f; --silence: #6f9ab5;
+    --ok: #4a7d43; --alerte: #b3641e; --casse: #a83232; --mort: #8a7f6d;
+    --chip-ok-bg: #e2ecdc; --chip-alerte-bg: #f4e4d2; --chip-casse-bg: #f3dcda; --chip-mort-bg: #e8e2d6;
+  }
+  body {
+    background: var(--parchemin);
+    color: var(--encre);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    line-height: 1.55;
+    margin: 0;
+    padding: 2.5rem 1.25rem 5rem;
+  }
+  .page { max-width: 1080px; margin: 0 auto; }
+  header { border-bottom: 3px double var(--trait); padding-bottom: 1.2rem; margin-bottom: 2rem; }
+  h1 { font-size: 2rem; margin: 0 0 .3rem; text-wrap: balance; letter-spacing: .01em; }
+  h1 .amethyste { color: var(--amethyste); }
+  .sous-titre { color: var(--encre-2); margin: 0; font-size: 1.02rem; }
+  .meta { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .78rem; color: var(--encre-2); margin-top: .6rem; }
+  h2 { font-size: 1.35rem; margin: 2.8rem 0 .4rem; border-bottom: 1px solid var(--trait); padding-bottom: .3rem; }
+  h3 { font-size: 1.05rem; margin: 1.6rem 0 .4rem; }
+  p.note { color: var(--encre-2); font-size: .92rem; max-width: 68ch; margin: .3rem 0 1rem; }
+  .carte-wrap { background: var(--carte); border: 1px solid var(--trait); border-radius: 6px; padding: .8rem; overflow-x: auto; }
+  svg { display: block; min-width: 640px; width: 100%; height: auto; }
+  svg text { font-family: "Iowan Old Style", Palatino, Georgia, serif; fill: var(--encre); }
+  svg .duree { font-family: ui-monospace, Consolas, monospace; font-size: 10px; fill: var(--encre-2); }
+  svg .tier { font-family: ui-monospace, Consolas, monospace; font-size: 10px; font-weight: 700; }
+  svg .zone-nom { font-size: 13px; font-weight: 700; }
+  svg .zone-sub { font-size: 10px; fill: var(--encre-2); }
+  svg .arete { stroke: var(--encre-2); stroke-width: 1.4; opacity: .55; }
+  svg .arete-prevue { stroke: var(--amethyste); stroke-width: 1.6; stroke-dasharray: 5 4; }
+  svg .arete-lancement { stroke: var(--ambre); stroke-width: 1.4; stroke-dasharray: 2 4; }
+  .legende { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; font-size: .82rem; color: var(--encre-2); margin-top: .8rem; }
+  .legende span { display: inline-flex; align-items: center; gap: .4rem; }
+  .pastille { width: .75rem; height: .75rem; border-radius: 3px; display: inline-block; border: 1px solid var(--trait); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--trait); border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: .87rem; }
+  th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--encre-2); font-weight: 600; padding: .55rem .7rem; border-bottom: 2px solid var(--trait); background: var(--carte); white-space: nowrap; }
+  td { padding: .45rem .7rem; border-bottom: 1px solid var(--trait); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.mono, .mono { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .8rem; font-variant-numeric: tabular-nums; }
+  td .slug { color: var(--encre-2); font-size: .74rem; font-family: ui-monospace, Consolas, monospace; }
+  .chip { display: inline-block; font-family: ui-monospace, Consolas, monospace; font-size: .68rem; padding: .1rem .45rem; border-radius: 999px; white-space: nowrap; font-weight: 600; }
+  .c-ok { color: var(--ok); background: var(--chip-ok-bg); }
+  .c-alerte { color: var(--alerte); background: var(--chip-alerte-bg); }
+  .c-casse { color: var(--casse); background: var(--chip-casse-bg); }
+  .c-mort { color: var(--mort); background: var(--chip-mort-bg); }
+  .c-acte { color: var(--amethyste); background: var(--amethyste-doux); }
+  .defaut { border-left: 4px solid var(--casse); background: var(--carte); padding: .7rem 1rem; margin: .8rem 0; border-radius: 0 6px 6px 0; }
+  .defaut.moyen { border-left-color: var(--alerte); }
+  .defaut.info { border-left-color: var(--mort); }
+  .defaut b { display: block; margin-bottom: .15rem; }
+  .defaut p { margin: 0; font-size: .9rem; color: var(--encre-2); }
+</style>
+<div class="page">
+<header>
+  <h1>Atlas d'<span class="amethyste">Améthyste</span> — zones &amp; ressources</h1>
+  <p class="sous-titre">État réel des fixtures croisé avec les définitions actées (GAME_ZONES.md, 2026-07-28)</p>
+  <p class="meta">386 items · 82 recettes · 34 filons déclarés · 12 zones (11 livrées + Vallons à créer)</p>
+</header>
+
+<h2>La carte du monde</h2>
+<p class="note">Un centre (le Sanctuaire sur la Voûte), un anneau de quatre zones de production, et deux bras
+qui s'éloignent dans le temps abîmé : le nord vers le figé, le sud vers l'épuisé. La profondeur de strate
+<em>est</em> le palier de danger. En pointillé améthyste : les Vallons et leurs liaisons, à créer (ZON-30).</p>
+<div class="carte-wrap">
+<svg viewBox="0 0 900 790" role="img" aria-label="Carte du monde d'Améthyste : graphe des zones">
+  <!-- arêtes livrées -->
+  <line class="arete" x1="500" y1="490" x2="640" y2="512"/> <!-- lumiere-jardins -->
+  <line class="arete" x1="470" y1="470" x2="360" y2="305"/> <!-- lumiere-foret -->
+  <line class="arete" x1="455" y1="490" x2="235" y2="390"/> <!-- lumiere-marais -->
+  <line class="arete" x1="490" y1="465" x2="530" y2="275"/> <!-- lumiere-mines -->
+  <line class="arete" x1="505" y1="475" x2="655" y2="325"/> <!-- lumiere-crete -->
+  <line class="arete" x1="320" y1="300" x2="230" y2="368"/> <!-- foret-marais -->
+  <line class="arete" x1="365" y1="280" x2="490" y2="260"/> <!-- foret-mines -->
+  <line class="arete" x1="235" y1="372" x2="630" y2="315"/> <!-- marais-crete -->
+  <line class="arete" x1="555" y1="270" x2="635" y2="298"/> <!-- mines-crete -->
+  <line class="arete" x1="215" y1="395" x2="240" y2="540"/> <!-- marais-dunes -->
+  <line class="arete" x1="250" y1="575" x2="300" y2="645"/> <!-- dunes-mer -->
+  <line class="arete" x1="330" y1="670" x2="450" y2="712"/> <!-- mer-cite -->
+  <line class="arete" x1="665" y1="285" x2="595" y2="172"/> <!-- crete-givre -->
+  <line class="arete" x1="590" y1="140" x2="640" y2="80"/>  <!-- givre-glacier -->
+  <!-- liaison de lancement (tant que la Mer de Sel n'est pas Ext.1) -->
+  <path class="arete-lancement" d="M 265 570 Q 420 620 455 705" fill="none"/>
+  <!-- arêtes prévues (Vallons) -->
+  <line class="arete-prevue" x1="460" y1="470" x2="405" y2="430"/>
+  <line class="arete-prevue" x1="385" y1="400" x2="345" y2="305"/>
+  <line class="arete-prevue" x1="365" y1="420" x2="235" y2="385"/>
+
+  <!-- durées de voyage -->
+  <text class="duree" x="560" y="508">60 s</text>
+  <text class="duree" x="398" y="392" fill="#7c5cb0">~4 min</text>
+  <text class="duree" x="420" y="368">5 min</text>
+  <text class="duree" x="330" y="452">7 min</text>
+  <text class="duree" x="516" y="372">10 min</text>
+  <text class="duree" x="592" y="418">15 min</text>
+  <text class="duree" x="258" y="330">5 min</text>
+  <text class="duree" x="418" y="258">8 min</text>
+  <text class="duree" x="428" y="336">9 min</text>
+  <text class="duree" x="588" y="272">8 min</text>
+  <text class="duree" x="198" y="470">8 min</text>
+  <text class="duree" x="252" y="618">12 min</text>
+  <text class="duree" x="380" y="700">10 min</text>
+  <text class="duree" x="648" y="230">13 min</text>
+  <text class="duree" x="628" y="118">11 min</text>
+
+  <!-- zones : rect + textes. Couleur de bord = région -->
+  <!-- Glacier du Silence (Ext.1) -->
+  <g>
+    <rect x="570" y="30" width="150" height="52" rx="6" fill="var(--carte)" stroke="var(--silence)" stroke-width="2" stroke-dasharray="6 3"/>
+    <text class="zone-nom" x="585" y="51">❄ Glacier du Silence</text>
+    <text class="zone-sub" x="585" y="66">expédition · Ext. 1</text>
+    <text class="tier" x="690" y="66" fill="var(--silence)">T5</text>
+  </g>
+  <!-- Pas de Givre (Ext.1) -->
+  <g>
+    <rect x="510" y="112" width="132" height="52" rx="6" fill="var(--carte)" stroke="var(--silence)" stroke-width="2" stroke-dasharray="6 3"/>
+    <text class="zone-nom" x="524" y="133">❄ Pas de Givre</text>
+    <text class="zone-sub" x="524" y="148">expédition · Ext. 1</text>
+    <text class="tier" x="614" y="148" fill="var(--silence)">T4</text>
+  </g>
+  <!-- Mines -->
+  <g>
+    <rect x="455" y="215" width="140" height="56" rx="6" fill="var(--carte)" stroke="var(--sauvages)" stroke-width="2.5"/>
+    <text class="zone-nom" x="470" y="237">⛏ Mines profondes</text>
+    <text class="zone-sub" x="470" y="252">⌂ foyer · métal, fer</text>
+    <text class="tier" x="562" y="252" fill="var(--sauvages)">T2–4</text>
+  </g>
+  <!-- Crête -->
+  <g>
+    <rect x="600" y="280" width="150" height="56" rx="6" fill="var(--carte)" stroke="var(--sauvages)" stroke-width="2.5"/>
+    <text class="zone-nom" x="615" y="302">⛰ Crête de Ventombre</text>
+    <text class="zone-sub" x="615" y="317">⌂ foyer · gemme, mithril</text>
+    <text class="tier" x="716" y="317" fill="var(--sauvages)">T3–4</text>
+  </g>
+  <!-- Forêt -->
+  <g>
+    <rect x="265" y="255" width="160" height="56" rx="6" fill="var(--carte)" stroke="var(--plaines)" stroke-width="2.5"/>
+    <text class="zone-nom" x="280" y="277">🌲 Forêt des murmures</text>
+    <text class="zone-sub" x="280" y="292">⌂ foyer · herbes, bois</text>
+    <text class="tier" x="398" y="292" fill="var(--plaines)">T1</text>
+  </g>
+  <!-- Marais -->
+  <g>
+    <rect x="130" y="350" width="140" height="56" rx="6" fill="var(--carte)" stroke="var(--sauvages)" stroke-width="2.5"/>
+    <text class="zone-nom" x="145" y="372">🜁 Marais brumeux</text>
+    <text class="zone-sub" x="145" y="387">⌂ foyer · toxines</text>
+    <text class="tier" x="240" y="387" fill="var(--sauvages)">T2</text>
+  </g>
+  <!-- Vallons (à créer) -->
+  <g>
+    <rect x="315" y="392" width="160" height="56" rx="6" fill="var(--amethyste-doux)" stroke="var(--amethyste)" stroke-width="2.5" stroke-dasharray="7 4"/>
+    <text class="zone-nom" x="330" y="414">🌾 Vallons d'Aubépine</text>
+    <text class="zone-sub" x="330" y="429">⌂ foyer · à créer (ZON-30)</text>
+    <text class="tier" x="448" y="429" fill="var(--amethyste)">T1</text>
+  </g>
+  <!-- Lumière -->
+  <g>
+    <rect x="415" y="452" width="150" height="56" rx="6" fill="var(--carte)" stroke="var(--or)" stroke-width="3"/>
+    <text class="zone-nom" x="430" y="474">✦ Village de Lumière</text>
+    <text class="zone-sub" x="430" y="489">sanctuaire · sûre · hub</text>
+    <text class="tier" x="536" y="489" fill="var(--or)">T0</text>
+  </g>
+  <!-- Jardins -->
+  <g>
+    <rect x="600" y="480" width="160" height="52" rx="6" fill="var(--carte)" stroke="var(--or)" stroke-width="2"/>
+    <text class="zone-nom" x="615" y="501">🏡 Quartier des Jardins</text>
+    <text class="zone-sub" x="615" y="516">sanctuaire · sûre</text>
+    <text class="tier" x="732" y="516" fill="var(--or)">T0</text>
+  </g>
+  <!-- Dunes -->
+  <g>
+    <rect x="165" y="522" width="140" height="56" rx="6" fill="var(--carte)" stroke="var(--ambre)" stroke-width="2.5"/>
+    <text class="zone-nom" x="180" y="544">🏜 Dunes d'Ambre</text>
+    <text class="zone-sub" x="180" y="559">⌂ foyer · cuir, os, ambre</text>
+    <text class="tier" x="272" y="559" fill="var(--ambre)">T3</text>
+  </g>
+  <!-- Mer de Sel -->
+  <g>
+    <rect x="245" y="628" width="120" height="52" rx="6" fill="var(--carte)" stroke="var(--silence)" stroke-width="2" stroke-dasharray="6 3"/>
+    <text class="zone-nom" x="259" y="649">🧂 Mer de Sel</text>
+    <text class="zone-sub" x="259" y="664">rejoint l'Ext. 1</text>
+    <text class="tier" x="338" y="664" fill="var(--silence)">T4</text>
+  </g>
+  <!-- Cité ensevelie -->
+  <g>
+    <rect x="420" y="690" width="140" height="56" rx="6" fill="var(--carte)" stroke="var(--ambre)" stroke-width="2.5"/>
+    <text class="zone-nom" x="435" y="712">🏛 Cité ensevelie</text>
+    <text class="zone-sub" x="435" y="727">◆ donjon · plans anciens</text>
+    <text class="tier" x="532" y="727" fill="var(--ambre)">T4</text>
+  </g>
+</svg>
+</div>
+<div class="legende">
+  <span><span class="pastille" style="border-color:var(--or); border-width:2px">&nbsp;</span> Sanctuaire (hors Crue)</span>
+  <span><span class="pastille" style="border-color:var(--plaines); border-width:2px">&nbsp;</span> Plaines de l'Éveil (contestable 5 %)</span>
+  <span><span class="pastille" style="border-color:var(--sauvages); border-width:2px">&nbsp;</span> Terres Sauvages (8 %)</span>
+  <span><span class="pastille" style="border-color:var(--ambre); border-width:2px">&nbsp;</span> l'Ambre (10 %)</span>
+  <span><span class="pastille" style="border-color:var(--silence); border-width:2px; border-style:dashed">&nbsp;</span> le Silence — réservé Extension 1</span>
+  <span>⌂ foyer possible &nbsp;·&nbsp; pointillé ocre : liaison Dunes→Cité au lancement</span>
+</div>
+
+<h2>Inventaire des ressources</h2>
+<p class="note">Croisement complet : items × recettes × filons déclarés × spots hérités (ObjectLayer) × butin
+de monstres × boutiques PNJ. Le palier vient du profil de filon calibré (T0 → T4) ou, à défaut, de la carte
+des minerais actée. Les états en rouge sont les défauts à corriger.</p>
+
+<h3>La ligne du métal</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Minerai</th><th>Palier</th><th>Sources actuelles</th><th>Consommé par</th><th>État</th></tr></thead>
+<tbody>
+<tr><td>Cuivre <span class="slug">ore-copper</span></td><td class="mono">T0</td><td>Filons Mines + Dunes · spot hérité · PNJ</td><td class="mono">8 recettes (bronze, outils, taille de gemme)</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Étain <span class="slug">ore-tin</span></td><td class="mono">T0</td><td>Filon Mines · spot hérité</td><td class="mono">2 (lingot de bronze)</td><td><span class="chip c-acte">2ᵉ filon Dunes acté</span></td></tr>
+<tr><td>Fer <span class="slug">ore-iron</span></td><td class="mono">T1</td><td>Filon Mines (exclusif) · spot · PNJ</td><td class="mono">20 recettes — consommé brut</td><td><span class="chip c-alerte">sans lingot (ECO-25)</span></td></tr>
+<tr><td>Or <span class="slug">ore-gold</span></td><td class="mono">T2</td><td>Filon Mines · spot hérité</td><td class="mono">4 (joaillerie)</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Argent <span class="slug">ore-silver</span></td><td class="mono">T2</td><td>Filon Crête · spot hérité</td><td class="mono">2 (gemme fine)</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Cobalt <span class="slug">ore-cobalt</span></td><td class="mono">T2</td><td>Filon Crête (exclusif) · spot hérité</td><td class="mono">7 recettes</td><td><span class="chip c-alerte">goulot connu (BALANCE §21)</span></td></tr>
+<tr><td>Platine <span class="slug">ore-platinum</span></td><td class="mono">T3</td><td>Spot hérité seulement</td><td class="mono">5 (lingot + armures mithril)</td><td><span class="chip c-acte">filon Dunes acté</span></td></tr>
+<tr><td>Sombracier <span class="slug">ore-darksteel</span></td><td class="mono">T4</td><td>Spot hérité seulement</td><td class="mono">1 (lingot d'adamantite)</td><td><span class="chip c-acte">filon Mines acté</span></td></tr>
+<tr><td>Mithril <span class="slug">ore-mithril</span></td><td class="mono">T4</td><td>Spot hérité seulement</td><td class="mono">5 — sommet du jeu de base</td><td><span class="chip c-acte">filon Crête acté</span></td></tr>
+<tr><td>Orichalque <span class="slug">ore-orichalcum</span></td><td class="mono">T4</td><td>Spot hérité seulement</td><td class="mono">1 (lingot d'orichalque)</td><td><span class="chip c-acte">butin Cité acté</span></td></tr>
+<tr><td>Adamantite <span class="slug">ore-adamantite</span></td><td class="mono">T4</td><td>Spot hérité seulement</td><td class="mono">1</td><td><span class="chip c-acte">réservé Ext. 1 (Mer de Sel)</span></td></tr>
+<tr><td>Métal étoilé <span class="slug">ore-starmetal</span></td><td class="mono">T4</td><td>Spot hérité seulement</td><td class="mono">4</td><td><span class="chip c-acte">réservé Ext. 1 (Glacier)</span></td></tr>
+<tr><td>Voidium <span class="slug">ore-voidium</span></td><td class="mono">—</td><td>Spot hérité seulement</td><td class="mono">0</td><td><span class="chip c-acte">réservé Ext. 2 (l'Étale)</span></td></tr>
+<tr><td>Cristal d'améthyste <span class="slug">ore-amethyst-crystal</span></td><td class="mono">—</td><td>Spot hérité seulement</td><td class="mono">0</td><td><span class="chip c-mort">légacy — décision G (sans gisement)</span></td></tr>
+</tbody></table></div>
+
+<h3>Gemmes &amp; joaillerie</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Ressource</th><th>Palier</th><th>Sources</th><th>Consommée par</th><th>État</th></tr></thead>
+<tbody>
+<tr><td>Rubis <span class="slug">ore-ruby</span></td><td class="mono">T2</td><td>Filon Mer de Sel · spot hérité</td><td class="mono">0 recette</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Émeraude <span class="slug">ore-emerald</span></td><td class="mono">T3</td><td>Filon Pas de Givre</td><td class="mono">0 recette</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Diamant <span class="slug">ore-diamond</span></td><td class="mono">T3</td><td>Filon Cité ensevelie</td><td class="mono">0 recette</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Gemme taillée basique → prismatique <span class="slug">crafted-gem-*</span></td><td class="mono">T1→T4</td><td>Craft joaillier (5 étages chaînés)</td><td class="mono">19 recettes au total</td><td><span class="chip c-alerte">taillées dans du métal, pas des gemmes</span></td></tr>
+</tbody></table></div>
+<div class="defaut">
+<b>La joaillerie ne taille aucune gemme.</b>
+<p>« Taille de gemme brute » consomme 2 cuivres ; la fine, 2 argents ; la rare, 1 mithril. Les trois
+gemmes brutes du monde (rubis, émeraude, diamant) ne sont consommées par rien — trois filons déclarés
+produisent des items sans usage. À réparer avec ECO-25 : les recettes de taille doivent consommer les
+gemmes brutes, et les filons de gemmes trouvent leur sens.</p>
+</div>
+
+<h3>Les plantes (herboristerie)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Plante</th><th>Palier</th><th>Sources</th><th>Consommée par</th><th>État</th></tr></thead>
+<tbody>
+<tr><td>Thym · Lavande</td><td class="mono">T0</td><td>Jardins du temple (Lumière) + PNJ</td><td class="mono">2 + 2 (premiers soins, antidote)</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Menthe · Pissenlit</td><td class="mono">T0</td><td>Forêt (+ PNJ pour la menthe)</td><td class="mono">3 + 0</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Sauge · Camomille · Aloès · Romarin · Échinacée</td><td class="mono">T1</td><td>Forêt</td><td class="mono">3 · 2 · 2 · 0 · 0</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Ortie · Valériane</td><td class="mono">T1</td><td>Marais</td><td class="mono">0 · 1</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Ginseng <span class="slug">plant-ginseng</span></td><td class="mono">T2</td><td>Forêt (exclusif)</td><td class="mono">5 recettes</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Mandragore · Belladone</td><td class="mono">T2</td><td>Marais (exclusif — ligne des toxines)</td><td class="mono">4 · 1</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Spores fantômes</td><td class="mono">T3</td><td>Marais (exclusif)</td><td class="mono">0</td><td><span class="chip c-alerte">peu utilisée</span></td></tr>
+<tr><td>Givrecoiffe</td><td class="mono">T3</td><td>Crête (exclusif)</td><td class="mono">0</td><td><span class="chip c-alerte">peu utilisée</span></td></tr>
+<tr><td>Fleur de lune · Feuille de dragon · Fleur de phénix</td><td class="mono">T3–T4</td><td>Pas de Givre / Glacier</td><td class="mono">0</td><td><span class="chip c-alerte">partent en Ext. 1</span></td></tr>
+<tr><td>Fruit du vide</td><td class="mono">T3</td><td>Cité ensevelie</td><td class="mono">0</td><td><span class="chip c-alerte">peu utilisé</span></td></tr>
+<tr><td>Dreamlily · Sunblossom · Thunderroot · Whisperweed · Wolfsbane</td><td class="mono">—</td><td><b>Aucune</b></td><td class="mono">0</td><td><span class="chip c-mort">items morts (×5)</span></td></tr>
+</tbody></table></div>
+
+<h3>Les poissons (pêche)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Poisson</th><th>Palier</th><th>Sources</th><th>Consommé par</th><th>État</th></tr></thead>
+<tbody>
+<tr><td>Truite <span class="slug">fish-trout</span></td><td class="mono">T0</td><td>Forêt (rivière) · spot hérité</td><td class="mono">0</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Carpe <span class="slug">fish-carp</span></td><td class="mono">T1</td><td>Marais · spot hérité</td><td class="mono">0</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Saumon <span class="slug">fish-salmon</span></td><td class="mono">T2</td><td>Forêt (rapides) · spot hérité</td><td class="mono">0</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Anguille électrique <span class="slug">fish-electric-eel</span></td><td class="mono">T3</td><td>Mines (bassins) · spot hérité</td><td class="mono">0</td><td><span class="chip c-casse">sans débouché</span></td></tr>
+<tr><td>Poisson-lune <span class="slug">fish-moonfish</span></td><td class="mono">—</td><td>Spot hérité seulement</td><td class="mono">0</td><td><span class="chip c-mort">quasi mort</span></td></tr>
+<tr><td>Kraken juvénile <span class="slug">fish-baby-kraken</span></td><td class="mono">—</td><td><b>Aucune</b></td><td class="mono">0</td><td><span class="chip c-mort">item mort</span></td></tr>
+</tbody></table></div>
+<div class="defaut">
+<b>La pêche entière est sans débouché.</b>
+<p>Aucune des 82 recettes ne consomme un poisson. Le pêcheur ne peut que vendre au PNJ : c'est un métier
+de sink, pas un métier d'artisanat. C'est l'argument le plus fort pour un métier de <em>cuisine</em>
+(poisson + blé + gibier → nourriture à effets), qui donnerait aussi son débouché au blé des Vallons.</p>
+</div>
+
+<h3>Cuirs &amp; os (dépeçage → tannerie)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Matière</th><th>Palier</th><th>Sources</th><th>Consommée par</th><th>État</th></tr></thead>
+<tbody>
+<tr><td>Cuir brut <span class="slug">leather-raw</span></td><td class="mono">T0</td><td>Butin des bêtes (chauve-souris, rat, loup…)</td><td class="mono">9 recettes (+ lanière ×16)</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Cuir épais <span class="slug">leather-thick</span></td><td class="mono">T2</td><td>Butin (squelette, loup-garou, gargouille…)</td><td class="mono">12 recettes</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Os <span class="slug">leather-bone</span></td><td class="mono">T2</td><td><b>Aucune</b></td><td class="mono">4 recettes (série « durcie »)</td><td><span class="chip c-casse">consommé, jamais lâché</span></td></tr>
+<tr><td>Croc <span class="slug">leather-fang</span></td><td class="mono">T2</td><td><b>Aucune</b></td><td class="mono">2 recettes</td><td><span class="chip c-casse">consommé, jamais lâché</span></td></tr>
+<tr><td>Écaille de dragon <span class="slug">leather-dragon-scale</span></td><td class="mono">T4</td><td><b>Aucune</b></td><td class="mono">3 recettes</td><td><span class="chip c-casse">consommé, jamais lâché</span></td></tr>
+<tr><td>Fourrure de loup-garou <span class="slug">leather-werewolf-fur</span></td><td class="mono">T3</td><td><b>Aucune</b></td><td class="mono">3 recettes</td><td><span class="chip c-casse">consommé, jamais lâché</span></td></tr>
+<tr><td>Peau 1 / Peau 2 <span class="slug">leather-skin-1/2</span></td><td class="mono">—</td><td>Aucune</td><td class="mono">0</td><td><span class="chip c-mort">doublons morts (ECO-02)</span></td></tr>
+</tbody></table></div>
+<div class="defaut">
+<b>Le tanneur de milieu et de haut de jeu est incraftable.</b>
+<p>12 recettes consomment quatre matières (os, croc, écaille, fourrure) qu'aucun monstre ne lâche —
+seuls des objets finis aux noms proches existent en butin. Toute la série « durcie », la série
+« dragon » et la cape de maître sont irréalisables. À réparer par des tables de butin (les loups-garous
+lâchent la fourrure, les dragons l'écaille…) — et l'os devient l'exclusivité des Dunes (ZON-31).</p>
+</div>
+
+<h3>Intermédiaires de craft</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Intermédiaire</th><th>Produit par</th><th>Consommé par</th><th>État</th></tr></thead>
+<tbody>
+<tr><td>Lingot de bronze</td><td class="mono">2 cuivre + 2 étain</td><td class="mono">5 recettes</td><td><span class="chip c-ok">OK — la seule vraie chaîne</span></td></tr>
+<tr><td>Lingot de mithril</td><td class="mono">3 mithril + 1 platine</td><td class="mono">10 recettes</td><td><span class="chip c-ok">OK (sommet de la base)</span></td></tr>
+<tr><td>Lingot d'adamantite / d'orichalque</td><td class="mono">minerais base + Ext. 1</td><td class="mono">1 / 4</td><td><span class="chip c-acte">enjambent l'Ext. 1 (voulu)</span></td></tr>
+<tr><td>Lingot de cobalt</td><td class="mono">3 cobalt</td><td class="mono">0 recette</td><td><span class="chip c-casse">produit, jamais consommé</span></td></tr>
+<tr><td>Lingot de fer · Lingot d'or</td><td class="mono">rien</td><td class="mono">0</td><td><span class="chip c-mort">items morts (cible d'ECO-25)</span></td></tr>
+<tr><td>Lanière de cuir</td><td class="mono">2 cuir brut</td><td class="mono">16 recettes</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Base de potion</td><td class="mono">2 menthe + 1 camomille</td><td class="mono">13 recettes</td><td><span class="chip c-ok">OK</span></td></tr>
+<tr><td>Gemmes taillées (5 étages)</td><td class="mono">métal (défaut ci-dessus)</td><td class="mono">19 recettes</td><td><span class="chip c-alerte">chaîne OK, intrant faux</span></td></tr>
+<tr><td>Tissu <span class="slug">crafted-cloth</span></td><td class="mono">rien</td><td class="mono">0</td><td><span class="chip c-mort">mort — attendrait un tailleur</span></td></tr>
+</tbody></table></div>
+
+<h3>Le bois — la ligne à créer (décision du 2026-07-28)</h3>
+<p class="note">Aucune ressource bois n'existe. L'arc et le bâton existent en items (butin, PNJ) mais aucune
+recette ne les produit : toute la ligne armes de bois + housing est sans matière. Proposition d'essences,
+raretés inversées respectées :</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Essence</th><th>Palier</th><th>Zones</th><th>Débouchés visés</th></tr></thead>
+<tbody>
+<tr><td>Bois de hêtre</td><td class="mono">T0</td><td>Vallons + Forêt (2 sources — jamais un goulot)</td><td class="mono">manches d'outils, flèches, meubles simples</td></tr>
+<tr><td>Chêne murmurant</td><td class="mono">T2</td><td>Forêt (exclusif — l'arbre de la zone-titre)</td><td class="mono">arcs, bâtons, baguettes</td></tr>
+<tr><td>Bois tourbé</td><td class="mono">T3</td><td>Marais (exclusif — noirci par l'eau morte)</td><td class="mono">baguettes sombres, teintures, housing</td></tr>
+<tr><td>Bois pétrifié</td><td class="mono">T4</td><td>Dunes (exclusif — l'âge précédent, thème Ambre)</td><td class="mono">armes de maître, mobilier de prestige</td></tr>
+</tbody></table></div>
+
+<h2>Synthèse du challenge des fixtures</h2>
+<div class="defaut">
+<b>Cassé — à réparer (nouveau, relevé ce jour)</b>
+<p>Pêche sans aucun débouché (6 poissons) · gemmes brutes sans consommateur et taille de gemme
+sur du métal (3 filons pour rien) · 12 recettes de tanneur aux intrants jamais lâchés ·
+lingot de cobalt sans consommateur · arc/bâton sans recette ni matière bois.</p>
+</div>
+<div class="defaut moyen">
+<b>Connu — déjà couvert par un jalon</b>
+<p>Minerais T3/T4 sans filon + étain unique (ECO-24b, carte actée) · chaîne sans lingots, fer consommé
+brut (ECO-25) · doubles sources filon/spot hérité (ECO-24b tranche) · populations du Marais et de la
+Crête encore issues des cartes TMX (ZON-26b) · cristal d'améthyste légacy (décision G).</p>
+</div>
+<div class="defaut info">
+<b>Mort — à purger ou à réveiller</b>
+<p>5 plantes sans source ni usage · poisson-lune et kraken juvénile · lingots de fer/or · tissu
+(réveillable par un métier tailleur) · peaux 1/2 (doublons ECO-02).</p>
+</div>
+</div>
