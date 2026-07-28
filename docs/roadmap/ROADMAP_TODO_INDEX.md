@@ -39,6 +39,35 @@
 
 ---
 
+## Ordre de chantier (2026-07-28) — pour un developpement autonome
+
+> Sequence de reference issue du cadrage macro (GAME_WORLD, GAME_PROGRESSION, BALANCE §22).
+> Un agent qui reprend le projet **execute dans cet ordre**, sauf contrordre explicite.
+> Critere d'arbitrage permanent (GAME_PROGRESSION §4) : rapprocher de la semaine 3 le moment
+> ou « quelqu'un compte sur moi » vaut mieux qu'ajouter du contenu au mois 6.
+
+| # | Chantier | Contenu | Pourquoi cet ordre |
+|---|----------|---------|--------------------|
+| 1 | **RET-01** | Rotation du WeeklyChallenge (cron + restitution) | Une ligne de scheduler, un systeme livre qui dort |
+| 2 | **ECO-24b** | Sources des minerais de haut palier + etain (donnees de zone) | Prealable de toute la chaine ; sans lui, chainer renforce un goulot |
+| 3 | **FOY-17** | Facteur de monde, `WorldLoadService`, `Player.lastActivityAt` | Precede FOY-08/11, ECO-22 et le recalibrage |
+| 4 | **Recalibrage filons** | BALANCE §22.3, W=1 a ~50 joueurs/jour | Sans lui, purete et Paleur livreraient du code sans effet observable |
+| 5 | **FOY-01 → 05** | Socle des foyers (Sprint 16) | Le pilier territorial commence a exister |
+| 6 | **RET-02 + RET-03** | Commission de la semaine + commande de guilde | Le rendez-vous hebdomadaire personnel et le « on compte sur moi », sans attendre la suite des foyers |
+| 7 | **FOY-06, 07, 10** | Services gates, bonus d'atelier, regression bornee (Sprint 17) | Faire vivre une zone y ouvre un marche |
+| 8 | **RET-05** | Chantier de la semaine (par foyer) | Depend de FOY-02/04, converge avec RET-02 |
+| 9 | **ECO-21 → 23** | Purete (bandes, tirage, marche/commandes) | Reveille `Recipe.quality`, donne un metier au prospecteur |
+| 10 | **RET-06** | Affleurement de la semaine | Depend de la purete |
+| 11 | **FOY-08, 09, 14 + RET-04** | La Crue + assiduite (Sprint 18) | L'enjeu politique, une fois le socle vivant |
+| 12 | **ECO-25 → 27** | Chaine de production par paliers | Le levier anti-creux-du-milieu |
+| 13 | **FOY-11 → 13, 15** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste |
+| 14 | **Zones & ressources** | Vallons (zone de niveau 2), ressources par zone, amethystite | ⚠️ **Bloque** par la derniere decision ouverte : la source de l'amethystite (GAME_WORLD §13.3 — recommandation : partout, la purete variant) |
+
+Transverse, au fil de l'eau : FOY-16 et RET-07 (tests), mise a jour de `ROADMAP_DONE.md`
+a chaque jalon livre (regle 13 de CLAUDE.md).
+
+---
+
 ## Sprints
 
 | Sprint | Theme | Priorite | Statut |
@@ -168,7 +197,8 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Foyers, Crue et Paleur (FOY-01 a FOY-16)](PLAN_SETTLEMENTS.md) — **0/16, prochain grand chantier** : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
+- [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) — **0/7** : l'horizon le plus fragile de la colonne de progression ; RET-01 (rotation du WeeklyChallenge) est le livrable le moins cher de toute la roadmap
+- [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **0/16, prochain grand chantier** : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-27)](PLAN_PLAYER_ECONOMY.md) — **Pistes F (purete) et G (chaine de production par paliers) ouvertes** : la Piste G est le levier principal contre le creux du milieu. Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)
 - [Controle de cite par les guildes (GCC-01 a GCC-20)](PLAN_GUILD_CITY_CONTROL.md) ✅

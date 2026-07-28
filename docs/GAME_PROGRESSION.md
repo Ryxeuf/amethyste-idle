@@ -312,9 +312,10 @@ est une zone morte, quelle que soit sa beauté.
    4 combats couvrant des rôles distincts), les autres restant jouables sans être nourris.
 2. **La rejouabilité de l'Acte I** sur un second personnage (cf. CLAUDE.md règle 12) :
    intégralement rejoué aujourd'hui (NAR-04). À reconsidérer si l'Acte I s'allonge.
-3. **L'horizon hebdomadaire** : six briques proposées (§3 ter-a/b — Commission,
-   Affleurement, assiduité en paliers ; rotation du WeeklyChallenge, chantier de la semaine,
-   commande de guilde). **À trancher**, puis à décliner en jalons.
+3. ~~L'horizon hebdomadaire~~ — **tranché et décliné** : les six briques du §3 ter-a/b sont
+   les jalons **RET-01 → RET-07** de
+   [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md), séquencés dans l'ordre de
+   chantier global (`ROADMAP_TODO_INDEX.md`).
 4. **La fusion de matéria** (extension) : le système est codé mais dormant. À garder fermé au
    lancement, et à ne pas casser — l'enum `Element` et le format des domaines doivent
    tolérer des éléments composés le jour venu (GAME_WORLD §2.1).
