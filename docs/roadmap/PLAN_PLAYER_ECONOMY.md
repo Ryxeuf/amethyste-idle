@@ -54,7 +54,7 @@ Piste B — HV régional            : ECO-03 → ECO-04
 Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
-Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 → ECO-23 → ECO-28
+Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 → ECO-26 → ECO-27
 Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
 ```
@@ -314,18 +314,22 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > reste nul partout — rétro-attribuer une pureté à des lots qui n'en avaient pas reviendrait
 > à inventer un passé au joueur.
 
-### ECO-22 — Tirage de pureté à la récolte (M | ★★★ | HAUTE)
+### ECO-22 — Tirage de pureté à la récolte ✅ (M | ★★★ | HAUTE)
 > D'où vient la bande. C'est ici que le savoir du prospecteur prend une valeur marchande.
-> Prérequis : ← ECO-21
-- [ ] Fourchette de tirage par filon, fonction de : **palier du filon**, **vitalité courante**
-      (un filon éreinté ne rend plus que du trouble), **compétence** du récolteur, **marée**
-      en cours, **biome** (Affleurement et Chœur tirent haut)
-- [ ] Plafond de bande imposé par la **Pâleur** du filon (GAME_WORLD §3.5 — lien avec FOY-11)
-- [ ] Exposition de l'information au prospecteur uniquement, conformément à
-      [../GAME_ZONE_ACTIONS.md](../GAME_ZONE_ACTIONS.md) (information exclusive)
-- [ ] **Seul le `parfait` permet l'éveil d'une matéria** — la rareté de la matéria devient
-      structurelle, sans table de drop
-- [ ] Tests : fourchettes, effet de la vitalité, plafond de Pâleur, gate d'éveil
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Périmètre tenu** : vitalité, compétence du récolteur, plafond déclaratif, information
+> exclusive. La **marée** et le **biome** ne sont pas branchés — la table de tirage les
+> accueillera sans changement de moteur, mais aucun des deux n'a de calibrage acté.
+>
+> **Reporté, avec sa raison — le gate d'éveil.** Vérification faite, **il n'existe aucun rite
+> d'éveil** : les matérias tombent des tables de butin, aucune recette n'en produit, et FOY-06
+> avait déjà reporté l'Autel d'éveil *vers* ce jalon. Poser le gate ici aurait produit un
+> service que rien n'appelle. Il suivra le rite — retirer les matérias des tables de butin est
+> un chantier de contenu à part entière, à ouvrir explicitement.
+>
+> **Reporté à FOY-11** : le plafond de **Pâleur**. Le mécanisme de plafond existe et est
+> déclaratif ; la Pâleur y ajoutera une seconde borne, plus basse, quand elle existera.
 
 ### ECO-23 — Pureté au marché et dans les commandes (S | ★★ | MOYENNE)
 > Sans ça, la pureté existe mais ne se négocie pas — et le HV reste un tas.

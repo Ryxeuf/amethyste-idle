@@ -11,6 +11,7 @@ use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Event\Zone\ZoneGatherEvent;
+use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\WorldScaleService;
@@ -74,7 +75,7 @@ class GatherServiceTest extends TestCase
             return $event;
         });
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService, $this->eventDispatcher) extends GatherService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService, $this->eventDispatcher, $this->purityDrawer()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -340,7 +341,7 @@ class GatherServiceTest extends TestCase
         $worldScale = $this->createMock(WorldScaleService::class);
         $worldScale->method('current')->willReturn(1.0);
 
-        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class)) extends GatherService {
+        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class), $this->purityDrawer()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -491,7 +492,7 @@ class GatherServiceTest extends TestCase
         $worldScale = $this->createMock(WorldScaleService::class);
         $worldScale->method('current')->willReturn($scale);
 
-        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class)) extends GatherService {
+        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class), $this->purityDrawer()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -533,5 +534,19 @@ class GatherServiceTest extends TestCase
         $this->parameterRepository->method('findOneBy')->willReturn(null);
 
         $this->assertSame(GatherService::DEFAULT_COST, $this->service->getGatherCost());
+    }
+
+    /**
+     * ECO-22 : ces tests portent sur la recolte, pas sur la purete. Un tireur
+     * qui ne rend rien laisse les lots sans bande — l'etat normal de tout ce qui
+     * est hors perimetre, c'est-a-dire de l'immense majorite des matieres.
+     */
+    private function purityDrawer(): PurityDrawer
+    {
+        $drawer = $this->createMock(PurityDrawer::class);
+        $drawer->method('draw')->willReturn(null);
+        $drawer->method('coversSlug')->willReturn(false);
+
+        return $drawer;
     }
 }

@@ -56,7 +56,7 @@
 | ~~6~~ | ~~**RET-02 + RET-03**~~ ✅ | Commission de la semaine + commande de guilde | **Livres le 2026-07-28** — le rendez-vous hebdomadaire personnel et le « on compte sur moi » existent |
 | ~~7~~ | ~~**FOY-06, 07, 10**~~ ✅ | Services gates, bonus d'atelier, regression bornee (Sprint 17) | **Livres le 2026-07-28** — faire vivre une zone y ouvre un marche et de meilleurs ateliers. **Piste B complete** |
 | 8 | **RET-05** | Chantier de la semaine (par foyer) | Depend de FOY-02/04, converge avec RET-02 |
-| 9 | **ECO-21 ✅ → 22 → 23** | Purete (bandes, tirage, marche/commandes) | **ECO-21 livre le 2026-07-28.** Reveille `Recipe.quality`, donne un metier au prospecteur |
+| 9 | **ECO-21 ✅ → 22 ✅ → 23** | Purete (bandes, tirage, marche/commandes) | **ECO-21 et ECO-22 livres le 2026-07-28.** Reveille `Recipe.quality`, donne un metier au prospecteur |
 | 10 | **RET-06** | Affleurement de la semaine | Depend de la purete |
 | 11 | **FOY-08, 09, 14 + RET-04** | La Crue + assiduite (Sprint 18) | L'enjeu politique, une fois le socle vivant |
 | 12 | **ECO-25 → 27** | Chaine de production par paliers | Le levier anti-creux-du-milieu |

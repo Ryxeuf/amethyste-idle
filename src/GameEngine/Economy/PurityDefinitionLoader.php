@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Economy;
 
+use App\Enum\Purity;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -30,7 +31,7 @@ class PurityDefinitionLoader
     }
 
     /**
-     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}}
+     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}}
      *
      * @throws PurityDefinitionException si le fichier est absent, illisible ou invalide
      */
@@ -58,7 +59,7 @@ class PurityDefinitionLoader
     /**
      * @param array<array-key, mixed> $raw
      *
-     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}}
+     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}}
      */
     public function normalize(array $raw, string $source = '<array>'): array
     {
@@ -92,7 +93,89 @@ class PurityDefinitionLoader
                 'excluded_slugs' => $excluded,
                 'included_slugs' => $included,
             ],
+            'draw' => $this->normalizeDraw($raw['draw'] ?? null, $source),
         ];
+    }
+
+    /**
+     * Le tirage de la bande a la recolte (ECO-22).
+     *
+     * Trois refus, et chacun ferme une facon d'ecrire une regle qui ne
+     * s'appliquerait jamais :
+     *
+     * - une **bande sans poids** ne sortirait pas du tirage, et son absence
+     *   passerait pour de la malchance plutot que pour un oubli ;
+     * - un **plafond qui ne descend pas** laisserait le parfait accessible a un
+     *   filon a sec, ce qui annulerait le signal de vitalite que ZON-37 existe
+     *   pour rendre lisible ;
+     * - un **plafond sans plancher a zero** laisserait un filon epuise sans
+     *   bande du tout, et la recolte rendrait alors des lots sans purete dans un
+     *   perimetre qui en exige une.
+     *
+     * @return array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}
+     */
+    private function normalizeDraw(mixed $draw, string $source): array
+    {
+        if (!\is_array($draw)) {
+            throw new PurityDefinitionException(sprintf('Purity config "%s" must declare "draw".', $source));
+        }
+
+        $weights = [];
+        $rawWeights = $draw['base_weights'] ?? null;
+        if (!\is_array($rawWeights)) {
+            throw new PurityDefinitionException(sprintf('"draw.base_weights" must be a mapping in "%s".', $source));
+        }
+        foreach (Purity::ordered() as $band) {
+            $weight = $rawWeights[$band->value] ?? null;
+            if (!is_numeric($weight) || (int) $weight < 0) {
+                throw new PurityDefinitionException(sprintf('Band "%s" needs a non-negative weight in "draw.base_weights" of "%s".', $band->value, $source));
+            }
+            $weights[$band->value] = (int) $weight;
+        }
+        if (array_sum($weights) <= 0) {
+            throw new PurityDefinitionException(sprintf('"draw.base_weights" must not be all zero in "%s".', $source));
+        }
+
+        $ceilings = [];
+        $rawCeilings = $draw['vitality_ceilings'] ?? null;
+        if (!\is_array($rawCeilings) || $rawCeilings === []) {
+            throw new PurityDefinitionException(sprintf('"draw.vitality_ceilings" must list at least one ceiling in "%s".', $source));
+        }
+        $previous = null;
+        foreach ($rawCeilings as $entry) {
+            if (!\is_array($entry) || !is_numeric($entry['at_least'] ?? null)) {
+                throw new PurityDefinitionException(sprintf('Each entry of "draw.vitality_ceilings" needs a numeric "at_least" in "%s".', $source));
+            }
+            $threshold = (float) $entry['at_least'];
+            $band = \is_string($entry['band'] ?? null) ? Purity::tryFrom($entry['band']) : null;
+            if ($band === null) {
+                throw new PurityDefinitionException(sprintf('An entry of "draw.vitality_ceilings" names an unknown band in "%s".', $source));
+            }
+            if ($previous !== null && $threshold >= $previous) {
+                throw new PurityDefinitionException(sprintf('"draw.vitality_ceilings" must descend: %.2f does not sit below the previous threshold in "%s".', $threshold, $source));
+            }
+            $previous = $threshold;
+            $ceilings[] = ['at_least' => $threshold, 'band' => $band];
+        }
+        if ($ceilings[array_key_last($ceilings)]['at_least'] > 0.0) {
+            throw new PurityDefinitionException(sprintf('"draw.vitality_ceilings" must end at 0 in "%s": an exhausted vein still yields a band.', $source));
+        }
+
+        return [
+            'base_weights' => $weights,
+            'vitality_ceilings' => $ceilings,
+            'skill_weight_per_point' => $this->nonNegativeInt($draw['skill_weight_per_point'] ?? null, 'draw.skill_weight_per_point', $source),
+            'skill_weight_cap' => $this->nonNegativeInt($draw['skill_weight_cap'] ?? null, 'draw.skill_weight_cap', $source),
+        ];
+    }
+
+    private function nonNegativeInt(mixed $value, string $key, string $source): int
+    {
+        if (!is_numeric($value) || (int) $value < 0) {
+            throw new PurityDefinitionException(sprintf('"%s" must be a non-negative integer in "%s".', $key, $source));
+        }
+
+        return (int) $value;
     }
 
     /**

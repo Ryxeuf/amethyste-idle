@@ -186,7 +186,7 @@ class ZoneController extends AbstractController
             'actions' => $this->buildActions(),
             'huntTargets' => $this->huntService->getHuntTargets($player, $zone),
             'huntCost' => $this->huntService->getHuntCost(),
-            'gatherables' => $this->gatherService->getGatherables($zone),
+            'gatherables' => $this->gatherService->getGatherables($zone, $player),
             'gatherCost' => $this->gatherService->getGatherCost(),
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
