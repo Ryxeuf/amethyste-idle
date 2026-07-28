@@ -4,6 +4,7 @@ namespace App\GameEngine\Zone;
 
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\GameEngine\Retention\WeeklyAttendanceService;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -25,6 +26,7 @@ class ActionEnergyManager
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly WeeklyAttendanceService $weeklyAttendance,
     ) {
     }
 
@@ -114,8 +116,15 @@ class ActionEnergyManager
         //
         // Une depense nulle ne vaut pas activite : elle ne pese sur rien.
         if ($cost > 0) {
-            $player->setLastActivityAt(new \DateTimeImmutable());
+            $now = new \DateTimeImmutable();
+            $player->setLastActivityAt($now);
             $player->addActionEnergySpent($cost);
+
+            // RET-04 — l'assiduite se compte au meme endroit, et pour la meme
+            // raison : c'est le seul passage ou l'on sait qu'un joueur a *fait*
+            // quelque chose. Le service est idempotent a la journee, donc
+            // l'appeler a chaque action ne compte qu'un jour.
+            $this->weeklyAttendance->record($player, $now);
         }
 
         if ($flush) {

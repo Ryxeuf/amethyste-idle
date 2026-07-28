@@ -7,6 +7,7 @@ namespace App\GameEngine\Player;
 use App\Entity\App\Player;
 use App\Entity\Game\Quest;
 use App\GameEngine\Quest\PlayerQuestHelper;
+use App\GameEngine\Retention\WeeklyAttendanceService;
 use App\GameEngine\Retention\WeeklyCommissionGenerator;
 use App\Repository\CraftJobRepository;
 use App\Repository\CraftOrderRepository;
@@ -71,6 +72,7 @@ final class PlayerHubDigest
         private readonly PlayerJournalEntryRepository $journalRepository,
         private readonly PlayerWeeklyCommissionRepository $commissionRepository,
         private readonly PlayerQuestHelper $questHelper,
+        private readonly WeeklyAttendanceService $weeklyAttendance,
     ) {
     }
 
@@ -314,6 +316,26 @@ final class PlayerHubDigest
         arsort($counts);
 
         return new HubRecap($counts, $recent);
+    }
+
+    /**
+     * L'assiduite de la semaine — une **restitution**, pas une relance.
+     *
+     * Elle est en lecture pure : regarder son tableau de bord n'a jamais compte
+     * comme une journee active. C'est le seul endroit ou la distinction entre
+     * « s'etre connecte » et « avoir joue » pourrait se perdre, et elle est ce
+     * qui immunise la brique contre le multi-compte comme contre la corvee.
+     */
+    public function attendance(Player $player, ?\DateTimeImmutable $now = null): HubAttendance
+    {
+        $days = $this->weeklyAttendance->currentDays($player, $now);
+        $next = $this->weeklyAttendance->nextTier($days);
+
+        if ($next === null) {
+            return new HubAttendance($days);
+        }
+
+        return new HubAttendance($days, $next->days, $next->gils, $next->energy);
     }
 
     /**

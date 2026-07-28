@@ -64,6 +64,7 @@ class IndexController extends AbstractController
             'resume' => $this->hubDigest->resume($player),
             'pending' => $this->hubDigest->pending($player),
             'recap' => $this->hubDigest->recap($player),
+            'attendance' => $this->hubDigest->attendance($player),
             'domainExperiences' => $player->getDomainExperiences(),
             'quests' => $this->hubDigest->quests($player),
             'energy' => [

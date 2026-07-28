@@ -1,0 +1,36 @@
+# =============================================================================
+# Assiduite hebdomadaire — paliers de presence (RET-04)
+# =============================================================================
+# On recompense la **presence**, on ne sanctionne **jamais** l'absence.
+#
+# Une serie qui casse transforme un PBBG en corvee : le joueur revient non pas
+# parce qu'il en a envie, mais parce qu'il a peur de perdre. C'est l'inverse du
+# contrat du genre, et c'est pourquoi ce fichier ne peut pas decrire une serie —
+# il n'a que des **paliers**, remis a zero chaque lundi, sans memoire des
+# semaines ratees. Une semaine d'absence coute exactement zero.
+#
+# Ce qui compte comme jour actif : **de l'energie depensee**, jamais la simple
+# connexion. Meme definition que la population effective (BALANCE § 22.5) — on
+# compte la charge, pas les tetes. `ActionEnergyManager::spend()` est le passage
+# oblige de toute action qui pese sur le monde ; se connecter n'y passe pas.
+#
+# Aucun cron : la remise a zero est **derivee** de la semaine ISO, exactement
+# comme la commission (RET-02). Une brique hebdomadaire de plus ne doit pas
+# vouloir dire une horloge de plus qui derive (contrat transverse, RET-07).
+# =============================================================================
+
+# Paliers, en jours actifs dans la semaine ISO courante. Franchis dans l'ordre,
+# une seule fois chacun, au moment ou le compteur atteint le seuil.
+#
+# Chiffrage : 2 jours est a portee de tout le monde, y compris du joueur du
+# week-end ; 6 demande une presence quasi quotidienne sans exiger les 7, parce
+# qu'un palier a 7 ferait d'un jour manque une perte, ce que ce fichier
+# s'interdit precisement de faire.
+#
+# L'energie du dernier palier n'est pas un ornement : c'est du **temps de jeu**
+# rendu, la seule recompense qu'un joueur assidu ne peut pas s'acheter — le
+# budget quotidien est egalitaire (BALANCE § 8).
+tiers:
+    - { days: 2, gils: 800,  energy: 0 }
+    - { days: 4, gils: 1800, energy: 0 }
+    - { days: 6, gils: 3500, energy: 60 }

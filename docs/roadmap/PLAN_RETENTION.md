@@ -15,7 +15,7 @@
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
 
-> **Avancement : 5/7.** RET-01, RET-02, RET-03, RET-05 et RET-06 livrés le 2026-07-28 (détail dans
+> **Avancement : 6/7.** RET-01, RET-02, RET-03, RET-04, RET-05 et RET-06 livrés le 2026-07-28 (détail dans
 > [../ROADMAP_DONE.md](../ROADMAP_DONE.md)). La rotation du lundi 00h00 existe désormais et
 > constitue le **point d'entrée unique** que RET-02, RET-04, RET-05 et RET-06 doivent
 > réutiliser — c'est le contrat transverse de RET-07.
@@ -25,14 +25,14 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | RET-01 | Rotation du `WeeklyChallenge` + restitution | Guilde | ✅ **livré (2026-07-28)** |
 | RET-02 ✅ | La Commission de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-03 ✅ | La commande de guilde | Guilde | ECO Piste C ✅ |
-| RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
+| RET-04 ✅ | L'assiduité en paliers | Solo | ✅ **livré (2026-07-28)** |
 | RET-05 ✅ | Le chantier de la semaine | Guilde | ✅ **livré (2026-07-28)** |
 | RET-06 ✅ | L'Affleurement de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-07 | Tests du plan | — | ‖ au fil des jalons |
 
 ```
 Vague 1 (indépendant)   : RET-01 → RET-02 → RET-03
-Vague 2 (après FOY)     : RET-04, RET-05
+Vague 2 (après FOY)     : RET-04 ✅, RET-05 ✅
 Vague 3 (après pureté)  : RET-06
 Transverse              : RET-07
 ```
@@ -78,16 +78,22 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 
 ## Vague 2 — après le socle des foyers
 
-### RET-04 — L'assiduité en paliers, jamais en série (S | ★★ | MOYENNE)
-> On récompense la présence, on ne sanctionne jamais l'absence. Une série qui casse
-> transforme un PBBG en corvée — c'est l'inverse du contrat du genre.
-> Prérequis : ← FOY-17 (`Player.lastActivityAt`, mis à jour à la dépense d'énergie)
-- [ ] Compteur de **jours actifs dans la semaine** (activité = énergie dépensée, jamais la
-      simple connexion — même définition que la population effective, BALANCE § 22.5)
-- [ ] Paliers 2 / 4 / 6 jours : récompenses croissantes, **remises à zéro chaque lundi sans
-      mémoire des semaines ratées**. Interdit : toute mécanique de série continue inter-semaines
-- [ ] Restitution discrète sur le tableau de bord (pas de compteur culpabilisant)
-- [ ] Tests : comptage par jour, paliers, absence d'effet inter-semaines
+### RET-04 — L'assiduité en paliers, jamais en série ✅ (S | ★★ | MOYENNE)
+> On récompense la présence, on ne sanctionne jamais l'absence.
+> **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **L'interdit est porté par la forme, pas par une règle.** Une ligne de
+> `player_weekly_attendance` par personnage et par semaine ISO : il n'y a *rien* à remettre à
+> zéro, et une série continue inter-semaines devient **inécrivable** sans changer le schéma.
+> C'est ce qui la protège du jalon futur qui la réintroduirait « parce que c'est standard » —
+> le risque que la table des risques de ce plan nomme explicitement. Le loader porte l'autre
+> moitié : aucun palier ne peut exiger 7 jours, un palier à 7 faisant d'un jour manqué une perte.
+>
+> **Précision au plan** : « remises à zéro chaque lundi » se lisait comme une tâche de
+> rotation. Il n'y en a pas — la bascule est **dérivée** de la semaine ISO, la même clef que
+> RET-01 et RET-02. RET-04 n'ajoute aucun cron à une famille qui en compte déjà quatre, ce qui
+> est la forme la plus forte du contrat transverse de RET-07 : pas « un seul point de
+> rotation », mais **pas de rotation du tout**.
 
 ### RET-05 — Le chantier de la semaine ✅ (M | ★★★ | HAUTE)
 > La liste de besoins hebdomadaire d'un foyer, à la Restauration d'Ishgard. La marée dit *où

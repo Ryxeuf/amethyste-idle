@@ -58,6 +58,12 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # RET-04 : paliers d'assiduite. Une table declarative, parce que le
+    # chiffrage d'une recompense de presence se retend en observant le serveur.
+    App\GameEngine\Retention\WeeklyAttendanceDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\GameEngine\Settlement\SettlementDefinitionLoader:
         arguments:
             $projectDir: '%kernel.project_dir%'

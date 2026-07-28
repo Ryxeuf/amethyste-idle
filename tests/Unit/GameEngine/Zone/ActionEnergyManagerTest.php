@@ -4,6 +4,7 @@ namespace App\Tests\Unit\GameEngine\Zone;
 
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\GameEngine\Retention\WeeklyAttendanceService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +23,9 @@ class ActionEnergyManagerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->parameterRepository = $this->createMock(EntityRepository::class);
         $this->entityManager->method('getRepository')->with(Parameter::class)->willReturn($this->parameterRepository);
-        $this->manager = new ActionEnergyManager($this->entityManager);
+        // RET-04 : l'assiduite se compte dans `spend()`. Ces tests portent sur
+        // l'energie, pas sur la presence — un service muet suffit.
+        $this->manager = new ActionEnergyManager($this->entityManager, $this->createMock(WeeklyAttendanceService::class));
     }
 
     private function buildPlayer(int $energy, int $max = 100, ?\DateTimeImmutable $updatedAt = null): Player
