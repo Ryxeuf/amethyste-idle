@@ -293,6 +293,47 @@ class SettlementDepositServiceTest extends TestCase
         return $this->contribution;
     }
 
+    /**
+     * RET-02b : le multiplicateur porte sur la ligne de la table, pas sur une
+     * valeur recopiee ailleurs. C'est ce qui garde le chiffrage a un seul
+     * endroit quand le Tribut triple un depot.
+     */
+    public function testADepositWithoutAMultiplierIsTheTableLine(): void
+    {
+        self::assertSame(24, $this->service()->deposit($this->player(), 'commission', $this->zone, $this->now()));
+    }
+
+    public function testAMultiplierScalesTheTableLine(): void
+    {
+        self::assertSame(72, $this->service()->deposit($this->player(), 'commission', $this->zone, $this->now(), 3.0));
+    }
+
+    /**
+     * Une action declaree hors plafond echappe au garde-fou journalier **et** ne
+     * consomme pas le quota du jour. Le plafond existe pour que le grind ne batte
+     * pas la regularite ; une livraison hebdomadaire n'est pas grindable, et la
+     * plafonner mangerait en silence le rendez-vous d'un joueur qui a beaucoup
+     * joue le meme jour. Compter son effort dans le quota reviendrait a la
+     * plafonner par la bande.
+     */
+    public function testAnUncappedDepositIgnoresTheDailyCapAndDoesNotConsumeIt(): void
+    {
+        $player = $this->player();
+        $service = $this->service();
+
+        // Le joueur a deja epuise son quota du jour.
+        for ($i = 0; $i < 20; ++$i) {
+            $service->deposit($player, 'quest', $this->zone, $this->now());
+        }
+        self::assertSame(0, $service->deposit($player, 'quest', $this->zone, $this->now()));
+
+        // La livraison passe quand meme, entiere.
+        self::assertSame(24, $service->deposit($player, 'commission', $this->zone, $this->now()));
+
+        // Et elle n'a rien consomme : une seconde livraison passe aussi.
+        self::assertSame(24, $service->deposit($player, 'commission', $this->zone, $this->now()));
+    }
+
     private function service(): SettlementDepositService
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -325,6 +366,8 @@ class SettlementDepositServiceTest extends TestCase
                 'craft' => new SedimentRule('craft', SettlementIndex::Trade, 1.0),
                 'quest' => new SedimentRule('quest', SettlementIndex::Lore, 5.0),
                 'travel' => new SedimentRule('travel', null, 0.2),
+                // RET-02b : la livraison d'une commission, hors plafond.
+                'commission' => new SedimentRule('commission', null, 24.0, false),
             ],
             'daily_cap_per_player' => 60,
             'diminishing_threshold' => 40,

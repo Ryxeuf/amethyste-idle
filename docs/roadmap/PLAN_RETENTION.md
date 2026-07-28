@@ -15,7 +15,7 @@
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
 
-> **Avancement : 1/7.** RET-01 livré le 2026-07-28 (détail dans
+> **Avancement : 3/7.** RET-01, RET-02 et RET-03 livrés le 2026-07-28 (détail dans
 > [../ROADMAP_DONE.md](../ROADMAP_DONE.md)). La rotation du lundi 00h00 existe désormais et
 > constitue le **point d'entrée unique** que RET-02, RET-04, RET-05 et RET-06 doivent
 > réutiliser — c'est le contrat transverse de RET-07.
@@ -23,7 +23,7 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | Code | Brique | Profil | Dépendances |
 |------|--------|--------|-------------|
 | RET-01 | Rotation du `WeeklyChallenge` + restitution | Guilde | ✅ **livré (2026-07-28)** |
-| RET-02 🟡 | La Commission de la semaine | Solo | ∅ (crochet sédiment quand FOY-02 arrive) |
+| RET-02 ✅ | La Commission de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-03 ✅ | La commande de guilde | Guilde | ECO Piste C ✅ |
 | RET-04 | L'assiduité en paliers | Solo | `Player.lastActivityAt` (← FOY-17) |
 | RET-05 | Le chantier de la semaine | Guilde | ← FOY-02, FOY-04 |
@@ -64,9 +64,11 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > **Socle livré le 2026-07-28** (RET-02a) : entité, pool déclaratif, tirage hebdomadaire
 > déterministe, zone de livraison choisie parmi les foyers, anti-reroll. Détail dans
 > [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
-- [ ] **RET-02b** — avancement branché sur les six événements de jeu, livraison au foyer
-      (dépôt de sédiment), récompense au choix parmi trois, carte sur le tableau de bord et
-      sur l'écran de la zone cible
+> **RET-02b livré le 2026-07-28** : avancement branché sur les six événements, livraison au
+> foyer (dépôt hors plafond journalier — une commission est structurellement ingrindable),
+> récompense au choix parmi trois dont le **Tribut** qui triple le dépôt en échange de la
+> part du joueur, carte sur l'écran de zone et attente actionnable sur le tableau de bord.
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ### RET-03 — La commande de guilde ✅ (S | ★★ | HAUTE)
 > « On compte sur moi » à cadence fixe, pour le prix d'un canal *guilde* sur un système livré.

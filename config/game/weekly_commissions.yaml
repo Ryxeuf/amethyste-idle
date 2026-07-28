@@ -33,6 +33,24 @@
 
 per_week: 1
 
+# Ce qu'on demande en echange, a la livraison (RET-02b).
+#
+# Trois options **d'ampleur comparable**, et c'est une regle de conception, pas
+# un reglage : des recompenses inegales transformeraient le choix en calcul, et
+# le rendez-vous hebdomadaire en optimisation. On veut que le joueur choisisse ce
+# dont il a besoin *cette semaine-la*, pas ce qui rapporte le plus.
+#
+# Le depot au foyer a lieu **dans tous les cas** : c'est la livraison elle-meme,
+# pas la recompense. Son chiffrage vit avec le reste de la table de depot, dans
+# `config/game/settlements.yaml` (ligne `commission`) — seul le facteur du Tribut
+# appartient a la commission. Le Tribut multiplie ce depot parce que le joueur
+# renonce a sa part : c'est la seule option qui pese sur le chantier collectif,
+# et la raison d'etre de la commission pour un joueur sans guilde.
+rewards:
+    purse_gils: 2500
+    vigour_energy: 120         # une demi-journee de regeneration (plafond 240)
+    tribute_multiplier: 3
+
 commissions:
     - slug: gibier-de-la-semaine
       activity: mob_kill

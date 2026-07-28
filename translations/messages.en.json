@@ -443,6 +443,11 @@
           "icon": "✉️",
           "title": "%count% unread message%plural%",
           "hint": "Someone wrote to you."
+        },
+        "commission_ready": {
+          "icon": "📜",
+          "title": "This week's commission is done",
+          "hint": "Carry it to the settlement that awaits it"
         }
       },
       "recap": {
@@ -1510,6 +1515,29 @@
         "next": "Continue",
         "shop": "Browse the shop",
         "end": "End of conversation."
+      }
+    },
+    "commission": {
+      "heading": "This week's commission",
+      "deliver_at": "To be delivered in %zone%.",
+      "ready": "Ready to deliver. What do you ask for?",
+      "reward": {
+        "purse": "The purse — gils",
+        "vigour": "The rally — energy",
+        "tribute": "The tribute — all to the settlement"
+      },
+      "error": {
+        "none": "You have no commission this week.",
+        "closed": "This commission is already closed.",
+        "incomplete": "The commission is not finished yet.",
+        "elsewhere": "The commission must be carried to its delivery zone.",
+        "no_settlement": "No settlement is waiting for this commission yet.",
+        "unknown_reward": "That reward does not exist."
+      },
+      "delivered": {
+        "purse": "Commission delivered: %grains% grains to the settlement, and %gils% gils for you.",
+        "vigour": "Commission delivered: %grains% grains to the settlement, and %energy% energy restored.",
+        "tribute": "Commission delivered: %grains% grains to the settlement. You kept nothing."
       }
     }
   },

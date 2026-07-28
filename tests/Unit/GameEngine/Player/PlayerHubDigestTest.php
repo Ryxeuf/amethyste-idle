@@ -14,7 +14,9 @@ use App\Entity\App\PlayerExpedition;
 use App\Entity\App\PlayerHouse;
 use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\PlayerQuest;
+use App\Entity\App\PlayerWeeklyCommission;
 use App\Entity\App\Zone;
+use App\Enum\InfluenceActivityType;
 use App\GameEngine\Player\HubPendingItem;
 use App\GameEngine\Player\HubResume;
 use App\GameEngine\Player\PlayerHubDigest;
@@ -25,6 +27,7 @@ use App\Repository\GardenPlotRepository;
 use App\Repository\PlayerExpeditionRepository;
 use App\Repository\PlayerHouseRepository;
 use App\Repository\PlayerJournalEntryRepository;
+use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -174,6 +177,41 @@ class PlayerHubDigestTest extends TestCase
         self::assertSame(
             ['house_rent', 'expedition_ready', 'quests_ready', 'talent_xp', 'messages_unread'],
             $keys,
+        );
+    }
+
+    /**
+     * RET-02b : une commission accomplie attend d'etre portee au foyer. C'est
+     * une attente actionnable au sens de la regle 2 — le joueur doit se
+     * deplacer, et sans cette ligne il ne saurait pas que sa semaine attend
+     * d'etre refermee. Une commission encore en cours, elle, n'attend rien.
+     */
+    public function testAFinishedCommissionIsAWaitingItemAndAnUnfinishedOneIsNot(): void
+    {
+        $player = $this->player();
+
+        $done = new PlayerWeeklyCommission($player, '2026-W31', 'slug', InfluenceActivityType::Quest, 2);
+        $done->addProgress(2);
+        self::assertSame(['commission_ready'], $this->pendingKeysWithCommission($done));
+
+        $running = new PlayerWeeklyCommission($player, '2026-W31', 'slug', InfluenceActivityType::Quest, 2);
+        $running->addProgress(1);
+        self::assertSame([], $this->pendingKeysWithCommission($running));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function pendingKeysWithCommission(PlayerWeeklyCommission $commission): array
+    {
+        $repository = $this->createMock(PlayerWeeklyCommissionRepository::class);
+        $repository->method('findCurrent')->willReturn($commission);
+
+        $digest = $this->digestWith(['commissionRepository' => $repository]);
+
+        return array_map(
+            static fn (HubPendingItem $item): string => $item->key,
+            $digest->pending($this->player(), $this->now()),
         );
     }
 
@@ -422,6 +460,7 @@ class PlayerHubDigestTest extends TestCase
             $houseRepository,
             $gardenPlotRepository,
             $journalRepository,
+            $overrides['commissionRepository'] ?? $this->createMock(PlayerWeeklyCommissionRepository::class),
             $questHelper,
         );
     }

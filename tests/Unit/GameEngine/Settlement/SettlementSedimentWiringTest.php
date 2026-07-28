@@ -49,17 +49,38 @@ class SettlementSedimentWiringTest extends TestCase
     private const NOT_YET_WIRED = [];
 
     /**
+     * Fichiers qui appellent le depot.
+     *
+     * Le listener n'est plus le seul depuis RET-02b : la livraison d'une
+     * commission depose elle aussi, depuis le moteur de retention. Chaque
+     * nouvel appelant doit s'inscrire ici, faute de quoi sa ligne du YAML
+     * passerait pour orpheline et le garde-fou refuserait un depot pourtant
+     * branche — un faux positif use un garde-fou aussi surement qu'un trou.
+     *
+     * @var list<string>
+     */
+    private const DEPOSIT_CALLERS = [
+        'src/EventListener/SettlementSedimentListener.php',
+        'src/GameEngine/Retention/WeeklyCommissionDelivery.php',
+    ];
+
+    /**
      * @return list<string>
      */
     private function actionsCalledByTheListener(): array
     {
-        $source = (string) file_get_contents(
-            \dirname(__DIR__, 4) . '/src/EventListener/SettlementSedimentListener.php',
-        );
+        $actions = [];
+        foreach (self::DEPOSIT_CALLERS as $relative) {
+            $path = \dirname(__DIR__, 4) . '/' . $relative;
+            self::assertFileExists($path, sprintf('Appelant de depot introuvable : %s.', $relative));
 
-        preg_match_all("/deposit\(\s*\\\$[a-zA-Z>()\\-]+,\s*'([a-z_]+)'/", $source, $matches);
+            preg_match_all("/deposit\(\s*\\\$[a-zA-Z>()\\-]+,\s*'([a-z_]+)'/", (string) file_get_contents($path), $matches);
+            foreach ($matches[1] as $action) {
+                $actions[$action] = true;
+            }
+        }
 
-        $actions = array_values(array_unique($matches[1]));
+        $actions = array_keys($actions);
         sort($actions);
 
         return $actions;

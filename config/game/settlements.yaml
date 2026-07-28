@@ -72,6 +72,15 @@ sediment:
     # fait vivre une zone de transit sans qu'on y farme (GAME_WORLD § 5.5,
     # levier 4) : 20 traversees/jour tiennent un Campement.
     travel: { index: spread, grains: 0.2 }
+    # Livraison d'une commission hebdomadaire (RET-02b). Reparti sur les quatre
+    # indices : ce qu'un joueur rapporte profite a la ville entiere, et une
+    # commission solo ne decide donc jamais a elle seule de son identite.
+    #
+    # `capped: false` — une commission est structurellement ingrindable (une par
+    # semaine, sans reroll). La soumettre au plafond journalier mangerait en
+    # silence le rendez-vous d'un joueur qui a beaucoup joue le meme jour, ce qui
+    # punirait exactement le comportement qu'on cherche a obtenir.
+    commission: { index: spread, grains: 24, capped: false }
 
 # Plafonds anti-exploit, appliques via `InfluenceAntiExploit` — on ne reecrit
 # pas les garde-fous, on s'y branche. Le grind ne bat jamais la regularite.

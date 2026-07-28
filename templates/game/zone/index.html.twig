@@ -92,6 +92,16 @@
                     </div>
                 {% endfor %}
 
+                {% for result in app.flashes('commission_result') %}
+                    <div class="ds-banner ds-banner--gain mb-3">
+                        📜 {{ ('game.commission.delivered.' ~ result.reward)|trans({
+                            '%grains%': result.grains,
+                            '%gils%': result.gils,
+                            '%energy%': result.energy,
+                        }) }}
+                    </div>
+                {% endfor %}
+
                 {% for result in app.flashes('boss_result') %}
                     <div class="ds-banner {{ result.defeated ? 'ds-banner--gain' : 'ds-banner--loss' }} mb-3">
                         {% if result.defeated %}
@@ -133,6 +143,49 @@
                                 {{ 'game.zone.travel.arrival_in'|trans({'%minutes%': (travel.remainingSeconds / 60)|round(0, 'ceil')}) }}
                             {% endif %}
                         </p>
+                    </div>
+                {% endif %}
+
+                {# ── Commission de la semaine (RET-02b) ───────────── #}
+                {# Le rendez-vous hebdomadaire personnel. Il s'affiche dans  #}
+                {# toutes les zones : savoir qu'il faut aller ailleurs fait  #}
+                {# partie du rendez-vous. Le blocage se dit — « il faut y    #}
+                {# aller » est une information, « impossible » n'en est pas. #}
+                {% if commission %}
+                    <div class="ds-card p-3 mb-4">
+                        <div class="flex items-baseline justify-between gap-2">
+                            <p class="ds-label">{{ 'game.commission.heading'|trans }}</p>
+                            <span class="ds-num ds-num--sm ds-num--muted">
+                                {{ commission.commission.progress }}/{{ commission.commission.target }}
+                            </span>
+                        </div>
+
+                        <div class="ds-meter mt-2">
+                            <div class="ds-meter__fill" style="width: {{ commission.commission.progressPercent }}%"></div>
+                        </div>
+
+                        {% if commission.deliveryZone %}
+                            <p class="ds-hint mt-1">
+                                {{ 'game.commission.deliver_at'|trans({
+                                    '%zone%': commission.deliveryZone.localizedName(app.request.locale),
+                                }) }}
+                            </p>
+                        {% endif %}
+
+                        {% if commission.blocker is null %}
+                            <p class="text-sm font-semibold text-ink mt-2">{{ 'game.commission.ready'|trans }}</p>
+                            <form method="post" action="{{ path('app_game_commission_deliver') }}" class="mt-2 space-y-1">
+                                <input type="hidden" name="_token" value="{{ csrf_token('commission_deliver') }}">
+                                {% for reward in commission.rewards %}
+                                    <button type="submit" name="reward" value="{{ reward.value }}"
+                                            class="ds-btn ds-btn--secondary ds-btn--sm w-full">
+                                        {{ ('game.commission.reward.' ~ reward.value)|trans }}
+                                    </button>
+                                {% endfor %}
+                            </form>
+                        {% else %}
+                            <p class="ds-hint mt-2">{{ commission.blocker|trans }}</p>
+                        {% endif %}
                     </div>
                 {% endif %}
 

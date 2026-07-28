@@ -7,12 +7,14 @@ namespace App\GameEngine\Player;
 use App\Entity\App\Player;
 use App\Entity\Game\Quest;
 use App\GameEngine\Quest\PlayerQuestHelper;
+use App\GameEngine\Retention\WeeklyCommissionGenerator;
 use App\Repository\CraftJobRepository;
 use App\Repository\CraftOrderRepository;
 use App\Repository\GardenPlotRepository;
 use App\Repository\PlayerExpeditionRepository;
 use App\Repository\PlayerHouseRepository;
 use App\Repository\PlayerJournalEntryRepository;
+use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
 
 /**
@@ -67,6 +69,7 @@ final class PlayerHubDigest
         private readonly PlayerHouseRepository $houseRepository,
         private readonly GardenPlotRepository $gardenPlotRepository,
         private readonly PlayerJournalEntryRepository $journalRepository,
+        private readonly PlayerWeeklyCommissionRepository $commissionRepository,
         private readonly PlayerQuestHelper $questHelper,
     ) {
     }
@@ -154,6 +157,22 @@ final class PlayerHubDigest
         if (null !== $expedition && $expedition->isComplete($now)) {
             $items[] = new HubPendingItem(
                 'expedition_ready',
+                'app_game_zone',
+                tone: HubPendingItem::TONE_GAIN,
+            );
+        }
+
+        // RET-02b : la commission de la semaine est prete, il reste a la porter
+        // au foyer. C'est une attente **actionnable** au sens de la regle 2 : le
+        // joueur doit se deplacer, et sans cette ligne il ne saurait pas que sa
+        // semaine attend d'etre refermee.
+        $commission = $this->commissionRepository->findCurrent(
+            $player,
+            WeeklyCommissionGenerator::weekKey($now),
+        );
+        if (null !== $commission && $commission->isComplete()) {
+            $items[] = new HubPendingItem(
+                'commission_ready',
                 'app_game_zone',
                 tone: HubPendingItem::TONE_GAIN,
             );
