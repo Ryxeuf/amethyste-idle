@@ -72,6 +72,28 @@
 
 ---
 
+### 136 — La documentation de design dans l'admin (S | ★★)
+
+> `/admin/roadmap` n'expose que la roadmap (index + 15 sprints + DONE). **Aucun document
+> de design n'est consultable depuis l'admin** — GAME_PRINCIPLES, GAME_WORLD, GAME_ZONES,
+> GAME_PROGRESSION, GAME_INSPIRATIONS, GAME_ZONE_ACTIONS, BALANCE, les plans annexes
+> (`docs/roadmap/PLAN_*.md`) et l'atlas (`docs/atlas-zones-ressources.html`) ne se lisent
+> que dans le depot. Constat du 2026-07-28.
+
+- [ ] Onglet « Documentation » dans l'admin, sur le meme gabarit que la roadmap :
+      table declarative fichier → libelle (les 3 constantes de `RoadmapController`
+      montrent le motif ; extraire un controleur ou une constante dediee)
+- [ ] Sections : Principes (GAME_PRINCIPLES), Monde (GAME_WORLD), Zones (GAME_ZONES +
+      atlas HTML servi tel quel), Progression, Inspirations, Actions de zone, Balance,
+      et un sous-onglet par plan annexe (PLAN_SETTLEMENTS, PLAN_RETENTION, PLAN_ZONES,
+      PLAN_FACTIONS, PLAN_PLAYER_ECONOMY…)
+- [ ] Ajouter un document = ajouter une entree de table, pas du code (meme regle que
+      les sprints, CLAUDE.md regle 13)
+- [ ] Tests : rendu d'un document, fichier manquant tolere, l'atlas HTML servi sans
+      echappement
+
+---
+
 ### Definition of Done
 
 - [ ] Load test passe avec 200 joueurs simultanes (scenarios modele zone)
