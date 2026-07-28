@@ -1,0 +1,191 @@
+# Arbres de domaine — doctrine, gabarits, équipement-build
+
+> **Statut : acté le 2026-07-28.** Source de vérité du chantier des arbres de compétences.
+> En amont : [GAME_PRINCIPLES.md](GAME_PRINCIPLES.md) §0 (le principe fondateur),
+> [GAME_WORLD.md](GAME_WORLD.md) §2.1 (doctrine matéria — trois verbes) et §2.2 (la roue
+> des domaines), [GAME_PROGRESSION.md](GAME_PROGRESSION.md) §3 bis (le build par acte) et
+> §7.1 (~16 domaines nourris). Règle absolue n° 9 de CLAUDE.md : les compétences sont
+> **passives uniquement** — jamais un sort actif.
+> Jalons d'exécution : [roadmap/PLAN_DOMAINS.md](roadmap/PLAN_DOMAINS.md) (DOM-01+).
+
+## 0. L'état des lieux (mesuré le 2026-07-28)
+
+Le système existe et il est grand : **491 compétences écrites à la main**
+(`src/DataFixtures/Game/SkillFixtures.php`, 5 200 lignes), les 32 domaines servis, la
+**Pyromancie comme domaine modèle** (15 nœuds). Échelle de coût 0 → 55 points, nœuds
+d'entrée à 0 point (la doctrine « matéria jour 1 » est respectée). Un nœud fait l'une de
+trois choses : **accorder une matéria** (`actions.materia.unlock`), donner un **passif**
+(`damage`/`heal`/`hit`/`critical`/`life`), **débloquer de l'équipement**.
+
+Le moteur est livré : `SkillAcquiring` (points + prérequis), `SkillRespecManager` (le
+respec existe et se compte — `Player.respecCount`), `BuildPresetManager` (les presets
+existent), `CrossDomainSkillResolver`, `SynergyCalculator` (synergies inter-domaines),
+`CombatSkillResolver` (agrégation des passifs — et le chemin du sort actif par compétence
+y est **fermé et commenté**). `Domain.randomSeed`/`graphHeight` sont un héritage de
+layout visuel, pas de la génération de contenu.
+
+## 1. La doctrine des trois couches *(validée)*
+
+> **Le savoir n'est jamais borné. Le faire est borné par l'instant. L'être est borné par
+> les choix.**
+
+| Couche | Règle | Le borneur |
+|---|---|---|
+| **Savoir** (les arbres) | Tout geste répété progresse — aucun arbre n'en exclut un autre, jamais | le budget d'énergie (~80 actions/jour, la seule monnaie) |
+| **Faire** (l'instant) | On n'exprime qu'une partie de ce qu'on sait | le **build** en combat ; l'atelier et le temps en artisanat |
+| **Être** (l'identité) | Certains choix se paient d'un renoncement | la **spécialisation** d'artisanat, le **patronage** de faction, la tension doctrinale |
+
+Formule canonique : **« on peut virtuellement savoir tout faire, mais on ne fait qu'une
+seule chose à la fois. »** Les seules exclusions du jeu sont sociales et réversibles à
+coût (spécialisation, patronage) — jamais des verrous de savoir. Interdire un arbre
+serait interdire un geste : contradiction frontale avec le principe fondateur, et retour
+des « classes » par la fenêtre.
+
+## 2. La double borne des passifs *(validée)*
+
+Tout passif de combat est borné **deux fois** : par l'**élément** de son domaine et par
+son **registre**. Chaque domaine de combat est une case *élément × registre* — le
+pyromancien est *feu × sorts* : son « critique +1 % » ne s'applique qu'aux **sorts de
+feu**, jamais au CaC ni à un sort d'eau. Sur une action donnée, un seul arbre s'applique
+donc pleinement.
+
+**Registres** : sorts / mêlée / distance. **Impact modèle** : le format actuel des
+passifs (`damage`, `critical`… plats) doit porter l'élément et le registre — c'est le
+refactor central du chantier (DOM-01). Les passifs de **récolte** et d'**artisanat**
+sont bornés à leur **métier** (le rendement du mineur ne sert pas l'herboriste) ; pas de
+registre pour eux.
+
+## 3. L'équipement est le build *(validé)*
+
+Le build (préset livré) n'est pas un menu : c'est **ce qu'on porte**.
+
+- **Les emplacements de matéria sont typés et portés par l'équipement** : emplacement de
+  **sort**, de **technique** (arme), ou **libre**. La robe porte des emplacements de sort
+  et des bonus de magie ; la plaque, des emplacements de technique et de l'armure ; le
+  cuir, l'entre-deux et la distance. **L'arme fixe le registre** des attaques de base (le
+  bâton canalise les sorts et frappe mal ; l'épée frappe vraiment).
+- **Un domaine n'est actif en combat que si le build porte une de ses sources** — une
+  matéria de son élément (écoles de sort), une arme de son registre (écoles d'arme). La
+  borne est **matérielle, jamais réglementaire** : une arme + 3-4 emplacements ⇒ 2-3
+  domaines actifs, mécaniquement. Changement de build hors combat uniquement.
+- **L'auto-limitation est émergente** : le mage en plaque avec son bâton existe — il est
+  moyen partout, et c'est son choix. Personne ne lit un « interdit » ; le monde répond à
+  ce qu'on porte.
+
+**Trois garde-fous** :
+
+1. **Jamais d'interdit de port** (pas de classes) : tout le monde peut tout porter — la
+   limitation vient des emplacements et des bonus. Seul un prérequis de *compétence* peut
+   gater une pièce (règle 9, déjà en place).
+2. **Le plancher jour 1** : les kits T1 portent au moins un emplacement **libre** — la
+   première matéria se sertit toujours, quelle que soit la tenue (GAME_WORLD §2.1).
+3. **La progression du support reste actée** : plus d'emplacements, de meilleurs bonus,
+   pour **la même** matéria. Le typage ne change rien à ça.
+
+Cohérences gagnées : le **tailleur** (ECO-31) cesse d'être « une armure de plus » — la
+ligne tissu est *le support des sorts* ; les bâtons et baguettes du **charpentier**
+(ECO-30) sont les canaux de sort. Côté code, c'est une **donnée** (type d'emplacement
+par pièce), pas un moteur — 56 items portent déjà `elemental_damage_boost`.
+
+## 4. Les caractéristiques du personnage *(état consigné)*
+
+**Il n'y a pas d'attributs primaires** (pas de Force/Intelligence/Dextérité distribuées)
+— et c'est une décision, pas un manque : on est ce qu'on *fait*, pas ce qu'on a coché à
+la création. Toutes les stats sont **dérivées** de quatre sources : arbres, équipement,
+matéria — et bientôt patronage (§6.4 de GAME_WORLD) et nourriture (ECO-29).
+
+| Caractéristique | Où elle vit | Rôle |
+|---|---|---|
+| Vie `life`/`maxLife` | Player (+ `diedAt`, régén ancrée `lifeUpdatedAt`) | survie ; la régén est un régulateur du pivot |
+| Énergie d'action `actionEnergy`/240 | Player | **le budget PBBG** (~80 actions/jour) |
+| Énergie de combat `energy`/`maxEnergy` | Player | paie les sorts (les PM, de fait) |
+| Précision `hit` | Player + passifs | `HitChanceCalculator` |
+| Vitesse `speed` | Player | initiative / fuite |
+| Passifs d'arbre `damage`/`heal`/`hit`/`critical`/`life` | Skill → `CombatSkillResolver` | la seule chose qu'un nœud donne en stats |
+
+Couches modificatrices : effets d'équipement (JSON par pièce ; attaque de base gratuite),
+bonus de set (`EquipmentSetResolver`), synergies inter-domaines et élémentaires, statuts,
+XP de matéria (+25 % si l'élément correspond). Hors combat : `gils`, `renownScore`
+(vitrine), `respecCount`, `discoveredRecipes`, `unlockedToolSlots`, `lastActivityAt` +
+`actionEnergySpentTotal` (FOY-17a).
+
+## 5. Le gabarit par famille
+
+Trois gabarits, opposables comme les lois de zone. Profondeur cible **~15 nœuds** (le
+modèle Pyromancie), échelle 0 → 55 points, **2 nœuds d'entrée à 0 point**. Le test du
+principe fondateur s'applique nœud par nœud : *quel geste répété m'a mené ici ?*
+
+### 5.1 Combat (élément × registre)
+
+| Part | Nœuds | Contenu |
+|---|---|---|
+| **Accords** | ~5 | matéria de l'élément, du palier d'entrée (0 pt) au palier rare ; les accords d'entrée ne coûtent rien, **jamais** |
+| **Passifs doublement bornés** | ~6 | dégâts, critique, précision, coût d'énergie de combat — *élément × registre* uniquement |
+| **Déblocages d'équipement** | ~2 | prérequis de port des pièces hautes de son registre |
+| **Accord d'hybride dormant** | 1 | voir §8 |
+| **Capstone** | 1 | un passif signature du domaine (jamais un sort) |
+
+### 5.2 Récolte (par métier)
+
+| Part | Nœuds | Contenu |
+|---|---|---|
+| **Rendement & fatigue** | ~4 | mieux récolter, se fatiguer moins (GAME_ZONE_ACTIONS : la fatigue module le rendement, jamais l'accès) |
+| **Repérage** | ~3 | découverte des filons cachés de son métier, lecture de la vitalité — l'information du prospecteur (GAME_ZONE_ACTIONS) |
+| **Pureté** | ~3 | la compétence du récolteur est un facteur du tirage de bande (ECO-22) — ligne du cristal seulement (mineur) ; les autres métiers portent des passifs de qualité équivalents |
+| **Outils** | ~2 | `unlockedToolSlots`, paliers d'outils |
+| **Déblocages de palier** | ~3 | accès aux filons T3/T4 par gate de compétence (la rareté se règle par le palier et le gate, jamais en étranglant la capacité) |
+
+### 5.3 Artisanat (par métier)
+
+| Part | Nœuds | Contenu |
+|---|---|---|
+| **Qualité & temps** | ~4 | chance de qualité supérieure, réduction de `craftingTime` — bornées au métier |
+| **Paliers de recettes** | ~4 | `requiredLevel` des recettes hautes |
+| **Économie du geste** | ~2 | rendement de matière (moins d'intrants perdus), taille de lot |
+| **Spécialisation terminale** | ~3 | voir §6 — la branche exclusive |
+| **Capstone** | 1 | le geste de maître (signature d'artisan sur l'objet, lien réputation d'artisan) |
+
+## 6. Les spécialisations d'artisanat
+
+**Une branche terminale exclusive par arbre d'artisanat** — le forgeron d'armes *ou*
+d'armures, l'alchimiste des remèdes *ou* des toxines. Exclusive **au sein de l'arbre**
+(on ne prend qu'une branche), changeable par **respec coûteux** (le seul respec payant du
+jeu — le respec de points ordinaire reste doux). Aucune exclusivité *entre* arbres
+(doctrine §1).
+
+**Impact modèle** : `Player.craftSpecialization` existe mais au **singulier** (une pour
+tout le personnage) — à migrer vers une spécialisation **par arbre** (`Recipe.
+requiredSpecialization` la consomme déjà). C'est le nœud « on compte sur moi » de
+l'Acte III : *le* forgeron d'armes de la région est une personne, pas une case.
+
+## 7. Les quatre arbres neufs
+
+Déclinés des gabarits — les métiers n'ayant **pas de matéria** (règle 9 : les sorts sont
+le combat), leurs arbres sont passifs + déblocages + spécialisation, ce qui est conforme.
+
+| Arbre | Gabarit | Spécialisation terminale | Nœuds signatures |
+|---|---|---|---|
+| **Bûcheron** (récolte) | §5.2 | — | repérage des essences exclusives (chêne murmurant, bois tourbé, pétrifié) ; gate T3/T4 |
+| **Cuisinier** | §5.3 | table de fête *ou* vivres de route | durée des effets de nourriture ; lots de voyage |
+| **Charpentier** | §5.3 | armes de trait *ou* mobilier | canaux de sort (qualité des bâtons) ; flèches en lot |
+| **Tailleur** | §5.3 | robes de sort *ou* tenues de travail | emplacements de sort de qualité ; doublures (confort de récolte) |
+
+## 8. L'accord d'hybride dormant
+
+Chaque arbre de combat porte **un nœud d'accord réservé**, inactif au lancement, qui
+s'activera quand la **fusion** ouvrira (extension — GAME_WORLD §2.1/§2.2) : l'accord de
+l'hybride dont son élément est parent (le pyromancien pourra accorder Magma ou Inferno).
+Poser le nœud maintenant coûte une ligne de données et évite un refactor d'arbre le jour
+venu ; l'enum `Element` doit tolérer les éléments composés (déjà acté). Les **gestes
+retrouvés** du Répertoire, eux, n'exigent pas de nouveau nœud : un geste retrouvé produit
+une matéria du **catalogue standard** — l'accord existant suffit.
+
+## 9. Ce que ce document ne décide pas
+
+- **Aucune valeur d'équilibrage** (pourcentages des passifs, coûts exacts des nœuds) —
+  BALANCE au moment des jalons.
+- **Le détail nœud par nœud des 36 arbres** : les gabarits sont la loi, les fixtures
+  sont l'exécution (DOM-05/06 pour les neufs ; la mise en conformité des 32 existants est
+  progressive, domaine fréquenté d'abord — §7.1 de GAME_PROGRESSION).
+- **La forme visuelle** de l'écran d'arbre (le `graphHeight` hérité) — design UI, pas
+  design système.
