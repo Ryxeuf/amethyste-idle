@@ -809,3 +809,108 @@ la masse saute d'un cran une fois par saison sans qu'aucun robinet ait coule.
 
 Tant qu'il n'y a qu'un seul releve, aucune tendance n'est affichee. Inventer un zero de
 depart ferait apparaitre une inflation infinie au premier jour.
+
+---
+
+## 21. Chaine de production par paliers — audit (ECO-24)
+
+> Livrable d'**ECO-24**. Cartographie des 82 recettes livrees, a la recherche des
+> **paliers orphelins** : une recette de haut palier dont aucun intrant ne vient d'un
+> palier inferieur. Un palier orphelin tue la demande en matiere de debut de jeu des que
+> les joueurs atteignent le haut de l'echelle — c'est le mecanisme du **creux du milieu**
+> (cf. [GAME_WORLD.md](GAME_WORLD.md) §5.5).
+
+### 21.1 Etat des lieux
+
+| Categorie | Nombre | Lecture |
+|---|---:|---|
+| Recettes chainees (consomment une sortie d'une autre recette) | **54** | La chaine horizontale est saine |
+| Orphelines de niveau 1-2 | **22** | **Voulu** — le palier d'entree doit rester realisable en solo (ECO-02) |
+| **Orphelines de niveau >= 3** | **6** | **Le defaut a corriger** |
+
+La conclusion est meilleure qu'attendu : la chaine est batie **horizontalement** (les
+biens finis consomment bien des intermediaires) mais **plate verticalement** — les
+intermediaires ne se consomment pas entre eux.
+
+### 21.2 Les six paliers orphelins
+
+| Metier | Niveau | Recette | Intrants actuels |
+|---|---:|---|---|
+| Forgeron | 3 | `recipe_cobalt_ingot` | `ore-cobalt` seul |
+| Forgeron | 4 | `recipe_steel_chainmail` | `ore-iron`, `ore-cobalt` |
+| Forgeron | 6 | `recipe_adamantite_ingot` | `ore-adamantite`, `ore-darksteel` |
+| Forgeron | 8 | `recipe_orichalcum_ingot` | `ore-orichalcum`, `ore-starmetal` |
+| Alchimiste | 3 | `recipe_poison_vial` | `plant-nightshade`, `poisonous-mushroom` |
+| Tanneur | 10 | `recipe_masterwork_drakehide_cloak` | trois cuirs bruts |
+
+**Quatre des six sont l'echelle de raffinage du metal elle-meme.** C'est la ou tout se
+joue : un lingot d'orichalque de niveau 8 ne doit rien, aujourd'hui, a ce qu'un debutant
+extrait. Le cas du tanneur (niveau 10, trois cuirs bruts) est le plus voyant du lot.
+
+**Le precedent existe deja dans le code** : `recipe_mithril_ingot` n'est *pas* orpheline,
+parce qu'ECO-19 a fait de la transmutation alchimique la seule source de `ore-mithril`
+(cf. §19). Le mithril est donc deja un produit d'artisanat et non de recolte — c'est
+exactement la forme visee, appliquee a un seul palier.
+
+### 21.3 Chaine cible (ligne du metal)
+
+```
+bronze (niv 1)  <- ore-copper x2 + ore-tin x2                     [inchangee : palier d'entree]
+cobalt (niv 3)  <- ore-cobalt x3      + 1 lingot de bronze
+mithril (niv 4) <- ore-mithril x3     + 1 lingot de cobalt        [ore-mithril = transmutation, §19]
+adamantite (6)  <- ore-adamantite x3  + 1 lingot de mithril
+orichalque (8)  <- ore-orichalcum x3  + 1 lingot d'adamantite
+```
+
+### 21.4 Le coefficient est le seul reglage qui compte
+
+Le risque de la mecanique est l'inverse de celui qu'elle corrige : **ecraser les filons
+de debut sous la demande de fin de jeu**. Il se regle entierement par le nombre d'unites
+du palier inferieur exigees a chaque etage, parce que l'effet est **multiplicatif** sur
+la profondeur de la chaine.
+
+Debit soutenu des filons concernes (`R = capacity x 3600 / respawn_seconds`) :
+cuivre **176 u/h** (deux filons : Mines T0 + Dunes T1), etain **96 u/h** (un seul filon,
+Mines T0), cobalt **32 u/h** (un seul filon, Crete T2).
+
+| Coefficient | Ce qu'un lingot d'orichalque entraine | Plafond monde | Goulot |
+|---:|---|---|---|
+| **1** | 1 lingot de bronze = **2 cuivre + 2 etain** | 48 orichalque/h (etain), **10,7/h (cobalt)** | **cobalt** — palier intermediaire |
+| 2 | 16 lingots de bronze = **32 cuivre + 32 etain** | 3 orichalque/h (etain), 1,3/h (cobalt) | cobalt, mais l'etain devient critique |
+
+**Decision : coefficient 1 a chaque etage, jamais 2.** A 1, l'entrainement sur la matiere
+de base reste faible (2 cuivre par lingot de fin de chaine) alors que la demande devient
+**permanente** — c'est exactement la propriete recherchee. A 2, la chaine consomme 16 fois
+plus et la matiere de debut devient le goulot du jeu.
+
+**Et le goulot reel n'est pas la matiere de base** : c'est le **cobalt**, palier
+intermediaire a filon unique. C'est une bonne nouvelle de conception — le point de tension
+tombe au milieu de l'echelle, la ou l'on veut precisement garder de l'activite.
+
+### 21.5 Deux defauts decouverts en chemin
+
+**a) Deux systemes de recolte coexistent.** Les filons calibres vivent dans
+`config/game/zones/*.yaml` (`ZoneVein`, vitalite partagee, paliers T0-T4). Mais
+`ore-mithril`, `ore-platinum`, `ore-darksteel`, `ore-adamantite`, `ore-starmetal` et
+`ore-orichalcum` **n'ont aucun filon declare** : ils n'existent que comme `ObjectLayer`
+(spots de l'ancien systeme de carte, sur `map_4` / Mines profondes), encore servis par
+`HarvestController` et exposes par `ZoneController`.
+
+Consequence a trancher avant d'aller plus loin : **le haut de la ligne du metal echappe au
+modele calibre**. La purete (ECO-22) se tire depuis la vitalite d'un `ZoneVein`, et la
+Paleur (FOY-11) se calcule par `ZoneVein` — ni l'une ni l'autre ne couvre ces minerais.
+
+**b) L'etain n'a qu'un seul filon dans le monde.** Le cuivre en a deux (Mines, Dunes),
+l'etain un seul, et le bronze exige les deux a parts egales. Regle de conception qui en
+decoule :
+
+> **Une matiere de base doit etre presente dans beaucoup de zones ; une matiere de haut
+> palier dans tres peu.** Raretes inversees. C'est ce qui dilue la demande de fin de jeu
+> sur la carte au lieu de l'ecraser sur une zone, et ce qui pousse les joueurs vers
+> l'exterieur.
+
+### 21.6 Suite
+
+ECO-25 applique la chaine cible (§21.3) au coefficient 1. Avant cela, deux prealables
+issus de §21.5 : unifier la source des minerais de haut palier (filon declare plutot que
+spot herite), et repartir l'etain sur au moins une seconde zone.

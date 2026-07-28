@@ -38,7 +38,8 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-21 | Bandes de pureté & modèle |
 | ECO-22 | Tirage de pureté à la récolte |
 | ECO-23 | Pureté au marché et dans les commandes |
-| ECO-24 | Audit de la chaîne de production |
+| ECO-24 | Audit de la chaîne de production ✅ |
+| ECO-24b | Prérequis : sources des minerais & répartition |
 | ECO-25 | Chaînage des paliers raffinés |
 | ECO-26 | Propagation de la pureté dans la chaîne |
 | ECO-27 | Équilibrage & tests de la chaîne |
@@ -50,7 +51,7 @@ Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 →
 Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté des ressources  : ECO-21 → ECO-22 → ECO-23
-Piste G — Chaîne de production    : ECO-24 → ECO-25 → ECO-26 → ECO-27
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -342,23 +343,59 @@ Piste G — Chaîne de production    : ECO-24 → ECO-25 → ECO-26 → ECO-27
 > début n'y entre. Le jour où les vétérans sont tous à l'orichalque, le cuivre ne vaut plus
 > rien et la Forêt des murmures n'intéresse plus personne.
 
-### ECO-24 — Audit de la chaîne de production (S | ★★ | HAUTE)
-> Livrable : un tableau, pas du code. On ne rééquilibre pas une chaîne qu'on n'a pas cartographiée.
-> Prérequis : ∅
-- [ ] Cartographier chaque **ligne raffinée** existante (métal : bronze → cobalt → mithril →
-      adamantite → orichalque ; puis cuir, tissu, alchimie, joaillerie)
-- [ ] Marquer les recettes de palier N qui ne consomment **aucune** sortie de palier inférieur
-- [ ] Chiffrer : combien de recettes de haut palier n'ont aucun lien avec le début du jeu
-- [ ] Proposer la **chaîne cible** dans [../BALANCE.md](../BALANCE.md), ligne par ligne
-- [ ] Croiser avec ECO-14 (interdépendance des métiers) : les deux audits se recouvrent
+### ECO-24 — Audit de la chaîne de production (S | ★★ | HAUTE) ✅
+> Livré 2026-07-27. Résultats complets : [../BALANCE.md § 21](../BALANCE.md).
+- [x] Cartographie des **82 recettes** livrées, par métier et par niveau
+- [x] **54 chaînées**, 22 orphelines de niveau 1-2 (**voulu** — palier d'entrée solo, ECO-02),
+      et **6 orphelines de niveau ≥ 3** : le défaut réel
+- [x] Chaîne cible posée dans BALANCE § 21.3
+
+> **La chaîne est bâtie horizontalement, plate verticalement.** Les biens finis consomment
+> bien des intermédiaires ; ce sont les intermédiaires qui ne se consomment pas entre eux.
+> **Quatre des six orphelines sont l'échelle de raffinage du métal elle-même** (`cobalt`,
+> `adamantite`, `orichalcum` ingots + `steel_chainmail`) ; les deux autres sont
+> `poison_vial` (niv 3) et `masterwork_drakehide_cloak` (niv **10**, trois cuirs bruts).
+>
+> **Le précédent existe déjà** : `recipe_mithril_ingot` n'est pas orpheline, parce qu'ECO-19
+> a fait de la transmutation alchimique la seule source d'`ore-mithril` (BALANCE § 19). La
+> forme visée est donc déjà appliquée — à un seul palier.
+
+> **Deux défauts découverts en chemin, à traiter avant ECO-25 :**
+>
+> **a) Deux systèmes de récolte coexistent.** `ore-mithril`, `ore-platinum`, `ore-darksteel`,
+> `ore-adamantite`, `ore-starmetal`, `ore-orichalcum` n'ont **aucun filon déclaré** dans
+> `config/game/zones/*.yaml` : ils n'existent que comme `ObjectLayer` hérités (sur `map_4`),
+> encore servis par `HarvestController`. Le **haut de la ligne du métal échappe donc au
+> modèle calibré** — or la pureté (ECO-22) se tire de la vitalité d'un `ZoneVein`, et la
+> Pâleur (FOY-11) se calcule par `ZoneVein`. Ni l'une ni l'autre ne les couvre.
+>
+> **b) L'étain n'a qu'un seul filon au monde** (le cuivre en a deux), alors que le bronze
+> exige les deux à parts égales. D'où une règle de conception ajoutée au socle : **une
+> matière de base doit être présente dans beaucoup de zones, une matière de haut palier dans
+> très peu** — raretés inversées.
+
+### ECO-24b — Prérequis de la chaîne : sources et répartition (S | ★★ | HAUTE)
+> Les deux défauts ci-dessus. Sans eux, chaîner les paliers renforce un goulot au lieu de
+> créer une demande.
+> Prérequis : ← ECO-24 ✅
+- [ ] Déclarer des **filons** (`gather:` dans le YAML de zone) pour les six minerais de haut
+      palier aujourd'hui portés par des `ObjectLayer`, aux paliers T3/T4 du calibrage
+- [ ] Décider du sort du chemin hérité `ObjectLayer` pour ces minerais (retrait, ou maintien
+      en double source assumée et documentée)
+- [ ] Répartir l'**étain** sur au moins une seconde zone
+- [ ] Vérifier la règle des raretés inversées sur toute la ligne du métal
+- [ ] Tests : chaque minerai de recette a au moins une source déclarée (loi transverse)
 
 ### ECO-25 — Chaînage des paliers raffinés (M | ★★★ | HAUTE)
-> Le cœur du jalon. Changement de **données**, pas de moteur.
-> Prérequis : ← ECO-24
-- [ ] Chaque recette de raffinage de palier N consomme **1 à 2 unités** du raffiné N-1, en
-      plus de son brut N (`Recipe.ingredients`)
-- [ ] **Quantités faibles et volontairement non cumulatives en temps** : le but est de créer
-      de la *demande*, pas d'ajouter cinq minutes d'attente à chaque craft de fin de jeu
+> Le cœur du jalon. Changement de **données**, pas de moteur : 6 recettes à corriger.
+> Prérequis : ← ECO-24 ✅, ← ECO-24b
+- [ ] Chaîne cible de BALANCE § 21.3, au **coefficient 1** : chaque recette de raffinage de
+      palier N consomme **1 seule unité** du raffiné N-1, en plus de son brut N
+- [ ] **Le coefficient est le seul réglage qui compte, et il n'est pas négociable.** L'effet
+      est *multiplicatif* sur la profondeur : à 1, un lingot d'orichalque entraîne 2 cuivre
+      + 2 étain ; à 2, il en entraîne **32**. Chiffré dans BALANCE § 21.4
+- [ ] **Quantités non cumulatives en temps** : le but est de créer de la *demande*, pas
+      d'ajouter cinq minutes d'attente à chaque craft de fin de jeu
 - [ ] **Le chemin du débutant reste intact** : le bronze se forge toujours directement depuis
       le cuivre et l'étain. Le chaînage ne commence qu'au deuxième palier
 - [ ] **L'artisan de fin de jeu n'est pas censé tout produire lui-même** : il achète le
@@ -401,7 +438,7 @@ Phase 3 (commandes)    : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
 Phase 4 (échoppes)     : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Phase 5 (équilibrage)  : ECO-14, ECO-15, ECO-16, ECO-17  (parallélisable)
 Phase 6 (pureté)       : ECO-21 → ECO-22 → ECO-23
-Phase 7 (chaîne)       : ECO-24 → ECO-25 → ECO-26 → ECO-27
+Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b → ECO-25 → ECO-26 → ECO-27
 ```
 
 **Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le

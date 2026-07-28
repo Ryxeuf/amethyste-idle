@@ -384,6 +384,15 @@ Une ressource ne se trouve pas « un peu partout » : elle appartient à une vei
 **Aucun métier n'est autosuffisant** (D-WoW §4.6) et **aucune région n'a tout** : le commerce
 entre régions n'est pas un bonus, c'est une nécessité.
 
+> **Raretés inversées.** Une matière de **base** doit être présente dans **beaucoup** de
+> zones ; une matière de **haut palier** dans **très peu**.
+>
+> C'est ce qui permet à la demande de fin de jeu de se diluer sur la carte au lieu d'écraser
+> une seule zone — et ce qui pousse les joueurs vers l'extérieur plutôt que sur un unique
+> filon. L'audit de la chaîne de production ([BALANCE.md § 21](BALANCE.md)) a montré que la
+> règle n'est pas tenue aujourd'hui : l'étain n'a qu'un filon au monde alors que le bronze
+> en consomme autant que de cuivre, qui en a deux.
+
 ### 5.2 Une ville est bonne à quelque chose de précis
 
 Le foyer accorde un **bonus d'atelier** sur la ligne de sa veine et de son type. Une épée se
