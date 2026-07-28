@@ -161,16 +161,16 @@
         {# RET-01 — Le defi de la semaine, sur l'ecran de guilde #}
         <div class="game-card mt-4">
             <div class="game-card-header flex items-center justify-between">
-                <h2 class="text-base font-semibold text-white">Defis de la semaine</h2>
+                <h2 class="text-base font-semibold text-white">{{ 'game.guild.weekly.heading'|trans }}</h2>
                 <a href="{{ path('app_game_guild_challenges') }}" class="px-2.5 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
-                    Tout voir
+                    {{ 'game.guild.weekly.see_all'|trans }}
                 </a>
             </div>
             <div class="game-card-body">
                 {% if weeklyChallenges is empty %}
                     <p class="text-gray-500 text-sm text-center py-4">
-                        Aucun defi en cours.
-                        <span class="block text-xs mt-1">La semaine suivante s'ouvre lundi a 00h00.</span>
+                        {{ 'game.guild.weekly.empty'|trans }}
+                        <span class="block text-xs mt-1">{{ 'game.guild.weekly.empty_hint'|trans }}</span>
                     </p>
                 {% else %}
                     <div class="space-y-3">
@@ -183,7 +183,7 @@
                                         <h3 class="text-white text-sm font-medium mt-0.5">{{ challenge|localized_challenge_title }}</h3>
                                     </div>
                                     <div class="text-right shrink-0 ml-2">
-                                        <div class="text-amber-400 text-xs font-mono">+{{ challenge.bonusPoints }} pts</div>
+                                        <div class="text-amber-400 text-xs font-mono">{{ 'game.guild.weekly.bonus_points'|trans({'%points%': challenge.bonusPoints}) }}</div>
                                     </div>
                                 </div>
 
@@ -197,7 +197,17 @@
                                 </div>
 
                                 <div class="text-[10px] text-gray-500 mt-1.5">
-                                    Il reste {{ entry.remaining }} — expire le {{ challenge.endsAt|date('d/m/Y H:i') }}
+                                    {# Cles ecrites en clair : l'audit de catalogue ne voit pas une cle construite par concatenation. #}
+                                    {% if entry.remaining.unit == 'days' %}
+                                        {{ 'game.guild.weekly.remaining_days'|trans({'%count%': entry.remaining.count}) }}
+                                    {% elseif entry.remaining.unit == 'hours' %}
+                                        {{ 'game.guild.weekly.remaining_hours'|trans({'%count%': entry.remaining.count}) }}
+                                    {% elseif entry.remaining.unit == 'minutes' %}
+                                        {{ 'game.guild.weekly.remaining_minutes'|trans({'%count%': entry.remaining.count}) }}
+                                    {% else %}
+                                        {{ 'game.guild.weekly.remaining_ended'|trans }}
+                                    {% endif %}
+                                    — {{ 'game.guild.weekly.expires_at'|trans({'%date%': challenge.endsAt|date('d/m/Y H:i')}) }}
                                 </div>
                             </div>
                         {% endfor %}

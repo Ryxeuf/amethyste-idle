@@ -1179,6 +1179,20 @@
         "gils_short": "G"
       }
     },
+    "guild": {
+      "weekly": {
+        "heading": "Weekly Challenges",
+        "see_all": "See all",
+        "empty": "No challenge running.",
+        "empty_hint": "The next week opens on Monday at 00:00.",
+        "bonus_points": "+%points% pts",
+        "remaining_days": "%count% day left|%count% days left",
+        "remaining_hours": "%count% hour left|%count% hours left",
+        "remaining_minutes": "%count% minute left|%count% minutes left",
+        "remaining_ended": "ended",
+        "expires_at": "expires %date%"
+      }
+    },
     "zone": {
       "title": "Current zone",
       "subtitle": "Your position in the world",

@@ -135,30 +135,38 @@ class GuildController extends AbstractController
     }
 
     /**
-     * Temps restant avant l'echeance d'un defi, en clair.
+     * Temps restant avant l'echeance d'un defi, en unite + quantite.
+     *
+     * On rend une structure, pas une phrase : la phrase se compose dans le
+     * gabarit, ou elle passe par le catalogue de traduction. Un `sprintf`
+     * francais ici ferait lire du francais a un joueur anglophone sans que
+     * personne s'en plaigne — c'est exactement le defaut que traque
+     * `HardcodedTextScanner`.
      *
      * Volontairement grossier : a l'echelle de la semaine, « 3 jours » se lit
      * mieux que « 2 j 19 h 41 min », et personne n'optimise a la minute un
      * rendez-vous qui dure sept jours.
+     *
+     * @return array{unit: 'days'|'hours'|'minutes'|'ended', count: int}
      */
-    private static function humanizeRemaining(\DateTimeInterface $endsAt, \DateTimeInterface $now): string
+    private static function humanizeRemaining(\DateTimeInterface $endsAt, \DateTimeInterface $now): array
     {
         $seconds = $endsAt->getTimestamp() - $now->getTimestamp();
         if ($seconds <= 0) {
-            return 'termine';
+            return ['unit' => 'ended', 'count' => 0];
         }
 
         $days = intdiv($seconds, 86400);
         if ($days >= 1) {
-            return sprintf('%d jour%s', $days, $days > 1 ? 's' : '');
+            return ['unit' => 'days', 'count' => $days];
         }
 
         $hours = intdiv($seconds, 3600);
         if ($hours >= 1) {
-            return sprintf('%d heure%s', $hours, $hours > 1 ? 's' : '');
+            return ['unit' => 'hours', 'count' => $hours];
         }
 
-        return sprintf('%d minute%s', max(1, intdiv($seconds, 60)), intdiv($seconds, 60) > 1 ? 's' : '');
+        return ['unit' => 'minutes', 'count' => max(1, intdiv($seconds, 60))];
     }
 
     #[Route('/create', name: 'app_game_guild_create', methods: ['POST'])]

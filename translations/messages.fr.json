@@ -1179,6 +1179,20 @@
         "gils_short": "G"
       }
     },
+    "guild": {
+      "weekly": {
+        "heading": "D\u00e9fis de la semaine",
+        "see_all": "Tout voir",
+        "empty": "Aucun d\u00e9fi en cours.",
+        "empty_hint": "La semaine suivante s'ouvre lundi \u00e0 00h00.",
+        "bonus_points": "+%points% pts",
+        "remaining_days": "%count% jour|%count% jours",
+        "remaining_hours": "%count% heure|%count% heures",
+        "remaining_minutes": "%count% minute|%count% minutes",
+        "remaining_ended": "termin\u00e9",
+        "expires_at": "expire le %date%"
+      }
+    },
     "zone": {
       "title": "Zone courante",
       "subtitle": "Votre position dans le monde",
