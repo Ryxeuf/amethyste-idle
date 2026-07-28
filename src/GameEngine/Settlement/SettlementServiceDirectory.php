@@ -34,11 +34,16 @@ class SettlementServiceDirectory
      * de retirer un acces acquis. Ce que le foyer ouvre, c'est de les trouver
      * **sur place**, dans la zone qu'on a fait monter.
      *
+     * La banque pointe sur l'ecran d'inventaire et non sur
+     * `app_game_inventory_bank_list` : cette route-la rend un **fragment** Turbo,
+     * qui affiche une liste nue hors de son cadre. Une porte doit mener a un
+     * ecran, pas a un morceau d'ecran.
+     *
      * @var array<string, string> service => nom de route
      */
     private const ROUTES = [
         'regional_market' => 'app_game_auction',
-        'zone_bank' => 'app_game_inventory_bank_list',
+        'zone_bank' => 'app_game_inventory',
     ];
 
     public function __construct(
