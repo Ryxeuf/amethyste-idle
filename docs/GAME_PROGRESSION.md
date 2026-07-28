@@ -125,6 +125,60 @@ enjeu neuf sur la table tous les 28 jours sans rien effacer de ce qui a été ac
 
 ---
 
+## 3 bis. Le build : matéria et emplacements
+
+La matéria est la **seule source d'actions de combat** (règle 10). Elle n'est donc pas une
+récompense parmi d'autres : c'est **le build du personnage**, et son rythme d'acquisition est
+un jalon de progression à part entière. La règle complète est en
+[GAME_WORLD.md §2.1](GAME_WORLD.md) ; ce qu'elle impose à la colonne :
+
+| Acte | Ce que le joueur doit avoir |
+|---|---|
+| **I** (j1-j7) | **Ses premières matéria de son élément dès les premiers jours.** Un pyromancien qui attend une semaine sa première matéria de feu ne joue pas — il regarde. Les nœuds d'entrée d'un domaine sont à 0 point requis, et c'est voulu |
+| **II** (s2-s4) | Deux ou trois matéria accordées, un premier équipement à plusieurs emplacements |
+| **III** (m2-m6) | Des matéria de palier supérieur, et surtout **du meilleur support** : plus d'emplacements, de meilleurs bonus |
+| **IV** | L'**éveil** — créer une matéria neuve. Exceptionnel, tardif, et *jamais* nécessaire pour jouer |
+
+> **On ne progresse pas en changeant de sort, on progresse en le portant mieux.**
+
+La boule de feu du jour 1 sert encore au mois 6. La progression passe par les
+**emplacements de sertissage** et les bonus qui les entourent, pas par le remplacement du
+sort. C'est ce qui évite d'obsolescer la matéria fétiche d'un joueur — et c'est cohérent avec
+le refus de l'obsolescence d'équipement à chaque saison.
+
+---
+
+## 3 ter. Les tâches système — la rétention qu'on n'écrit pas à la main
+
+Les quêtes de PNJ coûtent cher à écrire et se consomment une fois. Les **tâches système**
+(quotidiennes, hebdomadaires) sont générées, répétables, et récompensent l'assiduité : c'est
+le meilleur rapport rétention/coût d'écriture du jeu, et elles remplissent deux horizons
+entiers.
+
+**État réel du jeu :**
+
+| Horizon | Ce qui existe | Verdict |
+|---|---|---|
+| **Jour** | `PlayerDailyQuest` + `app:daily-quest:rotate` (00h01) | ✅ vivant et **personnel** |
+| **Semaine** | `WeeklyChallenge` | ⚠️ existe, mais **rattaché à `InfluenceSeason` et scoré en points d'influence de guilde** — et **aucune rotation planifiée** dans `DefaultScheduleProvider` |
+
+**Le trou est donc précis** : un joueur **solo** n'a rien à l'horizon de la semaine. Le défi
+hebdomadaire existant sert la guilde, pas la personne, et il ne tourne pas.
+
+**Ce qu'il faudrait :** un objet de désir hebdomadaire **personnel**, répétable, généré —
+par exemple une tâche tirée des tables de zone du joueur, avec une récompense qui compte à son
+horizon (un plan, une matéria de palier, un lot de pureté garantie). Et une récompense
+d'**assiduité** (série de semaines tenues) qui ne punisse jamais la rupture : on récompense
+la présence, on ne sanctionne pas l'absence — sinon le jeu devient une corvée, ce qui est le
+contraire d'un PBBG.
+
+**Mais les tâches système ne suffiront pas.** Elles occupent l'horizon, elles ne créent pas
+d'attachement : une tâche générée ne fait pas qu'on compte sur toi. L'horizon de la semaine a
+besoin d'**au moins un objet social** — une commande de craft à honorer, un palier de foyer à
+faire tomber avec sa guilde. La tâche système est le plancher, pas le plafond.
+
+---
+
 ## 4. Le passage critique, et comment on le rate
 
 Entre la **semaine 3 et la semaine 6**, le joueur a fait le tour de la nouveauté et n'a pas
@@ -191,8 +245,8 @@ est une zone morte, quelle que soit sa beauté.
    4 combats couvrant des rôles distincts), les autres restant jouables sans être nourris.
 2. **La rejouabilité de l'Acte I** sur un second personnage (cf. CLAUDE.md règle 12) :
    intégralement rejoué aujourd'hui (NAR-04). À reconsidérer si l'Acte I s'allonge.
-3. **Un objet de désir hebdomadaire manque encore.** Le jour et la marée sont couverts
-   (quotidiennes, arc saisonnier) ; la semaine repose uniquement sur les paliers de métier.
-   C'est l'horizon le plus fragile de la colonne.
+3. **L'horizon hebdomadaire reste le plus fragile** (§3 ter). Le défi hebdomadaire existant
+   est collectif et ne tourne pas ; il manque une tâche **personnelle** répétable *et* un
+   objet **social** à cet horizon. C'est le premier chantier de design à ouvrir.
 4. **Les paliers de métier ne sont pas calibrés** contre le budget d'énergie réel. À faire en
    même temps que le recalibrage des filons (BALANCE § 22.3).

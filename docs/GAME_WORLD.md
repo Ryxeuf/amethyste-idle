@@ -52,7 +52,7 @@ place pour deux.
 |---|---|
 | **Sédiment** | Le dépôt laissé par toute chose vécue. Invisible, omniprésent, mesurable. |
 | **Améthystite** | Sédiment durci. Minerai, inerte, commerçable. *(Déjà dans les données : `spot-amethystite-*`.)* |
-| **Matéria** | Améthystite où un geste est resté lisible. Ne se fabrique pas : se trouve, se taille, s'éveille. |
+| **Matéria** | Améthystite où un geste est resté lisible. **Trois verbes distincts, à ne jamais confondre** (§2.1) : on la **trouve** (voie normale et abondante), on l'**accorde** (nœud d'arbre qui apprend à s'en servir), on l'**éveille** (création d'une matéria neuve — voie rare et tardive). |
 | **Veine** | Coulée d'améthystite sous une région. Elle lui donne son élément et son caractère. |
 | **Accord** | Capacité d'entendre une famille de gestes. Ce que font pousser les arbres de talent. |
 | **Foyer** | Le point d'une zone où le sédiment s'accumule. Ce qui devient — ou pas — une ville. **C'est le nœud.** |
@@ -85,6 +85,45 @@ pour devenir une loi du monde.
 | **Saisons de 4 semaines** (D8-D12) | Le cristal respire. À chaque marée, une strate affleure et le monde redevient un mois durant ce qu'il a été. |
 | **Codex** (D11) | Ce n'est pas un menu : c'est **la mémoire que les joueurs sauvent du Reflux**. Ce qui y est inscrit ne pâlit pas. |
 
+### 2.1 La matéria — abondante à la base, rare au sommet
+
+**Règle de conception, au même rang que les règles absolues.** La matéria est la **seule
+source d'actions de combat** (règle 10, héritage de FF7) : sans elle, un personnage n'a que
+l'attaque de base de son arme. Elle n'est donc pas un objet de collection, c'est **le build
+du personnage**. Il en découle une contrainte que rien ne doit contredire :
+
+> **Un joueur qui se spécialise dans le feu doit avoir ses premières matéria de feu au
+> premier jour, pas à la première semaine.** Une matéria de base rare, c'est un personnage
+> sans actions — c'est-à-dire pas de jeu.
+
+**Les trois verbes, et ce que chacun gate :**
+
+| Verbe | Ce que c'est | Rareté |
+|---|---|---|
+| **Trouver** | La matéria existe déjà dans le monde : butin de créature, coffre, récompense, marché | **Abondante.** Voie normale, dès le jour 1 |
+| **Accorder** | Apprendre à s'en servir — le nœud d'arbre (`materia.unlock`) | **Gratuit et précoce.** Les nœuds d'entrée d'un domaine sont à 0 point |
+| **Éveiller** | Créer une matéria **neuve** à partir d'améthystite *Parfaite* | **Rare et tardif.** Service de grande cité, matéria de haut palier |
+
+Le jeu livré respecte déjà cette règle : 69 matéria tombent des créatures à 4-10 %, et l'arbre
+de Pyromancie ouvre **deux matéria de feu à 0 point requis**. Ce document ne l'invente pas —
+il la **fige**, pour qu'on ne la casse pas en la resserrant plus tard.
+
+**Où porte la rareté, alors ?** Sur trois choses, jamais sur le sort de base :
+
+1. **Les matéria de haut palier** — les gestes rares, les variantes puissantes.
+2. **Les emplacements de sertissage** — l'équipement de haut niveau offre **plus
+   d'emplacements** et de **meilleurs bonus sur les mêmes matéria** que l'équipement commun.
+3. **L'éveil** — fabriquer une matéria neuve reste un acte exceptionnel.
+
+D'où le principe qui en découle, et qui vaut d'être tenu :
+
+> **On ne progresse pas en changeant de sort, on progresse en le portant mieux.**
+
+La boule de feu du jour 1 reste utile au mois 6 : ce qui a changé, c'est le nombre
+d'emplacements, la qualité du support et les bonus qui l'entourent. Cela évite d'obsolescer
+la matéria fétiche d'un joueur — le défaut qu'on refuse déjà pour l'équipement
+([GAME_INSPIRATIONS.md](GAME_INSPIRATIONS.md) §5).
+
 ---
 
 ## 3. Les foyers — le monde que les joueurs construisent
@@ -112,7 +151,7 @@ Le rang du foyer détermine **ce que la zone offre** :
 | **Hameau** | Boutique T1 (plancher D1), premier atelier, quêtes locales. |
 | **Bourg** | **Marché local** (le HV régional s'y ouvre), ateliers de palier 2, parcelles d'habitation, échoppes. |
 | **Cité** | Ateliers de haut palier, banque, donjon de groupe accessible, quêtes de faction, étals loués. |
-| **Métropole** | Éveil de matéria, plans de fin de jeu, boss de région, services uniques au monde. |
+| **Métropole** | **Éveil** de matéria (création de matéria neuve — *pas* leur usage, cf. §2.1), plans de fin de jeu, boss de région, services uniques au monde. |
 
 **Un foyer qui ne reçoit plus rien redescend.** Pas de siège, pas de destruction : de
 l'oubli. C'est la version douce et PvE de la destruction de nœud — et c'est exactement le
@@ -142,7 +181,7 @@ n'enlève rien à personne : le système de foyer est **incrémental**.
   aujourd'hui (Forêt des murmures, Mines profondes… = Hameau ; les zones de l'Acte 4 =
   Campement).
 - Seuls les **services nouveaux** — marché local, ateliers de haut palier, parcelles,
-  étals, éveil de matéria, boss de région — sont gardés par le rang.
+  étals, **éveil** de matéria (création, jamais usage — §2.1), boss de région — sont gardés par le rang.
 - Conséquence : le pilier territorial peut se livrer **par tranches**, sans jamais casser
   une zone existante ni migrer les fixtures de PNJ.
 
@@ -436,7 +475,7 @@ incomparables :
 | **Trouble** | Le geste est illisible | Fonte, consommables, matériaux de base |
 | **Clair** | Lisible mais confus | Artisanat courant |
 | **Pur** | Net | Haut palier, commandes exigeantes |
-| **Parfait** | On entend qui l'a fait | **Seule bande qui permet d'éveiller une matéria** |
+| **Parfait** | On entend qui l'a fait | **Seule bande qui permet d'*éveiller* une matéria neuve** (§2.1 — n'affecte ni la trouver ni l'utiliser) |
 
 La pureté d'un lot se tire à la récolte, dans une fourchette donnée par : le **palier du
 filon**, sa **vitalité** au moment où l'on récolte (un filon éreinté ne rend plus que du
@@ -457,8 +496,10 @@ Ce que ça débloque, et c'est beaucoup pour une colonne :
 - **`Recipe.quality` se réveille.** Le champ existe et dort ; il trouve son intrant.
 - **Les commandes de craft peuvent exiger une bande minimale** — ce qui répond à la question
   ouverte de [GAME_PRINCIPLES.md](GAME_PRINCIPLES.md) §6.
-- **La matéria devient rare par construction**, sans table de drop : il faut du *Parfait*,
-  et le Parfait ne se force pas.
+- **L'*éveil* de matéria devient rare par construction** : il faut du *Parfait*, et le Parfait
+  ne se force pas. **La table de butin existante reste la voie normale** — on ne resserre pas
+  l'accès aux matéria de base (§2.1), on rend seulement la *création* d'une matéria neuve
+  exceptionnelle.
 
 **Impact modèle** : `PlayerItem.purity` (enum de bande, nullable — `null` = hors périmètre),
 la bande comme critère de pile et de filtre au HV, un modificateur de qualité au craft.
@@ -487,7 +528,7 @@ qu'elle est un **intrant** et non un **produit fini**.
 *(Chantier économie — à ouvrir dans `PLAN_PLAYER_ECONOMY`, pas dans le plan des foyers.)*
 
 **2. La pureté prime sur le palier** *(décision D, §5.4)*
-Seule l'améthystite **Parfaite** éveille une matéria. Or un filon reposé de palier moyen sort
+Seule l'améthystite **Parfaite** permet d'éveiller une matéria neuve. Or un filon reposé de palier moyen sort
 du Parfait bien plus souvent qu'un filon éreinté de haut palier. Une zone intermédiaire
 délaissée devient donc **la meilleure source du monde pour la chose la plus précieuse du
 jeu**. C'est la valeur qui suit la *fraîcheur*, pas le palier — et ça, aucun vétéran ne peut

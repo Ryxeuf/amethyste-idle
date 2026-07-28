@@ -33,7 +33,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-03 | Décroissance, calcul du rang et du type (hystérésis) |
 | FOY-04 | Le foyer sur l'écran de zone — chantier lisible |
 | FOY-05 | Gate déclaratif des services par rang |
-| FOY-06 | Services gatés : marché local, banque, éveil de matéria |
+| FOY-06 | Services gatés : marché local, banque, éveil (création) de matéria |
 | FOY-07 | Bonus d'atelier par foyer (ligne de production × type) |
 | FOY-08 | Crue — quotas indexés sur la population active |
 | FOY-09 | Zone d'influence & vassalité |
@@ -166,8 +166,10 @@ s'y branche.
 > Prérequis : ← FOY-05, ← FOY-04
 - [ ] **Bourg** : ouverture du marché local (le HV régional devient consultable depuis la zone)
 - [ ] **Cité** : banque de zone, donjon de groupe, étals loués (← ECO Piste D si livrée)
-- [ ] **Métropole** : éveil de matéria (consomme de l'améthystite *Parfaite*, §5.4),
-      plans de fin de jeu
+- [ ] **Métropole** : **éveil** de matéria — *création* d'une matéria neuve à partir
+      d'améthystite *Parfaite*. **Ne gate jamais l'obtention ni l'usage d'une matéria**
+      (GAME_WORLD §2.1) : sans ça, à 50 joueurs quotidiens aucune Métropole n'existe et le
+      système de build serait verrouillé. Plus les plans de fin de jeu
 - [ ] Chaque ouverture publie une annonce Mercure sur la zone (le palier se **voit**)
 - [ ] Tests : chaque service par rang, fermeture après régression
 
