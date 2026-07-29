@@ -18,7 +18,7 @@ dans leurs plans d'origine :
 |------|----------|--------|-------------|
 | ZON-30 ✅ | Les Vallons d'Aubépine (zone neuve) | M | ∅ |
 | ZON-31 ✅ | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
-| ZON-32 | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
+| ZON-32 ✅ | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
 | ZON-34 | La ligne du bois (domaine, essences, recettes) | M | → ECO-30 (charpentier) |
 | ZON-35 | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
@@ -35,7 +35,7 @@ dans leurs plans d'origine :
 
 ```
 ZON-30 ✅ → ZON-31 ✅ (indépendants, dans cet ordre de valeur)
-ECO-21/22 → ZON-32
+ECO-21/22 → ZON-32 ✅
 ZON-33 en continu
 ```
 
@@ -77,17 +77,25 @@ ZON-33 en continu
 > une gemme **taillée**, pour que la recette morde sur un produit d'artisanat comme la loi
 > d'ECO-27 l'exige au-delà du niveau 3.
 
-### ZON-32 — Signatures d'améthyste par zone (S | ★★ | MOYENNE)
+### ZON-32 — Signatures d'améthyste par zone ✅ (S | ★★ | MOYENNE)
 > Traduit en config les tendances actées (GAME_ZONES §2, colonne « signature ») pour le
 > tirage de pureté. **Une seule table déclarative**, pas de logique par zone.
-> Prérequis : ← ECO-21 (bandes), ECO-22 (tirage)
-- [ ] Table par zone : quantité relative (modificateur de taux de sous-produit) ×
-      fourchette de bande × élément dominant — dans la config de zone, pas en dur
-- [ ] **Le Fanal + Jardins : zéro améthyste** (canon §2.1 — la Voûte) ; cas testé
-      explicitement
-- [ ] Variations consignées : le Marais tire plus haut la nuit ; les Dunes et la Cité
-      rendent par le butin, pas par la récolte
-- [ ] Tests : signature appliquée au tirage, cas Fanal, cas nocturne du Marais
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Une colonne sur trois livrée, et c'est délibéré.** La table actée en compte trois —
+> quantité, bande, élément. Seule la **bande** a un consommateur aujourd'hui (le tirage
+> d'ECO-22). La *quantité relative* suppose un sous-produit d'améthyste à la récolte qui
+> n'existe pas, et l'*élément dominant* est le sujet de ZON-36. Les déclarer maintenant
+> aurait posé deux paramètres que personne ne lit — exactement ce que le contrat du pilier
+> territorial (FOY-16) interdit désormais.
+>
+> **Le signe déplace les poids, jamais le plafond.** « Trouble dominante » et « Pure
+> fréquente » décrivent une distribution, pas une borne. Un signe qui aurait touché le
+> plafond aurait laissé la Crête rendre du parfait sur un filon éreinté — effaçant d'un
+> seul geste la vitalité (ZON-37), la Pâleur (FOY-11) et l'Affleurement (RET-06).
+>
+> **Le cas du Fanal n'est pas une signature à zéro** — ce serait dire « peu ». C'est
+> l'absence de tout filon du périmètre de pureté, et c'est ce que le test verrouille.
 
 ### ZON-33 — Tests de conformité aux lois de zone (S | ★★ | HAUTE)
 > Les huit lois de GAME_ZONES §0 valent contrat. ‖ au fil des jalons.

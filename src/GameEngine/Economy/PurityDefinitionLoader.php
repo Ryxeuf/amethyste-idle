@@ -31,7 +31,7 @@ class PurityDefinitionLoader
     }
 
     /**
-     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}}
+     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}, signatures: array<string, array{weight_shift: int, night_weight_shift: int}>}
      *
      * @throws PurityDefinitionException si le fichier est absent, illisible ou invalide
      */
@@ -59,7 +59,7 @@ class PurityDefinitionLoader
     /**
      * @param array<array-key, mixed> $raw
      *
-     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}}
+     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}, signatures: array<string, array{weight_shift: int, night_weight_shift: int}>}
      */
     public function normalize(array $raw, string $source = '<array>'): array
     {
@@ -94,7 +94,62 @@ class PurityDefinitionLoader
                 'included_slugs' => $included,
             ],
             'draw' => $this->normalizeDraw($raw['draw'] ?? null, $source),
+            'signatures' => $this->normalizeSignatures($raw['signatures'] ?? [], $source),
         ];
+    }
+
+    /**
+     * La signature d'amethyste de chaque zone (ZON-32).
+     *
+     * « Une zone, une facon dont le temps s'est depose. » La table est
+     * facultative — une zone absente tire comme la reference, et c'est le
+     * defaut voulu : livrer une zone neuve ne doit pas exiger d'en decrire la
+     * geologie avant qu'on sache ce qu'elle sera.
+     *
+     * Un signe **nul** est valide, et c'est voulu : la Foret est inscrite a
+     * zero parce qu'elle **est** la reference du monde. Le dire explicitement
+     * vaut mieux que de le laisser deviner par une absence, qui ne distingue
+     * pas « neutre par nature » de « pas encore decrit ».
+     *
+     * @param array<array-key, mixed> $raw
+     *
+     * @return array<string, array{weight_shift: int, night_weight_shift: int}>
+     */
+    private function normalizeSignatures(mixed $raw, string $source): array
+    {
+        if (!\is_array($raw)) {
+            throw new PurityDefinitionException(sprintf('"signatures" must be a mapping in "%s".', $source));
+        }
+
+        $signatures = [];
+        foreach ($raw as $slug => $entry) {
+            if (!\is_string($slug) || trim($slug) === '') {
+                throw new PurityDefinitionException(sprintf('Signature keys must be zone slugs in "%s".', $source));
+            }
+            if (!\is_array($entry)) {
+                throw new PurityDefinitionException(sprintf('Signature of zone "%s" must be a mapping in "%s".', $slug, $source));
+            }
+
+            $day = $entry['weight_shift'] ?? null;
+            if (!is_numeric($day)) {
+                throw new PurityDefinitionException(sprintf('Signature of zone "%s" needs a numeric "weight_shift" in "%s".', $slug, $source));
+            }
+
+            // Le signe de nuit est facultatif : la plupart des zones deposent le
+            // temps de la meme facon a toute heure. Absent, il vaut celui du
+            // jour — et non zero, qui ferait de chaque nuit une zone neutre.
+            $night = $entry['night_weight_shift'] ?? $day;
+            if (!is_numeric($night)) {
+                throw new PurityDefinitionException(sprintf('Signature of zone "%s" has a non-numeric "night_weight_shift" in "%s".', $slug, $source));
+            }
+
+            $signatures[$slug] = [
+                'weight_shift' => (int) $day,
+                'night_weight_shift' => (int) $night,
+            ];
+        }
+
+        return $signatures;
     }
 
     /**
