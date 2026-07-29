@@ -1,0 +1,174 @@
+# =============================================================================
+# Affinites elementaires des ressources — la loi 10 (ZON-36)
+# =============================================================================
+# « Chaque ressource est la materialisation mineure d'un flux »
+# (docs/GAME_WORLD.md § 2.2, decline en docs/GAME_ZONES.md § 3 ter).
+#
+# Ce fichier est la **regle**, pas une liste de cinquante valeurs. La loi enonce
+# une derivation en deux temps, et le fichier a exactement cette forme :
+#
+#   1. l'affinite par defaut vient de la **ligne** de recolte — le metal est
+#      Metal, les plantes et le gibier sont Bete, les poissons sont Eau ;
+#   2. elle se **corrige** quand la matiere est marquee par son lieu (la
+#      signature de sa zone source) ou quand elle nomme elle-meme son flux.
+#
+# Ecrire les cinquante valeurs a la main aurait rendu la regle invisible : on
+# aurait vu un tableau, et personne n'aurait plus su lequel de ses lignes etait
+# une decision et lequel n'etait qu'une consequence. Ici les corrections **sont**
+# les decisions, et elles se comptent.
+#
+# **Aucun systeme ne lit encore cette donnee**, et c'est voulu (le jalon est de
+# la donnee pure). Ce qu'elle prepare est enumere dans GAME_ZONES § 3 ter :
+# heritage d'affinite au craft, buffs elementaires de cuisine, intrants de
+# fusion, orientation des lectures du Repertoire.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# La ligne — l'affinite par defaut d'une famille de recolte.
+# -----------------------------------------------------------------------------
+# Les prefixes de slug disent la famille dans le monde livre, exactement comme
+# le perimetre de purete (`purity.yaml`) s'appuie sur `ore-`. Une ligne est un
+# defaut : elle n'a pas a etre juste pour chaque matiere, seulement pour la
+# plupart — les exceptions sont en dessous, et c'est la qu'on les compte.
+lines:
+    # Le metal est le flux le plus litteral de tous : la ligne se lit sans
+    # correction du cuivre au cobalt, et la loi 10 la cite telle quelle.
+    metal:
+        - 'ore-'
+
+    # Le vivant, au sens large du canon : plantes, bois et depouilles. Ce n'est
+    # pas « animal » — c'est ce que le temps a depose dans quelque chose qui a
+    # pousse.
+    beast:
+        - 'plant-'
+        - 'wood-'
+        - 'leather-'
+
+    # L'eau n'a qu'une famille, et elle ne souffre qu'une exception (l'anguille
+    # des Mines, plus bas).
+    water:
+        - 'fish-'
+
+# Ce qui entre dans une ligne sans en porter le prefixe. Le depecage a des noms
+# propres — la viande et les plumes des Vallons (ZON-30) sont du gibier autant
+# que le cuir, et l'ambre fossile s'extrait au pic comme un minerai.
+line_slugs:
+    beast:
+        - 'meat-game'
+        - 'feather-raw'
+    metal:
+        - 'amber-fossil'
+
+# -----------------------------------------------------------------------------
+# La correction — la matiere est marquee par son lieu, ou nomme son flux.
+# -----------------------------------------------------------------------------
+# Chaque entree est une **decision**, et chacune se justifie par la signature de
+# sa zone source (GAME_ZONES § 2) ou par le canon de la loi 10. Une correction
+# qui ne se justifierait ni par l'une ni par l'autre serait une table arbitraire
+# — precisement ce que la loi refuse d'etre.
+corrections:
+    # --- Les Mines profondes (signature Metal, fond Tenebres) ---------------
+    # Le sombracier vient du fond des galeries, la ou le temps est le plus
+    # tasse : la signature du fond prime la ligne du metal. Canon.
+    ore-darksteel: dark
+    # L'anguille electrique : la foudre dans l'eau noire. Canon.
+    fish-electric-eel: air
+
+    # --- La Crete de Ventombre (signature Air) ------------------------------
+    # Le metal que le vent a mis a nu. Canon.
+    ore-mithril: air
+    # La givrecoiffe : la seule matiere de la Crete ou la signature **ne** prime
+    # pas — c'est le gel qui la nomme, et le canon la donne en Eau.
+    plant-frostcap: water
+
+    # --- Le Marais brumeux (signature Eau/Tenebres) -------------------------
+    # La seule zone du monde dont la signature emporte **toutes** ses plantes,
+    # et pour une raison qui n'est pas geographique : sa ligne de production
+    # *est* le poison (GAME_ZONES § 2.5). La belladone et les spores sont
+    # nommees par le canon ; les trois autres suivent la meme eau stagnante.
+    plant-nightshade: dark
+    plant-ghostshroom: dark
+    plant-mandrake: dark
+    plant-valerian: dark
+    plant-nettle: dark
+    # Le bois tourbe. Canon.
+    wood-peat: dark
+    # Les poissons du Marais ne sont pas corriges : la ligne (Eau) et la
+    # signature (Eau/Tenebres) disent la meme chose, et une correction qui ne
+    # change rien serait du bruit dans une table qui doit se compter.
+
+    # --- Les Dunes d'Ambre (signature Feu/Terre) ----------------------------
+    # Le platine : le fond de mer fossile, theme Ambre. Canon.
+    ore-platinum: fire
+    # Le bois petrifie. Canon.
+    wood-petrified: earth
+    # L'ambre fossile : de la resine que le temps a prise. Le biome Ambre
+    # conserve, et ce qu'il conserve garde la chaleur du jour ou il l'a pris.
+    amber-fossil: fire
+
+    # --- Les gemmes, ou les concentres --------------------------------------
+    # Elles echappent a la ligne du metal parce qu'elles ne sont pas du metal :
+    # ce sont des flux tasses jusqu'a devenir visibles. Canon.
+    ore-ruby: fire
+    ore-emerald: earth
+    ore-diamond: light
+
+    # --- Ce qui nomme son propre flux ---------------------------------------
+    # Le fruit du vide (Cite ensevelie) et l'ecaille de dragon : la bete prime
+    # la ligne, dit le canon — et le vide n'a jamais ete du vivant.
+    plant-voidfruit: dark
+    leather-dragon-scale: fire
+    # Le Glacier et le Pas de Givre (Extension 1) : la feuille de drake et la
+    # fleur de phenix portent leur bete, la fleur de lune porte sa glace.
+    plant-dragonleaf: fire
+    plant-phoenixflower: fire
+    plant-moonflower: water
+
+    # --- Les reserves d'extension -------------------------------------------
+    # Trois minerais declares et sans filon dans le jeu de base (GAME_ZONES
+    # § 3). Ils entrent ici parce qu'ils existent en fixtures : les laisser hors
+    # table ferait croire a un oubli le jour ou l'extension les sourcera. Deux
+    # se corrigent parce que leur nom **est** leur flux ; l'adamantite garde la
+    # ligne, faute de canon qui dise autre chose.
+    ore-starmetal: light
+    ore-voidium: dark
+
+# -----------------------------------------------------------------------------
+# Le substrat — aucune affinite, et ce n'est pas un oubli.
+# -----------------------------------------------------------------------------
+# « L'amethyste est le substrat, pas un flux » (GAME_WORLD § 2.2). Elle est ce
+# dans quoi les flux se deposent ; lui donner une affinite reviendrait a dire
+# que le temps est fait d'une des choses qu'il porte. Distinct de « hors
+# perimetre » : l'amethyste est bien une ressource, et sa reponse est « aucune ».
+without_affinity:
+    - 'ore-amethyst-crystal'
+
+# -----------------------------------------------------------------------------
+# Hors perimetre — ce qui porte un prefixe sans etre une ressource.
+# -----------------------------------------------------------------------------
+# Cette liste est **load-bearing**, pas decorative : `leather-` designe autant la
+# depouille que la piece de cuir qu'on en tire, et un prefixe seul ne sait pas
+# les distinguer. Un test de conformite exige que tout slug prefixe soit couvert
+# **ou** inscrit ici — de sorte qu'une piece `leather-cape` livree demain fasse
+# rougir la CI au lieu de devenir silencieusement une matiere premiere.
+#
+# On y trouve deux familles :
+#   - l'equipement de cuir — neuf pieces, qui portent le nom de leur matiere ;
+#   - trois restes d'inventaire — une buche de decor que ZON-34 a remplacee par
+#     quatre essences reelles, et deux peaux qu'ECO-02 a defaites au profit de
+#     `leather-raw`. Ni filon, ni recette, ni depecage. Leur inventer une
+#     affinite les ferait ressusciter un jour au motif qu'elles avaient l'air
+#     completes.
+excluded:
+    - 'leather-armor'
+    - 'leather-belt'
+    - 'leather-boots'
+    - 'leather-gloves'
+    - 'leather-hat'
+    - 'leather-helmet'
+    - 'leather-pants'
+    - 'leather-quiver'
+    - 'leather-shoulders'
+    - 'wood-log'
+    - 'leather-skin-1'
+    - 'leather-skin-2'
