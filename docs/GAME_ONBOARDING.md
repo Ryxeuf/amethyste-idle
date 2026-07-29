@@ -1,6 +1,6 @@
 # Le compte, le personnage, l'arrivée — cadrage de l'entrée dans le jeu
 
-> **Statut : proposé** · 2026-07-29 (révisions R1, R2, R3 et R3b le même jour — cf. §11)
+> **Statut : proposé** · 2026-07-29 (révisions R1 à R3c le même jour — cf. §11)
 > Source de vérité de **tout ce qui se passe avant qu'un joueur soit un joueur** : la
 > création du compte, la connexion, la création du personnage, les dix premières minutes
 > et l'apprentissage de l'interface.
@@ -455,42 +455,68 @@ La frontière est nette : **le parchemin ouvre un métier ou une famille d'arme,
 port » réserve explicitement le cas — « seul un prérequis de **compétence** peut gater une
 pièce ». Le parchemin d'arme est ce prérequis, et il est atteignable par tout le monde.)*
 
-#### 6.0 bis — Le cas de l'arme, tranché
+#### 6.0 bis — Le port de l'équipement, tranché
 
-**Oui : équiper une arme exige d'avoir appris son maniement dans un arbre. Sans quoi on se bat
-à mains nues.** Le mécanisme est **déjà en place** — `Item::requirements` (ManyToMany vers
-`Skill`) et `PlayerItemHelper::canBeEquipped()`, qui exige *toutes* les compétences requises —
-et il est déjà utilisé sur les armes de palier 2 et 3 (`berserk_weapon_t2`, `knight_weapon_t2`,
-`archer_weapon_t2`…). Trois précisions le rendent utilisable sans casser le reste.
+**Porter une pièce — arme, armure ou outil — exige d'avoir appris à la porter. Sans arme
+apprise, on se bat à mains nues.** Le mécanisme est **déjà en place** : `Item::requirements`
+(ManyToMany vers `Skill`) et `PlayerItemHelper::canBeEquipped()`, qui exige *toutes* les
+compétences requises. Il n'est aujourd'hui utilisé que sur les armes de palier 2 et 3
+(`berserk_weapon_t2`, `knight_weapon_t2`…) — jamais sur les armures, jamais au palier 1.
 
-**a) C'est l'inverse aujourd'hui.** Les armes **T1 n'ont aucun prérequis** ; seules les T2/T3
-en portent. On peut donc manier une hachette rouillée sans rien avoir appris, mais pas une
-hache de guerre. Avec la doctrine, **c'est le T1 qui porte le nœud de maniement** — c'est là
-qu'on apprend à tenir l'arme ; les paliers supérieurs continuent d'exiger des nœuds plus
-avancés du **même** arbre.
+**Les nœuds de port sont les points d'entrée gratuits des arbres.** Un maître mage donne accès
+à un arbre dont les premiers nœuds, à **0 point de domaine**, sont *port du bâton*, *port de la
+baguette*, *port de l'armure de tissu*. Le coût réel est **le parchemin**, jamais les points :
+ouvrir un arbre livre immédiatement son kit de port. C'est ce qui garantit le plancher jour 1
+(DOM-03) — on ne donne jamais une arme qu'on ne peut pas tenir.
 
-**b) Le nœud de maniement est borné par le registre, jamais par l'élément.** Les prérequis
-existants sont nommés **par domaine** (`berserk_weapon_t2` = feu × mêlée, `knight_weapon_t2` =
-métal × mêlée) et `steel-axe` porte `'domain' => 'soldier'`. Pris tel quel, cela signifie qu'un
-Berserker devrait ouvrir l'arbre du Soldat pour porter une hache : **l'arme redeviendrait
-couplée à l'élément**, exactement ce que DOM-01 a séparé (le domaine est élément × registre ;
-c'est l'**arme** qui fixe le registre).
+**Il n'existe donc aucun « parchemin de port ».** Les droits de port sont un effet de
+l'ouverture d'un arbre. Le compte reste à 32 parchemins, un par arbre.
 
-> **« Maniement de la hache » est un nœud partagé entre les huit arbres de mêlée. En ouvrir un
-> seul suffit. On n'achète jamais un élément pour porter une arme.**
+Cinq règles, et une affordance obligatoire.
 
-Le mécanisme existe : `Skill::domains` est un ManyToMany, et les nœuds partagés sont déjà une
-pratique du projet (DOM-09).
+**a) Le port s'apprend par ligne ou par famille, jamais par pièce ni par palier.** Une ligne
+d'armure (tissu, cuir, maille, plaque) = un nœud. Une famille d'arme (bâton, baguette, épée,
+hache, arc, dague…) = un nœud. On apprend **une fois** : trouver une hache de meilleur palier
+ne redemande jamais d'apprendre la hache.
 
-**c) La hache d'arme n'est pas la hache de bûcheron.** Le mot est le même, la porte ne l'est
-pas : la hache de guerre passe par le nœud de maniement (registre mêlée), la hache de bûcheron
-(ZON-34, DOM-05) par l'arbre du bûcheron. Même remarque pour la pioche — outil, jamais arme.
+> ⚠️ **À arbitrer avec DOM** : les compétences existantes sont **paliées et chaînées**
+> (`soldier_weapon_t2` → `soldier_weapon_t3`). Sous cette règle, elles cessent d'être des
+> droits de port pour devenir des nœuds de **maîtrise** (des passifs sur la famille). Sans
+> quoi chaque butin d'un palier supérieur rejouerait le mur du port — exactement le contraire
+> de *« on ne progresse pas en changeant d'arme, on progresse en la portant mieux »*.
 
-**d) Et le repli doit d'abord exister** (**D13**). `PlayerAttackHandler::getItem()` lève
-aujourd'hui `EntityNotFoundException('Player attack impossible')` dès qu'aucune arme n'est
-équipée. Le combat à mains nues — faible, sans emplacement de matéria, mais **toujours
-disponible** — est la condition sans laquelle cette doctrine enferme un personnage au lieu de
-l'orienter. C'est le premier jalon à livrer de tout le bloc.
+**b) Les nœuds de port sont partagés : plusieurs chemins mènent à la même chose.** « Port de la
+hache de guerre » existe dans **tous** les arbres qui l'enseignent naturellement ; en ouvrir
+**un seul** suffit. `Skill::domains` est déjà un ManyToMany — le mécanisme existe, et les nœuds
+partagés sont déjà une pratique du projet (DOM-09).
+
+**c) Le port est borné par le registre, jamais par l'élément.** Les prérequis actuels sont
+nommés par domaine (`berserk_weapon_t2` = feu × mêlée, `knight_weapon_t2` = métal × mêlée) et
+`steel-axe` porte `'domain' => 'soldier'`. Pris tels quels, porter une hache imposerait un
+élément — exactement ce que DOM-01 a séparé (le domaine est élément × registre ; c'est
+l'**arme** qui fixe le registre). La règle (b) le règle d'elle-même : le nœud partagé traverse
+les huit arbres de mêlée. **On n'achète jamais un élément pour porter une arme.**
+
+**d) L'arme de métier n'est pas une arme, et l'outil n'est pas un équipement de combat.** La
+hache de guerre et la hache de bûcheron sont **deux nœuds entièrement séparés, pour deux buts
+distincts** : l'une dans les arbres de mêlée, l'autre dans l'arbre du bûcheron (ZON-34,
+DOM-05). Idem pour la pioche, la canne et le couteau à dépecer, qui sont les nœuds d'entrée de
+leurs métiers. Même mot parfois, jamais la même porte.
+
+**e) Les mains nues existent toujours** (**D13**) : faibles, sans emplacement de matéria, mais
+disponibles sans condition. C'est le repli sans lequel toute cette doctrine enferme un
+personnage au lieu de l'orienter — et il **n'existe pas** aujourd'hui.
+
+> **L'affordance obligatoire** : une pièce non portable dit **ce qui manque et où l'apprendre**,
+> jamais un simple grisé. C'est ce qui distingue une porte d'un mur, et c'est la condition pour
+> que le garde-fou de DOM-02 tienne (« personne ne lit un interdit »). Le crochet existe déjà :
+> `EquipmentController` renvoie `'locked_skill'`.
+
+**Ce que ça change pour DOM-02.** Son garde-fou disait *« tout le monde peut tout porter »*, le
+prérequis de compétence n'étant qu'un cas réservé. Il devient *« tout le monde peut **apprendre
+à** tout porter »*, et le prérequis devient la règle générale. L'intention est intacte : le mage
+en plaque existe toujours — moyen partout, et c'est son choix — il a seulement dû aller voir
+quelqu'un. Ce qui n'existe pas, c'est le personnage qui naît en sachant tout porter.
 
 ### 6.1 Trois états, pas deux
 
@@ -728,7 +754,8 @@ l'interface. `PlayerHubDigest::recap()` fait déjà une partie du travail.
 | **A14** | **La forme de l'acte I** | **Trois tours de la même boucle** — parchemin → arbre → geste — sur l'arme, la matéria et la récolte (R2, §5.1) |
 | **A15** | **Le juste milieu** | **Le champ est infini, l'entrée est un acte.** Aucun geste n'est fermé, aucun arbre n'en exclut un autre, et un joueur peut tout mener de front — mais **rien n'est su avant d'avoir été appris** (R3, §6.0) |
 | **A16** | **Les actions de base** | Elles sont **concernées** : sans parchemin, on ne mine ni ne forge. Avec deux garde-fous : les personnages existants sont **grand-périsés**, et l'acte I **donne** les trois premiers. **Restent libres sans condition** : marcher, voyager, explorer, parler, ramasser, se battre **à mains nues** (R3, §6.0) |
-| **A18** | **L'arme** | **Équiper une arme exige le nœud de maniement de sa famille ; sans quoi, mains nues.** Le nœud est **partagé entre les arbres d'un même registre** (jamais borné par l'élément), il descend au **palier T1**, et l'arme de métier (hache de bûcheron, pioche) relève de l'arbre de métier, pas du combat. Prérequis absolu : **que les mains nues existent** (D13) — R3b, §6.0 bis |
+| **A18** | **Le port de l'équipement** | **Armes, armures et outils se portent après avoir appris à les porter ; sans arme apprise, mains nues.** Les nœuds de port sont les **points d'entrée gratuits** des arbres (0 point ; le coût est le parchemin), s'apprennent **par ligne d'armure ou famille d'arme** — jamais par pièce ni par palier —, sont **partagés** entre tous les arbres qui les enseignent, et ne sont **jamais bornés par l'élément**. L'arme de métier est un nœud **entièrement séparé** de l'arme de combat. **Amende DOM-02 garde-fou 1** — R3b/R3c, §6.0 bis |
+| **A19** | **L'affordance de port** | Une pièce non portable dit **ce qui manque et où l'apprendre**, jamais un simple grisé. C'est ce qui distingue une porte d'un mur, et la condition pour que « personne ne lit un interdit » (DOM-02) reste vrai — R3c, §6.0 bis |
 | **A17** | **Les arbres retrouvés** | Des arbres **hors registre**, ouverts par une rencontre que **l'accomplissement** déclenche (finir un arbre). **Latéral jamais vertical**, **cumulatif jamais manqué**, **jamais nécessaire**, et le parchemin retrouvé est **lié** : ce qui circule est l'information, pas l'objet (R3, §6.4) |
 
 ---
@@ -768,6 +795,17 @@ suppose est aujourd'hui une exception non gérée. Trois précisions : le nœud 
 descend au T1 (c'est l'inverse aujourd'hui), il est **partagé par registre** et jamais borné
 par l'élément (sinon porter une hache imposerait un élément), et l'arme de métier relève de
 l'arbre de métier.
+
+**R3c (2026-07-29)** — la règle du port **s'étend aux armures et aux outils**, et trouve sa
+forme : les nœuds de port sont les **points d'entrée gratuits** d'un arbre (un maître mage
+ouvre *port du bâton*, *port de la baguette*, *port du tissu*), le coût est le **parchemin** et
+jamais les points — ce qui garantit le plancher jour 1 et évite d'inventer un « parchemin de
+port » (le compte reste à 32). Le port s'apprend **une fois par ligne ou par famille**, ce qui
+oblige à reclasser les compétences d'arme paliées existantes (`*_weapon_t2/t3`) en nœuds de
+**maîtrise** — sinon chaque butin de palier supérieur rejouerait le mur du port. **Amende
+DOM-02 garde-fou 1** : *« tout le monde peut tout porter »* devient *« tout le monde peut
+**apprendre à** tout porter »*, et l'affordance de A19 est ce qui empêche l'amendement de se
+lire comme un interdit.
 
 - **la capacité de l'Humain est resserrée** sur ce qui lui est passé entre les mains (sac ou
   banque), jamais sur l'hôtel des ventes : elle cesse d'être un outil d'arbitrage de marché et

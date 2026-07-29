@@ -338,6 +338,8 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 
 | Risque | Parade |
 |---|---|
+| **ONB-20 amende DOM-02 garde-fou 1** : le port de l'equipement (armes, armures, outils) passe par des nœuds d'arbre — le prerequis de competence cesse d'etre un cas reserve pour devenir la regle | Les nœuds de port sont des **points d'entree gratuits** (0 point) d'arbres ouverts par un parchemin accessible a tous, **partages** entre tous les arbres qui les enseignent, et une piece non portable dit **ou l'apprendre**. Le mage en plaque existe toujours — il a du l'apprendre. Cf. GAME_ONBOARDING §6.0 bis |
+| **Effet de bord du meme amendement** : les competences d'arme paliees et chainees (`soldier_weapon_t2` → `t3`, 552 competences en base) ne peuvent plus etre des droits de port | Les reclasser en nœuds de **maitrise** (passifs sur la famille). Sinon chaque butin d'un palier superieur rejoue le mur du port — le contraire de « on progresse en portant mieux, pas en changeant d'arme ». **Arbitrage a confirmer avec ONB-20** |
 | Le refactor DOM-01 casse l'équilibre livré | Rétro-compat « global » + migration par domaine, testée domaine par domaine |
 | L'activation par build frustre (passifs « perdus ») | L'UI de build montre les domaines actifs ; les accords ne sont jamais perdus |
 | Le typage des emplacements bloque un débutant | Garde-fou testé : emplacement libre sur tous les kits T1 |

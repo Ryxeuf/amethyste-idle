@@ -44,7 +44,7 @@
 | ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
-| ONB-20 | Le combat a mains nues et le maniement d'arme (ferme D13) | M | ★★★ |
+| ONB-20 | Mains nues + le port de l'equipement par nœuds d'entree (ferme D13) | L | ★★★ |
 
 ```
 Piste A — Le compte existe    : ONB-01 → ONB-02 → ONB-03 → ONB-04
@@ -87,7 +87,7 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 | **NAR-20** (le réveil au Fanal) | ONB-12, ONB-13, ONB-15, ONB-16 touchent les mêmes textes et PNJ. **Même vague**, sinon on renomme deux fois. ⚠️ NAR-20 prévoit une « lettre du foyer d'attache **selon la race** » — ONB-13 la dérive des **gestes** (A9) |
 | **DOM-01→09** | ONB-08/09 s'appuient sur la borne `element × registre` déjà portée par `Domain`. ⚠️ **ONB-08 précise GAME_DOMAINS §1** (*le champ est infini, l'entrée est un acte* — cadrage §6.0/§6.3) : à relire ensemble |
 | **DOM-10** (arbres retrouvés) | **Ouvert par ONB-08** : le parchemin posé comme mécanisme rend possibles les arbres hors catalogue. Le jalon vit dans [PLAN_DOMAINS.md](PLAN_DOMAINS.md) — c'est du contenu de progression, pas de l'onboarding |
-| **DOM-02** (jamais d'interdit de port) | Aucune contradiction : le garde-fou réserve déjà le cas — *« seul un prérequis de compétence peut gater une pièce »*. Le parchemin d'arme **est** ce prérequis |
+| **DOM-02** (jamais d'interdit de port) | ⚠️ **ONB-20 amende son garde-fou 1** : le prérequis de compétence, jusqu'ici un cas réservé, devient **la règle générale** (armes, armures, outils). *« Tout le monde peut tout porter »* devient *« tout le monde peut **apprendre à** tout porter »* — le mage en plaque existe toujours, il a dû l'apprendre. À relire avec DOM |
 | **PLAN_ZONES** | ONB-10 est une exigence de **données de zone** |
 | **PLAN_PLAYER_ECONOMY** | ONB-08 : le barème des 29 parchemins non offerts est un **gold sink** à poser avec l'économie |
 | **WIK-02** (`/wiki`) | ONB-17 : « relire cette explication » pointe vers le wiki |
@@ -403,33 +403,47 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       **les quatre conditions du parchemin** (08) ; le catalogue contient toujours les 32 et
       n'expose aucun nœud d'un arbre fermé (09) ; un seul état d'onboarding (14)
 
-### ONB-20 — Le combat à mains nues et le maniement d'arme (M | ★★★ | HAUTE)
-> Ferme **D13** et rend applicable **A18**. `PlayerAttackHandler::getItem()` lève aujourd'hui
-> `EntityNotFoundException('Player attack impossible')` dès qu'aucune arme n'est équipée : **le
-> repli que toute la doctrine du parchemin suppose est un plantage.** À livrer **avant**
-> ONB-08.
-> Cadrage : GAME_ONBOARDING §6.0 bis
+### ONB-20 — Mains nues, et le port de l'équipement par nœuds d'entrée (L | ★★★ | HAUTE)
+> Ferme **D13** et rend applicables **A18** et **A19**. Deux choses à la fois, indissociables :
+> le repli qui empêche la doctrine d'enfermer un joueur, et la règle de port qu'elle suppose.
+> `PlayerAttackHandler::getItem()` lève aujourd'hui `EntityNotFoundException('Player attack
+> impossible')` dès qu'aucune arme n'est équipée. **À livrer avant ONB-08.**
+> ⚠️ **Amende DOM-02 garde-fou 1** — à relire avec DOM avant de coder (cadrage §6.0 bis).
 - [ ] **Les mains nues existent** : attaque faible, sans emplacement de matéria, **toujours
-      disponible**. Aucun chemin de combat ne doit pouvoir échouer faute d'arme
+      disponible**. Aucun chemin de combat ne peut échouer faute d'arme
 - [ ] Le prérequis d'équipement par compétence est **déjà en place** (`Item::requirements`
       ManyToMany vers `Skill`, `PlayerItemHelper::canBeEquipped()` qui exige *toutes* les
-      compétences, déjà utilisé sur les armes T2/T3) — rien à construire, seulement à étendre
-- [ ] **Descendre le nœud de maniement au palier T1.** Aujourd'hui c'est l'inverse : les T1
-      n'ont aucun prérequis, seules les T2/T3 en portent — on peut manier une hachette sans
-      rien avoir appris, mais pas une hache de guerre. Les paliers supérieurs continuent
-      d'exiger des nœuds plus avancés du **même** arbre
-- [ ] **Le nœud de maniement est partagé par registre, jamais borné par l'élément.** Les
-      prérequis actuels sont nommés par domaine (`berserk_weapon_t2` = feu × mêlée,
-      `knight_weapon_t2` = métal × mêlée) et `steel-axe` porte `'domain' => 'soldier'` : pris
-      tel quel, porter une hache imposerait un élément, ce que DOM-01 a justement séparé.
-      « Maniement de la hache » doit être un **nœud partagé** entre les huit arbres de mêlée
-      (`Skill::domains` est déjà ManyToMany) — **en ouvrir un seul suffit**
-- [ ] **L'arme de métier n'est pas une arme.** La hache de bûcheron (ZON-34, DOM-05) et la
-      pioche relèvent de leur arbre de métier, jamais d'un arbre de combat. Même mot, deux portes
+      compétences) — rien à construire, seulement à généraliser
+- [ ] **Les nœuds de port sont les points d'entrée gratuits des arbres** (0 point de domaine).
+      Ouvrir un arbre livre immédiatement son kit de port — un maître mage ouvre *port du
+      bâton*, *port de la baguette*, *port du tissu*. **Aucun « parchemin de port » à créer** :
+      le compte reste à 32 parchemins, un par arbre
+- [ ] **Par ligne ou par famille, jamais par pièce ni par palier** : une ligne d'armure
+      (tissu, cuir, maille, plaque) = un nœud ; une famille d'arme (bâton, baguette, épée,
+      hache, arc, dague…) = un nœud
+- [ ] **Reclasser les compétences d'arme paliées existantes.** `soldier_weapon_t2` →
+      `soldier_weapon_t3` sont chaînées par palier ; sous la règle ci-dessus elles cessent
+      d'être des droits de port pour devenir des nœuds de **maîtrise** (passifs sur la
+      famille). Sans ça, chaque butin d'un palier supérieur rejoue le mur du port —
+      le contraire de *« on progresse en portant mieux, pas en changeant d'arme »*.
+      **Arbitrage à confirmer avec DOM** (552 compétences en base)
+- [ ] **Nœuds partagés : plusieurs chemins pour la même chose.** « Port de la hache de
+      guerre » existe dans tous les arbres qui l'enseignent ; **en ouvrir un seul suffit**.
+      `Skill::domains` est déjà un ManyToMany
+- [ ] **Jamais borné par l'élément.** Les prérequis actuels sont nommés par domaine
+      (`berserk_weapon_t2` = feu × mêlée, `knight_weapon_t2` = métal × mêlée) et `steel-axe`
+      porte `'domain' => 'soldier'` : pris tels quels, porter une hache imposerait un élément,
+      ce que DOM-01 a séparé
+- [ ] **L'arme de métier est un nœud entièrement séparé.** Hache de guerre (arbres de mêlée)
+      et hache de bûcheron (arbre du bûcheron, ZON-34/DOM-05) : deux nœuds, deux buts. Idem
+      pioche, canne, couteau à dépecer — nœuds d'entrée de leurs métiers
+- [ ] **L'affordance (A19)** : une pièce non portable dit **ce qui manque et où l'apprendre**,
+      jamais un grisé muet. Le crochet existe — `EquipmentController` renvoie `'locked_skill'`
 - [ ] Migration : les personnages existants gardent ce qu'ils peuvent déjà équiper
 - [ ] Tests : attaque possible sans arme ; aucun `EntityNotFoundException` sur un chemin de
-      combat ; un nœud de maniement ouvert dans **un** arbre de mêlée autorise l'arme dans tous ;
-      aucune arme n'exige un élément précis
+      combat ; un nœud de port ouvert dans **un** arbre autorise la pièce partout ; aucune
+      pièce n'exige un élément précis ; le kit T1 de l'acte I est portable avec le seul
+      parchemin donné ; toute pièce non portable expose son manque et son lieu d'apprentissage
 
 ---
 

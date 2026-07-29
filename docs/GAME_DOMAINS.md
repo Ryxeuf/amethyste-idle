@@ -114,9 +114,18 @@ Le build (préset livré) n'est pas un menu : c'est **ce qu'on porte**.
 
 **Trois garde-fous** :
 
-1. **Jamais d'interdit de port** (pas de classes) : tout le monde peut tout porter — la
-   limitation vient des emplacements et des bonus. Seul un prérequis de *compétence* peut
-   gater une pièce (règle 9, déjà en place).
+1. **Jamais d'interdit de port** (pas de classes) : tout le monde peut **apprendre** à tout
+   porter — la limitation vient des emplacements et des bonus. Seul un prérequis de
+   *compétence* peut gater une pièce (règle 9, déjà en place).
+   > **Amendement (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §6.0 bis)** — ce
+   > prérequis de compétence n'est plus l'exception mais **la règle générale** : armes,
+   > armures et outils se portent après avoir appris à les porter. Le garde-fou tient parce
+   > que ces nœuds sont des **points d'entrée gratuits** (0 point de domaine) des arbres, et
+   > que tout arbre s'ouvre avec un parchemin accessible à tous : *le mage en plaque existe
+   > toujours*, il a seulement dû l'apprendre. On ne lit jamais un interdit — on lit **ce
+   > qu'il manque et où l'apprendre**. Le port s'apprend **par ligne d'armure ou par famille
+   > d'arme**, jamais par pièce ni par palier, et le même nœud est **partagé** par tous les
+   > arbres qui l'enseignent : plusieurs chemins mènent à la hache de guerre.
 2. **Le plancher jour 1** : les kits T1 portent au moins un emplacement **libre** — la
    première matéria se sertit toujours, quelle que soit la tenue (GAME_WORLD §2.1).
 3. **La progression du support reste actée** : plus d'emplacements, de meilleurs bonus,
