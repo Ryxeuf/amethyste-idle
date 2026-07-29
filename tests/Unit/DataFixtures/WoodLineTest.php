@@ -128,7 +128,7 @@ class WoodLineTest extends TestCase
     }
 
     /**
-     * **Le hetre n'est jamais gate, les trois exclusivites le sont toujours.**
+     * Le hetre n'est **jamais** gate ; les trois exclusivites le sont toujours.
      *
      * Le savoir est la porte (ECO-24c) : gater le T0 fermerait la ligne a qui
      * n'a pas encore d'arbre, et ne pas gater les autres ferait de leur rarete
@@ -176,7 +176,7 @@ class WoodLineTest extends TestCase
     }
 
     /**
-     * **La Crete et le Silence n'ont pas d'arbres.**
+     * Ni la Crete ni le Silence n'ont d'arbres.
      *
      * Le vent et le gel l'interdisent : la fiction et la loi des biomes
      * concordent, et le bois reste une affaire de plaines, de sous-bois et de
