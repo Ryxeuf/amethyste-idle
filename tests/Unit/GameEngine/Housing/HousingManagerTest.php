@@ -7,6 +7,7 @@ use App\Entity\App\PlayerHouse;
 use App\Entity\App\Zone;
 use App\Enum\HouseStyle;
 use App\GameEngine\Housing\HousingManager;
+use App\Helper\InventoryHelper;
 use App\Repository\PlayerHouseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,6 +21,7 @@ final class HousingManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
     private PlayerHouseRepository&MockObject $houseRepository;
+    private InventoryHelper&MockObject $inventoryHelper;
     private HousingManager $manager;
 
     /** @var list<object> */
@@ -35,7 +37,25 @@ final class HousingManagerTest extends TestCase
         });
 
         $this->houseRepository = $this->createMock(PlayerHouseRepository::class);
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger());
+        $this->inventoryHelper = $this->createMock(InventoryHelper::class);
+        // Sac vide par defaut : la voie marchande reste la voie de reference des
+        // tests HOU-05, et seuls ceux d'ECO-30 posent un necessaire.
+        $this->inventoryHelper->method('removeItemBySlug')->willReturn(0);
+
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper);
+    }
+
+    /**
+     * Remplace le sac par un sac qui contient un necessaire d'ameublement.
+     */
+    private function withFurnishingKit(): void
+    {
+        $inventoryHelper = $this->createMock(InventoryHelper::class);
+        $inventoryHelper->method('removeItemBySlug')
+            ->with(HousingManager::FURNISHING_KIT_SLUG, 1)
+            ->willReturn(1);
+
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper);
     }
 
     public function testBuyingLandCostsTheLandPriceAndBuildsTheHouse(): void
@@ -260,6 +280,48 @@ final class HousingManagerTest extends TestCase
 
         self::assertSame(HouseStyle::Bare, $house->getStyle());
         self::assertSame(10, $player->getGils());
+    }
+
+    /**
+     * Le necessaire du charpentier remplace le prix (ECO-30).
+     *
+     * L'ameublement se payait **uniquement** en Gils : un cosmetique que rien de
+     * joueur ne produisait. C'est le seul endroit ou le charpentier touche le
+     * housing, et il fallait qu'il le touche — sinon la ligne du bois n'aurait
+     * eu que des armes au bout.
+     */
+    public function testAFurnishingKitReplacesThePriceEntirely(): void
+    {
+        $this->withFurnishingKit();
+
+        $player = $this->playerIn($this->residentialZone(), 10);
+        $house = $this->ownedHouse($player);
+
+        $this->manager->furnish($player, $house, HouseStyle::Bourgeois);
+
+        self::assertSame(HouseStyle::Bourgeois, $house->getStyle());
+        self::assertSame(10, $player->getGils(), 'Le necessaire paie, pas la bourse.');
+    }
+
+    /**
+     * Le necessaire n'est **pas** consomme quand le style est deja installe.
+     *
+     * Le refus se prononce avant tout prelevement, faute de quoi un double clic
+     * couterait un objet de 290 Gils pour rien.
+     */
+    public function testAFurnishingKitIsNotSpentOnAStyleAlreadyInstalled(): void
+    {
+        $inventoryHelper = $this->createMock(InventoryHelper::class);
+        $inventoryHelper->expects(self::never())->method('removeItemBySlug');
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper);
+
+        $player = $this->playerIn($this->residentialZone(), 10_000);
+        $house = $this->ownedHouse($player);
+        $house->setStyle(HouseStyle::Rustic);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->manager->furnish($player, $house, HouseStyle::Rustic);
     }
 
     public function testBuyingTheStyleAlreadyInstalledIsRefused(): void

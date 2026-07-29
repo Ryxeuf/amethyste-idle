@@ -118,10 +118,11 @@ ZON-33 en continu
 - [x] Filons `profession: woodcutting` — Vallons + Forêt pour le hêtre, Forêt/Marais/Dunes
       pour les exclusifs, profils de palier standard, gate de compétence sur les trois
       exclusivités
-- [ ] **Recettes — reporté à ECO-30 (charpentier).** Elles n'appartiennent à personne
-      aujourd'hui : le charpentier est le métier *tranché* de cette ligne, et greffer une
-      recette d'arc sur le forgeron pour tenir la case aurait créé un rattachement à
-      défaire ensuite. Même arbitrage qu'aux Vallons (ZON-30).
+- [x] **Recettes — livrées par ECO-30 (charpentier) le 2026-07-29.** Elles n'appartenaient
+      à personne au moment de ZON-34 : le charpentier est le métier *tranché* de cette
+      ligne, et greffer une recette d'arc sur le forgeron pour tenir la case aurait créé un
+      rattachement à défaire ensuite. Même arbitrage qu'aux Vallons (ZON-30), et même
+      issue : le métier est venu, et chaque essence a un débouché.
 - [x] Tests : sources, paliers, gates, loi des biomes sans arbres
 
 > **Écart assumé : pas d'emplacement de hache.** Les quatre autres arbres de récolte

@@ -1112,6 +1112,182 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Dresse un kraken juvénile pour toute une tablée.',
                 'name_translations' => ['en' => 'Kraken Feast'],
             ],
+            // =================================================================
+            // ECO-30 — l'etabli du charpentier
+            // =================================================================
+            // ZON-34 a livre quatre essences **sans un seul debouche** : on
+            // pouvait abattre le chene murmurant et n'avoir rien a en faire.
+            // Chaque essence trouve ici sa fin — le hetre dans la planche, le
+            // chene dans les armes de palier 2, la tourbe dans le necessaire et
+            // l'arc de palier 3, le petrifie dans le baton de l'archimage.
+            //
+            // La planche joue pour le bois le role que la laniere joue pour le
+            // cuir : un intermediaire bon marche que tout le reste traverse.
+            // C'est ce qui tient la loi d'ECO-27 — aucune ligne plate — et ce
+            // qui donne au hetre une demande proportionnelle a l'activite de
+            // haut palier.
+            'recipe_plank' => [
+                'name' => 'Planche de hêtre',
+                'slug' => 'recipe-plank',
+                'craft' => 'charpentier',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'wood-beech', 'quantity' => 2],
+                ],
+                'result_ref' => 'crafted_plank',
+                'result_quantity' => 2,
+                'crafting_time' => 3,
+                'xp_reward' => 8,
+                'description' => 'Débite le hêtre droit de fil : le bois devient matière.',
+                'name_translations' => ['en' => 'Beech Plank'],
+            ],
+            'recipe_wood_haft' => [
+                'name' => 'Manche de bois',
+                'slug' => 'recipe-wood-haft',
+                'craft' => 'charpentier',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_wood_haft',
+                'result_quantity' => 2,
+                'crafting_time' => 4,
+                'xp_reward' => 12,
+                'description' => 'Tourne et ponce un manche prêt à recevoir un fer.',
+                'name_translations' => ['en' => 'Wooden Haft'],
+            ],
+            'recipe_t1_bow' => [
+                'name' => 'Arc court',
+                'slug' => 'recipe-t1-bow',
+                'craft' => 'charpentier',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                    ['slug' => 'wood-beech', 'quantity' => 1],
+                ],
+                'result_ref' => 't1_bow',
+                'crafting_time' => 6,
+                'xp_reward' => 18,
+                'description' => 'Cintre une branche de hêtre en arc court.',
+                'name_translations' => ['en' => 'Short Bow'],
+            ],
+            'recipe_t1_staff' => [
+                'name' => 'Bâton de novice',
+                'slug' => 'recipe-t1-staff',
+                'craft' => 'charpentier',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                ],
+                'result_ref' => 't1_staff',
+                'crafting_time' => 6,
+                'xp_reward' => 18,
+                'description' => 'Taille un bâton noueux qui canalise ce qu\'il peut.',
+                'name_translations' => ['en' => 'Novice Staff'],
+            ],
+            'recipe_arrows' => [
+                'name' => 'Flèches empennées',
+                'slug' => 'recipe-arrows',
+                'craft' => 'charpentier',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                    // ZON-30 a pose les plumes de corbeau sans consommateur.
+                    ['slug' => 'feather-raw', 'quantity' => 3],
+                    // ECO-14 : la ligature vient du tanneur. Au palier 3, jamais
+                    // a l'entree — croiser les metiers des le niveau 1 casserait
+                    // le plancher T1 (ECO-02).
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_arrows',
+                'result_quantity' => 10,
+                'crafting_time' => 5,
+                'xp_reward' => 20,
+                'description' => 'Empenne dix flèches. Elles partent vite et ne reviennent pas.',
+                'name_translations' => ['en' => 'Fletched Arrows'],
+            ],
+            'recipe_t2_bow' => [
+                'name' => 'Arc long composite',
+                'slug' => 'recipe-t2-bow',
+                'craft' => 'charpentier',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'wood-whisperoak', 'quantity' => 3],
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                ],
+                'result_ref' => 't2_bow',
+                'crafting_time' => 14,
+                'xp_reward' => 45,
+                'description' => 'Colle le chêne murmurant et la corne en un arc qui porte loin.',
+                'name_translations' => ['en' => 'Composite Longbow'],
+            ],
+            'recipe_t2_staff' => [
+                'name' => 'Bâton de cristal',
+                'slug' => 'recipe-t2-staff',
+                'craft' => 'charpentier',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'wood-whisperoak', 'quantity' => 3],
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                    // La gemme au sommet vient du joaillier : le charpentier
+                    // monte le bois, il ne taille pas la pierre.
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                ],
+                'result_ref' => 't2_staff',
+                'crafting_time' => 14,
+                'xp_reward' => 45,
+                'description' => 'Sertit un cristal au sommet d\'un chêne qui vibre encore.',
+                'name_translations' => ['en' => 'Crystal Staff'],
+            ],
+            'recipe_furnishing_kit' => [
+                'name' => 'Nécessaire d\'ameublement',
+                'slug' => 'recipe-furnishing-kit',
+                'craft' => 'charpentier',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-plank', 'quantity' => 6],
+                    ['slug' => 'wood-peat', 'quantity' => 2],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                ],
+                'result_ref' => 'crafted_furnishing_kit',
+                'crafting_time' => 20,
+                'xp_reward' => 70,
+                'description' => 'Monte de quoi meubler une demeure entière, ferrures comprises.',
+                'name_translations' => ['en' => 'Furnishing Kit'],
+            ],
+            'recipe_t3_bow' => [
+                'name' => 'Arc du vent hurlant',
+                'slug' => 'recipe-t3-bow',
+                'craft' => 'charpentier',
+                'required_level' => 6,
+                'ingredients' => [
+                    ['slug' => 'wood-peat', 'quantity' => 3],
+                    ['slug' => 'crafted-plank', 'quantity' => 2],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                ],
+                'result_ref' => 't3_bow',
+                'crafting_time' => 25,
+                'xp_reward' => 110,
+                'description' => 'Un bois que l\'eau morte a durci, tendu jusqu\'à siffler.',
+                'name_translations' => ['en' => 'Howling Wind Bow'],
+            ],
+            'recipe_t3_staff' => [
+                'name' => 'Bâton de l\'archimage',
+                'slug' => 'recipe-t3-staff',
+                'craft' => 'charpentier',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'wood-petrified', 'quantity' => 2],
+                    ['slug' => 'crafted-plank', 'quantity' => 1],
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                ],
+                'result_ref' => 't3_staff',
+                'crafting_time' => 30,
+                'xp_reward' => 150,
+                'description' => 'Grave un tronc de l\'âge précédent. Le bois se souvient mieux que nous.',
+                'name_translations' => ['en' => 'Archmage Staff'],
+            ],
             'recipe_amber_seal' => [
                 'name' => 'Sceau d\'ambre',
                 'slug' => 'recipe-amber-seal',
@@ -1441,6 +1617,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-iron', 'quantity' => 4],
                     ['slug' => 'ore-cobalt', 'quantity' => 2],
+                    // ECO-30 : une hache est un fer **sur un bois**, et jusqu'ici
+                    // le fer se passait du bois. C'est par ce manche que le
+                    // charpentier a une demande hors de lui-meme (ECO-14).
+                    ['slug' => 'crafted-wood-haft', 'quantity' => 1],
                     // Le manche est ligature de cuir sur toute sa longueur.
                     ['slug' => 'crafted-leather-strip', 'quantity' => 2],
                 ],

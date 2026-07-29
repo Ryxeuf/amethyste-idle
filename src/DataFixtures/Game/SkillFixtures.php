@@ -117,6 +117,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getSkinnerSkills(),
             $this->getLumberjackSkills(),
             $this->getCookSkills(),
+            $this->getCarpenterSkills(),
             $this->getBlacksmithSkills(),
             $this->getLeatherworkerSkills(),
             $this->getAlchimistSkills(),
@@ -4682,6 +4683,103 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'requirements' => ['lumber_heartwood', 'lumber_petrified_xs'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // CHARPENTIER (bois/craft) — le debouche de la ligne du bois (ECO-30)
+    // =========================================================================
+    // ZON-34 a livre quatre essences **sans un seul debouche** : on pouvait
+    // abattre le chene murmurant et n'avoir rien a en faire. Cet arbre ouvre les
+    // dix recettes qui ferment ce trou, et chaque essence y trouve sa fin.
+    //
+    // **Aucun emplacement d'outil**, comme le cuisinier : `Item::CRAFT_TOOL_TYPES`
+    // ne cite pas ce metier, et inventer une varlope aurait demande un type
+    // d'outil, un bit d'equipement et un emplacement d'interface neufs — un
+    // changement de mecanisme pour un jalon de contenu.
+    private function getCarpenterSkills(): array
+    {
+        $d = 'carpenter';
+
+        return [
+            // Rang 1 (0 pts) — la planche, par ou tout passe
+            'carpenter_plank' => [
+                'slug' => 'carpenter-plank',
+                'title' => 'Debit du hetre',
+                'description' => 'Permet de debiter le hetre en planches, la matiere de tout le metier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-plank']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-25 pts) — ce qu'on vend aux autres, et les premieres armes
+            'carpenter_haft' => [
+                'slug' => 'carpenter-haft',
+                'title' => 'Tournage de manches',
+                'description' => 'Permet de tourner les manches que le forgeron ne sait pas faire',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-wood-haft']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['carpenter_plank'],
+            ],
+            'carpenter_first_weapons' => [
+                'slug' => 'carpenter-first-weapons',
+                'title' => 'Arcs et batons',
+                'description' => 'Permet de cintrer l\'arc court et de tailler le baton de novice',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t1-bow', 'recipe-t1-staff']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['carpenter_plank'],
+            ],
+
+            // Rang 3 (35-60 pts) — le consommable, le geste, le composite
+            'carpenter_fletching' => [
+                'slug' => 'carpenter-fletching',
+                'title' => 'Empennage',
+                'description' => 'Permet d\'empenner les fleches : le seul produit du metier qui se depense',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-arrows']]],
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'requirements' => ['carpenter_first_weapons'],
+            ],
+            'carpenter_joinery' => [
+                'slug' => 'carpenter-joinery',
+                'title' => 'Assemblage',
+                'description' => 'Assembler sans clou ni colle : ce qu\'on batit ainsi tient mieux',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'life' => 4,
+                'requirements' => ['carpenter_haft'],
+            ],
+            'carpenter_composite' => [
+                'slug' => 'carpenter-composite',
+                'title' => 'Collage composite',
+                'description' => 'Permet de coller le chene murmurant et la corne en armes de second palier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t2-bow', 'recipe-t2-staff']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['carpenter_first_weapons'],
+            ],
+
+            // Rang 4 (90-150 pts) — meubler les autres, et le bois qui a cesse d'en etre
+            'carpenter_cabinetmaking' => [
+                'slug' => 'carpenter-cabinetmaking',
+                'title' => 'Ebenisterie',
+                'description' => 'Permet de monter le necessaire qui meuble la demeure d\'un autre joueur',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-furnishing-kit']]],
+                'requiredPoints' => 90,
+                'domain' => $d,
+                'requirements' => ['carpenter_joinery'],
+            ],
+            'carpenter_master' => [
+                'slug' => 'carpenter-master',
+                'title' => 'Maitre charpentier',
+                'description' => 'Permet de travailler le bois tourbe et le bois petrifie, que le temps a durcis',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t3-bow', 'recipe-t3-staff']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['carpenter_composite', 'carpenter_cabinetmaking'],
             ],
         ];
     }

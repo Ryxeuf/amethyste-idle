@@ -1403,10 +1403,10 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient"}',
             ],
-            // Matieres animales des Vallons (ZON-30). Elles n'ont pas encore de
-            // consommateur : la viande attend le cuisinier (ECO-29), les plumes
-            // le charpentier (ECO-30). Les poser **maintenant** est deliberé —
-            // la loi « chaque item de recette a une source » se tient plus
+            // Matieres animales des Vallons (ZON-30). Elles ont depuis trouve
+            // leur metier : la viande au cuisinier (ECO-29), les plumes au
+            // charpentier (ECO-30). Les poser **avant** eux etait delibere — la
+            // loi « chaque item de recette a une source » se tient plus
             // facilement quand la source precede la recette que l'inverse.
             'meat_game' => [
                 'name' => 'Viande de gibier',
@@ -1600,6 +1600,79 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // =================================================================
+            // ECO-30 — l'établi du charpentier
+            // =================================================================
+            // ZON-34 avait posé quatre essences **sans un seul débouché** : on
+            // pouvait abattre le chêne murmurant et n'avoir rien à en faire. Ces
+            // quatre objets sont ce que le bois devient.
+            //
+            // La planche joue pour le bois le rôle que la lanière joue pour le
+            // cuir : un intermédiaire bon marché que tout le reste du métier
+            // traverse. C'est ce qui donne au hêtre une demande proportionnelle
+            // à l'activité de haut palier, et non un plancher qui s'éteint.
+            'crafted_plank' => [
+                'name' => 'Planche de hêtre',
+                'name_translations' => ['en' => 'Beech Plank'],
+                'description' => 'Une planche débitée droit de fil, séchée et rabotée. Tout ce que le charpentier fait passe par elle.',
+                'type' => 'crafted',
+                'slug' => 'crafted-plank',
+                'price' => 15,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // Le manche est la piece que le charpentier vend au **forgeron** : une
+            // hache est un fer sur un bois, et jusqu'ici le fer se passait du
+            // bois. C'est par lui que le metier a une demande hors de lui-meme
+            // (ECO-14).
+            'crafted_wood_haft' => [
+                'name' => 'Manche de bois',
+                'name_translations' => ['en' => 'Wooden Haft'],
+                'description' => 'Un manche tourné et poncé, prêt à recevoir un fer. Le forgeron ne sait pas les faire.',
+                'type' => 'crafted',
+                'slug' => 'crafted-wood-haft',
+                'price' => 20,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // Le consommable perpetuel du metier. Un artisan qui ne produit que
+            // du durable voit sa demande s'eteindre le jour ou chacun a son arc ;
+            // la fleche, elle, se depense.
+            'crafted_arrows' => [
+                'name' => 'Flèches empennées',
+                'name_translations' => ['en' => 'Fletched Arrows'],
+                'description' => 'Une botte de flèches empennées de plumes de corbeau. Elles partent vite et ne reviennent pas.',
+                'type' => 'crafted',
+                'slug' => 'crafted-arrows',
+                'price' => 8,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'arrow_volley_spell',
+                'effect' => '{"action":"use_spell", "slug":"arrow-volley"}',
+                'nb_usages' => 1,
+            ],
+            // L'ameublement d'une demeure (HOU-05) se payait **uniquement** en
+            // Gils : un cosmetique que rien de joueur ne produisait. Le necessaire
+            // le rend fabricable — le charpentier meuble les maisons des autres,
+            // et le gold sink garde sa voie marchande pour qui n'a pas d'artisan
+            // sous la main.
+            'crafted_furnishing_kit' => [
+                'name' => 'Nécessaire d\'ameublement',
+                'name_translations' => ['en' => 'Furnishing Kit'],
+                'description' => 'Un lot de meubles en pièces détachées, avec les ferrures et la notice. Il ne reste qu\'à monter.',
+                'type' => 'crafted',
+                'slug' => 'crafted-furnishing-kit',
+                'price' => 290,
+                'space' => 3,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Uncommon,
                 'effect' => '{"action":"crafting_ingredient"}',
             ],
             // ZON-31 — l'exclusivite des Dunes d'Ambre. « L'Ambre » de la region

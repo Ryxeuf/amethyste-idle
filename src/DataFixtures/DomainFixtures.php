@@ -59,6 +59,10 @@ class DomainFixtures extends Fixture
             // ECO-29 — le debouche de la peche et des vivres. Element eau : le
             // metier prend l'element de ce qu'il cuit le plus.
             'cook' => ['title' => 'Cuisinier', 'element' => 'water', 'title_translations' => ['en' => 'Cook']],
+            // ECO-30 — le debouche de la ligne du bois. Meme element que le
+            // bucheron : le metier prend celui de sa matiere, comme le forgeron
+            // prend le metal.
+            'carpenter' => ['title' => 'Charpentier', 'element' => 'wood', 'title_translations' => ['en' => 'Carpenter']],
         ];
 
         foreach ($domains as $key => $data) {

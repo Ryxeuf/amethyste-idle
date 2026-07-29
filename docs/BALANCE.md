@@ -1041,7 +1041,9 @@ PNJ), a revele que chaque metier a un bout de chaine casse :
   consomme par rien) — a raccorder avec ECO-25.
 - **La ligne du bois n'existe pas.** L'arc et le baton existent en items (butin, PNJ)
   mais aucune recette ne les produit, et aucune ressource bois n'existe. Decision du
-  2026-07-28 : creer la recolte du bois (GAME_ZONES §3 bis, jalon ZON-34).
+  2026-07-28 : creer la recolte du bois (GAME_ZONES §3 bis, jalon ZON-34). **Solde le
+  2026-07-29** : ZON-34 a livre la matiere, ECO-30 le charpentier qui la consomme — les
+  six armes de bois se fabriquent, et chacune des quatre essences a un debouche (§23.11).
 - **Items morts** (ni source ni usage) : 5 plantes (`dreamlily`, `sunblossom`,
   `thunderroot`, `whisperweed`, `wolfsbane`), 2 poissons (`moonfish` en spot herite
   seul, `baby-kraken` sans source), `crafted-iron-ingot`, `crafted-gold-ingot`,
@@ -1467,3 +1469,31 @@ succes, jamais du passage* (GAME_WORLD § 3.5).
 **L'Appel de la Crue n'a pas de seuil**, et c'est deliberé : il se declenche sur une **variation**
 du nombre de places libres, pas sur un etat. Un seuil sur l'etat l'aurait fait sonner des la
 premiere maree, quand toutes les places sont libres.
+
+### 23.11 Les prix du charpentier (ECO-30)
+
+La ligne du bois est la premiere livree **apres** ECO-27, donc la premiere dont chaque prix est
+derive plutot que constate. La regle appliquee est celle du jalon : `prix = cout + 10 x niveau`,
+arrondi au pas de 5 sous 100.
+
+| Objet | Niv. | Cout des intrants | Prix |
+|---|---:|---:|---:|
+| Planche de hetre (x2) | 1 | 8 (hetre x2) | 15 l'unite |
+| Manche de bois (x2) | 2 | 15 (planche) | 20 l'unite |
+| Fleches empennees (x10) | 3 | 44 | 8 l'unite |
+| Necessaire d'ameublement | 5 | 240 | 290 |
+
+**Les fleches echappent volontairement a la formule.** Appliquee telle quelle a un lot de dix, elle
+aurait donne une fleche a 32 Gils — le prix d'un objet durable pour un consommable qu'on brule par
+poignees. Le lot vaut 80 pour 44 de matiere : la marge existe, et l'unite reste dans l'ordre de
+grandeur de ce qu'un archer consomme sans compter.
+
+**Les six armes de bois gardent leur prix d'origine.** Elles existaient deja au butin et en
+boutique ; les rehausser pour coller au cout de fabrication aurait deplace le plancher T1 (ECO-02)
+pour une raison de calibrage d'artisanat. Le controle qui compte est tenu dans l'autre sens :
+aucune ne coute plus cher a fabriquer qu'elle ne vaut (t1-bow 19 pour 22, t3-staff 265 pour 450).
+
+**Le necessaire d'ameublement vaut 290 et remplace jusqu'a 8 000 Gils** de style Bourgeois. L'ecart
+est le sujet, pas un defaut de calibrage : l'ameublement paye en monnaie est un gold sink, et un
+sink doit toujours etre battu par la voie joueur — sinon personne ne crafte, et le metier n'existe
+que sur le papier.
