@@ -17,9 +17,14 @@
 Trois contraintes viennent d'ailleurs et ne se négocient pas ici.
 
 **L'énergie.** 240 points au maximum, un point toutes les 6 minutes — soit **240 points par
-jour, et une barre pleine qui représente exactement une journée**. Une action de zone en coûte
-~3. Un joueur dispose donc d'environ **80 actions par jour**, consommables en une session de
-dix minutes ou étalées. C'est le budget réel de toute progression.
+jour, et une barre pleine qui représente exactement une journée**. Les gestes ont des coûts
+**différenciés** *(corrigé le 2026-07-29, playtest papier F1)* : récolte **3**, exploration
+et chasse **5**, événement de zone **10** — le voyage et le craft ne coûtent que du temps.
+Un joueur dispose donc de **50 à 80 gestes par jour selon leur nature** (80 en pure récolte,
+~48 en pure exploration), consommables en une session de dix minutes ou étalées. C'est le
+budget réel de toute progression. *(Les arbres de domaine apporteront des passifs de
+réduction de coût et de temps — la passe d'équilibrage post-arbres recalibrera ces repères,
+cf. BALANCE §24.)*
 
 **Pas de niveau global** (règle 6). La progression se fait par **32 arbres de domaine** :
 24 de combat (3 par élément), 4 de récolte (mineur, herboriste, pêcheur, dépeceur), 4
@@ -267,7 +272,8 @@ trois événements de la semaine 3 vaut mieux que celle qui ajoute du contenu au
 
 ## 5. Ce que le budget d'énergie autorise
 
-240 points par jour, ~3 par action, soit **~80 actions quotidiennes**, ~560 par semaine.
+240 points par jour, des coûts différenciés (3 à 10 selon le geste), soit **50 à 80 gestes
+quotidiens** — ~400 à 560 par semaine *(corrigé le 2026-07-29)*.
 
 | Objectif | Budget raisonnable | Lecture |
 |---|---|---|

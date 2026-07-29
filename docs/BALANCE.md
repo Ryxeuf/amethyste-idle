@@ -1302,9 +1302,10 @@ declarative :
 
 | Action (event existant) | Indice | Grains |
 |---|---|---:|
-| Kill (`MobDeadEvent`) | `war` | 1 |
+| Kill (`MobDeadEvent`) | `war` | 1,7 |
 | Recolte / peche / depecage (`SpotHarvestEvent`, `FishingEvent`, `ButcheringEvent`) | `trade` | 1 |
 | Craft (`CraftEvent`) | `trade` | 1 |
+| Evenement de zone | selon l'evenement | 3,3 |
 | Vente HV conclue dans la region | `trade` | 1 par 100 gils, plafonne a 5 |
 | Quete achevee (`QuestCompletedEvent`) | `lore` | 5 |
 | Entree de Codex / premiere visite | `lore` | 5 |
@@ -1320,8 +1321,17 @@ declarative :
 > soit chiffree sans etre appelee, precisement pour qu'un depot muet ne puisse pas
 > exister. Elles entreront dans le fichier avec leur listener.
 
-Reperes de flux (§ 1 : ~80 actions/jour a barre pleine ; § 22.5 : le joueur regulier
-depense ~62 % de sa barre) :
+> **Le grain est pondere par l'energie du geste** *(corrige le 2026-07-29, playtest
+> papier F2)* : **1 grain par ~3 energie depensee** — recolte (3 e) = 1, kill (5 e) = 1,7,
+> evenement (10 e) = 3,3. Sans cette ponderation, un guerrier deposait ~40 % de moins
+> qu'un recolteur a budget egal : les Bastions montaient structurellement plus lentement
+> que les Comptoirs, et l'indice `war` mondial restait chroniquement le plus bas (la
+> rotation des marees aurait tire Battue sur Battue). La regle : le sediment mesure le
+> temps vecu, et le temps vecu se mesure en energie.
+
+Reperes de flux (§ 1 : 50-80 gestes/jour a barre pleine selon leur nature ; § 22.5 : le
+joueur regulier depense ~62 % de sa barre) — les flux en grains restent inchanges par la
+ponderation (30-50 grains/jour), puisqu'ils se calculent desormais en energie :
 
 - **Joueur regulier** : ~30 grains/jour dans sa zone principale.
 - **Joueur assidu focalise** : ~50 grains/jour.
@@ -1572,3 +1582,24 @@ la meme regle le repare : `prix = cout + 10 x niveau`.
 64 800 s, soit 1,2 unite/heure et ~1,5 recolteur regulier soutenu. C'est le debit le plus faible du
 monde, et c'est voulu : ce sont les deux matieres qui ouvrent les deux recettes de plus haut palier
 du cuisinier.
+
+---
+
+## 24. Chantiers d'equilibrage ouverts (2026-07-29)
+
+Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTEST_PAPIER_MOIS_1.md)) :
+
+1. **La passe post-arbres.** Les arbres de domaine (GAME_DOMAINS, DOM-01+) apporteront des
+   passifs de **reduction de cout d'energie** et de **reduction de temps** (craft, voyage ?)
+   sur les gestes de leur domaine. Chaque reduction agrandit le budget effectif d'un
+   veteran : les reperes de GAME_PROGRESSION §5, le calibrage des filons (§22) et les flux
+   de grains (§23) devront etre re-verifies quand ces passifs existeront. A faire **apres**
+   DOM-01/02, avant tout lancement public.
+
+2. **L'equilibrage des combats.** La regeneration de l'energie de combat (les PM — pool
+   `Player.energy`, distinct de l'energie d'action) n'a jamais ete calibree contre les
+   chaines de combats reelles : un chasseur qui enchaine les kills est-il borne par ses PM
+   avant son energie d'action ? Le playtest papier ne peut pas le voir (V3). Chantier
+   complet : regen des PM entre et pendant les combats, couts des sorts par palier,
+   duree moyenne d'un combat en tours, et l'interaction avec les passifs de cout des
+   arbres (point 1). A instrumenter en jeu.

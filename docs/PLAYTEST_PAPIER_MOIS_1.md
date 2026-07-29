@@ -125,3 +125,15 @@ marées, et la règle des horizons à tous les étages.
 **Prochain playtest recommandé** : le même exercice sur le **mois 2-3** (l'Acte III —
 « on compte sur moi ») quand les factions (FAC) seront livrées : c'est le passage
 critique des semaines 3-6, et il dépend de systèmes qui viennent d'arriver.
+
+---
+
+## Suites (2026-07-29, validees)
+
+- **F1 consignee** : GAME_PROGRESSION §1 et §5 corriges (50-80 gestes selon leur nature) ;
+  la passe d'equilibrage post-arbres est ouverte en BALANCE §24.1 (les arbres apporteront
+  des reductions de cout/temps qui re-agrandiront le budget).
+- **F2 consignee** : le grain est pondere par l'energie du geste (BALANCE §23.1 — 1 grain
+  par ~3 energie ; kill = 1,7, evenement = 3,3).
+- **V3 jalonnee** : l'equilibrage des combats (regen des PM, couts des sorts, duree des
+  combats) est ouvert en BALANCE §24.2 — a instrumenter en jeu.
