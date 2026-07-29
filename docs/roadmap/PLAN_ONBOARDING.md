@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **3/20 livrés.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **3/20 livrés + ONB-20a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -44,7 +44,8 @@
 | ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
-| ONB-20 | Mains nues + le port de l'equipement par nœuds d'entree (ferme D13) | L | ★★★ |
+| ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
+| ONB-20b | Le port de l'equipement par nœuds d'entree | L | ★★★ |
 
 ```
 Piste A — Le compte existe    : ONB-01 → ONB-02 → ONB-03 → ONB-04
@@ -437,8 +438,19 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 > `PlayerAttackHandler::getItem()` lève aujourd'hui `EntityNotFoundException('Player attack
 > impossible')` dès qu'aucune arme n'est équipée. **À livrer avant ONB-08.**
 > ⚠️ **Amende DOM-02 garde-fou 1** — à relire avec DOM avant de coder (cadrage §6.0 bis).
-- [ ] **Les mains nues existent** : attaque faible, sans emplacement de matéria, **toujours
-      disponible**. Aucun chemin de combat ne peut échouer faute d'arme
+- [x] **ONB-20a ✅ LIVRÉ 2026-07-29 — Les mains nues existent** : attaque faible, sans
+      emplacement de matéria, **toujours disponible**. Aucun chemin de combat ne peut échouer
+      faute d'arme. Découpé en sous-jalon au titre de la règle #8 de `CLAUDE.md` : c'est le
+      repli qui débloque ONB-08, et il n'a pas à attendre l'échelle de port
+  - [x] `BareHandsAttack` — le sort le plus faible du jeu, sans élément, sans effet de statut,
+        sans critique, porté par aucun objet donc sans emplacement de matéria
+  - [x] Chances de toucher d'un **geste sans entraînement** : le facteur qu'`ItemHitResolver`
+        applique déjà à un objet dont le joueur ne connaît pas le domaine. On ne frappe pas
+        mieux en ne sachant rien
+  - [x] Un sort manquant en base **rate le coup**, il ne lève pas — une exception ici
+        recréerait exactement le défaut réparé
+  - [x] Une arme sans sort vaut une main vide
+- **ONB-20b — reste à faire** (l'échelle de port ci-dessous)
 - [ ] Le prérequis d'équipement par compétence est **déjà en place** (`Item::requirements`
       ManyToMany vers `Skill`, `PlayerItemHelper::canBeEquipped()` qui exige *toutes* les
       compétences) — rien à construire, seulement à généraliser
