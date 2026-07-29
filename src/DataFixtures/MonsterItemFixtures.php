@@ -580,6 +580,19 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 
             ['monster' => 'harvest_crow', 'item' => 'feather_raw', 'probability' => 80],
             ['monster' => 'harvest_crow', 'item' => 'plant_wheat', 'probability' => 30],
+
+            // --- ZON-31 : le gibier a os des Dunes ---
+            //
+            // L'os domine le cuir, a l'inverse des Vallons : le sable seche ce
+            // qu'il prend, et c'est ce qui donne au desert sa **moitie** de la
+            // ligne du tanneur (GAME_ZONES § 2.7).
+            ['monster' => 'dune_ibex', 'item' => 'leather_bone', 'probability' => 80],
+            ['monster' => 'dune_ibex', 'item' => 'leather_raw', 'probability' => 45],
+            ['monster' => 'dune_ibex', 'item' => 'meat_game', 'probability' => 40],
+
+            ['monster' => 'sand_hyena', 'item' => 'leather_bone', 'probability' => 75],
+            ['monster' => 'sand_hyena', 'item' => 'leather_fang', 'probability' => 45],
+            ['monster' => 'sand_hyena', 'item' => 'leather_raw', 'probability' => 40],
         ];
 
         foreach ($monsterItems as $data) {

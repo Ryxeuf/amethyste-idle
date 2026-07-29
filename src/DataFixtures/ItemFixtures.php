@@ -1242,6 +1242,24 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Uncommon,
             ],
+            // ZON-31 — le debouche de l'ambre. Une exclusivite sans debouche
+            // est un mensonge de level design : le filon existerait, et rien
+            // n'en ferait rien.
+            //
+            // Prix : cout (2x60 + 30 + 20 = 170) + 10 x niveau 4 = 210, la
+            // regle d'ECO-27.
+            'crafted_amber_seal' => [
+                'name' => 'Sceau d\'ambre',
+                'name_translations' => ['en' => 'Amber Seal'],
+                'description' => 'Une gemme prise dans l\'ambre et cerclée d\'argent. On y lit un insecte plus vieux que les cités.',
+                'type' => 'crafted',
+                'slug' => 'crafted-amber-seal',
+                'price' => 210,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
             'crafted_gem_rare' => [
                 'name' => 'Gemme rare',
                 'name_translations' => ['en' => 'Rare Gem'],
@@ -1407,6 +1425,24 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'type' => 'resource',
                 'slug' => 'feather-raw',
                 'price' => 3,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // ZON-31 — l'exclusivite des Dunes d'Ambre. « L'Ambre » de la region
+            // cesse d'etre un nom de lieu pour devenir une matiere : de la
+            // resine de l'age precedent, conservee par un temps tari
+            // (GAME_ZONES § 2.7). Reactif d'enchantement et de joaillerie.
+            //
+            // Prix T3, sous le platine (100) : c'est un reactif, pas un metal.
+            'amber_fossil' => [
+                'name' => 'Ambre fossile',
+                'name_translations' => ['en' => 'Fossil Amber'],
+                'description' => 'Une larme de résine durcie par un âge entier. Ce qu\'elle a pris au monde, elle le garde.',
+                'type' => 'resource',
+                'slug' => 'amber-fossil',
+                'price' => 60,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,

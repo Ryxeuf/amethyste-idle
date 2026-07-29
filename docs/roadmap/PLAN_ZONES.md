@@ -17,7 +17,7 @@ dans leurs plans d'origine :
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | ZON-30 ✅ | Les Vallons d'Aubépine (zone neuve) | M | ∅ |
-| ZON-31 | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
+| ZON-31 ✅ | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
 | ZON-32 | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
 | ZON-34 | La ligne du bois (domaine, essences, recettes) | M | → ECO-30 (charpentier) |
@@ -34,7 +34,7 @@ dans leurs plans d'origine :
 - **Recalibrage global** (BALANCE §22.3) — s'applique aux filons neufs comme aux anciens.
 
 ```
-ZON-30 ✅ → ZON-31 (indépendants, dans cet ordre de valeur)
+ZON-30 ✅ → ZON-31 ✅ (indépendants, dans cet ordre de valeur)
 ECO-21/22 → ZON-32
 ZON-33 en continu
 ```
@@ -61,19 +61,21 @@ ZON-33 en continu
 > `wood` et `amethyst` attendent les leurs. Le fichier prévoit ce cas explicitement — une zone
 > absente de `zone_line` n'apporte que son rang.
 
-### ZON-31 — Les Dunes d'Ambre approfondies (M | ★★ | HAUTE)
+### ZON-31 — Les Dunes d'Ambre approfondies ✅ (M | ★★ | HAUTE)
 > La zone la plus pauvre du monde livré (un filon, quatre monstres) reçoit ses
 > exclusivités (GAME_ZONES §2.7) : l'« Ambre » de la région devient une matière.
-> Prérequis : ∅ (le platine et le 2e étain relèvent d'ECO-24b)
-- [ ] Items : `ambre fossile` (réactif d'enchantement/joaillerie — **exclusivité**),
-      `os` (l'autre moitié de la ligne du tanneur, si l'existant `leather-bone` ne
-      suffit pas — auditer avant de créer)
-- [ ] Filon d'ambre fossile (T3) + récolte d'os portée par la faune (dépeçage, pas de
-      filon)
-- [ ] Faune densifiée en gibier à os (2-3 espèces désertiques dépeçables)
-- [ ] Au moins une recette consommant l'ambre fossile et une consommant l'os (une
-      exclusivité sans débouché est un mensonge de level design)
-- [ ] Tests : sources, débouchés, loi transverse
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **L'audit demandé a tranché contre la création.** `leather-bone` existe, a quatre recettes
+> consommatrices et des sources (squelettes, morts-vivants, grandes créatures). Il ne manquait
+> pas un item : il manquait une **faune du désert qui en rende**. Créer un second os aurait
+> dédoublé une ligne déjà servie — exactement le défaut qu'ECO-02 avait eu à défaire pour
+> `leather-skin-1/2`.
+>
+> **Une seule recette au lieu de deux**, et c'est la conséquence directe de l'audit : l'os a
+> déjà ses débouchés, seul l'ambre en manquait. Le sceau d'ambre (joaillier niveau 4) consomme
+> une gemme **taillée**, pour que la recette morde sur un produit d'artisanat comme la loi
+> d'ECO-27 l'exige au-delà du niveau 3.
 
 ### ZON-32 — Signatures d'améthyste par zone (S | ★★ | MOYENNE)
 > Traduit en config les tendances actées (GAME_ZONES §2, colonne « signature ») pour le

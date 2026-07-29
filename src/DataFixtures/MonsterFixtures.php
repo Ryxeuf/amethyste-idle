@@ -401,6 +401,48 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'elementalResistances' => ['beast' => 0.1, 'wind' => 0.2],
             ],
+            // =================================================================
+            // ZON-31 — le gibier a os des Dunes d'Ambre
+            // =================================================================
+            // La zone la plus pauvre du monde livre : quatre creatures, dont
+            // aucune ne rendait quoi que ce soit au depeceur. Or la ligne
+            // cuir/os du desert est sa production **declaree** (GAME_ZONES
+            // § 2.7) — elle n'avait simplement personne pour la porter.
+            //
+            // Le desert se depece en **os** : le sable seche ce qu'il prend, et
+            // c'est ce qui distingue sa ligne de celle des Vallons.
+            'dune_ibex' => [
+                'name' => 'Bouquetin des dunes',
+                'name_translations' => ['en' => 'Dune Ibex'],
+                // Agile et sec. Il se refugie sur les cretes de sable et n'est
+                // dangereux que si on l'y suit.
+                'life' => 30,
+                'hit' => 74,
+                'speed' => 14,
+                'attack' => 'sharp_blade',
+                'level' => 4,
+                'difficulty' => 2,
+                'aiPattern' => [
+                    'spell_chance' => 0,
+                ],
+                'elementalResistances' => ['beast' => 0.3, 'earth' => 0.2, 'water' => -0.2],
+            ],
+            'sand_hyena' => [
+                'name' => 'Hyène des sables',
+                'name_translations' => ['en' => 'Sand Hyena'],
+                // Charognarde : elle vient pour ce qu'on vient de tuer. Plus
+                // resistante que rapide, et elle mord fort.
+                'life' => 34,
+                'hit' => 80,
+                'speed' => 10,
+                'attack' => 'sharp_blade',
+                'level' => 5,
+                'difficulty' => 2,
+                'aiPattern' => [
+                    'spell_chance' => 0,
+                ],
+                'elementalResistances' => ['beast' => 0.3, 'fire' => 0.2, 'water' => -0.3],
+            ],
             'scorpion' => [
                 'name' => 'Scorpion',
                 'name_translations' => ['en' => 'Scorpion'],

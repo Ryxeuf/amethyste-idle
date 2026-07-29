@@ -5032,7 +5032,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'jewel-cut-rare',
                 'title' => 'Taille de gemmes rares',
                 'description' => 'Permet de tailler des gemmes rares aux proprietes magiques',
-                'actions' => [['action' => 'equip.tool', 'slugs' => ['chisel-steel']], ['action' => 'craft', 'recipes' => ['recipe-cut-gem-rare']]],
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['chisel-steel']], ['action' => 'craft', 'recipes' => ['recipe-cut-gem-rare', 'recipe-amber-seal']]],
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'requirements' => ['jewel_cut_fine', 'jewel_polish'],

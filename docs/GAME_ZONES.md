@@ -276,7 +276,8 @@ Franche** (GAME_SEASONS §2).
 - **Objets de désir** : semaine — l'os et l'ambre du tanneur/joaillier ; marée — le
   foyer (la taxe la plus forte du monde : l'arbitrage entre marchés y rapporte le plus,
   §4.3) ; an — le platine, intrant du lingot de mithril (§3).
-- **État** : le chantier de contenu principal du jeu de base après les Vallons.
+- **État** : ✅ **approfondie le 2026-07-29** (ZON-31) — ambre fossile, gibier à os,
+  débouché joaillier. Reste le versant narratif (l'Ambre comme thème de marée).
 
 ### 2.8 Cité ensevelie — le donjon du monde de base
 
