@@ -1558,6 +1558,18 @@ sa réputation de départ et sa première chaîne de quêtes :
 Le joueur se **sent** distinct dès la création ; la population **reste** groupée au moment où
 elle est la plus petite.
 
+> **Amendement (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §4.4)** — l'intention
+> ci-dessus est conservée, le mécanisme change : **le foyer d'attache ne se dérive plus de la
+> race, il se gagne**. C'est la zone où le joueur a réellement travaillé pendant l'acte I ; le
+> jeu le constate à la clôture et le lui annonce. Le dériver de la race revenait à demander une
+> orientation de carrière — kit, destination, chaîne de quêtes — au moment où le joueur en sait
+> le moins, c'est-à-dire à réintroduire une classe déguisée dans un jeu qui n'en a pas
+> (CLAUDE.md §9/§10). La concentration de la population est tenue de la même façon (le point de
+> réveil reste unique) ; le foyer n'est plus qu'une **adresse constatée après coup**, qui
+> n'ouvre ni ne ferme aucun contenu. Le défaut, faute d'activité distinctive, est **le Fanal** —
+> ce que ce tableau réservait à l'Humain devient le cas général. Le reste de §13.1
+> (éparpillement indexé sur la population) est inchangé.
+
 **Et l'éparpillement s'indexe sur la population**, exactement comme le quota de Crue (§3.3) :
 quand le serveur grossit, des foyers d'attache deviennent de vrais points de réveil. Aucune
 mécanique nouvelle, et le sens de la marche est le bon — on ajoute toujours un point de
