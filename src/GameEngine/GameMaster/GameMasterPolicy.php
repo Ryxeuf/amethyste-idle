@@ -132,7 +132,11 @@ class GameMasterPolicy
             return false;
         }
 
-        return $viewer->getId() === $viewed->getId() || $viewer->isGameMaster();
+        // Comparaison d'instances et non d'identifiants : dans une requete, la
+        // carte d'identite de Doctrine garantit un seul objet par ligne, et un
+        // `Player` jamais persiste n'a pas d'`id` — le lire leverait une erreur
+        // la ou une simple absence de correspondance suffit.
+        return $viewer === $viewed || $viewer->isGameMaster();
     }
 
     /**

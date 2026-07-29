@@ -9,8 +9,8 @@ use App\Enum\RankingTab;
 use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
-use App\Repository\PlayerRepository;
 use App\Repository\PlayerRankingBaselineRepository;
+use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

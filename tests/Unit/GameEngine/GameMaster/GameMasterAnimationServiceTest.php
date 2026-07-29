@@ -41,6 +41,22 @@ class GameMasterAnimationServiceTest extends TestCase
         return (new Zone())->setSlug('foret')->setName('Foret');
     }
 
+    /**
+     * Le journal cite l'identifiant de l'evenement : un evenement de test doit
+     * donc en porter un, comme il en porterait un en base.
+     */
+    private function event(string $name, string $status, string $startsAt, string $endsAt): GameEvent
+    {
+        $event = new GameEvent();
+        (new \ReflectionProperty(GameEvent::class, 'id'))->setValue($event, 42);
+        $event->setName($name);
+        $event->setStartsAt(new \DateTime($startsAt));
+        $event->setEndsAt(new \DateTime($endsAt));
+        $event->setStatus($status);
+
+        return $event;
+    }
+
     private function monster(): Monster
     {
         $monster = new Monster();
@@ -112,11 +128,7 @@ class GameMasterAnimationServiceTest extends TestCase
      */
     public function testLaunchKeepsTheEventDuration(): void
     {
-        $event = new GameEvent();
-        $event->setName('La Grande Battue');
-        $event->setStartsAt(new \DateTime('-3 days'));
-        $event->setEndsAt(new \DateTime('-3 days +2 hours'));
-        $event->setStatus(GameEvent::STATUS_SCHEDULED);
+        $event = $this->event('La Grande Battue', GameEvent::STATUS_SCHEDULED, '-3 days', '-3 days +2 hours');
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
@@ -131,11 +143,7 @@ class GameMasterAnimationServiceTest extends TestCase
 
     public function testLaunchRefusesAnEventAlreadyRunning(): void
     {
-        $event = new GameEvent();
-        $event->setName('En cours');
-        $event->setStartsAt(new \DateTime('-1 hour'));
-        $event->setEndsAt(new \DateTime('+1 hour'));
-        $event->setStatus(GameEvent::STATUS_ACTIVE);
+        $event = $this->event('En cours', GameEvent::STATUS_ACTIVE, '-1 hour', '+1 hour');
 
         $this->expectException(GameMasterRestrictionException::class);
 
@@ -144,11 +152,7 @@ class GameMasterAnimationServiceTest extends TestCase
 
     public function testStopClosesARunningEvent(): void
     {
-        $event = new GameEvent();
-        $event->setName('En cours');
-        $event->setStartsAt(new \DateTime('-1 hour'));
-        $event->setEndsAt(new \DateTime('+1 hour'));
-        $event->setStatus(GameEvent::STATUS_ACTIVE);
+        $event = $this->event('En cours', GameEvent::STATUS_ACTIVE, '-1 hour', '+1 hour');
 
         $this->service->stopEvent($this->gameMaster(), $event);
 
@@ -158,11 +162,7 @@ class GameMasterAnimationServiceTest extends TestCase
 
     public function testStopRefusesAnEventThatIsNotRunning(): void
     {
-        $event = new GameEvent();
-        $event->setName('Programme');
-        $event->setStartsAt(new \DateTime('+1 day'));
-        $event->setEndsAt(new \DateTime('+1 day +1 hour'));
-        $event->setStatus(GameEvent::STATUS_SCHEDULED);
+        $event = $this->event('Programme', GameEvent::STATUS_SCHEDULED, '+1 day', '+1 day +1 hour');
 
         $this->expectException(GameMasterRestrictionException::class);
 

@@ -4,8 +4,8 @@ namespace App\Controller\Game;
 
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
-use App\GameEngine\GoldSink\GoldSinkManager;
 use App\GameEngine\GameMaster\GameMasterPolicy;
+use App\GameEngine\GoldSink\GoldSinkManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

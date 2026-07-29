@@ -1657,7 +1657,49 @@
     },
     "game_master": {
       "seal": "MJ",
-      "seal_title": "Game master"
+      "seal_title": "Game master",
+      "console": {
+        "title": "GM console",
+        "heading": "Game master console",
+        "zone_context": "Current zone: %zone%. Everything below applies there.",
+        "no_zone": "none"
+      },
+      "visibility": {
+        "label": "Visibility",
+        "incognito": "Incognito",
+        "incognito_hint": "You appear neither in zone presence nor in player search.",
+        "visible": "Visible",
+        "visible_hint": "Players see you and recognise you as a game master.",
+        "action_hide": "Go incognito",
+        "action_show": "Become visible again"
+      },
+      "announce": {
+        "heading": "Server announcement",
+        "hint": "Broadcast to the whole server, on the general channel.",
+        "placeholder": "What the world should hear…",
+        "submit": "Announce"
+      },
+      "spawn": {
+        "heading": "Spawn monsters",
+        "empty": "Join a zone to place monsters there.",
+        "hint": "Ordinary monsters — same life, same level, same loot as the zone's own. %max% at most per action.",
+        "level": "lvl %level%",
+        "submit": "Place"
+      },
+      "events": {
+        "heading": "Zone events",
+        "empty": "No event attached to this zone. They are created from the administration.",
+        "running": "running until %time%",
+        "launch": "Launch",
+        "stop": "Close"
+      },
+      "channel": {
+        "heading": "GM channel",
+        "hint": "Between game masters. No player reads it.",
+        "empty": "Nothing yet.",
+        "submit": "Send"
+      },
+      "journal_notice": "Every one of these actions is written to the administration log, under your name."
     }
   },
   "common": {

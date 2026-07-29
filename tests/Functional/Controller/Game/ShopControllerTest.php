@@ -9,6 +9,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\Game\Item;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
 use App\GameEngine\World\GameTimeService;
@@ -46,6 +47,7 @@ class ShopControllerTest extends TestCase
             $this->gameTimeService,
             $this->regionBonusProvider,
             $this->renownDiscountProvider,
+            new GameMasterPolicy(),
         );
 
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);

@@ -13,6 +13,7 @@ use App\Entity\Game\Dungeon;
 use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
@@ -197,6 +198,7 @@ class ZoneControllerTest extends TestCase
             $this->settlementLoader(),
             $this->veinRestorationService(),
             $this->settlementDoctrineService(),
+            new GameMasterPolicy(),
         );
         $this->controller->setContainer($this->createContainer());
     }
