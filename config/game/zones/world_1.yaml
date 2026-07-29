@@ -213,6 +213,11 @@ zones:
             # plancher, le saumon donne une raison de revenir avec un meilleur
             # niveau de peche.
             - { slug: saumons-des-rapides, item: fish-salmon, profession: fishing, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            # ZON-34 — la seconde source de hetre, et l'arbre de la zone-titre.
+            # Le chene murmurant est l'**exclusivite** de la Foret : il porte
+            # son nom, il n'aurait pas pu pousser ailleurs.
+            - { slug: hetraie-des-lisieres, item: wood-beech, profession: woodcutting, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            - { slug: chenes-murmurants, item: wood-whisperoak, profession: woodcutting, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2, requires_skill: lumber-whisperoak-xs }
         # Population declaree (ZON-26b). Elle remplace les spawns que
         # `MobFixtures` posait sur la carte TMX `map_3` : deux sources de verite
         # pour un meme contenu, dont une invisible depuis ce fichier.
@@ -391,6 +396,9 @@ zones:
             - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
             - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            # ZON-34 — l'exclusivite du Marais : un bois que l'eau morte a
+            # noirci. Il ne pourrit plus, il a deja fini de le faire. Profil T3.
+            - { slug: souches-tourbees, item: wood-peat, profession: woodcutting, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2, requires_skill: lumber-peat-xs }
 
     crete-de-ventombre:
         name: 'Crête de Ventombre'
@@ -512,6 +520,10 @@ zones:
             # (ECO-24c), l'ambre affleure. Le gater fermerait la seule raison de
             # descendre au sud avant l'Acte III.
             - { slug: gisement-d-ambre-fossile, item: amber-fossil, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
+            # ZON-34 — l'exclusivite des Dunes, et le seul bois T4 du monde de
+            # base : un tronc de l'age precedent que le sable a change en pierre.
+            # Meme theme que l'ambre — le desert **conserve** ce qu'il prend.
+            - { slug: troncs-petrifies, item: wood-petrified, profession: woodcutting, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2, requires_skill: lumber-petrified-xs }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
     # === Acte 4 (tache 128b) ===
@@ -674,6 +686,10 @@ zones:
             - { slug: linieres-du-gue, item: plant-flax, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # Le gue — la peche d'apprentissage, entre la truite et la carpe.
             - { slug: perches-du-gue, item: fish-perch, profession: fishing, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            # ZON-34 — la ligne du bois. Le hetre a **deux** sources (ici et la
+            # Foret) et ne doit jamais etre un goulot : c'est le T0 de sa ligne,
+            # au meme titre que le cuivre pour le metal.
+            - { slug: hetraie-des-vallons, item: wood-beech, profession: woodcutting, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
         mobs:
             # Toute la faune est depecable, et c'est le point : le depeceur
             # commence ici. Les effectifs disent la densite du bocage — le

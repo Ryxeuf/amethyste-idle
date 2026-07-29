@@ -20,7 +20,7 @@ dans leurs plans d'origine :
 | ZON-31 ✅ | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
 | ZON-32 ✅ | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
-| ZON-34 | La ligne du bois (domaine, essences, recettes) | M | → ECO-30 (charpentier) |
+| ZON-34 ✅ | La ligne du bois (domaine, essences, filons) | M | → ECO-30 (charpentier) |
 | ZON-35 | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
 | ZON-36 | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
 | ZON-37 | La régénération d'un filon devient un débit ✅ | M | ∅ — **prérequis du recalibrage** |
@@ -106,21 +106,29 @@ ZON-33 en continu
 - [ ] Le graphe reste connexe et la liaison Dunes → Cité existe tant que la Mer de Sel
       n'a pas rejoint l'Extension 1 (GAME_ZONES §1, note de graphe)
 
-### ZON-34 — La ligne du bois (M | ★★★ | HAUTE)
+### ZON-34 — La ligne du bois ✅ (M | ★★★ | HAUTE)
 > Décidé le 2026-07-28 (GAME_ZONES §3 bis) : la récolte du bois devient la cinquième
 > récolte. Aujourd'hui l'arc et le bâton existent en items sans recette productrice, et
 > aucune ressource bois n'existe — la ligne armes de bois + housing est sans matière.
 > Le métier consommateur est **tranché** : le charpentier (ECO-30, Piste H de
 > PLAN_PLAYER_ECONOMY), qui prend ce jalon en prérequis.
-- [ ] Domaine `lumberjack` (Bûcheron) dans `DomainFixtures` + arbre de récolte (mêmes
-      gabarits que mineur/herboriste)
-- [ ] Items : 4 essences de la carte du bois (hêtre T0, chêne murmurant T2, bois tourbé
-      T3, bois pétrifié T4)
-- [ ] Filons `profession: woodcutting` aux zones de la carte (Vallons + Forêt pour le
-      hêtre ; Forêt, Marais, Dunes pour les exclusifs), profils de palier standard
-- [ ] Recettes : l'arc et le bâton existants gagnent une recette productrice ; au moins
-      une recette par essence (une exclusivité sans débouché est un mensonge)
-- [ ] Tests : sources, débouchés, loi transverse
+**Livré le 2026-07-29** (la matière). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Domaine `lumberjack` (Bûcheron) + arbre de récolte, 8 nœuds
+- [x] Items : 4 essences (hêtre T0, chêne murmurant T2, bois tourbé T3, bois pétrifié T4)
+- [x] Filons `profession: woodcutting` — Vallons + Forêt pour le hêtre, Forêt/Marais/Dunes
+      pour les exclusifs, profils de palier standard, gate de compétence sur les trois
+      exclusivités
+- [ ] **Recettes — reporté à ECO-30 (charpentier).** Elles n'appartiennent à personne
+      aujourd'hui : le charpentier est le métier *tranché* de cette ligne, et greffer une
+      recette d'arc sur le forgeron pour tenir la case aurait créé un rattachement à
+      défaire ensuite. Même arbitrage qu'aux Vallons (ZON-30).
+- [x] Tests : sources, paliers, gates, loi des biomes sans arbres
+
+> **Écart assumé : pas d'emplacement de hache.** Les quatre autres arbres de récolte
+> ouvrent un outil ; celui-ci non. La hache demande un type d'outil, un bit d'équipement
+> et un emplacement d'interface neufs — un changement de **mécanisme**, pas de données.
+> Elle arrivera avec le charpentier, à qui elle sert. Livrer l'arbre sans elle donne la
+> matière tout de suite ; poser la hache d'abord aurait donné un outil sans rien à couper.
 
 ### ZON-35 — Harmonisation des récoltes (S | ★★ | MOYENNE)
 > Applique la loi 9 (GAME_ZONES §3 ter) : le compte d'un domaine suit les artisanats

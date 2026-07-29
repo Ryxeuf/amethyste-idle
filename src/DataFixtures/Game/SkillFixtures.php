@@ -115,6 +115,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getHerbalistSkills(),
             $this->getFishermanSkills(),
             $this->getSkinnerSkills(),
+            $this->getLumberjackSkills(),
             $this->getBlacksmithSkills(),
             $this->getLeatherworkerSkills(),
             $this->getAlchimistSkills(),
@@ -4485,6 +4486,105 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'requirements' => ['skinner_exotic', 'skinner_fang_m'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // BUCHERON (bois/recolte) — la cinquieme recolte (ZON-34)
+    // =========================================================================
+    // Quatre essences, raretes inversees : le hetre a deux sources et ne doit
+    // jamais etre un goulot ; les trois autres sont chacune l'exclusivite d'une
+    // zone forestiere, et se gagnent sur un **savoir** (ECO-24c).
+    //
+    // **Aucun emplacement d'outil**, contrairement aux quatre autres arbres de
+    // recolte. La hache demande un type d'outil, un bit d'equipement et un
+    // emplacement d'interface neufs — un changement de **mecanisme**, pas de
+    // donnees. Elle arrivera avec le charpentier (ECO-30), qui est celui a qui
+    // elle sert. Livrer l'arbre sans elle donne la matiere tout de suite ; poser
+    // la hache d'abord aurait donne un outil sans rien a couper.
+    private function getLumberjackSkills(): array
+    {
+        $d = 'lumberjack';
+
+        return [
+            // Rang 1 (0 pts) — le hetre, la matiere de tout le monde
+            'lumber_beech_xs' => [
+                'slug' => 'lumber-beech-xs',
+                'title' => 'Coupe du hetre',
+                'description' => 'Permet d\'abattre les hetres des Vallons et de la Foret',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-beech-xs']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — le geste s'affine, et la Foret s'ouvre
+            'lumber_grain' => [
+                'slug' => 'lumber-grain',
+                'title' => 'Lecture du fil',
+                'description' => 'Lire le fil du bois avant de frapper : moins de perte, plus de rondins',
+                'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 10]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['lumber_beech_xs'],
+            ],
+            'lumber_whisperoak_xs' => [
+                'slug' => 'lumber-whisperoak-xs',
+                'title' => 'Coupe du chene murmurant',
+                'description' => 'Permet d\'abattre l\'arbre qui donne son nom a la Foret des murmures',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-whisperoak-xs']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['lumber_beech_xs'],
+            ],
+
+            // Rang 3 (35-60 pts) — les bois qui ont cesse d'etre du bois
+            'lumber_peat_xs' => [
+                'slug' => 'lumber-peat-xs',
+                'title' => 'Coupe du bois tourbe',
+                'description' => 'Permet de tirer du marais un bois que l\'eau morte a noirci',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-peat-xs']]],
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'requirements' => ['lumber_whisperoak_xs'],
+            ],
+            'lumber_seasoning' => [
+                'slug' => 'lumber-seasoning',
+                'title' => 'Sechage',
+                'description' => 'Choisir le bois deja sec sur pied : le rendement suit',
+                'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 15]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['lumber_grain'],
+            ],
+            'lumber_petrified_xs' => [
+                'slug' => 'lumber-petrified-xs',
+                'title' => 'Extraction du bois petrifie',
+                'description' => 'Permet de degager du sable des Dunes un tronc de l\'age precedent',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-petrified-xs']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['lumber_peat_xs'],
+            ],
+
+            // Rang 4 (90-150 pts) — le sommet du metier
+            'lumber_heartwood' => [
+                'slug' => 'lumber-heartwood',
+                'title' => 'Coeur de bille',
+                'description' => 'Ne garder que le duramen : moins de bois, mais du meilleur',
+                'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 20]],
+                'requiredPoints' => 90,
+                'domain' => $d,
+                'requirements' => ['lumber_seasoning', 'lumber_peat_xs'],
+            ],
+            'lumber_master' => [
+                'slug' => 'lumber-master',
+                'title' => 'Maitre bucheron',
+                'description' => 'Le bois n\'a plus de secret : chaque essence rend ce qu\'elle peut donner',
+                'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 25]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['lumber_heartwood', 'lumber_petrified_xs'],
             ],
         ];
     }

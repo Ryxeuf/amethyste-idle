@@ -1430,6 +1430,66 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient"}',
             ],
+            // =================================================================
+            // ZON-34 — les quatre essences de la ligne du bois
+            // =================================================================
+            // Aucune ressource bois n'existait : la ligne entiere (armes de
+            // bois, mobilier) etait sans matiere, et `wood-log` — une buche de
+            // decor sans filon ni recette — en tenait lieu (GAME_ZONES § 3 bis).
+            //
+            // Raretes inversees respectees : le hetre a **deux** sources et ne
+            // doit jamais etre un goulot ; les trois autres sont chacune
+            // l'exclusivite d'une zone forestiere.
+            'wood_beech' => [
+                'name' => 'Bois de hêtre',
+                'name_translations' => ['en' => 'Beech Wood'],
+                'description' => 'Un rondin de hêtre clair, droit de fil. Le bois qu\'on trouve partout et dont tout part.',
+                'type' => 'resource',
+                'slug' => 'wood-beech',
+                // T0, au niveau du ble et du cuir brut : la matiere la plus
+                // commune de sa ligne.
+                'price' => 4,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            'wood_whisperoak' => [
+                'name' => 'Chêne murmurant',
+                'name_translations' => ['en' => 'Whispering Oak'],
+                'description' => 'Une branche de l\'arbre qui donne son nom à la forêt. Elle vibre encore quand on la tient.',
+                'type' => 'resource',
+                'slug' => 'wood-whisperoak',
+                'price' => 22,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            'wood_peat' => [
+                'name' => 'Bois tourbé',
+                'name_translations' => ['en' => 'Peat Wood'],
+                'description' => 'Un bois noirci par l\'eau morte du marais. Il ne pourrit plus : il a déjà fini de le faire.',
+                'type' => 'resource',
+                'slug' => 'wood-peat',
+                'price' => 55,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            'wood_petrified' => [
+                'name' => 'Bois pétrifié',
+                'name_translations' => ['en' => 'Petrified Wood'],
+                'description' => 'Un tronc de l\'âge précédent, changé en pierre par le sable. On y compte encore les cernes.',
+                'type' => 'resource',
+                'slug' => 'wood-petrified',
+                'price' => 110,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
             // ZON-31 — l'exclusivite des Dunes d'Ambre. « L'Ambre » de la region
             // cesse d'etre un nom de lieu pour devenir une matiere : de la
             // resine de l'age precedent, conservee par un temps tari

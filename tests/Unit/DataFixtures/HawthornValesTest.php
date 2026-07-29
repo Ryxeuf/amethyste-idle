@@ -109,15 +109,20 @@ class HawthornValesTest extends TestCase
     }
 
     /**
-     * Les trois lignes de la zone sont bien celles qui ont ete actées : le ble
-     * (chaine de cuisine), le lin (fibre) et la perche (peche d'apprentissage).
+     * Les recoltes de la zone sont celles qui ont ete actées.
+     *
+     * Trois a la livraison — le ble (chaine de cuisine), le lin (fibre) et la
+     * perche (peche d'apprentissage) — puis le hetre, que ZON-34 y a pose :
+     * les Vallons sont l'une des **deux** sources du bois commun, celle du
+     * bocage, et c'est ce qui empeche le T0 de la ligne du bois d'etre un
+     * goulot.
      */
-    public function testTheThreeDeclaredHarvestsAreThere(): void
+    public function testTheDeclaredHarvestsAreThere(): void
     {
         $items = array_column($this->vales()['gather'], 'item');
         sort($items);
 
-        self::assertSame(['fish-perch', 'plant-flax', 'plant-wheat'], $items);
+        self::assertSame(['fish-perch', 'plant-flax', 'plant-wheat', 'wood-beech'], $items);
     }
 
     /**
