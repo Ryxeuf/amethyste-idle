@@ -2,10 +2,12 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\EnchantmentDefinition;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftSpecialization;
+use App\GameEngine\Crafting\CraftBranchCatalog;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\ExperimentationManager;
@@ -31,6 +33,7 @@ class CraftingController extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly PlayerHelper $playerHelper,
         private readonly CraftSpecializationService $craftSpecializationService,
+        private readonly CraftBranchCatalog $craftBranchCatalog,
         private readonly SettlementWorkshopBonus $workshopBonus,
         private readonly PurityChain $purityChain,
     ) {
@@ -139,10 +142,13 @@ class CraftingController extends AbstractController
             'enchantmentDefinitions' => $enchantmentDefinitions,
             'equippedItems' => $equippedItems,
             'activeEnchantments' => $activeEnchantments,
-            'specializations' => $this->craftSpecializationService->getAvailableSpecializations(),
-            'specializationCheck' => $this->craftSpecializationService->canChoose($player),
+            // DOM-04 : une ligne par arbre, et non plus un choix unique pour
+            // tout le personnage. L'ecran doit montrer les sept arbres, ce qui
+            // est pris dans chacun, et ce qui reste ouvert.
+            'specializationTrees' => $this->buildSpecializationTrees($player),
             'specializationBonus' => CraftSpecializationService::QUALITY_BONUS_CHANCE,
             'specializationRequiredXp' => CraftSpecializationService::REQUIRED_DOMAIN_XP,
+            'specializationRespecCost' => $this->craftSpecializationService->getRespecCost(),
         ]);
     }
 
@@ -160,18 +166,46 @@ class CraftingController extends AbstractController
             return $this->redirectToRoute('app_game_craft');
         }
 
-        $slug = (string) $request->request->get('specialization');
-        $specialization = CraftSpecialization::tryFrom($slug);
-        if ($specialization === null) {
+        $craft = CraftSpecialization::tryFrom((string) $request->request->get('craft'));
+        $branch = (string) $request->request->get('branch');
+        if ($craft === null || $branch === '') {
             $this->addFlash('warning', 'Specialisation inconnue.');
 
             return $this->redirectToRoute('app_game_craft');
         }
 
-        $result = $this->craftSpecializationService->choose($player, $specialization);
+        // Le respec est le meme geste que le choix, a ceci pres qu'il se paie.
+        // Les separer en deux routes aurait duplique la validation, et l'une des
+        // deux aurait fini par diverger.
+        $result = $player->getCraftSpecializationFor($craft->value) === null
+            ? $this->craftSpecializationService->choose($player, $craft, $branch)
+            : $this->craftSpecializationService->respec($player, $craft, $branch);
+
         $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
 
         return $this->redirectToRoute('app_game_craft');
+    }
+
+    /**
+     * Ce que chaque arbre d'artisanat propose, et ou en est le joueur.
+     *
+     * @return list<array{craft: CraftSpecialization, branches: array<string, array{label: string, description: string}>, chosen: ?string, check: array{ok: bool, reason: string}}>
+     */
+    private function buildSpecializationTrees(Player $player): array
+    {
+        $trees = [];
+        foreach ($this->craftSpecializationService->getAvailableSpecializations() as $craft) {
+            $current = $player->getCraftSpecializationFor($craft->value);
+
+            $trees[] = [
+                'craft' => $craft,
+                'branches' => $this->craftBranchCatalog->branchesOf($craft),
+                'chosen' => $current?->getBranch(),
+                'check' => $this->craftSpecializationService->canChoose($player, $craft),
+            ];
+        }
+
+        return $trees;
     }
 
     #[Route('/craft/{slug}', name: 'app_game_craft_execute', methods: ['POST'])]

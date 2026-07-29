@@ -6,108 +6,203 @@ use App\Entity\App\DomainExperience;
 use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 use App\Enum\CraftSpecialization;
+use App\GameEngine\Crafting\CraftBranchCatalog;
 use App\GameEngine\Crafting\CraftSpecializationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Le choix d'une branche, arbre par arbre (DOM-04).
+ *
+ * **Ce que ce jalon a defait.** Le modele livre portait une specialisation
+ * unique pour tout le personnage, et irreversible : devenir Forgeron fermait a
+ * jamais la maitrise du Tanneur. C'est l'exclusivite *entre* arbres, que la
+ * doctrine interdit — « interdire un arbre serait interdire un geste »
+ * (GAME_DOMAINS § 1).
+ *
+ * Les deux invariants qui comptent sont symetriques, et il faut les deux : rien
+ * n'empeche de se specialiser dans plusieurs metiers, rien ne permet de prendre
+ * deux branches du meme.
+ */
 class CraftSpecializationServiceTest extends TestCase
 {
-    private CraftSpecializationService $service;
+    private const RESPEC_COST = 2500;
 
-    protected function setUp(): void
+    public function testEveryCraftTreeCanBeSpecializedIn(): void
     {
-        $em = $this->createMock(EntityManagerInterface::class);
-        $this->service = new CraftSpecializationService($em);
+        self::assertCount(7, $this->service()->getAvailableSpecializations());
     }
 
-    public function testGetAvailableSpecializationsReturnsAllCases(): void
+    /**
+     * Rien n'empeche de se specialiser dans plusieurs metiers.
+     */
+    public function testSpecializingInOneTreeDoesNotCloseTheOthers(): void
     {
-        $this->assertCount(4, $this->service->getAvailableSpecializations());
-    }
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 500, 'Tanneur' => 500]);
 
-    public function testCanChooseRefusesBelowThreshold(): void
-    {
-        $player = $this->buildPlayerWithDomainXp('Forgeron', 100);
-        $check = $this->service->canChoose($player);
-        $this->assertFalse($check['ok']);
-        $this->assertStringContainsString('500', $check['reason']);
-    }
-
-    public function testCanChooseAcceptsAtThreshold(): void
-    {
-        $player = $this->buildPlayerWithDomainXp('Forgeron', CraftSpecializationService::REQUIRED_DOMAIN_XP);
-        $check = $this->service->canChoose($player);
-        $this->assertTrue($check['ok']);
-    }
-
-    public function testCanChooseRefusesIfAlreadySpecialized(): void
-    {
-        $player = $this->buildPlayerWithDomainXp('Forgeron', 1000);
-        $player->setCraftSpecialization(CraftSpecialization::Forgeron);
-
-        $check = $this->service->canChoose($player);
-        $this->assertFalse($check['ok']);
-        $this->assertStringContainsString('irreversible', $check['reason']);
-    }
-
-    public function testChooseFailsBelowThreshold(): void
-    {
-        $player = $this->buildPlayerWithDomainXp('Forgeron', 100);
-        $result = $this->service->choose($player, CraftSpecialization::Forgeron);
-        $this->assertFalse($result['success']);
-        $this->assertNull($player->getCraftSpecialization());
-    }
-
-    public function testChooseSucceedsAndAssignsSpecialization(): void
-    {
-        $player = $this->buildPlayerWithDomainXp('Alchimiste', 600);
-        $result = $this->service->choose($player, CraftSpecialization::Alchimiste);
-        $this->assertTrue($result['success']);
-        $this->assertSame(CraftSpecialization::Alchimiste, $player->getCraftSpecialization());
-    }
-
-    public function testGetQualityBonusReturnsBonusOnlyForMatchingCraft(): void
-    {
-        $player = new Player();
-        $player->setCraftSpecialization(CraftSpecialization::Joaillier);
-
-        $this->assertSame(
-            CraftSpecializationService::QUALITY_BONUS_CHANCE,
-            $this->service->getQualityBonusFor($player, 'joaillier')
+        self::assertTrue($service->choose($player, CraftSpecialization::Forgeron, 'weapons')['success']);
+        self::assertTrue(
+            $service->canChoose($player, CraftSpecialization::Tanneur)['ok'],
+            'Se specialiser chez le forgeron a ferme l\'arbre du tanneur : c\'est l\'exclusivite entre arbres que la doctrine interdit.',
         );
-        $this->assertSame(0, $this->service->getQualityBonusFor($player, 'forgeron'));
+        self::assertTrue($service->choose($player, CraftSpecialization::Tanneur, 'armour')['success']);
+
+        self::assertTrue($player->isSpecializedIn('forgeron'));
+        self::assertTrue($player->isSpecializedIn('tanneur'));
     }
 
-    public function testGetQualityBonusIsZeroWithoutSpecialization(): void
+    /**
+     * Mais on ne prend qu'une branche par arbre.
+     */
+    public function testASecondBranchInTheSameTreeIsRefused(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 500]);
+
+        $service->choose($player, CraftSpecialization::Forgeron, 'weapons');
+        $second = $service->choose($player, CraftSpecialization::Forgeron, 'armour');
+
+        self::assertFalse($second['success']);
+        self::assertStringContainsString('respec', $second['message']);
+        self::assertCount(1, $player->getCraftSpecializations());
+    }
+
+    /**
+     * Le seuil se lit **dans l'arbre concerne**.
+     *
+     * Il l'etait sur le meilleur des quatre : un joueur qui atteignait le seuil
+     * chez le forgeron pouvait se declarer alchimiste sans avoir jamais touche a
+     * un mortier.
+     */
+    public function testTheThresholdIsReadInTheTreeBeingSpecialized(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 900, 'Alchimiste' => 10]);
+
+        self::assertTrue($service->canChoose($player, CraftSpecialization::Forgeron)['ok']);
+        self::assertFalse($service->canChoose($player, CraftSpecialization::Alchimiste)['ok']);
+    }
+
+    public function testXpInANonCraftDomainUnlocksNothing(): void
+    {
+        $service = $this->service();
+
+        self::assertFalse($service->canChoose($this->player(['Guerrier' => 1000]), CraftSpecialization::Forgeron)['ok']);
+    }
+
+    public function testAnUnknownBranchIsRefused(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 500]);
+
+        self::assertFalse($service->choose($player, CraftSpecialization::Forgeron, 'cuisine')['success']);
+        self::assertCount(0, $player->getCraftSpecializations());
+    }
+
+    public function testTheQualityBonusFollowsTheTreeAndNotTheBranch(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Joaillier' => 500]);
+        $service->choose($player, CraftSpecialization::Joaillier, 'focus');
+
+        self::assertSame(CraftSpecializationService::QUALITY_BONUS_CHANCE, $service->getQualityBonusFor($player, 'joaillier'));
+        self::assertSame(0, $service->getQualityBonusFor($player, 'forgeron'));
+    }
+
+    // =====================================================================
+    // Le respec : le seul du jeu qui se paie
+    // =====================================================================
+
+    public function testChangingBranchCostsGils(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 500]);
+        $player->setGils(4000);
+        $service->choose($player, CraftSpecialization::Forgeron, 'weapons');
+
+        $result = $service->respec($player, CraftSpecialization::Forgeron, 'armour');
+
+        self::assertTrue($result['success']);
+        self::assertSame(4000 - self::RESPEC_COST, $player->getGils());
+        self::assertSame('armour', $player->getCraftSpecializationFor('forgeron')?->getBranch());
+    }
+
+    /**
+     * Le refus dit le prix.
+     *
+     * Un « impossible » sans chiffre laisserait croire a un verrou, alors que
+     * c'est une depense.
+     */
+    public function testTheRefusalNamesWhatIsMissing(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 500]);
+        $player->setGils(100);
+        $service->choose($player, CraftSpecialization::Forgeron, 'weapons');
+
+        $result = $service->respec($player, CraftSpecialization::Forgeron, 'armour');
+
+        self::assertFalse($result['success']);
+        self::assertStringContainsString((string) (self::RESPEC_COST - 100), $result['message']);
+        self::assertSame(100, $player->getGils(), 'Les gils ont ete preleves malgre le refus.');
+        self::assertSame('weapons', $player->getCraftSpecializationFor('forgeron')?->getBranch());
+    }
+
+    public function testRespeccingToTheSameBranchCostsNothingAndChangesNothing(): void
+    {
+        $service = $this->service();
+        $player = $this->player(['Forgeron' => 500]);
+        $player->setGils(4000);
+        $service->choose($player, CraftSpecialization::Forgeron, 'weapons');
+
+        $result = $service->respec($player, CraftSpecialization::Forgeron, 'weapons');
+
+        self::assertFalse($result['success']);
+        self::assertSame(4000, $player->getGils());
+    }
+
+    public function testRespeccingATreeWithoutABranchIsRefused(): void
+    {
+        self::assertFalse($this->service()->respec($this->player([]), CraftSpecialization::Forgeron, 'weapons')['success']);
+    }
+
+    // =====================================================================
+    // Fabrique
+    // =====================================================================
+
+    private function service(): CraftSpecializationService
+    {
+        return new CraftSpecializationService(
+            $this->createMock(EntityManagerInterface::class),
+            new CraftBranchCatalog(\dirname(__DIR__, 4)),
+            self::RESPEC_COST,
+        );
+    }
+
+    /**
+     * @param array<string, int> $domainXp titre de domaine => XP totale
+     */
+    private function player(array $domainXp): Player
     {
         $player = new Player();
-        $this->assertSame(0, $this->service->getQualityBonusFor($player, 'forgeron'));
-    }
 
-    public function testNonCraftDomainXpDoesNotUnlockSpecialization(): void
-    {
-        // XP dans un domaine qui n'est pas un metier d'artisanat (ex: Guerrier) ne doit pas debloquer.
-        $player = $this->buildPlayerWithDomainXp('Guerrier', 1000);
-        $check = $this->service->canChoose($player);
-        $this->assertFalse($check['ok']);
-    }
+        $experiences = new ArrayCollection();
+        foreach ($domainXp as $title => $xp) {
+            $domain = new Domain();
+            $domain->setTitle($title);
 
-    private function buildPlayerWithDomainXp(string $domainTitle, int $xp): Player
-    {
-        $player = new Player();
-        $reflection = new \ReflectionClass($player);
-        $prop = $reflection->getProperty('domainExperiences');
-        $prop->setAccessible(true);
+            $experience = new DomainExperience();
+            $experience->setDomain($domain);
+            $experience->setTotalExperience($xp);
 
-        $domain = new Domain();
-        $domain->setTitle($domainTitle);
+            $experiences->add($experience);
+        }
 
-        $domainExperience = new DomainExperience();
-        $domainExperience->setDomain($domain);
-        $domainExperience->setTotalExperience($xp);
-
-        $prop->setValue($player, new ArrayCollection([$domainExperience]));
+        $property = new \ReflectionProperty(Player::class, 'domainExperiences');
+        $property->setAccessible(true);
+        $property->setValue($player, $experiences);
 
         return $player;
     }

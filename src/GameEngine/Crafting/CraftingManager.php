@@ -81,8 +81,11 @@ class CraftingManager
             return false;
         }
 
+        // DOM-04 : la question est « le joueur a-t-il pris une branche dans cet
+        // arbre ? », plus « est-ce LE metier qu'il a choisi ? ». Le second
+        // fermait six arbres pour en ouvrir un.
         $required = $recipe->getRequiredSpecialization();
-        if ($required !== null && $required !== $player->getCraftSpecialization()) {
+        if ($required !== null && !$player->isSpecializedIn($required->craftSlug())) {
             return false;
         }
 
@@ -268,7 +271,7 @@ class CraftingManager
         }
 
         $requiredSpec = $recipe->getRequiredSpecialization();
-        if ($requiredSpec !== null && $player->getCraftSpecialization() !== $requiredSpec) {
+        if ($requiredSpec !== null && !$player->isSpecializedIn($requiredSpec->craftSlug())) {
             return ['ok' => false, 'message' => sprintf('Cette recette est reservee aux %s.', $requiredSpec->label())];
         }
 
@@ -445,7 +448,7 @@ class CraftingManager
 
         // Vérifier la spécialisation requise (recettes exclusives task 122)
         $requiredSpec = $recipe->getRequiredSpecialization();
-        if ($requiredSpec !== null && $player->getCraftSpecialization() !== $requiredSpec) {
+        if ($requiredSpec !== null && !$player->isSpecializedIn($requiredSpec->craftSlug())) {
             return [
                 'success' => false,
                 'item' => null,

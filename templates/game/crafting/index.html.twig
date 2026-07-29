@@ -20,30 +20,45 @@
             </svg>
             Specialisation de metier
         </h2>
-        {% if player.craftSpecialization %}
-            <p class="ds-body">
-                Vous etes <span class="ds-name ds-name--sm">{{ player.craftSpecialization.label }}</span>.
-                <span class="ds-hint">Bonus : +{{ specializationBonus }}% de chance d'ameliorer la qualite lors du craft en {{ player.craftSpecialization.craftSlug }}.</span>
-            </p>
-        {% elseif specializationCheck.ok %}
-            <p class="ds-body mb-3">
-                Choisissez une specialisation de maitrise. Le choix est <span class="ds-seal ds-seal-legendary">irreversible</span> et accorde +{{ specializationBonus }}% de chance d'amelioration de qualite sur le metier correspondant.
-            </p>
-            <form method="post" action="{{ path('app_game_craft_specialization') }}" onsubmit="return confirm('Ce choix est irreversible. Confirmer ?');" class="flex flex-wrap gap-2">
-                <input type="hidden" name="_token" value="{{ csrf_token('craft_specialization') }}">
-                {% for spec in specializations %}
-                    <button type="submit" name="specialization" value="{{ spec.value }}"
-                            class="ds-btn ds-btn--secondary ds-btn--sm"
-                            title="{{ spec.description }}">
-                        {{ spec.label }}
-                    </button>
-                {% endfor %}
-            </form>
-        {% else %}
-            <p class="ds-hint">
-                {{ specializationCheck.reason }}
-            </p>
-        {% endif %}
+        {# DOM-04 : une branche par arbre, et rien entre les arbres. On peut etre
+           forgeron d'armes ET alchimiste des remedes ; on ne peut pas etre
+           forgeron d'armes et d'armures. #}
+        <p class="ds-body mb-3">
+            Chaque metier ouvre <span class="ds-name ds-name--sm">deux branches</span>, et vous n'en prenez qu'une —
+            mais rien ne vous empeche de vous specialiser dans plusieurs metiers.
+            Une branche accorde +{{ specializationBonus }}% de chance d'amelioration de qualite sur son metier.
+            En changer coute <span class="ds-num">{{ specializationRespecCost }}</span> gils.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {% for tree in specializationTrees %}
+                <div class="ds-card p-3">
+                    <h3 class="ds-name ds-name--sm mb-1">{{ tree.craft.label }}</h3>
+                    {% if tree.chosen %}
+                        <p class="ds-hint mb-2">
+                            Branche prise : <span class="ds-seal ds-seal-rare">{{ tree.branches[tree.chosen].label }}</span>
+                        </p>
+                    {% elseif not tree.check.ok %}
+                        <p class="ds-hint mb-2">{{ tree.check.reason }}</p>
+                    {% endif %}
+                    {% if tree.chosen or tree.check.ok %}
+                        <form method="post" action="{{ path('app_game_craft_specialization') }}"
+                              onsubmit="return confirm('{{ (tree.chosen ? 'Changer de branche coute ' ~ specializationRespecCost ~ ' gils. Confirmer ?' : 'Confirmer cette branche ?')|e('js') }}');"
+                              class="flex flex-wrap gap-2">
+                            <input type="hidden" name="_token" value="{{ csrf_token('craft_specialization') }}">
+                            <input type="hidden" name="craft" value="{{ tree.craft.value }}">
+                            {% for key, branch in tree.branches %}
+                                <button type="submit" name="branch" value="{{ key }}"
+                                        class="ds-btn ds-btn--sm {{ key == tree.chosen ? 'ds-btn--primary' : 'ds-btn--secondary' }}"
+                                        title="{{ branch.description }}"
+                                        {{ key == tree.chosen ? 'disabled' : '' }}>
+                                    {{ branch.label }}
+                                </button>
+                            {% endfor %}
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     {# ECO-20 : le travail en cours a l'etabli. Le `craftingTime` des recettes

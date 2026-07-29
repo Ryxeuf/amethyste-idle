@@ -1,0 +1,100 @@
+# =============================================================================
+# Les branches terminales des arbres d'artisanat (DOM-04)
+# =============================================================================
+# GAME_DOMAINS § 6 : « une branche terminale exclusive **par arbre**
+# d'artisanat — le forgeron d'armes *ou* d'armures, l'alchimiste des remedes
+# *ou* des toxines. Exclusive au sein de l'arbre, changeable par respec couteux.
+# **Aucune exclusivite entre arbres** (doctrine § 1). »
+#
+# Ce que ce fichier corrige. Le modele livre portait une specialisation
+# **unique pour tout le personnage** et **irreversible** : choisir Forgeron
+# fermait a jamais la maitrise du Tanneur. C'est exactement l'exclusivite entre
+# arbres que la doctrine interdit — « interdire un arbre serait interdire un
+# geste » (§ 1). Le renoncement doit se jouer *dans* l'arbre, pas entre eux.
+#
+# Deux branches par arbre, et pas trois : le choix doit se raconter en une
+# phrase (« je suis le forgeron d'armes de la region »). Un eventail de choix
+# rend l'identite illisible, et c'est l'identite qui est le sujet — « le
+# forgeron d'armes de la region est une personne, pas une case » (§ 6).
+#
+# Ajouter un metier, c'est ajouter un bloc ici. Rien en dur.
+# =============================================================================
+
+crafts:
+    # --- Les quatre metiers historiques ---------------------------------
+    # Les deux premiers couples sont ceux que le canon nomme explicitement.
+    forgeron:
+        label: 'Forgeron'
+        branches:
+            weapons:
+                label: 'Forgeron d''armes'
+                description: 'Le tranchant avant la plaque : lames, pointes, et ce qui mord.'
+            armour:
+                label: 'Forgeron d''armures'
+                description: 'La plaque avant le tranchant : ce qui tient debout sous les coups.'
+
+    alchimiste:
+        label: 'Alchimiste'
+        branches:
+            remedies:
+                label: 'Alchimiste des remedes'
+                description: 'Ce qui repare : baumes, elixirs, antidotes.'
+            toxins:
+                label: 'Alchimiste des toxines'
+                description: 'Ce qui defait : poisons, vapeurs, corrosifs.'
+
+    # Le canon ne nomme pas ces deux couples-la. Ils suivent la meme regle que
+    # les autres — un axe qui se raconte en une phrase, et deux facons de
+    # servir la meme matiere.
+    tanneur:
+        label: 'Tanneur'
+        branches:
+            armour:
+                label: 'Tanneur d''armures'
+                description: 'Le cuir qui protege : plastrons souples, brassards, jambieres.'
+            harness:
+                label: 'Tanneur de harnachement'
+                description: 'Le cuir qui sert : sacs, carquois, sangles et outils.'
+
+    joaillier:
+        label: 'Joaillier'
+        branches:
+            focus:
+                label: 'Joaillier de focus'
+                description: 'La gemme qui canalise : ce que porte un lanceur de sorts.'
+            adornment:
+                label: 'Joaillier de parure'
+                description: 'La gemme qui se montre : ce qui dit le rang avant le coup.'
+
+    # --- Les trois metiers de la Piste H (ECO-29/30/31) -----------------
+    # Les couples sont ceux de GAME_DOMAINS § 7, colonne « specialisation
+    # terminale ».
+    cuisinier:
+        label: 'Cuisinier'
+        branches:
+            feast:
+                label: 'Table de fete'
+                description: 'Des effets puissants et courts, pour ce qu''on fait ensemble.'
+            provisions:
+                label: 'Vivres de route'
+                description: 'Des effets modestes et longs, pour ce qu''on fait seul et loin.'
+
+    charpentier:
+        label: 'Charpentier'
+        branches:
+            ranged:
+                label: 'Armes de trait'
+                description: 'Arcs, batons et fleches : le bois qui projette.'
+            furnishing:
+                label: 'Mobilier'
+                description: 'Ce qui meuble une demeure et ce qui la fait tenir.'
+
+    tailleur:
+        label: 'Tailleur'
+        branches:
+            spellrobes:
+                label: 'Robes de sort'
+                description: 'Le tissu qui porte les emplacements de sort.'
+            workwear:
+                label: 'Tenues de travail'
+                description: 'Le tissu qui tient a la recolte : doublures et confort.'

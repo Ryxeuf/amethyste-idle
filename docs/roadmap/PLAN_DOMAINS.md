@@ -18,7 +18,7 @@
 | DOM-01 ✅ | Passifs typés : élément × registre (refactor du format) | M | ∅ |
 | DOM-02 ✅ | Activation par build (domaines actifs = sources portées) | M | ← DOM-01 |
 | DOM-03 ✅ | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
-| DOM-04 | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
+| DOM-04 ✅ | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
 | DOM-05 | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
 | DOM-06 | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
 | DOM-07 | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
@@ -143,15 +143,39 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > emplacement, au prix d'un ordre de slots qui n'existe pas. Le canon parle de pièces, pas
 > d'emplacements individuels.
 
-### DOM-04 — Spécialisation par arbre (S | ★★ | HAUTE)
+### DOM-04 — Spécialisation par arbre ✅ (S | ★★ | HAUTE)
 > GAME_DOMAINS §6. `Player.craftSpecialization` (singulier) → une spécialisation par
 > arbre d'artisanat ; `Recipe.requiredSpecialization` la consomme déjà.
-> Prérequis : ∅
-- [ ] Migration : spécialisation portée par (player, domaine d'artisanat), rétro-compat
-      de la colonne existante
-- [ ] Exclusivité au sein de l'arbre ; **respec de spécialisation coûteux** (le seul
-      respec payant — paramètre), le respec de points ordinaire reste doux
-- [ ] Tests : une branche par arbre, coût du changement, recettes gatées
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] `PlayerCraftSpecialization` — une ligne par `(player, craft)`, l'unicité portée par
+      **le schéma** : un chemin de code qui l'oublierait ne pourrait pas la violer
+- [x] `config/game/craft_branches.yaml` — 7 arbres × 2 branches, déclaratif. Le loader
+      **refuse un arbre à moins de deux branches** : une branche unique n'est pas un choix
+- [x] Respec de branche **payant** (2 500 gils, paramètre), le seul du jeu — le respec de
+      points ordinaire reste doux
+- [x] Migration de données : les joueurs déjà spécialisés reprennent leur métier et sa
+      première branche ; la colonne héritée reste, le jeu ne la lit plus
+- [x] Tests : 9 (`CraftBranchCatalogTest`) + 12 (`CraftSpecializationServiceTest`)
+
+> **Le défaut corrigé n'était pas un manque : c'était une violation de la doctrine.** Le
+> modèle livré fermait six arbres pour en ouvrir un — devenir Forgeron interdisait à jamais
+> la maîtrise du Tanneur. C'est exactement l'exclusivité *entre* arbres que §1 refuse :
+> « interdire un arbre serait interdire un geste ». Le renoncement se joue désormais **dans**
+> l'arbre.
+>
+> **Le seuil se lit dans l'arbre concerné.** Il se lisait sur le meilleur des quatre : un
+> joueur au seuil chez le forgeron pouvait se déclarer alchimiste sans avoir jamais touché
+> un mortier.
+>
+> **Les trois métiers de la Piste H entrent dans l'enum.** Cuisinier, charpentier et
+> tailleur avaient des arbres et des recettes, mais aucune façon de s'y spécialiser — le
+> tailleur pouvait être le seul de la région à coudre des robes sans que rien ne le dise.
+>
+> **La migration impose une branche, et il n'y avait pas d'alternative** : l'ancienne valeur
+> désignait un métier, pas une branche. Elle prend la première déclarée, et le respec existe
+> précisément pour que ce choix imposé ne soit pas définitif. Le change reste un gain net.
+> Un test verrouille la correspondance entre les sept valeurs de repli du SQL et le
+> catalogue — la duplication est assumée, la divergence ne l'est pas.
 
 ### DOM-05 — Arbre du bûcheron (S | ★★ | HAUTE)
 > Gabarit récolte (GAME_DOMAINS §5.2). Se livre **avec** ZON-34.

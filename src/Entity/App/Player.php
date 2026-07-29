@@ -60,6 +60,7 @@ class Player implements CharacterInterface
         $this->bestiaryEntries = new ArrayCollection();
         $this->resourceCatalogEntries = new ArrayCollection();
         $this->achievements = new ArrayCollection();
+        $this->craftSpecializations = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -228,8 +229,29 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'renown_score', type: 'integer', options: ['default' => 0])]
     private int $renownScore = 0;
 
+    /**
+     * Colonne heritee — le metier unique et irreversible d'avant DOM-04.
+     *
+     * Elle n'est plus lue par le jeu : la specialisation vit desormais dans
+     * `craftSpecializations`, une ligne par arbre. Elle reste en base parce que
+     * la migration de donnees s'appuie dessus, et qu'une colonne qu'on retire le
+     * jour meme ou on la migre ne laisse aucun recours si la migration s'est
+     * trompee.
+     */
     #[ORM\Column(name: 'craft_specialization', type: 'string', length: 20, nullable: true, enumType: CraftSpecialization::class)]
     private ?CraftSpecialization $craftSpecialization = null;
+
+    /**
+     * La branche prise dans chaque arbre d'artisanat (DOM-04).
+     *
+     * Aucune exclusivite entre arbres : on peut etre forgeron d'armes **et**
+     * alchimiste des remedes. L'exclusivite est au sein de l'arbre, et c'est le
+     * schema qui la tient (contrainte unique `(player, craft)`).
+     *
+     * @var Collection<int, PlayerCraftSpecialization>
+     */
+    #[ORM\OneToMany(targetEntity: PlayerCraftSpecialization::class, mappedBy: 'player', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $craftSpecializations;
 
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
@@ -789,12 +811,45 @@ class Player implements CharacterInterface
 
     public function hasCraftSpecialization(): bool
     {
-        return $this->craftSpecialization !== null;
+        return !$this->craftSpecializations->isEmpty();
     }
 
+    /**
+     * Le joueur a-t-il pris une branche dans cet arbre ?
+     *
+     * La signature n'a pas bouge : les appelants qui gataient une recette sur
+     * « etre specialise en forgeron » continuent de fonctionner, et gagnent au
+     * passage le droit de l'etre aussi ailleurs.
+     */
     public function isSpecializedIn(string $craft): bool
     {
-        return $this->craftSpecialization !== null && $this->craftSpecialization->craftSlug() === $craft;
+        return $this->getCraftSpecializationFor($craft) !== null;
+    }
+
+    public function getCraftSpecializationFor(string $craft): ?PlayerCraftSpecialization
+    {
+        foreach ($this->craftSpecializations as $specialization) {
+            if ($specialization->getCraft()->value === $craft) {
+                return $specialization;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, PlayerCraftSpecialization>
+     */
+    public function getCraftSpecializations(): Collection
+    {
+        return $this->craftSpecializations;
+    }
+
+    public function addCraftSpecialization(PlayerCraftSpecialization $specialization): void
+    {
+        if (!$this->craftSpecializations->contains($specialization)) {
+            $this->craftSpecializations->add($specialization);
+        }
     }
 
     public function getRace(): ?Race

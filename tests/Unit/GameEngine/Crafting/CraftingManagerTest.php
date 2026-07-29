@@ -441,7 +441,7 @@ class CraftingManagerTest extends TestCase
 
         $player = $this->createMock(Player::class);
         $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
-        $player->method('getCraftSpecialization')->willReturn(null);
+        $player->method('isSpecializedIn')->willReturn(false);
 
         $available = $this->craftingManager->getAvailableRecipes($player, 'forgeron');
 
@@ -466,7 +466,7 @@ class CraftingManagerTest extends TestCase
 
         $player = $this->createMock(Player::class);
         $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
-        $player->method('getCraftSpecialization')->willReturn(CraftSpecialization::Forgeron);
+        $player->method('isSpecializedIn')->willReturn(true);
 
         $available = $this->craftingManager->getAvailableRecipes($player, 'forgeron');
 
@@ -474,7 +474,12 @@ class CraftingManagerTest extends TestCase
         $this->assertSame($exclusiveRecipe, array_values($available)[0]);
     }
 
-    public function testGetAvailableRecipesHidesExclusiveWhenSpecializationMismatch(): void
+    /**
+     * DOM-04 : le gardien demande « as-tu pris une branche **dans cet arbre** ? ».
+     * Avant, il demandait « est-ce LE metier que tu as choisi ? » — et fermait
+     * six arbres pour en ouvrir un.
+     */
+    public function testGetAvailableRecipesHidesExclusiveWhenTheTreeIsNotSpecializedIn(): void
     {
         $exclusiveRecipe = new Recipe();
         $exclusiveRecipe->setName('Master Blade');
@@ -491,7 +496,7 @@ class CraftingManagerTest extends TestCase
 
         $player = $this->createMock(Player::class);
         $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
-        $player->method('getCraftSpecialization')->willReturn(CraftSpecialization::Joaillier);
+        $player->method('isSpecializedIn')->willReturn(false);
 
         $available = $this->craftingManager->getAvailableRecipes($player, 'forgeron');
 
@@ -523,7 +528,7 @@ class CraftingManagerTest extends TestCase
 
         $player = $this->createMock(Player::class);
         $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
-        $player->method('getCraftSpecialization')->willReturn(null);
+        $player->method('isSpecializedIn')->willReturn(false);
 
         $locked = $this->craftingManager->getLockedRecipes($player, 'forgeron');
 
@@ -546,7 +551,7 @@ class CraftingManagerTest extends TestCase
         $recipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
 
         $player = $this->createPlayerWithBagItems(['iron' => 5]);
-        $player->method('getCraftSpecialization')->willReturn(null);
+        $player->method('isSpecializedIn')->willReturn(false);
 
         $this->playerItemGenerator->expects($this->never())->method('generateFromItemId');
 
