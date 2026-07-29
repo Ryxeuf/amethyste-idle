@@ -39,18 +39,23 @@ class VeinRestorationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Les chantiers en cours sur toute la carte, indexes par `zoneId:slug`.
+     * Les chantiers en cours sur toute la carte, indexes par `zone:filon`.
      *
      * Le tick quotidien passe sur tous les filons ; il lui faut donc une seule
      * requete plutot qu'une par filon.
+     *
+     * La cle porte le **slug** de la zone et non son identifiant : le slug est
+     * une clef naturelle, toujours renseignee, y compris sur une zone qui n'a
+     * jamais vu la base.
      *
      * @return array<string, true>
      */
     public function activeKeys(\DateTimeImmutable $now): array
     {
-        /** @var list<array{zoneId: int, veinSlug: string}> $rows */
+        /** @var list<array{zoneSlug: string, veinSlug: string}> $rows */
         $rows = $this->createQueryBuilder('r')
-            ->select('IDENTITY(r.zone) AS zoneId', 'r.veinSlug AS veinSlug')
+            ->join('r.zone', 'z')
+            ->select('z.slug AS zoneSlug', 'r.veinSlug AS veinSlug')
             ->andWhere('r.endsAt > :now')
             ->setParameter('now', $now)
             ->getQuery()
@@ -58,15 +63,15 @@ class VeinRestorationRepository extends ServiceEntityRepository
 
         $keys = [];
         foreach ($rows as $row) {
-            $keys[self::key((int) $row['zoneId'], (string) $row['veinSlug'])] = true;
+            $keys[self::key((string) $row['zoneSlug'], (string) $row['veinSlug'])] = true;
         }
 
         return $keys;
     }
 
-    public static function key(int $zoneId, string $veinSlug): string
+    public static function key(string $zoneSlug, string $veinSlug): string
     {
-        return $zoneId . ':' . $veinSlug;
+        return $zoneSlug . ':' . $veinSlug;
     }
 
     /**

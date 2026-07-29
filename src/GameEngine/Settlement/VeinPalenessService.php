@@ -117,12 +117,9 @@ class VeinPalenessService
      */
     private function restorationBonus(ZoneVein $vein, array $underway, float $bonus): float
     {
-        $zoneId = $vein->getZone()->getId();
-        if (null === $zoneId) {
-            return 0.0;
-        }
+        $key = VeinRestorationRepository::key($vein->getZone()->getSlug(), $vein->getSlug());
 
-        return isset($underway[VeinRestorationRepository::key($zoneId, $vein->getSlug())]) ? $bonus : 0.0;
+        return isset($underway[$key]) ? $bonus : 0.0;
     }
 
     /**
