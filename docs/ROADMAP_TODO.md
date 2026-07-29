@@ -27,7 +27,7 @@ L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'
 **Plans annexes :**
 - [PIVOT_PBBG.md](PIVOT_PBBG.md) — decision du pivot, equivalences carte → zones
 - [ZON_CAMPAIGN_RECAP.md](ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis (traites en Sprint 13)
-- [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md) ✅ — **7/7** (retention hebdomadaire)
+- [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md) ✅ — **7/7** (retention hebdomadaire) ; **vague 4 ouverte : RET-08→10** (le tableau du lundi, cadre par GAME_DASHBOARD.md)
 - [roadmap/PLAN_SETTLEMENTS.md](roadmap/PLAN_SETTLEMENTS.md) ✅ — **17/17** (foyers, Crue, Paleur) ; **vague 2 ouverte : FOY-18→21** (logement)
 - [roadmap/PLAN_ZONES.md](roadmap/PLAN_ZONES.md) ✅ — **7/7** (contenu des zones) ; restent ZON-39/40 et des donnees
 - [roadmap/PLAN_DOMAINS.md](roadmap/PLAN_DOMAINS.md) ✅ — **8/8** (arbres de domaine) ; DOM-09 ouvert

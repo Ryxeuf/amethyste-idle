@@ -33,7 +33,7 @@
 | Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) — vague 2 ouverte : NAR-15→20 (l'an 1 des marees) |
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
 | **Consolidation post-pivot (ZON-22→27)** | **8/8** | ✅ Sprint 13 termine (2026-07-26) — dette du pivot soldee |
-| Plan Retention (RET-01→07) | 7/7 | ✅ Termine (2026-07-28) |
+| Plan Retention (RET-01→07) | 7/7 | ✅ Termine (2026-07-28) — vague 4 ouverte : RET-08→10 (le tableau du lundi) |
 | Plan Foyers (FOY-01→17) | 17/17 | ✅ Termine (2026-07-29) — vague 2 ouverte : FOY-18→21 (logement) |
 | Plan Zones (ZON-30→36) | 7/7 | ✅ Termine (2026-07-29) — +ZON-37/38 livres ; restent ZON-39/40 et des donnees |
 | Plan Domaines (DOM-01→08) | 8/8 | ✅ Termine (2026-07-29) — DOM-09 ouvert |
@@ -69,17 +69,18 @@
 | ~~13~~ | ~~**FOY-11 → 16**~~ ✅ | Paleur, restauration, doctrine, marees consequence | **Livres les 2026-07-28/29** — l'extraction laisse une trace par filon (jamais par zone), la sanction devient une depense politique (**Piste D complete**), l'axe Extraire / Preserver devient un batiment (**Piste E complete**), la maree qui vient est choisie par ce que le serveur a fait, contrat transverse pose. **Plan foyers complet 17/17** |
 | ~~14~~ | ~~**ZON-30 → 36**~~ ✅ | Contenu des zones ([PLAN_ZONES.md](PLAN_ZONES.md)) | **7/7 livres au 2026-07-29 — plan complet** : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste, lois de zone en contrat, ligne du bois, recoltes harmonisees, affinites elementaires. **+ZON-37/38 livres** en chemin |
 | 15 | **BALANCE §24.0 + §24.3** | Ponderation du grain + seuils de foyer × W | §24.0 : 1 ligne de config `settlements.yaml`, toujours **non appliquee** au 2026-07-29. §24.3 **tranche le 2026-07-29 : la doc a raison** — `SettlementRankCalculator` doit lire des seuils × `W` (`WorldScaleService`). Meme chaine de depot, a livrer ensemble |
-| 16 | **ZON-39** | La loi de nommage appliquee aux libelles | Donnees pures (« Village de Lumiere » → « le Fanal », « Sanctuaire de Lumiere » → « Sanctuaire de la Voute », « Confrerie des Ombres » → « Confrerie des Ruelles ») |
-| 17 | **FAC-02 → 03** | Les gestes nourrissent la reputation, les consequences d'Hostile | La faction portee (FAC-01) doit se gagner par le jeu, pas par decret |
-| 18 | **FAC-04 → 05** | La Fonderie (faction + contrats d'approvisionnement) | La cinquieme faction devient jouable ; prerequis du Repertoire |
-| 19 | **ECO-28** | Commandes de service | Clot la **Piste F** ; prerequis tous livres |
-| 20 | **FAC-06 → 08** | Les Ruelles jouees (receleur, contrefacon, contrebande) | La face sombre de la Concorde, sans PvP |
-| 21 | **REP-01 → 06** | L'Autel d'eveil et le Repertoire ([PLAN_REPERTOIRE.md](PLAN_REPERTOIRE.md)) | Apres FAC-04 — le dernier systeme acte sans code |
-| 22 | **FOY-18 → 21** | Le logement dans les foyers (vague 2) | Le housing rejoint le pilier territorial |
-| 23 | **ECO-32 → 35** | Les caravanes (Piste I) | Affretement Bourg↔Bourg, escorte-astreinte, jamais d'interception joueur |
-| 24 | **NAR-15 → 20** | L'an 1 des marees ([PLAN_NARRATIVE.md](PLAN_NARRATIVE.md)) | Attention : la moitie « consequences » de NAR-15 est deja livree par FOY-15 |
-| 25 | **DOM-09, ZON-40, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), signatures inertes Foret/Vallons/Marais (ZON-40, tranche le 2026-07-29 : affleurements d'amethyste a poser), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
-| 26 | **WIK-02 → 03** | Le wiki joueur en ligne ([PLAN_WIKI.md](PLAN_WIKI.md)) | Contenu WIK-01 ✅ livre (docs/wiki/, 7 chapitres) ; reste le controleur public /wiki et l'acces site + jeu |
+| 16 | **RET-08 → 10** | Le tableau du lundi ([GAME_DASHBOARD](../GAME_DASHBOARD.md), PLAN_RETENTION vague 4) | Verdict V1 du playtest : le jalon UI le plus rentable — la semaine entre sur le hub, le lundi devient un etat, le choix de commission remonte |
+| 17 | **ZON-39** | La loi de nommage appliquee aux libelles | Donnees pures (« Village de Lumiere » → « le Fanal », « Sanctuaire de Lumiere » → « Sanctuaire de la Voute », « Confrerie des Ombres » → « Confrerie des Ruelles ») |
+| 18 | **FAC-02 → 03** | Les gestes nourrissent la reputation, les consequences d'Hostile | La faction portee (FAC-01) doit se gagner par le jeu, pas par decret |
+| 19 | **FAC-04 → 05** | La Fonderie (faction + contrats d'approvisionnement) | La cinquieme faction devient jouable ; prerequis du Repertoire |
+| 20 | **ECO-28** | Commandes de service | Clot la **Piste F** ; prerequis tous livres |
+| 21 | **FAC-06 → 08** | Les Ruelles jouees (receleur, contrefacon, contrebande) | La face sombre de la Concorde, sans PvP |
+| 22 | **REP-01 → 06** | L'Autel d'eveil et le Repertoire ([PLAN_REPERTOIRE.md](PLAN_REPERTOIRE.md)) | Apres FAC-04 — le dernier systeme acte sans code |
+| 23 | **FOY-18 → 21** | Le logement dans les foyers (vague 2) | Le housing rejoint le pilier territorial |
+| 24 | **ECO-32 → 35** | Les caravanes (Piste I) | Affretement Bourg↔Bourg, escorte-astreinte, jamais d'interception joueur |
+| 25 | **NAR-15 → 20** | L'an 1 des marees ([PLAN_NARRATIVE.md](PLAN_NARRATIVE.md)) | Attention : la moitie « consequences » de NAR-15 est deja livree par FOY-15 |
+| 26 | **DOM-09, ZON-40, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), signatures inertes Foret/Vallons/Marais (ZON-40, tranche le 2026-07-29 : affleurements d'amethyste a poser), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
+| 27 | **WIK-02 → 03** | Le wiki joueur en ligne ([PLAN_WIKI.md](PLAN_WIKI.md)) | Contenu WIK-01 ✅ livre (docs/wiki/, 7 chapitres) ; reste le controleur public /wiki et l'acces site + jeu |
 
 Transverse, au fil de l'eau : **FOY-16 livre** (tests du pilier territorial ; **RET-07 livre**), mise a jour de `ROADMAP_DONE.md`
 a chaque jalon livre (regle 13 de CLAUDE.md).
