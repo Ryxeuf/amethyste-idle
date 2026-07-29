@@ -2,7 +2,24 @@
 
 {% block title %}{{ 'game.zone.title'|trans }}{% endblock %}
 
+{# Duree lisible pour la barre de voyage : `12:34`, ou `1:02:03` au-dela d'une
+   heure. Rendue cote serveur pour que la carte reste lisible sans JavaScript ;
+   le controleur Stimulus reprend ensuite le meme format a chaque seconde. #}
+{% macro travel_duration(seconds) %}
+    {%- set h = (seconds / 3600)|round(0, 'floor') -%}
+    {%- set m = ((seconds % 3600) / 60)|round(0, 'floor') -%}
+    {%- set s = seconds % 60 -%}
+    {%- if h > 0 -%}
+        {{- h }}:{{ '%02d'|format(m) }}:{{ '%02d'|format(s) -}}
+    {%- else -%}
+        {{- m }}:{{ '%02d'|format(s) -}}
+    {%- endif -%}
+{% endmacro %}
+
 {% block game_content %}
+{# L'import vit dans le bloc : en heritage Twig, ce qui est declare au niveau
+   du template n'est pas visible depuis les blocs rendus par le parent. #}
+{% import _self as fmt %}
 {#
    Ecran de zone — section 07 du systeme de design.
 
@@ -138,18 +155,50 @@
                     </div>
                 {% endif %}
 
+                {# ── Voyage en cours ──────────────────────────────── #}
+                {# Le trajet se lit comme une jauge : ce qui est parcouru a     #}
+                {# gauche, ce qui reste a droite. Le decompte vit cote client   #}
+                {# (travel_progress), mais l'arrivee reste reglee par le        #}
+                {# serveur au rechargement que ce meme controleur declenche.    #}
                 {% if travel %}
-                    <div class="ds-card p-3 mb-4">
+                    <div class="ds-card p-3 mb-4"
+                         data-testid="zone-travel"
+                         data-controller="travel-progress"
+                         data-travel-progress-arrives-at-value="{{ travel.arrivesAt.timestamp }}"
+                         data-travel-progress-total-value="{{ travel.totalSeconds }}"
+                         data-travel-progress-server-now-value="{{ 'now'|date('U') }}">
                         <p class="text-sm font-semibold text-ink">
-                            {{ 'game.zone.travel.in_progress'|trans({'%zone%': travel.destination.localizedName(app.request.locale)}) }}
+                            🧳 {{ 'game.zone.travel.in_progress'|trans({'%zone%': travel.destination.localizedName(app.request.locale)}) }}
                         </p>
-                        <p class="ds-num ds-num--sm ds-num--muted text-left mt-0.5">
-                            {% if travel.remainingSeconds < 60 %}
-                                {{ 'game.zone.travel.arrival_imminent'|trans }}
-                            {% else %}
-                                {{ 'game.zone.travel.arrival_in'|trans({'%minutes%': (travel.remainingSeconds / 60)|round(0, 'ceil')}) }}
-                            {% endif %}
-                        </p>
+
+                        {% if travel.totalSeconds > 0 %}
+                            <div class="ds-meter__head mt-2">
+                                <span>{{ 'game.zone.travel.elapsed'|trans }}
+                                    <span data-travel-progress-target="elapsed">{{ fmt.travel_duration(travel.elapsedSeconds) }}</span>
+                                </span>
+                                <span>{{ 'game.zone.travel.remaining'|trans }}
+                                    <span data-travel-progress-target="remaining">{{ fmt.travel_duration(travel.remainingSeconds) }}</span>
+                                </span>
+                            </div>
+                            <div class="ds-meter ds-meter--tall"
+                                 role="progressbar"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-valuenow="{{ ((travel.elapsedSeconds / travel.totalSeconds) * 100)|round }}"
+                                 aria-label="{{ 'game.zone.travel.in_progress'|trans({'%zone%': travel.destination.localizedName(app.request.locale)}) }}">
+                                <div class="ds-meter__fill" data-travel-progress-target="bar"
+                                     style="width: {{ ((travel.elapsedSeconds / travel.totalSeconds) * 100)|round }}%"></div>
+                            </div>
+                        {% else %}
+                            {# Voyage entame avant le suivi du depart : pas de duree #}
+                            {# totale, donc pas de barre — le decompte seul.         #}
+                            <p class="ds-num ds-num--sm ds-num--muted text-left mt-0.5">
+                                {{ 'game.zone.travel.remaining'|trans }}
+                                <span data-travel-progress-target="remaining">{{ fmt.travel_duration(travel.remainingSeconds) }}</span>
+                            </p>
+                        {% endif %}
+
+                        <p class="ds-hint mt-2">{{ 'game.zone.travel.auto_refresh'|trans }}</p>
                     </div>
                 {% endif %}
 

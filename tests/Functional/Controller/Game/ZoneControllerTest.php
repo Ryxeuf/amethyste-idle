@@ -614,6 +614,7 @@ class ZoneControllerTest extends TestCase
         $player->setLife(100);
         $player->setCurrentZone($zone);
         $player->setTravelToZone($destination);
+        $player->setTravelStartedAt(new \DateTimeImmutable('-300 seconds'));
         $player->setTravelArrivesAt(new \DateTimeImmutable('+300 seconds'));
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
@@ -627,6 +628,37 @@ class ZoneControllerTest extends TestCase
         $this->assertSame($destination, $travel['destination']);
         $this->assertGreaterThan(290, $travel['remainingSeconds']);
         $this->assertLessThanOrEqual(300, $travel['remainingSeconds']);
+
+        // Barre de progression : la moitie du trajet est derriere le joueur.
+        $this->assertSame(600, $travel['totalSeconds']);
+        $this->assertGreaterThanOrEqual(300, $travel['elapsedSeconds']);
+        $this->assertSame($travel['totalSeconds'], $travel['elapsedSeconds'] + $travel['remainingSeconds']);
+    }
+
+    public function testTravelStartedBeforeDepartureTrackingHasNoTotalDuration(): void
+    {
+        $zone = $this->buildZone('village-de-lumiere', Zone::TYPE_CITY, true);
+        $destination = $this->buildZone('crete-de-ventombre');
+        $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
+        $player->setCurrentZone($zone);
+        $player->setTravelToZone($destination);
+        $player->setTravelArrivesAt(new \DateTimeImmutable('+300 seconds'));
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->zoneConnectionRepository->method('findEnabledFrom')->willReturn([]);
+        $this->playerRepository->method('findBy')->willReturn([$player]);
+        $this->objectLayerRepository->method('findBy')->willReturn([]);
+
+        $this->controller->index();
+
+        $travel = $this->capturedTemplateParams['travel'];
+        // Voyage anterieur a `travel_started_at` : la vue retombe sur le decompte
+        // seul plutot que d'inventer un depart et de mentir sur l'avancement.
+        $this->assertSame(0, $travel['totalSeconds']);
+        $this->assertSame(0, $travel['elapsedSeconds']);
+        $this->assertGreaterThan(290, $travel['remainingSeconds']);
     }
 
     public function testSafeZoneHidesHuntAction(): void

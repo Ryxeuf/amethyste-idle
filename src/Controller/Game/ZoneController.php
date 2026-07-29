@@ -168,15 +168,7 @@ class ZoneController extends AbstractController
 
         $poiCounts = $this->countPointsOfInterest($zone);
 
-        $travel = null;
-        if ($player->isTraveling() && null !== $player->getTravelArrivesAt()) {
-            $remaining = $player->getTravelArrivesAt()->getTimestamp() - time();
-            $travel = [
-                'destination' => $player->getTravelToZone(),
-                'arrivesAt' => $player->getTravelArrivesAt(),
-                'remainingSeconds' => max(0, $remaining),
-            ];
-        }
+        $travel = $this->buildTravelProgress($player);
 
         // Chaque liaison porte la duree **reellement subie**, monture comprise
         // (tache 130) : annoncer la duree de reference alors qu'une monture la
@@ -852,6 +844,37 @@ class ZoneController extends AbstractController
             'active' => false,
             'eligible' => $this->expeditionService->isEligibleZone($zone),
             'durations' => $this->expeditionService->getDurations(),
+        ];
+    }
+
+    /**
+     * Etat du voyage en cours, prepare pour la barre de progression.
+     *
+     * `totalSeconds` vaut 0 quand le depart est inconnu — voyage entame avant
+     * l'ajout de `travel_started_at`. La vue affiche alors le decompte seul :
+     * une barre sans duree totale ne pourrait que mentir sur l'avancement.
+     *
+     * @return array{destination: Zone, startedAt: ?\DateTimeImmutable, arrivesAt: \DateTimeImmutable, totalSeconds: int, elapsedSeconds: int, remainingSeconds: int}|null
+     */
+    private function buildTravelProgress(Player $player): ?array
+    {
+        $destination = $player->getTravelToZone();
+        $arrivesAt = $player->getTravelArrivesAt();
+        if (null === $destination || null === $arrivesAt) {
+            return null;
+        }
+
+        $startedAt = $player->getTravelStartedAt();
+        $remaining = max(0, $arrivesAt->getTimestamp() - time());
+        $total = null !== $startedAt ? max(0, $arrivesAt->getTimestamp() - $startedAt->getTimestamp()) : 0;
+
+        return [
+            'destination' => $destination,
+            'startedAt' => $startedAt,
+            'arrivesAt' => $arrivesAt,
+            'totalSeconds' => $total,
+            'elapsedSeconds' => max(0, $total - $remaining),
+            'remainingSeconds' => $remaining,
         ];
     }
 

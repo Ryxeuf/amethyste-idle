@@ -89,6 +89,7 @@ class PlayerController extends AbstractController
             // courant ferait « arriver » le joueur ailleurs quelques minutes
             // apres la teleportation.
             $player->setTravelToZone(null);
+            $player->setTravelStartedAt(null);
             $player->setTravelArrivesAt(null);
             $this->em->flush();
 
@@ -203,6 +204,7 @@ class PlayerController extends AbstractController
         if ($this->isCsrfTokenValid('reset' . $player->getId(), $request->request->get('_token'))) {
             $player->setCurrentZone(null);
             $player->setTravelToZone(null);
+            $player->setTravelStartedAt(null);
             $player->setTravelArrivesAt(null);
 
             $zone = $this->playerZoneSynchronizer->resolveOrAssign($player, true);

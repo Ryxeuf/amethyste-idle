@@ -62,6 +62,35 @@ class ZoneTravelServiceTest extends TestCase
         $this->assertSame($from, $player->getCurrentZone(), 'Le joueur reste dans sa zone tant que le voyage n\'est pas arrive.');
     }
 
+    public function testStartTravelRecordsDepartureSoDurationIsKnown(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($from, $to, 300));
+
+        $startedAt = $player->getTravelStartedAt();
+        $this->assertNotNull($startedAt, 'Le depart est horodate : sans lui, la barre de progression n\'a pas de duree totale.');
+        $this->assertEqualsWithDelta(time(), $startedAt->getTimestamp(), 2);
+        $this->assertSame(300, $arrivesAt->getTimestamp() - $startedAt->getTimestamp());
+    }
+
+    public function testStartTravelDepartureAccountsForMountSpeed(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+        $player->setActiveMount((new Mount())->setSpeedBonus(50));
+
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($from, $to, 300));
+
+        $startedAt = $player->getTravelStartedAt();
+        $this->assertNotNull($startedAt);
+        // La duree totale lue par la barre est celle reellement subie, pas celle du graphe.
+        $this->assertSame(200, $arrivesAt->getTimestamp() - $startedAt->getTimestamp());
+    }
+
     public function testActiveMountShortensTravel(): void
     {
         $from = $this->buildZone('village');
@@ -192,6 +221,7 @@ class ZoneTravelServiceTest extends TestCase
         $to = $this->buildZone('foret');
         $player = $this->buildPlayerIn($from);
         $player->setTravelToZone($to);
+        $player->setTravelStartedAt(new \DateTimeImmutable('-5 minutes'));
         $player->setTravelArrivesAt(new \DateTimeImmutable('-1 second'));
 
         $this->visitedZoneRepository->method('hasVisited')->willReturn(false);
@@ -202,6 +232,7 @@ class ZoneTravelServiceTest extends TestCase
         $this->assertSame($to, $player->getCurrentZone());
         $this->assertFalse($player->isTraveling());
         $this->assertNull($player->getTravelArrivesAt());
+        $this->assertNull($player->getTravelStartedAt(), 'Le depart est efface avec le reste du voyage.');
     }
 
     public function testSettleArrivalDispatchesPlayerTraveledEvent(): void
