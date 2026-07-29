@@ -64,6 +64,15 @@ class Zone
     #[ORM\Column(name: 'map_y', type: 'integer', nullable: true)]
     private ?int $mapY = null;
 
+    /**
+     * Contour de la zone sur la carte illustree : une liste de points « x,y »
+     * separes par des espaces, dans le **meme espace 0-100** que `mapX`/`mapY`
+     * (format `points` d'un `<polygon>` SVG). null = zone sans contour trace :
+     * seule sa pastille reste cliquable, et le brouillard ne s'y perce pas.
+     */
+    #[ORM\Column(name: 'map_shape', type: 'text', nullable: true)]
+    private ?string $mapShape = null;
+
     #[ORM\Column(name: 'type', type: 'string', length: 32, options: ['default' => self::TYPE_WILDERNESS])]
     private string $type = self::TYPE_WILDERNESS;
 
@@ -279,6 +288,23 @@ class Zone
     public function hasMapPosition(): bool
     {
         return null !== $this->mapX && null !== $this->mapY;
+    }
+
+    public function getMapShape(): ?string
+    {
+        return $this->mapShape;
+    }
+
+    public function setMapShape(?string $mapShape): self
+    {
+        $this->mapShape = $mapShape;
+
+        return $this;
+    }
+
+    public function hasMapShape(): bool
+    {
+        return null !== $this->mapShape && '' !== $this->mapShape;
     }
 
     public function setIllustrationPath(?string $illustrationPath): self

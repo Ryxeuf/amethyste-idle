@@ -115,11 +115,47 @@ class ZoneDefinitionLoader
             // 0-100 du cadre ; null = zone non placee (masquee de la carte).
             'map_x' => isset($definition['map_x']) ? (int) $definition['map_x'] : null,
             'map_y' => isset($definition['map_y']) ? (int) $definition['map_y'] : null,
+            // Contour cliquable sur la carte illustree (meme espace 0-100).
+            'map_shape' => $this->normalizeMapShape($slug, $definition['map_shape'] ?? null, $source),
             'explore' => $this->normalizeExplore($slug, $definition['explore'] ?? null, $source),
             'gather' => $this->normalizeGather($slug, $definition['gather'] ?? null, $source),
             'mobs' => $this->normalizeMobs($slug, $definition['mobs'] ?? null, $source),
             'pnjs' => $this->normalizePnjs($slug, $definition['pnjs'] ?? null, $source),
         ];
+    }
+
+    /**
+     * Contour de zone sur la carte illustree : « x,y x,y x,y… », dans le meme
+     * espace 0-100 que `map_x`/`map_y`.
+     *
+     * La donnee part telle quelle dans l'attribut `points` d'un `<polygon>` SVG :
+     * elle est validee ici plutot qu'echappee a l'affichage, parce qu'un contour
+     * malforme doit casser l'import — pas rendre une carte muette.
+     */
+    private function normalizeMapShape(string $slug, mixed $shape, string $source): ?string
+    {
+        if (null === $shape) {
+            return null;
+        }
+        if (!\is_string($shape)) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid "map_shape" in "%s": expected a string of "x,y" points.', $slug, $source));
+        }
+
+        $points = preg_split('/\s+/', trim($shape), -1, \PREG_SPLIT_NO_EMPTY) ?: [];
+        if (\count($points) < 3) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has a "map_shape" with %d point(s) in "%s": a polygon needs at least 3.', $slug, \count($points), $source));
+        }
+
+        foreach ($points as $point) {
+            if (1 !== preg_match('/^(\d{1,3}),(\d{1,3})$/', $point, $matches)) {
+                throw new ZoneDefinitionException(sprintf('Zone "%s" has a malformed point "%s" in its "map_shape" in "%s": expected "x,y" with integers.', $slug, $point, $source));
+            }
+            if ((int) $matches[1] > 100 || (int) $matches[2] > 100) {
+                throw new ZoneDefinitionException(sprintf('Zone "%s" has an out-of-range point "%s" in its "map_shape" in "%s": coordinates are percentages (0-100).', $slug, $point, $source));
+            }
+        }
+
+        return implode(' ', $points);
     }
 
     /**

@@ -125,6 +125,45 @@ class ZoneDefinitionLoaderTest extends TestCase
         self::assertTrue($connection['enabled']);
     }
 
+    public function testMapShapeIsNormalized(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'a' => ['name' => 'A', 'map_x' => 50, 'map_y' => 55, 'map_shape' => "  40,40   60,40\n60,60 40,60 "],
+            ],
+        ]);
+
+        // Les espaces surnumeraires disparaissent : la valeur part telle quelle
+        // dans l'attribut `points` d'un <polygon>.
+        self::assertSame('40,40 60,40 60,60 40,60', $result['zones'][0]['map_shape']);
+    }
+
+    public function testAZoneWithoutMapShapeHasNoOutline(): void
+    {
+        $result = $this->loader->normalize(['zones' => ['a' => ['name' => 'A']]]);
+
+        self::assertNull($result['zones'][0]['map_shape']);
+    }
+
+    public function testMapShapeWithTooFewPointsRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'map_shape' => '10,10 20,20']]]);
+    }
+
+    public function testMalformedMapShapePointRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'map_shape' => '10,10 20;20 30,30']]]);
+    }
+
+    public function testOutOfRangeMapShapePointRejected(): void
+    {
+        // Les coordonnees sont des pourcentages : 140 sortirait du cadre.
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'map_shape' => '10,10 140,20 30,30']]]);
+    }
+
     public function testEmptyZonesRejected(): void
     {
         $this->expectException(ZoneDefinitionException::class);
@@ -352,6 +391,77 @@ class ZoneDefinitionLoaderTest extends TestCase
         // declare, cette branche du tirage ne menerait a rien.
         self::assertNotNull($dunes['pnjs'], 'Une zone sans carte d\'origine n\'a d\'habitants que declares.');
         self::assertContains('dunes-caravanier-yazid', array_column($dunes['pnjs'], 'slug'));
+    }
+
+    /**
+     * Toute zone placee sur la carte porte un contour, et son centre declare
+     * tombe dedans.
+     *
+     * Les contours sont traces a la main contre l'illustration : rien dans le
+     * format ne garantit qu'un polygone entoure bien sa pastille. Sans ce test,
+     * une retouche de coordonnees pourrait poser le point d'une zone hors de
+     * son propre territoire — le brouillard percerait alors a un endroit et la
+     * pastille s'afficherait a un autre, sans qu'aucune erreur ne se leve.
+     */
+    public function testShippedWorldOneKeepsEveryZoneCenterInsideItsOwnShape(): void
+    {
+        $loader = new ZoneDefinitionLoader(\dirname(__DIR__, 4));
+        $result = $loader->loadFile($loader->defaultFile());
+
+        $placed = 0;
+        foreach ($result['zones'] as $zone) {
+            if (null === $zone['map_x'] || null === $zone['map_y']) {
+                continue;
+            }
+            ++$placed;
+
+            $shape = $zone['map_shape'];
+            self::assertNotNull(
+                $shape,
+                sprintf('La zone "%s" est placee sur la carte mais n\'a aucun contour.', $zone['slug']),
+            );
+
+            $polygon = array_map(
+                static fn (string $point): array => array_map('intval', explode(',', $point)),
+                explode(' ', (string) $shape),
+            );
+
+            self::assertTrue(
+                $this->isPointInPolygon($zone['map_x'], $zone['map_y'], $polygon),
+                sprintf(
+                    'Le centre (%d,%d) de la zone "%s" tombe hors de son propre contour.',
+                    $zone['map_x'],
+                    $zone['map_y'],
+                    $zone['slug'],
+                ),
+            );
+        }
+
+        // Le compte est epingle comme celui des connexions : il attrape une
+        // zone placee sur la carte sans qu'on y pense.
+        self::assertSame(12, $placed);
+    }
+
+    /**
+     * Lancer de rayon horizontal (algorithme pair-impair).
+     *
+     * @param list<array<int, int>> $polygon
+     */
+    private function isPointInPolygon(int $x, int $y, array $polygon): bool
+    {
+        $inside = false;
+        $count = \count($polygon);
+
+        for ($i = 0, $j = $count - 1; $i < $count; $j = $i++) {
+            [$xi, $yi] = $polygon[$i];
+            [$xj, $yj] = $polygon[$j];
+
+            if (($yi > $y) !== ($yj > $y) && $x < ($xj - $xi) * ($y - $yi) / ($yj - $yi) + $xi) {
+                $inside = !$inside;
+            }
+        }
+
+        return $inside;
     }
 
     /**

@@ -12,6 +12,21 @@
 #     type                          city | wilderness | interior | dungeon
 #     safe                          true = aucune rencontre hostile
 #     map_x / map_y                 position sur la carte du monde illustree (ZON-16), % 0-100 ; absent = zone hors carte
+#     map_shape                     contour cliquable sur cette meme carte : points « x,y » separes
+#                                   par des espaces, dans le MEME espace 0-100 que map_x/map_y
+#                                   (format `points` d'un <polygon> SVG). Minimum 3 points, valide
+#                                   a l'import. Absent = la zone n'a que sa pastille pour cible, et
+#                                   le brouillard de guerre ne s'y perce pas.
+#
+#                                   Les contours livres sont traces A LA MAIN contre
+#                                   `assets/styles/images/world-map/world-1.png` : ce sont des
+#                                   approximations du dessin, pas une verite geometrique. Deux
+#                                   consequences assumees — les polygones se chevauchent
+#                                   legerement aux frontieres, et le centre declare du Marais
+#                                   (32,74) comme celui des Dunes (30,78) tombe pres de leur
+#                                   frontiere commune, l'illustration ayant fondu les deux
+#                                   biomes l'un dans l'autre. Retracer un contour = editer
+#                                   cette ligne, rien d'autre.
 #     enabled                       (optionnel, defaut true)
 #     source_map                    nom de la Map TMX d'origine (legacy, optionnel)
 #     explore:                      table de rencontres / loot (optionnel -> defauts service)
@@ -91,6 +106,7 @@ zones:
         safe: true
         map_x: 50
         map_y: 55
+        map_shape: '50,43 58,39 66,45 67,56 58,62 50,59 46,50'
         enabled: true
         source_map: 'Village de Lumière'
         explore:
@@ -170,6 +186,7 @@ zones:
         safe: false
         map_x: 28
         map_y: 38
+        map_shape: '12,22 24,15 40,17 50,26 47,36 36,41 24,42 13,36'
         enabled: true
         source_map: 'Forêt des murmures'
         explore:
@@ -286,6 +303,7 @@ zones:
         safe: false
         map_x: 72
         map_y: 36
+        map_shape: '62,30 76,28 90,29 99,28 99,44 88,47 74,45 64,40'
         enabled: true
         source_map: 'Mines profondes'
         explore:
@@ -376,6 +394,7 @@ zones:
         safe: false
         map_x: 32
         map_y: 74
+        map_shape: '4,58 14,54 26,57 33,64 34,74 22,80 8,78'
         source_map: 'Marais Brumeux'
         explore:
             # Terrain hostile et pauvre en butin : on y vient pour ses plantes.
@@ -424,6 +443,7 @@ zones:
         safe: false
         map_x: 74
         map_y: 70
+        map_shape: '64,48 78,46 92,52 99,66 99,92 86,96 74,86 66,70'
         source_map: 'Crête de Ventombre'
         explore:
             # Zone la plus rude du World 1 : peu de repit, mais les caches des
@@ -459,6 +479,7 @@ zones:
         safe: true
         map_x: 42
         map_y: 46
+        map_shape: '30,44 40,41 48,42 50,48 44,53 34,52 29,48'
         source_map: 'Village de Lumière'
 
     dunes-d-ambre:
@@ -470,6 +491,7 @@ zones:
         safe: false
         map_x: 30
         map_y: 78
+        map_shape: '26,72 40,68 56,70 66,78 62,86 44,88 30,84'
         explore:
             weights: { mob: 50, chest: 12, harvest: 14, pnj: 2, nothing: 22 }
             chest_gils_min: 10
@@ -557,6 +579,7 @@ zones:
         safe: false
         map_x: 24
         map_y: 88
+        map_shape: '16,80 28,78 40,81 50,86 46,93 30,95 20,89'
         explore:
             weights: { mob: 55, chest: 14, harvest: 10, pnj: 3, nothing: 18 }
             chest_gils_min: 25
@@ -588,6 +611,7 @@ zones:
         safe: false
         map_x: 18
         map_y: 96
+        map_shape: '2,84 10,84 17,89 20,98 10,100 2,99'
         explore:
             weights: { mob: 58, chest: 18, harvest: 8, pnj: 2, nothing: 14 }
             chest_gils_min: 40
@@ -617,6 +641,7 @@ zones:
         safe: false
         map_x: 74
         map_y: 14
+        map_shape: '52,20 58,13 70,13 88,13 99,10 99,24 84,27 68,26 56,24'
         explore:
             weights: { mob: 56, chest: 14, harvest: 12, pnj: 2, nothing: 16 }
             chest_gils_min: 25
@@ -641,6 +666,7 @@ zones:
         safe: false
         map_x: 80
         map_y: 6
+        map_shape: '56,10 64,2 80,0 98,1 99,10 88,13 70,13 58,13'
         explore:
             weights: { mob: 62, chest: 18, harvest: 6, pnj: 0, nothing: 14 }
             chest_gils_min: 40
@@ -685,6 +711,7 @@ zones:
         safe: false
         map_x: 38
         map_y: 60
+        map_shape: '24,53 34,50 44,54 47,61 42,68 32,68 24,63'
         enabled: true
         explore:
             # Une zone douce : on y croise plus de gens et de recoltes que de
