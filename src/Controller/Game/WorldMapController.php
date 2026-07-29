@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\Zone;
+use App\Entity\App\ZoneConnection;
 use App\GameEngine\Settlement\VassalageService;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ZoneEventService;
@@ -19,11 +20,18 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Carte du monde illustree (pivot PBBG, ZON-16).
  *
- * Rendu SVG schematique (aucun moteur de rendu type PixiJS) : les zones placees
- * (`Zone.mapX`/`mapY`) apparaissent comme des noeuds relies par leurs
- * connexions, colores par biome. Les zones decouvertes sont cliquables ; un clic
- * vers une zone adjacente lance le voyage (ZON-06). Indicateurs : evenement de
- * zone actif (ZON-15) et expedition en cours (ZON-13).
+ * Une illustration de fond, et par-dessus un rendu SVG schematique (aucun moteur
+ * de rendu type PixiJS) : les zones placees (`Zone.mapX`/`mapY`) apparaissent
+ * comme des noeuds relies par leurs connexions, colores par biome. Les zones
+ * decouvertes sont cliquables — sur leur pastille, et sur leur contour
+ * (`Zone.mapShape`) quand elles en ont un ; un clic vers une zone adjacente
+ * lance le voyage (ZON-06). Indicateurs : evenement de zone actif (ZON-15) et
+ * expedition en cours (ZON-13).
+ *
+ * **Le brouillard de guerre se decide ici, pas dans le gabarit.** Trois etats :
+ * parcourue (`discovered`), reperee (`scouted` — voisine d'une zone parcourue),
+ * inconnue. Le contour n'est emis que pour les deux premiers : la brume qui se
+ * lit dans le HTML n'est pas une brume.
  */
 class WorldMapController extends AbstractController
 {
@@ -63,10 +71,24 @@ class WorldMapController extends AbstractController
         $expedition = $this->expeditionService->getActive($player);
         $expeditionZoneId = null !== $expedition ? $expedition->getZone()->getId() : null;
 
+        // Connexions sortantes, lues une fois par zone : elles servent trois
+        // fois — le voyage depuis la zone courante, les aretes du graphe, et
+        // le troisieme etat du brouillard (« reperee »).
+        /** @var array<int, list<ZoneConnection>> $connectionsFrom */
+        $connectionsFrom = [];
+        foreach ($placedZones as $zone) {
+            $connectionsFrom[$zone->getId()] = $this->zoneConnectionRepository->findEnabledFrom($zone);
+        }
+        // La zone courante peut n'etre pas placee sur la carte : ses connexions
+        // n'ont alors pas ete lues ci-dessus, et le voyage doit rester possible.
+        if (null !== $currentZone && !isset($connectionsFrom[$currentZone->getId()])) {
+            $connectionsFrom[$currentZone->getId()] = $this->zoneConnectionRepository->findEnabledFrom($currentZone);
+        }
+
         // Connexions traversables depuis la zone courante : cible -> id de connexion.
         $reachable = [];
         if (null !== $currentZone) {
-            foreach ($this->zoneConnectionRepository->findEnabledFrom($currentZone) as $connection) {
+            foreach ($connectionsFrom[$currentZone->getId()] as $connection) {
                 $reachable[$connection->getToZone()->getId()] = $connection->getId();
             }
         }
@@ -87,10 +109,41 @@ class WorldMapController extends AbstractController
             }
         }
 
+        $neighbours = [];
+        foreach ($connectionsFrom as $zoneId => $connections) {
+            $neighbours[$zoneId] = array_map(
+                static fn (ZoneConnection $connection): int => $connection->getToZone()->getId(),
+                $connections,
+            );
+        }
+
+        $discoveredIds = $visitedIds;
+        if (null !== $currentZone && !\in_array($currentZone->getId(), $discoveredIds, true)) {
+            $discoveredIds[] = $currentZone->getId();
+        }
+
+        // Zones reperees : celles ou l'on peut aller depuis une zone deja
+        // parcourue. On part des aretes **sortantes des zones connues**, et non
+        // des aretes sortantes de la zone examinee : ces dernieres ne diraient
+        // « reperee » que si le graphe portait aussi la liaison retour, ce qui
+        // est vrai des connexions bidirectionnelles du monde livre mais que
+        // rien n'impose au format.
+        $scoutedIds = [];
+        foreach ($discoveredIds as $discoveredId) {
+            foreach ($neighbours[$discoveredId] ?? [] as $neighbourId) {
+                $scoutedIds[$neighbourId] = true;
+            }
+        }
+
         $nodes = [];
         foreach ($placedZones as $zone) {
             $id = $zone->getId();
-            $discovered = \in_array($id, $visitedIds, true) || ($currentZone && $id === $currentZone->getId());
+            $discovered = \in_array($id, $discoveredIds, true);
+            // « Reperee » : jamais visitee, mais joignable depuis une zone qui
+            // l'a ete. On en connait la place et la forme, pas le contenu —
+            // c'est le « rumeur -> reperee -> cartographiee » de
+            // GAME_ZONE_ACTIONS, rendu ici en trois epaisseurs de brume.
+            $scouted = !$discovered && isset($scoutedIds[$id]);
             $nodes[] = [
                 'id' => $id,
                 'slug' => $zone->getSlug(),
@@ -99,7 +152,13 @@ class WorldMapController extends AbstractController
                 'safe' => $zone->isSafe(),
                 'x' => $zone->getMapX(),
                 'y' => $zone->getMapY(),
+                // Le contour n'est emis que pour ce que le joueur situe deja.
+                // Le taire pour le reste n'est pas une precaution decorative :
+                // le brouillard se lirait sinon dans le HTML, et la carte se
+                // devoilerait a qui ouvre l'inspecteur.
+                'shape' => ($discovered || $scouted) ? $zone->getMapShape() : null,
                 'discovered' => $discovered,
+                'scouted' => $scouted,
                 'current' => null !== $currentZone && $id === $currentZone->getId(),
                 'hasEvent' => $discovered && [] !== $this->zoneEventService->getActiveEventsForZone($zone),
                 'expedition' => $id === $expeditionZoneId,
@@ -120,8 +179,9 @@ class WorldMapController extends AbstractController
             $positions[$zone->getId()] = ['x' => $zone->getMapX(), 'y' => $zone->getMapY()];
         }
         foreach ($placedZones as $zone) {
-            foreach ($this->zoneConnectionRepository->findEnabledFrom($zone) as $connection) {
-                $toId = $connection->getToZone()->getId();
+            // On repart de l'adjacence deja lue : la refaire ici doublait les
+            // requetes de connexion, une par zone placee.
+            foreach ($neighbours[$zone->getId()] ?? [] as $toId) {
                 if (!isset($positions[$toId])) {
                     continue;
                 }

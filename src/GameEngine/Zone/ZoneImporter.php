@@ -102,6 +102,7 @@ class ZoneImporter
         $zone->setEnabled((bool) $data['enabled']);
         $zone->setMapX(isset($data['map_x']) ? (int) $data['map_x'] : null);
         $zone->setMapY(isset($data['map_y']) ? (int) $data['map_y'] : null);
+        $zone->setMapShape(isset($data['map_shape']) ? (string) $data['map_shape'] : null);
 
         /** @var array<string, mixed>|null $explore */
         $explore = \is_array($data['explore'] ?? null) ? $data['explore'] : null;

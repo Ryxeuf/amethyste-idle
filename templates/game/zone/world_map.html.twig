@@ -27,8 +27,20 @@
             {% if nodes is empty %}
                 <p class="text-gray-500 text-sm text-center py-8">{{ 'game.world_map.empty'|trans }}</p>
             {% else %}
-                <div class="relative w-full mx-auto rounded-lg border border-indigo-900/50 bg-paper overflow-hidden" style="max-width: 640px; aspect-ratio: 1 / 1;">
-                    {# ── Aretes (connexions) ── #}
+                {# Les zones dont le joueur connait le contour : celles-la seules
+                   percent le brouillard et offrent une cible cliquable. #}
+                {% set shapedNodes = nodes|filter(node => node.shape) %}
+                <div class="relative w-full mx-auto rounded-lg border border-indigo-900/50 bg-paper overflow-hidden" style="max-width: 640px; aspect-ratio: 1 / 1;"
+                     data-controller="world-map">
+                    {# ── Fond illustre ──
+                       Purement decoratif : toute l'information de la carte est
+                       portee par les pastilles et les libelles ci-dessous. #}
+                    <img src="{{ asset('styles/images/world-map/world-1.png') }}" alt="" aria-hidden="true" draggable="false"
+                         class="absolute inset-0 w-full h-full object-cover select-none pointer-events-none">
+
+                    {# ── Aretes (connexions) ──
+                       Sous le brouillard : une route qui traverse une contree
+                       inconnue doit s'y perdre. #}
                     <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none">
                         {% for edge in edges %}
                             <line x1="{{ edge.x1 }}" y1="{{ edge.y1 }}" x2="{{ edge.x2 }}" y2="{{ edge.y2 }}"
@@ -36,10 +48,57 @@
                         {% endfor %}
                     </svg>
 
+                    {# ── Brouillard de guerre ──
+                       Un voile de parchemin vierge perce a la forme de ce que le
+                       joueur connait : noir dans le masque = trou franc (zone
+                       parcourue), gris = voile mince (zone reperee, voisine d'une
+                       zone connue), blanc = brume pleine. Le flou sur les trous
+                       est ce qui fait lire « brume » plutot que « pochoir ». #}
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+                        <defs>
+                            <filter id="wm-fog-blur" x="-25%" y="-25%" width="150%" height="150%">
+                                <feGaussianBlur stdDeviation="1.6" />
+                            </filter>
+                            <mask id="wm-fog-mask">
+                                <rect x="0" y="0" width="100" height="100" fill="#ffffff" />
+                                <g filter="url(#wm-fog-blur)">
+                                    {% for node in shapedNodes %}
+                                        <polygon points="{{ node.shape }}" fill="{{ node.discovered ? '#000000' : '#8a8a8a' }}" />
+                                    {% endfor %}
+                                </g>
+                            </mask>
+                        </defs>
+                        {# Papier vierge (--color-paper-4), pas une nuit noire : une
+                           contree inconnue est une carte pas encore dessinee. #}
+                        <rect x="0" y="0" width="100" height="100" fill="#e0d7c1" fill-opacity="0.94" mask="url(#wm-fog-mask)" />
+                    </svg>
+
+                    {# ── Contours cliquables ──
+                       Enrichissement : la pastille reste la cible de repli, seule
+                       accessible au clavier et sans JS. #}
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                        {% for node in shapedNodes %}
+                            {% if node.discovered and node.travelConnectionId %}
+                                <polygon points="{{ node.shape }}" class="world-map-shape world-map-shape--travelable"
+                                         data-action="click->world-map#travel"
+                                         data-world-map-connection-param="{{ node.travelConnectionId }}">
+                                    <title>{{ 'game.world_map.travel_to'|trans({'%zone%': node.name}) }}</title>
+                                </polygon>
+                            {% else %}
+                                <polygon points="{{ node.shape }}" class="world-map-shape">
+                                    {% if node.discovered %}<title>{{ node.name }}</title>{% endif %}
+                                </polygon>
+                            {% endif %}
+                        {% endfor %}
+                    </svg>
+
                     {# ── Noeuds (zones) — classes Tailwind litterales (pas de construction dynamique) ── #}
                     {% for node in nodes %}
                         {%- if node.current -%}
                             {%- set dotClass = 'border-amber-300 bg-amber-400/80 ring-2 ring-amber-300/40' -%}
+                        {%- elseif node.scouted -%}
+                            {# Reperee : on en connait la place, pas le contenu. #}
+                            {%- set dotClass = 'border-gray-500 bg-gray-700/70' -%}
                         {%- elseif not node.discovered -%}
                             {%- set dotClass = 'border-gray-600 bg-gray-800/70' -%}
                         {%- elseif node.travelConnectionId -%}
@@ -53,7 +112,11 @@
                         {%- endif -%}
                         <div class="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center" style="left: {{ node.x }}%; top: {{ node.y }}%;">
                             {% if node.discovered and node.travelConnectionId %}
-                                <form method="post" action="{{ path('app_game_zone_travel', {id: node.travelConnectionId}) }}" title="{{ 'game.world_map.travel_to'|trans({'%zone%': node.name}) }}">
+                                {# Le formulaire porte le voyage pour les deux cibles :
+                                   la pastille le soumet directement, le contour SVG
+                                   le retrouve par son identifiant de connexion. #}
+                                <form method="post" action="{{ path('app_game_zone_travel', {id: node.travelConnectionId}) }}" title="{{ 'game.world_map.travel_to'|trans({'%zone%': node.name}) }}"
+                                      data-world-map-target="form" data-connection="{{ node.travelConnectionId }}">
                                     <input type="hidden" name="_token" value="{{ csrf_token('travel_' ~ node.travelConnectionId) }}">
                                     <button type="submit" class="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 {{ dotClass }}">
                                         {% if node.hasEvent %}<span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span>{% endif %}
@@ -92,6 +155,7 @@
                 <div class="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-gray-400">
                     <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-amber-300 bg-amber-400/80"></span>{{ 'game.world_map.legend.current'|trans }}</span>
                     <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-teal-400 bg-teal-500/70"></span>{{ 'game.world_map.legend.travelable'|trans }}</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-gray-500 bg-gray-700/70"></span>{{ 'game.world_map.legend.scouted'|trans }}</span>
                     <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-gray-600 bg-gray-800/70"></span>{{ 'game.world_map.legend.locked'|trans }}</span>
                     <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-fuchsia-400"></span>{{ 'game.world_map.legend.event'|trans }}</span>
                     <span class="inline-flex items-center gap-1">🧭 {{ 'game.world_map.legend.expedition'|trans }}</span>

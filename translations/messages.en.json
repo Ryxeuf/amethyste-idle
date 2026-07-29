@@ -1586,13 +1586,14 @@
     },
     "world_map": {
       "title": "World map",
-      "subtitle": "Click an adjacent discovered zone to travel there.",
+      "subtitle": "Click an adjacent discovered zone to travel there. Mist covers what you have not walked.",
       "back_to_zone": "Back to zone",
       "empty": "No zone placed on the map yet.",
       "travel_to": "Travel to %zone%",
       "legend": {
         "current": "Current zone",
         "travelable": "Travelable",
+        "scouted": "Scouted",
         "locked": "Undiscovered",
         "event": "Active event",
         "expedition": "Expedition"
