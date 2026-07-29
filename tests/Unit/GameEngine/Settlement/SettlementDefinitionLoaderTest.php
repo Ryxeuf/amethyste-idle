@@ -293,6 +293,48 @@ class SettlementDefinitionLoaderTest extends TestCase
         $this->loader->normalize($raw);
     }
 
+    /**
+     * Les deux ateliers doivent s'**opposer** (FOY-13). Deux boutons qui font
+     * la meme chose ne sont pas un choix, et l'axe Extraire / Preserver serait
+     * ecrit dans la documentation et absent du jeu.
+     */
+    public function testTheFoundryMustActuallyBurnFaster(): void
+    {
+        $raw = $this->validRaw();
+        $raw['doctrine']['foundry']['paleness_multiplier'] = 0.9;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/elle ne le menage pas/');
+
+        $this->loader->normalize($raw);
+    }
+
+    public function testTheReadersMustActuallySpareTheVein(): void
+    {
+        $raw = $this->validRaw();
+        $raw['doctrine']['readers']['paleness_multiplier'] = 1.2;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/ne sont pas un choix/');
+
+        $this->loader->normalize($raw);
+    }
+
+    /**
+     * Un atelier qui n'apporte rien est un cout sec — personne ne le paierait
+     * deux fois, et le camp « Preserver » n'aurait pas d'existence mecanique.
+     */
+    public function testAWorkshopThatGrantsNothingIsRefused(): void
+    {
+        $raw = $this->validRaw();
+        $raw['doctrine']['readers']['lore_multiplier'] = 1.0;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/cout sec/');
+
+        $this->loader->normalize($raw);
+    }
+
     public function testPalenessRecoveryMustStayBelowTheRise(): void
     {
         $raw = $this->validRaw();
@@ -364,6 +406,13 @@ class SettlementDefinitionLoaderTest extends TestCase
                 'duration_days' => 5,
                 'daily_bonus' => 0.04,
                 'opens_from' => 0.10,
+            ],
+            'doctrine' => [
+                'minimum_rank' => 'hamlet',
+                'cost' => 6000,
+                'lock_days' => 28,
+                'foundry' => ['gather_bonus' => 0.15, 'paleness_multiplier' => 1.5],
+                'readers' => ['lore_multiplier' => 1.5, 'paleness_multiplier' => 0.5],
             ],
         ];
     }

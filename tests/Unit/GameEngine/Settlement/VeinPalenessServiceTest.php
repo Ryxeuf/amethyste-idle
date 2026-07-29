@@ -5,7 +5,9 @@ namespace App\Tests\Unit\GameEngine\Settlement;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\Settlement\SettlementDoctrineBonus;
 use App\GameEngine\Settlement\VeinPalenessService;
+use App\Repository\SettlementRepository;
 use App\Repository\VeinRestorationRepository;
 use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -182,11 +184,18 @@ class VeinPalenessServiceTest extends TestCase
         $restorations = $this->createMock(VeinRestorationRepository::class);
         $restorations->method('activeKeys')->willReturn([]);
 
+        // FOY-13 : aucune zone de ces scenarios n'a de foyer, donc aucune
+        // doctrine — le facteur de degradation vaut 1 et la Paleur nue reste
+        // observable telle que FOY-11 l'a posee.
+        $settlements = $this->createMock(SettlementRepository::class);
+        $settlements->method('findOneByZone')->willReturn(null);
+
         return new VeinPalenessService(
             $this->createMock(EntityManagerInterface::class),
             $repository,
             $loader,
             $restorations,
+            new SettlementDoctrineBonus($settlements, $loader),
         );
     }
 }

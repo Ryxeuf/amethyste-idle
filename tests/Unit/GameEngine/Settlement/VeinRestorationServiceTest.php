@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Enum\GuildRank;
 use App\GameEngine\Codex\WorldFactService;
+use App\GameEngine\Guild\GuildSpendingAuthority;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\VeinPalenessService;
 use App\GameEngine\Settlement\VeinRestorationException;
@@ -339,6 +340,7 @@ class VeinRestorationServiceTest extends TestCase
             $veins,
             $loader,
             $this->createMock(WorldFactService::class),
+            new GuildSpendingAuthority($entityManager),
         );
     }
 }

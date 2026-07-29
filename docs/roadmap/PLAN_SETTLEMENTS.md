@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **15 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **16 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -40,7 +40,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-10 ✅ | Étiage & régression bornée |
 | FOY-11 ✅ | Pâleur — état de zone, effets sur rendement et pureté |
 | FOY-12 ✅ | Restauration payée au trésor de guilde |
-| FOY-13 | Ateliers de doctrine (Fonderie / Lecteurs) |
+| FOY-13 ✅ | Ateliers de doctrine (Fonderie / Lecteurs) |
 | FOY-14 ✅ | Crédit au journal de monde à la clôture de marée |
 | FOY-15 | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
 | FOY-16 | Tests unitaires du plan |
@@ -51,7 +51,7 @@ Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → F
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
 Piste D — Pâleur              : FOY-11 ✅ → FOY-12 ✅ **(piste complete)**
-Piste E — Doctrine & guilde   : FOY-13 → FOY-14 ✅
+Piste E — Doctrine & guilde   : FOY-13 ✅ → FOY-14 ✅ **(piste complete)**
 Piste F — Contenu & tests     : FOY-15, FOY-16
 ```
 
@@ -323,14 +323,23 @@ s'y branche.
 
 ## Piste E — Doctrine & guilde (séquentiel)
 
-### FOY-13 — Ateliers de doctrine (M | ★★ | MOYENNE)
+### FOY-13 — Ateliers de doctrine ✅ (M | ★★ | MOYENNE)
 > L'axe Extraire / Préserver (§6.2) devient un bâtiment qu'on voit sur l'écran de zone.
-> Prérequis : ← FOY-07, ← FOY-11
-- [ ] Atelier de la **Fonderie** : rendement d'extraction en hausse, Pâleur accélérée
-- [ ] Atelier des **Lecteurs** : Pâleur ralentie, entrées de Codex et progrès d'accord
-- [ ] Exclusifs entre eux sur un même foyer — la guilde **choisit**, elle ne cumule pas
-- [ ] Réutilise le mécanisme d'upgrade existant (`RegionUpgrade` / `RegionUpgradeManager`)
-- [ ] Tests : effets opposés, exclusivité, conservation à la régression (FOY-10)
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **L'exclusivité n'est pas surveillée, elle est impossible.** Une colonne sur `Settlement`,
+> pas deux booléens : aucun chemin de code ne *peut* cumuler les deux ateliers.
+>
+> **Écart au plan** : `RegionUpgrade` / `RegionUpgradeManager` n'a pas été réutilisé. Ce
+> mécanisme est adossé à `RegionControl`, donc au lien zone → région hérité d'avant le pivot —
+> le même héritage qui avait déjà fait dévier FOY-12. Un foyer est porté par une `Zone`. En
+> revanche, « qui peut engager le trésor ? » était désormais posé deux fois à l'identique :
+> la réponse part dans `GuildSpendingAuthority`, et FOY-12 y bascule.
+>
+> **Écarté, avec sa raison** : les entrées de Codex et le progrès d'accord promis aux Lecteurs.
+> Ni l'un ni l'autre n'a de canal **de zone** — le Codex se débloque par découverte personnelle,
+> l'XP de matéria par le combat. Le sédiment `lore` dit la même chose du lieu et existe déjà :
+> ce qui s'y apprend s'y dépose, et pousse la ville vers l'Athénée.
 
 ### FOY-14 — Crédit au journal de monde ✅ (S | ★★ | MOYENNE)
 > Le serveur garde la trace de qui a bâti quoi — en bien comme en mal.
@@ -410,6 +419,6 @@ FOY-16 court en parallèle sur les quatre sprints.
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
 Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14 ✅
-Phase 4 (conséquence): FOY-11 ✅ → FOY-12 ✅ → FOY-13 → FOY-15
+Phase 4 (conséquence): FOY-11 ✅ → FOY-12 ✅ → FOY-13 ✅ → FOY-15
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```

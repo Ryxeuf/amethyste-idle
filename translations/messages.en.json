@@ -1449,6 +1449,25 @@
         "locked_by": "Requires:",
         "paleness": "Vein gone pale (%percent% %) — it yields less, and mends on its own if given room to breathe."
       },
+      "doctrine": {
+        "heading": "Doctrine workshops",
+        "adopt": "Adopt — %cost% Gils",
+        "in_place": "Workshop in place.",
+        "locked_until": "Can be changed from %date%.",
+        "adopted": {
+          "foundry": "The Foundry workshop stands: you will extract more, and the vein will remember it.",
+          "readers": "The Readers' workshop is open: this place will spare its veins and keep what it learns."
+        },
+        "error": {
+          "no_settlement": "This zone has no settlement to orient.",
+          "settlement_too_small": "A settlement this size has no workshop to offer yet.",
+          "already_adopted": "That workshop is already in place.",
+          "locked": "The current doctrine still holds.",
+          "no_guild": "A workshop is paid from a guild treasury.",
+          "rank_too_low": "Your rank cannot commit the treasury.",
+          "treasury_too_low": "The guild treasury cannot cover it."
+        }
+      },
       "restoration": {
         "open": "Restore — %cost% Gils",
         "quote": "Restoration: %cost% Gils",
@@ -1517,6 +1536,16 @@
         "zone_bank": "the zone bank",
         "rented_stall": "rented stalls",
         "awakening_altar": "the Altar of Awakening"
+      },
+      "doctrine": {
+        "foundry": {
+          "name": "Foundry workshop",
+          "effect": "You extract more, and the vein goes pale that much faster."
+        },
+        "readers": {
+          "name": "Readers' workshop",
+          "effect": "The vein wears half as fast, and the place gathers lore quicker."
+        }
       },
       "gate": {
         "closed": "This service opens at %required%; the settlement is %current%."

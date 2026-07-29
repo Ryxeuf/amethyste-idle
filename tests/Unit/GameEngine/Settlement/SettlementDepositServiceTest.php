@@ -11,6 +11,7 @@ use App\Enum\SettlementRank;
 use App\GameEngine\Settlement\SedimentRule;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementDepositService;
+use App\GameEngine\Settlement\SettlementDoctrineBonus;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -378,6 +379,12 @@ class SettlementDepositServiceTest extends TestCase
             'without_settlement' => [],
         ]);
 
-        return new SettlementDepositService($entityManager, $settlementRepository, $contributionRepository, $loader);
+        // FOY-13 : aucun foyer de ces scenarios n'a de doctrine, donc tous les
+        // facteurs valent 1. Le lecteur reel plutot qu'un mock : il rend 1
+        // sans meme consulter le calibrage quand la doctrine est absente, et
+        // c'est justement le chemin qu'on veut voir couvert ici.
+        $doctrineBonus = new SettlementDoctrineBonus($settlementRepository, $loader);
+
+        return new SettlementDepositService($entityManager, $settlementRepository, $contributionRepository, $loader, $doctrineBonus);
     }
 }

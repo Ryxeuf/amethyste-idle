@@ -59,7 +59,8 @@ class SettlementDefinitionLoader
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
-     *     restoration: array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float}
+     *     restoration: array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float},
+     *     doctrine: array{minimum_rank: SettlementRank, cost: int, lock_days: int, foundry: array{gather_bonus: float, paleness_multiplier: float}, readers: array{lore_multiplier: float, paleness_multiplier: float}}
      * }
      *
      * @throws SettlementDefinitionException si le fichier est absent, illisible ou invalide
@@ -108,7 +109,8 @@ class SettlementDefinitionLoader
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
-     *     restoration: array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float}
+     *     restoration: array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float},
+     *     doctrine: array{minimum_rank: SettlementRank, cost: int, lock_days: int, foundry: array{gather_bonus: float, paleness_multiplier: float}, readers: array{lore_multiplier: float, paleness_multiplier: float}}
      * }
      */
     public function normalize(array $raw, string $source = '<array>'): array
@@ -147,6 +149,7 @@ class SettlementDefinitionLoader
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
             'paleness' => $paleness,
             'restoration' => $this->normalizeRestoration($raw['restoration'] ?? [], $paleness, $source),
+            'doctrine' => $this->normalizeDoctrine($raw['doctrine'] ?? [], $source),
         ];
     }
 
@@ -676,5 +679,75 @@ class SettlementDefinitionLoader
             'daily_bonus' => $bonus,
             'opens_from' => $opensFrom,
         ];
+    }
+
+    /**
+     * Les deux ateliers de doctrine (FOY-13).
+     *
+     * L'invariant qui porte le jalon : **les deux ateliers doivent s'opposer**.
+     * La Fonderie accelere la Paleur, les Lecteurs la ralentissent. Si les deux
+     * multiplicateurs tombaient du meme cote — ou valaient 1 —, l'axe Extraire /
+     * Preserver serait ecrit dans la documentation et absent du jeu : deux
+     * boutons qui font la meme chose ne sont pas un choix.
+     *
+     * Le gain de chaque camp est verifie de la meme facon : un atelier qui
+     * n'apporte rien est un cout sec, et personne ne le paierait deux fois.
+     *
+     * @param array<array-key, mixed> $raw
+     *
+     * @return array{minimum_rank: SettlementRank, cost: int, lock_days: int, foundry: array{gather_bonus: float, paleness_multiplier: float}, readers: array{lore_multiplier: float, paleness_multiplier: float}}
+     */
+    private function normalizeDoctrine(array $raw, string $source): array
+    {
+        $rank = $this->normalizeRank($raw['minimum_rank'] ?? null, 'doctrine.minimum_rank', $source);
+        $cost = $this->normalizePositiveInt($raw['cost'] ?? null, 'doctrine.cost', $source);
+        $lockDays = $this->normalizePositiveInt($raw['lock_days'] ?? null, 'doctrine.lock_days', $source);
+
+        $foundryPaleness = $this->normalizePositiveFloat($raw['foundry']['paleness_multiplier'] ?? null, 'doctrine.foundry.paleness_multiplier', $source);
+        $readersPaleness = $this->normalizePositiveFloat($raw['readers']['paleness_multiplier'] ?? null, 'doctrine.readers.paleness_multiplier', $source);
+
+        if ($foundryPaleness <= 1.0) {
+            throw new SettlementDefinitionException(sprintf('"doctrine.foundry.paleness_multiplier" (%.2f) must stay above 1 in "%s" : la Fonderie brule le cristal, elle ne le menage pas.', $foundryPaleness, $source));
+        }
+
+        if ($readersPaleness >= 1.0) {
+            throw new SettlementDefinitionException(sprintf('"doctrine.readers.paleness_multiplier" (%.2f) must stay below 1 in "%s" : deux ateliers qui abiment autant ne sont pas un choix.', $readersPaleness, $source));
+        }
+
+        $gatherBonus = $this->normalizeRate($raw['foundry']['gather_bonus'] ?? null, 'doctrine.foundry.gather_bonus', $source);
+        $loreMultiplier = $this->normalizePositiveFloat($raw['readers']['lore_multiplier'] ?? null, 'doctrine.readers.lore_multiplier', $source);
+
+        if ($loreMultiplier <= 1.0) {
+            throw new SettlementDefinitionException(sprintf('"doctrine.readers.lore_multiplier" (%.2f) must stay above 1 in "%s" : un atelier qui n\'apporte rien est un cout sec.', $loreMultiplier, $source));
+        }
+
+        return [
+            'minimum_rank' => $rank,
+            'cost' => $cost,
+            'lock_days' => $lockDays,
+            'foundry' => [
+                'gather_bonus' => $gatherBonus,
+                'paleness_multiplier' => $foundryPaleness,
+            ],
+            'readers' => [
+                'lore_multiplier' => $loreMultiplier,
+                'paleness_multiplier' => $readersPaleness,
+            ],
+        ];
+    }
+
+    /**
+     * Facteur strictement positif, sans borne haute.
+     *
+     * `normalizeRate` refuse tout ce qui depasse 1 : elle sert aux taux, pas aux
+     * multiplicateurs. Un atelier qui multiplie par 1,5 en aurait ete refuse.
+     */
+    private function normalizePositiveFloat(mixed $value, string $key, string $source): float
+    {
+        if (!is_numeric($value) || (float) $value <= 0.0) {
+            throw new SettlementDefinitionException(sprintf('"%s" must be a positive number in "%s".', $key, $source));
+        }
+
+        return (float) $value;
     }
 }

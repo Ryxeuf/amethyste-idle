@@ -14,6 +14,7 @@ use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\Settlement\SettlementDoctrineBonus;
 use App\GameEngine\World\WorldScaleService;
 use App\Helper\InventoryHelper;
 use App\Repository\PlayerJournalEntryRepository;
@@ -63,6 +64,7 @@ class GatherService
         private readonly WorldScaleService $worldScaleService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly PurityDrawer $purityDrawer,
+        private readonly SettlementDoctrineBonus $doctrineBonus,
     ) {
     }
 
@@ -230,7 +232,7 @@ class GatherService
         $this->actionEnergyManager->spend($player, $this->getGatherCost(), false);
 
         $vitalityBefore = $vein->getStock();
-        $quantity = $this->computeYield($player, $resource, $vitalityBefore, $vein->getPaleness());
+        $quantity = $this->computeYield($player, $zone, $resource, $vitalityBefore, $vein->getPaleness());
         $remaining = $vitalityBefore - $quantity;
         $vein->setStock($remaining);
         if ($remaining <= 0) {
@@ -435,7 +437,7 @@ class GatherService
      *
      * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null} $resource
      */
-    private function computeYield(Player $player, array $resource, int $stock, float $paleness = 0.0): int
+    private function computeYield(Player $player, Zone $zone, array $resource, int $stock, float $paleness = 0.0): int
     {
         $min = $resource['yield_min'];
         $max = $resource['yield_max'];
@@ -443,6 +445,12 @@ class GatherService
         $yield = $min + ($span > 0 ? $this->roll($span + 1) - 1 : 0);
 
         $yield = $this->yieldResolver->applyBonus($player, ActionYieldResolver::CATEGORY_GATHER, $yield);
+
+        // FOY-13 — l'atelier de la Fonderie fait rendre le filon davantage, et
+        // le fait palir d'autant plus vite (VeinPalenessService). Le bonus
+        // s'applique **avant** la vitalite et la Paleur : c'est ce qu'un
+        // outillage tire d'un filon, pas ce qui reste dans le filon.
+        $yield = (int) round($yield * $this->doctrineBonus->gatherMultiplier($zone));
 
         // ZON-37 — la vitalite module le rendement (GAME_ZONE_ACTIONS, loi 5).
         // Jusqu'ici le stock ne servait qu'a **plafonner** : un filon a 70/72 et

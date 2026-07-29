@@ -1427,3 +1427,28 @@ sterile. Elle se voit a partir de **0,10** et rabat la bande de purete au clair 
    d'attendre un jour de plus. A 5 400 Gils, le pire cas vaut l'ordre de grandeur du premier
    palier de tresor de guilde (5 000) : une depense qu'une guilde etablie decide, jamais une
    qu'elle subit.
+
+### 23.9 Les ateliers de doctrine (FOY-13)
+
+Une guilde paie **6 000 Gils** pour orienter un foyer, et la doctrine tient **28 jours** (une
+maree). Les deux ateliers sont exclusifs, et leurs effets s'opposent :
+
+| | Fonderie | Lecteurs |
+|---|---|---|
+| Rendement de recolte | **+15 %** | — |
+| Sediment `lore` | — | **+50 %** |
+| Montee de la Paleur | **×1,5** | **×0,5** |
+
+**Ce que ca vaut, en pratique.** Un filon presse a pression 2 gagne 0,08 de Paleur par jour ;
+sous Fonderie, 0,12 ; sous Lecteurs, 0,04 — soit exactement la vitesse a laquelle il se refait
+quand on le laisse. Un serveur qui choisit les Lecteurs peut donc presser un filon a pression 2
+**indefiniment** sans qu'il palisse ; c'est le prix a payer pour +0 % de rendement et une ville
+qui monte plus vite vers l'Athenee.
+
+**Le facteur ne touche jamais la recuperation** : un atelier oriente ce qu'on fait au filon, pas
+la vitesse a laquelle le monde se repare tout seul. Sans cette borne, la Fonderie punirait aussi
+ceux qui s'abstiennent.
+
+**Trois bornes tenues par le loader** : le multiplicateur de la Fonderie doit depasser 1, celui
+des Lecteurs rester dessous, et chaque atelier apporter quelque chose. Deux boutons qui font la
+meme chose ne sont pas un choix, et un atelier sans effet est un cout sec.
