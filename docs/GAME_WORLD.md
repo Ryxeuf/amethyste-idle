@@ -1486,7 +1486,14 @@ faction de plus.
 **c) L'escorte ne bloque personne.** S'inscrire comme escorteur n'immobilise pas le
 personnage : c'est une **astreinte, pas un voyage**. On joue normalement ; quand une
 rencontre tombe, on est appelé (fenêtre de 3 h — large exprès pour les horaires réels),
-on s'y rend, on la résout, on reprend sa journée. Les bénéfices de l'escorteur :
+on s'y rend, on la résout, on reprend sa journée. **La réserve d'astreinte** *(tranché le
+2026-07-29)* : à l'inscription, l'escorteur réserve le coût d'une intervention (~10
+énergie par convoi, rendue à l'arrivée si elle n'a pas servi) — on ne peut jamais être
+appelé sans pouvoir répondre, l'astreinte a un coût d'opportunité réel (c'est ce que la
+paie rémunère : rester frais), et le cumul de convois se borne tout seul. Filets en
+aval : la fenêtre régénère ~30 énergie à elle seule, les autres escorteurs (premier
+arrivé, premier servi), et la résolution dégradée si personne ne vient. Les bénéfices de
+l'escorteur :
 
 1. **La paie d'escorte** — une part du coût d'affrètement, fixée au départ (l'affréteur
    paie ses gardes : un transfert joueur → joueur, pas un robinet à gils) ;

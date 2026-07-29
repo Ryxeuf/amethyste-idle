@@ -672,6 +672,10 @@ valeur par défaut neutre.
       part du coût, transfert joueur → joueur) ; convoi de guilde = escorteurs membres
 - [ ] L'escorteur n'est **jamais immobilisé** ; une rencontre prise = voyage standard
       vers le segment + résolution ; premier arrivé, premier servi
+- [ ] **Réserve d'astreinte** : ~10 énergie gelées par convoi à l'inscription (paramètre),
+      rendues à l'arrivée si non utilisées — l'appel est toujours répondable, le cumul de
+      convois se borne (l'intervention se paie sur la réserve, jamais bloquée par une
+      barre vide)
 - [ ] Gains : paie à l'arrivée, réputation Chevaliers (geste d'escorte), butin des
       combats, grains `war` déposés sur la route
 - [ ] Tests : non-blocage, paie, réputation, concurrence entre escorteurs
