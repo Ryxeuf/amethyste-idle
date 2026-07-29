@@ -43,6 +43,21 @@ coût (spécialisation, patronage) — jamais des verrous de savoir. Interdire u
 serait interdire un geste : contradiction frontale avec le principe fondateur, et retour
 des « classes » par la fenêtre.
 
+> **Précision (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §6.3)** — ce que la
+> doctrine interdit est l'**exclusion**, pas le **séquencement**. L'accès à un arbre se fait
+> par un **parchemin** (acheté à un PNJ de métier ou reçu en récompense) : c'est un **coût**,
+> jamais un verrou, et il tient sous quatre conditions non négociables — (1) tout parchemin est
+> accessible à tout le monde, sans prérequis de peuple, de faction, de progression ni de choix
+> antérieur ; (2) en posséder un n'en interdit aucun autre, les 32 sont cumulables ; (3) aucun
+> n'est unique ni limité, un PNJ le vend toujours à prix fixe ; (4) aucun parchemin payant sur
+> le chemin critique de l'acte I. Le parchemin a alors le statut exact de l'énergie que ce
+> tableau désigne déjà comme borneur du savoir : il échelonne le **rythme** d'apprentissage,
+> jamais son **champ**. Ce que le catalogue public montre de toute façon — l'existence de
+> chaque arbre, sa case élément × registre, ce qu'on y apprend, où trouver son parchemin — ne
+> se cache jamais ; seul le **détail technique** (nœuds, valeurs, prérequis) attend le
+> parchemin. Sans ce séquencement, les 32 arbres sont tous ouverts au jour 1, ce que
+> GAME_PROGRESSION §3 désigne comme le risque n° 1 de l'acte I.
+
 ## 2. La double borne des passifs *(validée)*
 
 Tout passif de combat est borné **deux fois** : par l'**élément** de son domaine et par
