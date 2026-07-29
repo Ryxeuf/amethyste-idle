@@ -22,10 +22,6 @@ class RaceTest extends TestCase
         $this->assertSame('Humain', (string) $race);
     }
 
-
-
-
-
     public function testSetSpriteSheet(): void
     {
         $race = new Race();

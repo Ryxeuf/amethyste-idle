@@ -175,9 +175,6 @@ class Race
         return $this;
     }
 
-
-
-
     public function isAvailableAtCreation(): bool
     {
         return $this->availableAtCreation;
