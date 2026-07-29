@@ -25,6 +25,7 @@
 | DOM-07 ✅ | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
 | DOM-08 ✅ | Tests du plan | S | ‖ |
 | DOM-09 | La borne sans fuite (audit 2026-07-29) | M | ← DOM-01, DOM-02 |
+| DOM-10 | Les arbres retrouves (hors catalogue) | M | ← ONB-08 |
 
 ```
 Piste A — Le système   : DOM-01 → DOM-02 ; DOM-03 ‖ ; DOM-04 ‖
@@ -297,6 +298,39 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
       sans cas dans l'enum `Element` (inoffensif car hors combat, mais incohérent) ;
       GAME_DOMAINS §8 affirme que les composés sont « déjà actés » dans l'enum — **faux**.
       Trancher : ajouter les cas (wood + composés dormants) ou corriger le canon
+
+### DOM-10 — Les arbres retrouvés (M | ★★ | MOYENNE)
+> Ouvert le 2026-07-29 par la doctrine du parchemin ([../GAME_ONBOARDING.md](../GAME_ONBOARDING.md)
+> §6.4, arbitrage A17). Une fois l'accès aux arbres porté par un parchemin (**ONB-08**), une
+> couche devient possible : des arbres **hors catalogue**, ouverts par une rencontre que
+> **l'accomplissement** déclenche — le joueur qui a mené l'arbre du mineur à son dernier palier
+> croise un vieux Nain à moitié changé en minerai, qui lui confie un parchemin de prospection
+> que le registre ne mentionne pas.
+>
+> **Ce que ça répare** : aujourd'hui, **terminer un arbre ne donne rien** — le dernier palier
+> est un cul-de-sac. Il devient une condition de rencontre.
+>
+> Prérequis : ← **ONB-08** (le parchemin ouvre un arbre) ; croise NAR (les rencontres) et
+> PLAN_REPERTOIRE (cousin, à ne pas confondre : le Répertoire est **collectif** et porte sur la
+> **matéria** ; ceci est **individuel** et porte sur les **domaines**)
+- [ ] Catégorie d'arbre **hors registre** : absent du catalogue public, existant pour le joueur
+      seulement après la rencontre
+- [ ] Parchemin retrouvé **lié** (non échangeable) — l'unique exception aux quatre conditions
+      du parchemin de registre. Ce qui circule entre joueurs est **l'information**, jamais
+      l'objet : sans ça, le premier découvreur met le secret à l'hôtel des ventes et il meurt
+      en deux jours
+- [ ] Condition de rencontre = **un accomplissement**, jamais un tirage
+- [ ] **Les cinq lois**, chacune verrouillée par un test :
+  - [ ] **latéral, jamais vertical** (GAME_WORLD §12.3c) — des options, jamais de la puissance,
+        sinon le joueur qui n'a pas croisé le Nain est mécaniquement derrière
+  - [ ] **cumulatif, jamais manqué** (§12.3d) — la rencontre reste disponible indéfiniment pour
+        quiconque remplit la condition. Pas de premier arrivé, pas de fenêtre, pas de date
+  - [ ] **jamais nécessaire** — aucune recette, aucun palier, aucune quête normale n'en dépend
+  - [ ] la condition est un accomplissement
+  - [ ] le parchemin est lié
+- [ ] Premier contenu : un arbre retrouvé, en preuve du mécanisme (le reste est du contenu)
+- [ ] Tests : absence du catalogue ; rencontre rejouable par un second joueur ; non-échangeable ;
+      aucune recette ni progression normale n'en dépend
 
 ---
 

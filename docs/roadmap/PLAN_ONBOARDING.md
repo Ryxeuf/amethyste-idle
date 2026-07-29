@@ -80,7 +80,9 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 | Jalon voisin | Lien |
 |---|---|
 | **NAR-20** (le réveil au Fanal) | ONB-12, ONB-13, ONB-15, ONB-16 touchent les mêmes textes et PNJ. **Même vague**, sinon on renomme deux fois. ⚠️ NAR-20 prévoit une « lettre du foyer d'attache **selon la race** » — ONB-13 la dérive des **gestes** (A9) |
-| **DOM-01→09** | ONB-08/09 s'appuient sur la borne `element × registre` déjà portée par `Domain`. ⚠️ **ONB-08 précise GAME_DOMAINS §1** (le parchemin est un coût, pas un verrou — cadrage §6.3) : à relire ensemble |
+| **DOM-01→09** | ONB-08/09 s'appuient sur la borne `element × registre` déjà portée par `Domain`. ⚠️ **ONB-08 précise GAME_DOMAINS §1** (*le champ est infini, l'entrée est un acte* — cadrage §6.0/§6.3) : à relire ensemble |
+| **DOM-10** (arbres retrouvés) | **Ouvert par ONB-08** : le parchemin posé comme mécanisme rend possibles les arbres hors catalogue. Le jalon vit dans [PLAN_DOMAINS.md](PLAN_DOMAINS.md) — c'est du contenu de progression, pas de l'onboarding |
+| **DOM-02** (jamais d'interdit de port) | Aucune contradiction : le garde-fou réserve déjà le cas — *« seul un prérequis de compétence peut gater une pièce »*. Le parchemin d'arme **est** ce prérequis |
 | **PLAN_ZONES** | ONB-10 est une exigence de **données de zone** |
 | **PLAN_PLAYER_ECONOMY** | ONB-08 : le barème des 29 parchemins non offerts est un **gold sink** à poser avec l'économie |
 | **WIK-02** (`/wiki`) | ONB-17 : « relire cette explication » pointe vers le wiki |
@@ -203,6 +205,18 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [ ] Notion d'**arbre ouvert pour un personnage** (le modèle ne l'a pas)
 - [ ] Nouvel effet d'objet **« ouvrir un domaine »**, distinct de `learn_skill`
 - [ ] Un parchemin par domaine — **les 32**, avec le PNJ vendeur de chacun
+- [ ] **Les actions de base sont concernées** (A16) : sans parchemin, on ne mine ni ne forge.
+      Le mécanisme existe en données (`requires_skill` sur les filons, aujourd'hui posé
+      seulement au haut palier : `miner-darksteel-xs`, `lumber-whisperoak-xs`) — il faut le
+      généraliser au palier T0. ⚠️ **C'est un changement de comportement** : deux garde-fous
+      obligatoires, sous peine de bloquer des joueurs en place —
+  - [ ] **migration : les personnages existants sont grand-périsés** sur les métiers qu'ils
+        pratiquent déjà (dérivés de leurs `DomainExperience` et de leur historique de récolte)
+  - [ ] l'acte I **donne** les trois premiers parchemins (ONB-12)
+- [ ] **La frontière, testée** : le parchemin ouvre un **métier ou une famille d'arme**, jamais
+      un verbe élémentaire. **Restent libres pour tous, sans condition** : marcher, voyager,
+      explorer, parler, ramasser, se battre **à mains nues**. Sans cette ligne, le jeu devient
+      une parade de verrous — et un personnage sans arme apprise se retrouverait sans défense
 - [ ] **Les quatre conditions non négociables**, chacune verrouillée par un test :
   - [ ] tout parchemin est accessible à **tout le monde** (aucun prérequis de peuple, de
         faction, de progression ou de choix antérieur)
@@ -225,6 +239,10 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       trouver son parchemin**
 - [ ] **Ce que le catalogue ne dit pas** : la liste des nœuds, les valeurs, les prérequis
       internes, **ni même le premier nœud**, ni la spécialisation terminale
+- [ ] **Le catalogue omet, il ne ment pas** : il est complet pour tout ce qui s'atteint par le
+      jeu ordinaire. Les **arbres retrouvés** (DOM-10) n'y figurent pas et n'existent, pour le
+      joueur, qu'après la rencontre — l'écran doit donc être conçu pour qu'un arbre puisse
+      apparaître **hors liste**, sans que le compte affiché ait jamais menti
 - [ ] **L'arbre ouvert** : le détail complet, après parchemin
 - [ ] `DomainInfoController` sert le catalogue pour un arbre fermé, l'arbre pour un arbre ouvert
 - [ ] L'ouverture d'un arbre est **notifiée** — c'est un moment, pas un changement d'état muet

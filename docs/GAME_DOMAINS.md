@@ -43,20 +43,34 @@ coût (spécialisation, patronage) — jamais des verrous de savoir. Interdire u
 serait interdire un geste : contradiction frontale avec le principe fondateur, et retour
 des « classes » par la fenêtre.
 
-> **Précision (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §6.3)** — ce que la
-> doctrine interdit est l'**exclusion**, pas le **séquencement**. L'accès à un arbre se fait
-> par un **parchemin** (acheté à un PNJ de métier ou reçu en récompense) : c'est un **coût**,
-> jamais un verrou, et il tient sous quatre conditions non négociables — (1) tout parchemin est
-> accessible à tout le monde, sans prérequis de peuple, de faction, de progression ni de choix
-> antérieur ; (2) en posséder un n'en interdit aucun autre, les 32 sont cumulables ; (3) aucun
-> n'est unique ni limité, un PNJ le vend toujours à prix fixe ; (4) aucun parchemin payant sur
-> le chemin critique de l'acte I. Le parchemin a alors le statut exact de l'énergie que ce
-> tableau désigne déjà comme borneur du savoir : il échelonne le **rythme** d'apprentissage,
-> jamais son **champ**. Ce que le catalogue public montre de toute façon — l'existence de
-> chaque arbre, sa case élément × registre, ce qu'on y apprend, où trouver son parchemin — ne
-> se cache jamais ; seul le **détail technique** (nœuds, valeurs, prérequis) attend le
-> parchemin. Sans ce séquencement, les 32 arbres sont tous ouverts au jour 1, ce que
-> GAME_PROGRESSION §3 désigne comme le risque n° 1 de l'acte I.
+> **Précision (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §6)** — *le champ est
+> infini, l'entrée est un acte.* Cette section dit ce qui est **ouvert** à un personnage, pas
+> ce qu'il a **appris** : elle interdit qu'un geste soit **fermé**, elle n'affirme pas qu'il
+> est **déjà acquis**. Personne ne sait tenir une pioche, forger ou lancer un sort sans
+> l'avoir appris — tout le monde sait seulement **que ça existe**, et c'est le rôle du
+> catalogue public (les 32 arbres, leur case élément × registre, ce qu'on y apprend, où
+> trouver leur parchemin ; jamais les nœuds ni les valeurs).
+>
+> L'accès à un arbre passe donc par un **parchemin de registre** — acheté à un PNJ de métier
+> ou reçu en récompense. Il n'exclut rien : c'est l'acte d'apprendre lui-même, et on peut les
+> accumuler tous les 32 et les mener de front. Quatre conditions non négociables le
+> garantissent : (1) tout parchemin est accessible à tout le monde, sans prérequis de peuple,
+> de faction, de progression ni de choix antérieur ; (2) en posséder un n'en interdit aucun
+> autre ; (3) aucun n'est unique ni limité — un PNJ le vend toujours à prix fixe ; (4) aucun
+> parchemin payant sur le chemin critique de l'acte I. Le borneur réel de la progression reste
+> **l'énergie**, comme ce tableau le dit déjà.
+>
+> **Portée** : le parchemin ouvre un **métier ou une famille d'arme**, jamais un verbe
+> élémentaire du jeu — marcher, voyager, explorer, parler, ramasser et se battre **à mains
+> nues** restent libres pour tous, sans condition. Sur les armes, le garde-fou « jamais
+> d'interdit de port » (§3) réserve déjà le cas : *seul un prérequis de compétence peut gater
+> une pièce*. Le parchemin d'arme est ce prérequis.
+>
+> **Les arbres retrouvés** (GAME_ONBOARDING §6.4, jalon DOM-10) sont l'exception assumée : des
+> arbres **hors catalogue**, ouverts par une rencontre que l'accomplissement déclenche. Ils
+> obéissent aux deux lois du Répertoire (GAME_WORLD §12.3) — **latéral jamais vertical**,
+> **cumulatif jamais manqué** — plus deux propres : jamais nécessaires, et leur parchemin est
+> **lié** (ce qui circule entre joueurs est l'information, pas l'objet).
 
 ## 2. La double borne des passifs *(validée)*
 

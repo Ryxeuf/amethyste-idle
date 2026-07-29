@@ -273,7 +273,7 @@ de puissance prise à l'aveugle.
 | **Nain** — *Lire la pierre* | La **bande de pureté** d'un filon est lisible **avant** de récolter | un fait local, sur le filon devant soi | mineur, prospecteur, artisan qui vise le Parfait | un joueur qui ne récolte pas |
 | **Elfe** — *L'œil des lisières* | Une exploration qui ne donne « rien » rend quand même **un repérage** (un filon, un PNJ ou un monstre de la zone) | une information de zone, jamais du butin | qui découvre une zone neuve | qui connaît déjà sa zone par cœur |
 | **Orc** — *Le flair* | L'**élément et la faiblesse** d'un monstre sont lisibles **dès la première rencontre**, sans attendre le palier de bestiaire | une information de combat | qui affronte du nouveau | qui a déjà le bestiaire plein |
-| **Humain** — *Les usages* | Sur tout objet, il voit **à quoi il sert** : les recettes qui le consomment, les PNJ qui l'achètent — sans l'avoir découvert | une information économique | artisan, marchand, débutant noyé | qui connaît le livre de recettes |
+| **Humain** — *Les usages* | Sur un objet **qu'il a ou a eu en sac ou en banque**, il voit **à quoi il sert** : les recettes qui le consomment, les PNJ qui l'achètent | une information économique, **sur ce qui lui est passé entre les mains** | artisan, marchand, débutant noyé | qui connaît le livre de recettes |
 
 **Le test qui valide le jeu de quatre** : *chaque capacité a une population pour qui elle ne
 sert à rien.* C'est la garantie qu'aucune n'est strictement supérieure — et c'est le test à
@@ -286,6 +286,11 @@ Deux garde-fous à tenir à l'implémentation :
   semaine, RET-06). Deux échelles différentes, aucun doublon.
 - **Le repérage de l'Elfe ne donne jamais de butin** et ne réduit aucun coût. Il transforme du
   vide en connaissance, jamais en ressource — sans quoi E9 tombe.
+- **L'Humain ne lit pas une base de données, il lit son propre passé.** La capacité ne porte
+  que sur ce qui lui est **passé entre les mains** (sac ou banque, présent ou passé — elle
+  s'appuie sur `PlayerResourceCatalog`) : jamais sur un objet vu à l'hôtel des ventes, dans une
+  échoppe ou sur un autre joueur. C'est ce qui l'empêche de devenir un outil d'arbitrage de
+  marché, et ce qui la fait **se gagner en jouant** comme les trois autres.
 
 Et dans tous les cas : **le peuple ne détermine ni le métier, ni l'élément, ni la destination,
 ni les arbres accessibles.**
@@ -408,6 +413,47 @@ le succès `tutorial-complete` reste attaché à la clôture de l'arc.
 
 ## 6. Les arbres : le catalogue, le parchemin, l'arbre
 
+### 6.0 Le principe : tout le monde sait qu'on peut miner, personne ne sait miner
+
+> **Le champ est infini ; l'entrée est un acte.**
+
+C'est le juste milieu entre « pouvoir tout faire » et « interdire un geste », et il tient dans
+une distinction que la doctrine ne faisait pas :
+
+| | |
+|---|---|
+| **Ce qui n'est jamais borné** | *Le champ.* Aucun geste n'est fermé à personne. Aucun arbre n'en exclut un autre. Un joueur peut tout apprendre, et mener les 32 de front s'il le veut |
+| **Ce qui doit s'apprendre** | *Le geste lui-même.* On ne tient pas une pioche parce qu'on sait que les pioches existent |
+
+Personne ne sait lancer un sort ni tenir une épée sans l'avoir appris. Tout le monde **sait
+qu'on peut** se battre à l'épée, cueillir des plantes, miner, forger — c'est le catalogue,
+public et complet. Mais **savoir comment** demande de s'y être intéressé : un maître, ou un
+texte. C'est le parchemin.
+
+Deux conséquences, et la seconde est une décision de portée large.
+
+**Le joueur n'est jamais limité en nombre.** Il apprend autant de choses qu'il en croise, et
+les mène toutes de front. Le seul borneur reste l'énergie — ce que la doctrine des trois
+couches désigne déjà comme *la seule monnaie*.
+
+**Les actions de base sont concernées.** Un personnage qui n'a rien appris ne mine pas, ne
+cueille pas, ne forge pas. Ce n'est pas une punition, c'est la même phrase lue à l'endroit :
+il ne sait pas comment. *(Le mécanisme existe déjà en données — `requires_skill` sur les
+filons, aujourd'hui posé seulement au haut palier : `miner-darksteel-xs`,
+`lumber-whisperoak-xs`. Le généraliser au palier T0 est un changement de comportement, avec
+deux garde-fous obligatoires : les personnages existants sont **grand-périsés** sur ce qu'ils
+pratiquent déjà, et l'acte I **donne** les trois premiers parchemins.)*
+
+**Ce qui ne s'apprend jamais**, et qui reste libre pour tous, sans condition : marcher,
+voyager, explorer, parler, ramasser, se battre **à mains nues**. On n'apprend pas à marcher, et
+un personnage sans aucun apprentissage d'arme doit pouvoir se défendre — mal, mais toujours.
+La frontière est nette : **le parchemin ouvre un métier ou une famille d'arme, jamais un verbe
+élémentaire du jeu.** Sans cette ligne, le jeu devient une parade de verrous.
+
+*(Sur les armes, aucune contradiction avec GAME_DOMAINS : son garde-fou « jamais d'interdit de
+port » réserve explicitement le cas — « seul un prérequis de **compétence** peut gater une
+pièce ». Le parchemin d'arme est ce prérequis, et il est atteignable par tout le monde.)*
+
 ### 6.1 Trois états, pas deux
 
 La question « montre-t-on les 32 arbres dès l'arrivée ? » n'a pas une réponse binaire. Elle en
@@ -460,13 +506,20 @@ GAME_DOMAINS §1 énonce : *« le savoir n'est jamais borné »*, et ajoute — 
 fondateur, et retour des "classes" par la fenêtre. »* Le parchemin borne l'accès à un arbre. Il
 faut donc trancher, pas contourner.
 
-**Ce que la doctrine vise est l'exclusion, pas le séquencement.** Sa formule canonique est
-*« on peut virtuellement savoir tout faire, mais on ne fait qu'une seule chose à la fois »*,
-et son critère est explicite : **aucun arbre n'en exclut un autre**. Le parchemin n'exclut
-rien. Il ordonne.
+**La doctrine parle du champ, le parchemin parle de l'apprentissage** (§6.0). Sa formule
+canonique — *« on peut virtuellement savoir tout faire, mais on ne fait qu'une seule chose à la
+fois »* — dit **ce qui est possible**, pas ce qui est déjà su. Et son critère est explicite :
+**aucun arbre n'en exclut un autre**. Le parchemin n'exclut rien : il est l'acte d'apprendre
+lui-même, et on peut les accumuler tous.
 
-> **Le parchemin est un coût, jamais un verrou.** Quatre conditions le garantissent, et si
-> l'une tombe, il devient un système de classes et la doctrine est réellement violée :
+Autrement dit, la doctrine interdit qu'un geste soit **fermé** ; elle n'a jamais dit qu'il
+était **déjà acquis**. Confondre les deux, c'est poser qu'un personnage naît en sachant miner,
+forger, tirer à l'arc et lancer des sorts — ce qu'aucun texte du projet n'affirme, et ce que
+la fiction contredit.
+
+> **Le parchemin de registre est un coût, jamais un verrou.** Quatre conditions le
+> garantissent, et si l'une tombe, il devient un système de classes et la doctrine est
+> réellement violée :
 >
 > 1. **Tout parchemin est accessible à tout le monde** — aucun prérequis de peuple, de faction,
 >    de progression ou de choix antérieur.
@@ -490,7 +543,55 @@ mur en chemin. C'est un gain net pour la doctrine, pas une entorse.
 plancher T1 PNJ de GAME_PRINCIPLES appliqué au savoir. Un joueur riche ouvrira ses arbres plus
 tôt ; il ne les ouvrira pas *mieux*, et l'énergie reste la borne réelle de sa progression.
 
-### 6.4 Ce que ça change dans le code existant
+### 6.4 Les arbres retrouvés — ce que le catalogue ne contient pas
+
+Le catalogue est complet **pour ce qui s'atteint par le jeu ordinaire**. Il existe une seconde
+catégorie, qui n'y figure nulle part : **les arbres retrouvés**.
+
+> Un joueur qui a mené l'arbre du mineur à son dernier palier — et qui n'a donc, en principe,
+> plus rien à y faire — croise un vieux Nain à moitié changé en minerai. Le Nain lui confie un
+> parchemin prêt à tomber en poussière : un arbre de prospection que **le registre ne mentionne
+> pas**.
+
+C'est un ajout de valeur nette, pour une raison qui n'était pas visible avant : **aujourd'hui,
+terminer un arbre ne donne rien.** Le dernier palier est un cul-de-sac. Ici, il devient une
+**condition de rencontre** — et la fin d'un arbre cesse d'être une fin.
+
+**Le même patron vaut au-delà des arbres** : quêtes retrouvées, monstres uniques, recettes que
+personne n'a listées. Ce document ne cadre que les arbres ; le reste appartient au contenu.
+
+**Cinq lois.** Les deux premières sont importées telles quelles de GAME_WORLD §12.3 (le
+Répertoire), qui a déjà résolu le même problème à l'échelle du serveur — on ne réinvente pas
+une seconde jurisprudence pour le même sujet.
+
+1. **Latéral, jamais vertical** *(§12.3c)*. Un arbre retrouvé apporte des **options** — une
+   variante, un utilitaire, une lecture nouvelle du métier — jamais strictement plus de
+   puissance. Sinon le joueur qui n'a pas croisé le vieux Nain est mécaniquement derrière, et
+   le secret devient une obligation déguisée.
+2. **Cumulatif, jamais manqué** *(§12.3d)*. La rencontre reste disponible **indéfiniment, pour
+   quiconque remplit la même condition**. Il n'y a pas de premier arrivé, pas de fenêtre, pas
+   de date. **Le secret est dans le savoir, jamais dans l'avoir-été-là.**
+3. **Jamais nécessaire.** Aucune recette, aucun palier, aucune quête de progression normale
+   n'en dépend. Un joueur qui ignore tout des arbres retrouvés joue un jeu complet.
+4. **La condition est un accomplissement, pas un hasard.** Le vieux Nain se montre à qui a fini
+   l'arbre, pas à qui a de la chance. Un secret tiré au sort est une loterie ; un secret mérité
+   est une récompense.
+5. **Le parchemin retrouvé est lié** — c'est **l'exception** aux quatre conditions du §6.3, et
+   la seule. Ce qui circule entre joueurs, c'est **l'information** (« va voir le vieux Nain
+   quand tu auras fini le mineur »), jamais l'objet. Sans cette exception, le premier
+   découvreur met le secret à l'hôtel des ventes et il est mort en deux jours.
+
+La cinquième loi est le vrai geste de conception : elle fait du secret un **objet social**
+plutôt qu'une marchandise. C'est exactement le patron de l'information exclusive du prospecteur
+(GAME_ZONE_ACTIONS) — le savoir se monnaie entre joueurs sans qu'aucun objet ne change de main.
+
+> **À ne pas confondre avec le Répertoire** (GAME_WORLD §12.3, PLAN_REPERTOIRE). Le Répertoire
+> est **collectif** (c'est le serveur qui retrouve un geste), il porte sur la **matéria**, et il
+> s'oriente par les lectures. Les arbres retrouvés sont **individuels**, portent sur les
+> **domaines**, et se gagnent par l'accomplissement. Deux systèmes cousins, deux échelles, mais
+> **les mêmes deux lois** — ce qui est le signe qu'elles sont bonnes.
+
+### 6.5 Ce que ça change dans le code existant
 
 Les parchemins existent (`life-domain-parchment`, `miner-domain-parchment`,
 `herbalist-domain-parchment`) mais leur effet est `learn_skill` sur **une compétence précise**.
@@ -587,6 +688,9 @@ l'interface. `PlayerHubDigest::recap()` fait déjà une partie du travail.
 | **A12** | **Accès aux arbres** | **Catalogue public complet → parchemin → arbre ouvert.** Le parchemin est **un coût, jamais un verrou** : quatre conditions le garantissent (R2, §6.3) |
 | **A13** | **Le combat s'enseigne sur deux mannequins** | Le premier n'attaque pas (perdre est impossible), le second riposte sans pouvoir tuer. Combats scriptés : le Fanal reste `safe` (R2, §5.3) |
 | **A14** | **La forme de l'acte I** | **Trois tours de la même boucle** — parchemin → arbre → geste — sur l'arme, la matéria et la récolte (R2, §5.1) |
+| **A15** | **Le juste milieu** | **Le champ est infini, l'entrée est un acte.** Aucun geste n'est fermé, aucun arbre n'en exclut un autre, et un joueur peut tout mener de front — mais **rien n'est su avant d'avoir été appris** (R3, §6.0) |
+| **A16** | **Les actions de base** | Elles sont **concernées** : sans parchemin, on ne mine ni ne forge. Avec deux garde-fous : les personnages existants sont **grand-périsés**, et l'acte I **donne** les trois premiers. **Restent libres sans condition** : marcher, voyager, explorer, parler, ramasser, se battre **à mains nues** (R3, §6.0) |
+| **A17** | **Les arbres retrouvés** | Des arbres **hors registre**, ouverts par une rencontre que **l'accomplissement** déclenche (finir un arbre). **Latéral jamais vertical**, **cumulatif jamais manqué**, **jamais nécessaire**, et le parchemin retrouvé est **lié** : ce qui circule est l'information, pas l'objet (R3, §6.4) |
 
 ---
 
@@ -606,6 +710,22 @@ l'herboristerie sans l'avoir demandé. → A8, A9, A10, et le passage de sept à
 - **le combat s'enseigne sur deux mannequins**, ce qui règle au passage l'impossibilité de
   combattre au Fanal sans lever son `safe: true` → A13, et refonde l'acte I sur la boucle
   (§5.1) → A14.
+
+**R3 (2026-07-29)** — la doctrine du parchemin trouve sa formulation juste, et gagne un
+débouché :
+- **le juste milieu est nommé** : *le champ est infini, l'entrée est un acte*. R2 défendait le
+  parchemin comme « un coût qui séquence » ; c'était vrai mais faible. La vraie réponse est
+  qu'un personnage ne naît pas en sachant miner, forger et lancer des sorts — la doctrine
+  interdit qu'un geste soit **fermé**, elle n'a jamais dit qu'il était **déjà acquis** → A15 ;
+- **les actions de base entrent dans le champ du parchemin**, avec la frontière qui empêche le
+  jeu de devenir une parade de verrous (les verbes élémentaires restent libres) et les deux
+  garde-fous de migration → A16 ;
+- **les arbres retrouvés** : le parchemin, une fois posé comme mécanisme, ouvre une couche
+  hors registre qui donne enfin une récompense au fait de **terminer** un arbre. Ses lois sont
+  importées du Répertoire (GAME_WORLD §12.3), pas réinventées → A17 ;
+- **la capacité de l'Humain est resserrée** sur ce qui lui est passé entre les mains (sac ou
+  banque), jamais sur l'hôtel des ventes : elle cesse d'être un outil d'arbitrage de marché et
+  se gagne en jouant, comme les trois autres.
 
 ---
 
