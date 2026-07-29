@@ -177,10 +177,11 @@ workshop:
         # ligne de production : on voyage pour crafter.
         wood: { charpentier: 3 }
         amethyst: {}
-        # ZON-30 puis ECO-29 — la ligne agricole des Vallons. Le cuisinier livre,
-        # elle a son metier en face ; le tailleur (ECO-31) viendra s'y ajouter le
-        # jour ou le lin aura le sien.
-        farm: { cuisinier: 3 }
+        # ZON-30, puis ECO-29 et ECO-31 — la ligne agricole des Vallons nourrit
+        # deux metiers : le ble va au cuisinier, le lin au tailleur. C'est la
+        # seule ligne du monde a en porter deux, et c'est ce qui fait des Vallons
+        # une zone qu'on habite plutot qu'une zone qu'on traverse.
+        farm: { cuisinier: 3, tailleur: 3 }
 
     # Plafond du cumul. Ce n'est pas un detail de calibrage : sans lui, une
     # Metropole batie sur sa propre ligne accorderait 10 points, soit davantage

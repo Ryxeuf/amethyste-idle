@@ -63,6 +63,10 @@ class DomainFixtures extends Fixture
             // bucheron : le metier prend celui de sa matiere, comme le forgeron
             // prend le metal.
             'carpenter' => ['title' => 'Charpentier', 'element' => 'wood', 'title_translations' => ['en' => 'Carpenter']],
+            // ECO-31 — celui qui habille les lanceurs de sorts. Element air : le
+            // tissu est ce qui pese le moins, et le metier prend l'element de ce
+            // qu'il travaille.
+            'tailor' => ['title' => 'Tailleur', 'element' => 'air', 'title_translations' => ['en' => 'Tailor']],
         ];
 
         foreach ($domains as $key => $data) {
