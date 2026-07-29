@@ -4631,18 +4631,27 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // jamais etre un goulot ; les trois autres sont chacune l'exclusivite d'une
     // zone forestiere, et se gagnent sur un **savoir** (ECO-24c).
     //
-    // **Aucun emplacement d'outil**, contrairement aux quatre autres arbres de
-    // recolte. La hache demande un type d'outil, un bit d'equipement et un
-    // emplacement d'interface neufs — un changement de **mecanisme**, pas de
-    // donnees. Elle arrivera avec le charpentier (ECO-30), qui est celui a qui
-    // elle sert. Livrer l'arbre sans elle donne la matiere tout de suite ; poser
-    // la hache d'abord aurait donne un outil sans rien a couper.
+    // **La hache est arrivee (DOM-05).** ZON-34 avait livre cet arbre sans
+    // emplacement d'outil, et disait pourquoi : elle demandait un type d'outil,
+    // un bit d'equipement et un emplacement d'interface neufs — un changement de
+    // mecanisme, pas de donnees — et elle devait venir avec le charpentier, a qui
+    // elle sert. Le charpentier existe depuis ECO-30 : la promesse est soldee, et
+    // l'arbre passe de huit a quinze nœuds, au gabarit de recolte.
     private function getLumberjackSkills(): array
     {
         $d = 'lumberjack';
 
         return [
-            // Rang 1 (0 pts) — le hetre, la matiere de tout le monde
+            // Rang 1 (0 pts) — deux entrees, comme le gabarit l'exige : la
+            // matiere de tout le monde, et l'outil qui la coupe.
+            'lumber_axe' => [
+                'slug' => 'lumber-axe',
+                'title' => 'Prise de hache',
+                'description' => 'Debloque l\'emplacement de hache et l\'usage de la hache en bronze',
+                'actions' => [['action' => 'tool_slot.unlock', 'slot' => 'axe'], ['action' => 'equip.tool', 'slugs' => ['axe-bronze']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
             'lumber_beech_xs' => [
                 'slug' => 'lumber-beech-xs',
                 'title' => 'Coupe du hetre',
@@ -4661,6 +4670,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'requirements' => ['lumber_beech_xs'],
+            ],
+            'lumber_edge' => [
+                'slug' => 'lumber-edge',
+                'title' => 'Affutage',
+                'description' => 'Un fer bien passe mord du premier coup — et ouvre la hache en fer',
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['axe-iron']]],
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['lumber_axe'],
             ],
             'lumber_whisperoak_xs' => [
                 'slug' => 'lumber-whisperoak-xs',
@@ -4681,6 +4700,34 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 35,
                 'domain' => $d,
                 'requirements' => ['lumber_whisperoak_xs'],
+            ],
+            'lumber_keen_eye' => [
+                'slug' => 'lumber-keen-eye',
+                'title' => 'Oeil du bucheron',
+                'description' => 'Reperer de loin les essences que les autres passent sans voir, et manier la hache en acier',
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['axe-steel']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['lumber_edge'],
+            ],
+            'lumber_reading' => [
+                'slug' => 'lumber-reading',
+                'title' => 'Lecture de la coupe',
+                'description' => 'Savoir ce qu\'un peuplement a encore a donner avant d\'y porter le fer',
+                'requiredPoints' => 45,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['lumber_keen_eye'],
+            ],
+            'lumber_bark' => [
+                'slug' => 'lumber-bark',
+                'title' => 'Ecorcage',
+                'description' => 'Retirer l\'ecorce sur pied : le bois seche mieux et se fend moins',
+                'requiredPoints' => 55,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['lumber_keen_eye'],
             ],
             'lumber_seasoning' => [
                 'slug' => 'lumber-seasoning',
@@ -4710,6 +4757,25 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 90,
                 'domain' => $d,
                 'requirements' => ['lumber_seasoning', 'lumber_peat_xs'],
+            ],
+            'lumber_knotless' => [
+                'slug' => 'lumber-knotless',
+                'title' => 'Fil sans nœud',
+                'description' => 'Choisir la bille sans defaut : ce qui sort de la coupe se travaille mieux',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['lumber_bark'],
+            ],
+            'lumber_deep_scouting' => [
+                'slug' => 'lumber-deep-scouting',
+                'title' => 'Lecture du peuplement',
+                'description' => 'Voir de loin ce qu\'un bois donnera, et manier la hache en mithril',
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['axe-mithril']]],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['lumber_reading', 'lumber_heartwood'],
             ],
             'lumber_master' => [
                 'slug' => 'lumber-master',

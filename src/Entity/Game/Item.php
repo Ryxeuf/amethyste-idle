@@ -31,6 +31,10 @@ class Item
     public const TOOL_TYPE_TANNING_KIT = 'tanning_kit';
     public const TOOL_TYPE_MORTAR = 'mortar';
     public const TOOL_TYPE_CHISEL = 'chisel';
+    // DOM-05 : la hache, promise par ZON-34 et differee faute de metier a
+    // servir. Le charpentier existe depuis ECO-30 ; l'outil arrive avec celui a
+    // qui il sert, comme la note de ZON-34 l'annoncait.
+    public const TOOL_TYPE_AXE = 'axe';
 
     public const TOOL_GEAR_LOCATIONS = [
         self::TOOL_TYPE_PICKAXE => 'tool_pickaxe',
@@ -41,6 +45,7 @@ class Item
         self::TOOL_TYPE_TANNING_KIT => 'tool_tanning_kit',
         self::TOOL_TYPE_MORTAR => 'tool_mortar',
         self::TOOL_TYPE_CHISEL => 'tool_chisel',
+        self::TOOL_TYPE_AXE => 'tool_axe',
     ];
 
     public const CRAFT_TOOL_TYPES = [
@@ -59,6 +64,7 @@ class Item
         self::TOOL_TYPE_TANNING_KIT => 'un kit de tannage',
         self::TOOL_TYPE_MORTAR => 'un mortier d\'alchimie',
         self::TOOL_TYPE_CHISEL => 'un burin de joaillier',
+        self::TOOL_TYPE_AXE => 'une hache',
     ];
 
     public const TOOL_TIER_BRONZE = 1;
