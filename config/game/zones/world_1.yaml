@@ -461,6 +461,15 @@ zones:
             - { monster: venom_snake, count: 3 }
             - { monster: salamander, count: 2 }
             - { monster: creeping_shadow, count: 2, nocturnal: true }
+            # ZON-31 — le gibier a os. La zone etait la plus pauvre du monde
+            # livre (un filon, quatre monstres) : sa faune ne rendait **rien**
+            # au depeceur, alors que la ligne cuir/os du desert est sa
+            # production declaree (GAME_ZONES § 2.7).
+            #
+            # Le desert se depece en **os**, pas en cuir souple : c'est l'autre
+            # moitie de la ligne du tanneur, et l'Acte III la consomme.
+            - { monster: dune_ibex, count: 4 }
+            - { monster: sand_hyena, count: 3 }
         # ZON-26b-b : habitants declares. Comme les creatures, ils sont rattaches
         # a la zone **directement** : sans ce chemin, une zone sans carte
         # d'origine ne pouvait avoir aucun PNJ, et le tirage `pnj: 2` de son
@@ -494,6 +503,15 @@ zones:
             # mithril avec le mithril de la Crete : le sommet du jeu de base
             # exige donc un commerce nord-sud (loi des caravanes, GAME_WORLD §5.3).
             - { slug: filon-de-platine-des-dunes, item: ore-platinum, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2, requires_skill: miner-platinum-xs }
+            # ZON-31 — l'exclusivite de la zone. « L'Ambre » du nom cesse d'etre
+            # un decor : la resine de l'age precedent se degage du sable, et
+            # nulle part ailleurs. Profil T3, comme le platine — c'est une
+            # matiere qu'on vient chercher, pas une qu'on ramasse en passant.
+            #
+            # Pas de `requires_skill` : contrairement aux metaux de haut palier
+            # (ECO-24c), l'ambre affleure. Le gater fermerait la seule raison de
+            # descendre au sud avant l'Acte III.
+            - { slug: gisement-d-ambre-fossile, item: amber-fossil, profession: mining, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
     # === Acte 4 (tache 128b) ===

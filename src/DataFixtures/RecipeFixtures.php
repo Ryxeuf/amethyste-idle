@@ -977,6 +977,30 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Taille une gemme rare aux propriétés magiques avec des outils de mithril.',
                 'name_translations' => ['en' => 'Rare Gem'],
             ],
+            // ZON-31 — le debouche de l'ambre fossile. Une exclusivite sans
+            // debouche est un mensonge de level design : le filon existerait,
+            // et rien n'en ferait rien.
+            //
+            // Le sceau consomme une gemme **taillee** et non brute : la loi
+            // « aucune ligne plate verticalement » (ECO-27) veut qu'une recette
+            // de niveau >= 3 morde sur un produit d'artisanat, sinon la matiere
+            // de debut devient inutile des que les veterans montent.
+            'recipe_amber_seal' => [
+                'name' => 'Sceau d\'ambre',
+                'slug' => 'recipe-amber-seal',
+                'craft' => 'joaillier',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'amber-fossil', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                    ['slug' => 'ore-silver', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_amber_seal',
+                'crafting_time' => 10,
+                'xp_reward' => 35,
+                'description' => 'Sertit une gemme dans une larme d\'ambre du sud, cerclée d\'argent.',
+                'name_translations' => ['en' => 'Amber Seal'],
+            ],
             'recipe_enchant_gem' => [
                 'name' => 'Enchantement de gemme',
                 'slug' => 'recipe-enchant-gem',
