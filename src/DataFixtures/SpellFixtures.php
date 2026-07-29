@@ -2006,6 +2006,29 @@ class SpellFixtures extends Fixture
                 'level' => 5,
             ],
 
+            // ONB-20a — les mains nues.
+            //
+            // Le repli qui garantit qu'aucun chemin de combat ne peut echouer
+            // faute d'arme. Volontairement le sort le plus faible du jeu :
+            // sans element (on ne frappe rien de particulier), sans effet de
+            // statut, sans critique, et sans emplacement de materia puisqu'il
+            // n'est porte par aucun objet. Les mains nues ne sont pas une arme
+            // de secours qu'on choisirait — elles sont ce qui reste.
+            //
+            // `hit` est ici sans effet : `BareHandsAttack` roule sa propre
+            // chance de toucher, celle d'un geste sans entrainement.
+            'bare_hands' => [
+                'slug' => 'bare-hands',
+                'damage' => 1,
+                'element' => Element::None,
+                'heal' => null,
+                'name' => 'Mains nues',
+                'description' => 'Faute de mieux, on frappe avec ce qu\'on a.',
+                'hit' => 75,
+                'critical' => 0,
+                'level' => 1,
+            ],
+
             // Sorts de consommables
             'beer_heal' => [
                 'slug' => 'beer-heal',
