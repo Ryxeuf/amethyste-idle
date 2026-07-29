@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **16 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **17 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -42,7 +42,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-12 ✅ | Restauration payée au trésor de guilde |
 | FOY-13 ✅ | Ateliers de doctrine (Fonderie / Lecteurs) |
 | FOY-14 ✅ | Crédit au journal de monde à la clôture de marée |
-| FOY-15 | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
+| FOY-15 ✅ | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
 | FOY-16 | Tests unitaires du plan |
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
 
@@ -52,7 +52,7 @@ Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(pi
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
 Piste D — Pâleur              : FOY-11 ✅ → FOY-12 ✅ **(piste complete)**
 Piste E — Doctrine & guilde   : FOY-13 ✅ → FOY-14 ✅ **(piste complete)**
-Piste F — Contenu & tests     : FOY-15, FOY-16
+Piste F — Contenu & tests     : FOY-15 ✅, FOY-16
 ```
 
 **Ordre de valeur/effort** : `A → B → C → D → E → F`.
@@ -364,16 +364,19 @@ s'y branche.
 
 ## Piste F — Contenu & tests (parallélisable)
 
-### FOY-15 — Marées « conséquence » (M | ★★★ | MOYENNE)
+### FOY-15 — Marées « conséquence » ✅ (M | ★★★ | MOYENNE)
 > Ce qui transforme la saison en **boucle** plutôt qu'en calendrier (GAME_WORLD §8).
-> Prérequis : ← FOY-11, ← FOY-08
-- [ ] **La Pâleur** : thème déclenché quand l'extraction du mois écoulé dépasse un seuil ;
-      climax = empêcher un foyer de tomber
-- [ ] **L'Appel de la Crue** : thème déclenché quand un quota se libère ; climax = course de
-      foyers entre guildes, sans un coup échangé
-- [ ] Sélection du thème au tick de saison à partir d'un agrégat du mois précédent
-- [ ] Composition déclarative des 4 beats (convention `SeasonArcFixtures`, NAR-08)
-- [ ] Tests : sélection par agrégat, fenêtres de beat, absence de déclenchement sous le seuil
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Précision au plan** : les deux conditions ne se mesurent pas de la même façon. La Pâleur se
+> lit sur un **état** (assez de filons visiblement pâlis), parce qu'elle est réversible — un
+> serveur qui a réparé ne la revoit pas. L'Appel de la Crue se lit sur une **variation**, sans
+> quoi il sonnerait dès la première marée : au lancement, toutes les places sont libres. Un
+> unique vecteur de places libres, relevé à chaque clôture, couvre les deux causes annoncées
+> (palier de population franchi, quota libéré par régression) — du point de vue des joueurs,
+> la nouvelle est la même.
+>
+> **Aucune migration** : le repère est un vecteur de trois entiers, il vit dans `Parameter`.
 
 ### FOY-16 — Tests unitaires du plan (M | ★★ | HAUTE)
 > Objectif : **40+ méthodes** dédiées aux foyers, plus un test de contrat transverse.
@@ -419,6 +422,6 @@ FOY-16 court en parallèle sur les quatre sprints.
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
 Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14 ✅
-Phase 4 (conséquence): FOY-11 ✅ → FOY-12 ✅ → FOY-13 ✅ → FOY-15
+Phase 4 (conséquence): FOY-11 ✅ → FOY-12 ✅ → FOY-13 ✅ → FOY-15 ✅
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```

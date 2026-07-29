@@ -1,0 +1,82 @@
+# =============================================================================
+# Marees « consequence » — declenchees, jamais datees (FOY-15)
+# =============================================================================
+# Conception : docs/GAME_SEASONS.md § 3, docs/GAME_WORLD.md § 8.
+#
+# Ce qui transforme la saison en **boucle** plutot qu'en calendrier. Le theme de
+# la maree qui vient ne sort pas d'une partition ecrite d'avance : il sort de ce
+# que le serveur a fait le mois d'avant.
+#
+# Regle du fichier, la meme que `settlements.yaml` : les seuils et la
+# composition des quatre beats sont des **donnees**. Ajouter une maree
+# consequence, c'est ajouter un bloc — jamais une branche de code.
+#
+# Les fenetres de beat sont exprimees en jours depuis l'ouverture de la maree.
+# Elles doivent etre contiguës et tenir dans les 28 jours (convention NAR-08,
+# `SeasonArcFixtures`) ; le chargeur refuse le contraire.
+# =============================================================================
+
+# Nombre de filons pali au-dessus du seuil de visibilite qu'il faut compter en
+# fin de maree pour que la Paleur preempte le creneau suivant.
+#
+# Calibrage : le monde livre compte une trentaine de filons. A 6, il faut qu'un
+# cinquieme d'entre eux porte une trace visible — c'est-a-dire une exploitation
+# organisee sur plusieurs zones, pas une ruee d'un soir sur un filon.
+paleness_threshold: 6
+
+tides:
+    paleness:
+        theme: 'La Pâleur'
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'La Pâleur — Amorce : les filons se délavent'
+              description: "Les veines rendent moins, et la couleur s'en va. Ce que le mois passé a pris, ce mois-ci le paie."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: 'La Pâleur — Montée : les foyers vacillent'
+              description: "Les ateliers tournent au ralenti. Les guildes comptent ce qu'il en coûterait de restaurer, et ce qu'il en coûterait de ne rien faire."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "La Pâleur — Climax : empêcher la chute"
+              description: "Un foyer est sur le point de perdre un rang. Restaurer les filons, remplir le chantier de la semaine, déposer : tout compte, et rien ne se fait seul."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: "La Pâleur — Résolution : ce que le monde a retenu"
+              description: "Les veines reprennent des couleurs, ou ne les reprennent pas. La chronique garde le nom de ceux qui ont payé."
+              start_day: 21
+              end_day: 28
+
+    crue_call:
+        theme: 'L''Appel de la Crue'
+        beats:
+            - beat: amorce
+              order: 1
+              name: "L'Appel de la Crue — Amorce : une place se libère"
+              description: "Le monde peut porter une grande ville de plus. Les routes s'animent : chacun sait déjà où il ira déposer."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: "L'Appel de la Crue — Montée : la course commence"
+              description: "Plusieurs foyers visent la même place. Elle ira au plus fréquenté, et à personne d'autre — sans qu'un seul coup soit échangé."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "L'Appel de la Crue — Climax : la place se prend"
+              description: "La marée touche à sa fin et le quota se referme sur celui qui aura tenu. Déposer maintenant vaut plus que déposer demain."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: "L'Appel de la Crue — Résolution : la ville nouvelle"
+              description: "Une cité de plus se lève, et le monde reprend son souffle. Le journal retient qui l'a bâtie."
+              start_day: 21
+              end_day: 28
