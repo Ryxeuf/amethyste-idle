@@ -1320,7 +1320,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'elixir-force',
                 'spell' => 'elixir_force_spell',
                 'effect' => '{"action":"use_spell","slug":"elixir-force"}',
-                'price' => 180,
+                // ECO-29 : le ragout du cuisinier (40) entre dans le cout, et le
+                // prix suit la regle d'ECO-27 — 210 + 10 x 3.
+                'price' => 240,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
@@ -1489,7 +1491,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Un saumon des rapides rôti sur son lit de pain. Le plat des jours où l\'on a bien pêché.',
                 'type' => 'crafted',
                 'slug' => 'crafted-salmon-roast',
-                'price' => 70,
+                // Le fond d'alchimiste (45) entre dans le cout : 85 + 10 x 3.
+                'price' => 120,
                 'space' => 1,
                 'energy_cost' => 0,
                 'spell' => 'grilled_meat_heal',

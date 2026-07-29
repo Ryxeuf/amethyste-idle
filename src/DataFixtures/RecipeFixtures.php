@@ -733,6 +733,11 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'crafted-potion-base', 'quantity' => 1],
                     ['slug' => 'plant-ginseng', 'quantity' => 2],
                     ['slug' => 'plant-mandrake', 'quantity' => 1],
+                    // ECO-14, l'autre sens : la sortie du cuisinier doit avoir
+                    // une demande. Un elixir de force se batit sur un fond
+                    // nourrissant — le ragout du cuisinier en est un, et c'est
+                    // le seul metier qui en fasse.
+                    ['slug' => 'crafted-carp-stew', 'quantity' => 1],
                 ],
                 'result_ref' => 'elixir_force',
                 'crafting_time' => 8,
@@ -1049,6 +1054,12 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'fish-salmon', 'quantity' => 2],
                     ['slug' => 'crafted-bread', 'quantity' => 1],
+                    // ECO-14 : le fond de cuisson vient de l'alchimiste. Un
+                    // metier qui ne consomme la sortie d'aucun autre produit un
+                    // joueur autosuffisant — il n'a rien a acheter, donc rien a
+                    // vendre non plus. Au palier 3, jamais a l'entree : croiser
+                    // les metiers des le niveau 1 casserait le plancher T1.
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_salmon_roast',
                 'crafting_time' => 7,
