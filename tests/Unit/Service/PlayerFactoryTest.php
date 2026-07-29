@@ -154,11 +154,44 @@ class PlayerFactoryTest extends TestCase
         );
     }
 
-    private function makeRace(): Race
+    /**
+     * ONB-07 — le peuple ne decide plus d'aucun chiffre.
+     *
+     * L'Orc naissait avec +8 vie sur une base de 20 : +40 % de survie face a
+     * l'Humain, arbitre au pas 3 d'un tunnel par quelqu'un qui ne connait pas
+     * encore le jeu.
+     */
+    public function testEveryPeopleStartsWithTheSameNumbers(): void
     {
-        $race = new Race();
-        $race->setStatModifiers(['life' => 0, 'energy' => 0, 'speed' => 0, 'hit' => 0]);
+        $reference = null;
 
-        return $race;
+        foreach (['human', 'elf', 'dwarf', 'orc'] as $slug) {
+            $this->recalculator->method('recalculate');
+
+            $player = $this->factory->createPlayer(
+                new User(),
+                'Nom-' . $slug,
+                $this->makeRace($slug),
+                ['body' => 'human_f_dark'],
+            );
+
+            $stats = [
+                'life' => $player->getLife(),
+                'maxLife' => $player->getMaxLife(),
+                'energy' => $player->getEnergy(),
+                'maxEnergy' => $player->getMaxEnergy(),
+                'speed' => $player->getSpeed(),
+                'hit' => $player->getHit(),
+            ];
+
+            $reference ??= $stats;
+            $this->assertSame($reference, $stats, sprintf('Le peuple « %s » modifie des statistiques.', $slug));
+        }
+    }
+
+    private function makeRace(string $slug = 'human'): Race
+    {
+        // ONB-07 : un peuple ne porte plus aucun chiffre.
+        return (new Race())->setSlug($slug);
     }
 }

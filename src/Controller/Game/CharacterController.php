@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\User;
 use App\Form\CharacterCreateType;
 use App\Form\CharacterCustomizeType;
+use App\GameEngine\Race\RaceCapability;
 use App\Helper\PlayerHelper;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\ForbiddenNameChecker;
@@ -63,6 +64,7 @@ class CharacterController extends AbstractController
 
                 return $this->render('game/character/create.html.twig', [
                     'form' => $form->createView(),
+                    'race_capabilities' => $this->raceCapabilities(),
                 ]);
             }
 
@@ -71,6 +73,7 @@ class CharacterController extends AbstractController
 
                 return $this->render('game/character/create.html.twig', [
                     'form' => $form->createView(),
+                    'race_capabilities' => $this->raceCapabilities(),
                 ]);
             }
 
@@ -103,7 +106,29 @@ class CharacterController extends AbstractController
 
         return $this->render('game/character/create.html.twig', [
             'form' => $form->createView(),
+            'race_capabilities' => $this->raceCapabilities(),
         ]);
+    }
+
+    /**
+     * ONB-07 — ce que chaque peuple laisse voir, indexe par son slug.
+     *
+     * Le gabarit ne derive rien lui-meme : c'est ici, et nulle part ailleurs,
+     * qu'on decide ce qu'un peuple apporte.
+     *
+     * @return array<string, array{name: string, description: string}>
+     */
+    private function raceCapabilities(): array
+    {
+        $capabilities = [];
+        foreach (RaceCapability::cases() as $capability) {
+            $capabilities[$capability->raceSlug()] = [
+                'name' => $capability->nameKey(),
+                'description' => $capability->descriptionKey(),
+            ];
+        }
+
+        return $capabilities;
     }
 
     /**

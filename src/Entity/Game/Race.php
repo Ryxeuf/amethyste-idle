@@ -40,9 +40,6 @@ class Race
     #[ORM\Column(name: 'sprite_sheet', type: 'string', length: 255, nullable: true)]
     private ?string $spriteSheet = null;
 
-    #[ORM\Column(name: 'stat_modifiers', type: 'json')]
-    private array $statModifiers = ['life' => 0, 'energy' => 0, 'speed' => 0, 'hit' => 0];
-
     #[ORM\Column(name: 'available_at_creation', type: 'boolean', options: ['default' => true])]
     private bool $availableAtCreation = true;
 
@@ -176,23 +173,6 @@ class Race
         $this->spriteSheet = $spriteSheet;
 
         return $this;
-    }
-
-    public function getStatModifiers(): array
-    {
-        return $this->statModifiers;
-    }
-
-    public function setStatModifiers(array $statModifiers): self
-    {
-        $this->statModifiers = $statModifiers;
-
-        return $this;
-    }
-
-    public function getStatModifier(string $stat): int
-    {
-        return $this->statModifiers[$stat] ?? 0;
     }
 
     public function isAvailableAtCreation(): bool

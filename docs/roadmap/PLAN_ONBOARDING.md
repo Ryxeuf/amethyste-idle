@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **4/20 livrés + ONB-20a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **4/20 livrés + ONB-20a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -31,7 +31,8 @@
 | ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
 | ONB-05 | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
-| ONB-07 | La capacité de peuple remplace les statistiques (ferme D12) | M | ★★ |
+| ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
+| ONB-07b | Les quatre capacités branchées sur leurs écrans | M | ★★ |
 | ONB-08 | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
@@ -199,7 +200,19 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 > sont des arbitrages de puissance demandés au pas 3. `Race` n'étant lue **nulle part** hors
 > création, ce jalon ne casse rien.
 > Cadrage : GAME_ONBOARDING §4.5
-- [ ] **Retirer les modificateurs de statistiques** ; vérifier qu'aucun calcul n'en dépendait
+- [x] **ONB-07a ✅ LIVRÉ 2026-07-29 — Retirer les modificateurs de statistiques** ; vérifié
+      qu'aucun calcul n'en dépendait (seul `PlayerFactory` les lisait). La colonne
+      `race.stat_modifiers` est **supprimée**, pas remise à zéro : une donnée que plus rien ne
+      lit finit par être relue un jour par quelqu'un qui la croit vivante. Les personnages déjà
+      créés gardent leurs statistiques — les recalculer retirerait des points de vie à des
+      joueurs pour corriger une décision qu'ils n'ont pas prise
+  - [x] `RaceCapability` (les quatre capacités déclarées) + `RaceCapabilityResolver` (le point
+        unique d'où l'on demande « ce personnage voit-il ceci ? »)
+  - [x] Écran du peuple : la capacité remplace les puces de statistiques
+  - [x] Tests : chaque peuple porte **exactement une** capacité ; une capacité n'expose
+        **aucun chiffre** ; les quatre peuples naissent avec des statistiques identiques
+- **ONB-07b — reste à faire** : brancher les quatre capacités sur leurs écrans (zone,
+  exploration, bestiaire, catalogue de ressources)
 - [ ] Implémenter les quatre capacités, sous la règle « elle touche ce qu'on **sait**, jamais
       ce qu'on **produit** » :
   - [ ] **Nain — Lire la pierre** : la bande de pureté d'un filon est lisible **avant** la
