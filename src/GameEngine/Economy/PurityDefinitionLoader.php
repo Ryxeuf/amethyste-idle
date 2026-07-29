@@ -111,8 +111,6 @@ class PurityDefinitionLoader
      * vaut mieux que de le laisser deviner par une absence, qui ne distingue
      * pas « neutre par nature » de « pas encore decrit ».
      *
-     * @param array<array-key, mixed> $raw
-     *
      * @return array<string, array{weight_shift: int, night_weight_shift: int}>
      */
     private function normalizeSignatures(mixed $raw, string $source): array

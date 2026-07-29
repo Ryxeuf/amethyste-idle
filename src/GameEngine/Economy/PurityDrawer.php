@@ -7,8 +7,8 @@ use App\Entity\App\Zone;
 use App\Enum\Purity;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\Retention\WeekKey;
-use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\World\GameTimeService;
 use App\Repository\WeeklyOutcropRepository;
 use App\Repository\ZoneVeinRepository;
 
@@ -169,16 +169,6 @@ class PurityDrawer
     }
 
     /**
-     * Poids effectifs, plafond et savoir appliques.
-     *
-     * Le transfert se fait **vers le haut d'un cran a la fois** : le trouble
-     * nourrit le clair, le clair nourrit le pur. Un raccourci du trouble vers le
-     * parfait ferait du niveau de recolte un achat de rarete, ce que le socle de
-     * monde ecarte explicitement.
-     *
-     * @return array<string, int>
-     */
-    /**
      * Ce que la geologie de la zone deplace, a l'heure qu'il est (ZON-32).
      *
      * Une zone absente de la table tire comme la reference : livrer une zone
@@ -246,6 +236,16 @@ class PurityDrawer
         return $weights;
     }
 
+    /**
+     * Poids effectifs : geologie, savoir et plafond appliques dans cet ordre.
+     *
+     * Le transfert se fait **vers le haut d'un cran a la fois** : le trouble
+     * nourrit le clair, le clair nourrit le pur. Un raccourci du trouble vers le
+     * parfait ferait du niveau de recolte un achat de rarete, ce que le socle de
+     * monde ecarte explicitement.
+     *
+     * @return array<string, int>
+     */
     public function weightsFor(Purity $ceiling, int $skillBonus, ?Zone $zone = null): array
     {
         $draw = $this->definition();

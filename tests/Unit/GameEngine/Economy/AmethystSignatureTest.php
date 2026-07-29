@@ -198,7 +198,7 @@ class AmethystSignatureTest extends TestCase
     }
 
     /**
-     * **Le signe ne perce jamais le plafond.**
+     * Le signe ne perce **jamais** le plafond.
      *
      * Un filon ereinte de la Crete rend du trouble comme partout ailleurs : la
      * geologie decrit une distribution, la vitalite pose une borne, et c'est la
