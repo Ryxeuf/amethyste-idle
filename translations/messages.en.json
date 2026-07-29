@@ -978,14 +978,7 @@
         "hair_color": "Hair color",
         "outfit": "Starting outfit",
         "choose_race": "Choose a race",
-        "balanced": "Balanced",
         "submit": "Begin the adventure",
-        "stat": {
-          "life": "Life",
-          "energy": "Energy",
-          "speed": "Speed",
-          "hit": "Hit"
-        },
         "name_free": "This name is available.",
         "name_taken": "This name is already taken.",
         "name_forbidden": "This name is not allowed.",
@@ -1712,6 +1705,26 @@
         "submit": "Send"
       },
       "journal_notice": "Every one of these actions is written to the administration log, under your name."
+    },
+    "race": {
+      "capability": {
+        "read-the-stone": {
+          "name": "Reading Stone",
+          "description": "A vein's purity is plain to you before the first harvest."
+        },
+        "eye-of-the-margins": {
+          "name": "Eye of the Margins",
+          "description": "An exploration that yields nothing still leaves you a lead."
+        },
+        "the-scent": {
+          "name": "The Scent",
+          "description": "A monster's element and weakness, from the very first encounter."
+        },
+        "the-uses": {
+          "name": "The Uses",
+          "description": "On any object: what consumes it, and who buys it."
+        }
+      }
     }
   },
   "common": {

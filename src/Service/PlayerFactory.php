@@ -46,21 +46,20 @@ class PlayerFactory
         // morte, jusqu'a la premiere depense d'energie de chacun.
         $player->setLastActivityAt(new \DateTimeImmutable());
 
-        $modifiers = $race->getStatModifiers();
-        $lifeMod = (int) ($modifiers['life'] ?? 0);
-        $energyMod = (int) ($modifiers['energy'] ?? 0);
-        $speedMod = (int) ($modifiers['speed'] ?? 0);
-        $hitMod = (int) ($modifiers['hit'] ?? 0);
-
-        $maxLife = self::BASE_LIFE + $lifeMod;
-        $maxEnergy = self::BASE_MAX_ENERGY + $energyMod;
-
-        $player->setLife($maxLife);
-        $player->setMaxLife($maxLife);
-        $player->setEnergy(self::BASE_ENERGY + $energyMod);
-        $player->setMaxEnergy($maxEnergy);
-        $player->setSpeed(self::BASE_SPEED + $speedMod);
-        $player->setHit(self::BASE_HIT + $hitMod);
+        // ONB-07 : tous les personnages naissent avec les memes chiffres.
+        //
+        // Le peuple portait des modificateurs — l'Orc a +8 vie sur une base de
+        // 20, soit +40 % de survie face a l'Humain a 0. Ce n'etait pas
+        // equilibre, et c'etait surtout un arbitrage de puissance demande au
+        // pas 3 d'un tunnel ou aucune decision de build ne doit etre prise
+        // (A8). Ce que le peuple apporte est desormais une **capacite**, qui
+        // touche ce qu'on sait et jamais ce qu'on produit (`RaceCapability`).
+        $player->setLife(self::BASE_LIFE);
+        $player->setMaxLife(self::BASE_LIFE);
+        $player->setEnergy(self::BASE_ENERGY);
+        $player->setMaxEnergy(self::BASE_MAX_ENERGY);
+        $player->setSpeed(self::BASE_SPEED);
+        $player->setHit(self::BASE_HIT);
         $player->setGils(0);
         $player->setTutorialStep(TutorialStep::Movement->value);
 
