@@ -159,7 +159,9 @@
                 <p class="text-gray-500 text-sm">Aucune progression.</p>
             {% endif %}
 
-            {# Set domain XP form #}
+            {# Set domain XP form — reserve aux administrateurs : c'est de la
+               progression offerte, donc un classement fausse. #}
+            {% if is_granted('ROLE_ADMIN') %}
             <div class="mt-4 pt-4 border-t border-gray-800">
                 <h3 class="text-sm font-medium text-gray-400 mb-3">Modifier l'XP d'un domaine</h3>
                 <form method="post" action="{{ path('admin_player_set_domain_xp', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2">
@@ -175,6 +177,7 @@
                     </button>
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -282,6 +285,17 @@
                 </button>
             </form>
 
+            {# Voir le jeu tel que ce joueur le voit. Reserve a ROLE_SUPER_ADMIN
+               (seul porteur de ROLE_ALLOWED_TO_SWITCH) : c'est un diagnostic,
+               pas un outil de moderation. Sortie : ?_switch_user=_exit #}
+            {% if is_granted('ROLE_ALLOWED_TO_SWITCH') %}
+                <a href="{{ path('app_game', {_switch_user: player.user.email}) }}"
+                   class="flex items-center justify-center w-full bg-teal-800 hover:bg-teal-700 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center"
+                   onclick="return confirm('Voir le jeu comme « {{ player.name }} » ? Vous agirez sous son identite jusqu\'a la sortie.');">
+                    Voir le jeu comme ce joueur
+                </a>
+            {% endif %}
+
             <a href="{{ path('admin_player_teleport', {id: player.id}) }}" class="flex items-center justify-center w-full bg-blue-700 hover:bg-blue-600 text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
                 Teleporter vers une zone
             </a>
@@ -325,7 +339,9 @@
             {% endif %}
         </div>
 
-        {# Give item #}
+        {# Give item — reserve aux administrateurs : faire apparaitre de la
+           matiere fabrique de la valeur que personne n'a produite. #}
+        {% if is_granted('ROLE_ADMIN') %}
         <div class="mt-4 pt-4 border-t border-gray-800">
             <h3 class="text-sm font-medium text-gray-400 mb-3">Donner un item</h3>
             <form method="post" action="{{ path('admin_player_give_item', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2">
@@ -341,6 +357,7 @@
                 </button>
             </form>
         </div>
+        {% endif %}
 
         {# Verrou herite de l'ere carte : plus aucun deplacement ne le pose, mais
            la teleportation payante (gold sink) le lit encore comme un verrou. #}
@@ -356,7 +373,8 @@
             </form>
         </div>
 
-        {# Give gils #}
+        {# Give gils — reserve aux administrateurs : monnaie creee hors de tout puits. #}
+        {% if is_granted('ROLE_ADMIN') %}
         <div class="mt-4 pt-4 border-t border-gray-800">
             <h3 class="text-sm font-medium text-gray-400 mb-3">Donner des gils</h3>
             <form method="post" action="{{ path('admin_player_give_gils', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2">
@@ -367,6 +385,7 @@
                 </button>
             </form>
         </div>
+        {% endif %}
     </div>
 
     <div class="mt-4">

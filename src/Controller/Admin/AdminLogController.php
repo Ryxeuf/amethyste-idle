@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\App\AdminLog;
+use App\GameEngine\GameMaster\GameMasterJournal;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +37,15 @@ class AdminLogController extends AbstractController
                ->setParameter('q', '%' . $search . '%');
         }
 
+        // Vue « journal MJ » : ce qu'un maitre du jeu a fait **depuis le jeu**.
+        // Meme table que le reste — un second journal aurait diverge — mais un
+        // filtre d'un clic, parce que c'est cette liste qu'on ouvre quand un
+        // joueur conteste une animation.
+        $scope = $request->query->get('scope', '');
+        if (GameMasterJournal::ENTITY_TYPE === $scope) {
+            $qb->andWhere('l.entityType = :scope')->setParameter('scope', GameMasterJournal::ENTITY_TYPE);
+        }
+
         $total = (clone $qb)->select('COUNT(l.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
         $logs = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
@@ -45,6 +55,8 @@ class AdminLogController extends AbstractController
         return $this->render('admin/log/index.html.twig', [
             'logs' => $logs,
             'search' => $search,
+            'scope' => $scope,
+            'gameMasterScope' => GameMasterJournal::ENTITY_TYPE,
             'currentPage' => $page,
             'totalPages' => max(1, (int) ceil($total / $limit)),
             'total' => $total,

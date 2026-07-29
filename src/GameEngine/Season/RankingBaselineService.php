@@ -9,6 +9,7 @@ use App\Enum\RankingTab;
 use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
+use App\Repository\PlayerRepository;
 use App\Repository\PlayerRankingBaselineRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -31,6 +32,7 @@ class RankingBaselineService
         private readonly PlayerBestiaryRepository $bestiaryRepository,
         private readonly PlayerQuestCompletedRepository $questCompletedRepository,
         private readonly DomainExperienceRepository $domainExperienceRepository,
+        private readonly PlayerRepository $playerRepository,
     ) {
     }
 
@@ -47,9 +49,19 @@ class RankingBaselineService
     public function currentSeasonTotals(RankingTab $tab): array
     {
         $baselines = $this->baselineRepository->mapByPlayerId($tab);
+
+        // Les maitres du jeu sortent du classement, et donc aussi des instantanes
+        // de fin de saison et des podiums qui en decoulent — les trois passent
+        // par ici. Un animateur en tete du classement de recolte n'est pas une
+        // performance : c'est le signe que la mesure ne mesure plus rien.
+        $excluded = array_flip($this->playerRepository->findGameMasterIds());
         $totals = [];
 
         foreach ($this->cumulativeTotals($tab) as $playerId => $cumulative) {
+            if (isset($excluded[$playerId])) {
+                continue;
+            }
+
             $delta = $cumulative - ($baselines[$playerId] ?? 0);
             if ($delta > 0) {
                 $totals[$playerId] = $delta;
@@ -101,6 +113,12 @@ class RankingBaselineService
      */
     public function currentSeasonRankFor(Player $player, RankingTab $tab): ?int
     {
+        // Un MJ n'a pas de rang : il ne figure pas dans la liste ou le rang se
+        // calcule, et lui en annoncer un serait lui promettre une place.
+        if ($player->isGameMaster()) {
+            return null;
+        }
+
         $total = $this->currentSeasonTotalFor($player, $tab);
         if ($total <= 0) {
             return null;

@@ -205,7 +205,9 @@ export default class extends Controller {
     _handleNewMessage(data) {
         const { channel, topic } = data;
 
-        if (channel === 'global' && this.hasGlobalPanelTarget) {
+        // L'annonce d'un MJ arrive sur le topic global : elle se pose donc dans
+        // le panneau general, ou tout le monde la lit sans s'etre abonne a rien.
+        if ((channel === 'global' || channel === 'announcement') && this.hasGlobalPanelTarget) {
             const container = this.globalPanelTarget.querySelector('[data-chat-target="messages"]')
                 || this.globalPanelTarget.querySelector('.chat-messages');
             if (container) {
@@ -258,6 +260,33 @@ export default class extends Controller {
     }
 
     _appendMessage(container, data) {
+        // Annonce d'un MJ : rendue comme une voix du monde, pas comme un message
+        // de plus. Meme forme que le rendu Twig, pour qu'une annonce recue en
+        // direct se lise comme celles deja en place.
+        if (data.channel === 'announcement') {
+            const line = document.createElement('div');
+            line.className = 'chat-line my-1 px-3 py-1.5 rounded border-l-4 border-brand bg-brand/10';
+            line.dataset.messageId = data.id;
+
+            const seal = document.createElement('span');
+            seal.className = 'ds-seal ds-seal-amethyst px-1.5 py-0 text-[10px] mr-1';
+            seal.textContent = 'MJ';
+
+            const who = document.createElement('span');
+            who.className = 'font-semibold text-sm mr-1';
+            who.textContent = data.sender?.name ?? '?';
+
+            const what = document.createElement('span');
+            what.className = 'text-sm font-medium';
+            what.textContent = data.content ?? '';
+
+            line.append(seal, who, what);
+            container.appendChild(line);
+            this._scrollToBottom(container);
+
+            return;
+        }
+
         const isSelf = data.sender.id === this.playerIdValue;
         const div = document.createElement('div');
         div.className = 'chat-line py-0.5 px-2';

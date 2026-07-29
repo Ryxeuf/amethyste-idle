@@ -851,18 +851,86 @@ personnage**, pas un compte : un membre du staff joue ordinairement avec son
 personnage habituel et bascule sur son personnage MJ pour animer. Il n'ouvre
 aucun écran d'administration — cela reste l'affaire de `User::roles`.
 
+`GameMasterPolicy` (`src/GameEngine/GameMaster/`) est la source de vérité : la
+règle « un MJ ne pèse jamais sur le monde » y est écrite une fois, et chaque
+écran l'interroge au lieu de la réimplémenter.
+
+#### Ce qui est levé
+
 | Levier | Effet MJ | Où |
 |--------|----------|-----|
 | Énergie d'action | Plein refait à chaque lecture ; dépense nulle | `ActionEnergyManager::refresh()` / `spend()` |
 | Régénération PV | Plein refait dès la sortie de combat | `LifeRegenManager::refresh()` |
-| Voyage | Durée nulle, arrivée réglée dans la foulée ; découverte et liaisons désactivées ignorées | `ZoneTravelService::startTravel()` |
+| Voyage | Durée nulle ; découverte, liaisons désactivées et portes ignorées | `ZoneTravelService::startTravel()` |
 | Écran de zone | Les liaisons désactivées apparaissent, marquées « hors ligne » | `ZoneConnectionRepository::findAllFrom()` |
-| Distinction visuelle | Sceau améthyste « MJ » à côté du nom (présence de zone, chat, profil, admin) | `templates/components/_game_master_seal.html.twig` |
+| Filons | La bande de pureté se lit sans le palier de prospection | `GatherService::getGatherables()` |
+| Faune | Tout le vivier de la zone, pas seulement le bestiaire appris | `HuntService::getHuntTargets()` |
+| Carte du monde | Aucun brouillard : le monde entier | `WorldMapController` |
 
-**Un MJ ne pèse pas sur le monde** : son énergie étant gratuite, `spend()`
-n'alimente ni `lastActivityAt` / `actionEnergySpentTotal` (charge mondiale,
-FOY-17) ni l'assiduité hebdomadaire (RET-04). Compter une activité qui ne coûte
-rien fausserait les deux mesures.
+Le MJ n'est **pas** invulnérable : il meurt comme les autres et passe par le
+respawn. Animer un combat sans jamais rien risquer, c'est arbitrer depuis les
+gradins.
+
+`bypassesAccessGates()` est le point d'accroche des portes à venir : quand FAC-09
+posera les cinq portes de faction, elles interrogeront cette méthode plutôt que
+de réimplémenter la règle.
+
+#### Ce qui est fermé
+
+| Canal | Lecture | Écriture |
+|-------|---------|----------|
+| Hôtel des ventes | ouverte | fermée (dépôt, achat, enchère) |
+| Boutiques PNJ | ouverte | fermée (achat, vente) |
+| Échoppes joueurs | ouverte (index, recherche, visite) | fermée (les 9 écritures, via `PlayerShopController::act()`) |
+| Commandes de craft | ouverte | fermée (ni donneur d'ordre, ni destinataire) |
+| Coffre de guilde | — | fermé (dépôt et retrait) |
+| Services payants (gold sinks) | ouverte | fermée |
+
+Le refus (`GameMasterRestrictionException`) étend `InvalidArgumentException`
+**à dessein** : c'est le type que les gestionnaires de commerce lèvent déjà et
+que tous les écrans savent rattraper. Un type neuf aurait traversé les `catch`
+existants pour finir en 500 — la restriction serait devenue une panne.
+
+**Donner reste l'affaire d'un administrateur** : `give-item`, `give-gils` et
+`set-domain-xp` sont passés de `ROLE_MODERATOR` à `ROLE_ADMIN`. Faire apparaître
+de la matière fabrique de la valeur que personne n'a produite.
+
+#### Ce qui ne compte pas
+
+- **Charge mondiale (FOY-17) et assiduité (RET-04)** : `spend()` n'alimente ni
+  `lastActivityAt` ni `actionEnergySpentTotal` pour un MJ.
+- **Classements, instantanés de saison et podiums** : exclus au seul point de
+  passage, `RankingBaselineService::currentSeasonTotals()`.
+- **Masse monétaire** : les Gils d'un MJ sortent de `GilsSupplyService` — bourse
+  gelée, donc monnaie qui ne circule plus. À l'inverse, l'énergie déjà dépensée
+  par un vétéran promu **reste comptée** : c'est un flux, il a réellement eu lieu,
+  et le retrancher ferait rétrograder des foyers à chaque nomination.
+
+#### Incognito
+
+`Player::gameMasterIncognito`, basculé à volonté depuis la console. Retire le MJ
+de la présence de zone et de la recherche de joueurs ; les autres MJ et lui-même
+continuent de le voir. Une fiche de profil ouverte par son lien reste lisible :
+cacher un personnage qu'on cite par son nom ne protégerait rien.
+
+#### Console MJ — `/game/gm`
+
+Contextuelle à la zone courante ; la gestion de fond reste à l'admin.
+Bascule d'incognito, annonce globale (canal `announcement`, rendue encadrée dans
+le chat), canal de service `gm` entre animateurs, apparition de monstres
+(plafond `MAX_SPAWN_COUNT = 20`, monstres ordinaires), lancement et clôture des
+événements de la zone. **Chaque geste est journalisé** par `GameMasterJournal`
+dans `AdminLog` sous `entityType = GameMaster` — filtre « Journal MJ » sur
+`/admin/logs`.
+
+L'accès se décide sur le drapeau du **personnage**, jamais sur un rôle de compte :
+un membre du staff connecté sur son perso ordinaire ne voit pas la console.
+
+#### Voir le jeu comme un joueur
+
+`switch_user` est activé, gardé par `ROLE_ALLOWED_TO_SWITCH` (que seul
+`ROLE_SUPER_ADMIN` porte). Lien sur la fiche joueur admin, bandeau permanent
+pendant l'emprunt d'identité, sortie par `?_switch_user=_exit`.
 
 **Attribution** : `POST /admin/players/{id}/game-master`, réservé à `ROLE_ADMIN`
 (le reste de l'écran joueur est ouvert à `ROLE_MODERATOR` — un modérateur

@@ -22,6 +22,7 @@ use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Crafting\QualityCalculator;
 use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Region\PlayerRegionResolver;
@@ -111,6 +112,7 @@ class CraftOrderManagerTest extends TestCase
             $this->itemGenerator,
             new NullLogger(),
             $this->purityChain(),
+            new GameMasterPolicy(),
         );
     }
 
@@ -353,7 +355,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $orderRepository = $this->createMock(CraftOrderRepository::class);
         $orderRepository->method('countActiveByRequester')->willReturn(CraftOrderManager::MAX_ACTIVE_ORDERS);
-        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain());
+        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain(), new GameMasterPolicy());
 
         $requester = $this->createPlayer(1, 1_000);
         $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
@@ -386,7 +388,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $craftingManager = $this->createMock(CraftingManager::class);
         $craftingManager->method('getCraftingLevel')->willReturn(2);
-        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain());
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain(), new GameMasterPolicy());
 
         $order = $this->openOrder($this->createPlayer(1, 1_000), 5);
 
@@ -1045,7 +1047,7 @@ class CraftOrderManagerTest extends TestCase
         $craftingManager->method('getCraftingLevel')->willReturn(99);
         $craftingManager->method('isRecipeUnlocked')->willReturn(false);
 
-        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain());
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger(), $this->purityChain(), new GameMasterPolicy());
 
         $order = $this->openOrder($this->createPlayer(1, 1_000));
 

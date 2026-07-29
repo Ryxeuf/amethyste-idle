@@ -4,7 +4,7 @@
     </p>
     <div class="flex items-center gap-1 flex-wrap justify-center">
         {% if currentPage > 1 %}
-            <a href="?page={{ currentPage - 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+            <a href="?page={{ currentPage - 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}{% if scope is defined and scope %}&scope={{ scope }}{% endif %}"
                class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">
                 Precedent
             </a>
@@ -14,7 +14,7 @@
         {% set endPage = min(totalPages, currentPage + 2) %}
 
         {% if startPage > 1 %}
-            <a href="?page=1{% if search is defined and search %}&q={{ search }}{% endif %}"
+            <a href="?page=1{% if search is defined and search %}&q={{ search }}{% endif %}{% if scope is defined and scope %}&scope={{ scope }}{% endif %}"
                class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">1</a>
             {% if startPage > 2 %}
                 <span class="px-2 text-gray-600">...</span>
@@ -22,7 +22,7 @@
         {% endif %}
 
         {% for p in startPage..endPage %}
-            <a href="?page={{ p }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+            <a href="?page={{ p }}{% if search is defined and search %}&q={{ search }}{% endif %}{% if scope is defined and scope %}&scope={{ scope }}{% endif %}"
                class="px-3 py-1.5 rounded-lg text-sm {% if p == currentPage %}bg-purple-600 text-ink-on{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %} transition-colors">
                 {{ p }}
             </a>
@@ -32,12 +32,12 @@
             {% if endPage < totalPages - 1 %}
                 <span class="px-2 text-gray-600">...</span>
             {% endif %}
-            <a href="?page={{ totalPages }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+            <a href="?page={{ totalPages }}{% if search is defined and search %}&q={{ search }}{% endif %}{% if scope is defined and scope %}&scope={{ scope }}{% endif %}"
                class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">{{ totalPages }}</a>
         {% endif %}
 
         {% if currentPage < totalPages %}
-            <a href="?page={{ currentPage + 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+            <a href="?page={{ currentPage + 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}{% if scope is defined and scope %}&scope={{ scope }}{% endif %}"
                class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">
                 Suivant
             </a>

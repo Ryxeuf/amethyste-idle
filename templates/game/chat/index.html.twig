@@ -49,6 +49,15 @@
     <div data-chat-target="globalPanel" class="flex-1 flex flex-col min-h-0">
         <div class="chat-messages flex-1 overflow-y-auto bg-gray-800/50 rounded-lg p-2 space-y-0.5 text-sm scrollbar-thin" data-chat-target="messages">
             {% for message in globalMessages %}
+                {% if message.channel == 'announcement' %}
+                    {# Annonce d'un MJ : la voix du monde, pas une prise de parole
+                       de plus. Elle occupe sa propre ligne, encadree. #}
+                    <div class="chat-line my-1 px-3 py-1.5 rounded border-l-4 border-brand bg-brand/10" data-message-id="{{ message.id }}">
+                        <span class="ds-seal ds-seal-amethyst px-1.5 py-0 text-[10px] mr-1">MJ</span>
+                        <span class="font-semibold text-sm mr-1">{{ message.sender.name }}</span>
+                        <span class="text-sm font-medium">{{ message.content }}</span>
+                    </div>
+                {% else %}
                 <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
                     {% set senderTag = player_guild_tag(message.sender) %}
@@ -59,6 +68,7 @@
                     <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
                 </div>
+                {% endif %}
             {% endfor %}
         </div>
     </div>

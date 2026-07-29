@@ -11,6 +11,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Enum\GuildRank;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\GuildVaultManager;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -29,7 +30,7 @@ class GuildVaultManagerTest extends TestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->guildManager = $this->createMock(GuildManager::class);
-        $this->vaultManager = new GuildVaultManager($this->em, $this->guildManager);
+        $this->vaultManager = new GuildVaultManager($this->em, $this->guildManager, new GameMasterPolicy());
     }
 
     public function testDepositSuccess(): void

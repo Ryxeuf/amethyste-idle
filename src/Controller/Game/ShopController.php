@@ -7,6 +7,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
 use App\Enum\PlayerRenownTier;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
 use App\GameEngine\World\GameTimeService;
@@ -27,6 +28,7 @@ class ShopController extends AbstractController
         private readonly GameTimeService $gameTimeService,
         private readonly RegionBonusProvider $regionBonusProvider,
         private readonly PlayerRenownDiscountProvider $renownDiscountProvider,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -79,6 +81,11 @@ class ShopController extends AbstractController
     public function buy(int $id, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // Le MJ entre dans la boutique et lit les prix ; il n'y achete rien.
+        if (!$this->gameMasterPolicy->canTrade($this->playerHelper->getPlayer())) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
 
         $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
         if (!$pnj || !$pnj->isMerchant()) {
@@ -195,6 +202,10 @@ class ShopController extends AbstractController
     public function sell(int $id, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        if (!$this->gameMasterPolicy->canTrade($this->playerHelper->getPlayer())) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
 
         $data = json_decode($request->getContent(), true);
         $playerItemId = $data['playerItemId'] ?? null;

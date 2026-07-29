@@ -61,13 +61,17 @@ class HuntService
             return [];
         }
 
+        // Le bestiaire dit ce que le personnage a appris ; un MJ voit le vivier
+        // tel qu'il est. Sans cela il ne pourrait pas verifier qu'une proie
+        // signalee absente l'est vraiment.
+        $revealsAll = $player->isGameMaster();
         $known = array_flip($this->bestiaryRepository->findMonsterIdsByPlayer($player));
 
         $targets = [];
         foreach ($mobs as $mob) {
             $monster = $mob->getMonster();
             $id = (int) $monster->getId();
-            if (isset($targets[$id]) || !isset($known[$id])) {
+            if (isset($targets[$id]) || (!$revealsAll && !isset($known[$id]))) {
                 continue;
             }
             $targets[$id] = $monster;

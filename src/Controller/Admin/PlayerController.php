@@ -273,7 +273,15 @@ class PlayerController extends AbstractController
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
     }
 
+    /**
+     * Donner un objet — reserve a ROLE_ADMIN.
+     *
+     * Faire apparaitre de la matiere, c'est fabriquer de la valeur que personne
+     * n'a produite : le geste qui abime le plus surement une economie de joueurs.
+     * Il n'appartient ni a un moderateur ni a un maitre du jeu.
+     */
     #[Route('/{id}/give-item', name: 'give_item', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function giveItem(Request $request, Player $player): Response
     {
         if ($this->isCsrfTokenValid('give_item' . $player->getId(), $request->request->get('_token'))) {
@@ -316,7 +324,13 @@ class PlayerController extends AbstractController
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
     }
 
+    /**
+     * Fixer l'XP d'un domaine — reserve a ROLE_ADMIN : c'est de la progression
+     * offerte, donc un classement fausse et des paliers franchis sans les avoir
+     * joues.
+     */
     #[Route('/{id}/set-domain-xp', name: 'set_domain_xp', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function setDomainXp(Request $request, Player $player): Response
     {
         if ($this->isCsrfTokenValid('set_domain_xp' . $player->getId(), $request->request->get('_token'))) {
@@ -358,7 +372,12 @@ class PlayerController extends AbstractController
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
     }
 
+    /**
+     * Donner des Gils — reserve a ROLE_ADMIN, pour la meme raison qu'un objet :
+     * c'est de la monnaie creee hors de tout puits.
+     */
     #[Route('/{id}/give-gils', name: 'give_gils', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function giveGils(Request $request, Player $player): Response
     {
         if ($this->isCsrfTokenValid('give_gils' . $player->getId(), $request->request->get('_token'))) {

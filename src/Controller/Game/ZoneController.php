@@ -14,6 +14,7 @@ use App\Enum\SettlementDoctrine;
 use App\Enum\WeeklyCommissionReward;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
@@ -93,6 +94,7 @@ class ZoneController extends AbstractController
         private readonly SettlementDefinitionLoader $settlementLoader,
         private readonly VeinRestorationService $veinRestorationService,
         private readonly SettlementDoctrineService $settlementDoctrineService,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -168,9 +170,12 @@ class ZoneController extends AbstractController
             ? $this->zoneConnectionRepository->findAllFrom($zone)
             : $this->zoneConnectionRepository->findEnabledFrom($zone);
 
-        $playersPresent = $this->entityManager
-            ->getRepository(Player::class)
-            ->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50);
+        // Un MJ incognito ne figure pas dans la liste : c'est tout l'objet du
+        // mode — observer une zone sans que sa presence change ce qui s'y passe.
+        $playersPresent = $this->gameMasterPolicy->visibleTo(
+            $this->entityManager->getRepository(Player::class)->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50),
+            $player,
+        );
 
         $poiCounts = $this->countPointsOfInterest($zone);
 
@@ -576,9 +581,10 @@ class ZoneController extends AbstractController
             return new JsonResponse(['players' => []]);
         }
 
-        /** @var list<Player> $present */
-        $present = $this->entityManager->getRepository(Player::class)
-            ->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50);
+        $present = $this->gameMasterPolicy->visibleTo(
+            $this->entityManager->getRepository(Player::class)->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50),
+            $player,
+        );
 
         $players = array_map(static fn (Player $p): array => [
             'id' => $p->getId(),

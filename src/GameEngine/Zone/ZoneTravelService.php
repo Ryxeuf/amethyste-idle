@@ -8,6 +8,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +29,7 @@ class ZoneTravelService
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly MountTravelSpeed $mountTravelSpeed,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -57,7 +59,13 @@ class ZoneTravelService
         // au bout d'un chemin qu'il n'a lui-meme jamais emprunte. Les deux
         // refus qui restent au-dessus valent pour tout le monde : on ne part pas
         // deux fois, et on ne part pas d'un combat.
-        $isGameMaster = $player->isGameMaster();
+        //
+        // La question passe par la politique et non par le drapeau : c'est le
+        // point d'accroche des portes a venir. Quand FAC-09 posera les cinq
+        // portes de faction — zones cachees derriere un palier de reputation —
+        // elles interrogeront `bypassesAccessGates()` plutot que de reimplementer
+        // la regle, et le MJ les franchira sans qu'on y revienne.
+        $isGameMaster = $this->gameMasterPolicy->bypassesAccessGates($player);
 
         if (!$isGameMaster) {
             if (!$connection->isEnabled() || !$connection->getToZone()->isEnabled()) {

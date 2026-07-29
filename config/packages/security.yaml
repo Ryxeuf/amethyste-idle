@@ -45,7 +45,13 @@ security:
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            #
+            # Voir l'ecran d'un joueur tel qu'il le voit — le seul moyen fiable
+            # de diagnostiquer un blocage sans lui demander des captures. Garde
+            # par ROLE_ALLOWED_TO_SWITCH, que seul ROLE_SUPER_ADMIN porte : un
+            # moderateur sanctionne, il ne se met pas dans la peau des gens.
+            # `?_switch_user=_exit` rend la main.
+            switch_user: { role: ROLE_ALLOWED_TO_SWITCH }
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

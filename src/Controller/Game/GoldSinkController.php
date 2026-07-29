@@ -5,6 +5,7 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\GameEngine\GoldSink\GoldSinkManager;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,7 @@ class GoldSinkController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly GoldSinkManager $goldSinkManager,
         private readonly EntityManagerInterface $entityManager,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -60,6 +62,13 @@ class GoldSinkController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $player = $this->playerHelper->getPlayer();
+
+        // Les services payants sont des puits a Gils : un MJ qui les emprunte
+        // retire de la monnaie que personne n'a gagnee. L'ecran reste lisible,
+        // les services ne s'achetent pas.
+        if (!$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
         $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find($id);
 
         if (!$playerItem || !$this->ownsItem($playerItem)) {
@@ -85,6 +94,13 @@ class GoldSinkController extends AbstractController
 
         $player = $this->playerHelper->getPlayer();
 
+        // Les services payants sont des puits a Gils : un MJ qui les emprunte
+        // retire de la monnaie que personne n'a gagnee. L'ecran reste lisible,
+        // les services ne s'achetent pas.
+        if (!$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
+
         $data = json_decode($request->getContent(), true);
         $regionId = (int) ($data['regionId'] ?? 0);
 
@@ -108,6 +124,13 @@ class GoldSinkController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $player = $this->playerHelper->getPlayer();
+
+        // Les services payants sont des puits a Gils : un MJ qui les emprunte
+        // retire de la monnaie que personne n'a gagnee. L'ecran reste lisible,
+        // les services ne s'achetent pas.
+        if (!$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
         $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find($id);
 
         if (!$playerItem || !$this->ownsItem($playerItem)) {

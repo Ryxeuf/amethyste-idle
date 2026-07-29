@@ -9,10 +9,20 @@
             <input type="text" name="q" value="{{ search }}" placeholder="Rechercher (action, type, label)..."
                    class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-hidden focus:border-purple-500 w-full sm:w-80">
             <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
-            {% if search %}
+            {% if scope %}<input type="hidden" name="scope" value="{{ scope }}">{% endif %}
+            {% if search or scope %}
                 <a href="{{ path('admin_log_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
             {% endif %}
         </form>
+
+        {# Journal MJ : les gestes d'animation faits depuis le jeu. C'est cette
+           liste qu'on ouvre quand un joueur conteste une animation. #}
+        <div class="mt-3 flex gap-2 text-sm">
+            <a href="{{ path('admin_log_index') }}"
+               class="px-3 py-1.5 rounded-lg {{ scope ? 'bg-gray-800 text-gray-400 hover:text-gray-200' : 'bg-purple-800 text-purple-100' }}">Tous</a>
+            <a href="{{ path('admin_log_index', {scope: gameMasterScope}) }}"
+               class="px-3 py-1.5 rounded-lg {{ scope == gameMasterScope ? 'bg-purple-800 text-purple-100' : 'bg-gray-800 text-gray-400 hover:text-gray-200' }}">Journal MJ</a>
+        </div>
     </div>
 
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
