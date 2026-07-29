@@ -258,8 +258,11 @@ seed:
     marais-brumeux: { rank: camp, stock: 400 }
     crete-de-ventombre: { rank: camp, stock: 400 }
     dunes-d-ambre: { rank: camp, stock: 300 }
-    # Les Vallons (ZON-30) demarreront en Ruine : zone neuve, tout est a batir.
-    # C'est le premier chantier collectif offert aux joueurs.
+    # Les Vallons (ZON-30) naissent en **Ruine**, stock nul : zone neuve, tout
+    # est a batir. C'est le premier chantier collectif offert aux joueurs — le
+    # Vieux Moulin est une ruine dans le lore parce qu'il en est une dans les
+    # donnees, et le foyer que les joueurs y feront lever sera le leur.
+    vallons-d-aubepine: { rank: ruin, stock: 0 }
 
 # Zones sans foyer, et pourquoi. Une zone absente de `seed` mais absente d'ici
 # serait une omission ; l'ecrire est ce qui distingue les deux.

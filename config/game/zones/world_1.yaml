@@ -605,6 +605,100 @@ zones:
             - { slug: feuille-de-dragon-gelee, item: plant-dragonleaf, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
             - { slug: fleur-de-phenix, item: plant-phoenixflower, profession: herbalism, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 2 }
 
+    # =========================================================================
+    # ZONE 12 — Vallons d'Aubepine (la zone-ecole du depeceur, ZON-30)
+    # =========================================================================
+    #
+    # Declaree en dernier parce que le fichier suit l'ordre de livraison, pas
+    # l'ordre du monde : les Vallons se lisent geographiquement entre le hub et
+    # la Foret (GAME_ZONES § 2.2).
+    #
+    # **Ce qu'elle repare.** Le depecage n'avait aucun terrain d'apprentissage a
+    # portee du hub : la faune de la Foret est disputee par tout le serveur et
+    # melee de creatures non depecables. Les Vallons donnent au debutant une
+    # faune **entierement depecable** et calme.
+    #
+    # **Ce qu'elle apporte au monde.** Le lin est son **exclusivite** (loi 1) :
+    # aucune autre zone n'en produira. C'est ce qui ramenera un veteran dans une
+    # zone d'Acte I le jour ou le textile aura besoin de fibre.
+    #
+    # **Aucun filon n'y est un goulot** : les profils sont T0 et T1, les deux
+    # paliers les plus genereux du calibrage (BALANCE § 22.3).
+    vallons-d-aubepine:
+        name: "Vallons d'Aubépine"
+        name_en: 'Hawthorn Vales'
+        description: "Bocage et riviere a une demi-heure du Fanal. Des haies d'aubepine, des pres, des vergers, un gue. Le grenier du monde — et le premier endroit ou l'on comprend qu'il se cultive."
+        description_en: 'Hedgerow and river half an hour from the Beacon. Hawthorn hedges, meadows, orchards, a ford. The granary of the world — and the first place where one understands that it is farmed.'
+        type: wilderness
+        safe: false
+        map_x: 38
+        map_y: 60
+        enabled: true
+        explore:
+            # Une zone douce : on y croise plus de gens et de recoltes que de
+            # betes. Le contraste avec la Foret est la raison d'etre du lieu.
+            weights: { mob: 30, chest: 10, harvest: 26, pnj: 12, nothing: 22 }
+            chest_gils_min: 4
+            chest_gils_max: 18
+            night:
+                # **La nuit des Vallons est calme**, et c'est acte (GAME_ZONES
+                # § 2.2) : aucun nocturne agressif, pas de `mob_slugs` qui
+                # restreindrait le vivier a des creatures de nuit. On entend la
+                # hulotte, on ne la combat pas.
+                weights: { mob: 20, chest: 12, harvest: 22, pnj: 4, nothing: 42 }
+                chest_gils_min: 6
+                chest_gils_max: 24
+        gather:
+            # Les carres de ble — profil T0, le plus genereux. Le ble ouvre la
+            # chaine de cuisine joueur, aujourd'hui entierement PNJ.
+            - { slug: carres-de-ble, item: plant-wheat, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            # Les linieres — profil T1, et **l'exclusivite de la zone**.
+            - { slug: linieres-du-gue, item: plant-flax, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            # Le gue — la peche d'apprentissage, entre la truite et la carpe.
+            - { slug: perches-du-gue, item: fish-perch, profession: fishing, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+        mobs:
+            # Toute la faune est depecable, et c'est le point : le depeceur
+            # commence ici. Les effectifs disent la densite du bocage — le
+            # gibier y est nombreux et peu dangereux.
+            - { monster: orchard_vixen, count: 5 }
+            - { monster: harvest_crow, count: 5 }
+            - { monster: hedge_boar, count: 4 }
+            - { monster: hawthorn_stag, count: 3 }
+            # « La Foret deborde » : le loup n'appartient pas aux Vallons, il y
+            # passe. Un seul, en lisiere.
+            - { monster: wolf, count: 1 }
+        pnjs:
+            - slug: vallons-perrette-meuniere
+              name: 'Perrette, meunière du Vieux Moulin'
+              name_en: 'Perrette, Miller of the Old Mill'
+              class_type: merchant
+              # Le plancher d'achat agricole (regle D1) : elle achete le ble
+              # quoi qu'il arrive, comme la Fonderie rachete le cristal. Et elle
+              # vend le pain **tant que le cuisinier joueur n'existe pas** — le
+              # jour ou ECO-29 arrive, elle cesse d'etre la seule.
+              greeting: "Apporte-moi ton blé, je te le prends toujours. Le pain, lui, sort du four à l'aube — et il n'attend personne."
+              shop_items: [bread, healing-potion-small]
+              opens_at: 5
+              closes_at: 20
+            - slug: vallons-aubin-haiier
+              name: 'Aubin le haiier'
+              name_en: 'Aubin the Hedger'
+              class_type: merchant
+              greeting: "Les haies, ça se taille et ça se raconte. Tu vois la bande bleue, là-bas, près du gué ? Du lin. Il n'y en a nulle part ailleurs."
+              shop_items: [healing-potion-small]
+              opens_at: 6
+              closes_at: 19
+            - slug: vallons-vieille-brune
+              name: 'La Vieille Brune'
+              name_en: 'Old Brune'
+              class_type: hunter
+              # La tutrice naturelle de la quatrieme recolte : c'est elle qui
+              # vend le couteau et achete le gibier.
+              greeting: "Un cerf, ça ne s'affronte pas, ça se chasse. Reviens avec des peaux, je te dirai si tu as appris quelque chose."
+              shop_items: [healing-potion-small]
+              opens_at: 6
+              closes_at: 21
+
 connections:
     - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }
     - { from: village-de-lumiere, to: foret-des-murmures, travel_seconds: 300, bidirectional: true }
@@ -619,6 +713,15 @@ connections:
     # alternative credible au detour par le village, ce qui donne enfin du sens
     # au choix d'itineraire (et a la reduction de temps de voyage des montures).
     - { from: foret-des-murmures, to: mines-profondes, travel_seconds: 480, bidirectional: true }
+
+    # ZON-30 : les Vallons sont **sur la route** du sud. Le trajet le plus court
+    # depuis le hub (240 s, la demi-heure de marche du lore), et une alternative
+    # credible au passage par le village pour rejoindre la Foret ou le Marais.
+    # C'est ce qui y depose du sediment sans que personne n'ait a s'y arreter
+    # (levier 4 de GAME_WORLD § 5.5).
+    - { from: village-de-lumiere, to: vallons-d-aubepine, travel_seconds: 240, bidirectional: true }
+    - { from: vallons-d-aubepine, to: foret-des-murmures, travel_seconds: 300, bidirectional: true }
+    - { from: vallons-d-aubepine, to: marais-brumeux, travel_seconds: 480, bidirectional: true }
     - { from: marais-brumeux, to: crete-de-ventombre, travel_seconds: 540, bidirectional: true }
 
     # Acte 4 (tache 128b) : deux bras longs. Les durees disent l'eloignement —

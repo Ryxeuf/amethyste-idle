@@ -16,7 +16,7 @@ dans leurs plans d'origine :
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| ZON-30 | Les Vallons d'Aubépine (zone neuve) | M | ∅ |
+| ZON-30 ✅ | Les Vallons d'Aubépine (zone neuve) | M | ∅ |
 | ZON-31 | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
 | ZON-32 | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
@@ -34,35 +34,32 @@ dans leurs plans d'origine :
 - **Recalibrage global** (BALANCE §22.3) — s'applique aux filons neufs comme aux anciens.
 
 ```
-ZON-30 → ZON-31 (indépendants, dans cet ordre de valeur)
+ZON-30 ✅ → ZON-31 (indépendants, dans cet ordre de valeur)
 ECO-21/22 → ZON-32
 ZON-33 en continu
 ```
 
 ---
 
-### ZON-30 — Les Vallons d'Aubépine (M | ★★★ | HAUTE)
+### ZON-30 — Les Vallons d'Aubépine ✅ (M | ★★★ | HAUTE)
 > La seule zone neuve du jeu de base (GAME_ZONES §2.2). Comble le trou entre le hub et la
-> Forêt, et donne au **dépeçage** son terrain d'apprentissage — la 4e ligne de récolte
-> exigée à portée du hub (GAME_PROGRESSION §6a).
-> Prérequis : ∅
-- [ ] Items : `plant-wheat` (T0), `plant-flax` (T1 — **exclusivité de la zone**),
-      `fish-perch` (T1) dans `fixtures/game/item/`
-- [ ] Monstres : la table actée de GAME_ZONES §2.2 (« Faune & habitants ») — sanglier
-      des haies, cerf d'aubépine (cuir à taux plein), renarde des vergers, corbeau
-      moissonneur (plumes → flèches), loup réutilisé en lisière ; **aucun nocturne
-      agressif** (contraste voulu avec la Forêt)
-- [ ] Zone `vallons-d-aubepine` dans `world_1.yaml` : type wilderness, région Plaines de
-      l'Éveil, filons aux profils T0/T1 du calibrage (jamais un goulot), faune déclarée,
-      les 3 PNJ actés (Perrette la meunière — plancher d'achat du blé —, Aubin le
-      haiier, la Vieille Brune) et les micro-lieux (le Gué, le Vieux Moulin en ruine —
-      le cœur du futur foyer)
-- [ ] Connexions : Fanal ↔ Vallons (court), Vallons ↔ Forêt (court), Vallons ↔ Marais
-      (moyen) ; position sur la carte du monde illustrée
-- [ ] Une première recette de cuisine joueur consommant le blé (la chaîne pain cesse
-      d'être PNJ-only) et une recette de tannerie consommant le lin
-- [ ] Tests : import de zone, filons, loi transverse « chaque item de recette a une
-      source »
+> Forêt, et donne au **dépeçage** son terrain d'apprentissage.
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Deux items de plus que prévu, et pourquoi.** `meat-game` et `feather-raw` n'étaient pas
+> dans la liste, mais la faune actée les produit (viande → cuisinier, plumes → flèches). Les
+> poser maintenant est délibéré : la loi « chaque item de recette a une source » se tient plus
+> facilement quand la source précède la recette que l'inverse — ECO-29 et ECO-30 trouveront
+> leurs intrants déjà sourcés.
+>
+> **Reporté à ZON-30b, avec sa raison** : les deux recettes joueur (cuisine du blé, tannerie
+> du lin). Elles supposent des arbres de métier — le cuisinier n'existe pas encore (ECO-29), et
+> greffer une recette de pain sur l'alchimiste pour tenir une case aurait créé exactement le
+> genre de rattachement qu'il faudrait défaire ensuite.
+>
+> **Écarté** : `zone_line` pour les Vallons. La ligne agricole n'a pas d'atelier en face, comme
+> `wood` et `amethyst` attendent les leurs. Le fichier prévoit ce cas explicitement — une zone
+> absente de `zone_line` n'apporte que son rang.
 
 ### ZON-31 — Les Dunes d'Ambre approfondies (M | ★★ | HAUTE)
 > La zone la plus pauvre du monde livré (un filon, quatre monstres) reçoit ses
