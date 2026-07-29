@@ -17,6 +17,8 @@ use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
+use App\GameEngine\Settlement\VeinRestorationException;
+use App\GameEngine\Settlement\VeinRestorationService;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -86,6 +88,7 @@ class ZoneController extends AbstractController
         private readonly SettlementPanelBuilder $settlementPanelBuilder,
         private readonly WeeklyCommissionDelivery $commissionDelivery,
         private readonly SettlementDefinitionLoader $settlementLoader,
+        private readonly VeinRestorationService $veinRestorationService,
     ) {
     }
 
@@ -127,6 +130,7 @@ class ZoneController extends AbstractController
                 'gatherables' => [],
                 'gatherCost' => $this->gatherService->getGatherCost(),
                 'palenessVisibleFrom' => $this->palenessVisibleFrom(),
+                'restorations' => [],
                 'poiLabels' => [],
                 'typeLabels' => [],
                 'travel' => null,
@@ -192,6 +196,7 @@ class ZoneController extends AbstractController
             'gatherables' => $this->gatherService->getGatherables($zone, $player),
             'gatherCost' => $this->gatherService->getGatherCost(),
             'palenessVisibleFrom' => $this->palenessVisibleFrom(),
+            'restorations' => $this->veinRestorationService->offersFor($player, $zone),
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
             'justArrived' => $arrived,
@@ -358,6 +363,53 @@ class ZoneController extends AbstractController
         }
 
         $this->addFlash('gather_result', ['key' => $result->messageKey, 'params' => $result->messageParams]);
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Ouvrir un chantier de restauration sur un filon pali (FOY-12).
+     *
+     * Le chantier ne coute **aucune energie** : ce n'est pas un geste de
+     * personnage mais un acte de gouvernement, paye sur le tresor de la guilde.
+     * Le facturer au budget d'action du joueur qui clique reviendrait a le lui
+     * faire payer deux fois.
+     */
+    #[Route('/game/zone/restore/{slug}', name: 'app_game_zone_restore', methods: ['POST'], requirements: ['slug' => '[a-z0-9\-]+'])]
+    public function restore(string $slug, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('restore_' . $slug, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $zone = $this->resolveZone($player);
+        if (null === $zone) {
+            $this->addFlash('error', 'game.zone.gather.error.no_zone');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $restoration = $this->veinRestorationService->open($player, $zone, $slug);
+        } catch (VeinRestorationException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $this->addFlash('restoration_result', [
+            'key' => 'game.zone.restoration.opened',
+            'params' => ['%cost%' => $restoration->getCostGils()],
+        ]);
 
         return $this->redirectToRoute('app_game_zone');
     }

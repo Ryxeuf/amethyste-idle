@@ -6,6 +6,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\VeinPalenessService;
+use App\Repository\VeinRestorationRepository;
 use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -173,12 +174,19 @@ class VeinPalenessServiceTest extends TestCase
         $repository->method('findAll')->willReturn($veins);
 
         $loader = $this->createMock(SettlementDefinitionLoader::class);
-        $loader->method('load')->willReturn(['paleness' => $this->definition()]);
+        $loader->method('load')->willReturn([
+            'paleness' => $this->definition(),
+            'restoration' => ['cost_per_point' => 90, 'duration_days' => 5, 'daily_bonus' => 0.04, 'opens_from' => 0.10],
+        ]);
+
+        $restorations = $this->createMock(VeinRestorationRepository::class);
+        $restorations->method('activeKeys')->willReturn([]);
 
         return new VeinPalenessService(
             $this->createMock(EntityManagerInterface::class),
             $repository,
             $loader,
+            $restorations,
         );
     }
 }

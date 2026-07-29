@@ -92,6 +92,13 @@
                     </div>
                 {% endfor %}
 
+                {# FOY-12 — restaurer est un acte de gouvernement : il s'annonce. #}
+                {% for result in app.flashes('restoration_result') %}
+                    <div class="ds-banner ds-banner--gain mb-3">
+                        🛠️ {{ result.key|trans(result.params) }}
+                    </div>
+                {% endfor %}
+
                 {% for result in app.flashes('commission_result') %}
                     <div class="ds-banner ds-banner--gain mb-3">
                         📜 {{ ('game.commission.delivered.' ~ result.reward)|trans({
@@ -731,6 +738,33 @@
                                             <p class="ds-hint mt-1">
                                                 🌫️ {{ 'game.zone.gather.paleness'|trans({'%percent%': gatherable.palenessPercent}) }}
                                             </p>
+                                        {% endif %}
+                                        {# FOY-12 — la restauration est un acte de gouvernement : #}
+                                        {# son prix se lit meme sans guilde, et la raison d'un    #}
+                                        {# bouton absent se dit plutot que de laisser un blanc.   #}
+                                        {% set restoration = restorations[gatherable.slug] ?? null %}
+                                        {% if restoration %}
+                                            {% if restoration.isUnderway %}
+                                                <p class="ds-hint mt-1">
+                                                    🛠️ {{ 'game.zone.restoration.underway'|trans({
+                                                        '%guild%': restoration.activeGuildName,
+                                                        '%date%': restoration.activeUntil|date('d/m'),
+                                                    }) }}
+                                                </p>
+                                            {% elseif restoration.canOpen %}
+                                                <form method="post" action="{{ path('app_game_zone_restore', {slug: gatherable.slug}) }}" class="mt-1.5" data-testid="zone-restore-form">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('restore_' ~ gatherable.slug) }}">
+                                                    <button type="submit" data-testid="zone-restore-button"
+                                                            class="ds-btn ds-btn--ghost ds-btn--sm w-full">
+                                                        🛠️ {{ 'game.zone.restoration.open'|trans({'%cost%': restoration.cost}) }}
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <p class="ds-hint mt-1">
+                                                    🛠️ {{ 'game.zone.restoration.quote'|trans({'%cost%': restoration.cost}) }}
+                                                    — {{ restoration.blockedReason|trans }}
+                                                </p>
+                                            {% endif %}
                                         {% endif %}
                                         {# ECO-24c — le filon gate reste visible, et dit ce   #}
                                         {# qu'il demande. Le cacher aurait retire au joueur   #}

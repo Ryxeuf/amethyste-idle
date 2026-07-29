@@ -3,6 +3,7 @@
 namespace App\GameEngine\Settlement;
 
 use App\Entity\App\ZoneVein;
+use App\Repository\VeinRestorationRepository;
 use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -39,20 +40,25 @@ class VeinPalenessService
         private readonly EntityManagerInterface $entityManager,
         private readonly ZoneVeinRepository $veinRepository,
         private readonly SettlementDefinitionLoader $loader,
+        private readonly VeinRestorationRepository $restorationRepository,
     ) {
     }
 
     /**
      * @return array{processed: int, dulled: int, recovered: int}
      */
-    public function tick(): array
+    public function tick(?\DateTimeImmutable $now = null): array
     {
-        $definition = $this->loader->load()['paleness'];
+        $now ??= new \DateTimeImmutable();
+        $config = $this->loader->load();
+        $definition = $config['paleness'];
+        $bonus = $config['restoration']['daily_bonus'];
+        $underway = $this->restorationRepository->activeKeys($now);
         $report = ['processed' => 0, 'dulled' => 0, 'recovered' => 0];
 
         foreach ($this->veinRepository->findAll() as $vein) {
             $before = $vein->getPaleness();
-            $after = self::step($before, $this->pressureOf($vein), $definition);
+            $after = self::step($before, $this->pressureOf($vein), $definition, $this->restorationBonus($vein, $underway, $bonus));
 
             $vein->setPaleness($after);
             // Le compteur repart a zero : ce qu'on mesure est la journee, pas
@@ -78,9 +84,14 @@ class VeinPalenessService
      * Statique et pure : le calcul est le cœur du jalon, et il doit pouvoir se
      * verifier sans base de donnees.
      *
+     * `$restorationBonus` est le debit qu'un chantier paye ajoute a la
+     * recuperation du jour (FOY-12). Il n'entre **jamais** dans la branche de
+     * montee : payer ne compense pas une surexploitation en cours, sinon la
+     * Paleur cesserait d'etre une contrainte pour devenir une facture.
+     *
      * @param array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float} $definition
      */
-    public static function step(float $paleness, float $pressure, array $definition): float
+    public static function step(float $paleness, float $pressure, array $definition, float $restorationBonus = 0.0): float
     {
         if ($pressure > 1.0) {
             $risen = $paleness + $definition['rise_per_pressure'] * ($pressure - 1.0);
@@ -90,14 +101,28 @@ class VeinPalenessService
         }
 
         // Exactement au debit soutenu, le filon **tient** : il ne s'abime pas et
-        // ne se refait pas. C'est le regime d'equilibre que vise le calibrage
-        // (BALANCE § 22.3), et le faire guerir la reviendrait a dire qu'une
-        // exploitation parfaitement soutenable repare le passe.
-        if ($pressure === 1.0) {
-            return $paleness;
+        // ne se refait pas de lui-meme. C'est le regime d'equilibre que vise le
+        // calibrage (BALANCE § 22.3), et le faire guerir la reviendrait a dire
+        // qu'une exploitation parfaitement soutenable repare le passe. Seul un
+        // chantier paye y fait reculer la trace, et par son seul debit.
+        $natural = $pressure === 1.0 ? 0.0 : $definition['daily_recovery'];
+
+        return max(0.0, $paleness - $natural - $restorationBonus);
+    }
+
+    /**
+     * Ce qu'un chantier en cours ajoute a la recuperation de ce filon.
+     *
+     * @param array<string, true> $underway
+     */
+    private function restorationBonus(ZoneVein $vein, array $underway, float $bonus): float
+    {
+        $zoneId = $vein->getZone()->getId();
+        if (null === $zoneId) {
+            return 0.0;
         }
 
-        return max(0.0, $paleness - $definition['daily_recovery']);
+        return isset($underway[VeinRestorationRepository::key($zoneId, $vein->getSlug())]) ? $bonus : 0.0;
     }
 
     /**

@@ -314,3 +314,38 @@ paleness:
     # (ECO-22 avait laisse cette seconde borne en attente), et l'Affleurement
     # de la semaine ne peut plus tirer ce filon (RET-06).
     dulls_purity_from: 0.30
+
+# =============================================================================
+# Restauration d'un filon pali (FOY-12)
+# =============================================================================
+# Mecanique de Wakfu : la sanction devient une **depense politique**, pas une
+# perte seche. Une guilde paie sur son tresor pour qu'un filon se refasse plus
+# vite, et ce paiement se lit dans le journal de monde — restaurer est un acte
+# de gouvernement, il doit se voir.
+#
+# Deux interdits tiennent ce bloc :
+#   - **On n'achete pas un monde propre.** Le chantier ajoute un debit de
+#     recuperation quotidien pendant `duration_days` ; il ne remet jamais la
+#     Paleur a zero. A `max`, un chantier complet en retire 0,20 sur les 0,60.
+#   - **Payer n'autorise pas a continuer.** Le bonus ne s'applique que si la
+#     pression du jour est sous le debit soutenu du filon : un chantier ouvert
+#     sur un filon qu'on presse encore ne repare rien.
+restoration:
+    # Cout en Gils par point de Paleur (1 point = 0,01). A `paleness.max`, un
+    # chantier coute 5 400 Gils — l'ordre de grandeur du premier palier de
+    # tresor de guilde (RegionUpgradeManager, 5 000), donc une depense qu'une
+    # guilde etablie decide, jamais une qu'elle subit.
+    cost_per_point: 90
+
+    # Duree du chantier. Assez longue pour que la decision se voie sur plusieurs
+    # jours de jeu, assez courte pour rester dans une semaine.
+    duration_days: 5
+
+    # Ce que le chantier ajoute chaque jour a la recuperation naturelle : il la
+    # double. Reparer reste plus lent qu'abimer (0,08 par point de pression).
+    daily_bonus: 0.04
+
+    # Paleur minimale pour ouvrir un chantier. Ne peut pas descendre sous
+    # `paleness.visible_from` : on n'ouvre pas un chantier sur une trace que
+    # personne ne voit.
+    opens_from: 0.10

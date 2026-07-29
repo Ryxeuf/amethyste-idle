@@ -260,6 +260,39 @@ class SettlementDefinitionLoaderTest extends TestCase
      * FOY-11 — abimer doit aller plus vite que reparer, sinon la trace n'en
      * est pas une : elle s'effacerait aussi vite qu'elle se pose.
      */
+    /**
+     * On n'ouvre pas un chantier sur une trace que personne ne voit (FOY-12).
+     * Restaurer est un acte **public** ; le rendre possible sous le seuil de
+     * visibilite reviendrait a facturer une reparation invisible.
+     */
+    public function testRestorationCannotOpenBelowWhatThePlayersCanSee(): void
+    {
+        $raw = $this->validRaw();
+        $raw['restoration']['opens_from'] = 0.05;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/personne ne voit/');
+
+        $this->loader->normalize($raw);
+    }
+
+    /**
+     * Payer ne doit jamais autoriser a presser un filon indefiniment : si le
+     * bonus d'un chantier atteignait la vitesse a laquelle on abime, une guilde
+     * riche tiendrait un filon propre en le surexploitant en continu, et la
+     * Paleur cesserait d'etre une contrainte pour devenir une facture.
+     */
+    public function testRestorationCannotOutrunTheDamageItRepairs(): void
+    {
+        $raw = $this->validRaw();
+        $raw['restoration']['daily_bonus'] = 0.08;
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/presser un filon indefiniment/');
+
+        $this->loader->normalize($raw);
+    }
+
     public function testPalenessRecoveryMustStayBelowTheRise(): void
     {
         $raw = $this->validRaw();
@@ -325,6 +358,12 @@ class SettlementDefinitionLoaderTest extends TestCase
                 'max' => 0.60,
                 'visible_from' => 0.10,
                 'dulls_purity_from' => 0.30,
+            ],
+            'restoration' => [
+                'cost_per_point' => 90,
+                'duration_days' => 5,
+                'daily_bonus' => 0.04,
+                'opens_from' => 0.10,
             ],
         ];
     }

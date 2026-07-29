@@ -58,7 +58,8 @@ class SettlementDefinitionLoader
      *     crue: array<string, int>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
-     *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float}
+     *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
+     *     restoration: array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float}
      * }
      *
      * @throws SettlementDefinitionException si le fichier est absent, illisible ou invalide
@@ -106,7 +107,8 @@ class SettlementDefinitionLoader
      *     crue: array<string, int>,
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
-     *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float}
+     *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
+     *     restoration: array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float}
      * }
      */
     public function normalize(array $raw, string $source = '<array>'): array
@@ -122,6 +124,7 @@ class SettlementDefinitionLoader
 
         $neverGated = $this->normalizeWithout($raw['never_gated'] ?? [], $source, 'never_gated');
         $services = $this->normalizeServices($raw['services'] ?? [], $neverGated, $source);
+        $paleness = $this->normalizePaleness($raw['paleness'] ?? [], $source);
 
         return [
             'ranks' => $this->normalizeRanks($raw['ranks'] ?? null, $source),
@@ -142,7 +145,8 @@ class SettlementDefinitionLoader
             'crue' => $this->normalizeCrue($raw['crue'] ?? [], $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
-            'paleness' => $this->normalizePaleness($raw['paleness'] ?? [], $source),
+            'paleness' => $paleness,
+            'restoration' => $this->normalizeRestoration($raw['restoration'] ?? [], $paleness, $source),
         ];
     }
 
@@ -629,6 +633,48 @@ class SettlementDefinitionLoader
             'max' => $max,
             'visible_from' => $visible,
             'dulls_purity_from' => $dulls,
+        ];
+    }
+
+    /**
+     * Le chantier de restauration (FOY-12).
+     *
+     * Deux invariants, et tous deux disent la meme chose sous deux angles :
+     * **on n'achete pas un monde propre**.
+     *
+     * 1. Un chantier ne s'ouvre pas sous le seuil de visibilite. Payer pour
+     *    effacer une trace que personne ne voit serait une depense sans public,
+     *    alors que le jalon existe pour rendre la restauration *publique*.
+     * 2. Le bonus quotidien ne peut pas atteindre la vitesse a laquelle on
+     *    abime. S'il la depassait, une guilde riche pourrait presser un filon
+     *    en continu et le tenir propre a coups de Gils — la Paleur cesserait
+     *    d'etre une contrainte pour devenir une facture.
+     *
+     * @param array<array-key, mixed>                                                                                           $raw
+     * @param array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float} $paleness
+     *
+     * @return array{cost_per_point: int, duration_days: int, daily_bonus: float, opens_from: float}
+     */
+    private function normalizeRestoration(array $raw, array $paleness, string $source): array
+    {
+        $costPerPoint = $this->normalizePositiveInt($raw['cost_per_point'] ?? null, 'restoration.cost_per_point', $source);
+        $duration = $this->normalizePositiveInt($raw['duration_days'] ?? null, 'restoration.duration_days', $source);
+        $bonus = $this->normalizeRate($raw['daily_bonus'] ?? null, 'restoration.daily_bonus', $source);
+        $opensFrom = $this->normalizeRate($raw['opens_from'] ?? null, 'restoration.opens_from', $source);
+
+        if ($opensFrom < $paleness['visible_from']) {
+            throw new SettlementDefinitionException(sprintf('"restoration.opens_from" (%.2f) is below "paleness.visible_from" (%.2f) in "%s" : on n\'ouvre pas un chantier sur une trace que personne ne voit.', $opensFrom, $paleness['visible_from'], $source));
+        }
+
+        if ($bonus >= $paleness['rise_per_pressure']) {
+            throw new SettlementDefinitionException(sprintf('"restoration.daily_bonus" (%.2f) must stay below "paleness.rise_per_pressure" (%.2f) in "%s" : payer ne doit jamais autoriser a presser un filon indefiniment.', $bonus, $paleness['rise_per_pressure'], $source));
+        }
+
+        return [
+            'cost_per_point' => $costPerPoint,
+            'duration_days' => $duration,
+            'daily_bonus' => $bonus,
+            'opens_from' => $opensFrom,
         ];
     }
 }

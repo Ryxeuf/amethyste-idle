@@ -1397,3 +1397,33 @@ a 300), mesuree en **population effective** (§ 22.5). Elle remplace toute notio
 c'est l'unique enjeu territorial du serveur — exactement la tension voulue. Periode de
 grace au lancement : pendant les **deux premieres marees**, aucune retrogradation et
 aucune contraction de W (§ 22.4).
+
+### 23.8 La Paleur et son chantier de restauration (FOY-11 / FOY-12)
+
+**La Paleur** (`paleness:` dans `settlements.yaml`) se mesure **par filon** et compare ce
+qu'on a pris dans la journee au debit soutenu du filon, `R = capacity x 86400 /
+respawn_seconds`. Au-dessus de la pression 1, elle monte de **0,08 par point de pression** ;
+sous 1, elle rend **0,04 par jour** ; elle est bornee a **0,60** — un filon pali n'est jamais
+sterile. Elle se voit a partir de **0,10** et rabat la bande de purete au clair a partir de
+**0,30**.
+
+**Le chantier de restauration** (`restoration:`) coute **90 Gils par point de Paleur**
+(1 point = 0,01), dure **5 jours** et ajoute **0,04/jour** a la recuperation naturelle.
+
+| Paleur du filon | Cout du chantier | Ce que 5 jours de chantier en retirent |
+|---|---|---|
+| 0,10 (juste visible) | 900 Gils | 0,10 → 0 (le naturel y suffisait presque) |
+| 0,30 (bande rabattue) | 2 700 Gils | 0,30 → 0 en 4 jours au lieu de 8 |
+| 0,60 (plafond) | 5 400 Gils | 0,60 → **0,20** — le filon reste marque |
+
+**Les trois bornes du chiffrage**, chacune tenue par le loader :
+
+1. **Reparer reste plus lent qu'abimer** : 0,04 + 0,04 = 0,08 au mieux, soit exactement ce
+   qu'ajoute un jour a pression 2. Le bonus **n'entre pas** dans la branche de montee, donc un
+   filon presse ne se repare pas, meme paye.
+2. **On n'achete pas un monde propre** : au plafond, un chantier complet laisse 0,20 — il faut
+   arreter de presser pour finir la guerison.
+3. **Le prix est lineaire**, sans palier : un joueur doit pouvoir predire ce que lui coutera
+   d'attendre un jour de plus. A 5 400 Gils, le pire cas vaut l'ordre de grandeur du premier
+   palier de tresor de guilde (5 000) : une depense qu'une guilde etablie decide, jamais une
+   qu'elle subit.

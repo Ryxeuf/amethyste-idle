@@ -1449,6 +1449,19 @@
         "locked_by": "Requires:",
         "paleness": "Vein gone pale (%percent% %) — it yields less, and mends on its own if given room to breathe."
       },
+      "restoration": {
+        "open": "Restore — %cost% Gils",
+        "quote": "Restoration: %cost% Gils",
+        "underway": "Works funded by \"%guild%\" run until %date%",
+        "opened": "Works opened: %cost% Gils paid into the vein. The mark does not vanish at once — the works help it mend, they do not buy it.",
+        "error": {
+          "no_guild": "Restoration works are paid from a guild treasury.",
+          "rank_too_low": "Your rank cannot commit the treasury.",
+          "nothing_to_mend": "This vein has nothing to mend.",
+          "already_underway": "Works are already running on this vein.",
+          "treasury_too_low": "The guild treasury cannot cover it."
+        }
+      },
       "pnjs": {
         "heading": "Characters here",
         "empty": "Nobody here right now.",
