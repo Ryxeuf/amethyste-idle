@@ -14,6 +14,8 @@ use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Progression\ActionYieldResolver;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\Settlement\SettlementDoctrineBonus;
 use App\GameEngine\World\WorldScaleService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\GatherService;
@@ -21,6 +23,7 @@ use App\GameEngine\Zone\ZoneActionException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\InventoryHelper;
 use App\Repository\PlayerJournalEntryRepository;
+use App\Repository\SettlementRepository;
 use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -78,7 +81,7 @@ class GatherServiceTest extends TestCase
             return $event;
         });
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService, $this->eventDispatcher, $this->purityDrawer()) extends GatherService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $this->worldScaleService, $this->eventDispatcher, $this->purityDrawer(), $this->doctrineBonus()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -727,5 +730,18 @@ class GatherServiceTest extends TestCase
         $drawer->method('coversSlug')->willReturn(false);
 
         return $drawer;
+    }
+
+    /**
+     * FOY-13 : aucune zone de ces scenarios n'a de foyer, donc aucune doctrine.
+     * Le facteur vaut 1 et le rendement nu reste observable tel que ZON-10 et
+     * FOY-11 l'ont pose.
+     */
+    private function doctrineBonus(): SettlementDoctrineBonus
+    {
+        $settlements = $this->createMock(SettlementRepository::class);
+        $settlements->method('findOneByZone')->willReturn(null);
+
+        return new SettlementDoctrineBonus($settlements, $this->createMock(SettlementDefinitionLoader::class));
     }
 }
