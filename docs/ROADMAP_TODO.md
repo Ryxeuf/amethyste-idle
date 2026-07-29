@@ -33,6 +33,7 @@ L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'
 - [roadmap/PLAN_DOMAINS.md](roadmap/PLAN_DOMAINS.md) ✅ — **8/8** (arbres de domaine) ; DOM-09 ouvert
 - [roadmap/PLAN_FACTIONS.md](roadmap/PLAN_FACTIONS.md) — **1/10, en cours** (FAC-01 livre)
 - [roadmap/PLAN_REPERTOIRE.md](roadmap/PLAN_REPERTOIRE.md) — **0/6, a faire** (l'Autel d'eveil)
+- [roadmap/PLAN_WIKI.md](roadmap/PLAN_WIKI.md) — **WIK-01 ✅** (contenu docs/wiki/, 7 chapitres) ; restent WIK-02/03 (controleur public /wiki, acces)
 - [roadmap/PLAN_PLAYER_ECONOMY.md](roadmap/PLAN_PLAYER_ECONOMY.md) — Pistes A-E, G, H **completes** ; reste ECO-28 (Piste F 3/4) et la **Piste I ouverte** (ECO-32→35, caravanes)
 - [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) ✅ — 14/14 ; **vague 2 ouverte : NAR-15→20** (l'an 1 des marees)
 - [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md) ✅ — 20/20
