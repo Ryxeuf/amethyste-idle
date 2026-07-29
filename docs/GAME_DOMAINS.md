@@ -123,9 +123,14 @@ Le build (préset livré) n'est pas un menu : c'est **ce qu'on porte**.
    > que ces nœuds sont des **points d'entrée gratuits** (0 point de domaine) des arbres, et
    > que tout arbre s'ouvre avec un parchemin accessible à tous : *le mage en plaque existe
    > toujours*, il a seulement dû l'apprendre. On ne lit jamais un interdit — on lit **ce
-   > qu'il manque et où l'apprendre**. Le port s'apprend **par ligne d'armure ou par famille
-   > d'arme**, jamais par pièce ni par palier, et le même nœud est **partagé** par tous les
-   > arbres qui l'enseignent : plusieurs chemins mènent à la hache de guerre.
+   > qu'il manque et où l'apprendre**. Le port s'apprend **par famille d'arme, ligne d'armure
+   > ou outil de métier**, sur une **échelle** : échelon 1 gratuit (le port de base, palier
+   > T1), échelons suivants **paliés et chaînés** pour les pièces évoluées — *on ne se sert
+   > pas d'un arc à poulie sans maîtriser l'arc, ni du marteau de précision sans avoir usé le
+   > marteau ordinaire*. Les compétences d'arme déjà en base (`*_weapon_t2` → `t3`) **sont**
+   > cette échelle et restent inchangées ; il manque l'échelon 1 et les échelles d'armures et
+   > d'outils. Chaque échelon est **partagé** par tous les arbres qui l'enseignent : plusieurs
+   > chemins mènent à la hache de guerre.
 2. **Le plancher jour 1** : les kits T1 portent au moins un emplacement **libre** — la
    première matéria se sertit toujours, quelle que soit la tenue (GAME_WORLD §2.1).
 3. **La progression du support reste actée** : plus d'emplacements, de meilleurs bonus,

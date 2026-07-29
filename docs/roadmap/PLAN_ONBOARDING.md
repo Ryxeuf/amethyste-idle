@@ -418,15 +418,19 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       Ouvrir un arbre livre immédiatement son kit de port — un maître mage ouvre *port du
       bâton*, *port de la baguette*, *port du tissu*. **Aucun « parchemin de port » à créer** :
       le compte reste à 32 parchemins, un par arbre
-- [ ] **Par ligne ou par famille, jamais par pièce ni par palier** : une ligne d'armure
-      (tissu, cuir, maille, plaque) = un nœud ; une famille d'arme (bâton, baguette, épée,
-      hache, arc, dague…) = un nœud
-- [ ] **Reclasser les compétences d'arme paliées existantes.** `soldier_weapon_t2` →
-      `soldier_weapon_t3` sont chaînées par palier ; sous la règle ci-dessus elles cessent
-      d'être des droits de port pour devenir des nœuds de **maîtrise** (passifs sur la
-      famille). Sans ça, chaque butin d'un palier supérieur rejoue le mur du port —
-      le contraire de *« on progresse en portant mieux, pas en changeant d'arme »*.
-      **Arbitrage à confirmer avec DOM** (552 compétences en base)
+- [ ] **Le port est une échelle, par famille / ligne / outil** : échelon 1 = le port de base
+      (palier T1), **gratuit**, nœud d'entrée de l'arbre ; échelons suivants **paliés et
+      chaînés** pour les pièces évoluées — l'arc à poulie exige l'arc, le marteau de précision
+      exige le marteau ordinaire
+- [ ] **Les compétences d'arme existantes SONT cette échelle et ne bougent pas.**
+      `soldier_weapon_t2` → `soldier_weapon_t3`, `berserk_weapon_t2` → `t3` : chaînées,
+      conservées telles quelles. Ce qui manque est **l'échelon 1** (les armes T1 n'ont aucun
+      prérequis aujourd'hui) et **les échelles d'armures et d'outils**, inexistantes
+- [ ] **L'échelle suit les paliers d'objets déjà en place** (T1/T2/T3) — n'inventer aucun cran
+- [ ] **Un échelon de port n'est jamais seul sur un palier d'arbre** : il accompagne des
+      passifs, sinon le rang est un péage
+- [ ] Bénéfice à exploiter : l'échelle donne aux **arbres d'artisanat** une raison de monter
+      qui n'est pas la liste des recettes — de meilleurs outils
 - [ ] **Nœuds partagés : plusieurs chemins pour la même chose.** « Port de la hache de
       guerre » existe dans tous les arbres qui l'enseignent ; **en ouvrir un seul suffit**.
       `Skill::domains` est déjà un ManyToMany
@@ -441,9 +445,11 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       jamais un grisé muet. Le crochet existe — `EquipmentController` renvoie `'locked_skill'`
 - [ ] Migration : les personnages existants gardent ce qu'ils peuvent déjà équiper
 - [ ] Tests : attaque possible sans arme ; aucun `EntityNotFoundException` sur un chemin de
-      combat ; un nœud de port ouvert dans **un** arbre autorise la pièce partout ; aucune
-      pièce n'exige un élément précis ; le kit T1 de l'acte I est portable avec le seul
-      parchemin donné ; toute pièce non portable expose son manque et son lieu d'apprentissage
+      combat ; un échelon ouvert dans **un** arbre autorise la pièce partout ; aucune pièce
+      n'exige un élément précis ; **l'échelon 1 de toute échelle est gratuit** ; **aucun palier
+      d'arbre ne contient qu'un échelon de port** ; le kit T1 de l'acte I est portable avec le
+      seul parchemin donné ; toute pièce non portable expose son manque et son lieu
+      d'apprentissage
 
 ---
 

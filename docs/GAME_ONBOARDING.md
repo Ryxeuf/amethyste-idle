@@ -1,6 +1,6 @@
 # Le compte, le personnage, l'arrivée — cadrage de l'entrée dans le jeu
 
-> **Statut : proposé** · 2026-07-29 (révisions R1 à R3c le même jour — cf. §11)
+> **Statut : proposé** · 2026-07-29 (révisions R1 à R3d le même jour — cf. §11)
 > Source de vérité de **tout ce qui se passe avant qu'un joueur soit un joueur** : la
 > création du compte, la connexion, la création du personnage, les dix premières minutes
 > et l'apprentissage de l'interface.
@@ -474,16 +474,41 @@ l'ouverture d'un arbre. Le compte reste à 32 parchemins, un par arbre.
 
 Cinq règles, et une affordance obligatoire.
 
-**a) Le port s'apprend par ligne ou par famille, jamais par pièce ni par palier.** Une ligne
-d'armure (tissu, cuir, maille, plaque) = un nœud. Une famille d'arme (bâton, baguette, épée,
-hache, arc, dague…) = un nœud. On apprend **une fois** : trouver une hache de meilleur palier
-ne redemande jamais d'apprendre la hache.
+**a) Le port s'apprend par famille ou par ligne, sur une échelle.** Une famille d'arme (arc,
+épée, hache, bâton…), une ligne d'armure (tissu, cuir, maille, plaque) ou un outil de métier
+(marteau du forgeron, pioche…) porte **une échelle de port** :
 
-> ⚠️ **À arbitrer avec DOM** : les compétences existantes sont **paliées et chaînées**
-> (`soldier_weapon_t2` → `soldier_weapon_t3`). Sous cette règle, elles cessent d'être des
-> droits de port pour devenir des nœuds de **maîtrise** (des passifs sur la famille). Sans
-> quoi chaque butin d'un palier supérieur rejouerait le mur du port — exactement le contraire
-> de *« on ne progresse pas en changeant d'arme, on progresse en la portant mieux »*.
+| Échelon | Ce qu'il ouvre | Coût |
+|---|---|---|
+| **1 — le port de base** | Tenir l'arme, porter la ligne, utiliser l'outil. Palier T1 | **Gratuit**, nœud d'entrée de l'arbre |
+| **2, 3…** | Les pièces évoluées de la même famille — l'arc à poulie, le marteau de précision, le marteau magique | Paliés et **chaînés** : l'échelon *n* exige l'échelon *n−1* |
+
+> **On ne sait pas se servir d'un arc à poulie sans maîtriser l'arc. On n'utilise pas le
+> marteau de précision du forgeron sans avoir usé le marteau ordinaire.** L'échelle est ce qui
+> rend le port crédible : elle ne barre pas l'entrée — l'échelon 1 est gratuit — elle
+> échelonne la maîtrise.
+
+**Les compétences existantes sont déjà cette échelle** : `soldier_weapon_t2` →
+`soldier_weapon_t3`, `berserk_weapon_t2` → `t3`, paliées et chaînées. Elles restent telles
+quelles. Ce qui manque, c'est **l'échelon 1** (le port de base, T1, gratuit, aujourd'hui
+inexistant : les armes T1 n'ont aucun prérequis) et **l'échelle équivalente pour les armures
+et les outils**, qui n'existe pas du tout.
+
+Deux garde-fous et une conséquence :
+
+- **L'échelle suit les paliers d'objets déjà en place** (T1/T2/T3). On n'invente pas d'autres
+  crans : sinon la donnée explose pour rien.
+- **Un échelon de port n'est jamais le seul contenu d'un palier d'arbre.** Il accompagne des
+  passifs ; un arbre dont un rang n'apporte qu'un droit de port est un péage, pas un arbre.
+- **Conséquence gagnée** : l'échelle de port donne aux arbres d'artisanat une raison de monter
+  qui ne soit pas seulement la liste des recettes — **de meilleurs outils**. Le forgeron
+  progresse aussi dans ce qu'il tient en main.
+
+**Et le butin trop évolué n'est pas une frustration : c'est un revenu.** Une pièce qu'on ne
+peut pas encore porter reste **vendable et échangeable** — elle alimente le marché au lieu de
+dormir. C'est même la voie normale : on la vend, on l'achète plus tard quand l'échelon tombe.
+La seule vraie précaution est d'équilibrage, pas de doctrine : les tables de butin ne doivent
+pas déverser trop haut au-dessus du joueur (affaire de BALANCE).
 
 **b) Les nœuds de port sont partagés : plusieurs chemins mènent à la même chose.** « Port de la
 hache de guerre » existe dans **tous** les arbres qui l'enseignent naturellement ; en ouvrir
@@ -754,7 +779,7 @@ l'interface. `PlayerHubDigest::recap()` fait déjà une partie du travail.
 | **A14** | **La forme de l'acte I** | **Trois tours de la même boucle** — parchemin → arbre → geste — sur l'arme, la matéria et la récolte (R2, §5.1) |
 | **A15** | **Le juste milieu** | **Le champ est infini, l'entrée est un acte.** Aucun geste n'est fermé, aucun arbre n'en exclut un autre, et un joueur peut tout mener de front — mais **rien n'est su avant d'avoir été appris** (R3, §6.0) |
 | **A16** | **Les actions de base** | Elles sont **concernées** : sans parchemin, on ne mine ni ne forge. Avec deux garde-fous : les personnages existants sont **grand-périsés**, et l'acte I **donne** les trois premiers. **Restent libres sans condition** : marcher, voyager, explorer, parler, ramasser, se battre **à mains nues** (R3, §6.0) |
-| **A18** | **Le port de l'équipement** | **Armes, armures et outils se portent après avoir appris à les porter ; sans arme apprise, mains nues.** Les nœuds de port sont les **points d'entrée gratuits** des arbres (0 point ; le coût est le parchemin), s'apprennent **par ligne d'armure ou famille d'arme** — jamais par pièce ni par palier —, sont **partagés** entre tous les arbres qui les enseignent, et ne sont **jamais bornés par l'élément**. L'arme de métier est un nœud **entièrement séparé** de l'arme de combat. **Amende DOM-02 garde-fou 1** — R3b/R3c, §6.0 bis |
+| **A18** | **Le port de l'équipement** | **Armes, armures et outils se portent après avoir appris à les porter ; sans arme apprise, mains nues.** Chaque famille ou ligne porte une **échelle** : échelon 1 **gratuit** (nœud d'entrée de l'arbre, palier T1), échelons suivants **paliés et chaînés** pour les pièces évoluées (l'arc à poulie exige l'arc). Les échelles sont **partagées** entre tous les arbres qui les enseignent, **jamais bornées par l'élément**, et l'outil de métier a la sienne, séparée. **Amende DOM-02 garde-fou 1** — R3b/R3c/R3d, §6.0 bis |
 | **A19** | **L'affordance de port** | Une pièce non portable dit **ce qui manque et où l'apprendre**, jamais un simple grisé. C'est ce qui distingue une porte d'un mur, et la condition pour que « personne ne lit un interdit » (DOM-02) reste vrai — R3c, §6.0 bis |
 | **A17** | **Les arbres retrouvés** | Des arbres **hors registre**, ouverts par une rencontre que **l'accomplissement** déclenche (finir un arbre). **Latéral jamais vertical**, **cumulatif jamais manqué**, **jamais nécessaire**, et le parchemin retrouvé est **lié** : ce qui circule est l'information, pas l'objet (R3, §6.4) |
 
@@ -795,6 +820,18 @@ suppose est aujourd'hui une exception non gérée. Trois précisions : le nœud 
 descend au T1 (c'est l'inverse aujourd'hui), il est **partagé par registre** et jamais borné
 par l'élément (sinon porter une hache imposerait un élément), et l'arme de métier relève de
 l'arbre de métier.
+
+**R3d (2026-07-29)** — le port devient une **échelle** plutôt qu'un droit unique. R3c posait
+« une fois par famille, jamais par palier » et proposait de reclasser les compétences d'arme
+paliées en nœuds de maîtrise : c'était une **mauvaise application** du principe *« on ne
+progresse pas en changeant de sort, on progresse en le portant mieux »*, qui protège la
+**matéria** de l'obsolescence (GAME_PROGRESSION §3 bis) et n'a jamais concerné l'équipement —
+le jeu a déjà des armes T1/T2/T3. On ne se sert pas d'un arc à poulie sans maîtriser l'arc, ni
+du marteau de précision sans avoir usé le marteau ordinaire. L'échelon 1 reste gratuit et
+immédiat ; les suivants restent paliés et chaînés, ce qui **conserve les compétences existantes
+telles quelles** (`*_weapon_t2` → `t3`) au lieu de les reclasser. Gain de côté : les arbres
+d'artisanat gagnent une raison de monter qui n'est pas la liste des recettes — de meilleurs
+outils.
 
 **R3c (2026-07-29)** — la règle du port **s'étend aux armures et aux outils**, et trouve sa
 forme : les nœuds de port sont les **points d'entrée gratuits** d'un arbre (un maître mage
