@@ -51,7 +51,16 @@ donc pleinement.
 
 **Registres** : sorts / mêlée / distance. **Impact modèle** : le format actuel des
 passifs (`damage`, `critical`… plats) doit porter l'élément et le registre — c'est le
-refactor central du chantier (DOM-01). Les passifs de **récolte** et d'**artisanat**
+refactor central du chantier (**DOM-01 ✅ livré le 2026-07-29** : le registre est porté par
+`Domain`, jamais par le nœud ; `CombatSkillResolver` filtre sur la case de l'action).
+
+> **Deux précisions actées à la livraison.** (1) `life` **échappe à la borne** : les points
+> de vie maximum ne sont pas un geste, et les borner ferait varier la barre de vie d'un tour
+> à l'autre selon le sort choisi. Les quatre autres statistiques qualifient une action et se
+> bornent avec elle. (2) **La grille 8 × 3 n'est pas pleine** : trois éléments (feu, air,
+> bête) occupent leurs trois cases, l'eau a trois domaines de sorts, le métal deux de mêlée.
+> Étiqueter le « Guérisseur » en mêlée pour faire tenir la grille aurait menti sur ce qu'est
+> le domaine ; le remplissage est un sujet de contenu, pas de moteur. Les passifs de **récolte** et d'**artisanat**
 sont bornés à leur **métier** (le rendement du mineur ne sert pas l'herboriste) ; pas de
 registre pour eux.
 

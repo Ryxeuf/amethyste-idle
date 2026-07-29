@@ -15,7 +15,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| DOM-01 | Passifs typés : élément × registre (refactor du format) | M | ∅ |
+| DOM-01 ✅ | Passifs typés : élément × registre (refactor du format) | M | ∅ |
 | DOM-02 | Activation par build (domaines actifs = sources portées) | M | ← DOM-01 |
 | DOM-03 | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
 | DOM-04 | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
@@ -36,18 +36,42 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 
 ---
 
-### DOM-01 — Passifs typés : élément × registre (M | ★★★ | CRITIQUE)
+### DOM-01 — Passifs typés : élément × registre ✅ (M | ★★★ | CRITIQUE)
 > GAME_DOMAINS §2. Le refactor central : `damage`/`critical`/… plats deviennent des
 > passifs bornés. « Critique +1 % » du pyromancien = sorts de feu uniquement.
-> Prérequis : ∅
-- [ ] Format de passif enrichi sur `Skill` : stat × élément × registre (sorts/mêlée/
-      distance) pour le combat ; stat × métier pour récolte/artisanat. Rétro-compat :
-      un passif non typé vaut « global » le temps de la migration
-- [ ] `CombatSkillResolver::getCombatBonuses` filtre par l'action en cours (élément du
-      sort, registre de l'attaque)
-- [ ] Migration des 491 compétences : typage déclaratif par domaine d'appartenance
-      (le domaine *est* la case élément × registre — aucune décision manuelle par nœud)
-- [ ] Tests : un passif feu×sorts ne s'applique ni au CaC ni à l'eau ; rétro-compat
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] `CombatRegister` (sorts / mêlée / distance) + `Domain::register` : le domaine
+      **est** la case élément × registre, et c'est lui qui porte la borne — les 130
+      passifs livrés se typent d'un coup, sans une seule décision par nœud
+- [x] `CombatScope` (élément × registre de l'action) et
+      `CombatSkillResolver::getCombatBonuses($player, ?$scope)` — filtre effectif ;
+      `FightSpellController` passe la portée du sort
+- [x] Rétro-compat par une clause explicite : un nœud **sans domaine de combat**
+      (récolte, artisanat, ou sans domaine) reste global. C'est elle qui permet de typer
+      36 domaines sans relire 524 nœuds
+- [x] Tests : 10 (`CombatSkillResolverScopeTest`) + 4 (`DomainRegisterTest`)
+
+> **`life` échappe toujours à la borne, et c'est une décision.** Les points de vie maximum
+> ne sont pas un geste : les borner ferait varier la barre de vie d'un tour à l'autre selon
+> le sort choisi. Les quatre autres statistiques qualifient une action et se bornent avec
+> elle.
+>
+> **Sans portée, rien n'est borné.** La fiche d'inventaire affiche un total, pas une action —
+> `getCombatBonuses($player)` garde donc exactement le comportement d'avant. Montrer au
+> joueur *ce qui s'applique vraiment* est le sujet de DOM-02 (l'écran de build).
+>
+> **Le registre de l'attaque de base n'a pas encore de consommateur, et ce n'est pas un
+> oubli.** `FightAttackController::calculateDamage` vaut `3 + variance + enchantement` : il
+> n'a **jamais** lu les passifs d'arbre. Leur y brancher une borne mêlée/distance aurait
+> demandé d'inventer d'abord le registre de l'arme — ce que DOM-02 et DOM-03 posent. Les
+> deux registres existent dans le modèle et sont testés ; leur porte d'entrée arrive avec
+> celui à qui elle sert.
+>
+> **La grille 8 × 3 n'est pas pleine, et on ne l'a pas remplie de force.** Trois éléments
+> (feu, air, bête) occupent leurs trois cases ; l'eau a trois domaines de sorts, le métal
+> deux de mêlée. Étiqueter le « Guérisseur » en mêlée pour faire tenir la grille aurait
+> menti sur ce qu'est le domaine. Le gain mécanique tient sans elle : un passif feu × mêlée
+> ne sert plus un sort d'eau. Le remplissage est un sujet de contenu, pas de moteur.
 
 ### DOM-02 — Activation par build (M | ★★★ | CRITIQUE)
 > GAME_DOMAINS §3. Un domaine n'est actif en combat que si le build porte une de ses
