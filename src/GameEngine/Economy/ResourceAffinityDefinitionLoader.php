@@ -86,13 +86,7 @@ class ResourceAffinityDefinitionLoader
             ['corrections', 'without_affinity', array_intersect(array_keys($corrections), $withoutAffinity)],
         ] as [$left, $right, $overlap]) {
             if ($overlap !== []) {
-                throw new ResourceAffinityDefinitionException(sprintf(
-                    'These slugs sit in both "%s" and "%s" of "%s": %s.',
-                    $left,
-                    $right,
-                    $source,
-                    implode(', ', array_values($overlap)),
-                ));
+                throw new ResourceAffinityDefinitionException(sprintf('These slugs sit in both "%s" and "%s" of "%s": %s.', $left, $right, $source, implode(', ', array_values($overlap))));
             }
         }
 
@@ -157,12 +151,7 @@ class ResourceAffinityDefinitionLoader
         foreach ($raw as $element => $values) {
             $named = \is_string($element) ? Element::tryFrom($element) : null;
             if ($named === null || $named === Element::None) {
-                throw new ResourceAffinityDefinitionException(sprintf(
-                    '"%s" is keyed by element in "%s"; "%s" is not one.',
-                    $key,
-                    $source,
-                    \is_string($element) ? $element : \gettype($element),
-                ));
+                throw new ResourceAffinityDefinitionException(sprintf('"%s" is keyed by element in "%s"; "%s" is not one.', $key, $source, \is_string($element) ? $element : \gettype($element)));
             }
 
             $lists[$named->value] = $this->slugList($values, $key . '.' . $named->value, $source);
