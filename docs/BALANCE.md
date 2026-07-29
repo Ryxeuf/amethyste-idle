@@ -1589,6 +1589,11 @@ du cuisinier.
 
 Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTEST_PAPIER_MOIS_1.md)) :
 
+0. **Appliquer la ponderation du grain** (§23.1, F2 — **action immediate, une ligne de
+   config**) : la table de depot de `config/game/settlements.yaml` passe du grain
+   uniforme au grain pondere par l'energie du geste (kill 1,7, evenement 3,3). FOY-02
+   etant livre sur la table uniforme, c'est une correction de donnees, pas de moteur.
+
 1. **La passe post-arbres.** Les arbres de domaine (GAME_DOMAINS, DOM-01+) apporteront des
    passifs de **reduction de cout d'energie** et de **reduction de temps** (craft, voyage ?)
    sur les gestes de leur domaine. Chaque reduction agrandit le budget effectif d'un
