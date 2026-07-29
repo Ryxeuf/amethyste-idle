@@ -1629,9 +1629,11 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    (`src/GameEngine/Settlement/`). Effet : sur un monde a `W` eleve, les filons donnent
    plus (capacite × W, branchee) mais les seuils de foyer n'ont pas bouge — les foyers
    montent **plus vite** que le calibrage §23.3, et le « temps de montee constant » que
-   ces trois mentions garantissent est faux. A trancher explicitement : **implementer la
-   multiplication** (dette de code a solder), ou **acter le renoncement** et corriger les
-   trois mentions. **Decision utilisateur requise.**
+   ces trois mentions garantissent est faux. **Tranche le 2026-07-29 : la doc a raison.**
+   C'est une **dette de code a solder** : `SettlementRankCalculator` (et tout lecteur des
+   seuils `ranks:`) doit multiplier les seuils par `W` via `WorldScaleService`, au meme
+   titre que la capacite des filons. A implementer avec la ponderation du grain (§24.0) —
+   les deux corrections touchent la meme chaine de depot.
 
 4. **Calibrage du rendement et de la duree du jardin** (herite du Sprint 11, tache 129 /
    HOU-02) : 1 unite semee rend 2 a 3 en 3 h, sans energie ni presence — un rendement pose

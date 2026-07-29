@@ -239,7 +239,7 @@ Franche** (GAME_SEASONS §2).
   C'est l'information exclusive type du prospecteur (GAME_ZONE_ACTIONS).
   *Note d'audit (2026-07-29)* : cette promesse est aujourd'hui **ininstanciable** — le
   Marais n'a aucun filon du périmètre de pureté (préfixe `ore-`), sa signature
-  (`night_weight_shift: 30`) ne s'applique donc jamais. Voir **ZON-40** (PLAN_ZONES).
+  (`night_weight_shift: 30`) ne s'applique donc jamais. Remede tranche le 2026-07-29 : un affleurement d'amethyste sera pose dans la Foret, les Vallons et le Marais — voir **ZON-40** (PLAN_ZONES).
 - **Faune** : **non déclarée** — le Marais dépend encore de sa carte TMX d'origine.
   C'est le reste de ZON-26b (Sprint 13), pas un jalon neuf.
 - **Objets de désir** : semaine — la commande d'élixirs (les commandes de craft exigeant
