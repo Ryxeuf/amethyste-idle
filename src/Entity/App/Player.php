@@ -12,6 +12,7 @@ use App\Entity\Game\Skill;
 use App\Entity\User;
 use App\Enum\CraftSpecialization;
 use App\Repository\PlayerRepository;
+use App\Service\PlayerNameNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,6 +72,19 @@ class Player implements CharacterInterface
 
     #[ORM\Column(name: 'name', type: 'string', length: 255, unique: true)]
     private string $name;
+
+    /**
+     * ONB-06 — la forme sous laquelle deux noms sont « le meme nom ».
+     *
+     * PostgreSQL compare des octets : l'unicite sur `name` laissait passer
+     * « Claire » a cote de « claire », et « Clairе » ecrit avec un « е »
+     * cyrillique a cote des deux. Cette colonne porte l'index unique reel ;
+     * `name` reste le nom d'affichage, tel que le joueur l'a tape.
+     *
+     * Maintenue par `setName()` : elle ne peut pas se desynchroniser.
+     */
+    #[ORM\Column(name: 'normalized_name', type: 'string', length: 255, unique: true, nullable: true)]
+    private ?string $normalizedName = null;
 
     #[ORM\Column(name: 'max_life', type: 'integer')]
     private int $maxLife;
@@ -405,8 +419,14 @@ class Player implements CharacterInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+        $this->normalizedName = (new PlayerNameNormalizer())->normalize($name);
 
         return $this;
+    }
+
+    public function getNormalizedName(): ?string
+    {
+        return $this->normalizedName;
     }
 
     public function getName(): string

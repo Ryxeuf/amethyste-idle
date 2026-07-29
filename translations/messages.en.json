@@ -985,7 +985,11 @@
           "energy": "Energy",
           "speed": "Speed",
           "hit": "Hit"
-        }
+        },
+        "name_free": "This name is available.",
+        "name_taken": "This name is already taken.",
+        "name_forbidden": "This name is not allowed.",
+        "name_too_short": "At least 3 characters."
       },
       "customize": {
         "title": "Customize appearance",

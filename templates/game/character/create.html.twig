@@ -84,7 +84,12 @@
 
 
                     {# Nom du personnage #}
-                    <div>
+                    <div data-controller="name-availability"
+                         data-name-availability-url-value="{{ path('app_character_name_available') }}"
+                         data-name-availability-free-value="{{ 'game.character.create.name_free'|trans }}"
+                         data-name-availability-taken-value="{{ 'game.character.create.name_taken'|trans }}"
+                         data-name-availability-forbidden-value="{{ 'game.character.create.name_forbidden'|trans }}"
+                         data-name-availability-too-short-value="{{ 'game.character.create.name_too_short'|trans }}">
                         <label for="{{ form.name.vars.id }}" class="block text-sm font-medium text-gray-300 mb-1.5">
                             {{ 'game.character.create.name_label'|trans }}
                         </label>
@@ -97,7 +102,10 @@
                                maxlength="16"
                                minlength="3"
                                autocomplete="off"
+                               data-name-availability-target="input"
+                               data-action="input->name-availability#check"
                                required>
+                        <p class="mt-1 text-sm" data-name-availability-target="status" aria-live="polite"></p>
                         {% if form.name.vars.errors|length > 0 %}
                             <p class="mt-1 text-sm text-red-400">{{ form.name.vars.errors[0].message }}</p>
                         {% endif %}

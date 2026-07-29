@@ -985,7 +985,11 @@
           "energy": "Energie",
           "speed": "Vitesse",
           "hit": "Precision"
-        }
+        },
+        "name_free": "Ce nom est libre.",
+        "name_taken": "Ce nom est déjà pris.",
+        "name_forbidden": "Ce nom n'est pas autorisé.",
+        "name_too_short": "Au moins 3 caractères."
       },
       "customize": {
         "title": "Personnaliser l'apparence",

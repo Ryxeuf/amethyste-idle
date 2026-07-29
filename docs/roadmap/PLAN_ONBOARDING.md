@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **3/20 livrés + ONB-20a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **4/20 livrés + ONB-20a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -30,7 +30,7 @@
 | ONB-03 ✅ | Durcissement de la connexion (ferme D3) | S | ★★★ |
 | ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
 | ONB-05 | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
-| ONB-06 | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
+| ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07 | La capacité de peuple remplace les statistiques (ferme D12) | M | ★★ |
 | ONB-08 | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
@@ -175,15 +175,23 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [ ] `limit_reached` : dit **quoi faire**
 - [ ] Tests : parcours complet, retour arrière, reprise d'un tunnel interrompu
 
-### ONB-06 — Le nom : unicité robuste et immédiate (S | ★★★ | HAUTE)
+### ONB-06 — Le nom : unicité robuste et immédiate (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-29
 > Ferme **D9**.
-> Prérequis : ← ONB-05
-- [ ] Unicité **insensible à la casse** + normalisation des homoglyphes — colonne normalisée,
-      index unique
-- [ ] Vérification **au fil de la frappe** (« libre / pris », rien de plus)
-- [ ] `ForbiddenNameChecker` appliqué à la forme normalisée
-- [ ] Bouton « proposer un nom » par peuple (contenu ← NAR-20)
-- [ ] Tests : casse, homoglyphes, nom interdit, course entre deux créations simultanées
+> Prérequis annoncé : ← ONB-05. **Livré avant** : le tunnel réutilisera l'écran de création
+> existant, et l'usurpation d'identité n'a pas de raison d'attendre une refonte d'écran.
+- [x] Unicité **insensible à la casse** + normalisation des homoglyphes — colonne
+      `player.normalized_name`, index unique, migration avec repli SQL et désambiguïsation des
+      doublons déjà en base
+- [x] Vérification **au fil de la frappe** (« libre / pris », rien de plus — jamais **qui**
+      porte le nom, ce serait un annuaire de personnages ouvert à tous)
+- [x] `ForbiddenNameChecker` appliqué à la forme normalisée — « аdmin » avec un « а »
+      cyrillique passait au travers. Deux lectures sont testées, parce qu'un chiffre est
+      ambigu : `1` vaut `l` pour l'unicité et peut se lire `i` pour la détection
+- [ ] Bouton « proposer un nom » par peuple — **laissé à NAR-20**, qui porte les tables de noms
+- [x] Tests : casse, espaces, ponctuation, accents, ligatures, homoglyphes cyrilliques et grecs,
+      noms distincts qui le restent, nom interdit ; **la course entre deux créations
+      simultanées est tranchée par l'index**, et le contrôleur rattrape la violation par une
+      redirection (Doctrine ferme le gestionnaire d'entités après une violation de contrainte)
 
 ### ONB-07 — La capacité de peuple remplace les statistiques (M | ★★ | MOYENNE)
 > Ferme **D12** et applique **A11**. Les modificateurs actuels ne sont pas équilibrés — Humain
