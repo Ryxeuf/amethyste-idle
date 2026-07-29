@@ -10,9 +10,12 @@ use App\Helper\PlayerHelper;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\ForbiddenNameChecker;
 use App\Service\PlayerFactory;
+use App\Service\PlayerNameNormalizer;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,6 +30,7 @@ class CharacterController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly ForbiddenNameChecker $forbiddenNameChecker,
+        private readonly PlayerNameNormalizer $playerNameNormalizer,
         private readonly AvatarHashRecalculator $avatarHashRecalculator,
         #[Autowire('%app.max_players_per_user%')] private readonly int $maxPlayersPerUser,
     ) {
@@ -62,10 +66,7 @@ class CharacterController extends AbstractController
                 ]);
             }
 
-            $existingPlayer = $this->entityManager->getRepository(Player::class)
-                ->findOneBy(['name' => $name]);
-
-            if ($existingPlayer !== null) {
+            if ($this->isNameTaken($name)) {
                 $this->addFlash('error', 'Ce nom de personnage est déjà pris.');
 
                 return $this->render('game/character/create.html.twig', [
@@ -79,7 +80,22 @@ class CharacterController extends AbstractController
                 'hairColor' => $this->stringOrNull($form->get('hairColor')->getData()),
             ];
 
-            $player = $this->playerFactory->createPlayer($user, $name, $race, $appearance);
+            try {
+                $player = $this->playerFactory->createPlayer($user, $name, $race, $appearance);
+            } catch (UniqueConstraintViolationException) {
+                // ONB-06 : deux creations simultanees passent toutes deux la
+                // verification avant qu'aucune n'ait ecrit. Seul l'index
+                // tranche — la verification ci-dessus est un confort, pas une
+                // garantie.
+                //
+                // On redirige plutot que de re-rendre : Doctrine ferme le
+                // gestionnaire d'entites apres une violation de contrainte, et
+                // le formulaire a besoin de lire les peuples pour s'afficher.
+                $this->addFlash('error', 'Ce nom de personnage vient d\'etre pris.');
+
+                return $this->redirectToRoute('app_character_create');
+            }
+
             $this->playerHelper->setActivePlayer($player);
 
             return $this->redirectToRoute('app_game');
@@ -88,6 +104,41 @@ class CharacterController extends AbstractController
         return $this->render('game/character/create.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * ONB-06 — « libre / pris », et rien de plus.
+     *
+     * Repondre au fil de la frappe evite de perdre un formulaire entier sur un
+     * nom deja pris. La reponse ne dit jamais **qui** porte le nom : ce serait
+     * un annuaire de personnages ouvert a tous.
+     */
+    #[Route('/name-available', name: 'app_character_name_available', methods: ['GET'])]
+    public function nameAvailable(Request $request): JsonResponse
+    {
+        $name = trim((string) $request->query->get('name', ''));
+
+        if (mb_strlen($name) < 3) {
+            return new JsonResponse(['available' => false, 'reason' => 'too_short']);
+        }
+
+        if ($this->forbiddenNameChecker->isForbidden($name)) {
+            return new JsonResponse(['available' => false, 'reason' => 'forbidden']);
+        }
+
+        return new JsonResponse(['available' => !$this->isNameTaken($name)]);
+    }
+
+    /**
+     * L'unicite se juge sur la forme normalisee : « Claire », « claire » et
+     * « Clairе » (avec un « е » cyrillique) sont le meme nom.
+     */
+    private function isNameTaken(string $name): bool
+    {
+        $normalized = $this->playerNameNormalizer->normalize($name);
+
+        return $this->entityManager->getRepository(Player::class)
+            ->findOneBy(['normalizedName' => $normalized]) !== null;
     }
 
     #[Route('/select', name: 'app_character_select')]

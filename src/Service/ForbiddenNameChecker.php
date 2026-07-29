@@ -30,43 +30,59 @@ class ForbiddenNameChecker
         'gm', 'mj', 'pnj', 'npc', 'bot', 'test', 'null', 'undefined',
     ];
 
+    /**
+     * Substitutions de style « leet », lues avant la normalisation.
+     *
+     * Elles ne peuvent pas vivre dans `PlayerNameNormalizer` : l'unicite doit
+     * trancher une fois pour toutes (`1` y vaut `l`), alors que la detection
+     * doit attraper **toutes** les lectures possibles (`1` peut se lire `i`).
+     */
+    private const LEET = [
+        '0' => 'o', '1' => 'i', '3' => 'e', '4' => 'a', '5' => 's',
+        '7' => 't', '8' => 'b', '@' => 'a', '$' => 's',
+    ];
+
+    public function __construct(private readonly PlayerNameNormalizer $nameNormalizer)
+    {
+    }
+
     public function isForbidden(string $name): bool
     {
-        $normalized = $this->normalize($name);
-
-        foreach (self::RESERVED_NAMES as $reserved) {
-            if ($normalized === $reserved) {
-                return true;
+        foreach ($this->readings($name) as $reading) {
+            foreach (self::RESERVED_NAMES as $reserved) {
+                if ($reading === $reserved) {
+                    return true;
+                }
             }
-        }
 
-        foreach (self::FORBIDDEN_PATTERNS as $pattern) {
-            if (str_contains($normalized, $pattern)) {
-                return true;
+            foreach (self::FORBIDDEN_PATTERNS as $pattern) {
+                if (str_contains($reading, $pattern)) {
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    private function normalize(string $name): string
+    /**
+     * ONB-06 : le filtre s'applique aux **formes de comparaison**, au pluriel.
+     *
+     * Avant, il lisait une chaine latine : « аdmin » ecrit avec un « а »
+     * cyrillique passait au travers, alors que l'œil y lisait « admin ». La
+     * liste interdite n'a pas change ; c'est ce qu'on lui donne a lire.
+     *
+     * Deux lectures, parce qu'un chiffre est ambigu : la forme d'unicite, et
+     * la meme apres substitutions leet. Un nom est refuse si **l'une** des deux
+     * touche.
+     *
+     * @return list<string>
+     */
+    private function readings(string $name): array
     {
-        $name = mb_strtolower(trim($name));
-        // Remove spaces and hyphens for pattern matching (e.g. "f u c k" → "fuck")
-        $name = str_replace([' ', '-'], '', $name);
-        // Normalize common leet-speak substitutions
-        $name = strtr($name, [
-            '0' => 'o',
-            '1' => 'i',
-            '3' => 'e',
-            '4' => 'a',
-            '5' => 's',
-            '7' => 't',
-            '8' => 'b',
-            '@' => 'a',
-            '$' => 's',
-        ]);
+        $direct = $this->nameNormalizer->normalize($name);
+        $leet = $this->nameNormalizer->normalize(strtr(mb_strtolower($name), self::LEET));
 
-        return $name;
+        return $direct === $leet ? [$direct] : [$direct, $leet];
     }
 }

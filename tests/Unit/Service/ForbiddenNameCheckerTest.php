@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Service;
 
 use App\Service\ForbiddenNameChecker;
+use App\Service\PlayerNameNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class ForbiddenNameCheckerTest extends TestCase
@@ -11,7 +12,7 @@ class ForbiddenNameCheckerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->checker = new ForbiddenNameChecker();
+        $this->checker = new ForbiddenNameChecker(new PlayerNameNormalizer());
     }
 
     /** @dataProvider forbiddenNamesProvider */
