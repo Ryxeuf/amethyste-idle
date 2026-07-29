@@ -25,4 +25,4 @@
 - [ ] Un joueur peut lancer une expedition, se deconnecter, et recuperer son butin plus tard
 - [ ] On voit qui est present dans sa zone et on peut discuter/cooperer
 - [ ] Les world bosses fonctionnent comme evenements de zone annonces
-- [ ] La carte du monde illustree remplace visuellement l'ancienne carte navigable
+- [x] La carte du monde illustree remplace visuellement l'ancienne carte navigable *(ZON-16 puis **ZON-16b** le 2026-07-29 : fond illustre, contours de zone cliquables, brouillard de guerre a trois etats — voir `ROADMAP_DONE.md`)*

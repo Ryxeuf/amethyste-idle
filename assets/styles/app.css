@@ -2049,3 +2049,39 @@ a.materia-slots-counter--link:hover {
 .tutorial-hint-link:hover {
   color: rgb(74, 31, 149);
 }
+
+/* ===== WORLD MAP: contours de zone cliquables (ZON-16) =====
+   Le contour est transparent au repos : la carte illustree se suffit, et un
+   territoire cerne en permanence ferait un atlas scolaire. Il ne se revele
+   qu'au survol de la zone ou l'on peut aller. */
+.world-map-shape {
+  /* `fill: none` rendrait le polygone intraversable au pointeur : il faut une
+     surface, fût-elle transparente, pour qu'un clic porte. */
+  fill: transparent;
+  stroke: none;
+  pointer-events: none;
+}
+
+.world-map-shape--travelable {
+  pointer-events: all;
+  cursor: pointer;
+  transition:
+    fill 0.15s ease,
+    stroke-opacity 0.15s ease;
+  stroke: rgb(91, 47, 176);
+  stroke-width: 0.35;
+  stroke-opacity: 0;
+  stroke-linejoin: round;
+}
+
+.world-map-shape--travelable:hover,
+.world-map-shape--travelable:focus {
+  fill: rgba(91, 47, 176, 0.16);
+  stroke-opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-map-shape--travelable {
+    transition: none;
+  }
+}

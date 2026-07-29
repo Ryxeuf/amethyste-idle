@@ -1586,13 +1586,14 @@
     },
     "world_map": {
       "title": "Carte du monde",
-      "subtitle": "Cliquez une zone adjacente decouverte pour vous y rendre.",
+      "subtitle": "Cliquez une zone adjacente decouverte pour vous y rendre. La brume couvre ce que vous n'avez pas parcouru.",
       "back_to_zone": "Retour a la zone",
       "empty": "Aucune zone placee sur la carte pour l'instant.",
       "travel_to": "Voyager vers %zone%",
       "legend": {
         "current": "Zone actuelle",
         "travelable": "Voyage possible",
+        "scouted": "Reperee",
         "locked": "Non decouverte",
         "event": "Evenement actif",
         "expedition": "Expedition"

@@ -73,10 +73,10 @@ class WorldMapControllerTest extends TestCase
         $this->controller->setContainer($this->createContainer());
     }
 
-    private function buildZone(int $id, string $slug, ?int $x, ?int $y, bool $safe = false): Zone
+    private function buildZone(int $id, string $slug, ?int $x, ?int $y, bool $safe = false, ?string $shape = null): Zone
     {
         $zone = (new Zone())->setSlug($slug)->setName(ucfirst($slug))->setIsSafe($safe);
-        $zone->setMapX($x)->setMapY($y);
+        $zone->setMapX($x)->setMapY($y)->setMapShape($shape);
         $ref = new \ReflectionProperty(Zone::class, 'id');
         $ref->setValue($zone, $id);
 
@@ -133,6 +133,65 @@ class WorldMapControllerTest extends TestCase
         // Une arete hub<->forest.
         $this->assertCount(1, $this->captured['edges']);
         $this->assertTrue($this->captured['hasCurrent']);
+    }
+
+    /**
+     * Brouillard de guerre : trois etats, et un contour qui ne fuit pas.
+     *
+     * Le contour est la seule donnee de la carte qui dessine le terrain. L'emettre
+     * pour une zone que le joueur n'a pas situee reviendrait a livrer le monde
+     * entier a qui ouvre l'inspecteur — le brouillard ne serait qu'un decor.
+     */
+    public function testFogExposesShapesOnlyForWhatThePlayerCanSituate(): void
+    {
+        $hub = $this->buildZone(1, 'hub', 50, 55, true, '46,50 60,50 60,62 46,62');
+        $forest = $this->buildZone(2, 'forest', 28, 38, false, '20,30 36,30 36,44 20,44');
+        // Au-dela de la foret : jamais visitee, et voisine d'aucune zone connue.
+        $glacier = $this->buildZone(3, 'glacier', 80, 6, false, '70,0 90,0 90,12 70,12');
+
+        $player = new Player();
+        $player->setCurrentZone($hub);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->zoneRepository->method('findAllEnabled')->willReturn([$hub, $forest, $glacier]);
+        // Le joueur n'a jamais quitte le hub.
+        $this->visitedZoneRepository->method('findVisitedZoneIds')->willReturn([]);
+
+        $hubToForest = new ZoneConnection($hub, $forest, 300);
+        $forestToGlacier = new ZoneConnection($forest, $glacier, 600);
+        $refId = new \ReflectionProperty(ZoneConnection::class, 'id');
+        $refId->setValue($hubToForest, 10);
+        $refId->setValue($forestToGlacier, 11);
+        $this->zoneConnectionRepository->method('findEnabledFrom')->willReturnCallback(
+            fn (Zone $z) => match ($z->getId()) {
+                1 => [$hubToForest],
+                2 => [$forestToGlacier],
+                default => [],
+            }
+        );
+
+        $this->controller->index();
+
+        $this->assertNotNull($this->captured);
+        $byId = [];
+        foreach ($this->captured['nodes'] as $node) {
+            $byId[$node['id']] = $node;
+        }
+
+        // Le hub : parcouru, donc a decouvert.
+        $this->assertTrue($byId[1]['discovered']);
+        $this->assertFalse($byId[1]['scouted']);
+        $this->assertSame('46,50 60,50 60,62 46,62', $byId[1]['shape']);
+
+        // La foret : jamais visitee, mais voisine du hub — reperee.
+        $this->assertFalse($byId[2]['discovered']);
+        $this->assertTrue($byId[2]['scouted']);
+        $this->assertSame('20,30 36,30 36,44 20,44', $byId[2]['shape']);
+
+        // Le glacier : deux pas plus loin, rien n'en transpire.
+        $this->assertFalse($byId[3]['discovered']);
+        $this->assertFalse($byId[3]['scouted']);
+        $this->assertNull($byId[3]['shape']);
     }
 
     private function createContainer(): ContainerInterface&MockObject
