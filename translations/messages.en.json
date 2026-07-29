@@ -30,11 +30,19 @@
     }
   },
   "registration": {
-    "title": "Registration",
+    "title": "Sign up",
+    "eyebrow": "Amethyste",
+    "intro": "An account, a name, and the Beacon awaits. Verifying your address can wait: it only opens the market, guilds and chat.",
+    "email": "Email address",
     "password": "Password",
-    "register": "Register",
+    "password_show": "Show",
+    "password_hide": "Hide",
+    "password_hint": "At least %min% characters.",
+    "agree_terms": "I accept the game rules",
+    "register": "Create my account",
     "already_registered": "Already registered?",
-    "login_link": "Log in"
+    "login_link": "Log in",
+    "rate_limited": "Too many accounts created from this connection. Try again in an hour."
   },
   "security": {
     "title": "Login",

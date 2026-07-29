@@ -1,5 +1,14 @@
 framework:
     rate_limiter:
+        # Account creation: 5 accounts / hour / IP (ONB-01).
+        # Le multicomptage se combat par la porte de verification (ONB-04),
+        # pas ici : ce limiteur ne vise que la creation en rafale.
+        registration:
+            policy: 'fixed_window'
+            limit: 5
+            interval: '1 hour'
+            lock_factory: null
+
         # Combat actions: 5 req/s per player
         game_fight:
             policy: 'sliding_window'

@@ -8,11 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`users`')]
+#[UniqueEntity(fields: ['email'], message: 'Un compte existe deja avec cette adresse e-mail.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableEntity;
@@ -52,6 +54,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isBanned = false;
 
     /**
+     * Date de verification de l'adresse e-mail.
+     *
+     * Nulle par defaut : le compte nait **non verifie et pleinement jouable**
+     * (decision A1 du cadrage, GAME_ONBOARDING §3.2). La verification ne barre
+     * pas le jeu, elle barre le marche, les guildes et le chat — la porte est
+     * posee par ONB-04.
+     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $emailVerifiedAt = null;
+
+    /**
      * @var Player[]|ArrayCollection
      */
     #[ORM\OneToMany(targetEntity: Player::class, mappedBy: 'user')]
@@ -67,9 +80,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
+    /**
+     * L'adresse est normalisee a l'ecriture (ONB-01).
+     *
+     * Sans cela, `Jean@X.fr` et `jean@x.fr` sont deux comptes distincts pour la
+     * base et un seul pour le facteur : l'unicite ne tiendrait pas, et une
+     * demande de mot de passe oublie (ONB-02) viserait le mauvais compte.
+     */
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = mb_strtolower(trim($email));
 
         return $this;
     }
@@ -199,5 +219,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isBanned = $isBanned;
 
         return $this;
+    }
+
+    public function getEmailVerifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->emailVerifiedAt;
+    }
+
+    public function setEmailVerifiedAt(?\DateTimeImmutable $emailVerifiedAt): static
+    {
+        $this->emailVerifiedAt = $emailVerifiedAt;
+
+        return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->emailVerifiedAt !== null;
     }
 }

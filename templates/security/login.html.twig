@@ -76,6 +76,13 @@
                         {{ 'security.login'|trans }}
                     </button>
                 </form>
+
+                <div class="ds-divider my-6"></div>
+
+                <p class="ds-hint text-center">
+                    {{ 'security.no_account'|trans }}
+                    <a href="{{ path('app_register') }}" class="underline">{{ 'security.register_link'|trans }}</a>
+                </p>
             </div>
 
         </div>

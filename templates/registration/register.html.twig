@@ -3,29 +3,46 @@
 {% block title %}{{ 'registration.title'|trans }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="h3 mb-3 font-weight-normal">{{ 'registration.title'|trans }}</h1>
-                </div>
-                <div class="card-body">
-                    {{ form_start(registrationForm, { attr: { 'data-turbo': 'false' } }) }}
-                        {{ form_row(registrationForm.email) }}
-                        {{ form_row(registrationForm.plainPassword, {
-                            label: 'registration.password'|trans
-                        }) }}
-                        {{ form_row(registrationForm.agreeTerms) }}
-
-                        <button type="submit" class="btn btn-lg btn-primary">{{ 'registration.register'|trans }}</button>
-                    {{ form_end(registrationForm) }}
-                </div>
-                <div class="card-footer text-center">
-                    <p>{{ 'registration.already_registered'|trans }} <a href="{{ path('app_login') }}">{{ 'registration.login_link'|trans }}</a></p>
-                </div>
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+    <div class="w-full max-w-md">
+        <div class="ds-panel">
+            <div class="text-center mb-6">
+                <p class="ds-eyebrow">{{ 'registration.eyebrow'|trans }}</p>
+                <h1 class="ds-name">{{ 'registration.title'|trans }}</h1>
+                <p class="ds-hint mt-2">{{ 'registration.intro'|trans }}</p>
             </div>
+
+            {% for message in app.flashes('error') %}
+                <div class="ds-banner ds-banner--loss mb-4">{{ message|trans }}</div>
+            {% endfor %}
+
+            {{ form_start(registrationForm, { attr: { 'data-turbo': 'false', class: 'space-y-5' } }) }}
+                {{ form_row(registrationForm.email) }}
+
+                <div data-controller="password-reveal">
+                    {{ form_label(registrationForm.plainPassword) }}
+                    {{ form_widget(registrationForm.plainPassword, { attr: { 'data-password-reveal-target': 'input' } }) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                    <button type="button" class="ds-btn ds-btn--quiet ds-btn--sm mt-2"
+                            data-action="password-reveal#toggle">
+                        <span data-password-reveal-target="show">{{ 'registration.password_show'|trans }}</span>
+                        <span data-password-reveal-target="hide" class="hidden">{{ 'registration.password_hide'|trans }}</span>
+                    </button>
+                    <p class="ds-hint mt-1">{{ 'registration.password_hint'|trans({'%min%': password_min_length}) }}</p>
+                </div>
+
+                {{ form_row(registrationForm.agreeTerms) }}
+
+                <button type="submit" id="registration_submit" class="ds-btn ds-btn--primary w-full">{{ 'registration.register'|trans }}</button>
+            {{ form_end(registrationForm) }}
+
+            <div class="ds-divider my-6"></div>
+
+            <p class="ds-hint text-center">
+                {{ 'registration.already_registered'|trans }}
+                <a href="{{ path('app_login') }}" class="underline">{{ 'registration.login_link'|trans }}</a>
+            </p>
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
