@@ -1449,6 +1449,19 @@
         "locked_by": "Demande :",
         "paleness": "Filon délavé (%percent% %) — il rend moins et se refait tout seul si on le laisse respirer."
       },
+      "restoration": {
+        "open": "Restaurer — %cost% Gils",
+        "quote": "Restauration : %cost% Gils",
+        "underway": "Chantier de « %guild% » en cours jusqu'au %date%",
+        "opened": "Chantier ouvert : %cost% Gils versés au filon. La trace ne s'efface pas d'un coup — le chantier accompagne la guérison.",
+        "error": {
+          "no_guild": "Un chantier se paie sur un trésor de guilde.",
+          "rank_too_low": "Votre rang ne permet pas d'engager le trésor.",
+          "nothing_to_mend": "Ce filon n'a rien à restaurer.",
+          "already_underway": "Un chantier court déjà sur ce filon.",
+          "treasury_too_low": "Le trésor de la guilde ne suit pas."
+        }
+      },
       "pnjs": {
         "heading": "Personnages présents",
         "empty": "Personne ici pour le moment.",

@@ -17,6 +17,7 @@ use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
+use App\GameEngine\Settlement\VeinRestorationService;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -193,6 +194,7 @@ class ZoneControllerTest extends TestCase
             $this->settlementPanelBuilder,
             $this->commissionDelivery,
             $this->settlementLoader(),
+            $this->veinRestorationService(),
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -789,5 +791,17 @@ class ZoneControllerTest extends TestCase
         ]]);
 
         return $loader;
+    }
+
+    /**
+     * FOY-12 : aucun filon pali dans ces scenarios, donc aucun chantier a
+     * proposer. C'est l'etat normal d'une zone qu'on ne presse pas.
+     */
+    private function veinRestorationService(): VeinRestorationService
+    {
+        $service = $this->createMock(VeinRestorationService::class);
+        $service->method('offersFor')->willReturn([]);
+
+        return $service;
     }
 }

@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **14 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **15 livrés.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -39,7 +39,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-09 ✅ | Zone d'influence & vassalité |
 | FOY-10 ✅ | Étiage & régression bornée |
 | FOY-11 ✅ | Pâleur — état de zone, effets sur rendement et pureté |
-| FOY-12 | Restauration payée au trésor de guilde |
+| FOY-12 ✅ | Restauration payée au trésor de guilde |
 | FOY-13 | Ateliers de doctrine (Fonderie / Lecteurs) |
 | FOY-14 ✅ | Crédit au journal de monde à la clôture de marée |
 | FOY-15 | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
@@ -50,7 +50,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 Piste A — Socle du foyer      : FOY-01 ✅ → FOY-02 ✅ → FOY-03 ✅ → FOY-04 ✅
 Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(piste complete)**
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
-Piste D — Pâleur              : FOY-11 ✅ → FOY-12
+Piste D — Pâleur              : FOY-11 ✅ → FOY-12 ✅ **(piste complete)**
 Piste E — Doctrine & guilde   : FOY-13 → FOY-14 ✅
 Piste F — Contenu & tests     : FOY-15, FOY-16
 ```
@@ -302,15 +302,22 @@ s'y branche.
 > **Ce que FOY-12 hérite** : `ZoneVein.paleness` est la grandeur sur laquelle indexer le coût de
 > restauration, et `settlements.yaml` porte déjà le bloc `paleness:` où ce coût trouvera sa place.
 
-### FOY-12 — Restauration payée au trésor (M | ★★★ | MOYENNE)
+### FOY-12 — Restauration payée au trésor ✅ (M | ★★★ | MOYENNE)
 > Mécanique de Wakfu : la sanction devient une **dépense politique**, pas une perte sèche.
-> Prérequis : ← FOY-11
-- [ ] Chantier de restauration ouvert par la guilde contrôlante, payé au `GuildVault`
-- [ ] Coût indexé sur la Pâleur accumulée ; effet étalé sur plusieurs jours (pas d'achat
-      instantané d'un monde propre)
-- [ ] Trace au `GuildVaultLog` et mention publique — restaurer est un **acte de gouvernement**
-      qui doit se voir
-- [ ] Tests : coût, application progressive, trésor insuffisant, idempotence
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Deux écarts assumés à la lettre du jalon.** La trace ne passe pas par le `GuildVaultLog` :
+> ce registre exige un `Item` non nul, c'est un journal d'objets et non de Gils. La ligne
+> `VeinRestoration` porte donc elle-même la comptabilité, et la mention publique passe par le
+> journal de monde (FOY-14). Et le chantier n'est pas réservé à la **guilde contrôlante** : le
+> lien zone → région court par `Zone::getSourceMap()`, un héritage d'avant le pivot que les
+> zones récentes n'ont pas — la majorité de la carte serait restée irréparable. L'autorité
+> retenue est celle qui gouverne déjà la dépense, le rang qui peut retirer du trésor.
+>
+> **L'interdit ajouté en cours de route** : le bonus n'entre jamais dans la branche de montée.
+> Payer ne compense pas une surexploitation en cours, sinon la Pâleur devenait une facture
+> qu'une guilde riche acquitte en pressant en continu. Le loader refuse une config où le bonus
+> atteindrait `rise_per_pressure` — la règle est écrite dans le calcul **et** dans la validation.
 
 ---
 
@@ -403,6 +410,6 @@ FOY-16 court en parallèle sur les quatre sprints.
 Phase 1 (socle)      : FOY-01 → FOY-02 → FOY-03 → FOY-04 → FOY-05
 Phase 2 (valeur)     : FOY-06 → FOY-07 → FOY-10
 Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14 ✅
-Phase 4 (conséquence): FOY-11 ✅ → FOY-12 → FOY-13 → FOY-15
+Phase 4 (conséquence): FOY-11 ✅ → FOY-12 ✅ → FOY-13 → FOY-15
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```
