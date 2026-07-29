@@ -9,6 +9,23 @@ framework:
             interval: '1 hour'
             lock_factory: null
 
+        # Login throttling (ONB-03), cable par `security.login_rate_limiter`.
+        # Deux bornes distinctes : l'identifiant vise et l'adresse qui essaie.
+        # 5 essais par compte arretent la devinette d'un mot de passe ; 30 par
+        # adresse arretent le bourrage d'identifiants sans punir un foyer ou un
+        # cybercafe, ou plusieurs joueurs partagent une IP.
+        login_local:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '15 minutes'
+            lock_factory: null
+
+        login_global:
+            policy: 'sliding_window'
+            limit: 30
+            interval: '15 minutes'
+            lock_factory: null
+
         # Combat actions: 5 req/s per player
         game_fight:
             policy: 'sliding_window'

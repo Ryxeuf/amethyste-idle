@@ -136,6 +136,17 @@ services:
             $graceTides: 1
             $tideDays: 28
 
+    # ONB-03 : le limiteur de connexion, cable a la main.
+    # `login_throttling: { max_attempts: N }` derive la borne par IP de la borne
+    # par identifiant (N x 5) : impossible de regler l'une sans l'autre. On
+    # fournit donc les deux limiteurs explicitement.
+    app.login_rate_limiter:
+        class: Symfony\Component\Security\Http\RateLimiter\DefaultLoginRateLimiter
+        arguments:
+            - '@limiter.login_global'
+            - '@limiter.login_local'
+            - '%kernel.secret%'
+
     App\EventListener\LocaleListener:
         arguments:
             $defaultLocale: '%default_locale%'

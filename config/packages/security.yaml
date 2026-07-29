@@ -28,6 +28,16 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\LoginFormAuthenticator
+            # ONB-03 : `User::isBanned` etait ecrit par l'administration et lu
+            # nulle part. Le controle d'utilisateur ferme le login ; le
+            # `BannedUserSubscriber` ferme les sessions deja ouvertes.
+            user_checker: App\Security\UserChecker
+            # ONB-03 : 5 essais / 15 min par identifiant, 30 / 15 min par IP.
+            # Les deux limiteurs sont declares dans `rate_limiter.yaml` — les
+            # valeurs par defaut de Symfony lient la borne par IP a celle par
+            # identifiant, ce qui interdit de regler l'une sans l'autre.
+            login_throttling:
+                limiter: app.login_rate_limiter
             # API v1 : Bearer JWT pour les clients natifs (mobile/Steam),
             # en complement de la session cookie du client web.
             access_token:
@@ -38,7 +48,10 @@ security:
                 target: app_home
             remember_me:
                 secret: '%kernel.secret%'
-                lifetime: 604800 # 1 week in seconds
+                # ONB-03 : 30 jours. Une semaine redemandait le mot de passe a
+                # chaque joueur qui saute un week-end — soit exactement ceux que
+                # la retention cherche a faire revenir.
+                lifetime: 2592000 # 30 days in seconds
                 path: /
 
             # activate different ways to authenticate
