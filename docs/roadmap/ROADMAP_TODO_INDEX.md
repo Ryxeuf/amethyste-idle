@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-07-29 (**point global doc↔code** : DOM 8/8 complet, ZON-30→36 livres, FAC ouvert 1/10, FOY 17/17 + vague 2 FOY-18→21 ouverte, RET 7/7) ; 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
+> Derniere mise a jour : 2026-07-29 (**ouverture du plan Onboarding ONB-01→15** — le jeu n'avait aucune porte d'entree : cf. [PLAN_ONBOARDING.md](PLAN_ONBOARDING.md)) ; 2026-07-29 (**point global doc↔code** : DOM 8/8 complet, ZON-30→36 livres, FAC ouvert 1/10, FOY 17/17 + vague 2 FOY-18→21 ouverte, RET 7/7) ; 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
 > **PIVOT PBBG (juillet 2026)** : le jeu a abandonne la carte en tuiles au profit d'un monde en graphe de zones (energie, time-gating reel). Decision et equivalences : [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md) ; bilan de campagne : [docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md).
 
 ---
@@ -38,6 +38,7 @@
 | Plan Zones (ZON-30→36) | 7/7 | ✅ Termine (2026-07-29) — +ZON-37/38 livres ; restent ZON-39/40 et des donnees |
 | Plan Domaines (DOM-01→08) | 8/8 | ✅ Termine (2026-07-29) — DOM-09 ouvert |
 | Plan Factions (FAC-01→10) | 1/10 | En cours (FAC-01 livre le 2026-07-29) |
+| **Plan Onboarding (ONB-01→15)** | **0/15** | **A faire — bloquant** : `/register` leve un 404, aucun compte ne peut naitre |
 | Plan Repertoire (REP-01→06) | 0/6 | A faire (l'Autel d'eveil, apres FAC-04) |
 | **Plan Economie joueur (ECO)** | Pistes A→E, G, H completes | Reste ECO-28 (Piste F 3/4) et la Piste I ECO-32→35 (caravanes) |
 | Sprint 11 — Monde vivant | 6/6 | ✅ Termine (2026-07-26) |
@@ -68,19 +69,22 @@
 | ~~12~~ | ~~**ECO-25 → 27**~~ ✅ | Chaine de production par paliers | **Livres le 2026-07-28** — l'echelle du metal est continue du cuivre a l'orichalque (coefficient 1), la purete remonte la chaine par le maillon le plus faible, aucun craft ne detruit de la valeur. **Piste G complete** |
 | ~~13~~ | ~~**FOY-11 → 16**~~ ✅ | Paleur, restauration, doctrine, marees consequence | **Livres les 2026-07-28/29** — l'extraction laisse une trace par filon (jamais par zone), la sanction devient une depense politique (**Piste D complete**), l'axe Extraire / Preserver devient un batiment (**Piste E complete**), la maree qui vient est choisie par ce que le serveur a fait, contrat transverse pose. **Plan foyers complet 17/17** |
 | ~~14~~ | ~~**ZON-30 → 36**~~ ✅ | Contenu des zones ([PLAN_ZONES.md](PLAN_ZONES.md)) | **7/7 livres au 2026-07-29 — plan complet** : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste, lois de zone en contrat, ligne du bois, recoltes harmonisees, affinites elementaires. **+ZON-37/38 livres** en chemin |
-| 15 | **BALANCE §24.0 + §24.3** | Ponderation du grain + seuils de foyer × W | §24.0 : 1 ligne de config `settlements.yaml`, toujours **non appliquee** au 2026-07-29. §24.3 **tranche le 2026-07-29 : la doc a raison** — `SettlementRankCalculator` doit lire des seuils × `W` (`WorldScaleService`). Meme chaine de depot, a livrer ensemble |
-| 16 | **RET-08 → 10** | Le tableau du lundi ([GAME_DASHBOARD](../GAME_DASHBOARD.md), PLAN_RETENTION vague 4) | Verdict V1 du playtest : le jalon UI le plus rentable — la semaine entre sur le hub, le lundi devient un etat, le choix de commission remonte |
-| 17 | **ZON-39** | La loi de nommage appliquee aux libelles | Donnees pures (« Village de Lumiere » → « le Fanal », « Sanctuaire de Lumiere » → « Sanctuaire de la Voute », « Confrerie des Ombres » → « Confrerie des Ruelles ») |
-| 18 | **FAC-02 → 03** | Les gestes nourrissent la reputation, les consequences d'Hostile | La faction portee (FAC-01) doit se gagner par le jeu, pas par decret |
-| 19 | **FAC-04 → 05** | La Fonderie (faction + contrats d'approvisionnement) | La cinquieme faction devient jouable ; prerequis du Repertoire |
-| 20 | **ECO-28** | Commandes de service | Clot la **Piste F** ; prerequis tous livres |
-| 21 | **FAC-06 → 08** | Les Ruelles jouees (receleur, contrefacon, contrebande) | La face sombre de la Concorde, sans PvP |
-| 22 | **REP-01 → 06** | L'Autel d'eveil et le Repertoire ([PLAN_REPERTOIRE.md](PLAN_REPERTOIRE.md)) | Apres FAC-04 — le dernier systeme acte sans code |
-| 23 | **FOY-18 → 21** | Le logement dans les foyers (vague 2) | Le housing rejoint le pilier territorial |
-| 24 | **ECO-32 → 35** | Les caravanes (Piste I) | Affretement Bourg↔Bourg, escorte-astreinte, jamais d'interception joueur |
-| 25 | **NAR-15 → 20** | L'an 1 des marees ([PLAN_NARRATIVE.md](PLAN_NARRATIVE.md)) | Attention : la moitie « consequences » de NAR-15 est deja livree par FOY-15 |
-| 26 | **DOM-09, ZON-40, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), signatures inertes Foret/Vallons/Marais (ZON-40, tranche le 2026-07-29 : affleurements d'amethyste a poser), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
-| 27 | **WIK-02 → 03** | Le wiki joueur en ligne ([PLAN_WIKI.md](PLAN_WIKI.md)) | Contenu WIK-01 ✅ livre (docs/wiki/, 7 chapitres) ; reste le controleur public /wiki et l'acces site + jeu |
+| 15 | **ONB-01 → 04** | Le compte peut naitre ([PLAN_ONBOARDING.md](PLAN_ONBOARDING.md), Piste A) | **Rang 1 de fait** : `/register` leve un 404, il n'existe aucun mailer, et `isBanned` n'est lu nulle part. Tant que ce bloc n'est pas livre, le jeu n'a aucun joueur possible et perdre son mot de passe fait perdre son personnage |
+| 16 | **ONB-11** | Reparer les quetes `explore` de l'arc d'intro | Trois des sept quetes d'`intro` valident un `explore` par `map_id`+coordonnees : post-ZON-21 elles ne se declenchent qu'au voyage. **L'acte I est bloque des sa premiere etape** — correctif S, a passer avant tout contenu neuf |
+| 17 | **BALANCE §24.0 + §24.3** | Ponderation du grain + seuils de foyer × W | §24.0 : 1 ligne de config `settlements.yaml`, toujours **non appliquee** au 2026-07-29. §24.3 **tranche le 2026-07-29 : la doc a raison** — `SettlementRankCalculator` doit lire des seuils × `W` (`WorldScaleService`). Meme chaine de depot, a livrer ensemble |
+| 18 | **RET-08 → 10** | Le tableau du lundi ([GAME_DASHBOARD](../GAME_DASHBOARD.md), PLAN_RETENTION vague 4) | Verdict V1 du playtest : le jalon UI le plus rentable — la semaine entre sur le hub, le lundi devient un etat, le choix de commission remonte |
+| 19 | **ZON-39** | La loi de nommage appliquee aux libelles | Donnees pures (« Village de Lumiere » → « le Fanal », « Sanctuaire de Lumiere » → « Sanctuaire de la Voute », « Confrerie des Ombres » → « Confrerie des Ruelles ») |
+| 20 | **ONB-05 → 15** | Le tunnel, l'acte I et le coach ([PLAN_ONBOARDING.md](PLAN_ONBOARDING.md), Pistes B a E) | A faire **avec NAR-20 et ZON-39** : le tunnel neuf, le foyer d'attache et les PNJ du Fanal touchent les memes textes. Les livrer separement, c'est renommer deux fois |
+| 21 | **FAC-02 → 03** | Les gestes nourrissent la reputation, les consequences d'Hostile | La faction portee (FAC-01) doit se gagner par le jeu, pas par decret |
+| 22 | **FAC-04 → 05** | La Fonderie (faction + contrats d'approvisionnement) | La cinquieme faction devient jouable ; prerequis du Repertoire |
+| 23 | **ECO-28** | Commandes de service | Clot la **Piste F** ; prerequis tous livres |
+| 24 | **FAC-06 → 08** | Les Ruelles jouees (receleur, contrefacon, contrebande) | La face sombre de la Concorde, sans PvP |
+| 25 | **REP-01 → 06** | L'Autel d'eveil et le Repertoire ([PLAN_REPERTOIRE.md](PLAN_REPERTOIRE.md)) | Apres FAC-04 — le dernier systeme acte sans code |
+| 26 | **FOY-18 → 21** | Le logement dans les foyers (vague 2) | Le housing rejoint le pilier territorial |
+| 27 | **ECO-32 → 35** | Les caravanes (Piste I) | Affretement Bourg↔Bourg, escorte-astreinte, jamais d'interception joueur |
+| 28 | **NAR-15 → 19** | L'an 1 des marees ([PLAN_NARRATIVE.md](PLAN_NARRATIVE.md)) | Attention : la moitie « consequences » de NAR-15 est deja livree par FOY-15. **NAR-20 est avancee au rang 20** — l'acte d'intro se reecrit avec le tunnel, pas apres |
+| 29 | **DOM-09, ZON-40, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), signatures inertes Foret/Vallons/Marais (ZON-40, tranche le 2026-07-29 : affleurements d'amethyste a poser), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
+| 30 | **WIK-02 → 03** | Le wiki joueur en ligne ([PLAN_WIKI.md](PLAN_WIKI.md)) | Contenu WIK-01 ✅ livre (docs/wiki/, 7 chapitres) ; reste le controleur public /wiki et l'acces site + jeu |
 
 Transverse, au fil de l'eau : **FOY-16 livre** (tests du pilier territorial ; **RET-07 livre**), mise a jour de `ROADMAP_DONE.md`
 a chaque jalon livre (regle 13 de CLAUDE.md).
@@ -164,6 +168,7 @@ SUITE ECONOMIE ✅ LIVREE (Sprint 15 + Pistes D/E/G/H)
   ECO-05..09 commandes de craft ✅, ECO-10..13 echoppes ✅, ECO-15 ✅, ECO-17 ✅
 
 RESTE — pilote par les plans annexes (cf. ordre de chantier, rangs 15+) :
+  ONB-01..15 (compte, personnage, arrivee — bloquant, cf. rangs 15/16/20),
   FAC-02..10, REP-01..06, ECO-28, ECO-32..35 (caravanes),
   FOY-18..21 (logement), NAR-15..20 (marees), DOM-09, ZON-39/40
 ```
@@ -206,6 +211,7 @@ l'« Ordre de chantier » ci-dessus.
 - [Contenu des zones (ZON-30 a ZON-36)](PLAN_ZONES.md) ✅ — **7/7, plan complet (2026-07-29)** ; **+ZON-37/38 livres** en chemin ; restent **ZON-39** (la loi de nommage appliquee aux libelles — donnees pures) et **ZON-40** (signatures d'amethyste inertes sur Foret/Vallons/Marais — tranche : affleurements d'amethyste a poser), plus les restes de donnees ZON-26b (Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre) ; decline [docs/GAME_ZONES.md](../GAME_ZONES.md)
 - [Factions (FAC-01 a FAC-10)](PLAN_FACTIONS.md) — **1/10, en cours** (FAC-01 livre le 2026-07-29 : la decote au-dela d'Ami, une seule faction portee, les bonus de palier appliques) : tension par paires, patronage, la Fonderie, les Ruelles, les cinq portes ; decline GAME_WORLD §6.4 et §12.2/12.4/12.5
 - [Arbres de domaine (DOM-01 a DOM-08)](PLAN_DOMAINS.md) ✅ — **8/8, plan complet (2026-07-29)** ; **DOM-09 ouvert** (bornage des nœuds partages + arbitrage Element wood/composes) ; decline [docs/GAME_DOMAINS.md](../GAME_DOMAINS.md)
+- [Compte, personnage et arrivee en jeu (ONB-01 a ONB-15)](PLAN_ONBOARDING.md) — **0/15, a faire, bloquant** : l'inscription n'existe pas (`/register` → 404), il n'y a ni mailer ni recuperation de mot de passe, le login n'a aucun garde-fou et l'arc d'intro est casse par le pivot. Decline [docs/GAME_ONBOARDING.md](../GAME_ONBOARDING.md) (e-mail differe derriere une porte economique et sociale, tunnel unique en 4 pas, coach par ecran)
 - [Wiki joueur (WIK-01 a WIK-03)](PLAN_WIKI.md) — **WIK-01 ✅ contenu livre le 2026-07-29** (docs/wiki/, 7 chapitres, ~20 pages joueur declinees des GAME_*) ; restent **WIK-02** (controleur public /wiki) et **WIK-03** (acces site + jeu, contrat d'entretien)
 - [Repertoire des gestes retrouves (REP-01 a REP-06)](PLAN_REPERTOIRE.md) — **0/6, a faire** (l'Autel d'eveil ; apres FAC-04) ; decline GAME_WORLD §12.3
 - [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-35)](PLAN_PLAYER_ECONOMY.md) — Pistes A, B, C, D, E, G et H **completes** (Piste G : la chaine de production a une verticale, la purete la remonte par le maillon le plus faible, aucun craft ne detruit de la valeur ; Piste H : cuisinier, charpentier et tailleur livres) ; reste **ECO-28** (commandes de service, Piste F 3/4) et la **Piste I ouverte : ECO-32→35** (les caravanes, decline GAME_WORLD §12.7)
