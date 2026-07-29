@@ -3,6 +3,7 @@
 namespace App\GameEngine\Fight;
 
 use App\Entity\App\Player;
+use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\GameEngine\Progression\SynergyCalculator;
 
@@ -57,9 +58,26 @@ class CombatSkillResolver
     /**
      * Get combat stat bonuses from all unlocked combat skills.
      *
+     * **La double borne des passifs (DOM-01).** Avec une portee, seuls les
+     * passifs dont un domaine occupe la case `element x registre` de l'action
+     * s'appliquent : le « critique +1 % » du pyromancien ne sert que les sorts
+     * de feu, jamais le corps a corps ni un sort d'eau (GAME_DOMAINS § 2).
+     * Avant ce jalon, une vie de progression au berserker faisait des degats a
+     * un sort d'eau — et sur une action donnee, tous les arbres s'exprimaient a
+     * la fois, ce qui vidait la notion meme de build.
+     *
+     * **Sans portee, rien n'est borne**, et c'est voulu : la fiche d'inventaire
+     * affiche un total, pas une action. La borne s'applique la ou un geste a
+     * lieu.
+     *
+     * **`life` echappe toujours a la borne.** Les points de vie maximum ne sont
+     * pas un geste : les faire dependre du sort qu'on lance ferait varier la
+     * barre de vie d'un tour a l'autre. Les quatre autres statistiques
+     * qualifient une action et se bornent avec elle.
+     *
      * @return array{damage: int, heal: int, hit: int, critical: int, life: int}
      */
-    public function getCombatBonuses(Player $player): array
+    public function getCombatBonuses(Player $player, ?CombatScope $scope = null): array
     {
         $bonuses = [
             'damage' => 0,
@@ -70,11 +88,17 @@ class CombatSkillResolver
         ];
 
         foreach ($player->getSkills() as $skill) {
+            // La vie precede la borne : elle n'est pas une action.
+            $bonuses['life'] += $skill->getLife();
+
+            if (!$this->skillAppliesTo($skill, $scope)) {
+                continue;
+            }
+
             $bonuses['damage'] += $skill->getDamage();
             $bonuses['heal'] += $skill->getHeal();
             $bonuses['hit'] += $skill->getHit();
             $bonuses['critical'] += $skill->getCritical();
-            $bonuses['life'] += $skill->getLife();
         }
 
         // Ajouter les bonus de synergies cross-domaine
@@ -90,6 +114,37 @@ class CombatSkillResolver
         }
 
         return $bonuses;
+    }
+
+    /**
+     * Le passif de cette competence s'exprime-t-il sur l'action en cours ?
+     *
+     * **La retro-compatibilite passe par un « global » explicite.** Une
+     * competence sans domaine de combat — un nœud de recolte, d'artisanat, ou
+     * un nœud sans domaine du tout — n'a pas de case `element x registre` a
+     * comparer. La borner reviendrait a supprimer son passif partout ; la
+     * declarer globale la laisse se comporter comme avant DOM-01. C'est la
+     * clause qui permet de typer les domaines sans relire les 524 nœuds.
+     */
+    private function skillAppliesTo(Skill $skill, ?CombatScope $scope): bool
+    {
+        if ($scope === null) {
+            return true;
+        }
+
+        $bounded = false;
+        foreach ($skill->getDomains() as $domain) {
+            if (!$domain->isCombatDomain()) {
+                continue;
+            }
+
+            $bounded = true;
+            if ($scope->admits($domain)) {
+                return true;
+            }
+        }
+
+        return !$bounded;
     }
 
     /**

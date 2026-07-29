@@ -3,6 +3,7 @@
 namespace App\Entity\Game;
 
 use App\Entity\App\DomainExperience;
+use App\Enum\CombatRegister;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -57,6 +58,21 @@ class Domain
 
     #[ORM\Column(name: 'element', type: 'string', length: 25, nullable: true)]
     private ?string $element = null;
+
+    /**
+     * Le registre de combat du domaine — la seconde borne (DOM-01).
+     *
+     * Avec `element`, il fait du domaine une **case** : le pyromancien est
+     * `feu x sorts`, le berserker `feu x melee`. C'est le domaine qui porte la
+     * borne, jamais le nœud : « le domaine *est* la case, aucune decision
+     * manuelle par nœud » (PLAN_DOMAINS, DOM-01).
+     *
+     * `null` veut dire **hors combat**, pas « registre inconnu » : la recolte et
+     * l'artisanat n'ont pas de registre (GAME_DOMAINS § 2), leurs passifs etant
+     * bornes a leur metier — c'est-a-dire au domaine lui-meme.
+     */
+    #[ORM\Column(name: 'combat_register', type: 'string', length: 20, nullable: true, enumType: CombatRegister::class)]
+    private ?CombatRegister $register = null;
 
     #[ORM\OneToMany(targetEntity: DomainExperience::class, mappedBy: 'domain')]
     private $playerExperiences;
@@ -258,6 +274,29 @@ class Domain
         $this->element = $element;
 
         return $this;
+    }
+
+    public function getRegister(): ?CombatRegister
+    {
+        return $this->register;
+    }
+
+    public function setRegister(?CombatRegister $register): self
+    {
+        $this->register = $register;
+
+        return $this;
+    }
+
+    /**
+     * Le domaine s'exprime-t-il en combat ?
+     *
+     * La question se pose telle quelle a plusieurs endroits, et la reponse
+     * derive du registre : un domaine de recolte ou d'artisanat n'en a pas.
+     */
+    public function isCombatDomain(): bool
+    {
+        return $this->register !== null;
     }
 
     /**

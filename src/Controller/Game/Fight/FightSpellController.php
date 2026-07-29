@@ -9,6 +9,7 @@ use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
@@ -149,8 +150,11 @@ class FightSpellController extends AbstractController
         // Process status effects at start of turn
         $statusMessages = $this->statusEffectManager->processStartOfTurn($fight, $player);
 
-        // Calculate combat bonuses from skills
-        $bonuses = $this->combatSkillResolver->getCombatBonuses($player);
+        // Calculate combat bonuses from skills.
+        // DOM-01 : bornes a la case du geste — l'element du sort et le registre
+        // « sorts ». Sans cette portee, l'arbre du berserker (feu x melee)
+        // ajoutait ses degats a un sort d'eau, et le build n'avait plus de sens.
+        $bonuses = $this->combatSkillResolver->getCombatBonuses($player, CombatScope::ofSpell($spell));
 
         // Apply enchantment bonuses from equipped items
         $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($player);
