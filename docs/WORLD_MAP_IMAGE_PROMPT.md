@@ -10,6 +10,9 @@
 Le gabarit d'affichage (`templates/game/zone/world_map.html.twig`) impose :
 
 - **Format carré 1:1**, largeur utile 640 px (générer en 1024×1024 ou 2048×2048).
+- **Livrer en WebP**, pas en PNG. Le PNG d'origine pesait 3,3 Mo pour un cadre affiché à
+  640 px ; en WebP qualité 86 il tombe à 490 Ko sans différence visible (PSNR 38 dB). La
+  conversion : `Image.open(src).convert('RGB').save(dst, 'WEBP', quality=86, method=6)`.
 - Les **pastilles de zone et les libellés sont dessinés par l'application** par-dessus
   l'image, à la position exacte `map_x` / `map_y`. L'illustration destinée au jeu ne doit
   donc **ni pastilles ni texte** à ces emplacements — juste le décor.
