@@ -203,6 +203,39 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'trade_suspended_until', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $tradeSuspendedUntil = null;
 
+    /**
+     * Maitre du jeu (MJ).
+     *
+     * Marque **le personnage**, pas le compte : un membre du staff joue
+     * ordinairement avec son personnage habituel et bascule sur son personnage
+     * MJ pour animer. Le drapeau n'ouvre aucun ecran d'administration (cela
+     * reste l'affaire de `User::roles`) ; il leve les regulateurs de rythme du
+     * PBBG — energie d'action, regeneration des PV, duree de voyage — et se
+     * voit en jeu (sceau « MJ » a cote du nom).
+     *
+     * Contrepartie : un MJ ne pese pas sur le monde. Son energie etant
+     * gratuite, le compter dans la charge mondiale (FOY-17) ou dans
+     * l'assiduite hebdomadaire (RET-04) fausserait les deux mesures.
+     */
+    #[ORM\Column(name: 'is_game_master', type: 'boolean', options: ['default' => false])]
+    private bool $gameMaster = false;
+
+    /**
+     * Le MJ se retire des ecrans des joueurs.
+     *
+     * Deux metiers dans un seul personnage : animer, ou l'inverse — observer une
+     * zone, arbitrer un litige, regarder un joueur bloque sans influencer ce
+     * qu'il fait. Le mode se bascule a volonte depuis la console MJ ; il ne
+     * change rien aux privileges, seulement a ce que les autres voient.
+     *
+     * Le retrait ne vaut que pour les listes de rencontre (presence de zone,
+     * recherche de joueurs). Une fiche de profil ouverte par son lien reste
+     * lisible : cacher un personnage qu'on cite par son nom ne protegerait rien
+     * et casserait les liens deja echanges.
+     */
+    #[ORM\Column(name: 'is_game_master_incognito', type: 'boolean', options: ['default' => false])]
+    private bool $gameMasterIncognito = false;
+
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
 
@@ -818,6 +851,40 @@ class Player implements CharacterInterface
     public function setPrestigeTitle(?string $prestigeTitle): void
     {
         $this->prestigeTitle = $prestigeTitle;
+    }
+
+    public function isGameMaster(): bool
+    {
+        return $this->gameMaster;
+    }
+
+    public function setGameMaster(bool $gameMaster): static
+    {
+        $this->gameMaster = $gameMaster;
+
+        return $this;
+    }
+
+    public function isGameMasterIncognito(): bool
+    {
+        return $this->gameMasterIncognito;
+    }
+
+    public function setGameMasterIncognito(bool $incognito): static
+    {
+        $this->gameMasterIncognito = $incognito;
+
+        return $this;
+    }
+
+    /**
+     * Le personnage doit-il etre retire des listes ou le rencontrent d'autres
+     * joueurs ? Un joueur ordinaire ne l'est jamais : l'incognito n'a de sens
+     * que porte par un MJ.
+     */
+    public function isHiddenFromOtherPlayers(): bool
+    {
+        return $this->gameMaster && $this->gameMasterIncognito;
     }
 
     public function getRenownScore(): int

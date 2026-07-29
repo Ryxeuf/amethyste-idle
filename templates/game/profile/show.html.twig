@@ -18,6 +18,7 @@
                         {% set guildColor = player_guild_color(targetPlayer) %}
                         {% if senderTag %}<span class="px-2 py-0.5 text-xs rounded-full border font-bold" style="color: {{ guildColor ?? '#f59e0b' }}; background-color: {{ (guildColor ?? '#f59e0b') }}20; border-color: {{ (guildColor ?? '#f59e0b') }}30">[{{ senderTag }}]</span>{% endif %}
                         <h2 class="text-lg font-bold text-white">{{ targetPlayer.name }}</h2>
+                        {{ include('components/_game_master_seal.html.twig', {player: targetPlayer}, with_context = false) }}
                         {% if isOwnProfile %}
                             <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30">Vous</span>
                         {% endif %}

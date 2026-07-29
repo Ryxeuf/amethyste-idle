@@ -49,6 +49,77 @@ class ChatManager
         return $message;
     }
 
+    /**
+     * Annonce d'un maitre du jeu, sur le canal global.
+     *
+     * Trois differences avec un message ordinaire, et elles comptent toutes :
+     * elle porte son propre canal (`announcement`) pour que l'ecran la
+     * distingue, elle echappe a la limite de debit — une annonce urgente ne se
+     * fait pas refuser parce qu'on vient de parler — et sa longueur est celle
+     * d'un message, pas d'un discours.
+     *
+     * Publiee sur le topic `chat/global` : personne n'a a s'abonner a quoi que
+     * ce soit pour l'entendre.
+     */
+    public function sendGameMasterAnnouncement(Player $sender, string $content): ?ChatMessage
+    {
+        if (!$sender->isGameMaster()) {
+            return null;
+        }
+
+        $content = $this->sanitizeContent($content);
+        if (!$this->validateMessage($content)) {
+            return null;
+        }
+
+        $message = new ChatMessage();
+        $message->setChannel(ChatMessage::CHANNEL_ANNOUNCEMENT);
+        $message->setContent($content);
+        $message->setSender($sender);
+
+        $this->em->persist($message);
+        $this->em->flush();
+
+        $this->publishMessage($message);
+
+        return $message;
+    }
+
+    /**
+     * Message du canal de service des maitres du jeu.
+     *
+     * Le canal n'existe que pour eux : l'emetteur est verifie ici, la lecture
+     * l'est par le controleur. Un joueur ordinaire ne le voit pas et ne peut
+     * pas s'y abonner — le topic n'apparait dans aucune de ses pages.
+     */
+    public function sendGameMasterMessage(Player $sender, string $content): ?ChatMessage
+    {
+        if (!$sender->isGameMaster()) {
+            return null;
+        }
+
+        $content = $this->sanitizeContent($content);
+        if (!$this->validateMessage($content)) {
+            return null;
+        }
+
+        if ($this->isRateLimited($sender)) {
+            return null;
+        }
+
+        $message = new ChatMessage();
+        $message->setChannel(ChatMessage::CHANNEL_GM);
+        $message->setContent($content);
+        $message->setSender($sender);
+
+        $this->em->persist($message);
+        $this->em->flush();
+
+        $this->publishMessage($message);
+
+        return $message;
+    }
+
     public function sendMapMessage(Player $sender, string $content): ?ChatMessage
     {
         $content = $this->sanitizeContent($content);
@@ -210,9 +281,50 @@ class ChatManager
         return $this->em->getRepository(ChatMessage::class)->createQueryBuilder('m')
             ->leftJoin('m.sender', 's')
             ->addSelect('s')
+            // Les annonces des MJ sont lues sur le canal general : elles y sont
+            // diffusees en direct, elles doivent donc s'y retrouver a la
+            // relecture. Leur canal propre ne sert qu'a les rendre autrement.
+            ->where('m.channel IN (:channels)')
+            ->andWhere('m.isDeleted = false')
+            ->setParameter('channels', [ChatMessage::CHANNEL_GLOBAL, ChatMessage::CHANNEL_ANNOUNCEMENT])
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Historique du canal de service MJ.
+     *
+     * @return ChatMessage[]
+     */
+    public function getGameMasterHistory(int $limit = 50): array
+    {
+        return $this->em->getRepository(ChatMessage::class)->createQueryBuilder('m')
+            ->leftJoin('m.sender', 's')
+            ->addSelect('s')
             ->where('m.channel = :channel')
             ->andWhere('m.isDeleted = false')
-            ->setParameter('channel', ChatMessage::CHANNEL_GLOBAL)
+            ->setParameter('channel', ChatMessage::CHANNEL_GM)
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Dernieres annonces des maitres du jeu.
+     *
+     * @return ChatMessage[]
+     */
+    public function getAnnouncementHistory(int $limit = 20): array
+    {
+        return $this->em->getRepository(ChatMessage::class)->createQueryBuilder('m')
+            ->leftJoin('m.sender', 's')
+            ->addSelect('s')
+            ->where('m.channel = :channel')
+            ->andWhere('m.isDeleted = false')
+            ->setParameter('channel', ChatMessage::CHANNEL_ANNOUNCEMENT)
             ->orderBy('m.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
@@ -353,6 +465,10 @@ class ChatManager
                 'chat/private/' . $message->getRecipient()->getId(),
             ] : [],
             ChatMessage::CHANNEL_GUILD => $message->getGuild() ? ['chat/guild/' . $message->getGuild()->getId()] : [],
+            // L'annonce emprunte le canal global : tout le monde l'entend sans
+            // s'etre abonne a rien.
+            ChatMessage::CHANNEL_ANNOUNCEMENT => ['chat/global'],
+            ChatMessage::CHANNEL_GM => ['chat/gm'],
             default => [],
         };
     }
@@ -376,6 +492,12 @@ class ChatManager
 
         if ($sender->getPrestigeTitle() !== null) {
             $senderData['prestigeTitle'] = $sender->getPrestigeTitle();
+        }
+
+        // Le sceau MJ voyage avec le message : un message arrive par Mercure
+        // doit se reconnaitre comme celui rendu par Twig, sans requete de plus.
+        if ($sender->isGameMaster()) {
+            $senderData['gameMaster'] = true;
         }
 
         $data = [

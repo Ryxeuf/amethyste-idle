@@ -11,6 +11,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Guild\TownControlManager;
@@ -51,6 +52,7 @@ class AuctionManager
         private readonly PlayerRegionResolver $regionResolver,
         private readonly GuildManager $guildManager,
         private readonly AuctionAntiExploit $antiExploit,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -71,6 +73,7 @@ class AuctionManager
             throw new \InvalidArgumentException('Cet objet est lie a son proprietaire et ne peut pas etre mis en vente.');
         }
 
+        $this->gameMasterPolicy->assertMayTrade($seller);
         $this->assertNotSuspended($seller);
         $this->validatePriceLimits($playerItem, $pricePerUnit);
         $this->validateActiveListingsLimit($seller);
@@ -241,6 +244,7 @@ class AuctionManager
             throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
         }
 
+        $this->gameMasterPolicy->assertMayTrade($seller);
         $this->assertNotSuspended($seller);
         $this->validatePriceLimits($playerItem, $startingPrice);
         $this->validateActiveListingsLimit($seller);
@@ -600,6 +604,10 @@ class AuctionManager
      */
     private function assertTradeAllowed(Player $buyer, AuctionListing $listing): void
     {
+        // Le MJ regarde la salle des ventes, il n'y engage rien : ni achat, ni
+        // enchere. Le controle est ici, donc sur les deux chemins a la fois.
+        $this->gameMasterPolicy->assertMayTrade($buyer);
+
         // ECO-16b : la suspension vaut aussi face au canal systeme. Elle ferme
         // le marche, pas seulement le commerce entre joueurs.
         $this->assertNotSuspended($buyer);

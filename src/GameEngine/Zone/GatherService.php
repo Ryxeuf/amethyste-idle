@@ -161,7 +161,12 @@ class GatherService
             return null;
         }
 
-        if ($this->yieldResolver->getBonusPercent($player, ActionYieldResolver::CATEGORY_GATHER) <= 0) {
+        // Le MJ lit la bande sans l'avoir meritee. L'information exclusive du
+        // prospecteur decrit ce qu'un **joueur** sait ; un MJ n'est pas la pour
+        // progresser mais pour verifier, et un filon qu'un joueur dit vide se
+        // tranche en le regardant.
+        if (!$player->isGameMaster()
+            && $this->yieldResolver->getBonusPercent($player, ActionYieldResolver::CATEGORY_GATHER) <= 0) {
             return null;
         }
 

@@ -38,6 +38,20 @@ class ActionEnergyManager
     public function refresh(Player $player, bool $flush = false): int
     {
         $now = new \DateTimeImmutable();
+
+        // MJ : l'energie n'est pas un rythme a subir mais un outil a avoir sous
+        // la main. Le plein est refait a chaque lecture, sans attendre.
+        if ($player->isGameMaster()) {
+            $granted = max(0, $player->getMaxActionEnergy() - $player->getActionEnergy());
+            $player->setActionEnergy($player->getMaxActionEnergy());
+            $player->setActionEnergyUpdatedAt($now);
+            if ($flush) {
+                $this->entityManager->flush();
+            }
+
+            return $granted;
+        }
+
         $updatedAt = $player->getActionEnergyUpdatedAt();
 
         if (null === $updatedAt) {
@@ -97,6 +111,18 @@ class ActionEnergyManager
 
         $this->refresh($player);
 
+        // MJ : depense nulle, et surtout **aucune trace** dans les compteurs
+        // d'activite. Son energie etant gratuite, l'y compter gonflerait la
+        // charge mondiale (FOY-17) et lui fabriquerait une assiduite (RET-04)
+        // que le monde n'a pas vecue.
+        if ($player->isGameMaster()) {
+            if ($flush) {
+                $this->entityManager->flush();
+            }
+
+            return;
+        }
+
         if ($player->getActionEnergy() < $cost) {
             throw new NotEnoughActionEnergyException('game.zone.energy.error.not_enough');
         }
@@ -137,6 +163,11 @@ class ActionEnergyManager
      */
     public function secondsUntilNextPoint(Player $player): ?int
     {
+        // MJ : rien a attendre, donc rien a decompter.
+        if ($player->isGameMaster()) {
+            return null;
+        }
+
         if ($player->getActionEnergy() >= $player->getMaxActionEnergy()) {
             return null;
         }

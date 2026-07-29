@@ -11,6 +11,7 @@ use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
 use App\Repository\PlayerRankingBaselineRepository;
+use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,6 +24,7 @@ class RankingBaselineServiceTest extends TestCase
     private PlayerBestiaryRepository&MockObject $bestiaryRepository;
     private PlayerQuestCompletedRepository&MockObject $questRepository;
     private DomainExperienceRepository&MockObject $xpRepository;
+    private PlayerRepository&MockObject $playerRepository;
     private RankingBaselineService $service;
 
     protected function setUp(): void
@@ -32,6 +34,7 @@ class RankingBaselineServiceTest extends TestCase
         $this->bestiaryRepository = $this->createMock(PlayerBestiaryRepository::class);
         $this->questRepository = $this->createMock(PlayerQuestCompletedRepository::class);
         $this->xpRepository = $this->createMock(DomainExperienceRepository::class);
+        $this->playerRepository = $this->createMock(PlayerRepository::class);
 
         $this->service = new RankingBaselineService(
             $this->entityManager,
@@ -39,6 +42,7 @@ class RankingBaselineServiceTest extends TestCase
             $this->bestiaryRepository,
             $this->questRepository,
             $this->xpRepository,
+            $this->playerRepository,
         );
     }
 
@@ -90,6 +94,33 @@ class RankingBaselineServiceTest extends TestCase
         $this->baselineRepository->method('mapByPlayerId')->willReturn([7 => 10]);
 
         $this->assertSame([], $this->service->currentSeasonTotals(RankingTab::Quests));
+    }
+
+    /**
+     * Un maitre du jeu sort du classement — et donc aussi des instantanes de fin
+     * de saison et des podiums, qui passent tous par cette methode. Un animateur
+     * en tete du classement de recolte n'est pas une performance : c'est le
+     * signe que la mesure ne mesure plus rien.
+     */
+    public function testGameMastersAreExcludedFromTheSeasonRanking(): void
+    {
+        $this->bestiaryRepository->method('sumKillsByPlayerId')->willReturn([7 => 1200, 9 => 340]);
+        $this->baselineRepository->method('mapByPlayerId')->willReturn([]);
+        $this->playerRepository->method('findGameMasterIds')->willReturn([7]);
+
+        $this->assertSame([9 => 340], $this->service->currentSeasonTotals(RankingTab::Kills));
+    }
+
+    /**
+     * Et on ne lui annonce pas de rang : lui en donner un serait lui promettre
+     * une place dans une liste ou il ne figure pas.
+     */
+    public function testAGameMasterHasNoRank(): void
+    {
+        $gameMaster = $this->player(7);
+        $gameMaster->setGameMaster(true);
+
+        $this->assertNull($this->service->currentSeasonRankFor($gameMaster, RankingTab::Kills));
     }
 
     public function testEachTabReadsItsOwnCounter(): void

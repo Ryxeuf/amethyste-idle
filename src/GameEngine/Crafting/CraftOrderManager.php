@@ -13,6 +13,7 @@ use App\Enum\Purity;
 use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Auction\AuctionSettlement;
 use App\GameEngine\Economy\PurityChain;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\RegionBonusProvider;
@@ -68,6 +69,7 @@ class CraftOrderManager
         private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly LoggerInterface $logger,
         private readonly PurityChain $purityChain,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -207,6 +209,9 @@ class CraftOrderManager
             throw new \InvalidArgumentException('Vous ne pouvez pas prendre en charge votre propre commande.');
         }
 
+        // La commande de craft est un canal d'echange : un MJ ne l'honore pas.
+        $this->gameMasterPolicy->assertMayTrade($crafter);
+
         // ECO-16b : la suspension ferme les canaux d'echange, celui-ci compris.
         if ($crafter->isTradeSuspended()) {
             throw new \InvalidArgumentException('Votre acces au marche est suspendu.');
@@ -289,6 +294,14 @@ class CraftOrderManager
         // de sens ici qu'a l'hotel des ventes.
         if ($this->antiExploit->isSameAccount($requester, $target)) {
             throw new \InvalidArgumentException('Vous ne pouvez pas adresser une commande a un autre de vos personnages.');
+        }
+
+        // Ni comme donneur d'ordre, ni comme destinataire : un MJ ne passe pas
+        // commande, et une commande ne lui est pas adressee.
+        $this->gameMasterPolicy->assertMayTrade($requester);
+
+        if (!$this->gameMasterPolicy->canTrade($target)) {
+            throw new \InvalidArgumentException('Cet artisan ne prend pas de commande.');
         }
 
         if ($target->isTradeSuspended()) {

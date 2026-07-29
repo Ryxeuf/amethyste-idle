@@ -122,6 +122,16 @@
             </div>
         </nav>
         {% endblock %}
+
+        {# Bandeau d'identite empruntee. Sans lui, on oublie qu'on agit sous le
+           nom de quelqu'un d'autre — et le prochain geste est fait a sa place. #}
+        {% if is_granted('IS_IMPERSONATOR') %}
+            <div class="sticky top-0 z-50 bg-amber-600 text-black px-4 py-2 text-sm font-semibold flex flex-wrap items-center justify-between gap-2">
+                <span>Vous voyez le jeu comme « {{ app.user.userIdentifier }} ». Tout geste est fait sous son identite.</span>
+                <a href="{{ path('app_game', {_switch_user: '_exit'}) }}" class="underline whitespace-nowrap">Reprendre mon identite</a>
+            </div>
+        {% endif %}
+
         {% block body %}{% endblock %}
 
         <script>

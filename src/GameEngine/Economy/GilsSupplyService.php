@@ -47,7 +47,13 @@ final class GilsSupplyService
     public function measure(): GilsSupplyMeasure
     {
         return new GilsSupplyMeasure(
-            playerGils: $this->sum('SELECT COALESCE(SUM(p.gils), 0) FROM player p'),
+            // Les Gils d'un MJ sortent de la masse monetaire : il ne peut ni
+            // acheter, ni vendre, ni deposer, donc sa bourse est gelee — de la
+            // monnaie qui ne circule plus n'est plus de l'offre. C'est un
+            // **stock**, contrairement a l'energie depensee, ou l'historique
+            // d'un veteran promu decrit une pression reellement exercee et
+            // reste compte (cf. `PlayerRepository::sumActionEnergySpent()`).
+            playerGils: $this->sum('SELECT COALESCE(SUM(p.gils), 0) FROM player p WHERE p.is_game_master = FALSE'),
             guildGils: $this->sum('SELECT COALESCE(SUM(g.gils_treasury), 0) FROM guild g'),
             shopGils: $this->sum('SELECT COALESCE(SUM(s.vault_gils), 0) FROM player_shop s'),
             escrowGils: $this->auctionEscrow() + $this->craftOrderEscrow(),

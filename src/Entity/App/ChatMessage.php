@@ -22,6 +22,22 @@ class ChatMessage
     public const CHANNEL_GUILD = 'guild';
     // Chat de zone (pivot PBBG, ZON-14) : remplace a terme le canal `map` gele.
     public const CHANNEL_ZONE = 'zone';
+    /**
+     * Canal de service des maitres du jeu.
+     *
+     * Ni lu ni ecrit par un joueur : c'est la ou deux animateurs se coordonnent
+     * pendant une soiree, quand le canal global appartient au monde et que le
+     * prive ne monte pas a trois.
+     */
+    public const CHANNEL_GM = 'gm';
+    /**
+     * Annonce d'un maitre du jeu, publiee sur le canal global.
+     *
+     * Distincte d'un message ordinaire : elle se lit comme une voix du monde, et
+     * l'ecran la rend comme telle. Elle reste dans `global` pour que personne
+     * n'ait a s'abonner a quoi que ce soit pour l'entendre.
+     */
+    public const CHANNEL_ANNOUNCEMENT = 'announcement';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

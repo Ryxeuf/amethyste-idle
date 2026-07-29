@@ -200,14 +200,22 @@ class ChatController extends AbstractController
             return new JsonResponse(['players' => []]);
         }
 
-        $players = $this->em->getRepository(Player::class)->createQueryBuilder('p')
+        $qb = $this->em->getRepository(Player::class)->createQueryBuilder('p')
             ->where('LOWER(p.name) LIKE LOWER(:q)')
             ->andWhere('p.id != :currentId')
             ->setParameter('q', '%' . $query . '%')
             ->setParameter('currentId', $player->getId())
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults(10);
+
+        // Un MJ incognito ne se trouve pas : la recherche sert a engager la
+        // conversation, et l'incognito existe pour ne pas etre aborde. Les
+        // autres MJ le voient toujours — deux animateurs doivent pouvoir se
+        // joindre pendant une soiree.
+        if (!$player->isGameMaster()) {
+            $qb->andWhere('p.gameMaster = false OR p.gameMasterIncognito = false');
+        }
+
+        $players = $qb->getQuery()->getResult();
 
         $data = array_map(fn (Player $p) => [
             'id' => $p->getId(),

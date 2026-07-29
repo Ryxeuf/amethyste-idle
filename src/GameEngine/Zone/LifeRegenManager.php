@@ -54,6 +54,22 @@ class LifeRegenManager
         }
 
         $now = new \DateTimeImmutable();
+
+        // MJ : sortir d'un combat blesse ne doit pas l'immobiliser. Le plein est
+        // refait des la sortie de combat, sans attendre la regen. La mort reste
+        // exclue plus haut : elle passe par le respawn, pour le MJ comme pour
+        // les autres — le plein revient au refresh suivant.
+        if ($player->isGameMaster()) {
+            $granted = max(0, $player->getMaxLife() - $player->getLife());
+            $player->setLife($player->getMaxLife());
+            $player->setLifeUpdatedAt($now);
+            if ($flush) {
+                $this->entityManager->flush();
+            }
+
+            return $granted;
+        }
+
         $updatedAt = $player->getLifeUpdatedAt();
 
         if (null === $updatedAt) {
@@ -118,7 +134,7 @@ class LifeRegenManager
      */
     public function secondsUntilNextPoint(Player $player): ?int
     {
-        if (null !== $player->getFight() || $player->isDead()) {
+        if (null !== $player->getFight() || $player->isDead() || $player->isGameMaster()) {
             return null;
         }
 
@@ -143,7 +159,7 @@ class LifeRegenManager
      */
     public function secondsUntilFull(Player $player): ?int
     {
-        if (null !== $player->getFight() || $player->isDead()) {
+        if (null !== $player->getFight() || $player->isDead() || $player->isGameMaster()) {
             return null;
         }
 

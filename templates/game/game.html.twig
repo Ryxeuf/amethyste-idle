@@ -157,6 +157,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                     </a>
+                    {# Console MJ : le statut est porte par le personnage, pas par
+                       le compte — un membre du staff sur son perso ordinaire ne
+                       la voit pas. #}
+                    {% if is_game_master() %}
+                        <a href="{{ path('app_game_gm_console') }}" class="ds-nav-icon" title="Console MJ">
+                            <span class="ds-seal ds-seal-amethyst px-1.5 py-0 text-[10px]">MJ</span>
+                        </a>
+                    {% endif %}
                     {% if is_granted('ROLE_MODERATOR') %}
                         <a href="{{ path('admin_dashboard') }}" class="ds-nav-icon" title="Administration">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -198,6 +206,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 </a>
+                {% if is_game_master() %}
+                    <a href="{{ path('app_game_gm_console') }}" class="ds-nav-icon touch-target" title="Console MJ">
+                        <span class="ds-seal ds-seal-amethyst px-1.5 py-0 text-[10px]">MJ</span>
+                    </a>
+                {% endif %}
                 {% if is_granted('ROLE_MODERATOR') %}
                     <a href="{{ path('admin_dashboard') }}" class="ds-nav-icon touch-target" title="Administration">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

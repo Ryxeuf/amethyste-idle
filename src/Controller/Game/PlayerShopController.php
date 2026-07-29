@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\PlayerShop;
 use App\Entity\App\ShopListing;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Housing\HousingManager;
 use App\GameEngine\Shop\ShopManager;
 use App\GameEngine\Shop\ShopRentService;
@@ -52,6 +53,7 @@ class PlayerShopController extends AbstractController
         private readonly ShopSaleLogRepository $saleLogRepository,
         private readonly CrafterReputationRepository $reputationRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -257,6 +259,17 @@ class PlayerShopController extends AbstractController
 
         if (!$this->isCsrfTokenValid($token, $request->request->get('_token'))) {
             $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute($route, $routeParams);
+        }
+
+        // Toutes les ecritures de l'ecran passent par ici : tenir une echoppe,
+        // l'approvisionner, y acheter, en encaisser le coffre. Un MJ visite les
+        // echoppes — l'index, la recherche et la visite restent ouverts — mais
+        // n'y touche a rien. Le controle est donc pose une fois, et non sur
+        // chacune des neuf routes.
+        if (!$this->gameMasterPolicy->canTrade($player)) {
+            $this->addFlash('error', GameMasterPolicy::REASON_TRADE);
 
             return $this->redirectToRoute($route, $routeParams);
         }

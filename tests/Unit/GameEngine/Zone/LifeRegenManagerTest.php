@@ -160,4 +160,40 @@ class LifeRegenManagerTest extends TestCase
 
         $this->assertSame(LifeRegenManager::DEFAULT_REGEN_SECONDS, $this->manager->getRegenSeconds());
     }
+
+    /**
+     * MJ : le plein est refait des la lecture, sans attendre la regen.
+     */
+    public function testGameMasterIsHealedInstantly(): void
+    {
+        $player = $this->buildPlayer(4, 100, new \DateTimeImmutable('-1 second'));
+        $player->setGameMaster(true);
+
+        $granted = $this->manager->refresh($player);
+
+        $this->assertSame(96, $granted);
+        $this->assertSame(100, $player->getLife());
+        $this->assertNull($this->manager->secondsUntilNextPoint($player));
+        $this->assertNull($this->manager->secondsUntilFull($player));
+    }
+
+    /**
+     * Les deux exclusions valent pour le MJ comme pour les autres : en combat
+     * les PV appartiennent au combat, et la mort passe par le respawn.
+     */
+    public function testGameMasterIsNotHealedInFightNorWhenDead(): void
+    {
+        $inFight = $this->buildPlayer(10, 100, new \DateTimeImmutable('-1 hour'));
+        $inFight->setGameMaster(true);
+        $inFight->setFight(new Fight());
+
+        $this->assertSame(0, $this->manager->refresh($inFight));
+        $this->assertSame(10, $inFight->getLife());
+
+        $dead = $this->buildPlayer(0, 100, new \DateTimeImmutable('-1 hour'));
+        $dead->setGameMaster(true);
+
+        $this->assertSame(0, $this->manager->refresh($dead));
+        $this->assertSame(0, $dead->getLife());
+    }
 }

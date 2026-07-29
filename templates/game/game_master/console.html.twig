@@ -1,0 +1,151 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.game_master.console.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page max-w-3xl mx-auto space-y-4">
+
+    {# ── Etat ──────────────────────────────────────────── #}
+    <div class="ds-card p-4">
+        <div class="flex items-center gap-2 flex-wrap mb-2">
+            <span class="ds-seal ds-seal-amethyst">{{ 'game.game_master.seal'|trans }}</span>
+            <h2 class="ds-title">{{ 'game.game_master.console.heading'|trans }}</h2>
+        </div>
+        <p class="ds-hint mb-3">
+            {{ 'game.game_master.console.zone_context'|trans({'%zone%': zone ? zone.localizedName(app.request.locale) : ('game.game_master.console.no_zone'|trans)}) }}
+        </p>
+
+        <div class="flex items-center justify-between gap-3 border-t border-line pt-3">
+            <div>
+                <div class="ds-label">{{ 'game.game_master.visibility.label'|trans }}</div>
+                <div class="text-sm">
+                    {% if player.gameMasterIncognito %}
+                        <span class="ds-seal ds-seal--loss">{{ 'game.game_master.visibility.incognito'|trans }}</span>
+                        <span class="ds-hint">{{ 'game.game_master.visibility.incognito_hint'|trans }}</span>
+                    {% else %}
+                        <span class="ds-seal ds-seal-amethyst">{{ 'game.game_master.visibility.visible'|trans }}</span>
+                        <span class="ds-hint">{{ 'game.game_master.visibility.visible_hint'|trans }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <form method="post" action="{{ path('app_game_gm_incognito') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('gm_incognito') }}">
+                <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm whitespace-nowrap">
+                    {{ (player.gameMasterIncognito ? 'game.game_master.visibility.action_show' : 'game.game_master.visibility.action_hide')|trans }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {# ── Annonce globale ───────────────────────────────── #}
+    <div class="ds-card p-4">
+        <h3 class="ds-label mb-2">{{ 'game.game_master.announce.heading'|trans }}</h3>
+        <p class="ds-hint mb-2">{{ 'game.game_master.announce.hint'|trans }}</p>
+        <form method="post" action="{{ path('app_game_gm_announce') }}" class="flex gap-2">
+            <input type="hidden" name="_token" value="{{ csrf_token('gm_announce') }}">
+            <input type="text" name="content" maxlength="500" required
+                   placeholder="{{ 'game.game_master.announce.placeholder'|trans }}"
+                   class="flex-1 min-w-0 rounded-card bg-paper border border-line px-3 py-2 text-sm text-ink focus:outline-hidden focus:border-brand">
+            <button type="submit" class="ds-btn ds-btn--primary ds-btn--sm shrink-0">{{ 'game.game_master.announce.submit'|trans }}</button>
+        </form>
+
+        {% if announcements|length > 0 %}
+            <ul class="mt-3 space-y-1 border-t border-line pt-3">
+                {% for message in announcements %}
+                    <li class="text-xs">
+                        <span class="ds-num ds-num--sm ds-num--muted mr-1">{{ message.createdAt ? message.createdAt|date('d/m H:i') : '' }}</span>
+                        <span class="font-semibold mr-1">{{ message.sender.name }}</span>
+                        <span class="ds-hint">{{ message.content }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    {# ── Faire apparaitre des monstres ─────────────────── #}
+    <div class="ds-card p-4">
+        <h3 class="ds-label mb-2">{{ 'game.game_master.spawn.heading'|trans }}</h3>
+        {% if zone is null %}
+            <div class="ds-empty">
+                <p class="ds-empty__hint">{{ 'game.game_master.spawn.empty'|trans }}</p>
+            </div>
+        {% else %}
+            <p class="ds-hint mb-2">{{ 'game.game_master.spawn.hint'|trans({'%max%': maxSpawn}) }}</p>
+            <form method="post" action="{{ path('app_game_gm_spawn') }}" class="flex flex-col sm:flex-row gap-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('gm_spawn') }}">
+                <select name="monster_id" required
+                        class="flex-1 min-w-0 rounded-card bg-paper border border-line px-3 py-2 text-sm text-ink">
+                    {% for monster in monsters %}
+                        <option value="{{ monster.id }}">{{ monster.name }} — {{ 'game.game_master.spawn.level'|trans({'%level%': monster.level}) }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="count" value="1" min="1" max="{{ maxSpawn }}"
+                       class="w-full sm:w-20 rounded-card bg-paper border border-line px-3 py-2 text-sm text-ink">
+                <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm shrink-0">{{ 'game.game_master.spawn.submit'|trans }}</button>
+            </form>
+        {% endif %}
+    </div>
+
+    {# ── Evenements de la zone ─────────────────────────── #}
+    <div class="ds-card p-4">
+        <h3 class="ds-label mb-2">{{ 'game.game_master.events.heading'|trans }}</h3>
+        {% if zoneEvents|length == 0 %}
+            <div class="ds-empty">
+                <p class="ds-empty__hint">{{ 'game.game_master.events.empty'|trans }}</p>
+            </div>
+        {% else %}
+            <ul class="space-y-1.5">
+                {% for event in zoneEvents %}
+                    {% set running = event.status == 'active' %}
+                    <li class="ds-row">
+                        <span class="ds-row__body">
+                            <span class="ds-row__name ds-name--sm">{{ event.name }}</span>
+                            <span class="ds-hint">
+                                {{ event.type }}
+                                {% if running %}
+                                    <span class="ds-num--gain">{{ 'game.game_master.events.running'|trans({'%time%': event.endsAt|date('H:i')}) }}</span>
+                                {% else %}
+                                    {{ event.status }}
+                                {% endif %}
+                            </span>
+                        </span>
+                        <form method="post" action="{{ path('app_game_gm_event', {id: event.id, action: running ? 'stop' : 'launch'}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('gm_event_' ~ event.id) }}">
+                            <button type="submit" class="ds-btn ds-btn--quiet ds-btn--sm">
+                                {{ (running ? 'game.game_master.events.stop' : 'game.game_master.events.launch')|trans }}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    {# ── Canal de service ──────────────────────────────── #}
+    <div class="ds-card p-4">
+        <h3 class="ds-label mb-2">{{ 'game.game_master.channel.heading'|trans }}</h3>
+        <p class="ds-hint mb-2">{{ 'game.game_master.channel.hint'|trans }}</p>
+        <div class="max-h-48 overflow-y-auto border border-line rounded-card px-3 py-2 mb-2">
+            {% if gmMessages|length == 0 %}
+                <p class="ds-hint">{{ 'game.game_master.channel.empty'|trans }}</p>
+            {% else %}
+                {% for message in gmMessages %}
+                    <div class="text-xs py-0.5">
+                        <span class="ds-num ds-num--sm ds-num--muted mr-1">{{ message.createdAt ? message.createdAt|date('H:i') : '' }}</span>
+                        <span class="font-semibold text-brand mr-1">{{ message.sender.name }}</span>
+                        <span class="text-ink">{{ message.content }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <form method="post" action="{{ path('app_game_gm_say') }}" class="flex gap-2">
+            <input type="hidden" name="_token" value="{{ csrf_token('gm_say') }}">
+            <input type="text" name="content" maxlength="500" required
+                   class="flex-1 min-w-0 rounded-card bg-paper border border-line px-3 py-2 text-sm text-ink focus:outline-hidden focus:border-brand">
+            <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm shrink-0">{{ 'game.game_master.channel.submit'|trans }}</button>
+        </form>
+    </div>
+
+    <p class="ds-hint">{{ 'game.game_master.journal_notice'|trans }}</p>
+</div>
+{% endblock %}

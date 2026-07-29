@@ -9,7 +9,9 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Mount;
 use App\Event\Zone\PlayerTraveledEvent;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +31,7 @@ class ZoneTravelServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed());
+        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy());
     }
 
     private function buildZone(string $slug): Zone
@@ -287,5 +289,76 @@ class ZoneTravelServiceTest extends TestCase
         $this->entityManager->expects($this->never())->method('persist');
 
         $this->service->markZoneVisited($player, $zone);
+    }
+
+    /**
+     * MJ : le voyage est instantane — l'arrivee est reglee dans la foulee, par
+     * le meme chemin que les liaisons de duree nulle.
+     */
+    public function testGameMasterTravelsInstantly(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+        $player->setGameMaster(true);
+        $connection = new ZoneConnection($from, $to, 1800);
+
+        $this->service->startTravel($player, $connection);
+
+        $this->assertSame($to, $player->getCurrentZone());
+        $this->assertNull($player->getTravelToZone());
+        $this->assertNull($player->getTravelArrivesAt());
+    }
+
+    /**
+     * MJ : une zone jamais decouverte n'est pas un refus — c'est justement ce
+     * qu'il doit pouvoir aller voir.
+     */
+    public function testGameMasterIgnoresDiscoveryRequirement(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+        $player->setGameMaster(true);
+        $connection = (new ZoneConnection($from, $to, 300))->setRequiresDiscovery(true);
+
+        $this->visitedZoneRepository->method('hasVisited')->willReturn(false);
+
+        $this->service->startTravel($player, $connection);
+
+        $this->assertSame($to, $player->getCurrentZone());
+    }
+
+    /**
+     * MJ : une liaison desactivee reste franchissable — c'est le contenu en
+     * preparation qu'il vient inspecter.
+     */
+    public function testGameMasterTravelsThroughDisabledConnection(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+        $player->setGameMaster(true);
+        $connection = (new ZoneConnection($from, $to, 300))->setEnabled(false);
+
+        $this->service->startTravel($player, $connection);
+
+        $this->assertSame($to, $player->getCurrentZone());
+    }
+
+    /**
+     * Les deux refus qui restent valent pour tout le monde : on ne part pas
+     * d'un combat.
+     */
+    public function testGameMasterStillCannotTravelWhileFighting(): void
+    {
+        $from = $this->buildZone('village');
+        $player = $this->buildPlayerIn($from);
+        $player->setGameMaster(true);
+        $player->setFight(new Fight());
+
+        $this->expectException(ZoneTravelException::class);
+
+        $this->service->startTravel($player, new ZoneConnection($from, $this->buildZone('foret'), 300));
     }
 }

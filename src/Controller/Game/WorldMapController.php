@@ -122,6 +122,14 @@ class WorldMapController extends AbstractController
             $discoveredIds[] = $currentZone->getId();
         }
 
+        // MJ : la carte se leve entierement. Le brouillard raconte ce qu'un
+        // personnage a parcouru ; un animateur doit voir le monde tel qu'il est
+        // pour y envoyer les autres — et pour reperer la zone qui n'est reliee a
+        // rien.
+        if ($player->isGameMaster()) {
+            $discoveredIds = array_map(static fn (Zone $zone): int => $zone->getId(), $placedZones);
+        }
+
         // Zones reperees : celles ou l'on peut aller depuis une zone deja
         // parcourue. On part des aretes **sortantes des zones connues**, et non
         // des aretes sortantes de la zone examinee : ces dernieres ne diraient

@@ -8,6 +8,7 @@ use App\Entity\App\GuildVaultLog;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GuildVaultManager
@@ -15,6 +16,7 @@ class GuildVaultManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly GuildManager $guildManager,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -23,6 +25,10 @@ class GuildVaultManager
      */
     public function deposit(Player $player, PlayerItem $playerItem): void
     {
+        // Le coffre de guilde deplace de la valeur entre joueurs : ferme au MJ,
+        // dans les deux sens.
+        $this->gameMasterPolicy->assertMayTrade($player);
+
         $membership = $this->guildManager->getPlayerMembership($player);
         if (!$membership) {
             throw new \InvalidArgumentException('Vous n\'êtes pas dans une guilde.');
@@ -72,6 +78,10 @@ class GuildVaultManager
      */
     public function withdraw(Player $player, PlayerItem $playerItem): void
     {
+        // Le coffre de guilde deplace de la valeur entre joueurs : ferme au MJ,
+        // dans les deux sens.
+        $this->gameMasterPolicy->assertMayTrade($player);
+
         $membership = $this->guildManager->getPlayerMembership($player);
         if (!$membership) {
             throw new \InvalidArgumentException('Vous n\'êtes pas dans une guilde.');

@@ -1258,7 +1258,9 @@
         "travel_minutes": "%count% min de voyage",
         "travel_instant": "Passage immédiat",
         "travel_mounted": "%mount% : %base% min à pied",
-        "locked": "Liaison rapide : découverte de la zone requise"
+        "locked": "Liaison rapide : découverte de la zone requise",
+        "gm_disabled": "Liaison désactivée — visible parce que vous êtes maître du jeu",
+        "gm_disabled_short": "hors ligne"
       },
       "players": {
         "heading": "Joueurs présents",
@@ -1652,6 +1654,52 @@
     },
     "housing": {
       "furnishing_kit_hint": "Un nécessaire d'ameublement, monté par un charpentier, remplace le prix quel que soit le style."
+    },
+    "game_master": {
+      "seal": "MJ",
+      "seal_title": "Maître du jeu",
+      "console": {
+        "title": "Console MJ",
+        "heading": "Console du maître du jeu",
+        "zone_context": "Zone courante : %zone%. Tout ce qui suit s'y applique.",
+        "no_zone": "aucune"
+      },
+      "visibility": {
+        "label": "Visibilité",
+        "incognito": "Incognito",
+        "incognito_hint": "Vous n'apparaissez ni dans la présence de zone, ni dans la recherche de joueurs.",
+        "visible": "Visible",
+        "visible_hint": "Les joueurs vous voient et vous reconnaissent comme MJ.",
+        "action_hide": "Passer incognito",
+        "action_show": "Redevenir visible"
+      },
+      "announce": {
+        "heading": "Annonce globale",
+        "hint": "Diffusée à tout le serveur, sur le canal général.",
+        "placeholder": "Ce que le monde doit entendre…",
+        "submit": "Annoncer"
+      },
+      "spawn": {
+        "heading": "Faire apparaître des monstres",
+        "empty": "Rejoignez une zone pour y poser des monstres.",
+        "hint": "Monstres ordinaires — même vie, même niveau, même butin que ceux du vivier. %max% au maximum par geste.",
+        "level": "niv. %level%",
+        "submit": "Poser"
+      },
+      "events": {
+        "heading": "Événements de la zone",
+        "empty": "Aucun événement rattaché à cette zone. Ils se créent depuis l'administration.",
+        "running": "en cours jusqu'à %time%",
+        "launch": "Lancer",
+        "stop": "Clore"
+      },
+      "channel": {
+        "heading": "Canal MJ",
+        "hint": "Entre animateurs. Aucun joueur ne le lit.",
+        "empty": "Rien pour l'instant.",
+        "submit": "Envoyer"
+      },
+      "journal_notice": "Chacun de ces gestes est inscrit au journal d'administration, sous votre nom."
     }
   },
   "common": {

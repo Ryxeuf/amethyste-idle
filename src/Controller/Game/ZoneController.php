@@ -14,6 +14,7 @@ use App\Enum\SettlementDoctrine;
 use App\Enum\WeeklyCommissionReward;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
+use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
@@ -93,6 +94,7 @@ class ZoneController extends AbstractController
         private readonly SettlementDefinitionLoader $settlementLoader,
         private readonly VeinRestorationService $veinRestorationService,
         private readonly SettlementDoctrineService $settlementDoctrineService,
+        private readonly GameMasterPolicy $gameMasterPolicy,
     ) {
     }
 
@@ -124,6 +126,7 @@ class ZoneController extends AbstractController
             return $this->render('game/zone/index.html.twig', [
                 'zone' => null,
                 'connections' => [],
+                'isGameMaster' => $player->isGameMaster(),
                 'mount' => null,
                 'shopsPresent' => [],
                 'playersPresent' => [],
@@ -160,11 +163,19 @@ class ZoneController extends AbstractController
         // La zone courante compte comme decouverte (deverrouille les liaisons rapides).
         $this->zoneTravelService->markZoneVisited($player, $zone);
 
-        $connections = $this->zoneConnectionRepository->findEnabledFrom($zone);
+        // MJ : la liste montre aussi les liaisons desactivees — le contenu en
+        // preparation est precisement ce qu'il a besoin d'aller voir.
+        $isGameMaster = $player->isGameMaster();
+        $connections = $isGameMaster
+            ? $this->zoneConnectionRepository->findAllFrom($zone)
+            : $this->zoneConnectionRepository->findEnabledFrom($zone);
 
-        $playersPresent = $this->entityManager
-            ->getRepository(Player::class)
-            ->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50);
+        // Un MJ incognito ne figure pas dans la liste : c'est tout l'objet du
+        // mode — observer une zone sans que sa presence change ce qui s'y passe.
+        $playersPresent = $this->gameMasterPolicy->visibleTo(
+            $this->entityManager->getRepository(Player::class)->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50),
+            $player,
+        );
 
         $poiCounts = $this->countPointsOfInterest($zone);
 
@@ -177,13 +188,17 @@ class ZoneController extends AbstractController
         foreach ($connections as $connection) {
             $connectionRows[] = [
                 'connection' => $connection,
-                'seconds' => $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds()),
+                'seconds' => $isGameMaster
+                    ? 0
+                    : $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds()),
+                'disabled' => !$connection->isEnabled() || !$connection->getToZone()->isEnabled(),
             ];
         }
 
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
             'connections' => $connectionRows,
+            'isGameMaster' => $isGameMaster,
             'mount' => $player->getActiveMount(),
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,
@@ -566,14 +581,16 @@ class ZoneController extends AbstractController
             return new JsonResponse(['players' => []]);
         }
 
-        /** @var list<Player> $present */
-        $present = $this->entityManager->getRepository(Player::class)
-            ->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50);
+        $present = $this->gameMasterPolicy->visibleTo(
+            $this->entityManager->getRepository(Player::class)->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50),
+            $player,
+        );
 
         $players = array_map(static fn (Player $p): array => [
             'id' => $p->getId(),
             'name' => $p->getName(),
             'self' => $p->getId() === $player->getId(),
+            'gameMaster' => $p->isGameMaster(),
         ], $present);
 
         return new JsonResponse(['players' => $players]);
