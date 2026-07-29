@@ -314,8 +314,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '15.20',
+                            'zone_slug' => 'foret-des-murmures',
                             'name' => 'Clairière de la forêt',
                         ],
                     ],
@@ -334,8 +333,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '10.6',
+                            'zone_slug' => 'village-de-lumiere',
                             'name' => 'Convoi abandonné',
                         ],
                     ],
@@ -691,14 +689,16 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_reveil' => [
                 'name' => 'L\'Éveil — Réveil',
                 'name_translations' => ['en' => 'The Awakening — Awakening'],
-                'description' => 'Vous ouvrez les yeux dans un lieu inconnu, sans aucun souvenir. Une femme sage se tient devant vous. Explorez les alentours du village pour retrouver vos esprits.',
-                'description_translations' => ['en' => 'You open your eyes in an unfamiliar place, without any memory. A wise woman stands before you. Explore the village surroundings to gather your thoughts.'],
+                'description' => 'Vous ouvrez les yeux dans un lieu inconnu, sans aucun souvenir. Claire la Sage vous envoie chez Marie la Herboriste : une tisane vous éclaircira les idées avant toute chose.',
+                'description_translations' => ['en' => 'You open your eyes in an unfamiliar place, without any memory. Claire the Wise sends you to Marie the Herbalist: a herbal brew will clear your head before anything else.'],
                 'requirements' => [
-                    'explore' => [
+                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
+                    // Jamais le donneur de la quete : on ne demande pas de
+                    // retourner voir celui qu'on vient de quitter.
+                    'talk_to' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '80.34',
-                            'name' => 'Place du village',
+                            'pnj_id' => 0,
+                            'name' => 'Marie la Herboriste',
                         ],
                     ],
                 ],
@@ -716,11 +716,11 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Claire vous conseille d\'aller voir Gérard le Forgeron pour vous équiper. Rendez-vous à sa forge et recevez votre première arme.',
                 'description_translations' => ['en' => 'Claire advises you to visit Gerard the Blacksmith to get equipped. Go to his forge and receive your first weapon.'],
                 'requirements' => [
-                    'explore' => [
+                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
+                    'talk_to' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '1.5',
-                            'name' => 'Forge de Gérard',
+                            'pnj_id' => 0,
+                            'name' => 'Gérard le Forgeron',
                         ],
                     ],
                 ],
@@ -796,14 +796,14 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_cristal' => [
                 'name' => 'L\'Éveil — Le Cristal d\'Améthyste',
                 'name_translations' => ['en' => 'The Awakening — The Amethyst Crystal'],
-                'description' => 'Claire la Sage vous parle d\'un cristal mystérieux caché dans une clairière au sud. Trouvez-le : il pourrait détenir la clé de vos souvenirs perdus.',
-                'description_translations' => ['en' => 'Claire the Wise tells you about a mysterious crystal hidden in a clearing to the south. Find it: it may hold the key to your lost memories.'],
+                'description' => 'Claire la Sage vous parle d\'un cristal d\'améthyste dont l\'écho résonne encore en vous. Elle ne sait pas le lire seule : Antoine le Mage étudie ces résonances depuis vingt ans. Allez le voir.',
+                'description_translations' => ['en' => 'Claire the Wise speaks of an amethyst crystal whose echo still resonates within you. She cannot read it alone: Antoine the Mage has studied these resonances for twenty years. Go and see him.'],
                 'requirements' => [
-                    'explore' => [
+                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
+                    'talk_to' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '85.50',
-                            'name' => 'Clairière du Cristal',
+                            'pnj_id' => 0,
+                            'name' => 'Antoine le Mage',
                         ],
                     ],
                 ],
@@ -878,7 +878,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'The bells of the Village of Light ring the alarm. Head to the square to hear the herald announce the season\'s threat.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '80.34', 'name' => 'Place du village'],
+                        ['zone_slug' => 'village-de-lumiere', 'name' => 'Place du village'],
                     ],
                 ],
                 'rewards' => ['xp' => 40, 'gold' => 20],
@@ -923,7 +923,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'The season closes. Walk the quieted surroundings and witness the return of calm — the victorious guild will reap the honors.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '85.50', 'name' => 'Clairière du Cristal'],
+                        ['zone_slug' => 'foret-des-murmures', 'name' => 'Clairière du Cristal'],
                     ],
                 ],
                 'rewards' => ['xp' => 120, 'gold' => 70],
@@ -954,8 +954,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'isHidden' => true,
                 'triggerCondition' => [
                     'type' => 'explore',
-                    'map_id' => 3,
-                    'coordinates' => '20.20',
+                    'zone_slug' => 'foret-des-murmures',
                 ],
                 'storyArc' => 'zone_foret-des-murmures',
                 'arcOrder' => 1,
@@ -1015,8 +1014,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '25.40',
+                            'zone_slug' => 'foret-des-murmures',
                             'name' => 'Pierre gravee',
                         ],
                     ],
@@ -1028,8 +1026,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'isHidden' => true,
                 'triggerCondition' => [
                     'type' => 'explore',
-                    'map_id' => 1,
-                    'coordinates' => '20.38',
+                    'zone_slug' => 'foret-des-murmures',
                 ],
             ],
             'quest_hidden_rare_slime' => [
@@ -1183,8 +1180,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 3,
-                            'coordinates' => '30.15',
+                            'zone_slug' => 'foret-des-murmures',
                             'name' => 'Racines de l\'Arbre-Mère',
                         ],
                     ],
@@ -1268,8 +1264,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 4,
-                            'coordinates' => '55.5',
+                            'zone_slug' => 'mines-profondes',
                             'name' => 'Salle secrète de la Forge',
                         ],
                     ],
@@ -1348,8 +1343,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 5,
-                            'coordinates' => '25.42',
+                            'zone_slug' => 'marais-brumeux',
                             'name' => 'Bassin des Brumes éternelles',
                         ],
                     ],
@@ -1413,8 +1407,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 6,
-                            'coordinates' => '25.5',
+                            'zone_slug' => 'crete-de-ventombre',
                             'name' => 'Pic sacré de Ventombre',
                         ],
                     ],
@@ -1520,14 +1513,16 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte3_epilogue' => [
                 'name' => 'La Convergence — Epilogue',
                 'name_translations' => ['en' => 'The Convergence — Epilogue'],
-                'description' => 'Le Gardien est vaincu. Le cristal d\'Amethyste libere son secret ultime. Rendez-vous au coeur du Nexus pour decouvrir la verite sur votre passe.',
-                'description_translations' => ['en' => 'The Guardian is defeated. The Amethyst Crystal releases its final secret. Head to the heart of the Nexus to uncover the truth about your past.'],
+                'description' => 'Le Gardien est vaincu. Le cristal d\'Amethyste libere son secret ultime, mais son echo ne veut rien dire pour vous. Rapportez-le a Claire la Sage : elle attend cette reponse depuis le premier jour.',
+                'description_translations' => ['en' => 'The Guardian is defeated. The Amethyst Crystal releases its final secret, but its echo means nothing to you. Bring it back to Claire the Wise: she has been waiting for this answer since day one.'],
                 'requirements' => [
-                    'explore' => [
+                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
+                    // Le Nexus est un **donjon**, pas une zone : l'objectif visait
+                    // une carte sans `Zone`, donc rien.
+                    'talk_to' => [
                         [
-                            'map_id' => 0,
-                            'coordinates' => '15.15',
-                            'name' => 'Coeur du Nexus',
+                            'pnj_id' => 0,
+                            'name' => 'Claire la Sage',
                         ],
                     ],
                 ],
@@ -1590,12 +1585,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'While crossing the plains, you spot a stele carved with ancient runes, half-buried in tall grass. Step closer to decipher the inscriptions.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '45.22', 'name' => 'Stèle aux runes anciennes'],
+                        ['zone_slug' => 'vallons-d-aubepine', 'name' => 'Stèle aux runes anciennes'],
                     ],
                 ],
                 'rewards' => ['xp' => 50, 'gold' => 30],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '42.18'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'vallons-d-aubepine'],
             ],
             'quest_discovery_forgotten_well' => [
                 'name' => 'Le puits des Anciens',
@@ -1604,7 +1599,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A ruined well, barely visible in the grass, still holds the clear water of a forgotten underground spring. Examine it more closely.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '32.53', 'name' => 'Puits en ruine'],
+                        ['zone_slug' => 'vallons-d-aubepine', 'name' => 'Puits en ruine'],
                     ],
                 ],
                 'rewards' => [
@@ -1613,7 +1608,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'items' => [['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion']],
                 ],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '28.50'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'vallons-d-aubepine'],
             ],
             // Forêt des Murmures
             'quest_discovery_fairy_ring' => [
@@ -1623,12 +1618,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A musical hum drifts through the air. Fireflies dance in a circle around a ring of glowing mushrooms. Step into the centre of the ring.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '88.32', 'name' => 'Centre du cercle féérique'],
+                        ['zone_slug' => 'foret-des-murmures', 'name' => 'Centre du cercle féérique'],
                     ],
                 ],
                 'rewards' => ['xp' => 70, 'gold' => 45],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '85.28'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'foret-des-murmures'],
             ],
             'quest_discovery_hollow_oak' => [
                 'name' => 'Le chêne millénaire',
@@ -1637,12 +1632,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A massive hollow oak stands before you. Ancient carvings adorn the inside of its trunk. Explore the cavity to uncover what it hides.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '108.22', 'name' => 'Intérieur du chêne creux'],
+                        ['zone_slug' => 'foret-des-murmures', 'name' => 'Intérieur du chêne creux'],
                     ],
                 ],
                 'rewards' => ['xp' => 75, 'gold' => 50],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '105.18'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'foret-des-murmures'],
             ],
             // Marais Brumeux
             'quest_discovery_sunken_altar' => [
@@ -1652,12 +1647,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'Beneath the stagnant waters, you make out a stone altar covered in moss and faded symbols. Wade out to it to examine it.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '25.82', 'name' => 'Autel de pierre immergé'],
+                        ['zone_slug' => 'marais-brumeux', 'name' => 'Autel de pierre immergé'],
                     ],
                 ],
                 'rewards' => ['xp' => 80, 'gold' => 55],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '22.78'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'marais-brumeux'],
             ],
             'quest_discovery_phospho_grotto' => [
                 'name' => 'Grotte phosphorescente',
@@ -1666,12 +1661,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A blue-green glow emanates from a crevice in the rock. The grotto is lined with luminescent moss. Explore it all the way to the back.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '48.102', 'name' => 'Fond de la grotte lumineuse'],
+                        ['zone_slug' => 'mines-profondes', 'name' => 'Fond de la grotte lumineuse'],
                     ],
                 ],
                 'rewards' => ['xp' => 85, 'gold' => 50],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '45.98'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'mines-profondes'],
             ],
             // Collines Venteuses
             'quest_discovery_wind_shrine' => [
@@ -1681,12 +1676,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'The wind whistles between standing stones on the hill. An ancient shrine dedicated to the wind spirits. Approach the central menhir.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '145.50', 'name' => 'Menhir central du sanctuaire'],
+                        ['zone_slug' => 'crete-de-ventombre', 'name' => 'Menhir central du sanctuaire'],
                     ],
                 ],
                 'rewards' => ['xp' => 90, 'gold' => 60],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '140.45'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'crete-de-ventombre'],
             ],
             // Lande d'Ombre
             'quest_discovery_shadow_obelisk' => [
@@ -1696,12 +1691,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A black obelisk stands in the moor, pulsing with dark energy. Inscriptions describe an ancient protective ritual. Decipher them.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '58.142', 'name' => 'Obélisque aux inscriptions sombres'],
+                        ['zone_slug' => 'marais-brumeux', 'name' => 'Obélisque aux inscriptions sombres'],
                     ],
                 ],
                 'rewards' => ['xp' => 100, 'gold' => 70],
                 'isHidden' => true,
-                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '55.138'],
+                'triggerCondition' => ['type' => 'explore', 'zone_slug' => 'marais-brumeux'],
             ],
             // --- Quêtes de découverte (exploration standard multi-points) ---
             'quest_discovery_cartographer' => [
@@ -1711,11 +1706,11 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'The village cartographer asks you to mark five landmarks in each zone to complete her map of the forgotten lands.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '30.30', 'name' => 'Cairn de la Plaine'],
-                        ['map_id' => 1, 'coordinates' => '90.25', 'name' => 'Arbre-signal de la Forêt'],
-                        ['map_id' => 1, 'coordinates' => '35.90', 'name' => 'Balise du Marais'],
-                        ['map_id' => 1, 'coordinates' => '150.60', 'name' => 'Vigie des Collines'],
-                        ['map_id' => 1, 'coordinates' => '60.150', 'name' => 'Tour de guet de la Lande'],
+                        ['zone_slug' => 'vallons-d-aubepine', 'name' => 'Cairn des Vallons'],
+                        ['zone_slug' => 'foret-des-murmures', 'name' => 'Arbre-signal de la Forêt'],
+                        ['zone_slug' => 'marais-brumeux', 'name' => 'Balise du Marais'],
+                        ['zone_slug' => 'crete-de-ventombre', 'name' => 'Vigie de la Crête'],
+                        ['zone_slug' => 'dunes-d-ambre', 'name' => 'Tour de guet des Dunes'],
                     ],
                 ],
                 'rewards' => [
@@ -1731,9 +1726,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A scholar tells you of three ancient sacred sites scattered between the Hills and the Moor. Find them to unlock the mysteries of the past.'],
                 'requirements' => [
                     'explore' => [
-                        ['map_id' => 1, 'coordinates' => '135.80', 'name' => 'Dolmen des Collines'],
-                        ['map_id' => 1, 'coordinates' => '100.135', 'name' => 'Cercle de pierres de la Lande'],
-                        ['map_id' => 1, 'coordinates' => '70.165', 'name' => 'Crypte ancienne'],
+                        ['zone_slug' => 'crete-de-ventombre', 'name' => 'Dolmen de la Crête'],
+                        ['zone_slug' => 'dunes-d-ambre', 'name' => 'Cercle de pierres des Dunes'],
+                        ['zone_slug' => 'mines-profondes', 'name' => 'Crypte ancienne'],
                     ],
                 ],
                 'rewards' => [
@@ -2032,8 +2027,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 1,
-                            'coordinates' => '12.8',
+                            'zone_slug' => 'village-de-lumiere',
                             'name' => 'Geôles du village',
                         ],
                     ],
@@ -2165,8 +2159,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => [
                     'explore' => [
                         [
-                            'map_id' => 3,
-                            'coordinates' => '22.18',
+                            'zone_slug' => 'foret-des-murmures',
                             'name' => 'Temple oublié',
                         ],
                     ],
@@ -2261,7 +2254,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'A wandering merchant needs to be escorted to the Village. Accompany him by reaching the rendezvous point.'],
                 'requirements' => [
                     'escort' => [
-                        ['destination_map_id' => 2, 'destination_coordinates' => '10.10', 'name' => 'Amener le marchand au Village'],
+                        ['destination_zone_slug' => 'village-de-lumiere', 'name' => 'Amener le marchand au Village'],
                     ],
                 ],
                 'rewards' => [
@@ -2276,7 +2269,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'Villagers are lost in the Swamp. Guide them out by reaching the evacuation point in the Mountains.'],
                 'requirements' => [
                     'escort' => [
-                        ['destination_map_id' => 6, 'destination_coordinates' => '5.5', 'name' => 'Guider les réfugiés en Montagne'],
+                        ['destination_zone_slug' => 'crete-de-ventombre', 'name' => 'Guider les réfugiés sur la Crête'],
                     ],
                 ],
                 'rewards' => [

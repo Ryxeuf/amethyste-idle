@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **2/20 livrés.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **3/20 livrés.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -39,7 +39,7 @@
 | ONB-12 | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
 | ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
 | ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
-| ONB-15 | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
+| ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
 | ONB-16 | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
 | ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
@@ -350,15 +350,30 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [ ] `tutorial-complete` reste attaché à la clôture de l'arc
 - [ ] Tests : aucun état d'onboarding écrit à deux endroits (test de contrat)
 
-### ONB-15 — Réparer les quêtes `explore` de l'arc (S | ★★★ | HAUTE)
-> Ferme **D4**. Trois des sept quêtes d'`intro` valident un `explore` sur `map_id => 1` et des
-> coordonnées ; `updateExplored()` résout par **zone** et ne se déclenche qu'au voyage : elles
-> ne tombent **jamais** pour un joueur qui n'a pas bougé. **L'arc est bloqué dès sa première
-> étape.**
-- [ ] Convertir les trois objectifs en objectifs du pivot : parler à un PNJ, récolter, combattre
-- [ ] **Aucune quête d'introduction ne dépend de `map_id` ni de coordonnées**
-- [ ] Balayer les autres arcs pour la même faute (`acte4`, zones, saisons)
-- [ ] Tests : l'arc `intro` se termine de bout en bout ; test de contrat contre la récidive
+### ONB-15 — Réparer les quêtes `explore` de l'arc (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-29
+> Ferme **D4**. Le diagnostic était **en dessous de la réalité** : `map_id => 1` ne désigne pas
+> le village mais la **« Carte de test »**, que `MapFixtures` crée en premier. Ces objectifs ne
+> visaient pas un mécanisme mort, ils visaient une zone qui n'existe pas.
+- [x] Convertir les trois objectifs en objectifs du pivot — les trois deviennent des `talk_to`,
+      chacun vers **un autre PNJ que le donneur** (les trois sont données par Claire la Sage :
+      on ne demande pas de retourner voir celui qu'on vient de quitter)
+- [x] **Aucune quête d'introduction ne dépend de `map_id` ni de coordonnées**
+- [x] Balayer les autres arcs : saison 1, quêtes de découverte (10), quête cachée de la
+      clairière, chaîne de fond de la Forêt, les 4 fragments de l'acte 2, les deux quêtes
+      morales, l'exploration de la forêt, le choix d'allégeance et les deux escortes
+- [x] **Deux dettes trouvées au passage, hors énoncé** —
+  - [x] l'**épilogue de l'acte 3** visait « le cœur du Nexus » recalé sur une carte de **donjon**,
+        qu'aucune zone ne prend pour origine : l'arc principal se terminait sur une étape
+        impossible. Il se termine chez Claire la Sage
+  - [x] les porteurs de l'arc (Claire, Gérard, Marie, Antoine) habitaient `map_1`, donc **aucune
+        zone** — or l'écran de zone liste par zone depuis ZON-27. Ils étaient injoignables, ce
+        qui condamnait déjà l'étape « guilde » avant même les trois `explore`. Les quatre
+        emménagent au village ; la fusion des deux populations reste à **ONB-16**
+- [x] Tests : `QuestCoordinateContractTest` — aucune coordonnée dans `intro`, aucun verbe
+      hors pivot, tout `talk_to` désigne quelqu'un **et** ce quelqu'un habite une zone,
+      et le balayage global (aucune quête, nulle part)
+- **Hors périmètre, assumé** : `defend` porte bien un `map_id`, mais il se résout par
+  `Mob::map` et fonctionne — ce n'est pas la même faute
 
 ### ONB-16 — Une population de PNJ au Fanal, dont le maître d'armes (M | ★★ | MOYENNE)
 > Ferme **D5** : `PnjFixtures` (Gérard le Forgeron, Marie la Herboriste, Claire la Sage) et
