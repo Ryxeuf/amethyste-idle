@@ -197,6 +197,9 @@ class ZoneImporter
         // La zone est posee explicitement : `WorldEntityZoneListener` respecte
         // une zone deja fixee et n'ira pas chercher de carte.
         $mob->setZone($zone);
+        // Champ herite de l'ere carte (regle #7), sans usage depuis ZON-21
+        // mais non nullable en base.
+        $mob->setCoordinates('0.0');
         $mob->setLife($monster->getLife());
         $mob->setLevel($monster->getLevel());
         $mob->setNocturnal((bool) $entry['nocturnal']);
