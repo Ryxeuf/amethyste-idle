@@ -23,6 +23,15 @@ class PlayerSkillHelper
      * doit donc le dire, sinon le joueur cherchera un prerequis qui n'existe pas.
      */
     public const REFUSAL_OTHER_BRANCH = 'other_branch';
+    /**
+     * Le nœud est pose mais pas encore ouvert (DOM-07).
+     *
+     * L'accord d'hybride attend que la fusion ouvre. Le montrer et le refuser
+     * vaut mieux que de le cacher : un arbre dont un nœud apparaitrait le jour
+     * d'une mise a jour se relirait comme un ajout, alors que c'est une porte
+     * qu'on savait la.
+     */
+    public const REFUSAL_DORMANT = 'dormant';
 
     public function __construct(private readonly PlayerHelper $playerHelper, private readonly PlayerDomainHelper $playerDomainHelper)
     {
@@ -51,6 +60,13 @@ class PlayerSkillHelper
 
         if ($player->hasSkill($skill)) {
             return self::REFUSAL_ALREADY_ACQUIRED;
+        }
+
+        // DOM-07 : avant tout le reste. Un joueur qui a les points et les
+        // prerequis d'un nœud dormant doit lire « pas encore ouvert », pas un
+        // motif qui lui ferait croire qu'il lui manque quelque chose.
+        if ($skill->isDormant()) {
+            return self::REFUSAL_DORMANT;
         }
 
         // Limite globale multi-domaine
