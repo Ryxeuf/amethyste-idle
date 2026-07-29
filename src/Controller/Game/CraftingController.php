@@ -55,7 +55,7 @@ class CraftingController extends AbstractController
         //
         // ECO-30 : le charpentier rejoint l'etabli aux memes conditions, et pour
         // la meme raison — sa varlope serait un mecanisme, pas une donnee.
-        $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier', 'cuisinier', 'charpentier'];
+        $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier', 'cuisinier', 'charpentier', 'tailleur'];
         // FOY-07 : le bonus que le lieu accorde, metier par metier. Le joueur
         // doit pouvoir arbitrer *ou* crafter — un total sans sa composition ne
         // lui dirait pas quoi faire de l'information.

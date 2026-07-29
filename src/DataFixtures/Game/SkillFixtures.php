@@ -118,6 +118,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getLumberjackSkills(),
             $this->getCookSkills(),
             $this->getCarpenterSkills(),
+            $this->getTailorSkills(),
             $this->getBlacksmithSkills(),
             $this->getLeatherworkerSkills(),
             $this->getAlchimistSkills(),
@@ -4780,6 +4781,107 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'requirements' => ['carpenter_composite', 'carpenter_cabinetmaking'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // TAILLEUR (air/craft) — celui qui habille les lanceurs de sorts (ECO-31)
+    // =========================================================================
+    // Le trou le plus beant de l'audit d'equipement : sur 121 pieces, **pas une
+    // robe**. Pyromancien, hydromancien, necromancien — tous s'habillaient en
+    // cuir et en metal, et aucun metier ne les habillait.
+    //
+    // L'arbre ouvre les onze recettes de la categorie tissu, et reveille au
+    // passage `crafted-cloth`, un objet livre de longue date que **rien ne
+    // produisait ni ne consommait**.
+    //
+    // **Aucun emplacement d'outil**, comme le cuisinier et le charpentier :
+    // `Item::CRAFT_TOOL_TYPES` ne cite pas ce metier, et lui inventer une
+    // aiguille aurait demande un type d'outil, un bit d'equipement et un
+    // emplacement d'interface neufs — un mecanisme pour un jalon de contenu.
+    private function getTailorSkills(): array
+    {
+        $d = 'tailor';
+
+        return [
+            // Rang 1 (0 pts) — la toile, par ou tout passe
+            'tailor_weaving' => [
+                'slug' => 'tailor-weaving',
+                'title' => 'Tissage',
+                'description' => 'Permet de rouir, filer et tisser le lin des Vallons en toile',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cloth']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-25 pts) — le plancher du lanceur de sorts
+            'tailor_linen' => [
+                'slug' => 'tailor-linen',
+                'title' => 'Coupe de la toile',
+                'description' => 'Permet de tailler la capuche et les mitaines de lin, les deux premieres pieces du mage',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-linen-hood', 'recipe-linen-gloves']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['tailor_weaving'],
+            ],
+            'tailor_robe' => [
+                'slug' => 'tailor-robe',
+                'title' => 'Montage de la robe',
+                'description' => 'Permet de monter la premiere robe du monde : rien n\'y entrave le geste',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-linen-robe']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['tailor_weaving'],
+            ],
+
+            // Rang 3 (35-60 pts) — le lin fin, et la main qui s'affine
+            'tailor_fine_weave' => [
+                'slug' => 'tailor-fine-weave',
+                'title' => 'Battage du lin',
+                'description' => 'Permet de battre le lin jusqu\'a la soie : capuche et mitaines de lin fin',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-fine-linen-hood', 'recipe-fine-linen-gloves']]],
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'requirements' => ['tailor_linen'],
+            ],
+            'tailor_needle' => [
+                'slug' => 'tailor-needle',
+                'title' => 'Aiguille sure',
+                'description' => 'Coudre sans y penser : la main tient plus longtemps',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['tailor_robe'],
+            ],
+            'tailor_fine_robe' => [
+                'slug' => 'tailor-fine-robe',
+                'title' => 'Couture invisible',
+                'description' => 'Permet de monter la robe de lin fin, dont les coutures ne se voient pas',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-fine-linen-robe']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['tailor_fine_weave'],
+            ],
+
+            // Rang 4 (90-150 pts) — ce qui n'est plus tout a fait du lin
+            'tailor_shadowsilk' => [
+                'slug' => 'tailor-shadowsilk',
+                'title' => 'Trame d\'ombre',
+                'description' => 'Permet de tisser le poil de loup-garou dans la toile : la soie d\'ombre',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-shadowsilk-hood', 'recipe-shadowsilk-robe']]],
+                'requiredPoints' => 90,
+                'domain' => $d,
+                'requirements' => ['tailor_fine_robe'],
+            ],
+            'tailor_archivist' => [
+                'slug' => 'tailor-archivist',
+                'title' => 'Maitre tailleur',
+                'description' => 'Permet de coudre une gemme enchantee dans le col : le mantelet et la robe de l\'archiviste',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-archivist-mantle', 'recipe-archivist-robe']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['tailor_shadowsilk', 'tailor_needle'],
             ],
         ];
     }

@@ -46,7 +46,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-28 | Commandes de service — travailler un objet lié |
 | ECO-29 ✅ | Cuisinier — le débouché de la pêche et des vivres |
 | ECO-30 ✅ | Charpentier — le débouché du bois |
-| ECO-31 | Tailleur — la ligne tissu et l'armure des mages |
+| ECO-31 ✅ | Tailleur — la ligne tissu et l'armure des mages |
 
 ```
 Piste A — Socle & liaison        : ECO-01 → ECO-02
@@ -56,7 +56,7 @@ Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
-Piste H — Métiers manquants       : ECO-29 ✅, ECO-30 ✅, ECO-31 (← ZON-30 ✅)
+Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅  (complète)
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -581,18 +581,35 @@ Piste H — Métiers manquants       : ECO-29 ✅, ECO-30 ✅, ECO-31 (← ZON-3
 > mécanisme là où ce jalon répare un trou de contenu. Même arbitrage que la marmite du
 > cuisinier (ECO-29) et que le report d'origine (ZON-34).
 
-### ECO-31 — Tailleur : la ligne tissu et l'armure des mages (M | ★★★ | HAUTE)
-> Le trou béant : **aucune armure tissu n'existe**. Les domaines de sort (pyromancien,
-> hydromancien, nécromancien…) n'ont aucun métier qui les habille. Le lin des Vallons
-> (exclusivité, ZON-30) et l'item mort `crafted-cloth` attendent ce jalon.
-> Prérequis : ← ZON-30 (le lin)
-- [ ] Domaine `tailor` (Tailleur) + arbre
-- [ ] Chaîne : lin → `crafted-cloth` (l'item mort se réveille) → pièces d'armure tissu
-- [ ] **Créer la catégorie d'équipement tissu** : robes, coiffes, gants T1→T4, orientées
-      magie (le pendant exact de la série cuir du tanneur et métal du forgeron)
-- [ ] Paliers hauts croisés : fourrure (tanneur) ou fil d'argent (joaillier) en liant —
-      aucun métier autosuffisant
-- [ ] Tests : chaque pièce a une recette, le lin a ≥ 2 débouchés (tannerie + couture)
+### ECO-31 — Tailleur : la ligne tissu et l'armure des mages ✅ (M | ★★★ | HAUTE)
+> Le trou béant refermé. **Livré le 2026-07-29.**
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Domaine `tailor` (Tailleur) + arbre de 8 nœuds
+- [x] Chaîne : lin → `crafted-cloth` (l'item mort se réveille, produit **et** consommé) →
+      dix pièces d'armure tissu
+- [x] **Catégorie d'équipement tissu créée** : capuches, robes, mitaines sur quatre
+      paliers (toile de lin → lin fin → soie d'ombre → l'archiviste), aux mêmes
+      emplacements et rangs de rareté que la série cuir, avec l'axe inversé — de la
+      puissance magique payée en protection
+- [x] Paliers hauts croisés : lanière puis fourrure de loup-garou (tanneur), gemme simple,
+      fine puis enchantée (joaillier). Le premier palier reste cousu **sans autre métier**,
+      pour ne pas manger le plancher T1 du lanceur de sorts (ECO-02)
+- [x] Le lin a deux débouchés : la toile du tailleur et le fil qui coud les jambières du
+      tanneur
+- [x] Le manteau du maître tanneur se **double** de toile : la sortie du tailleur trouve un
+      acheteur d'un autre métier (ECO-14 dans les deux sens)
+- [x] `line_bonus` : la ligne `farm` sert désormais deux métiers, le blé au cuisinier et le
+      lin au tailleur — la seule du monde dans ce cas
+- [x] Tests : 9 (`ClothLineTest`)
+
+> **Écart assumé : pas d'outil de couture.** `Item::CRAFT_TOOL_TYPES` ne cite pas ce métier ;
+> une aiguille aurait demandé un type d'outil, un bit d'équipement et un emplacement
+> d'interface neufs. Même arbitrage que la marmite (ECO-29) et la varlope (ECO-30).
+
+> **Le fil d'argent n'a pas été créé.** Le plan le citait comme liant alternatif ; il
+> n'existe pas dans le catalogue, et l'inventer aurait ajouté une recette de joaillier à un
+> jalon qui en consomme déjà trois. Les gemmes du joaillier — simple, fine, enchantée —
+> tiennent le rôle sur les trois paliers hauts, et le croisement est le même.
 
 ---
 

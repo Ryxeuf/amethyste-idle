@@ -604,3 +604,162 @@ App\Entity\Game\Item:
     materia_slots: 3
     level: 28
     space: 3
+
+  # === Armures Tissu — la ligne du tailleur (ECO-31) ===
+  # Le trou beant de l'audit d'economie : sur 121 pieces d'equipement, **pas une
+  # robe**. Les domaines de sort — pyromancien, hydromancien, necromancien —
+  # s'habillaient en cuir et en metal, et aucun metier ne les habillait.
+  #
+  # Le pendant exact de la serie cuir : memes emplacements, memes paliers, meme
+  # progression de rarete. Ce qui change est l'axe — la ou le cuir donne de la
+  # protection, le tissu donne de la puissance magique, et il en paie le prix en
+  # protection. Un mage en robe encaisse moins et frappe plus fort.
+
+  # --- Palier 1 : toile de lin (common, niveau 1) ---
+  # Le plancher T1 du lanceur de sorts (ECO-02) : trois pieces atteignables des
+  # le premier jour, a partir du lin des Vallons et de rien d'autre.
+  linen_hood (extends item):
+    name: "Capuche de lin"
+    description: "Une capuche de toile ecrue, assez ample pour qu'on y garde la tete au frais et les idees claires"
+    type: "gear"
+    slug: 'linen-hood'
+    price: 50
+    gear_location: 'head'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 1
+    effect: '{"action":"magic_boost","amount":4}'
+    materia_slots: 1
+  linen_robe (extends item):
+    name: "Robe de lin"
+    description: "Une robe longue de toile de lin, sans une piece de metal. Rien n'y entrave le geste"
+    type: "gear"
+    slug: 'linen-robe'
+    price: 80
+    gear_location: 'chest'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 2
+    effect: '{"action":"magic_boost","amount":8}'
+    materia_slots: 1
+    space: 2
+  linen_gloves (extends item):
+    name: "Mitaines de lin"
+    description: "Des mitaines qui laissent les doigts libres : on ne trace pas un signe avec des gants de cuir"
+    type: "gear"
+    slug: 'linen-gloves'
+    price: 50
+    gear_location: 'hand'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 1
+    effect: '{"action":"magic_boost","amount":4}'
+    materia_slots: 1
+
+  # --- Palier 2 : lin fin (uncommon, niveau 8) ---
+  # Le pendant du cuir renforce. La laniere du tanneur entre ici : aucun metier
+  # n'est autosuffisant (ECO-14).
+  fine_linen_hood (extends item):
+    name: "Capuche de lin fin"
+    description: "Un lin battu et lisse jusqu'a la soie, borde d'une laniere de cuir souple"
+    type: "gear"
+    slug: 'fine-linen-hood'
+    price: 95
+    gear_location: 'head'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 2
+    effect: '{"action":"magic_boost","amount":9}'
+    materia_slots: 1
+    level: 8
+  fine_linen_robe (extends item):
+    name: "Robe de lin fin"
+    description: "Une robe d'un lin si serre qu'il tombe droit. Les coutures sont invisibles, et c'est la moitie du travail"
+    type: "gear"
+    slug: 'fine-linen-robe'
+    price: 170
+    gear_location: 'chest'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 3
+    effect: '{"action":"magic_boost","amount":16}'
+    materia_slots: 1
+    level: 8
+    space: 2
+  fine_linen_gloves (extends item):
+    name: "Mitaines de lin fin"
+    description: "Le fil est double au bout des doigts, la ou le geste use la toile"
+    type: "gear"
+    slug: 'fine-linen-gloves'
+    price: 95
+    gear_location: 'hand'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 2
+    effect: '{"action":"magic_boost","amount":9}'
+    materia_slots: 1
+    level: 8
+
+  # --- Palier 3 : soie d'ombre (rare, niveau 18) ---
+  # La fourrure de loup-garou tannee entre dans la trame. Le tailleur cesse ici
+  # de travailler le seul lin, et depend pour de bon des autres metiers.
+  shadowsilk_hood (extends item):
+    name: "Capuche de soie d'ombre"
+    description: "Du lin tisse serre avec du poil de loup-garou. Elle ne renvoie pas la lumiere, elle la garde"
+    type: "gear"
+    slug: 'shadowsilk-hood'
+    price: 300
+    gear_location: 'head'
+    nbUsages: 200
+    rarity: 'rare'
+    element: 'dark'
+    protection: 3
+    effect: '{"action":"magic_boost","amount":20}'
+    materia_slots: 2
+    level: 18
+  shadowsilk_robe (extends item):
+    name: "Robe de soie d'ombre"
+    description: "Une robe qu'on croit noire jusqu'a la voir bouger. La trame de poil boit ce qui la traverse"
+    type: "gear"
+    slug: 'shadowsilk-robe'
+    price: 610
+    gear_location: 'chest'
+    nbUsages: 200
+    rarity: 'rare'
+    element: 'dark'
+    protection: 5
+    effect: '{"action":"magic_boost","amount":34}'
+    materia_slots: 2
+    level: 18
+    space: 2
+
+  # --- Palier 4 : l'archiviste (epic, niveau 28) ---
+  # Le sommet de la ligne, et le pendant exact du plastron de cuir enchante :
+  # meme palier, meme rarete, meme gemme du joaillier au coeur de la piece.
+  archivist_mantle (extends item):
+    name: "Mantelet de l'archiviste"
+    description: "Un mantelet a epaules doubles, cousu pour tenir des heures penche sur une table sans peser"
+    type: "gear"
+    slug: 'archivist-mantle'
+    price: 590
+    gear_location: 'shoulder'
+    nbUsages: 250
+    rarity: 'epic'
+    protection: 5
+    effect: '{"action":"magic_boost","amount":32}'
+    materia_slots: 2
+    level: 28
+  archivist_robe (extends item):
+    name: "Robe de l'archiviste"
+    description: "Une gemme enchantee cousue au col, et dix aunes de lin autour. Ce qu'on lit dedans reste lu"
+    type: "gear"
+    slug: 'archivist-robe'
+    price: 1200
+    gear_location: 'chest'
+    nbUsages: 250
+    rarity: 'epic'
+    protection: 7
+    effect: '{"action":"magic_boost","amount":48}'
+    materia_slots: 3
+    level: 28
+    space: 3

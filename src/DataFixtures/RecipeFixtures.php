@@ -485,6 +485,11 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'leather-raw', 'quantity' => 3],
                     ['slug' => 'leather-thick', 'quantity' => 1],
+                    // ECO-31 : le cuir se coud **au fil de lin**. C'est le second
+                    // debouche du lin des Vallons, a cote du tissu du tailleur —
+                    // une exclusivite de zone dont un seul metier dependrait
+                    // s'eteindrait avec lui.
+                    ['slug' => 'plant-flax', 'quantity' => 1],
                 ],
                 'result_ref' => 'leather_pants',
                 'crafting_time' => 8,
@@ -1288,6 +1293,194 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Grave un tronc de l\'âge précédent. Le bois se souvient mieux que nous.',
                 'name_translations' => ['en' => 'Archmage Staff'],
             ],
+            // =================================================================
+            // ECO-31 — l'ouvroir du tailleur
+            // =================================================================
+            // Le trou le plus beant de l'audit d'equipement : sur 121 pieces,
+            // **pas une robe**. Les domaines de sort s'habillaient en cuir et en
+            // metal, et aucun metier ne les habillait. Onze recettes ouvrent la
+            // categorie tissu et reveillent `crafted-cloth`, un objet livre de
+            // longue date que **rien ne produisait ni ne consommait**.
+            //
+            // Le tissu est au tailleur ce que la planche est au charpentier et
+            // la laniere au tanneur : l'intermediaire par lequel tout passe.
+            // Toutes les recettes de la ligne le consomment, ce qui donne au lin
+            // des Vallons une demande qui monte avec les paliers plutot que de
+            // s'eteindre au premier (ECO-27).
+            'recipe_cloth' => [
+                'name' => 'Tissu',
+                'slug' => 'recipe-cloth',
+                'craft' => 'tailleur',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'plant-flax', 'quantity' => 3],
+                ],
+                'result_ref' => 'crafted_cloth',
+                'result_quantity' => 2,
+                'crafting_time' => 3,
+                'xp_reward' => 8,
+                'description' => 'Rouit, file et tisse le lin du gué : la toile naît enfin quelque part.',
+                'name_translations' => ['en' => 'Cloth'],
+            ],
+            'recipe_linen_hood' => [
+                'name' => 'Capuche de lin',
+                'slug' => 'recipe-linen-hood',
+                'craft' => 'tailleur',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 2],
+                ],
+                'result_ref' => 'linen_hood',
+                'crafting_time' => 5,
+                'xp_reward' => 15,
+                'description' => 'Coupe et coud une capuche ample dans la toile écrue.',
+                'name_translations' => ['en' => 'Linen Hood'],
+            ],
+            'recipe_linen_gloves' => [
+                'name' => 'Mitaines de lin',
+                'slug' => 'recipe-linen-gloves',
+                'craft' => 'tailleur',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 2],
+                ],
+                'result_ref' => 'linen_gloves',
+                'crafting_time' => 5,
+                'xp_reward' => 15,
+                'description' => 'Laisse les doigts libres : on ne trace pas un signe ganté de cuir.',
+                'name_translations' => ['en' => 'Linen Mitts'],
+            ],
+            'recipe_linen_robe' => [
+                'name' => 'Robe de lin',
+                'slug' => 'recipe-linen-robe',
+                'craft' => 'tailleur',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 4],
+                ],
+                'result_ref' => 'linen_robe',
+                'crafting_time' => 8,
+                'xp_reward' => 25,
+                'description' => 'La première robe du monde. Rien n\'y entrave le geste.',
+                'name_translations' => ['en' => 'Linen Robe'],
+            ],
+            'recipe_fine_linen_hood' => [
+                'name' => 'Capuche de lin fin',
+                'slug' => 'recipe-fine-linen-hood',
+                'craft' => 'tailleur',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 3],
+                    // ECO-14 : la bordure vient du tanneur. Au palier 3, jamais a
+                    // l'entree — croiser les metiers des le niveau 1 casserait le
+                    // plancher T1 (ECO-02), et le mage doit pouvoir s'habiller
+                    // seul au premier jour.
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'fine_linen_hood',
+                'crafting_time' => 10,
+                'xp_reward' => 30,
+                'description' => 'Bat le lin jusqu\'à la soie, puis le borde de cuir souple.',
+                'name_translations' => ['en' => 'Fine Linen Hood'],
+            ],
+            'recipe_fine_linen_gloves' => [
+                'name' => 'Mitaines de lin fin',
+                'slug' => 'recipe-fine-linen-gloves',
+                'craft' => 'tailleur',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 3],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'fine_linen_gloves',
+                'crafting_time' => 10,
+                'xp_reward' => 30,
+                'description' => 'Double le fil au bout des doigts, là où le geste use la toile.',
+                'name_translations' => ['en' => 'Fine Linen Mitts'],
+            ],
+            'recipe_fine_linen_robe' => [
+                'name' => 'Robe de lin fin',
+                'slug' => 'recipe-fine-linen-robe',
+                'craft' => 'tailleur',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 6],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                ],
+                'result_ref' => 'fine_linen_robe',
+                'crafting_time' => 15,
+                'xp_reward' => 45,
+                'description' => 'Un lin si serré qu\'il tombe droit, et des coutures invisibles.',
+                'name_translations' => ['en' => 'Fine Linen Robe'],
+            ],
+            'recipe_shadowsilk_hood' => [
+                'name' => 'Capuche de soie d\'ombre',
+                'slug' => 'recipe-shadowsilk-hood',
+                'craft' => 'tailleur',
+                'required_level' => 6,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 4],
+                    // Le poil de loup-garou entre dans la trame : le tailleur
+                    // cesse ici de travailler le seul lin.
+                    ['slug' => 'leather-werewolf-fur', 'quantity' => 1],
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                ],
+                'result_ref' => 'shadowsilk_hood',
+                'crafting_time' => 20,
+                'xp_reward' => 70,
+                'description' => 'Tisse le lin serré avec du poil de loup-garou. Elle garde la lumière.',
+                'name_translations' => ['en' => 'Shadowsilk Hood'],
+            ],
+            'recipe_shadowsilk_robe' => [
+                'name' => 'Robe de soie d\'ombre',
+                'slug' => 'recipe-shadowsilk-robe',
+                'craft' => 'tailleur',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 8],
+                    ['slug' => 'leather-werewolf-fur', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-fine', 'quantity' => 1],
+                ],
+                'result_ref' => 'shadowsilk_robe',
+                'crafting_time' => 28,
+                'xp_reward' => 110,
+                'description' => 'On la croit noire jusqu\'à la voir bouger.',
+                'name_translations' => ['en' => 'Shadowsilk Robe'],
+            ],
+            'recipe_archivist_mantle' => [
+                'name' => 'Mantelet de l\'archiviste',
+                'slug' => 'recipe-archivist-mantle',
+                'craft' => 'tailleur',
+                'required_level' => 8,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 6],
+                    ['slug' => 'leather-werewolf-fur', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-fine', 'quantity' => 1],
+                ],
+                'result_ref' => 'archivist_mantle',
+                'crafting_time' => 30,
+                'xp_reward' => 130,
+                'description' => 'Des épaules doubles, cousues pour tenir des heures sans peser.',
+                'name_translations' => ['en' => 'Archivist Mantle'],
+            ],
+            'recipe_archivist_robe' => [
+                'name' => 'Robe de l\'archiviste',
+                'slug' => 'recipe-archivist-robe',
+                'craft' => 'tailleur',
+                'required_level' => 9,
+                'ingredients' => [
+                    ['slug' => 'crafted-cloth', 'quantity' => 10],
+                    ['slug' => 'leather-werewolf-fur', 'quantity' => 2],
+                    // Le pendant exact du plastron de cuir enchante : meme
+                    // palier, meme gemme du joaillier au coeur de la piece.
+                    ['slug' => 'crafted-gem-enchanted', 'quantity' => 1],
+                ],
+                'result_ref' => 'archivist_robe',
+                'crafting_time' => 40,
+                'xp_reward' => 200,
+                'description' => 'Une gemme enchantée cousue au col, et dix aunes de lin autour.',
+                'name_translations' => ['en' => 'Archivist Robe'],
+            ],
             'recipe_amber_seal' => [
                 'name' => 'Sceau d\'ambre',
                 'slug' => 'recipe-amber-seal',
@@ -1441,6 +1634,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     // le sommet du tanneur doit desormais quelque chose a son
                     // premier geste.
                     ['slug' => 'crafted-leather-strip', 'quantity' => 4],
+                    // ECO-31 : un manteau se double. Le tailleur trouve ici son
+                    // acheteur d'un autre metier — sans quoi il produirait sans
+                    // que personne n'achete sa production (ECO-14).
+                    ['slug' => 'crafted-cloth', 'quantity' => 2],
                 ],
                 'result_ref' => 'masterwork_drakehide_cloak',
                 'crafting_time' => 30,

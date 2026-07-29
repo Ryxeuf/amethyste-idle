@@ -141,8 +141,9 @@ désire à chaque horizon.
   le foyer (un Comptoir agricole naturel) et la foire de récolte ; an — rien, et c'est
   normal : une zone d'Acte I n'a pas à retenir un vétéran, elle le *revoit* quand la
   demande en lin et en cuir l'y ramène (leviers 1 et 3 du §5.5).
-- **État** : ✅ **livrée le 2026-07-29** (ZON-30). Restent les deux recettes joueur (cuisine
-  du blé, tannerie du lin), qui attendent leurs métiers — ECO-29 et ECO-31.
+- **État** : ✅ **livrée le 2026-07-29** (ZON-30), et **complète** depuis : le blé a trouvé
+  le cuisinier (ECO-29), le lin le tailleur (ECO-31) — et le fil qui coud le cuir du tanneur.
+  Les Vallons sont la seule zone du monde dont la ligne de production sert **deux** métiers.
 
 #### Faune & habitants des Vallons *(détail acté le 2026-07-28 — l'entrée de ZON-30)*
 

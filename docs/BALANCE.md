@@ -1027,7 +1027,9 @@ PNJ), a revele que chaque metier a un bout de chaine casse :
 - **Aucune armure tissu n'existe.** Sur les 121 items d'equipement, pas une robe ni une
   piece orientee magie : les domaines de sort s'habillent en cuir et en metal, et aucun
   metier ne les habille. **Tranche** : le tailleur (ECO-31) cree la categorie tissu
-  depuis le lin des Vallons ; l'item mort `crafted-cloth` s'y reveille.
+  depuis le lin des Vallons ; l'item mort `crafted-cloth` s'y reveille. **Solde le
+  2026-07-29** : dix pieces sur quatre paliers, aux memes emplacements que la serie cuir
+  et sur l'axe inverse (§ 23.12).
 - **La joaillerie ne taille aucune gemme.** `recipe-cut-gem-basic` consomme du **cuivre**,
   la fine de l'**argent**, la rare du **mithril**. Les trois gemmes brutes du monde
   (rubis, emeraude, diamant) ne sont consommees par **rien** — trois filons declares
@@ -1048,7 +1050,8 @@ PNJ), a revele que chaque metier a un bout de chaine casse :
   `thunderroot`, `whisperweed`, `wolfsbane`), 2 poissons (`moonfish` en spot herite
   seul, `baby-kraken` sans source), `crafted-iron-ingot`, `crafted-gold-ingot`,
   `crafted-cloth`, `leather-skin-1/2` (doublons ECO-02). A purger ou a reveiller par
-  les jalons concernes.
+  les jalons concernes. **`crafted-cloth` est reveille** par ECO-31 : il est desormais
+  produit par le tailleur et consomme par onze recettes, dont une du tanneur.
 
 ---
 
@@ -1497,3 +1500,35 @@ aucune ne coute plus cher a fabriquer qu'elle ne vaut (t1-bow 19 pour 22, t3-sta
 est le sujet, pas un defaut de calibrage : l'ameublement paye en monnaie est un gold sink, et un
 sink doit toujours etre battu par la voie joueur — sinon personne ne crafte, et le metier n'existe
 que sur le papier.
+
+### 23.12 La ligne du tissu (ECO-31)
+
+Le pendant chiffre de la serie cuir. Les prix suivent la regle d'ECO-27 — `prix = cout + 10 x
+niveau`, arrondi au pas de 5 sous 100, de 10 sous 1 000, de 50 au-dela.
+
+| Piece | Niv. | Cout des intrants | Prix |
+|---|---:|---:|---:|
+| Tissu (x2) | 1 | 27 (lin x3) | 15 l'unite |
+| Capuche / mitaines de lin | 2 | 30 | 50 |
+| Robe de lin | 2 | 60 | 80 |
+| Capuche / mitaines de lin fin | 3 | 65 | 95 |
+| Robe de lin fin | 4 | 130 | 170 |
+| Capuche de soie d'ombre | 6 | 240 | 300 |
+| Robe de soie d'ombre | 7 | 540 | 610 |
+| Mantelet de l'archiviste | 8 | 510 | 590 |
+| Robe de l'archiviste | 9 | 1 120 | 1 200 |
+
+**L'axe du metier, chiffre.** A palier egal, une piece de tissu protege environ **un tiers** de
+ce que protege son equivalent de cuir, et rend en echange un bonus de puissance magique. La robe
+de l'archiviste (protection 7, magie 48) se lit contre le plastron de cuir enchante (protection
+20) : meme palier, meme rarete, meme gemme du joaillier au coeur de la piece, deux facons
+opposees de survivre a un combat.
+
+**Le premier palier ne coute que de la toile**, et c'est la borne qui compte : trois pieces
+accessibles au niveau 2 sans acheter quoi que ce soit a un autre joueur. Le croisement avec le
+tanneur commence au palier 3 (ECO-14), jamais avant — le plancher T1 du lanceur de sorts (ECO-02)
+prime sur l'interdependance.
+
+**Le lin des Vallons alimente deux metiers**, la toile du tailleur et le fil qui coud les
+jambieres du tanneur. C'est le seul intrant du monde dans ce cas, et c'est deliberé : une
+exclusivite de zone dont un seul metier dependrait s'eteindrait avec lui.
