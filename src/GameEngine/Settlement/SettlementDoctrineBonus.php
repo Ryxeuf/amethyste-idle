@@ -20,7 +20,16 @@ use App\Repository\SettlementRepository;
  */
 class SettlementDoctrineBonus
 {
-    /** @var array<string, SettlementDoctrine|null> */
+    /**
+     * Indexee par identite d'objet, jamais par slug.
+     *
+     * Une `Zone` construite en memoire n'a pas forcement de slug, et lire une
+     * propriete typee non initialisee est une erreur fatale. Le service serait
+     * alors devenu impossible a appeler depuis un contexte qui construit ses
+     * entites — ce qui inclut la moitie des tests du pilier.
+     *
+     * @var array<int, SettlementDoctrine|null>
+     */
     private array $cache = [];
 
     public function __construct(
@@ -37,12 +46,12 @@ class SettlementDoctrineBonus
      */
     public function doctrineOf(Zone $zone): ?SettlementDoctrine
     {
-        $slug = $zone->getSlug();
-        if (!\array_key_exists($slug, $this->cache)) {
-            $this->cache[$slug] = $this->settlementRepository->findOneByZone($zone)?->getDoctrine();
+        $key = spl_object_id($zone);
+        if (!\array_key_exists($key, $this->cache)) {
+            $this->cache[$key] = $this->settlementRepository->findOneByZone($zone)?->getDoctrine();
         }
 
-        return $this->cache[$slug];
+        return $this->cache[$key];
     }
 
     /**
