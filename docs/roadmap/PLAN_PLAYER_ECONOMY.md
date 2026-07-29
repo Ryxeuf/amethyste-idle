@@ -636,3 +636,52 @@ marchande du savoir du prospecteur, et l'exigence de qualité dans les commandes
 ECO-22 lit la Pâleur d'un filon (FOY-11) pour plafonner la bande. Les deux plans peuvent
 avancer en parallèle — seul ce plafond les couple, et il se livre des deux côtés avec une
 valeur par défaut neutre.
+
+---
+
+## Piste I — Les caravanes (ouverte le 2026-07-29)
+
+> Décline [../GAME_WORLD.md](../GAME_WORLD.md) **§12.7** (mécanique tranchée) et §5.3
+> (principes). Prérequis livrés : HV régional, échoppes (Piste D ✅), foyers (rang
+> Bourg, FOY ✅), montures utilitaires. Le miroir discret (contrebande) vit en FAC-08.
+
+### ECO-32 — L'affrètement (M | ★★★ | HAUTE)
+> Bourg ↔ Bourg, cargaison, itinéraire × allure.
+- [ ] Entité de caravane : affréteur, cargaison (escrow), origine/destination (zones à
+      foyer **Bourg+**, testé), itinéraire (chemin du graphe choisi), allure
+      (prudente/normale/hardie), coût d'affrètement (sink), état
+- [ ] Multiplicateur de durée par allure sur `travel_seconds` cumulés ; taux de
+      rencontre par segment selon allure et itinéraire (config, **jamais nul**)
+- [ ] Capacité de cargaison majorée par la monture utilitaire active
+- [ ] Tests : gate Bourg↔Bourg, escrow, curseurs temps/risque
+
+### ECO-33 — Les rencontres & l'assurance (M | ★★★ | HAUTE)
+> La caravane s'arrête, le monde répond. Fenêtre 3 h, dégradé 25 %, assurance Marchands.
+- [ ] Jet de rencontre par segment ; la caravane passe en attente, notification à
+      l'affréteur et aux escorteurs (Mercure + tableau de bord)
+- [ ] Résolution sur place dans la **fenêtre de 3 h** (paramètre) : combat standard ou
+      choix (péage/contournement/forcer) ; expirée → **perte ~25 %** de la cargaison
+      (paramètre — jamais la totalité, jamais l'inventaire, testé)
+- [ ] **Assurance des Marchands** : prime à l'affrètement (majorée en allure hardie),
+      remboursement partiel des pertes — palier de réputation Marchands requis
+- [ ] Tests : fenêtre, dégradé borné, assurance, notification
+
+### ECO-34 — L'escorte (M | ★★★ | HAUTE)
+> Une astreinte, pas un voyage : l'escorteur joue normalement et répond aux appels.
+- [ ] Inscription d'escorteurs avant le départ (l'affréteur fixe la **paie d'escorte** —
+      part du coût, transfert joueur → joueur) ; convoi de guilde = escorteurs membres
+- [ ] L'escorteur n'est **jamais immobilisé** ; une rencontre prise = voyage standard
+      vers le segment + résolution ; premier arrivé, premier servi
+- [ ] Gains : paie à l'arrivée, réputation Chevaliers (geste d'escorte), butin des
+      combats, grains `war` déposés sur la route
+- [ ] Tests : non-blocage, paie, réputation, concurrence entre escorteurs
+
+### ECO-35 — Équilibrage & canon (S | ★★ | HAUTE)
+- [ ] Le point mort : quel volume justifie une caravane contre N voyages à dos
+      (chiffré dans BALANCE, avec les coûts d'affrètement et d'assurance)
+- [ ] **Sédiment aux deux bouts** (grains `trade` pondérés) ; la contrebande n'en
+      dépose **aucun** (canon §12.7 e, testé)
+- [ ] **Jamais d'interception par un joueur** — aucune API, aucune information de
+      convoi vendable (les rumeurs des Ruelles ne portent jamais sur les convois),
+      invariant testé
+- [ ] Trajets privés (affréteur + escorteurs), agrégats publics seulement

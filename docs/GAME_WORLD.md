@@ -1453,6 +1453,71 @@ quand la ville décline : elle *est* ce qui reste de la ville.
 Jalons : **FOY-18 → FOY-21** (vague 2 du plan foyers). Le jardin, lui, ne change pas —
 il est déjà exactement ce qu'il doit être.
 
+### 12.7 Les caravanes — mécanique tranchée *(2026-07-29)*
+
+Le §5.3 posait les principes ; voici la mécanique, tranchée. **La caravane est un
+contrat de transport asynchrone** — et son miroir discret existe déjà : la contrebande
+des Ruelles (§12.4).
+
+**a) L'affrètement.** Se fait à un marché, vers un marché : **Bourg ↔ Bourg minimum**
+(une caravane relie des places marchandes — la valeur du rang s'en trouve renforcée).
+Coût en gils (le sink), cargaison au-delà de la capacité du sac (les montures
+utilitaires — chariot de la Fonderie, mule des Marchands — l'augmentent), et **deux
+curseurs de risque** :
+
+- **L'itinéraire** : le graphe offre des chemins alternatifs (l'anneau) — le plus court
+  n'est pas le plus sûr ;
+- **L'allure** : *prudente* (lente, taux de rencontre bas — **jamais nul**), *normale*,
+  ou *hardie* (rapide, taux haut).
+
+Le couple itinéraire × allure est le facteur temps/risque : la caravane prudente par la
+longue route arrive presque toujours entière, presque toujours tard.
+
+**b) Les rencontres, asynchrones.** À chaque segment, un jet de rencontre **PvE**
+(pillards PNJ, bêtes, événements de marée). Quand une tombe, la caravane s'arrête :
+l'affréteur et les escorteurs sont notifiés et disposent d'une **fenêtre de 3 heures**
+pour la résoudre sur place (voyage standard + combat ou choix — payer le péage,
+contourner, forcer). Fenêtre expirée : résolution automatique dégradée — la caravane
+repart en perdant **~25 % de la cargaison** (jamais tout, jamais l'inventaire — la même
+borne que la contrebande). **L'assurance des Marchands** (prime à l'affrètement,
+majorée pour une allure hardie) rembourse partiellement les pertes — un service de
+faction de plus.
+
+**c) L'escorte ne bloque personne.** S'inscrire comme escorteur n'immobilise pas le
+personnage : c'est une **astreinte, pas un voyage**. On joue normalement ; quand une
+rencontre tombe, on est appelé (fenêtre de 3 h — large exprès pour les horaires réels),
+on s'y rend, on la résout, on reprend sa journée. Les bénéfices de l'escorteur :
+
+1. **La paie d'escorte** — une part du coût d'affrètement, fixée au départ (l'affréteur
+   paie ses gardes : un transfert joueur → joueur, pas un robinet à gils) ;
+2. **La réputation des Chevaliers** — l'escorte est un de leurs gestes (§6.4) ;
+3. **Le butin des rencontres** résolues (un combat paie normalement) ;
+4. Les **grains `war`** de ses combats, déposés sur la route.
+
+**d) La visibilité, et la ligne rouge.** Les trajets **ne sont pas publics** : seuls
+l'affréteur et ses escorteurs voient le convoi ; le monde ne voit que l'effet agrégé
+(le sédiment déposé aux deux bouts — commercer fait monter les foyers, §5.3). Les
+rumeurs des Ruelles **ne vendent jamais** l'information d'un convoi : cette information
+n'aurait d'usage que l'interception, et **l'attaque de caravane par des joueurs serait
+du PvP — jamais, règle 11, le Serment** (« le sang versé ne se dépose pas » vaut sur
+les routes comme partout). Le risque d'une caravane est le monde, pas les autres
+joueurs.
+
+**e) Le miroir des Ruelles.** Le pendant des caravanes existe déjà : **la contrebande**
+(§12.4 d, FAC-08). La symétrie est complète, et elle se consigne :
+
+| | **La caravane** (au grand jour) | **La contrebande** (la nuit) |
+|---|---|---|
+| Volume | gros (au-delà du sac) | petit et précieux |
+| Quand | jour, lente | nuit, discrète |
+| Protection | escorte de joueurs, assurance | aucune — la discrétion |
+| Risque | rencontres PvE, perte partielle | la fouille, confiscation du contrat |
+| Qui y gagne | Marchands (assurance), Chevaliers (escorte) | les Ruelles (la coupe) |
+| Sédiment | **déposé aux deux bouts** | **aucun** — le transport invisible ne nourrit pas les foyers |
+
+La dernière ligne est un canon : la contrebande vole aussi le sédiment — ce que la
+ville ne voit pas passer ne la fait pas grandir. Jalons : **ECO-32 → ECO-35** (Piste I).
+
 ## 13. Peuplement du monde — départ, zones, extensions
 
 > **Statut : acté le 2026-07-28.** Les deux entrées attendues (§14) sont closes, et les
