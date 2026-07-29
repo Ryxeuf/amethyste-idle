@@ -757,7 +757,19 @@
       "reputation": "Reputation",
       "next_tier": "Next tier: %tier%",
       "max_tier": "Maximum tier reached!",
-      "rewards_title": "Rewards"
+      "rewards_title": "Rewards",
+      "axis": {
+        "explain": "Beyond the %tier% tier, gaining reputation with a faction removes %percent%% of that gain from its opposite. Below it, everyone can like you. Absence never costs anything.",
+        "neutral": "Outside the axis",
+        "opposed_to": "opposed to %faction%"
+      },
+      "patronage": {
+        "badge": "Colours carried",
+        "choose": "Carry these colours",
+        "clear": "Carry no colours",
+        "current": "You carry the colours of %faction%: only its stat bonuses apply.",
+        "none": "You carry no colours. From the %tier% tier onwards, a faction can become your patronage — one at a time."
+      }
     },
     "friends": {
       "title": "Friends",

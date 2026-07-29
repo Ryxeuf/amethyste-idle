@@ -5,6 +5,7 @@ namespace App\Entity\App;
 use App\Entity\App\Traits\CharacterStatsTrait;
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
+use App\Entity\Game\Faction;
 use App\Entity\Game\Mount;
 use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
@@ -252,6 +253,23 @@ class Player implements CharacterInterface
      */
     #[ORM\OneToMany(targetEntity: PlayerCraftSpecialization::class, mappedBy: 'player', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $craftSpecializations;
+
+    /**
+     * Les couleurs qu'on porte (FAC-01).
+     *
+     * GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent
+     * un patronage — on porte les couleurs d'une seule faction a la fois. Un
+     * palier de reputation ouvre des portes ; il n'empile jamais de la
+     * puissance. »
+     *
+     * Une reference unique et pas une collection : c'est la forme du champ qui
+     * tient l'exclusivite. Une collection aurait laisse la regle a la charge du
+     * service, et un seul appelant distrait aurait suffi a empiler quatre
+     * factions sans qu'aucun ecran ne le dise.
+     */
+    #[ORM\ManyToOne(targetEntity: Faction::class)]
+    #[ORM\JoinColumn(name: 'patron_faction_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Faction $patronFaction = null;
 
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
@@ -850,6 +868,26 @@ class Player implements CharacterInterface
         if (!$this->craftSpecializations->contains($specialization)) {
             $this->craftSpecializations->add($specialization);
         }
+    }
+
+    public function getPatronFaction(): ?Faction
+    {
+        return $this->patronFaction;
+    }
+
+    /**
+     * Porter d'autres couleurs, ou n'en porter aucune.
+     *
+     * Le setter ne verifie ni le palier ni le combat : c'est `PatronageService`
+     * qui arbitre, parce que le refus doit avoir un motif et que le motif se
+     * dit au joueur. Un entite qui refuse en silence produirait un formulaire
+     * qui ne fait rien.
+     */
+    public function setPatronFaction(?Faction $faction): self
+    {
+        $this->patronFaction = $faction;
+
+        return $this;
     }
 
     public function getRace(): ?Race
