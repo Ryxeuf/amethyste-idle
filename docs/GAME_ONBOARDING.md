@@ -1,6 +1,6 @@
 # Le compte, le personnage, l'arrivée — cadrage de l'entrée dans le jeu
 
-> **Statut : proposé** · 2026-07-29 (révisions R1 et R2 le même jour — cf. §11)
+> **Statut : proposé** · 2026-07-29 (révisions R1, R2, R3 et R3b le même jour — cf. §11)
 > Source de vérité de **tout ce qui se passe avant qu'un joueur soit un joueur** : la
 > création du compte, la connexion, la création du personnage, les dix premières minutes
 > et l'apprentissage de l'interface.
@@ -74,7 +74,7 @@ lit trois fois chaque option et abandonne une fois sur cinq.
 
 ## 2. L'existant, sans complaisance
 
-État constaté dans le code au 2026-07-29. Douze dettes, dont trois bloquantes.
+État constaté dans le code au 2026-07-29. Treize dettes, dont trois bloquantes.
 
 | # | Dette | Gravité | Constat |
 |---|---|---|---|
@@ -90,6 +90,7 @@ lit trois fois chaque option et abandonne une fois sur cinq.
 | **D10** | **Aucun apprentissage d'interface** | 🟡 | Un bandeau d'objectif au hub, rien d'autre |
 | **D11** | **La zone de départ n'expose qu'une seule récolte** | 🟠 | Le Fanal n'a que **deux filons, tous deux d'herboristerie** (thym, lavande). Un choix de métier « au choix » y est impossible : tout le monde devient herboriste faute d'alternative *(le volet « combat » de cette dette est réglé autrement — cf. §5.4)* |
 | **D12** | **Les peuples ne sont pas équilibrés — et l'Humain est strictement dominé** | 🟡 | Humain `0/0/0/0` ; Nain `+5 vie, +5 énergie, −1 vitesse` ; Orc `+8 vie, −3 précision` ; Elfe `+2 vitesse, +3 précision`. L'Humain n'a **aucun avantage**. Et +8 vie sur une base de 20, c'est **+40 % de survie** demandés au pas 3 |
+| **D13** | **Le combat à mains nues n'existe pas** | 🟠 | `PlayerAttackHandler::getItem()` lève `EntityNotFoundException('Player attack impossible')` dès qu'aucune arme n'est équipée (ou qu'elle n'a pas de `spell`). Le repli posé comme garde-fou anti-blocage en §6.0 **est aujourd'hui un plantage** : sans lui, la doctrine du parchemin enferme un personnage sans arme apprise |
 
 **Deux systèmes à moitié construits**, découverts en instruisant ce dossier — ils changent le
 plan plus qu'ils ne l'alourdissent :
@@ -454,6 +455,43 @@ La frontière est nette : **le parchemin ouvre un métier ou une famille d'arme,
 port » réserve explicitement le cas — « seul un prérequis de **compétence** peut gater une
 pièce ». Le parchemin d'arme est ce prérequis, et il est atteignable par tout le monde.)*
 
+#### 6.0 bis — Le cas de l'arme, tranché
+
+**Oui : équiper une arme exige d'avoir appris son maniement dans un arbre. Sans quoi on se bat
+à mains nues.** Le mécanisme est **déjà en place** — `Item::requirements` (ManyToMany vers
+`Skill`) et `PlayerItemHelper::canBeEquipped()`, qui exige *toutes* les compétences requises —
+et il est déjà utilisé sur les armes de palier 2 et 3 (`berserk_weapon_t2`, `knight_weapon_t2`,
+`archer_weapon_t2`…). Trois précisions le rendent utilisable sans casser le reste.
+
+**a) C'est l'inverse aujourd'hui.** Les armes **T1 n'ont aucun prérequis** ; seules les T2/T3
+en portent. On peut donc manier une hachette rouillée sans rien avoir appris, mais pas une
+hache de guerre. Avec la doctrine, **c'est le T1 qui porte le nœud de maniement** — c'est là
+qu'on apprend à tenir l'arme ; les paliers supérieurs continuent d'exiger des nœuds plus
+avancés du **même** arbre.
+
+**b) Le nœud de maniement est borné par le registre, jamais par l'élément.** Les prérequis
+existants sont nommés **par domaine** (`berserk_weapon_t2` = feu × mêlée, `knight_weapon_t2` =
+métal × mêlée) et `steel-axe` porte `'domain' => 'soldier'`. Pris tel quel, cela signifie qu'un
+Berserker devrait ouvrir l'arbre du Soldat pour porter une hache : **l'arme redeviendrait
+couplée à l'élément**, exactement ce que DOM-01 a séparé (le domaine est élément × registre ;
+c'est l'**arme** qui fixe le registre).
+
+> **« Maniement de la hache » est un nœud partagé entre les huit arbres de mêlée. En ouvrir un
+> seul suffit. On n'achète jamais un élément pour porter une arme.**
+
+Le mécanisme existe : `Skill::domains` est un ManyToMany, et les nœuds partagés sont déjà une
+pratique du projet (DOM-09).
+
+**c) La hache d'arme n'est pas la hache de bûcheron.** Le mot est le même, la porte ne l'est
+pas : la hache de guerre passe par le nœud de maniement (registre mêlée), la hache de bûcheron
+(ZON-34, DOM-05) par l'arbre du bûcheron. Même remarque pour la pioche — outil, jamais arme.
+
+**d) Et le repli doit d'abord exister** (**D13**). `PlayerAttackHandler::getItem()` lève
+aujourd'hui `EntityNotFoundException('Player attack impossible')` dès qu'aucune arme n'est
+équipée. Le combat à mains nues — faible, sans emplacement de matéria, mais **toujours
+disponible** — est la condition sans laquelle cette doctrine enferme un personnage au lieu de
+l'orienter. C'est le premier jalon à livrer de tout le bloc.
+
 ### 6.1 Trois états, pas deux
 
 La question « montre-t-on les 32 arbres dès l'arrivée ? » n'a pas une réponse binaire. Elle en
@@ -690,6 +728,7 @@ l'interface. `PlayerHubDigest::recap()` fait déjà une partie du travail.
 | **A14** | **La forme de l'acte I** | **Trois tours de la même boucle** — parchemin → arbre → geste — sur l'arme, la matéria et la récolte (R2, §5.1) |
 | **A15** | **Le juste milieu** | **Le champ est infini, l'entrée est un acte.** Aucun geste n'est fermé, aucun arbre n'en exclut un autre, et un joueur peut tout mener de front — mais **rien n'est su avant d'avoir été appris** (R3, §6.0) |
 | **A16** | **Les actions de base** | Elles sont **concernées** : sans parchemin, on ne mine ni ne forge. Avec deux garde-fous : les personnages existants sont **grand-périsés**, et l'acte I **donne** les trois premiers. **Restent libres sans condition** : marcher, voyager, explorer, parler, ramasser, se battre **à mains nues** (R3, §6.0) |
+| **A18** | **L'arme** | **Équiper une arme exige le nœud de maniement de sa famille ; sans quoi, mains nues.** Le nœud est **partagé entre les arbres d'un même registre** (jamais borné par l'élément), il descend au **palier T1**, et l'arme de métier (hache de bûcheron, pioche) relève de l'arbre de métier, pas du combat. Prérequis absolu : **que les mains nues existent** (D13) — R3b, §6.0 bis |
 | **A17** | **Les arbres retrouvés** | Des arbres **hors registre**, ouverts par une rencontre que **l'accomplissement** déclenche (finir un arbre). **Latéral jamais vertical**, **cumulatif jamais manqué**, **jamais nécessaire**, et le parchemin retrouvé est **lié** : ce qui circule est l'information, pas l'objet (R3, §6.4) |
 
 ---
@@ -723,6 +762,13 @@ débouché :
 - **les arbres retrouvés** : le parchemin, une fois posé comme mécanisme, ouvre une couche
   hors registre qui donne enfin une récompense au fait de **terminer** un arbre. Ses lois sont
   importées du Répertoire (GAME_WORLD §12.3), pas réinventées → A17 ;
+**R3b (2026-07-29)** — le cas de l'arme tranché (§6.0 bis, A18), et une dette découverte en le
+vérifiant : **le combat à mains nues n'existe pas** (**D13**) — le repli que la doctrine
+suppose est aujourd'hui une exception non gérée. Trois précisions : le nœud de maniement
+descend au T1 (c'est l'inverse aujourd'hui), il est **partagé par registre** et jamais borné
+par l'élément (sinon porter une hache imposerait un élément), et l'arme de métier relève de
+l'arbre de métier.
+
 - **la capacité de l'Humain est resserrée** sur ce qui lui est passé entre les mains (sac ou
   banque), jamais sur l'hôtel des ventes : elle cesse d'être un outil d'arbitrage de marché et
   se gagne en jouant, comme les trois autres.

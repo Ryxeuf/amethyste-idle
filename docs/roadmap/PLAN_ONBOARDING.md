@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**19 jalons** (**ONB-01** à **ONB-19**) organisés en 5 pistes.
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes.
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -44,11 +44,12 @@
 | ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
+| ONB-20 | Le combat a mains nues et le maniement d'arme (ferme D13) | M | ★★★ |
 
 ```
 Piste A — Le compte existe    : ONB-01 → ONB-02 → ONB-03 → ONB-04
 Piste B — Le tunnel           : ONB-05 → ONB-06, ONB-07        (06 et 07 paralleles)
-Piste C — La boucle du jeu    : ONB-08 → ONB-09
+Piste C — La boucle du jeu    : ONB-20 → ONB-08 → ONB-09
                                 ONB-10, ONB-11  (paralleles)  → ONB-12 → ONB-13
 Piste D — L'acte I repare     : ONB-14, ONB-15, ONB-16        (paralleles)
 Piste E — Apprentissage & preuve : ONB-17, ONB-18, ONB-19
@@ -71,6 +72,10 @@ le rôle d'orienter — c'est-à-dire redevenir ce que R1 et R2 ont écarté.
 **ONB-08 est le pivot technique du plan.** Il introduit une notion que le modèle n'a pas :
 **un arbre ouvert pour un personnage**. Tout ce qui suit en dépend — le catalogue (09), la
 chaîne (12), et le coach de l'écran des arbres (17).
+
+**Mais ONB-20 passe avant lui**, et c'est non négociable : le combat à mains nues **n'existe
+pas** (`PlayerAttackHandler` lève une exception sans arme équipée). Livrer la doctrine du
+parchemin avant ce repli enfermerait un personnage sans arme apprise au lieu de l'orienter.
 
 **Coupe minimale jouable** : ONB-01 + ONB-02 + ONB-03 + ONB-15. Un inconnu peut alors créer un
 compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
@@ -397,6 +402,34 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       pour la porte (04) ; **aucun contenu gaté par la race ni par le foyer d'attache** (07, 13) ;
       **les quatre conditions du parchemin** (08) ; le catalogue contient toujours les 32 et
       n'expose aucun nœud d'un arbre fermé (09) ; un seul état d'onboarding (14)
+
+### ONB-20 — Le combat à mains nues et le maniement d'arme (M | ★★★ | HAUTE)
+> Ferme **D13** et rend applicable **A18**. `PlayerAttackHandler::getItem()` lève aujourd'hui
+> `EntityNotFoundException('Player attack impossible')` dès qu'aucune arme n'est équipée : **le
+> repli que toute la doctrine du parchemin suppose est un plantage.** À livrer **avant**
+> ONB-08.
+> Cadrage : GAME_ONBOARDING §6.0 bis
+- [ ] **Les mains nues existent** : attaque faible, sans emplacement de matéria, **toujours
+      disponible**. Aucun chemin de combat ne doit pouvoir échouer faute d'arme
+- [ ] Le prérequis d'équipement par compétence est **déjà en place** (`Item::requirements`
+      ManyToMany vers `Skill`, `PlayerItemHelper::canBeEquipped()` qui exige *toutes* les
+      compétences, déjà utilisé sur les armes T2/T3) — rien à construire, seulement à étendre
+- [ ] **Descendre le nœud de maniement au palier T1.** Aujourd'hui c'est l'inverse : les T1
+      n'ont aucun prérequis, seules les T2/T3 en portent — on peut manier une hachette sans
+      rien avoir appris, mais pas une hache de guerre. Les paliers supérieurs continuent
+      d'exiger des nœuds plus avancés du **même** arbre
+- [ ] **Le nœud de maniement est partagé par registre, jamais borné par l'élément.** Les
+      prérequis actuels sont nommés par domaine (`berserk_weapon_t2` = feu × mêlée,
+      `knight_weapon_t2` = métal × mêlée) et `steel-axe` porte `'domain' => 'soldier'` : pris
+      tel quel, porter une hache imposerait un élément, ce que DOM-01 a justement séparé.
+      « Maniement de la hache » doit être un **nœud partagé** entre les huit arbres de mêlée
+      (`Skill::domains` est déjà ManyToMany) — **en ouvrir un seul suffit**
+- [ ] **L'arme de métier n'est pas une arme.** La hache de bûcheron (ZON-34, DOM-05) et la
+      pioche relèvent de leur arbre de métier, jamais d'un arbre de combat. Même mot, deux portes
+- [ ] Migration : les personnages existants gardent ce qu'ils peuvent déjà équiper
+- [ ] Tests : attaque possible sans arme ; aucun `EntityNotFoundException` sur un chemin de
+      combat ; un nœud de maniement ouvert dans **un** arbre de mêlée autorise l'arme dans tous ;
+      aucune arme n'exige un élément précis
 
 ---
 
