@@ -7,6 +7,7 @@ use App\Helper\PlayerHelper;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\ForbiddenNameChecker;
 use App\Service\PlayerFactory;
+use App\Service\PlayerNameNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -34,6 +35,7 @@ class CharacterControllerCustomizeTest extends TestCase
             $this->playerHelper,
             $this->entityManager,
             $this->createMock(ForbiddenNameChecker::class),
+            new PlayerNameNormalizer(),
             $this->recalculator,
             1,
         );
