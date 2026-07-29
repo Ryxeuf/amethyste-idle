@@ -116,6 +116,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getFishermanSkills(),
             $this->getSkinnerSkills(),
             $this->getLumberjackSkills(),
+            $this->getCookSkills(),
             $this->getBlacksmithSkills(),
             $this->getLeatherworkerSkills(),
             $this->getAlchimistSkills(),
@@ -4486,6 +4487,102 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'requirements' => ['skinner_exotic', 'skinner_fang_m'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // CUISINIER (eau/craft) — le debouche de la peche et des vivres (ECO-29)
+    // =========================================================================
+    // Avant ce jalon, **aucun poisson du monde n'etait consomme par quoi que ce
+    // soit** : six filons de peche, un arbre entier de competences, et rien au
+    // bout. L'arbre du cuisinier ouvre les sept plats qui ferment ce trou.
+    //
+    // **Aucun emplacement d'outil.** On cuisine avec ce qu'on a, et
+    // `Item::CRAFT_TOOL_TYPES` ne cite pas ce metier : inventer une marmite
+    // aurait demande un type d'outil, un bit d'equipement et un emplacement
+    // d'interface neufs — un changement de mecanisme pour un jalon de contenu.
+    private function getCookSkills(): array
+    {
+        $d = 'cook';
+
+        return [
+            // Rang 1 (0 pts) — le four et le feu
+            'cook_bread' => [
+                'slug' => 'cook-bread',
+                'title' => 'Panification',
+                'description' => 'Permet de cuire le pain de campagne a partir du ble',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-bread']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'cook_skewer' => [
+                'slug' => 'cook-skewer',
+                'title' => 'Cuisson au feu',
+                'description' => 'Permet de preparer la brochette du gue : perche et truite sur la meme branche',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-fish-skewer']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-25 pts) — la marmite
+            'cook_stew' => [
+                'slug' => 'cook-stew',
+                'title' => 'Mijotage',
+                'description' => 'Permet de mijoter la carpe des etangs avec le gibier de plaine',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-carp-stew']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['cook_skewer'],
+            ],
+            'cook_palate' => [
+                'slug' => 'cook-palate',
+                'title' => 'Palais du cuisinier',
+                'description' => 'Gouter avant de servir : les plats sortent meilleurs',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['cook_bread'],
+            ],
+
+            // Rang 3 (35-60 pts) — les tables qui se paient
+            'cook_roast' => [
+                'slug' => 'cook-roast',
+                'title' => 'Rotissage',
+                'description' => 'Permet de rotir le saumon des rapides sur son lit de pain',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-salmon-roast']]],
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'requirements' => ['cook_stew'],
+            ],
+            'cook_moonfish' => [
+                'slug' => 'cook-moonfish',
+                'title' => 'Ecaillage fin',
+                'description' => 'Permet d\'apprêter le poisson-lune sans abimer ses ecailles',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-moonfish-plate']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['cook_roast'],
+            ],
+
+            // Rang 4 (90-150 pts) — ce qui mord encore dans l'assiette
+            'cook_eel' => [
+                'slug' => 'cook-eel',
+                'title' => 'Anguille au poivre',
+                'description' => 'Permet d\'apprêter l\'anguille electrique sans se faire mordre',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-eel-dish']]],
+                'requiredPoints' => 90,
+                'domain' => $d,
+                'requirements' => ['cook_moonfish'],
+            ],
+            'cook_feast' => [
+                'slug' => 'cook-feast',
+                'title' => 'Festin',
+                'description' => 'Permet de dresser un kraken juvenile pour toute une tablee',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-kraken-feast']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['cook_eel', 'cook_palate'],
             ],
         ];
     }
