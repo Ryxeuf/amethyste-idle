@@ -31,10 +31,18 @@
   },
   "registration": {
     "title": "Inscription",
+    "eyebrow": "Améthyste",
+    "intro": "Un compte, un nom, et le Fanal vous attend. Vérifier votre adresse peut attendre : elle n'ouvre que le marché, les guildes et le chat.",
+    "email": "Adresse e-mail",
     "password": "Mot de passe",
-    "register": "S'inscrire",
+    "password_show": "Afficher",
+    "password_hide": "Masquer",
+    "password_hint": "Au moins %min% caractères.",
+    "agree_terms": "J'accepte les règles du jeu",
+    "register": "Créer mon compte",
     "already_registered": "Déjà inscrit ?",
-    "login_link": "Connectez-vous"
+    "login_link": "Connectez-vous",
+    "rate_limited": "Trop de comptes créés depuis cette connexion. Réessayez dans une heure."
   },
   "security": {
     "title": "Connexion",

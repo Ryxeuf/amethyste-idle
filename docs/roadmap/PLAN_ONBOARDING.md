@@ -21,11 +21,11 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes.
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **1/20 livré.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
-| ONB-01 | Inscription — le compte peut naître (ferme D1) | M | ★★★ |
+| ONB-01 ✅ | Inscription — le compte peut naître (ferme D1) | M | ★★★ |
 | ONB-02 | Mailer + mot de passe oublié (ferme D2) | M | ★★★ |
 | ONB-03 | Durcissement de la connexion (ferme D3) | S | ★★★ |
 | ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
@@ -98,18 +98,22 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 
 ## Piste A — Le compte existe (séquentiel)
 
-### ONB-01 — Inscription : le compte peut naître (M | ★★★ | CRITIQUE)
-> Ferme **D1**. `RegistrationController::__invoke()` lève un `NotFoundHttpException` : aucun
-> compte ne peut être créé hors fixtures.
-- [ ] `RegistrationFormType` : **trois champs** — e-mail, mot de passe, acceptation des règles.
+### ONB-01 — Inscription : le compte peut naître (M | ★★★ | CRITIQUE) — ✅ LIVRÉ 2026-07-29
+> Ferme **D1**. `RegistrationController::__invoke()` levait un `NotFoundHttpException` : aucun
+> compte ne pouvait être créé hors fixtures.
+- [x] `RegistrationFormType` : **trois champs** — e-mail, mot de passe, acceptation des règles.
       Pas de pseudo de compte, pas de confirmation (bouton « afficher »)
-- [ ] Contraintes : e-mail valide et unique, mot de passe ≥ 10 caractères, hachage `auto`
-- [ ] `emailVerifiedAt` nullable sur `User` (+ migration idempotente) — le compte naît **non
+- [x] Contraintes : e-mail valide et unique, mot de passe ≥ 10 caractères, hachage `auto`
+- [x] `emailVerifiedAt` nullable sur `User` (+ migration idempotente) — le compte naît **non
       vérifié et pleinement jouable**
-- [ ] Authentification automatique puis redirection vers le tunnel (ONB-05)
-- [ ] Limiteur : 5 comptes / heure / IP
-- [ ] Lien « créer un compte » depuis la connexion et l'accueil public
-- [ ] Tests : création nominale, e-mail pris, mot de passe trop court, limiteur
+- [x] Authentification automatique puis redirection vers la création de personnage — le tunnel
+      (ONB-05) reprendra cette redirection sans la déplacer
+- [x] Limiteur : 5 comptes / heure / IP
+- [x] Lien « créer un compte » depuis la connexion, l'accueil public et la barre de navigation
+- [x] Tests : création nominale, e-mail pris (y compris à la casse près), mot de passe trop
+      court, règles refusées, limiteur
+- [x] **Au passage** : `User::setEmail()` normalise l'adresse (minuscule + trim), sans quoi
+      l'unicité ne tient pas et ONB-02 viserait le mauvais compte
 
 ### ONB-02 — Mailer et mot de passe oublié (M | ★★★ | CRITIQUE)
 > Ferme **D2** : perdre son mot de passe revient à perdre son personnage, son inventaire, sa
