@@ -14,7 +14,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **17 livrés.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **17 livrés — plan complet.**
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -43,7 +43,7 @@ exactement ce dont les foyers ont besoin (`MobDeadEvent`, `CraftEvent`, `SpotHar
 | FOY-13 ✅ | Ateliers de doctrine (Fonderie / Lecteurs) |
 | FOY-14 ✅ | Crédit au journal de monde à la clôture de marée |
 | FOY-15 ✅ | Marées « conséquence » (la Pâleur, l'Appel de la Crue) |
-| FOY-16 | Tests unitaires du plan |
+| FOY-16 ✅ | Tests unitaires du plan |
 | FOY-17 | Facteur de monde — mesure ✅ (a) et échelle ✅ (b) |
 
 ```
@@ -52,7 +52,7 @@ Piste B — Ce que le rang ouvre: FOY-05 ✅ → FOY-06 ✅ → FOY-07 ✅ **(pi
 Piste C — La Crue             : FOY-17a ✅ → FOY-17b ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-10 ✅ **(piste complete)**
 Piste D — Pâleur              : FOY-11 ✅ → FOY-12 ✅ **(piste complete)**
 Piste E — Doctrine & guilde   : FOY-13 ✅ → FOY-14 ✅ **(piste complete)**
-Piste F — Contenu & tests     : FOY-15 ✅, FOY-16
+Piste F — Contenu & tests     : FOY-15 ✅, FOY-16 ✅ **(piste complete)**
 ```
 
 **Ordre de valeur/effort** : `A → B → C → D → E → F`.
@@ -378,14 +378,21 @@ s'y branche.
 >
 > **Aucune migration** : le repère est un vecteur de trois entiers, il vit dans `Parameter`.
 
-### FOY-16 — Tests unitaires du plan (M | ★★ | HAUTE)
+### FOY-16 — Tests unitaires du plan ✅ (M | ★★ | HAUTE)
 > Objectif : **40+ méthodes** dédiées aux foyers, plus un test de contrat transverse.
-> Prérequis : ‖ (au fil des jalons)
-- [ ] Couverture par piste : sédiment, rang/type, gate, Crue, régression, Pâleur, doctrine
-- [ ] `SettlementPlanContractTest` : verrouille le vocabulaire déclaratif
-      (`settlements.yaml`) et les invariants — un foyer ne dépasse jamais son quota, une zone
-      pâlie ne devient jamais stérile, un service existant n'est jamais gaté
-- [ ] Synthèse de couverture, à la manière de `NARRATIVE_TEST_COVERAGE.md`
+> **Livré le 2026-07-29.** Carte complète dans
+> [SETTLEMENT_TEST_COVERAGE.md](SETTLEMENT_TEST_COVERAGE.md).
+>
+> **235 méthodes sur 21 fichiers** — l'objectif est dépassé d'un facteur six, parce que les
+> tests ont été écrits *au fil des jalons* plutôt que rattrapés à la fin. Ce jalon n'a donc pas
+> eu à combler un retard : il a ajouté ce qu'aucune brique ne pouvait vérifier seule.
+>
+> **Le contrat transverse verrouille dix propriétés** qui ne sont vraies que de l'ensemble —
+> dont trois qu'aucun test de comportement n'aurait vues : tout paramètre déclaré est **lu**
+> (un bloc ignoré du chargeur se lit comme une garantie), le rang d'un foyer ne se pose qu'à
+> **deux** endroits (un troisième écrivain contournerait la Crue sans même la connaître), et
+> `never_gated` ne peut pas être **vidé** — désarmer la décision A sans jamais la contredire
+> était le seul chemin que le chargeur laissait ouvert.
 
 ---
 
