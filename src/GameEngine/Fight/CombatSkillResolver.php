@@ -10,6 +10,7 @@ use App\GameEngine\Progression\SynergyCalculator;
 class CombatSkillResolver
 {
     public function __construct(
+        private readonly BuildDomainResolver $buildDomainResolver,
         private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
     ) {
@@ -75,6 +76,14 @@ class CombatSkillResolver
      * barre de vie d'un tour a l'autre. Les quatre autres statistiques
      * qualifient une action et se bornent avec elle.
      *
+     * **La seconde borne, materielle (DOM-02).** Un domaine ne s'exprime que si
+     * le build en porte une source : une materia de son element pour une ecole
+     * de sort, une arme de son registre pour une ecole d'arme. Les deux bornes
+     * sont cumulatives et ne disent pas la meme chose — la premiere dit « ce
+     * geste-ci n'est pas le tien », la seconde « tu n'as rien sur toi qui le
+     * permette ». Sans elle, un joueur qui monte les trente-six arbres les
+     * exprimerait tous des qu'une action tombe dans la bonne case.
+     *
      * @return array{damage: int, heal: int, hit: int, critical: int, life: int}
      */
     public function getCombatBonuses(Player $player, ?CombatScope $scope = null): array
@@ -91,7 +100,7 @@ class CombatSkillResolver
             // La vie precede la borne : elle n'est pas une action.
             $bonuses['life'] += $skill->getLife();
 
-            if (!$this->skillAppliesTo($skill, $scope)) {
+            if (!$this->skillAppliesTo($player, $skill, $scope)) {
                 continue;
             }
 
@@ -125,8 +134,13 @@ class CombatSkillResolver
      * comparer. La borner reviendrait a supprimer son passif partout ; la
      * declarer globale la laisse se comporter comme avant DOM-01. C'est la
      * clause qui permet de typer les domaines sans relire les 524 nœuds.
+     *
+     * **Les deux bornes sont cumulatives (DOM-02).** Le domaine doit convenir a
+     * l'action *et* etre porte par le build. Elles ne disent pas la meme chose :
+     * la premiere refuse un geste qui n'est pas celui de l'arbre, la seconde
+     * refuse un arbre que rien sur le personnage n'exprime.
      */
-    private function skillAppliesTo(Skill $skill, ?CombatScope $scope): bool
+    private function skillAppliesTo(Player $player, Skill $skill, ?CombatScope $scope): bool
     {
         if ($scope === null) {
             return true;
@@ -139,7 +153,7 @@ class CombatSkillResolver
             }
 
             $bounded = true;
-            if ($scope->admits($domain)) {
+            if ($scope->admits($domain) && $this->buildDomainResolver->isActive($player, $domain)) {
                 return true;
             }
         }

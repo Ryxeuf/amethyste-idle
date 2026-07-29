@@ -16,7 +16,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | DOM-01 ✅ | Passifs typés : élément × registre (refactor du format) | M | ∅ |
-| DOM-02 | Activation par build (domaines actifs = sources portées) | M | ← DOM-01 |
+| DOM-02 ✅ | Activation par build (domaines actifs = sources portées) | M | ← DOM-01 |
 | DOM-03 | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
 | DOM-04 | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
 | DOM-05 | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
@@ -73,16 +73,39 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > menti sur ce qu'est le domaine. Le gain mécanique tient sans elle : un passif feu × mêlée
 > ne sert plus un sort d'eau. Le remplissage est un sujet de contenu, pas de moteur.
 
-### DOM-02 — Activation par build (M | ★★★ | CRITIQUE)
+### DOM-02 — Activation par build ✅ (M | ★★★ | CRITIQUE)
 > GAME_DOMAINS §3. Un domaine n'est actif en combat que si le build porte une de ses
 > sources. La borne est matérielle, jamais réglementaire.
-> Prérequis : ← DOM-01
-- [ ] Résolution des domaines actifs : matéria serties (élément) + arme (registre)
-- [ ] Les passifs des domaines inactifs ne s'appliquent pas ; les **accords** restent
-      acquis (le savoir n'est jamais borné — seule l'expression l'est)
-- [ ] Changement de build hors combat uniquement (`BuildPresetManager` réutilisé)
-- [ ] UI : l'écran de build montre les domaines actifs qui en découlent
-- [ ] Tests : domaines actifs dérivés du build, passif inactif hors build, presets
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] `BuildDomainResolver` : **une source par famille de registre** — une matéria de son
+      élément pour une école de sort, une arme de son registre pour une école d'arme.
+      Le registre de l'arme est celui de **son** domaine, déjà déclaré dans les fixtures
+      (l'épée est au soldat, l'arc à l'archer)
+- [x] Les deux bornes se cumulent dans `CombatSkillResolver` : le domaine doit convenir à
+      l'action **et** être porté
+- [x] Les **accords** ne passent jamais par là — `getUnlockedMateriaSpellSlugs` est
+      inchangé, et un test l'exige nommément
+- [x] UI : l'écran des arbres marque « Exprimé / Non exprimé » et **dit quoi porter**
+- [x] Tests : 6 (`BuildDomainResolverTest`) + 5 (`CombatSkillResolverBuildTest`)
+
+> **Deux sources, une par famille, et ce n'est pas une commodité.** Une école de sort
+> s'exprime par la matière qu'on sertit, une école d'arme par l'arme qu'on tient. Exiger les
+> deux de chacune aurait rendu le pyromancien dépendant d'un bâton qui n'existe pas dans son
+> arbre, et le soldat d'une matéria de métal qui n'a rien à voir avec son épée.
+>
+> **L'épée de bois du débutant n'ouvre aucune école, et n'en ferme aucune.** Elle n'a pas de
+> domaine : elle n'appartient à rien. Personne n'y perd — l'attaque de base ne lit pas les
+> passifs (DOM-01), et la première matéria se sertit toujours (plancher jour 1).
+>
+> **Le changement de build hors combat était déjà tenu** : la borne se calcule à chaque
+> action à partir de l'équipement porté, et l'équipement ne se change pas en combat. Ajouter
+> un verrou dans `BuildPresetManager` aurait dupliqué une garantie que le modèle donne
+> gratuitement.
+>
+> **La fiche d'inventaire n'est pas bornée non plus.** Elle montre ce qu'un joueur a
+> *appris*, pas ce que sa tenue du moment exprime : l'y borner ferait baisser ses chiffres
+> en rangeant une arme, sans que rien ne l'explique. C'est l'écran des arbres qui porte la
+> distinction, et il la porte en toutes lettres.
 
 ### DOM-03 — Emplacements typés sur l'équipement (M | ★★★ | HAUTE)
 > GAME_DOMAINS §3. La robe porte des emplacements de sort, la plaque des emplacements

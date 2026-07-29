@@ -5,7 +5,10 @@ namespace App\Controller\Game\Skill;
 use App\Dto\Domain\DomainModel;
 use App\Dto\Domain\PlayerDomain;
 use App\Dto\Skill\SkillPlayer;
+use App\Entity\App\Player;
 use App\Entity\Game\Domain;
+use App\Enum\CombatRegister;
+use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Progression\BuildPresetManager;
 use App\GameEngine\Progression\SkillRespecManager;
 use App\Helper\PlayerDomainHelper;
@@ -26,6 +29,7 @@ class IndexController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly SkillRespecManager $respecManager,
         private readonly BuildPresetManager $presetManager,
+        private readonly BuildDomainResolver $buildDomainResolver,
     ) {
     }
 
@@ -36,6 +40,16 @@ class IndexController extends AbstractController
         $domainsModels = array_map($this->transformDomain(...), $domains);
 
         $player = $this->playerHelper->getPlayer();
+
+        // DOM-02 : l'ecran dit ce que le build exprime, et ce qu'il faudrait
+        // porter pour le reste. Le savoir n'est jamais perdu — seule son
+        // expression depend de l'equipement, et c'est cette distinction que
+        // l'affichage doit rendre lisible plutot que de la laisser deviner.
+        if ($player !== null) {
+            foreach ($domainsModels as $model) {
+                $this->annotateActivation($player, $model);
+            }
+        }
 
         $buildStats = $this->computeBuildStats($domainsModels);
 
@@ -78,6 +92,30 @@ class IndexController extends AbstractController
         }
 
         return $stats;
+    }
+
+    /**
+     * Dit si le domaine s'exprime, et sinon ce qu'il faudrait porter.
+     *
+     * Le conseil est **une phrase, pas un code d'erreur** : « inactif » seul se
+     * lirait comme une punition, alors que la borne est materielle et se leve en
+     * changeant d'equipement.
+     */
+    private function annotateActivation(Player $player, DomainModel $model): void
+    {
+        $register = $model->entity->getRegister();
+        if ($register === null) {
+            return;
+        }
+
+        $model->activeInBuild = $this->buildDomainResolver->isActive($player, $model->entity);
+        if ($model->activeInBuild) {
+            return;
+        }
+
+        $model->activationHint = $register === CombatRegister::Spell
+            ? 'Sertissez une matéria de cet élément pour l\'exprimer.'
+            : sprintf('Équipez une arme de %s pour l\'exprimer.', mb_strtolower($register->label()));
     }
 
     private function transformDomain(Domain $domain): DomainModel

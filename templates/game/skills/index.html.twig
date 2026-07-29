@@ -335,6 +335,14 @@
                                         {{ elementConfig[domain.element].label }}
                                     </span>
                                 {% endif %}
+                                {# DOM-02 : ce que le build exprime. Le savoir reste acquis —
+                                   seule son expression depend de l'equipement. #}
+                                {% if domain.activeInBuild is not null %}
+                                    <span class="ds-seal {{ domain.activeInBuild ? 'ds-seal-rare' : 'ds-seal-common' }}"
+                                          title="{{ domain.activeInBuild ? 'Ce que vous portez exprime cet arbre.' : domain.activationHint }}">
+                                        {{ domain.activeInBuild ? 'Exprimé' : 'Non exprimé' }}
+                                    </span>
+                                {% endif %}
                             </div>
                             <div class="flex items-center gap-3 flex-wrap">
                                 {% if domain.totalExperience is defined and domain.totalExperience > 0 %}
@@ -360,6 +368,18 @@
                                 </a>
                             </div>
                         </div>
+
+                        {# DOM-02 : dire quoi faire, jamais seulement constater. La borne est
+                           materielle et se leve en changeant d'equipement — l'ecrire evite
+                           qu'un « non exprime » se lise comme une sanction. #}
+                        {% if domain.activeInBuild is same as(false) %}
+                            <div class="ds-card p-3 mb-4">
+                                <p class="ds-hint">
+                                    Les passifs de cet arbre restent acquis, mais rien de ce que vous portez ne les exprime.
+                                    {{ domain.activationHint }}
+                                </p>
+                            </div>
+                        {% endif %}
 
                         {% set skillsAvailable = domain.skills|filter(s => s.canBeAcquired and not s.acquired) %}
                         {% set skillsAcquired  = domain.skills|filter(s => s.acquired) %}
