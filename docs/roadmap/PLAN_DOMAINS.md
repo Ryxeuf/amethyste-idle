@@ -20,7 +20,7 @@
 | DOM-03 ✅ | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
 | DOM-04 ✅ | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
 | DOM-05 ✅ | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
-| DOM-06 | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
+| DOM-06 ✅ | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
 | DOM-07 | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
 | DOM-08 | Tests du plan | S | ‖ |
 
@@ -207,16 +207,39 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > couvrent la part, et le plafond global reste respecté — un test vérifie que l'arbre ne
 > sature pas à lui seul `MAX_BONUS_PERCENT`.
 
-### DOM-06 — Arbres cuisinier, charpentier, tailleur (M — 1 sous-jalon/arbre | ★★★ | HAUTE)
+### DOM-06 — Arbres cuisinier, charpentier, tailleur ✅ (M | ★★★ | HAUTE)
 > Gabarit artisanat (§5.3) + spécialisations terminales (§7). Se livrent **avec**
 > ECO-29/30/31.
-- [ ] 06a Cuisinier : qualité/durée des effets, lots de voyage ; spé « table de fête /
-      vivres de route »
-- [ ] 06b Charpentier : qualité des canaux de sort, flèches en lot ; spé « armes de
-      trait / mobilier »
-- [ ] 06c Tailleur : emplacements de sort de qualité, doublures ; spé « robes de sort /
-      tenues de travail »
-- [ ] Tests : conformité au gabarit, spécialisations exclusives
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Les trois arbres passent de 8 à **15 nœuds**, avec **deux entrées à 0 pt** chacun
+- [x] Cuisinier : sens du feu, économie de garde-manger, conservation ; branches
+      « table de fête / vivres de route »
+- [x] Charpentier : fil d'équerre, chutes utiles, travail en lot, accord du canal ;
+      branches « armes de trait / mobilier »
+- [x] Tailleur : sertissage de tissu, doublure, lisière franche, teinture ; branches
+      « robes de sort / tenues de travail »
+- [x] **La branche devient une porte d'arbre** : `actions.specialization.branch` +
+      un sixième motif de refus, `other_branch`, traduit FR/EN
+- [x] Tests : 6 (`CraftTreeTemplateTest`) + 5 (`PlayerSkillBranchGateTest`)
+
+> **C'est ici que DOM-04 et l'arbre se rencontrent.** Sans ce jalon, la spécialisation
+> restait un bonus de qualité dont rien, dans ce que le joueur apprend, ne portait la
+> trace — et les deux nœuds terminaux se seraient appris tous les deux, ce qui viderait
+> le renoncement de son sens.
+>
+> **Le refus `other_branch` a une propriété que les cinq autres n'ont pas : il ne se lève
+> pas en jouant.** Il se lève en *renonçant*, par le respec de branche, qui se paie. Le
+> message le dit, sinon le joueur chercherait un prérequis qui n'existe pas.
+>
+> **Deux défauts muets trouvés en chemin.** `carpenter_true_grain` (30 pts) exigeait
+> `carpenter_joinery` (50 pts), et `tailor_setting` (30) exigeait `tailor_needle` (50) : un
+> nœud s'affichait accessible, le joueur avait les points, et l'apprentissage refusait sans
+> dire pourquoi. Un test interdit désormais qu'un prérequis coûte plus cher que le nœud
+> qu'il ouvre.
+>
+> **Deux entrées gratuites par arbre**, ce qui a rendu libres le manche du charpentier et la
+> coupe de la toile du tailleur : tisser et tailler sont le même geste élémentaire, et faire
+> payer le second faisait de l'entrée un couloir.
 
 ### DOM-07 — Nœuds d'hybride dormants (S | ★ | BASSE)
 > GAME_DOMAINS §8. Une ligne de données par arbre de combat, inactive au lancement.

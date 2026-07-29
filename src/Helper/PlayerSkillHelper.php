@@ -15,6 +15,14 @@ class PlayerSkillHelper
     public const REFUSAL_GLOBAL_CAP = 'global_cap';
     public const REFUSAL_NOT_ENOUGH_XP = 'not_enough_xp';
     public const REFUSAL_MISSING_REQUIREMENTS = 'missing_requirements';
+    /**
+     * Le nœud appartient a l'autre branche de l'arbre (DOM-06).
+     *
+     * C'est le seul refus qui ne se leve pas en jouant : il se leve en
+     * **renoncant** — par le respec de branche, qui se paie (DOM-04). Le motif
+     * doit donc le dire, sinon le joueur cherchera un prerequis qui n'existe pas.
+     */
+    public const REFUSAL_OTHER_BRANCH = 'other_branch';
 
     public function __construct(private readonly PlayerHelper $playerHelper, private readonly PlayerDomainHelper $playerDomainHelper)
     {
@@ -65,7 +73,43 @@ class PlayerSkillHelper
             return self::REFUSAL_NOT_ENOUGH_XP;
         }
 
-        return $this->meetsRequirements($player, $skill) ? null : self::REFUSAL_MISSING_REQUIREMENTS;
+        if (!$this->meetsRequirements($player, $skill)) {
+            return self::REFUSAL_MISSING_REQUIREMENTS;
+        }
+
+        // DOM-06 : les nœuds terminaux d'un arbre d'artisanat appartiennent a
+        // une branche. C'est ici que le choix de DOM-04 devient visible dans
+        // l'arbre — sans quoi la specialisation resterait un bonus de qualite
+        // sans aucune trace dans ce que le joueur apprend.
+        return $this->matchesChosenBranch($player, $skill) ? null : self::REFUSAL_OTHER_BRANCH;
+    }
+
+    /**
+     * Le nœud est-il de la branche que le joueur a prise ?
+     *
+     * Un nœud sans declaration de branche appartient a tout le monde : la
+     * grande majorite de l'arbre reste commune, et seule la poignee de nœuds
+     * terminaux se choisit.
+     */
+    private function matchesChosenBranch(Player $player, Skill $skill): bool
+    {
+        foreach ($skill->getActions() ?? [] as $descriptor) {
+            if (!\is_array($descriptor) || ($descriptor['action'] ?? null) !== 'specialization.branch') {
+                continue;
+            }
+
+            $craft = (string) ($descriptor['craft'] ?? '');
+            $branch = (string) ($descriptor['branch'] ?? '');
+            if ($craft === '' || $branch === '') {
+                continue;
+            }
+
+            if ($player->getCraftSpecializationFor($craft)?->getBranch() !== $branch) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getTotalUsedPoints(?Player $player = null): int

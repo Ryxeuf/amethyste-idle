@@ -4621,6 +4621,73 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['cook_eel', 'cook_palate'],
             ],
+            // Rang 3 bis (30-70 pts) — le geste, pas la recette (DOM-06)
+            'cook_timing' => [
+                'slug' => 'cook-timing',
+                'title' => 'Sens du feu',
+                'description' => 'Retirer au bon moment : les plats sortent plus vite de la marmite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['cook_palate'],
+            ],
+            'cook_thrift' => [
+                'slug' => 'cook-thrift',
+                'title' => 'Economie de garde-manger',
+                'description' => 'Rien ne se perd : les parures et les fonds resservent au plat suivant',
+                'requiredPoints' => 45,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['cook_timing'],
+            ],
+            'cook_keeping' => [
+                'slug' => 'cook-keeping',
+                'title' => 'Conservation',
+                'description' => 'Saler, fumer, confire : ce qui est prepare tient plus longtemps',
+                'requiredPoints' => 70,
+                'domain' => $d,
+                'life' => 4,
+                'requirements' => ['cook_thrift'],
+            ],
+
+            // Rang 4 (110-150 pts) — la branche, puis le geste de maitre
+            //
+            // DOM-06 : les deux nœuds terminaux appartiennent chacun a une
+            // branche (DOM-04). C'est ici que le choix pris a l'etabli devient
+            // visible dans l'arbre — sans quoi la specialisation resterait un
+            // bonus de qualite dont rien, dans ce que le joueur apprend, ne
+            // porterait la trace.
+            'cook_feast_table' => [
+                'slug' => 'cook-feast-table',
+                'title' => 'Table de fete',
+                'description' => 'Des effets puissants et courts, pour ce qu\'on fait ensemble',
+                'actions' => [['action' => 'specialization.branch', 'craft' => 'cuisinier', 'branch' => 'feast']],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'life' => 6,
+                'requirements' => ['cook_keeping'],
+            ],
+            'cook_road_provisions' => [
+                'slug' => 'cook-road-provisions',
+                'title' => 'Vivres de route',
+                'description' => 'Des effets modestes et longs, pour ce qu\'on fait seul et loin',
+                'actions' => [['action' => 'specialization.branch', 'craft' => 'cuisinier', 'branch' => 'provisions']],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'life' => 4,
+                'hit' => 1,
+                'requirements' => ['cook_keeping'],
+            ],
+            'cook_master' => [
+                'slug' => 'cook-master',
+                'title' => 'Maitre queux',
+                'description' => 'La signature du cuisinier : ce qui sort de sa table se reconnait',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'life' => 8,
+                'critical' => 2,
+                'requirements' => ['cook_feast'],
+            ],
         ];
     }
 
@@ -4821,9 +4888,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Tournage de manches',
                 'description' => 'Permet de tourner les manches que le forgeron ne sait pas faire',
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-wood-haft']]],
-                'requiredPoints' => 10,
+                // DOM-06 : seconde entree gratuite, comme le gabarit l'exige. La
+                // planche et le manche sont le meme geste elementaire ; faire
+                // payer le second faisait de l'entree un couloir.
+                'requiredPoints' => 0,
                 'domain' => $d,
-                'requirements' => ['carpenter_plank'],
             ],
             'carpenter_first_weapons' => [
                 'slug' => 'carpenter-first-weapons',
@@ -4883,6 +4952,76 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['carpenter_composite', 'carpenter_cabinetmaking'],
             ],
+            // Rang 3 bis (30-70 pts) — le geste, pas la recette (DOM-06)
+            'carpenter_true_grain' => [
+                'slug' => 'carpenter-true-grain',
+                'title' => 'Fil d\'equerre',
+                'description' => 'Debiter dans le fil : le canal du baton porte le sort sans le tordre',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['carpenter_first_weapons'],
+            ],
+            'carpenter_offcuts' => [
+                'slug' => 'carpenter-offcuts',
+                'title' => 'Chutes utiles',
+                'description' => 'Les tombees d\'une piece font les fleches de la suivante',
+                'requiredPoints' => 45,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['carpenter_true_grain'],
+            ],
+            'carpenter_batch' => [
+                'slug' => 'carpenter-batch',
+                'title' => 'Travail en lot',
+                'description' => 'Douze fleches d\'un coup plutot qu\'une douzaine de fois une',
+                'requiredPoints' => 70,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['carpenter_offcuts'],
+            ],
+
+            'carpenter_tuning' => [
+                'slug' => 'carpenter-tuning',
+                'title' => 'Accord du canal',
+                'description' => 'Regler la piece jusqu\'a ce que le flux la traverse sans accrocher',
+                'requiredPoints' => 85,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['carpenter_composite'],
+            ],
+
+            // Rang 4 (110-150 pts) — la branche, puis le geste de maitre (DOM-06)
+            'carpenter_bowyer' => [
+                'slug' => 'carpenter-bowyer',
+                'title' => 'Armes de trait',
+                'description' => 'Arcs, batons et fleches : le bois qui projette',
+                'actions' => [['action' => 'specialization.branch', 'craft' => 'charpentier', 'branch' => 'ranged']],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'damage' => 3,
+                'requirements' => ['carpenter_batch'],
+            ],
+            'carpenter_furnisher' => [
+                'slug' => 'carpenter-furnisher',
+                'title' => 'Mobilier',
+                'description' => 'Ce qui meuble une demeure et ce qui la fait tenir',
+                'actions' => [['action' => 'specialization.branch', 'craft' => 'charpentier', 'branch' => 'furnishing']],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'life' => 6,
+                'requirements' => ['carpenter_batch'],
+            ],
+            'carpenter_signature' => [
+                'slug' => 'carpenter-signature',
+                'title' => 'Marque du charpentier',
+                'description' => 'La signature au fer sur la piece finie : on sait de qui elle vient',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'critical' => 2,
+                'hit' => 1,
+                'requirements' => ['carpenter_master'],
+            ],
         ];
     }
 
@@ -4922,7 +5061,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Coupe de la toile',
                 'description' => 'Permet de tailler la capuche et les mitaines de lin, les deux premieres pieces du mage',
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-linen-hood', 'recipe-linen-gloves']]],
-                'requiredPoints' => 10,
+                // DOM-06 : seconde entree gratuite, comme le gabarit l'exige.
+                // Tisser et tailler sont le meme geste elementaire ; faire payer
+                // le second faisait de l'entree un couloir.
+                'requiredPoints' => 0,
                 'domain' => $d,
                 'requirements' => ['tailor_weaving'],
             ],
@@ -4983,6 +5125,76 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'requirements' => ['tailor_shadowsilk', 'tailor_needle'],
+            ],
+            // Rang 3 bis (30-70 pts) — le geste, pas la recette (DOM-06)
+            'tailor_setting' => [
+                'slug' => 'tailor-setting',
+                'title' => 'Sertissage de tissu',
+                'description' => 'Coudre l\'emplacement de sort a meme la trame : il tient mieux le flux',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['tailor_robe'],
+            ],
+            'tailor_lining' => [
+                'slug' => 'tailor-lining',
+                'title' => 'Doublure',
+                'description' => 'Une doublure bien posee : on travaille plus longtemps sans s\'user',
+                'requiredPoints' => 45,
+                'domain' => $d,
+                'life' => 4,
+                'requirements' => ['tailor_setting'],
+            ],
+            'tailor_selvage' => [
+                'slug' => 'tailor-selvage',
+                'title' => 'Lisiere franche',
+                'description' => 'Une lisiere qui ne file pas : la piece sort du metier sans perte',
+                'requiredPoints' => 70,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['tailor_lining'],
+            ],
+
+            'tailor_dye' => [
+                'slug' => 'tailor-dye',
+                'title' => 'Teinture stable',
+                'description' => 'Une couleur qui ne passe pas au soleil ni sous la pluie',
+                'requiredPoints' => 85,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['tailor_fine_robe'],
+            ],
+
+            // Rang 4 (110-150 pts) — la branche, puis le geste de maitre (DOM-06)
+            'tailor_spellrobes' => [
+                'slug' => 'tailor-spellrobes',
+                'title' => 'Robes de sort',
+                'description' => 'Le tissu qui porte les emplacements de sort',
+                'actions' => [['action' => 'specialization.branch', 'craft' => 'tailleur', 'branch' => 'spellrobes']],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'critical' => 3,
+                'requirements' => ['tailor_selvage'],
+            ],
+            'tailor_workwear' => [
+                'slug' => 'tailor-workwear',
+                'title' => 'Tenues de travail',
+                'description' => 'Le tissu qui tient a la recolte : doublures et confort',
+                'actions' => [['action' => 'specialization.branch', 'craft' => 'tailleur', 'branch' => 'workwear']],
+                'requiredPoints' => 110,
+                'domain' => $d,
+                'life' => 6,
+                'requirements' => ['tailor_selvage'],
+            ],
+            'tailor_signature' => [
+                'slug' => 'tailor-signature',
+                'title' => 'Point du maitre',
+                'description' => 'Une couture qu\'on reconnait sans lire l\'etiquette',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'critical' => 2,
+                'life' => 4,
+                'requirements' => ['tailor_archivist'],
             ],
         ];
     }

@@ -570,7 +570,8 @@
           "already_acquired": "Vous possédez déjà cette compétence.",
           "global_cap": "Limite de 500 points de compétence atteinte.",
           "not_enough_xp": "Points d'expérience de domaine insuffisants.",
-          "missing_requirements": "Il vous manque un prérequis pour cette compétence."
+          "missing_requirements": "Il vous manque un prérequis pour cette compétence.",
+          "other_branch": "Ce nœud appartient à l'autre branche de l'arbre. Changez de branche à l'établi pour y accéder."
         }
       }
     },

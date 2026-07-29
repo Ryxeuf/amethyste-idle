@@ -570,7 +570,8 @@
           "already_acquired": "You already have this skill.",
           "global_cap": "You have reached the 500 skill point cap.",
           "not_enough_xp": "Not enough domain experience.",
-          "missing_requirements": "You are missing a prerequisite for this skill."
+          "missing_requirements": "You are missing a prerequisite for this skill.",
+          "other_branch": "This node belongs to the tree's other branch. Change branch at the workbench to reach it."
         }
       }
     },
