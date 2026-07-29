@@ -31,5 +31,4 @@ enum SettlementDoctrine: string
             self::Readers => 'Atelier des Lecteurs',
         };
     }
-
 }
