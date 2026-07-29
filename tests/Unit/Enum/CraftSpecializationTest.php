@@ -7,9 +7,25 @@ use PHPUnit\Framework\TestCase;
 
 class CraftSpecializationTest extends TestCase
 {
-    public function testAllSpecializationsExist(): void
+    /**
+     * Les sept arbres d'artisanat, depuis DOM-04.
+     *
+     * Ils etaient quatre : cuisinier, charpentier et tailleur avaient des arbres
+     * et des recettes depuis ECO-29/30/31, mais aucune facon de s'y specialiser.
+     * Le tailleur pouvait etre le seul de la region a coudre des robes sans que
+     * rien ne le dise.
+     */
+    public function testEveryCraftTreeIsDeclared(): void
     {
-        $this->assertCount(4, CraftSpecialization::cases());
+        $this->assertSame([
+            'forgeron',
+            'tanneur',
+            'alchimiste',
+            'joaillier',
+            'cuisinier',
+            'charpentier',
+            'tailleur',
+        ], array_map(static fn (CraftSpecialization $c): string => $c->value, CraftSpecialization::cases()));
     }
 
     public function testCraftSlugMatchesEnumValue(): void
