@@ -17,6 +17,10 @@
             </div>
 
             <div class="px-8 pb-8">
+                {% for message in app.flashes('error') %}
+                    <div class="ds-banner ds-banner--loss mb-4">{{ message }}</div>
+                {% endfor %}
+
                 {% if error %}
                     <div class="mb-4 px-4 py-3 rounded-lg bg-red-900/40 border border-red-700 text-red-300 text-sm flex items-start gap-2">
                         <svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">

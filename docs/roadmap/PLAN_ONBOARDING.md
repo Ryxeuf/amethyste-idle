@@ -21,13 +21,13 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **1/20 livré.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **2/20 livrés.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
 | ONB-01 ✅ | Inscription — le compte peut naître (ferme D1) | M | ★★★ |
 | ONB-02 | Mailer + mot de passe oublié (ferme D2) | M | ★★★ |
-| ONB-03 | Durcissement de la connexion (ferme D3) | S | ★★★ |
+| ONB-03 ✅ | Durcissement de la connexion (ferme D3) | S | ★★★ |
 | ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
 | ONB-05 | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
@@ -126,14 +126,23 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [ ] Gabarits d'e-mail au ton du jeu, en français, avec repli texte
 - [ ] Tests : jeton expiré, rejoué, compte inexistant (réponse constante), invalidation
 
-### ONB-03 — Durcissement de la connexion (S | ★★★ | CRITIQUE)
-> Ferme **D3**. Aucun garde-fou sur le firewall, et `isBanned` n'est lu nulle part.
-- [ ] `login_throttling` : 5 essais / 15 min par identifiant, 30 / 15 min par IP
-- [ ] Lecture de `isBanned` au login **et** en session courante
-- [ ] Message d'erreur **unique**
-- [ ] `remember_me.lifetime` : 7 j → **30 j**
-- [ ] Redirection post-login **selon l'état** (aucun personnage / acte I en cours / plusieurs)
-- [ ] Tests : throttling, banni refusé, redirection par état
+### ONB-03 — Durcissement de la connexion (S | ★★★ | CRITIQUE) — ✅ LIVRÉ 2026-07-29
+> Ferme **D3**. Aucun garde-fou sur le firewall, et `isBanned` n'était lu nulle part.
+- [x] `login_throttling` : 5 essais / 15 min par identifiant, 30 / 15 min par IP.
+      Les deux limiteurs sont **déclarés séparément** (`app.login_rate_limiter`) : l'option
+      `max_attempts` de Symfony dérive la borne par IP de la borne par identifiant, ce qui
+      interdit de régler l'une sans l'autre
+- [x] Lecture de `isBanned` au login (`UserChecker`) **et** en session courante
+      (`BannedUserSubscriber`) — sans quoi une session ouverte survivait au bannissement
+      jusqu'à un mois avec le « se souvenir de moi »
+- [x] Message d'erreur **unique** (`LoginFormAuthenticator::GENERIC_FAILURE_MESSAGE`) —
+      seul le throttling garde le sien, il ne dit rien du compte visé et le taire ferait
+      réessayer sans fin
+- [x] `remember_me.lifetime` : 7 j → **30 j**
+- [x] Redirection post-login **selon l'état** : aucun personnage → le tunnel ; plusieurs →
+      le choix ; un seul avec l'acte I inachevé → **l'écran de zone**, pas le hub
+- [x] Tests : message unique par cause d'échec, banni refusé, session bannie fermée,
+      chemins de sortie laissés ouverts, redirection par état
 
 ### ONB-04 — La vérification différée et sa porte (M | ★★★ | HAUTE)
 > Décision A1 (cadrage §3.2).
