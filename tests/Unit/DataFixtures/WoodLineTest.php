@@ -86,9 +86,13 @@ class WoodLineTest extends TestCase
             }
         }
 
-        ksort($sourced);
+        $sourced = array_keys($sourced);
+        sort($sourced);
 
-        self::assertSame(array_keys(self::ESSENCES), array_keys($sourced));
+        $declared = array_keys(self::ESSENCES);
+        sort($declared);
+
+        self::assertSame($declared, $sourced);
     }
 
     /**
