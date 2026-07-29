@@ -56,6 +56,9 @@ class DomainFixtures extends Fixture
             'leatherworker' => ['title' => 'Tanneur', 'element' => 'beast', 'title_translations' => ['en' => 'Leatherworker']],
             'alchimist' => ['title' => 'Alchimiste', 'element' => 'water', 'title_translations' => ['en' => 'Alchemist']],
             'jeweller' => ['title' => 'Joaillier', 'element' => 'earth', 'title_translations' => ['en' => 'Jeweler']],
+            // ECO-29 — le debouche de la peche et des vivres. Element eau : le
+            // metier prend l'element de ce qu'il cuit le plus.
+            'cook' => ['title' => 'Cuisinier', 'element' => 'water', 'title_translations' => ['en' => 'Cook']],
         ];
 
         foreach ($domains as $key => $data) {

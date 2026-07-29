@@ -1320,7 +1320,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'elixir-force',
                 'spell' => 'elixir_force_spell',
                 'effect' => '{"action":"use_spell","slug":"elixir-force"}',
-                'price' => 180,
+                // ECO-29 : le ragout du cuisinier (40) entre dans le cout, et le
+                // prix suit la regle d'ECO-27 — 210 + 10 x 3.
+                'price' => 240,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
@@ -1429,6 +1431,116 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // =================================================================
+            // ECO-29 — la table du cuisinier
+            // =================================================================
+            // Sept plats, et leur raison d'exister tient en une ligne : **les
+            // sept poissons du monde n'etaient consommes par rien**. Six
+            // filons de peche, un arbre entier de competences, et pas une
+            // recette au bout — le defaut le plus large de l'audit d'economie.
+            //
+            // Les plats **soignent**, ils ne buffent pas. Les « buffs
+            // temporaires modestes » du jalon demandent un canal de bonus par
+            // consommable qui n'existe pas ; les plats reprennent donc les
+            // sorts de soin deja poses, par palier. Inventer le canal ici
+            // aurait fait de ce jalon un chantier de mecanique alors qu'il
+            // repare un trou de contenu.
+            'crafted_bread' => [
+                'name' => 'Pain de campagne',
+                'name_translations' => ['en' => 'Country Bread'],
+                'description' => 'Une miche cuite au four du Vieux Moulin. Le blé des Vallons trouve enfin sa fin.',
+                'type' => 'crafted',
+                'slug' => 'crafted-bread',
+                'price' => 20,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'bread_heal',
+                'effect' => '{"action":"use_spell", "slug":"bread-heal"}',
+                'nb_usages' => 1,
+            ],
+            'crafted_fish_skewer' => [
+                'name' => 'Brochette du gué',
+                'name_translations' => ['en' => 'Ford Skewer'],
+                'description' => 'Une perche et une truite enfilées sur la même branche. La première chose qu\'un pêcheur apprend à cuire.',
+                'type' => 'crafted',
+                'slug' => 'crafted-fish-skewer',
+                'price' => 20,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'bread_heal',
+                'effect' => '{"action":"use_spell", "slug":"bread-heal"}',
+                'nb_usages' => 1,
+            ],
+            'crafted_carp_stew' => [
+                'name' => 'Ragoût de carpe',
+                'name_translations' => ['en' => 'Carp Stew'],
+                'description' => 'Carpe des étangs et gibier de plaine dans le même pot. Ce que le marais et le bocage font ensemble.',
+                'type' => 'crafted',
+                'slug' => 'crafted-carp-stew',
+                'price' => 40,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'grilled_meat_heal',
+                'effect' => '{"action":"use_spell", "slug":"grilled-meat-heal"}',
+                'nb_usages' => 1,
+            ],
+            'crafted_salmon_roast' => [
+                'name' => 'Saumon rôti',
+                'name_translations' => ['en' => 'Roast Salmon'],
+                'description' => 'Un saumon des rapides rôti sur son lit de pain. Le plat des jours où l\'on a bien pêché.',
+                'type' => 'crafted',
+                'slug' => 'crafted-salmon-roast',
+                // Le fond d'alchimiste (45) entre dans le cout : 85 + 10 x 3.
+                'price' => 120,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'grilled_meat_heal',
+                'effect' => '{"action":"use_spell", "slug":"grilled-meat-heal"}',
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Uncommon,
+            ],
+            'crafted_moonfish_plate' => [
+                'name' => 'Poisson-lune en écailles',
+                'name_translations' => ['en' => 'Moonfish Platter'],
+                'description' => 'Les écailles irisées se soulèvent une à une. On mange lentement, et on s\'en souvient.',
+                'type' => 'crafted',
+                'slug' => 'crafted-moonfish-plate',
+                'price' => 100,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'stew_heal',
+                'effect' => '{"action":"use_spell", "slug":"stew-heal"}',
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Uncommon,
+            ],
+            'crafted_eel_dish' => [
+                'name' => 'Anguille au poivre',
+                'name_translations' => ['en' => 'Peppered Eel'],
+                'description' => 'Elle crépite encore dans l\'assiette. Ceux qui l\'ont pêchée disent que c\'est normal.',
+                'type' => 'crafted',
+                'slug' => 'crafted-eel-dish',
+                'price' => 130,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'stew_heal',
+                'effect' => '{"action":"use_spell", "slug":"stew-heal"}',
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Rare,
+            ],
+            'crafted_kraken_feast' => [
+                'name' => 'Festin de kraken',
+                'name_translations' => ['en' => 'Kraken Feast'],
+                'description' => 'Un kraken juvénile et deux miches. Il en faut deux : le reste de la table en veut aussi.',
+                'type' => 'crafted',
+                'slug' => 'crafted-kraken-feast',
+                'price' => 250,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'stew_heal',
+                'effect' => '{"action":"use_spell", "slug":"stew-heal"}',
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Rare,
             ],
             // =================================================================
             // ZON-34 — les quatre essences de la ligne du bois

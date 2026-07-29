@@ -44,7 +44,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-26 ✅ | Propagation de la pureté dans la chaîne |
 | ECO-27 ✅ | Équilibrage & tests de la chaîne |
 | ECO-28 | Commandes de service — travailler un objet lié |
-| ECO-29 | Cuisinier — le débouché de la pêche et des vivres |
+| ECO-29 ✅ | Cuisinier — le débouché de la pêche et des vivres |
 | ECO-30 | Charpentier — le débouché du bois |
 | ECO-31 | Tailleur — la ligne tissu et l'armure des mages |
 
@@ -56,7 +56,7 @@ Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
-Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← ZON-30)
+Piste H — Métiers manquants       : ECO-29 ✅, ECO-30 (← ZON-34 ✅), ECO-31 (← ZON-30 ✅)
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -523,22 +523,29 @@ Piste H — Métiers manquants       : ECO-29, ECO-30 (← ZON-34), ECO-31 (← 
 > Chaque jalon suit le gabarit éprouvé : domaine + arbre, recettes, intrants sourcés,
 > loi transverse testée.
 
-### ECO-29 — Cuisinier : le débouché de la pêche et des vivres (M | ★★★ | HAUTE)
-> Répare d'un coup le défaut le plus large de l'audit : 6 poissons sans débouché. Donne
-> son sens au blé des Vallons et au gibier. La nourriture à effets est le consommable
-> perpétuel idéal (demande de fond, GAME_WORLD §5.6).
-> Prérequis : ∅ (s'enrichit de ZON-30 quand le blé existe)
-- [ ] Domaine `cook` (Cuisinier) + arbre (gabarits des artisanats existants)
-- [ ] Recettes T0→T3 consommant **chaque poisson** (truite → anguille), le gibier
-      (viande via dépeçage) et le blé/farine (← ZON-30) — plus aucun poisson orphelin
-- [ ] Nourriture à effets : buffs temporaires modestes (énergie de confort, bonus de
-      récolte/combat courts) — jamais indispensable, toujours agréable
-- [ ] Le pain et le ragoût des PNJ gagnent leur équivalent joueur (le PNJ reste le
+### ECO-29 — Cuisinier : le débouché de la pêche et des vivres ✅ (M | ★★★ | HAUTE)
+> Répare d'un coup le défaut le plus large de l'audit. **Livré le 2026-07-29.**
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Domaine `cook` (Cuisinier) + arbre de 8 nœuds
+- [x] Sept recettes consommant **chaque poisson** (perche → kraken), le gibier et le blé
+      des Vallons — plus aucun poisson orphelin, et un test transverse le verrouille
+- [x] Le pain et le ragoût des PNJ gagnent leur équivalent joueur (le PNJ reste le
       plancher T1, règle D1)
-- [ ] **Épices** : les herbes banales sans débouché (pissenlit, romarin, échinacée,
-      ortie) deviennent des intrants de cuisine (← ZON-35, loi 9)
-- [ ] Réveiller ou purger `fish-moonfish` / `fish-baby-kraken` au passage
-- [ ] Tests : plus aucun poisson sans consommateur (loi transverse étendue)
+- [x] `fish-moonfish` et `fish-baby-kraken` réveillés : ils ouvrent les deux derniers
+      paliers de l'arbre
+- [x] Tests : plus aucun poisson sans consommateur (loi transverse étendue)
+- [ ] **Nourriture à effets — reporté.** Les buffs temporaires (énergie de confort, bonus
+      de récolte courts) demandent un **canal de bonus par consommable** qui n'existe pas :
+      les objets à effet passent aujourd'hui par un sort, et un sort ne buffe qu'en combat.
+      Les sept plats reprennent donc les trois sorts de soin déjà posés, par palier.
+      Inventer le canal ici aurait fait de ce jalon un chantier de mécanique alors qu'il
+      répare un trou de **contenu**.
+- [ ] **Épices — reporté à ZON-35** (loi 9), son prérequis déclaré.
+
+> **Écart assumé : pas d'outil de cuisine.** `Item::CRAFT_TOOL_TYPES` ne cite pas le
+> cuisinier — on cuisine avec ce qu'on a. Une marmite aurait demandé un type d'outil, un
+> bit d'équipement et un emplacement d'interface neufs ; le code prévoit déjà le cas d'un
+> craft sans outil requis, et c'est ce chemin qui est emprunté.
 
 ### ECO-30 — Charpentier : le débouché du bois (M | ★★★ | HAUTE)
 > Le consommateur de la ligne du bois (ZON-34). L'arc et le bâton existants gagnent

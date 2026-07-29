@@ -47,7 +47,12 @@ class CraftingController extends AbstractController
         // ECO-20 : un seul travail a la fois — un etabli est un etabli.
         $activeJob = $this->craftingManager->getActiveJob($player);
 
-        $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier'];
+        // ECO-29 : le cuisinier rejoint l'etabli. Il n'a **pas** d'outil requis
+        // (`Item::CRAFT_TOOL_TYPES` ne le cite pas) : on cuisine avec ce qu'on
+        // a. Lui inventer une marmite aurait demande un type d'outil, un bit
+        // d'equipement et un emplacement d'interface neufs — un changement de
+        // mecanisme pour un jalon qui repare un trou de contenu.
+        $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier', 'cuisinier'];
         // FOY-07 : le bonus que le lieu accorde, metier par metier. Le joueur
         // doit pouvoir arbitrer *ou* crafter — un total sans sa composition ne
         // lui dirait pas quoi faire de l'information.

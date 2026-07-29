@@ -733,6 +733,11 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'crafted-potion-base', 'quantity' => 1],
                     ['slug' => 'plant-ginseng', 'quantity' => 2],
                     ['slug' => 'plant-mandrake', 'quantity' => 1],
+                    // ECO-14, l'autre sens : la sortie du cuisinier doit avoir
+                    // une demande. Un elixir de force se batit sur un fond
+                    // nourrissant — le ragout du cuisinier en est un, et c'est
+                    // le seul metier qui en fasse.
+                    ['slug' => 'crafted-carp-stew', 'quantity' => 1],
                 ],
                 'result_ref' => 'elixir_force',
                 'crafting_time' => 8,
@@ -985,6 +990,128 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
             // « aucune ligne plate verticalement » (ECO-27) veut qu'une recette
             // de niveau >= 3 morde sur un produit d'artisanat, sinon la matiere
             // de debut devient inutile des que les veterans montent.
+            // =================================================================
+            // ECO-29 — la table du cuisinier
+            // =================================================================
+            // Sept plats pour sept poissons. Avant ce jalon, **aucun poisson du
+            // monde n'etait consomme par quoi que ce soit** : six filons de
+            // peche, un arbre entier de competences, et rien au bout. C'etait
+            // le trou le plus large de l'audit d'economie.
+            //
+            // Le pain sert de **liant vertical** : les plats de palier 3 et
+            // au-dela le consomment, ce qui tient la loi d'ECO-27 (aucune ligne
+            // plate) et donne au ble des Vallons une demande qui ne s'arrete
+            // pas au premier jour.
+            'recipe_bread' => [
+                'name' => 'Pain de campagne',
+                'slug' => 'recipe-bread',
+                'craft' => 'cuisinier',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'plant-wheat', 'quantity' => 3],
+                ],
+                'result_ref' => 'crafted_bread',
+                'crafting_time' => 3,
+                'xp_reward' => 8,
+                'description' => 'Cuit une miche au four : le blé des Vallons trouve enfin sa fin.',
+                'name_translations' => ['en' => 'Country Bread'],
+            ],
+            'recipe_fish_skewer' => [
+                'name' => 'Brochette du gué',
+                'slug' => 'recipe-fish-skewer',
+                'craft' => 'cuisinier',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'fish-perch', 'quantity' => 1],
+                    ['slug' => 'fish-trout', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_fish_skewer',
+                'crafting_time' => 3,
+                'xp_reward' => 8,
+                'description' => 'Enfile une perche et une truite sur la même branche.',
+                'name_translations' => ['en' => 'Ford Skewer'],
+            ],
+            'recipe_carp_stew' => [
+                'name' => 'Ragoût de carpe',
+                'slug' => 'recipe-carp-stew',
+                'craft' => 'cuisinier',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'fish-carp', 'quantity' => 2],
+                    ['slug' => 'meat-game', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_carp_stew',
+                'crafting_time' => 5,
+                'xp_reward' => 14,
+                'description' => 'Mijote la carpe des étangs avec le gibier de plaine.',
+                'name_translations' => ['en' => 'Carp Stew'],
+            ],
+            'recipe_salmon_roast' => [
+                'name' => 'Saumon rôti',
+                'slug' => 'recipe-salmon-roast',
+                'craft' => 'cuisinier',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'fish-salmon', 'quantity' => 2],
+                    ['slug' => 'crafted-bread', 'quantity' => 1],
+                    // ECO-14 : le fond de cuisson vient de l'alchimiste. Un
+                    // metier qui ne consomme la sortie d'aucun autre produit un
+                    // joueur autosuffisant — il n'a rien a acheter, donc rien a
+                    // vendre non plus. Au palier 3, jamais a l'entree : croiser
+                    // les metiers des le niveau 1 casserait le plancher T1.
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_salmon_roast',
+                'crafting_time' => 7,
+                'xp_reward' => 22,
+                'description' => 'Rôtit un saumon des rapides sur son lit de pain.',
+                'name_translations' => ['en' => 'Roast Salmon'],
+            ],
+            'recipe_moonfish_plate' => [
+                'name' => 'Poisson-lune en écailles',
+                'slug' => 'recipe-moonfish-plate',
+                'craft' => 'cuisinier',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'fish-moonfish', 'quantity' => 1],
+                    ['slug' => 'crafted-bread', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_moonfish_plate',
+                'crafting_time' => 9,
+                'xp_reward' => 30,
+                'description' => 'Lève une à une les écailles irisées du poisson-lune.',
+                'name_translations' => ['en' => 'Moonfish Platter'],
+            ],
+            'recipe_eel_dish' => [
+                'name' => 'Anguille au poivre',
+                'slug' => 'recipe-eel-dish',
+                'craft' => 'cuisinier',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'fish-electric-eel', 'quantity' => 1],
+                    ['slug' => 'crafted-bread', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_eel_dish',
+                'crafting_time' => 11,
+                'xp_reward' => 40,
+                'description' => 'Apprête l\'anguille sans se faire mordre. Elle crépite encore.',
+                'name_translations' => ['en' => 'Peppered Eel'],
+            ],
+            'recipe_kraken_feast' => [
+                'name' => 'Festin de kraken',
+                'slug' => 'recipe-kraken-feast',
+                'craft' => 'cuisinier',
+                'required_level' => 6,
+                'ingredients' => [
+                    ['slug' => 'fish-baby-kraken', 'quantity' => 1],
+                    ['slug' => 'crafted-bread', 'quantity' => 2],
+                ],
+                'result_ref' => 'crafted_kraken_feast',
+                'crafting_time' => 15,
+                'xp_reward' => 60,
+                'description' => 'Dresse un kraken juvénile pour toute une tablée.',
+                'name_translations' => ['en' => 'Kraken Feast'],
+            ],
             'recipe_amber_seal' => [
                 'name' => 'Sceau d\'ambre',
                 'slug' => 'recipe-amber-seal',
