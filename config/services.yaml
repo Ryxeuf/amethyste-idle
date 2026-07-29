@@ -81,6 +81,13 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # ZON-36 : l'affinite elementaire des ressources (loi 10). Le fichier porte
+    # la **regle** — la ligne de recolte, corrigee par la signature de la zone
+    # source — et non cinquante valeurs ecrites a la main.
+    App\GameEngine\Economy\ResourceAffinityDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # FOY-17 : denominateur du dimensionnement du monde (BALANCE § 22.5).
     # Un « joueur regulier » depense ~60 % de sa regeneration quotidienne, soit
     # ~150 points/jour et ~4 200 sur une maree de 28 jours. Ces deux nombres

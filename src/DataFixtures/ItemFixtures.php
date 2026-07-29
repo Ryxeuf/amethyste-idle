@@ -10,12 +10,18 @@ use App\Entity\Game\Spell;
 use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
+use App\GameEngine\Economy\ResourceAffinityCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class ItemFixtures extends Fixture implements DependentFixtureInterface
 {
+    public function __construct(
+        private readonly ResourceAffinityCatalog $affinities,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
         $itemsData = $this->getItemsData();
@@ -109,6 +115,12 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             if (isset($data['description_translations']) && is_array($data['description_translations'])) {
                 $item->setDescriptionTranslations($data['description_translations']);
             }
+
+            // ZON-36 : l'affinite n'est jamais ecrite item par item. Elle se
+            // **derive** de la table declarative — la ligne de recolte, corrigee
+            // par la signature de la zone source. L'ecrire ici aurait duplique
+            // cinquante valeurs et fait de la loi 10 une liste.
+            $item->setAffinity($this->affinities->affinityOf($item->getSlug()));
 
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());

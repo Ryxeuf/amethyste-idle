@@ -181,6 +181,22 @@ class Item
     #[ORM\Column(name: 'element', type: 'string', length: 25, enumType: Element::class)]
     private Element $element = Element::None;
 
+    /**
+     * L'affinite elementaire de la matiere — la loi 10 (ZON-36).
+     *
+     * Distincte de `element`, qui dit le flux qu'une arme **projette**. Celle-ci
+     * dit le flux dont une ressource est faite : le mithril est Air parce que le
+     * vent l'a mis a nu, pas parce qu'il frappe au vent.
+     *
+     * Nullable, et le `null` porte deux sens que `Element::None` ne saurait
+     * separer : « pas une ressource » et « l'amethyste, qui est le substrat et
+     * non un flux ». `ResourceAffinityCatalog::covers()` tranche entre les deux
+     * — et reste la source de verite : cette colonne n'en est que la projection,
+     * posee au chargement des fixtures pour que la donnee soit interrogeable.
+     */
+    #[ORM\Column(name: 'affinity', type: 'string', length: 25, nullable: true, enumType: Element::class)]
+    private ?Element $affinity = null;
+
     #[ORM\Column(name: 'gear_location', type: 'string', nullable: true)]
     private $gearLocation;
 
@@ -401,6 +417,18 @@ class Item
     public function getElement(): Element
     {
         return $this->element;
+    }
+
+    public function setAffinity(?Element $affinity): Item
+    {
+        $this->affinity = $affinity;
+
+        return $this;
+    }
+
+    public function getAffinity(): ?Element
+    {
+        return $this->affinity;
     }
 
     /**

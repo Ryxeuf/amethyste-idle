@@ -22,7 +22,7 @@ dans leurs plans d'origine :
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
 | ZON-34 ✅ | La ligne du bois (domaine, essences, filons) | M | → ECO-30 (charpentier) |
 | ZON-35 ✅ | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
-| ZON-36 | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
+| ZON-36 ✅ | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
 | ZON-37 | La régénération d'un filon devient un débit ✅ | M | ∅ — **prérequis du recalibrage** |
 
 **Référencés, à exécuter dans leurs plans** :
@@ -162,20 +162,36 @@ ZON-33 en continu
 > comme exemples canoniques d'affinité. L'invariant qui compte — plus une seule sans
 > débouché — est tenu. Écart documenté dans GAME_ZONES §3 ter.
 
-### ZON-36 — Affinités élémentaires des ressources (S | ★★ | MOYENNE)
+### ZON-36 — Affinités élémentaires des ressources ✅ (S | ★★ | MOYENNE)
 > Applique la loi 10 (GAME_ZONES §3 ter, GAME_WORLD §2.2) : chaque ressource porte une
 > affinité de flux, dérivée de la signature de sa zone source. **Donnée pure** — aucun
 > système consommateur à construire ici.
-> Prérequis : ∅
-- [ ] Champ d'affinité déclaratif sur les items de ressource (fixtures YAML/PHP — même
-      enum `Element` que les domaines, nullable : `null` = améthyste/hors périmètre)
-- [ ] Application de la règle de dérivation (ligne par défaut, signature de zone en
-      correction) sur toutes les ressources du jeu de base — table canonique de
-      GAME_ZONES §3 ter
-- [ ] L'améthyste reste **sans affinité** (substrat, canon §2.2) — cas testé
-- [ ] Documentation : quels futurs systèmes liront la donnée (craft, cuisine, fusion,
-      lectures) — pointeurs, pas d'implémentation
-- [ ] Tests : toute ressource de récolte a une affinité ou un `null` justifié
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Champ `Item::affinity` nullable (même enum `Element` que les domaines) + migration
+- [x] La **règle**, pas la table : `config/game/affinities.yaml` déclare la ligne de
+      récolte (défaut) et les **23 corrections** — écrire les cinquante valeurs à la main
+      aurait rendu la loi invisible, et personne n'aurait plus su lesquelles étaient une
+      décision
+- [x] L'améthyste reste **sans affinité** (substrat, canon §2.2) — cas testé, et distinct
+      du `null` de hors-périmètre : `covers()` sépare les deux
+- [x] Tests : 22 (`ResourceAffinityCatalogTest` sur la dérivation et les refus du loader,
+      `ResourceAffinityCoverageTest` sur le monde livré)
+
+> **Le champ est distinct de `element`, et c'est le seul vrai arbitrage du jalon.**
+> `Item::element` dit ce qu'une arme **projette** ; l'affinité dit ce dont une matière est
+> **faite**. Les confondre aurait fait d'une épée de feu une ressource Feu — et aurait
+> rendu impossible le seul cas que le canon nomme, celui de l'améthyste, dont la réponse
+> est « aucune » et non « neutre ».
+>
+> **Le garde-fou du préfixe.** `leather-` désigne autant la dépouille que la botte qu'on
+> en tire. Un test exige que tout slug préfixé soit couvert **ou** explicitement exclu :
+> une pièce `leather-cape` livrée demain fait rougir la CI au lieu de devenir en silence
+> une matière première.
+>
+> **Écarté : le typage de l'améthyste par zone.** La colonne « élément dominant » de la
+> signature de zone (ZON-32) reste non livrée. Elle décrit la teinte de l'améthyste
+> récoltée, pas l'affinité d'une matière — et personne ne la lirait, ce que le contrat du
+> pilier territorial (FOY-16) interdit.
 
 ---
 

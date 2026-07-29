@@ -11,6 +11,7 @@ use App\Entity\Game\Spell;
 use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
+use App\GameEngine\Economy\ResourceAffinityCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -20,6 +21,11 @@ use Symfony\Component\Yaml\Yaml;
 class ItemFixtures extends Fixture implements DependentFixtureInterface
 {
     private const FIXTURES_DIR = __DIR__ . '/../../../fixtures/game/item';
+
+    public function __construct(
+        private readonly ResourceAffinityCatalog $affinities,
+    ) {
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -151,6 +157,12 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 if (isset($data['materia_slots'])) {
                     $item->setMateriaSlots((int) $data['materia_slots']);
                 }
+
+                // ZON-36 : meme derivation que dans les fixtures PHP, et depuis
+                // la meme table. Deux chemins de chargement qui repondraient
+                // differemment donneraient au minerai de cuivre une affinite
+                // selon le fichier qui l'a pose.
+                $item->setAffinity($this->affinities->affinityOf($item->getSlug()));
 
                 $manager->persist($item);
                 $this->addReference($reference, $item);

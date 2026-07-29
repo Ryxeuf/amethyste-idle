@@ -421,7 +421,18 @@ la zone source** quand la matière est marquée par son lieu. Exemples canonique
 Ce que la donnée prépare (aucun système à construire maintenant) : l'héritage d'affinité
 au craft (une robe cousue de matières Feu servira le pyromancien), les buffs élémentaires
 de cuisine, les **intrants de fusion** (fusionner vers Blizzard demandera des matières
-Eau et Air), et l'orientation des lectures du Répertoire. Jalon : **ZON-36**.
+Eau et Air), et l'orientation des lectures du Répertoire. Jalon : **ZON-36** ✅
+(2026-07-29).
+
+> **Livré comme une règle, pas comme une table.** `config/game/affinities.yaml` déclare la
+> ligne de récolte — le défaut — et **23 corrections**, qui sont les seules décisions du
+> jalon. Écrire les cinquante valeurs à la main aurait rendu la dérivation invisible : on
+> aurait vu un tableau, et personne n'aurait plus su lesquelles de ses lignes étaient une
+> décision et lesquelles n'étaient qu'une conséquence.
+>
+> **Le Marais est la seule zone dont la signature emporte toutes ses plantes**, et pour
+> une raison qui n'est pas géographique : sa ligne de production *est* le poison (§2.5).
+> Ailleurs, la correction reste l'exception que le canon nomme.
 
 ## 4. Extension 1 — le Silence *(esquisse actée)*
 
