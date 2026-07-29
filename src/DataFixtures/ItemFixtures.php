@@ -1320,9 +1320,11 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'poison-vial',
                 'spell' => 'poison_vial_spell',
                 'effect' => '{"action":"use_spell","slug":"poison-vial"}',
-                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
-                // prix = cout + 10 x niveau).
-                'price' => 220,
+                // ZON-35 puis ZON-33 : le prix suit les intrants ajoutes (regle
+                // d'ECO-27, prix = cout + 10 x niveau). La racine de marais porte
+                // le cout a 215 ; sans reprise, la fiole se rapprochait a 5 gils
+                // de detruire de la valeur.
+                'price' => 245,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,

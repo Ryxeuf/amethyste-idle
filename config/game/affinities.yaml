@@ -56,6 +56,12 @@ line_slugs:
     beast:
         - 'meat-game'
         - 'feather-raw'
+        # ZON-33 — deux plantes du Marais dont le slug ne porte pas le prefixe
+        # `plant-`. C'est cette faille de nommage qui les avait fait echapper a
+        # la loi 9 (ZON-35) comme a la loi 10 : les nommer ici est ce qui evite
+        # qu'un prefixe reste le seul garant d'une famille.
+        - 'poisonous-mushroom'
+        - 'swamp-root'
     metal:
         - 'amber-fossil'
 
@@ -91,6 +97,10 @@ corrections:
     plant-mandrake: dark
     plant-valerian: dark
     plant-nettle: dark
+    # ZON-33 — les deux dernieres plantes du Marais, sourcees par ce jalon.
+    # Meme eau stagnante, meme signature.
+    poisonous-mushroom: dark
+    swamp-root: dark
     # Le bois tourbe. Canon.
     wood-peat: dark
     # Les poissons du Marais ne sont pas corriges : la ligne (Eau) et la

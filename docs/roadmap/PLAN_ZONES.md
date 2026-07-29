@@ -11,7 +11,7 @@
 
 ## Vue d'ensemble
 
-**7 jalons** (**ZON-30** à **ZON-36**), plus trois chantiers **référencés** qui vivent
+**7 jalons** (**ZON-30** à **ZON-36**) — **plan complet 7/7 au 2026-07-29** —, plus trois chantiers **référencés** qui vivent
 dans leurs plans d'origine :
 
 | Code | Livrable | Taille | Dépendances |
@@ -19,7 +19,7 @@ dans leurs plans d'origine :
 | ZON-30 ✅ | Les Vallons d'Aubépine (zone neuve) | M | ∅ |
 | ZON-31 ✅ | Les Dunes d'Ambre approfondies (ambre, os, gibier) | M | ∅ |
 | ZON-32 ✅ | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
-| ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
+| ZON-33 ✅ | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
 | ZON-34 ✅ | La ligne du bois (domaine, essences, filons) | M | → ECO-30 (charpentier) |
 | ZON-35 ✅ | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
 | ZON-36 ✅ | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
@@ -97,14 +97,37 @@ ZON-33 en continu
 > **Le cas du Fanal n'est pas une signature à zéro** — ce serait dire « peu ». C'est
 > l'absence de tout filon du périmètre de pureté, et c'est ce que le test verrouille.
 
-### ZON-33 — Tests de conformité aux lois de zone (S | ★★ | HAUTE)
+### ZON-33 — Tests de conformité aux lois de zone ✅ (S | ★★ | HAUTE)
 > Les huit lois de GAME_ZONES §0 valent contrat. ‖ au fil des jalons.
-- [ ] Loi 1 testée : chaque zone du monde de base a au moins une source exclusive
-      (item ou monstre introuvable ailleurs)
-- [ ] Loi 2 testée sur la ligne du métal : nombre de sources décroissant avec le palier
-- [ ] Loi transverse re-vérifiée après chaque jalon : aucun item de recette sans source
-- [ ] Le graphe reste connexe et la liaison Dunes → Cité existe tant que la Mer de Sel
-      n'a pas rejoint l'Extension 1 (GAME_ZONES §1, note de graphe)
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Loi 1 testée : chaque zone du monde de base a au moins une source exclusive
+      (item ou monstre introuvable ailleurs). Une seule exemption, documentée : le
+      **quartier des Jardins**, qui n'est pas une zone mais le quartier d'artisanat du
+      sanctuaire (§2.1) — lui donner une exclusivité serait donner au Fanal une raison
+      de le quitter
+- [x] Loi 2 testée sur la ligne du métal : la largeur (nombre de sources) ne croît
+      jamais avec le palier — la forme entière, là où `OreSourceReferenceTest` n'en
+      tenait que les deux bouts
+- [x] Loi transverse, **étendue aux quêtes** : aucun ingrédient de recette *ni objectif
+      de collecte* sans source. Quatre voies acceptées (filon, recette, butin, étal)
+- [x] Le graphe reste connexe ; la Cité reste atteignable depuis les Dunes, et la
+      liaison directe est exigée **conditionnellement** (si la Mer de Sel quitte le
+      graphe) — voir l'écart ci-dessous
+- [x] Tests : 8 (`ZoneLawsTest`)
+
+> **Deux défauts muets trouvés, et corrigés par le même jalon.** Le champignon vénéneux
+> ne s'achetait qu'à l'échoppe de Morwen, et la racine de marais n'existait nulle part —
+> alors que la quête d'Acte II qui les demande dit « *récoltez* ». Le journal affichait
+> « 0 / 3 » sans jamais dire où chercher : le pire de cette famille de défauts, parce que
+> le joueur croit que c'est lui qui cherche mal. Tous deux avaient échappé à la loi 9
+> (ZON-35) parce que leurs slugs ne portent pas le préfixe `plant-`. C'est pourquoi
+> **aucune loi d'ici ne s'appuie sur un préfixe.**
+>
+> **L'écart de graphe est documenté plutôt que corrigé.** GAME_ZONES §1 écrivait la
+> liaison Dunes → Cité directe au lancement, la Mer de Sel devant s'intercaler plus tard.
+> Le monde livré a pris l'autre chemin — la Mer de Sel est là depuis l'Acte 4. Ajouter la
+> liaison directe **raccourcirait** la route, ce que la note interdit explicitement
+> (« le monde s'agrandit sans jamais rétrécir »).
 
 ### ZON-34 — La ligne du bois ✅ (M | ★★★ | HAUTE)
 > Décidé le 2026-07-28 (GAME_ZONES §3 bis) : la récolte du bois devient la cinquième
