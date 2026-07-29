@@ -279,6 +279,46 @@
                             </p>
                         {% endif %}
 
+                        {# ── Ateliers de doctrine (FOY-13) ───────────────── #}
+                        {# L'axe Extraire / Preserver devient un batiment. Les  #}
+                        {# deux ateliers s'affichent toujours, meme quand un    #}
+                        {# seul est adoptable : l'axe ne se comprend qu'en      #}
+                        {# voyant ce qu'on n'a pas choisi.                      #}
+                        {% if doctrines is not empty %}
+                            <div class="ds-divider my-2"></div>
+                            <p class="ds-label">{{ 'game.zone.doctrine.heading'|trans }}</p>
+                            <div class="flex flex-wrap gap-2 mt-1">
+                                {% for offer in doctrines %}
+                                    <div class="ds-card p-2 flex-1 min-w-[9rem] {{ offer.adopted ? '' : 'opacity-80' }}">
+                                        <p class="text-xs font-semibold text-ink">
+                                            {{ ('game.settlement.doctrine.' ~ offer.doctrine.value ~ '.name')|trans }}
+                                        </p>
+                                        <p class="ds-hint">
+                                            {{ ('game.settlement.doctrine.' ~ offer.doctrine.value ~ '.effect')|trans }}
+                                        </p>
+                                        {% if offer.adopted %}
+                                            <p class="ds-hint mt-1">
+                                                ⚑ {{ 'game.zone.doctrine.in_place'|trans }}
+                                                {% if offer.lockedUntil %}
+                                                    {{ 'game.zone.doctrine.locked_until'|trans({'%date%': offer.lockedUntil|date('d/m')}) }}
+                                                {% endif %}
+                                            </p>
+                                        {% elseif offer.canAdopt %}
+                                            <form method="post" action="{{ path('app_game_zone_doctrine', {doctrine: offer.doctrine.value}) }}" class="mt-1.5" data-testid="zone-doctrine-form">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('doctrine_' ~ offer.doctrine.value) }}">
+                                                <button type="submit" data-testid="zone-doctrine-button"
+                                                        class="ds-btn ds-btn--quiet ds-btn--sm w-full">
+                                                    {{ 'game.zone.doctrine.adopt'|trans({'%cost%': offer.cost}) }}
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <p class="ds-hint mt-1">{{ offer.blockedReason|trans }}</p>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                         {# ── Chantier de la semaine (RET-05) ─────────────── #}
                         {# La maree dit ou va la ville ; le chantier dit ce      #}
                         {# qu'elle attend cette semaine. Les contributeurs sont  #}

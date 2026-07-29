@@ -349,3 +349,41 @@ restoration:
     # `paleness.visible_from` : on n'ouvre pas un chantier sur une trace que
     # personne ne voit.
     opens_from: 0.10
+
+# =============================================================================
+# Ateliers de doctrine (FOY-13)
+# =============================================================================
+# L'axe qui divise tout le monde — Extraire / Preserver (GAME_WORLD § 6.2) —
+# devient un batiment qu'on voit sur l'ecran de zone.
+#
+# Le **type** d'un foyer se deduit de la frequentation : personne ne le choisit.
+# La **doctrine** est l'inverse : c'est la seule chose qu'une guilde decide
+# explicitement pour un lieu, et elle la paie sur son tresor. Les deux ateliers
+# sont exclusifs — une colonne, pas deux booleens.
+doctrine:
+    # Un Campement n'a pas d'atelier a offrir : le seuil est le meme que celui
+    # a partir duquel un foyer a une identite (`type.minimum_rank`) et un bonus
+    # d'etabli (`workshop.rank_bonus`).
+    minimum_rank: hamlet
+
+    # Ce que coute l'adoption, sur le tresor de guilde. Du meme ordre que la
+    # restauration d'un filon au plafond (5 400) : une decision de guilde
+    # etablie, pas un achat d'impulsion.
+    cost: 6000
+
+    # Verrou : une maree entiere. Une doctrine qui se retourne a la semaine ne
+    # divise plus personne, et l'axe ne serait qu'un interrupteur.
+    lock_days: 28
+
+    # La Fonderie brule le cristal pour en tirer de la force : on extrait plus,
+    # et le filon s'abime plus vite.
+    foundry:
+        gather_bonus: 0.15       # +15 % de rendement de recolte dans la zone
+        paleness_multiplier: 1.5 # la Paleur monte d'une fois et demie
+
+    # Les Lecteurs tiennent qu'une materia fondue est un mort efface deux fois.
+    # On menage le filon, et le lieu accumule du savoir plus vite — ce qui le
+    # pousse vers l'Athenee, donc vers l'etabli d'alchimiste (FOY-07).
+    readers:
+        lore_multiplier: 1.5     # +50 % de sediment `lore` depose dans la zone
+        paleness_multiplier: 0.5 # la Paleur monte deux fois moins vite

@@ -2,6 +2,7 @@
 
 namespace App\Entity\App;
 
+use App\Enum\SettlementDoctrine;
 use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\Enum\SettlementType;
@@ -127,6 +128,28 @@ class Settlement
      */
     #[ORM\Column(name: 'tide_start_rank', type: 'string', length: 20, nullable: true, enumType: SettlementRank::class)]
     private ?SettlementRank $tideStartRank = null;
+
+    /**
+     * La doctrine adoptee par une guilde pour ce foyer (FOY-13).
+     *
+     * Une seule colonne, et c'est le jalon : les deux ateliers sont exclusifs
+     * **par construction**, aucun chemin de code ne peut les cumuler.
+     *
+     * `null` est l'etat normal. Un foyer sans doctrine n'est pas un foyer
+     * inacheve : c'est un lieu que personne n'a encore voulu orienter.
+     */
+    #[ORM\Column(name: 'doctrine', type: 'string', length: 20, nullable: true, enumType: SettlementDoctrine::class)]
+    private ?SettlementDoctrine $doctrine = null;
+
+    /**
+     * Depuis quand la doctrine tient.
+     *
+     * Sert au verrou : on ne bascule pas d'un atelier a l'autre a la semaine.
+     * Une doctrine qui se retourne au gre de l'humeur ne divise plus personne,
+     * et l'axe Extraire / Preserver ne serait qu'un interrupteur.
+     */
+    #[ORM\Column(name: 'doctrine_since', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $doctrineSince = null;
 
     public function __construct(Zone $zone)
     {
@@ -349,6 +372,32 @@ class Settlement
     public function setTideStartRank(?SettlementRank $rank): self
     {
         $this->tideStartRank = $rank;
+
+        return $this;
+    }
+
+    public function getDoctrine(): ?SettlementDoctrine
+    {
+        return $this->doctrine;
+    }
+
+    public function getDoctrineSince(): ?\DateTimeImmutable
+    {
+        return $this->doctrineSince;
+    }
+
+    /**
+     * Adopte une doctrine, et date le choix.
+     *
+     * Aucune regression ne passe par ici : un foyer qui retombe garde sa
+     * doctrine. C'est la meme regle que le patrimoine (FOY-05 / FOY-10) — on
+     * borne ce qui reste a acquerir, on ne reprend pas ce qui est acquis, et un
+     * atelier paye ne s'efface pas parce que la frequentation a baisse.
+     */
+    public function adoptDoctrine(SettlementDoctrine $doctrine, \DateTimeImmutable $at): self
+    {
+        $this->doctrine = $doctrine;
+        $this->doctrineSince = $at;
 
         return $this;
     }

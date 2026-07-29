@@ -3,12 +3,12 @@
 namespace App\GameEngine\Settlement;
 
 use App\Entity\App\Guild;
-use App\Entity\App\GuildMember;
 use App\Entity\App\Player;
 use App\Entity\App\VeinRestoration;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\GameEngine\Codex\WorldFactService;
+use App\GameEngine\Guild\GuildSpendingAuthority;
 use App\Repository\VeinRestorationRepository;
 use App\Repository\ZoneVeinRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,6 +55,7 @@ class VeinRestorationService
         private readonly ZoneVeinRepository $veinRepository,
         private readonly SettlementDefinitionLoader $loader,
         private readonly WorldFactService $worldFactService,
+        private readonly GuildSpendingAuthority $authority,
     ) {
     }
 
@@ -166,19 +167,12 @@ class VeinRestorationService
      */
     private function authorizedGuild(Player $player): Guild
     {
-        $membership = $this->entityManager->getRepository(GuildMember::class)->findOneBy(['player' => $player]);
-        if (!$membership instanceof GuildMember) {
-            throw new VeinRestorationException('game.zone.restoration.error.no_guild');
+        [$guild, $reason] = $this->authority->resolve($player);
+        if (null === $guild) {
+            throw new VeinRestorationException('game.zone.restoration.error.' . $reason);
         }
 
-        // L'autorite est celle qui gouverne deja la depense. Un chantier est un
-        // retrait du tresor ; rien ne justifierait qu'il obeisse a une regle
-        // plus permissive qu'un retrait ordinaire.
-        if (!$membership->getRank()->canWithdraw()) {
-            throw new VeinRestorationException('game.zone.restoration.error.rank_too_low');
-        }
-
-        return $membership->getGuild();
+        return $guild;
     }
 
     /**

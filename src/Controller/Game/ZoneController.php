@@ -10,12 +10,15 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\Enum\SettlementDoctrine;
 use App\Enum\WeeklyCommissionReward;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\Settlement\SettlementDoctrineException;
+use App\GameEngine\Settlement\SettlementDoctrineService;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\VeinRestorationException;
 use App\GameEngine\Settlement\VeinRestorationService;
@@ -89,6 +92,7 @@ class ZoneController extends AbstractController
         private readonly WeeklyCommissionDelivery $commissionDelivery,
         private readonly SettlementDefinitionLoader $settlementLoader,
         private readonly VeinRestorationService $veinRestorationService,
+        private readonly SettlementDoctrineService $settlementDoctrineService,
     ) {
     }
 
@@ -131,6 +135,7 @@ class ZoneController extends AbstractController
                 'gatherCost' => $this->gatherService->getGatherCost(),
                 'palenessVisibleFrom' => $this->palenessVisibleFrom(),
                 'restorations' => [],
+                'doctrines' => [],
                 'poiLabels' => [],
                 'typeLabels' => [],
                 'travel' => null,
@@ -197,6 +202,7 @@ class ZoneController extends AbstractController
             'gatherCost' => $this->gatherService->getGatherCost(),
             'palenessVisibleFrom' => $this->palenessVisibleFrom(),
             'restorations' => $this->veinRestorationService->offersFor($player, $zone),
+            'doctrines' => $this->settlementDoctrineService->offersFor($player, $zone),
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
             'justArrived' => $arrived,
@@ -410,6 +416,49 @@ class ZoneController extends AbstractController
             'key' => 'game.zone.restoration.opened',
             'params' => ['%cost%' => $restoration->getCostGils()],
         ]);
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Doter le foyer d'un atelier de doctrine (FOY-13).
+     *
+     * Comme la restauration, c'est un acte de gouvernement paye sur le tresor
+     * de la guilde, et non un geste de personnage : aucune energie d'action.
+     */
+    #[Route('/game/zone/doctrine/{doctrine}', name: 'app_game_zone_doctrine', methods: ['POST'], requirements: ['doctrine' => '[a-z]+'])]
+    public function doctrine(string $doctrine, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('doctrine_' . $doctrine, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $chosen = SettlementDoctrine::tryFrom($doctrine);
+        $zone = $this->resolveZone($player);
+        if (null === $chosen || null === $zone) {
+            $this->addFlash('error', 'game.zone.doctrine.error.no_settlement');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $this->settlementDoctrineService->adopt($player, $zone, $chosen);
+        } catch (SettlementDoctrineException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $this->addFlash('success', 'game.zone.doctrine.adopted.' . $chosen->value);
 
         return $this->redirectToRoute('app_game_zone');
     }

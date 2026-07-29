@@ -50,6 +50,7 @@ class SettlementDepositService
         private readonly SettlementRepository $settlementRepository,
         private readonly SettlementContributionRepository $contributionRepository,
         private readonly SettlementDefinitionLoader $loader,
+        private readonly SettlementDoctrineBonus $doctrineBonus,
     ) {
     }
 
@@ -115,6 +116,21 @@ class SettlementDepositService
         $effort = $granted;
         if ($settlement->isRebuilding()) {
             $granted *= $rules['rebuild_multiplier'];
+        }
+
+        // FOY-13 — l'atelier des Lecteurs fait que le lieu accumule du savoir
+        // plus vite. Deux precautions, et chacune protege une regle anterieure :
+        //
+        // - le bonus ne touche **que** l'indice `lore`. Applique au depot
+        //   reparti, il aurait pousse le foyer vers l'Athenee sans que personne
+        //   n'y ait rien lu, et le type aurait cesse d'etre une consequence de
+        //   la frequentation (FOY-01) ;
+        // - il vient **apres** `$effort`, comme la reascension. Le plafond
+        //   journalier mesure ce qu'un joueur a fait, pas ce que la ville a
+        //   recu : le compter reviendrait a faire payer au joueur l'atelier que
+        //   sa guilde a offert au lieu.
+        if (SettlementIndex::Lore === $index) {
+            $granted *= $this->doctrineBonus->loreMultiplier($zone);
         }
 
         $deposited = $index === null

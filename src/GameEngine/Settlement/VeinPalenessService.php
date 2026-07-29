@@ -41,6 +41,7 @@ class VeinPalenessService
         private readonly ZoneVeinRepository $veinRepository,
         private readonly SettlementDefinitionLoader $loader,
         private readonly VeinRestorationRepository $restorationRepository,
+        private readonly SettlementDoctrineBonus $doctrineBonus,
     ) {
     }
 
@@ -58,7 +59,13 @@ class VeinPalenessService
 
         foreach ($this->veinRepository->findAll() as $vein) {
             $before = $vein->getPaleness();
-            $after = self::step($before, $this->pressureOf($vein), $definition, $this->restorationBonus($vein, $underway, $bonus));
+            $after = self::step(
+                $before,
+                $this->pressureOf($vein),
+                $definition,
+                $this->restorationBonus($vein, $underway, $bonus),
+                $this->doctrineBonus->palenessMultiplier($vein->getZone()),
+            );
 
             $vein->setPaleness($after);
             // Le compteur repart a zero : ce qu'on mesure est la journee, pas
@@ -89,12 +96,18 @@ class VeinPalenessService
      * montee : payer ne compense pas une surexploitation en cours, sinon la
      * Paleur cesserait d'etre une contrainte pour devenir une facture.
      *
+     * `$riseMultiplier` est ce que la doctrine du foyer fait a la degradation
+     * (FOY-13) : la Fonderie l'accelere, les Lecteurs la ralentissent. Il
+     * s'applique **a la montee seule**, jamais a la recuperation — un atelier
+     * oriente ce qu'on fait au filon, il ne decide pas de la vitesse a laquelle
+     * le monde se repare tout seul.
+     *
      * @param array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float} $definition
      */
-    public static function step(float $paleness, float $pressure, array $definition, float $restorationBonus = 0.0): float
+    public static function step(float $paleness, float $pressure, array $definition, float $restorationBonus = 0.0, float $riseMultiplier = 1.0): float
     {
         if ($pressure > 1.0) {
-            $risen = $paleness + $definition['rise_per_pressure'] * ($pressure - 1.0);
+            $risen = $paleness + $definition['rise_per_pressure'] * ($pressure - 1.0) * $riseMultiplier;
 
             // Plancher dur : un filon pali ne devient **jamais** sterile.
             return min($definition['max'], $risen);

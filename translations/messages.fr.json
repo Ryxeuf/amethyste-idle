@@ -1449,6 +1449,25 @@
         "locked_by": "Demande :",
         "paleness": "Filon délavé (%percent% %) — il rend moins et se refait tout seul si on le laisse respirer."
       },
+      "doctrine": {
+        "heading": "Ateliers de doctrine",
+        "adopt": "Adopter — %cost% Gils",
+        "in_place": "Atelier en place.",
+        "locked_until": "Changement possible à partir du %date%.",
+        "adopted": {
+          "foundry": "L'atelier de la Fonderie est dressé : on extraira plus, et le filon s'en souviendra.",
+          "readers": "L'atelier des Lecteurs est ouvert : le lieu ménagera ses filons et gardera ce qu'il apprend."
+        },
+        "error": {
+          "no_settlement": "Cette zone n'a pas de foyer à orienter.",
+          "settlement_too_small": "Un foyer de cette taille n'a pas encore d'atelier à offrir.",
+          "already_adopted": "Cet atelier est déjà en place.",
+          "locked": "La doctrine en place tient encore.",
+          "no_guild": "Un atelier se paie sur un trésor de guilde.",
+          "rank_too_low": "Votre rang ne permet pas d'engager le trésor.",
+          "treasury_too_low": "Le trésor de la guilde ne suit pas."
+        }
+      },
       "restoration": {
         "open": "Restaurer — %cost% Gils",
         "quote": "Restauration : %cost% Gils",
@@ -1517,6 +1536,16 @@
         "zone_bank": "la banque de zone",
         "rented_stall": "les étals loués",
         "awakening_altar": "l'Autel d'éveil"
+      },
+      "doctrine": {
+        "foundry": {
+          "name": "Atelier de la Fonderie",
+          "effect": "On extrait davantage, et le filon pâlit d'autant plus vite."
+        },
+        "readers": {
+          "name": "Atelier des Lecteurs",
+          "effect": "Le filon s'abîme deux fois moins vite, et le lieu accumule le savoir plus vite."
+        }
       },
       "gate": {
         "closed": "Ce service ouvre au rang %required% ; le foyer est %current%."

@@ -16,6 +16,7 @@ use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\Settlement\SettlementDoctrineService;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\VeinRestorationService;
 use App\GameEngine\Social\ChatManager;
@@ -195,6 +196,7 @@ class ZoneControllerTest extends TestCase
             $this->commissionDelivery,
             $this->settlementLoader(),
             $this->veinRestorationService(),
+            $this->settlementDoctrineService(),
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -800,6 +802,19 @@ class ZoneControllerTest extends TestCase
     private function veinRestorationService(): VeinRestorationService
     {
         $service = $this->createMock(VeinRestorationService::class);
+        $service->method('offersFor')->willReturn([]);
+
+        return $service;
+    }
+
+    /**
+     * FOY-13 : ces scenarios portent sur les actions de zone. Une zone sans
+     * foyer n'a pas d'atelier a proposer, et c'est l'etat de la plupart d'entre
+     * elles.
+     */
+    private function settlementDoctrineService(): SettlementDoctrineService
+    {
+        $service = $this->createMock(SettlementDoctrineService::class);
         $service->method('offersFor')->willReturn([]);
 
         return $service;
