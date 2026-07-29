@@ -8,6 +8,7 @@ use App\Enum\Purity;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\Retention\WeekKey;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\World\GameTimeService;
 use App\Repository\WeeklyOutcropRepository;
 use App\Repository\ZoneVeinRepository;
 
@@ -42,6 +43,11 @@ class PurityDrawer
      */
     private ?array $draw = null;
 
+    /**
+     * @var array<string, array{weight_shift: int, night_weight_shift: int}>|null
+     */
+    private ?array $signatures = null;
+
     public function __construct(
         private readonly PurityScope $scope,
         private readonly PurityDefinitionLoader $loader,
@@ -49,6 +55,7 @@ class PurityDrawer
         private readonly WeeklyOutcropRepository $outcropRepository,
         private readonly ZoneVeinRepository $veinRepository,
         private readonly SettlementDefinitionLoader $settlementLoader,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -66,6 +73,7 @@ class PurityDrawer
         $weights = $this->weightsFor(
             $this->ceiling($stock, $capacity, $zone, $veinSlug),
             $this->yieldResolver->getBonusPercent($player, ActionYieldResolver::CATEGORY_GATHER),
+            $zone,
         );
 
         return $this->pick($weights, $this->roll(array_sum($weights)));
@@ -161,21 +169,46 @@ class PurityDrawer
     }
 
     /**
-     * Poids effectifs, plafond et savoir appliques.
+     * Ce que la geologie de la zone deplace, a l'heure qu'il est (ZON-32).
      *
-     * Le transfert se fait **vers le haut d'un cran a la fois** : le trouble
-     * nourrit le clair, le clair nourrit le pur. Un raccourci du trouble vers le
-     * parfait ferait du niveau de recolte un achat de rarete, ce que le socle de
-     * monde ecarte explicitement.
+     * Une zone absente de la table tire comme la reference : livrer une zone
+     * neuve ne doit pas exiger d'en decrire la geologie avant qu'on sache ce
+     * qu'elle sera.
+     *
+     * L'heure compte parce qu'une signature peut etre **erratique** : le Marais
+     * depose mal le jour et bien la nuit, et c'est l'information exclusive type
+     * du prospecteur (GAME_ZONE_ACTIONS § 5.5) — savoir *quand* frapper.
+     */
+    private function signatureShift(?Zone $zone): int
+    {
+        if (null === $zone) {
+            return 0;
+        }
+
+        $signature = $this->signatures()[$zone->getSlug()] ?? null;
+        if (null === $signature) {
+            return 0;
+        }
+
+        return $this->gameTimeService->isNight()
+            ? $signature['night_weight_shift']
+            : $signature['weight_shift'];
+    }
+
+    /**
+     * Deplace des points de poids d'un cran a la fois.
+     *
+     * Vers le haut quand le signe est positif — le trouble nourrit le clair, le
+     * clair nourrit le pur —, vers le bas quand il est negatif. Le **parfait ne
+     * bouge jamais** : il ne s'achete ni a l'experience, ni a la geographie, et
+     * c'est ce qui le garde rare sans table de drop (GAME_WORLD § 5.4).
+     *
+     * @param array<string, int> $weights
      *
      * @return array<string, int>
      */
-    public function weightsFor(Purity $ceiling, int $skillBonus): array
+    private function applyShift(array $weights, int $shift): array
     {
-        $draw = $this->definition();
-        $weights = $draw['base_weights'];
-
-        $shift = min(max(0, $skillBonus) * $draw['skill_weight_per_point'], $draw['skill_weight_cap']);
         if ($shift > 0) {
             $fromTrouble = min($shift, $weights[Purity::Trouble->value]);
             $weights[Purity::Trouble->value] -= $fromTrouble;
@@ -184,7 +217,48 @@ class PurityDrawer
             $fromClair = min($shift, $weights[Purity::Clair->value]);
             $weights[Purity::Clair->value] -= $fromClair;
             $weights[Purity::Pur->value] += $fromClair;
+
+            return $weights;
         }
+
+        if ($shift < 0) {
+            $down = -$shift;
+
+            $fromPur = min($down, $weights[Purity::Pur->value]);
+            $weights[Purity::Pur->value] -= $fromPur;
+            $weights[Purity::Clair->value] += $fromPur;
+
+            $fromClair = min($down, $weights[Purity::Clair->value]);
+            $weights[Purity::Clair->value] -= $fromClair;
+            $weights[Purity::Trouble->value] += $fromClair;
+        }
+
+        return $weights;
+    }
+
+    /**
+     * Poids effectifs : geologie, savoir et plafond appliques dans cet ordre.
+     *
+     * Le transfert se fait **vers le haut d'un cran a la fois** : le trouble
+     * nourrit le clair, le clair nourrit le pur. Un raccourci du trouble vers le
+     * parfait ferait du niveau de recolte un achat de rarete, ce que le socle de
+     * monde ecarte explicitement.
+     *
+     * @return array<string, int>
+     */
+    public function weightsFor(Purity $ceiling, int $skillBonus, ?Zone $zone = null): array
+    {
+        $draw = $this->definition();
+        $weights = $draw['base_weights'];
+
+        // ZON-32 — la signature de la zone vient **en premier** : c'est la
+        // geologie du lieu, et le savoir du recolteur travaille dessus. Un
+        // prospecteur chevronne tire mieux aux Mines qu'un debutant, mais il y
+        // tire toujours moins bien qu'a la Crete.
+        $weights = $this->applyShift($weights, $this->signatureShift($zone));
+
+        $shift = min(max(0, $skillBonus) * $draw['skill_weight_per_point'], $draw['skill_weight_cap']);
+        $weights = $this->applyShift($weights, $shift);
 
         // Le plafond est applique **en dernier** : il doit primer sur le savoir,
         // sinon un recolteur chevronne continuerait de tirer du parfait dans un
@@ -231,6 +305,20 @@ class PurityDrawer
         }
 
         return $this->draw;
+    }
+
+    /**
+     * Les signatures de zone, memoisees (ZON-32).
+     *
+     * @return array<string, array{weight_shift: int, night_weight_shift: int}>
+     */
+    private function signatures(): array
+    {
+        if ($this->signatures === null) {
+            $this->signatures = $this->loader->load()['signatures'];
+        }
+
+        return $this->signatures;
     }
 
     protected function roll(int $max): int

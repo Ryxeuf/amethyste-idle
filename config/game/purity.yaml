@@ -74,3 +74,60 @@ draw:
     # parfait, qui ne s'achete pas a l'experience.
     skill_weight_per_point: 1
     skill_weight_cap: 25
+
+# =============================================================================
+# Signature d'amethyste par zone (ZON-32)
+# =============================================================================
+# « Une zone, une facon dont le temps s'est depose » (GAME_ZONES § 2, colonne
+# « signature »). Les Mines rendent beaucoup et trouble ; la Crete peu et pur ;
+# le Marais tire haut la nuit et bas le jour. Ces tendances etaient **ecrites
+# dans un document et absentes du jeu** — deux zones se recoltaient a
+# l'identique.
+#
+# **Une seule table declarative, aucune logique par zone.** Le signe se lit ici
+# et nulle part ailleurs ; ajouter une zone, c'est ajouter une ligne.
+#
+# **Ce que le signe deplace : les poids, jamais le plafond.** « Trouble
+# dominante » et « Pure frequente » decrivent une *distribution*, pas une borne.
+# Un signe qui toucherait le plafond laisserait la Crete rendre du parfait sur
+# un filon ereinte — et effacerait la vitalite (ZON-37), la Paleur (FOY-11) et
+# l'Affleurement (RET-06) d'un seul geste.
+#
+# L'unite est celle de `skill_weight_per_point` : des points de poids transferes
+# d'un cran a la fois, du trouble vers le clair et du clair vers le pur. Un signe
+# **negatif** fait le chemin inverse. Jamais de raccourci vers le parfait : il ne
+# s'achete ni a l'experience, ni a la geographie.
+#
+# **Ce qui n'est pas ici, et pourquoi.** La « quantite relative » de GAME_ZONES
+# suppose un sous-produit d'amethyste a la recolte, qui n'existe pas encore : la
+# declarer aujourd'hui serait un parametre que personne ne lit — exactement ce
+# que le contrat du pilier territorial (FOY-16) interdit. L'**element** dominant
+# appartient a ZON-36 pour la meme raison.
+signatures:
+    # Reference du monde : la Foret. Le depot sans a-coups donne une amethyste
+    # sans surprise, et c'est contre elle que les autres zones se lisent.
+    foret-des-murmures: { weight_shift: 0 }
+
+    # La strate la plus jeune du monde : le temps y passe vite et leger. Le
+    # debutant y apprend **qu'il existe** de l'amethyste, pas ou la chercher pure.
+    vallons-d-aubepine: { weight_shift: -10 }
+
+    # La plus grande quantite du monde — et la bande la plus basse. Trop de temps
+    # tasse rend le geste illisible.
+    mines-profondes: { weight_shift: -20 }
+
+    # Erratique : le temps stagnant se depose mal, mais quand il prend, il prend
+    # bien. Le Marais nocturne est le premier endroit ou un joueur d'Acte II voit
+    # du **Pur** — et c'est l'information exclusive type du prospecteur.
+    marais-brumeux: { weight_shift: -15, night_weight_shift: 30 }
+
+    # Le pendant exact des Mines : peu, mais la plus haute moyenne du monde. Le
+    # vent a emporte le meuble, ce qui reste est net.
+    crete-de-ventombre: { weight_shift: 25 }
+
+    # Le temps epuise n'a plus grand-chose a deposer — mais le biome Ambre
+    # **conserve** : ce qui s'y trouve vient d'un autre age, pas de la fraiche.
+    dunes-d-ambre: { weight_shift: 15 }
+
+    # On n'y recolte pas, on y **retrouve**. Le premier avant-gout de l'Etale.
+    cite-ensevelie: { weight_shift: 20 }

@@ -10,6 +10,7 @@ use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Economy\PurityScope;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\GameEngine\World\GameTimeService;
 use App\Repository\WeeklyOutcropRepository;
 use App\Repository\ZoneVeinRepository;
 use PHPUnit\Framework\TestCase;
@@ -213,6 +214,10 @@ class PurityDrawerTest extends TestCase
                 'skill_weight_per_point' => 1,
                 'skill_weight_cap' => 25,
             ],
+            // ZON-32 : aucune signature de zone dans ces scenarios — les tests
+            // portent sur le tirage nu, et une zone absente de la table tire
+            // comme la reference du monde.
+            'signatures' => [],
         ]);
 
         return new PurityDrawer(new PurityScope($loader), $loader, new ActionYieldResolver(), $this->createMock(WeeklyOutcropRepository::class), ...$this->palenessStubs());
@@ -223,7 +228,11 @@ class PurityDrawerTest extends TestCase
      * Paleur. Un depot sans filon pali laisse la seconde borne inactive — l'etat
      * normal d'un monde qu'on n'a pas encore ereinte.
      *
-     * @return array{0: ZoneVeinRepository, 1: SettlementDefinitionLoader}
+     * ZON-32 : le temps du monde vient avec, parce que la signature d'une zone
+     * peut dependre de l'heure. Le jour par defaut — la nuit est une exception,
+     * et un test qui la veut la demande.
+     *
+     * @return array{0: ZoneVeinRepository, 1: SettlementDefinitionLoader, 2: GameTimeService}
      */
     private function palenessStubs(): array
     {
@@ -239,6 +248,9 @@ class PurityDrawerTest extends TestCase
             'dulls_purity_from' => 0.3,
         ]]);
 
-        return [$veinRepository, $settlementLoader];
+        $gameTime = $this->createMock(GameTimeService::class);
+        $gameTime->method('isNight')->willReturn(false);
+
+        return [$veinRepository, $settlementLoader, $gameTime];
     }
 }
