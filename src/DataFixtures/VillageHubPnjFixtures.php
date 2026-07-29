@@ -177,7 +177,10 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 // l'artisanat ne les reconnaissent. Les vendre revenait a vendre un
                 // outil qui ne fonctionne pas.
                 'shopItems' => [
-                    'pickaxe-bronze', 'sickle-bronze', 'fishing-rod-bronze', 'skinning-knife-bronze',
+                    // DOM-05 : la hache rejoint les quatre autres outils de recolte.
+                    // Un outil qu'aucun etal ne vend est un outil que le nœud
+                    // d'entree autorise sans que personne puisse l'obtenir.
+                    'pickaxe-bronze', 'sickle-bronze', 'fishing-rod-bronze', 'skinning-knife-bronze', 'axe-bronze',
                     'hammer-bronze', 'tanning-kit-bronze', 'mortar-bronze', 'chisel-bronze',
                     'bread', 'grilled-meat', 'stew', 'mushroom', 'beer-pint', 'scroll-teleport',
                 ],

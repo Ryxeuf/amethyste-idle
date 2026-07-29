@@ -19,7 +19,7 @@
 | DOM-02 ✅ | Activation par build (domaines actifs = sources portées) | M | ← DOM-01 |
 | DOM-03 ✅ | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
 | DOM-04 ✅ | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
-| DOM-05 | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
+| DOM-05 ✅ | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
 | DOM-06 | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
 | DOM-07 | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
 | DOM-08 | Tests du plan | S | ‖ |
@@ -177,11 +177,35 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > Un test verrouille la correspondance entre les sept valeurs de repli du SQL et le
 > catalogue — la duplication est assumée, la divergence ne l'est pas.
 
-### DOM-05 — Arbre du bûcheron (S | ★★ | HAUTE)
+### DOM-05 — Arbre du bûcheron ✅ (S | ★★ | HAUTE)
 > Gabarit récolte (GAME_DOMAINS §5.2). Se livre **avec** ZON-34.
-- [ ] ~15 nœuds : rendement/fatigue, repérage des essences exclusives, qualité, outils
-      (hache), gates T3/T4 (bois tourbé, pétrifié)
-- [ ] Tests : conformité au gabarit (proportions, entrées à 0 pt)
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] L'arbre passe de 8 à **15 nœuds**, avec **deux entrées à 0 pt** : la matière, et
+      l'outil qui la coupe
+- [x] **La hache**, promise par ZON-34 et différée faute de métier à servir : type d'outil,
+      quatre paliers (bronze → mithril), emplacement débloqué au nœud d'entrée, et deux
+      étals qui la vendent
+- [x] Repérage (3 nœuds), qualité (2), outils (3) — le rendement était déjà au gabarit
+- [x] Tests : 8 (`LumberjackTreeTest`)
+
+> **La promesse de ZON-34 est tenue mot pour mot.** Elle disait : « la hache demande un type
+> d'outil, un bit d'équipement et un emplacement d'interface neufs — un changement de
+> mécanisme, pas de données. Elle arrivera avec le charpentier, à qui elle sert. » Le
+> charpentier existe depuis ECO-30, et les quatre essences ont un débouché.
+>
+> **La hache est exactement aussi utile que la pioche — ce qui mérite d'être dit.** Depuis le
+> pivot, le chemin de récolte de zone (`GatherService`) ne demande **aucun** outil, à aucune
+> profession : le contrôle vit dans `HarvestManager`, qui opère sur les `ObjectLayer` de la
+> carte supprimée. La hache rejoint donc ses quatre sœurs au même niveau de réalité — déclarée,
+> achetable, débloquée par l'arbre, et pas encore exigée. Rebrancher l'exigence est un
+> changement de règle qui casserait tous les récolteurs actuels : hors de portée d'un jalon de
+> données, et noté ici pour qu'on ne le redécouvre pas.
+>
+> **Pas de nœud de fatigue.** Le gabarit dit « rendement & fatigue » ; le vocabulaire d'actions
+> n'a pas de fatigue (`yield`, `harvest`, `equip.tool`, `tool_slot.unlock`, `craft`). En
+> inventer une aurait posé un paramètre que personne ne lit. Les quatre nœuds de rendement
+> couvrent la part, et le plafond global reste respecté — un test vérifie que l'arbre ne
+> sature pas à lui seul `MAX_BONUS_PERCENT`.
 
 ### DOM-06 — Arbres cuisinier, charpentier, tailleur (M — 1 sous-jalon/arbre | ★★★ | HAUTE)
 > Gabarit artisanat (§5.3) + spécialisations terminales (§7). Se livrent **avec**

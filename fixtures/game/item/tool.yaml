@@ -366,3 +366,60 @@ App\Entity\Game\Item:
     toolType: 'skinning_knife'
     toolTier: 4
     durability: 500
+
+  # --- Haches (Bucheronnage) — DOM-05 -------------------------------------
+  # ZON-34 avait livre l'arbre du bucheron **sans emplacement d'outil**, et
+  # disait pourquoi : « la hache demande un type d'outil, un bit d'equipement et
+  # un emplacement d'interface neufs — un changement de mecanisme, pas de
+  # donnees. Elle arrivera avec le charpentier, a qui elle sert. Livrer l'arbre
+  # sans elle donne la matiere tout de suite ; poser la hache d'abord aurait
+  # donne un outil sans rien a couper. »
+  #
+  # Le charpentier existe depuis ECO-30, et les quatre essences ont un debouche.
+  # La promesse se solde ici, aux memes quatre paliers et aux memes prix que les
+  # quatre autres outils de recolte : la hache n'est ni un privilege ni une
+  # punition, elle est le cinquieme outil d'une cinquieme recolte.
+  axe_bronze (extends item):
+    id: 95
+    name: 'Hache en bronze'
+    description: 'Une hache de bucheron a fer de bronze, lourde et sans finesse'
+    type: 'tool'
+    slug: 'axe-bronze'
+    price: 50
+    domain: '@lumberjack'
+    toolType: 'axe'
+    toolTier: 1
+    durability: 100
+  axe_iron (extends item):
+    id: 96
+    name: 'Hache en fer'
+    description: 'Un fer de hache bien trempe : le bois cede sans qu''on force'
+    type: 'tool'
+    slug: 'axe-iron'
+    price: 150
+    domain: '@lumberjack'
+    toolType: 'axe'
+    toolTier: 2
+    durability: 200
+  axe_steel (extends item):
+    id: 97
+    name: 'Hache en acier'
+    description: 'Le tranchant tient toute une journee de coupe sans repasser'
+    type: 'tool'
+    slug: 'axe-steel'
+    price: 400
+    domain: '@lumberjack'
+    toolType: 'axe'
+    toolTier: 3
+    durability: 350
+  axe_mithril (extends item):
+    id: 98
+    name: 'Hache en mithril'
+    description: 'Si legere qu''on la croirait vide, et qui entame le bois petrifie'
+    type: 'tool'
+    slug: 'axe-mithril'
+    price: 1000
+    domain: '@lumberjack'
+    toolType: 'axe'
+    toolTier: 4
+    durability: 500
