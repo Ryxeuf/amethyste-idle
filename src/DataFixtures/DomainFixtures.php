@@ -48,6 +48,9 @@ class DomainFixtures extends Fixture
             'herbalist' => ['title' => 'Herboriste', 'element' => 'beast', 'title_translations' => ['en' => 'Herbalist']],
             'fisherman' => ['title' => 'Pêcheur', 'element' => 'water', 'title_translations' => ['en' => 'Fisherman']],
             'skinner' => ['title' => 'Dépeceur', 'element' => 'beast', 'title_translations' => ['en' => 'Skinner']],
+            // ZON-34 — la cinquieme recolte. Element bois : le domaine prend
+            // l'element de ce qu'il coupe, comme le mineur prend la terre.
+            'lumberjack' => ['title' => 'Bûcheron', 'element' => 'wood', 'title_translations' => ['en' => 'Lumberjack']],
             // Craft
             'blacksmith' => ['title' => 'Forgeron', 'element' => 'metal', 'title_translations' => ['en' => 'Blacksmith']],
             'leatherworker' => ['title' => 'Tanneur', 'element' => 'beast', 'title_translations' => ['en' => 'Leatherworker']],
