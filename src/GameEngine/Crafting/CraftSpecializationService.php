@@ -3,68 +3,81 @@
 namespace App\GameEngine\Crafting;
 
 use App\Entity\App\Player;
+use App\Entity\App\PlayerCraftSpecialization;
 use App\Enum\CraftSpecialization;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Gere le choix et l'application des specialisations de metier (task 122).
+ * Le choix d'une branche terminale, arbre par arbre (DOM-04).
  *
- * Un joueur peut choisir une specialisation irreversible une fois qu'il a atteint
- * le seuil d'XP total dans le domaine correspondant. La specialisation accorde un
- * bonus de chance d'amelioration de qualite lors du craft sur le metier associe.
+ * **Ce que ce jalon a defait.** Le modele livre portait une specialisation
+ * unique pour tout le personnage, et irreversible : devenir Forgeron fermait a
+ * jamais la maitrise du Tanneur. C'est l'exclusivite *entre* arbres, que la
+ * doctrine interdit — « interdire un arbre serait interdire un geste »
+ * (GAME_DOMAINS § 1). Le renoncement se joue desormais **dans** l'arbre.
+ *
+ * **Le respec de specialisation est le seul respec payant du jeu** (§ 6). Le
+ * respec de points ordinaire reste doux : ce qu'on paie n'est pas d'avoir
+ * change d'avis sur un bonus, c'est d'avoir change d'identite. « Le forgeron
+ * d'armes de la region est une personne, pas une case. »
  */
 class CraftSpecializationService
 {
     /**
-     * Seuil d'XP de domaine requis pour debloquer le choix d'une specialisation.
+     * Seuil d'XP de domaine requis pour debloquer le choix dans un arbre.
+     *
+     * Lu **par arbre** depuis DOM-04, la ou il l'etait sur le meilleur des
+     * quatre : un joueur qui atteignait le seuil chez le forgeron pouvait se
+     * declarer alchimiste sans avoir jamais touche a un mortier.
      */
     public const REQUIRED_DOMAIN_XP = 500;
 
     /**
      * Bonus additionnel de chance d'amelioration de qualite (en %) sur le craft
-     * correspondant a la specialisation (ex: +20 ajoute au `skillLevel * 2` base).
+     * correspondant a la specialisation.
      */
     public const QUALITY_BONUS_CHANCE = 20;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly CraftBranchCatalog $branches,
+        private readonly int $respecCost,
     ) {
     }
 
     /**
-     * Retourne la liste des specialisations disponibles.
+     * Les arbres qui offrent une specialisation.
      *
-     * @return CraftSpecialization[]
+     * @return list<CraftSpecialization>
      */
     public function getAvailableSpecializations(): array
     {
-        return CraftSpecialization::cases();
+        return $this->branches->specializableCrafts();
+    }
+
+    public function getRespecCost(): int
+    {
+        return $this->respecCost;
     }
 
     /**
-     * Verifie si le joueur peut actuellement choisir une specialisation.
+     * Le joueur peut-il prendre une branche dans cet arbre ?
      *
      * @return array{ok: bool, reason: string}
      */
-    public function canChoose(Player $player): array
+    public function canChoose(Player $player, CraftSpecialization $craft): array
     {
-        if ($player->hasCraftSpecialization()) {
+        if ($player->getCraftSpecializationFor($craft->value) !== null) {
             return [
                 'ok' => false,
-                'reason' => sprintf(
-                    'Vous etes deja specialise : %s. Le choix est irreversible.',
-                    $player->getCraftSpecialization()->label()
-                ),
+                'reason' => 'Vous avez deja pris une branche dans cet arbre. En changer demande un respec.',
             ];
         }
 
-        if ($this->getMaxDomainXp($player) < self::REQUIRED_DOMAIN_XP) {
+        if ($this->getDomainXp($player, $craft) < self::REQUIRED_DOMAIN_XP) {
             return [
                 'ok' => false,
-                'reason' => sprintf(
-                    'Atteignez %d XP dans un domaine d\'artisanat pour debloquer une specialisation.',
-                    self::REQUIRED_DOMAIN_XP
-                ),
+                'reason' => sprintf('Atteignez %d XP dans cet arbre pour y choisir une branche.', self::REQUIRED_DOMAIN_XP),
             ];
         }
 
@@ -72,26 +85,69 @@ class CraftSpecializationService
     }
 
     /**
-     * Attribue une specialisation au joueur (irreversible).
+     * Prend une branche dans un arbre.
      *
      * @return array{success: bool, message: string}
      */
-    public function choose(Player $player, CraftSpecialization $specialization): array
+    public function choose(Player $player, CraftSpecialization $craft, string $branch): array
     {
-        $check = $this->canChoose($player);
+        if (!$this->branches->hasBranch($craft, $branch)) {
+            return ['success' => false, 'message' => 'Branche inconnue pour ce metier.'];
+        }
+
+        $check = $this->canChoose($player, $craft);
         if (!$check['ok']) {
             return ['success' => false, 'message' => $check['reason']];
         }
 
-        $player->setCraftSpecialization($specialization);
+        $specialization = new PlayerCraftSpecialization($player, $craft, $branch);
+        $player->addCraftSpecialization($specialization);
+        $this->entityManager->persist($specialization);
         $this->entityManager->flush();
 
         return [
             'success' => true,
-            'message' => sprintf(
-                'Felicitations ! Vous etes desormais %s.',
-                $specialization->label()
-            ),
+            'message' => sprintf('Vous etes desormais %s.', (string) $this->branches->labelOf($craft, $branch)),
+        ];
+    }
+
+    /**
+     * Change de branche dans un arbre, contre paiement.
+     *
+     * Le seul respec payant du jeu. Le refus quand les gils manquent dit le
+     * prix : un « impossible » sans chiffre laisserait croire a un verrou.
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function respec(Player $player, CraftSpecialization $craft, string $branch): array
+    {
+        $current = $player->getCraftSpecializationFor($craft->value);
+        if ($current === null) {
+            return ['success' => false, 'message' => 'Vous n\'avez pas encore de branche dans cet arbre.'];
+        }
+
+        if (!$this->branches->hasBranch($craft, $branch)) {
+            return ['success' => false, 'message' => 'Branche inconnue pour ce metier.'];
+        }
+
+        if ($current->getBranch() === $branch) {
+            return ['success' => false, 'message' => 'C\'est deja votre branche.'];
+        }
+
+        if ($player->getGils() < $this->respecCost) {
+            return [
+                'success' => false,
+                'message' => sprintf('Changer de branche coute %d gils. Il vous en manque %d.', $this->respecCost, $this->respecCost - $player->getGils()),
+            ];
+        }
+
+        $player->setGils($player->getGils() - $this->respecCost);
+        $current->setBranch($branch);
+        $this->entityManager->flush();
+
+        return [
+            'success' => true,
+            'message' => sprintf('Vous etes desormais %s.', (string) $this->branches->labelOf($craft, $branch)),
         ];
     }
 
@@ -104,25 +160,18 @@ class CraftSpecializationService
     }
 
     /**
-     * Retourne la plus grande XP de domaine parmi les domaines de craft.
+     * L'XP totale du joueur **dans cet arbre**.
      */
-    private function getMaxDomainXp(Player $player): int
+    private function getDomainXp(Player $player, CraftSpecialization $craft): int
     {
-        $craftSlugs = array_map(
-            static fn (CraftSpecialization $c): string => $c->craftSlug(),
-            CraftSpecialization::cases()
-        );
-
-        $max = 0;
         foreach ($player->getDomainExperiences() as $domainExperience) {
             $domain = $domainExperience->getDomain();
             $slug = strtolower(str_replace(' ', '-', $domain->getTitle()));
-            if (!in_array($slug, $craftSlugs, true)) {
-                continue;
+            if ($slug === $craft->craftSlug()) {
+                return $domainExperience->getTotalExperience();
             }
-            $max = max($max, $domainExperience->getTotalExperience());
         }
 
-        return $max;
+        return 0;
     }
 }

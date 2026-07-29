@@ -3,11 +3,18 @@
 namespace App\Enum;
 
 /**
- * Specialisation de metier d'artisanat (tier 2).
+ * L'arbre d'artisanat dans lequel une specialisation se prend (DOM-04).
  *
- * Un joueur peut choisir une specialisation irreversible apres avoir atteint
- * le seuil d'XP de domaine requis. La specialisation accorde un bonus de qualite
- * sur le craft correspondant et debloquera plus tard des recettes exclusives.
+ * **Ce n'est plus un choix unique pour le personnage.** Jusqu'a DOM-04, un
+ * joueur ne pouvait etre specialise que dans **un** metier, et le choix etait
+ * irreversible : devenir Forgeron fermait a jamais la maitrise du Tanneur.
+ * C'etait exactement l'exclusivite *entre* arbres que la doctrine interdit —
+ * « interdire un arbre serait interdire un geste » (GAME_DOMAINS § 1). Le
+ * renoncement se joue desormais **dans** l'arbre, entre deux branches
+ * (`config/game/craft_branches.yaml`).
+ *
+ * Cet enum designe donc l'arbre, pas la specialisation. La specialisation est
+ * la **branche**, et elle se declare en configuration.
  */
 enum CraftSpecialization: string
 {
@@ -15,6 +22,12 @@ enum CraftSpecialization: string
     case Tanneur = 'tanneur';
     case Alchimiste = 'alchimiste';
     case Joaillier = 'joaillier';
+    // Les trois metiers de la Piste H (ECO-29/30/31). Ils avaient des arbres et
+    // des recettes, mais aucune facon de s'y specialiser : le tailleur pouvait
+    // etre le seul de la region a coudre des robes sans que rien ne le dise.
+    case Cuisinier = 'cuisinier';
+    case Charpentier = 'charpentier';
+    case Tailleur = 'tailleur';
 
     /**
      * Libelle affiche dans l'interface ("Maitre Forgeron", etc.).
@@ -26,6 +39,9 @@ enum CraftSpecialization: string
             self::Tanneur => 'Maitre Tanneur',
             self::Alchimiste => 'Maitre Alchimiste',
             self::Joaillier => 'Maitre Joaillier',
+            self::Cuisinier => 'Maitre Cuisinier',
+            self::Charpentier => 'Maitre Charpentier',
+            self::Tailleur => 'Maitre Tailleur',
         };
     }
 
@@ -47,6 +63,9 @@ enum CraftSpecialization: string
             self::Tanneur => 'Maitre du cuir : armures legeres et accessoires.',
             self::Alchimiste => 'Maitre des potions : elixirs, baumes et enchantements.',
             self::Joaillier => 'Maitre des gemmes : bijoux et amplifications magiques.',
+            self::Cuisinier => 'Maitre des fourneaux : vivres, festins et effets durables.',
+            self::Charpentier => 'Maitre du bois : arcs, batons, fleches et mobilier.',
+            self::Tailleur => 'Maitre du tissu : robes de sort et tenues de travail.',
         };
     }
 }

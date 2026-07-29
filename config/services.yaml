@@ -88,6 +88,19 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # DOM-04 : les branches terminales de chaque arbre d'artisanat. Ajouter un
+    # metier, c'est ajouter un bloc — jamais toucher une classe.
+    App\GameEngine\Crafting\CraftBranchCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    # DOM-04 : le seul respec payant du jeu (GAME_DOMAINS § 6). Ce qu'on paie
+    # n'est pas d'avoir change d'avis sur un bonus, c'est d'avoir change
+    # d'identite — le respec de points ordinaire reste doux.
+    App\GameEngine\Crafting\CraftSpecializationService:
+        arguments:
+            $respecCost: 2500
+
     # FOY-17 : denominateur du dimensionnement du monde (BALANCE § 22.5).
     # Un « joueur regulier » depense ~60 % de sa regeneration quotidienne, soit
     # ~150 points/jour et ~4 200 sur une maree de 28 jours. Ces deux nombres

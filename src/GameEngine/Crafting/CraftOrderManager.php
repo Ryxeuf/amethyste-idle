@@ -330,7 +330,7 @@ class CraftOrderManager
         }
 
         $required = $recipe->getRequiredSpecialization();
-        if (null !== $required && $required !== $crafter->getCraftSpecialization()) {
+        if (null !== $required && !$crafter->isSpecializedIn($required->craftSlug())) {
             throw new \InvalidArgumentException('Cette recette exige une specialisation que vous n\'avez pas.');
         }
 
