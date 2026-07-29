@@ -68,6 +68,12 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # FOY-15 : marees consequence. Seuils **et** composition des quatre beats
+    # sont de la donnee — ajouter une maree declenchee, c'est ajouter un bloc.
+    App\GameEngine\Season\ConsequenceTideDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # ECO-21 : le perimetre de la purete. Etroit et **declare** — la ligne du
     # cristal seule porte une bande, et cette decision se prend dans un fichier
     # de configuration, pas dans un nom de slug bien choisi.

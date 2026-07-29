@@ -7,6 +7,8 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Season\ConsequenceTideComposer;
+use App\GameEngine\Season\ConsequenceTideSelector;
 use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
@@ -42,6 +44,8 @@ class SeasonTickCommand extends Command
         private readonly WorldLoadService $worldLoadService,
         private readonly WorldScaleService $worldScaleService,
         private readonly SettlementChronicleService $chronicleService,
+        private readonly ConsequenceTideSelector $consequenceTideSelector,
+        private readonly ConsequenceTideComposer $consequenceTideComposer,
     ) {
         parent::__construct();
     }
@@ -71,7 +75,63 @@ class SeasonTickCommand extends Command
         //    la cloture daterait d'avant le basculement de maree.
         $this->captureWorldLoad($io, $now, $tideBoundary);
 
+        // 6. La maree qui vient est-elle une **consequence** (FOY-15) ? Apres le
+        //    releve de charge, pour que le quota de Crue se lise sur la
+        //    population la plus fraiche — c'est elle qui decide s'il reste une
+        //    place a prendre.
+        $this->handleConsequenceTide($io, $tideBoundary);
+
         return Command::SUCCESS;
+    }
+
+    /**
+     * Choisit le theme de la maree qui vient a partir du mois ecoule (FOY-15).
+     *
+     * **A la cloture seulement.** Une consequence se decide quand une maree
+     * s'acheve ; l'evaluer a chaque tick reviendrait a la redecider tous les
+     * jours, et l'arc se recomposerait sous les pieds des joueurs.
+     *
+     * **Une maree ecrite garde sa place.** Une consequence preempte un creneau
+     * de **rotation** (GAME_SEASONS § 3) ; elle ne bouscule jamais une partition
+     * deja posee. Un theme deja present suffit a le dire.
+     */
+    private function handleConsequenceTide(SymfonyStyle $io, bool $tideBoundary): void
+    {
+        if (!$tideBoundary) {
+            return;
+        }
+
+        $scheduled = $this->entityManager->getRepository(InfluenceSeason::class)->findOneBy(
+            ['status' => SeasonStatus::Scheduled],
+        );
+
+        if ($scheduled === null || $scheduled->getTheme() !== null) {
+            // Le repere avance quand meme : sans cela, la place liberee pendant
+            // une maree ecrite serait annoncee une maree trop tard.
+            $this->consequenceTideSelector->rememberFreeSlots();
+
+            return;
+        }
+
+        $tide = $this->consequenceTideSelector->select();
+
+        // Le releve suit la lecture, jamais l'inverse : pris avant, il ferait
+        // disparaitre l'ouverture qu'on cherche justement a detecter.
+        $this->consequenceTideSelector->rememberFreeSlots();
+
+        if ($tide === null) {
+            return;
+        }
+
+        $beats = $this->consequenceTideComposer->compose($scheduled, $tide);
+        $this->entityManager->flush();
+
+        $io->success(sprintf(
+            'Marée conséquence « %s » posée sur "%s" (%d beat(s)).',
+            (string) $scheduled->getTheme(),
+            $scheduled->getName(),
+            $beats,
+        ));
     }
 
     private function captureWorldLoad(SymfonyStyle $io, \DateTimeImmutable $now, bool $tideBoundary): void

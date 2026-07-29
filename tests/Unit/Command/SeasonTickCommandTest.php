@@ -9,6 +9,8 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Season\ConsequenceTideComposer;
+use App\GameEngine\Season\ConsequenceTideSelector;
 use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
@@ -76,6 +78,8 @@ class SeasonTickCommandTest extends TestCase
             $this->worldLoadService,
             $this->worldScaleService,
             $this->chronicleService,
+            $this->consequenceTideSelector(),
+            $this->consequenceTideComposer(),
         );
 
         $app = new Application();
@@ -247,6 +251,8 @@ class SeasonTickCommandTest extends TestCase
             $this->worldLoadService,
             $this->worldScaleService,
             $this->chronicleService,
+            $this->consequenceTideSelector(),
+            $this->consequenceTideComposer(),
         );
         $app = new Application();
         $app->add($command);
@@ -437,6 +443,24 @@ class SeasonTickCommandTest extends TestCase
         $season->setUpdatedAt(new \DateTime());
 
         return $season;
+    }
+
+    /**
+     * FOY-15 : ces tests portent sur le cycle de vie des saisons, pas sur le
+     * declenchement d'une consequence. « Rien ne s'est passe » est le resultat
+     * normal d'une cloture, et c'est ce qu'il faut ici.
+     */
+    private function consequenceTideSelector(): ConsequenceTideSelector
+    {
+        $selector = $this->createMock(ConsequenceTideSelector::class);
+        $selector->method('select')->willReturn(null);
+
+        return $selector;
+    }
+
+    private function consequenceTideComposer(): ConsequenceTideComposer
+    {
+        return $this->createMock(ConsequenceTideComposer::class);
     }
 
     private function createWorldLoadSnapshot(): WorldLoadSnapshot

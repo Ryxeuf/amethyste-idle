@@ -1452,3 +1452,18 @@ ceux qui s'abstiennent.
 **Trois bornes tenues par le loader** : le multiplicateur de la Fonderie doit depasser 1, celui
 des Lecteurs rester dessous, et chaque atelier apporter quelque chose. Deux boutons qui font la
 meme chose ne sont pas un choix, et un atelier sans effet est un cout sec.
+
+### 23.10 Le seuil des marees consequence (FOY-15)
+
+`paleness_threshold: 6` (dans `config/game/consequence_tides.yaml`) : nombre de filons portant une
+Paleur **visible** (>= 0,10) qu'il faut compter en fin de maree pour que la Paleur preempte le
+creneau suivant.
+
+Le monde livre compte une trentaine de filons. A 6, il faut donc qu'un cinquieme d'entre eux porte
+une trace — c'est-a-dire une exploitation organisee sur **plusieurs zones**, et non une ruee d'un
+soir sur un filon. C'est coherent avec le principe de FOY-11 : *la Paleur est une consequence du
+succes, jamais du passage* (GAME_WORLD § 3.5).
+
+**L'Appel de la Crue n'a pas de seuil**, et c'est deliberé : il se declenche sur une **variation**
+du nombre de places libres, pas sur un etat. Un seuil sur l'etat l'aurait fait sonner des la
+premiere maree, quand toutes les places sont libres.
