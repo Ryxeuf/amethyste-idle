@@ -29,51 +29,49 @@ class PlayerRaceTest extends TestCase
         $this->assertNull($player->getRace());
     }
 
-    public function testPlayerWithHumanRaceHasNeutralModifiers(): void
+    /**
+     * ONB-07 : un peuple ne porte plus aucun chiffre.
+     *
+     * Ces deux tests remplacent `testPlayerWithHumanRaceHasNeutralModifiers` et
+     * `testStatModifiersAppliedCorrectly`, qui verifiaient precisement le
+     * mecanisme retire — un Elfe a `-5 vie / +10 energie / +3 vitesse`. Ce que
+     * l'on garantit desormais est l'inverse : attacher un peuple ne deplace
+     * aucune statistique.
+     */
+    public function testAttachingAPeopleMovesNoStatistic(): void
     {
-        $race = new Race();
-        $race->setSlug('human');
-        $race->setName('Humain');
-        $race->setDescription('Race humaine');
-        $race->setStatModifiers(['life' => 0, 'energy' => 0, 'speed' => 0, 'hit' => 0]);
-
         $player = new Player();
         $player->setMaxLife(100);
         $player->setMaxEnergy(50);
         $player->setSpeed(10);
         $player->setHit(50);
-        $player->setRace($race);
 
-        // Stats neutres : aucune modification attendue
-        $this->assertSame(0, $race->getStatModifier('life'));
-        $this->assertSame(0, $race->getStatModifier('energy'));
-        $this->assertSame(0, $race->getStatModifier('speed'));
-        $this->assertSame(0, $race->getStatModifier('hit'));
+        $before = [$player->getMaxLife(), $player->getMaxEnergy(), $player->getSpeed(), $player->getHit()];
+
+        $player->setRace($this->race('elf', 'Elfe'));
+
+        $after = [$player->getMaxLife(), $player->getMaxEnergy(), $player->getSpeed(), $player->getHit()];
+
+        $this->assertSame($before, $after);
     }
 
-    public function testStatModifiersAppliedCorrectly(): void
+    /**
+     * Le peuple n'expose plus de modificateurs : la methode n'existe pas, et
+     * ce test le dit explicitement plutot que de laisser une absence muette.
+     */
+    public function testARaceExposesNoStatModifierAtAll(): void
     {
-        $race = new Race();
-        $race->setSlug('elf');
-        $race->setName('Elfe');
-        $race->setDescription('Race elfique');
-        $race->setStatModifiers(['life' => -5, 'energy' => 10, 'speed' => 3, 'hit' => 2]);
+        $this->assertFalse(
+            method_exists($this->race('dwarf', 'Nain'), 'getStatModifiers'),
+            'Un peuple ne doit porter aucun chiffre (ONB-07).',
+        );
+    }
 
-        $baseLife = 100;
-        $baseEnergy = 50;
-        $baseSpeed = 10;
-        $baseHit = 50;
-
-        $player = new Player();
-        $player->setMaxLife($baseLife + $race->getStatModifier('life'));
-        $player->setMaxEnergy($baseEnergy + $race->getStatModifier('energy'));
-        $player->setSpeed($baseSpeed + $race->getStatModifier('speed'));
-        $player->setHit($baseHit + $race->getStatModifier('hit'));
-        $player->setRace($race);
-
-        $this->assertSame(95, $player->getMaxLife());
-        $this->assertSame(60, $player->getMaxEnergy());
-        $this->assertSame(13, $player->getSpeed());
-        $this->assertSame(52, $player->getHit());
+    private function race(string $slug, string $name): Race
+    {
+        return (new Race())
+            ->setSlug($slug)
+            ->setName($name)
+            ->setDescription('Peuple de test');
     }
 }
