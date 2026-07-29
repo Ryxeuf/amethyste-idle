@@ -387,8 +387,13 @@ class ZoneControllerTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame($zone, $this->capturedTemplateParams['zone']);
-        // Chaque liaison est accompagnee de sa duree reellement subie (tache 130).
-        $this->assertSame([['connection' => $connection, 'seconds' => 300]], $this->capturedTemplateParams['connections']);
+        // Chaque liaison est accompagnee de sa duree reellement subie (tache 130)
+        // et de son etat : une liaison desactivee n'apparait qu'a un MJ, et la
+        // vue doit pouvoir la marquer comme telle.
+        $this->assertSame(
+            [['connection' => $connection, 'seconds' => 300, 'disabled' => false]],
+            $this->capturedTemplateParams['connections'],
+        );
         $this->assertSame([$player], $this->capturedTemplateParams['playersPresent']);
         $this->assertSame(
             [ObjectLayer::TYPE_HARVEST_SPOT => 2, ObjectLayer::TYPE_FORGE => 1],
