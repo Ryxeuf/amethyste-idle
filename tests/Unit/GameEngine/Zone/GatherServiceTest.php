@@ -347,7 +347,7 @@ class GatherServiceTest extends TestCase
         $worldScale = $this->createMock(WorldScaleService::class);
         $worldScale->method('current')->willReturn(1.0);
 
-        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class), $this->purityDrawer()) extends GatherService {
+        $service = new class($entityManager, $this->createMock(ActionEnergyManager::class), $this->createMock(ZoneTravelService::class), $veinRepository, $this->createMock(PlayerItemGenerator::class), $this->createMock(InventoryHelper::class), $this->createMock(PlayerJournalEntryRepository::class), new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class), $this->purityDrawer(), $this->doctrineBonus()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
@@ -498,7 +498,7 @@ class GatherServiceTest extends TestCase
         $worldScale = $this->createMock(WorldScaleService::class);
         $worldScale->method('current')->willReturn($scale);
 
-        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class), $this->purityDrawer()) extends GatherService {
+        $service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->veinRepository, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, new ActionYieldResolver(), $worldScale, $this->createMock(EventDispatcherInterface::class), $this->purityDrawer(), $this->doctrineBonus()) extends GatherService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;
