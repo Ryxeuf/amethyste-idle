@@ -1287,8 +1287,9 @@
       "travel": {
         "button": "Travel",
         "in_progress": "Traveling to %zone%",
-        "arrival_in": "Arrival in ~%minutes% min",
-        "arrival_imminent": "Arrival imminent — reload the page",
+        "elapsed": "Elapsed",
+        "remaining": "Remaining",
+        "auto_refresh": "The page refreshes on its own when you arrive.",
         "flash": {
           "started": "Travel started. Your character will arrive in real time.",
           "arrived": "You have arrived at your destination."

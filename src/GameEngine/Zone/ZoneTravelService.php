@@ -61,8 +61,10 @@ class ZoneTravelService
         // (tache 130), sans jamais alterer la duree de reference du graphe.
         $seconds = $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
 
-        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $seconds));
+        $startedAt = new \DateTimeImmutable();
+        $arrivesAt = $startedAt->modify(sprintf('+%d seconds', $seconds));
         $player->setTravelToZone($connection->getToZone());
+        $player->setTravelStartedAt($startedAt);
         $player->setTravelArrivesAt($arrivesAt);
 
         // Liaison instantanee (interieurs...) : arrivee reglee dans la foulee.
@@ -89,6 +91,7 @@ class ZoneTravelService
 
         $player->setCurrentZone($destination);
         $player->setTravelToZone(null);
+        $player->setTravelStartedAt(null);
         $player->setTravelArrivesAt(null);
         $this->markZoneVisited($player, $destination, false);
 

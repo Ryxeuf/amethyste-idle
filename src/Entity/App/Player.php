@@ -130,6 +130,14 @@ class Player implements CharacterInterface
     private ?\DateTimeImmutable $travelArrivesAt = null;
 
     /**
+     * Depart du voyage en cours : sans lui, la duree totale du trajet est
+     * inconnue au rendu (la liaison empruntee n'est pas conservee) et une
+     * barre de progression ne peut pas situer le temps deja parcouru.
+     */
+    #[ORM\Column(name: 'travel_started_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $travelStartedAt = null;
+
+    /**
      * Energie d'action PBBG (ZON-07) : gate l'acces aux rencontres (explorer,
      * chasser, recolter, rejoindre un evenement...), JAMAIS le combat lui-meme.
      * Distincte de `energy` (ressource de combat consommee par les sorts).
@@ -411,6 +419,16 @@ class Player implements CharacterInterface
     public function setTravelArrivesAt(?\DateTimeImmutable $travelArrivesAt): void
     {
         $this->travelArrivesAt = $travelArrivesAt;
+    }
+
+    public function getTravelStartedAt(): ?\DateTimeImmutable
+    {
+        return $this->travelStartedAt;
+    }
+
+    public function setTravelStartedAt(?\DateTimeImmutable $travelStartedAt): void
+    {
+        $this->travelStartedAt = $travelStartedAt;
     }
 
     public function isTraveling(): bool
