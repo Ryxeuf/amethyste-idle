@@ -1411,6 +1411,48 @@ cachées, une par maison.
 
 Cinq récompenses d'exaltation, cinq quartiers de lore, zéro puissance verticale.
 
+### 12.6 Le logement dans le monde des foyers *(tranché le 2026-07-29)*
+
+Le housing est livré (demeure rattachée à une zone, loyer-sink, jardin qui multiplie ce
+qu'on possède — auto-limitant —, ameublement par le nécessaire du charpentier) mais il
+n'a jamais rencontré le pilier territorial : **une seule zone résidentielle** (le
+Quartier des Jardins), aucun lien au rang des foyers, un loyer qui ne nourrit personne.
+Le raccord, en quatre décisions :
+
+**a) Le lotissement du Fanal reste le plancher.** Le Quartier des Jardins est le logement
+de départ : hors Crue, hors foyer, **jamais gaté** (décision A), loyer modeste en pur
+gold sink (pas de guilde au Sanctuaire). Tout joueur peut toujours se loger là — le
+plancher, jamais le plafond.
+
+**b) Habiter un foyer.** Toute zone à foyer de rang **Hameau ou plus** ouvre des
+parcelles résidentielles, dont le **nombre suit le rang** (repères à W = 1 : Hameau ~8,
+Bourg ~20, Cité ~40, Métropole ~80 — paramètres `settlements.yaml`, mis à l'échelle par
+W). La régression d'un foyer **n'expulse jamais personne** (rien n'est rétro-gaté) —
+elle ferme seulement l'ouverture de *nouvelles* parcelles sous le rang. La rareté des
+parcelles hautes est un enjeu de plus de la Crue, sans une mécanique neuve.
+
+**c) Le loyer devient politique.** Dans une zone à foyer, le loyer part au **trésor de
+la guilde contrôlante** de la région (le même canal que la taxe HV) ; sans guilde
+contrôlante, il reste un sink. Habiter chez quelqu'un est un acte politique doux — et
+une guilde bien gérée a désormais des *habitants* comme source de revenus : une raison
+de plus de rendre sa région vivable.
+
+**d) Les avantages du logis sont des commodités, jamais de la puissance.** Habiter
+donne : le **retour au logis** (une fois par jour, le voyage vers sa zone de résidence
+est instantané — la commodité de fin de session, cf. le playtest V2), le **jardin**
+(livré), un **coffre domestique**, et la vitrine (styles du charpentier, cosmétique).
+Et **les cheminées comptent** : chaque demeure habitée dépose un petit grain de
+résidence quotidien au foyer de sa zone — la population résidente soutient la ville,
+faiblement mais structurellement (un plancher de sédiment pour les foyers résidentiels).
+
+En fiction : on ne « possède » pas un terrain — on **entretient un feu** quelque part,
+et le monde s'en souvient. La maison est du temps vécu déposé au même endroit chaque
+jour ; c'est pour ça qu'elle nourrit le foyer, et c'est pour ça qu'on ne l'expulse pas
+quand la ville décline : elle *est* ce qui reste de la ville.
+
+Jalons : **FOY-18 → FOY-21** (vague 2 du plan foyers). Le jardin, lui, ne change pas —
+il est déjà exactement ce qu'il doit être.
+
 ## 13. Peuplement du monde — départ, zones, extensions
 
 > **Statut : acté le 2026-07-28.** Les deux entrées attendues (§14) sont closes, et les
