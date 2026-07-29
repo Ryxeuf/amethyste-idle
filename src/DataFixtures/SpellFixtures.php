@@ -2143,6 +2143,21 @@ class SpellFixtures extends Fixture
                 'hit' => 100,
                 'level' => 1,
             ],
+            // --- Sort consommable charpentier (ECO-30) ---
+            // La flèche est le **consommable perpétuel** du métier : elle se
+            // dépense à chaque usage et ne se garde pas. C'est ce qui donne au
+            // charpentier une demande qui ne s'éteint pas quand tout le monde a
+            // son arc — le défaut de tout métier qui ne produit que du durable.
+            'arrow_volley_spell' => [
+                'slug' => 'arrow-volley',
+                'damage' => 4,
+                'element' => Element::Air,
+                'heal' => null,
+                'name' => 'Volée de flèches',
+                'description' => 'Une salve empennée qui trouve la faille de l\'armure',
+                'hit' => 95,
+                'level' => 1,
+            ],
             // Sorts sans élément
             'none_attack_1' => [
                 'slug' => 'none-attack-1',

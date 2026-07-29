@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerHouse;
 use App\Entity\App\Zone;
 use App\Enum\HouseStyle;
+use App\Helper\InventoryHelper;
 use App\Repository\PlayerHouseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -28,10 +29,20 @@ class HousingManager
      */
     public const RESIDENTIAL_ZONE_SLUGS = ['quartier-des-jardins'];
 
+    /**
+     * Le necessaire d'ameublement du charpentier (ECO-30).
+     *
+     * Il remplace le prix en Gils d'un style, quel que soit ce style : un
+     * necessaire meuble une demeure, et le luxe du Bourgeois se paie alors en
+     * bois plutot qu'en monnaie.
+     */
+    public const FURNISHING_KIT_SLUG = 'crafted-furnishing-kit';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerHouseRepository $houseRepository,
         private readonly LoggerInterface $logger,
+        private readonly InventoryHelper $inventoryHelper,
     ) {
     }
 
@@ -180,10 +191,20 @@ class HousingManager
     }
 
     /**
-     * Installe un ameublement (HOU-05).
+     * Installe un ameublement (HOU-05, ECO-30).
      *
-     * Purement cosmetique et payant : un **gold sink** qui ne cree aucune
-     * pression a depenser chez ceux que l'apparence n'interesse pas.
+     * Purement cosmetique : un **gold sink** qui ne cree aucune pression a
+     * depenser chez ceux que l'apparence n'interesse pas.
+     *
+     * Deux voies, et c'est ECO-30 qui ouvre la seconde. Le style se payait
+     * **uniquement** en Gils — un cosmetique que rien de joueur ne produisait.
+     * Le necessaire du charpentier le remplace : celui qui en a un meuble
+     * gratuitement, et le charpentier a une raison de plus d'exister. La voie
+     * marchande reste ouverte pour qui n'a pas d'artisan sous la main, sans quoi
+     * le sink dependrait de la presence d'un metier.
+     *
+     * Le necessaire est **essaye d'abord** : un joueur qui en possede un ne
+     * paie jamais, et n'a pas a le declarer.
      */
     public function furnish(Player $player, PlayerHouse $house, HouseStyle $style): void
     {
@@ -194,8 +215,12 @@ class HousingManager
         }
 
         $price = $style->price();
-        if ($price > 0 && !$player->removeGils($price)) {
-            throw new \InvalidArgumentException(sprintf('Il vous faut %s Gils pour cet ameublement.', number_format($price, 0, ',', ' ')));
+        // `removeItemBySlug` puise dans le sac du joueur de la session, que
+        // `assertOwnership` vient d'identifier a `$player`.
+        $paidWithKit = $price > 0 && 1 === $this->inventoryHelper->removeItemBySlug(self::FURNISHING_KIT_SLUG, 1);
+
+        if (!$paidWithKit && $price > 0 && !$player->removeGils($price)) {
+            throw new \InvalidArgumentException(sprintf('Il vous faut %s Gils ou un necessaire d\'ameublement.', number_format($price, 0, ',', ' ')));
         }
 
         $house->setStyle($style);
@@ -204,7 +229,8 @@ class HousingManager
         $this->logger->info('House furnished', [
             'player_id' => $player->getId(),
             'style' => $style->value,
-            'price' => $price,
+            'price' => $paidWithKit ? 0 : $price,
+            'paid_with_kit' => $paidWithKit,
         ]);
     }
 

@@ -45,7 +45,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-27 ✅ | Équilibrage & tests de la chaîne |
 | ECO-28 | Commandes de service — travailler un objet lié |
 | ECO-29 ✅ | Cuisinier — le débouché de la pêche et des vivres |
-| ECO-30 | Charpentier — le débouché du bois |
+| ECO-30 ✅ | Charpentier — le débouché du bois |
 | ECO-31 | Tailleur — la ligne tissu et l'armure des mages |
 
 ```
@@ -56,7 +56,7 @@ Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
 Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
-Piste H — Métiers manquants       : ECO-29 ✅, ECO-30 (← ZON-34 ✅), ECO-31 (← ZON-30 ✅)
+Piste H — Métiers manquants       : ECO-29 ✅, ECO-30 ✅, ECO-31 (← ZON-30 ✅)
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -547,17 +547,39 @@ Piste H — Métiers manquants       : ECO-29 ✅, ECO-30 (← ZON-34 ✅), ECO-
 > bit d'équipement et un emplacement d'interface neufs ; le code prévoit déjà le cas d'un
 > craft sans outil requis, et c'est ce chemin qui est emprunté.
 
-### ECO-30 — Charpentier : le débouché du bois (M | ★★★ | HAUTE)
-> Le consommateur de la ligne du bois (ZON-34). L'arc et le bâton existants gagnent
-> leur recette ; le housing (PlayerHouse, mobilier — livré côté code) gagne son métier.
-> Prérequis : ← ZON-34 (essences et filons)
-- [ ] Domaine `carpenter` (Charpentier) + arbre
-- [ ] Recettes d'armes : arc, bâton, baguette par palier d'essence (hêtre → chêne
-      murmurant → bois tourbé → bois pétrifié), lanière de cuir en liant (chaîne croisée
-      avec le tanneur, D-WoW §4.6)
-- [ ] Recettes de mobilier : la ligne `HouseFurnishing` gagne des versions craftées
-- [ ] Flèches consommables pour l'archer (le consommable perpétuel du charpentier)
-- [ ] Tests : chaque essence a ≥ 1 débouché, aucune arme de bois sans recette
+### ECO-30 — Charpentier : le débouché du bois ✅ (M | ★★★ | HAUTE)
+> Le consommateur de la ligne du bois (ZON-34). **Livré le 2026-07-29.**
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Domaine `carpenter` (Charpentier) + arbre de 8 nœuds
+- [x] Recettes d'armes : arc et bâton par palier d'essence (hêtre → chêne murmurant →
+      bois tourbé → bois pétrifié), lanière de cuir en liant (chaîne croisée avec le
+      tanneur, D-WoW §4.6) et gemme du joaillier sur les bâtons
+- [x] La planche de hêtre, intermédiaire que **neuf recettes sur dix** traversent — le
+      pendant bois de la lanière de cuir
+- [x] Flèches consommables pour l'archer, empennées des plumes que ZON-30 avait posées
+      sans consommateur
+- [x] La hache d'acier du forgeron gagne son manche : la sortie du charpentier trouve un
+      acheteur d'un autre métier (ECO-14 dans les deux sens)
+- [x] `line_bonus` : les lignes `wood` et `farm` gagnent leur métier d'atelier — elles
+      étaient vides faute de consommateur
+- [x] Tests : 8 sur la ligne du bois + 2 sur `HousingManager`
+- [ ] **Baguette — reportée.** Aucune baguette n'existe dans les 121 pièces d'équipement ;
+      en créer une famille relève de la catégorie d'équipement à inventer (le chantier
+      d'ECO-31 pour le tissu), pas d'un jalon qui branche un métier sur une matière.
+
+> **L'ameublement, tel qu'il existe réellement.** Le plan demandait « la ligne
+> `HouseFurnishing` gagne des versions craftées ». Il n'y a pas de ligne : `HouseStyle` a
+> délibérément choisi un **style payant** plutôt qu'un catalogue de meubles à poser, et un
+> vrai système de mobilier serait un chantier à lui seul. Le charpentier se branche donc
+> sur ce choix-là sans le défaire — un **nécessaire d'ameublement** remplace le prix en
+> Gils, quel que soit le style. La voie marchande reste ouverte, sans quoi le gold sink
+> dépendrait de la présence d'un métier.
+
+> **Écart assumé : pas d'outil de charpente**, et la **hache de bûcheron reste reportée**.
+> `Item::CRAFT_TOOL_TYPES` ne cite pas ce métier ; un outil de récolte demanderait un type
+> d'outil, un bit d'équipement et un emplacement d'interface neufs — un changement de
+> mécanisme là où ce jalon répare un trou de contenu. Même arbitrage que la marmite du
+> cuisinier (ECO-29) et que le report d'origine (ZON-34).
 
 ### ECO-31 — Tailleur : la ligne tissu et l'armure des mages (M | ★★★ | HAUTE)
 > Le trou béant : **aucune armure tissu n'existe**. Les domaines de sort (pyromancien,

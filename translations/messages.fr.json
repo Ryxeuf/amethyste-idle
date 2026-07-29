@@ -1633,6 +1633,9 @@
         "none": "Aucune exigence",
         "hint": "Porte sur la matière que vous confiez, pas sur l'objet produit. Seule la ligne du cristal — améthyste, minerais, gemmes — porte une bande."
       }
+    },
+    "housing": {
+      "furnishing_kit_hint": "Un nécessaire d'ameublement, monté par un charpentier, remplace le prix quel que soit le style."
     }
   },
   "common": {

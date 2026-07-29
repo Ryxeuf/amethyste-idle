@@ -120,8 +120,10 @@
                     Une parcelle rend 2 a 3 unites de ce qu'on y seme, en 3 heures.
                 </p>
 
-                {# HOU-05 : l'ameublement se paie, la devise non. #}
+                {# HOU-05 : l'ameublement se paie, la devise non. ECO-30 : un
+                   necessaire d'ameublement du charpentier remplace le prix. #}
                 <h3 class="text-sm font-semibold text-indigo-300 mt-5 mb-2">Ameublement</h3>
+                <p class="text-xs text-gray-500 mb-2">{{ 'game.housing.furnishing_kit_hint'|trans }}</p>
                 <div class="grid gap-2 sm:grid-cols-2">
                     {% for style in styles %}
                         <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-3">
