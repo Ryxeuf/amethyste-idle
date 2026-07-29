@@ -370,15 +370,33 @@ L'audit a montré un ratio de 5 contre 1 entre l'herboriste (22 plantes, dont 12
 débouché ou sans source) et le bûcheron (4 essences). L'harmonisation ne vise pas
 l'égalité brute : **le compte suit les artisanats nourris**.
 
-| Domaine | Nourrit | Cible base | Action |
-|---|---|---|---|
-| Mineur | forge + joaillerie (+ liants) | 10–13 | rien — gabarit de référence |
-| Herboriste | alchimie + épices de cuisine | 8–12 | **élaguer de 22** : 5 mortes purgées, 7 sans débouché raccordées (banales → épices ECO-29, rares → alchimie haute) ou fusionnées |
-| Dépeceur | tannerie (+ liants) | 6–8 | rien après ECO-24b ; le trou T1 se comble par le gibier des Vallons |
-| Pêcheur | cuisine | 5–6 | **+1 T4** : le poisson-lune (item mort) se réveille en pêche nocturne rare du Marais — un mort ressuscité, un trou comblé, une signature de zone servie |
-| Bûcheron | charpenterie + housing | 4–6 | rien — le hêtre couvre T0–T1 |
+| Domaine | Nourrit | Cible d'origine | Livré (ZON-35) |
+|---|---|---:|---|
+| Mineur | forge + joaillerie (+ liants) | 10–13 | **14** — gabarit de référence, inchangé |
+| Herboriste | alchimie + épices de cuisine | 8–12 | **20** — 5 mortes purgées, 10 sans débouché raccordées ; voir l'écart ci-dessous |
+| Dépeceur | tannerie (+ liants) | 6–8 | inchangé — le trou T1 est comblé par le gibier des Vallons (ZON-30) |
+| Pêcheur | cuisine | 5–6 | **7** — le poisson-lune **et** le kraken juvénile se pêchent enfin, tous deux en T4 |
+| Bûcheron | charpenterie + housing | 4–6 | **4** — le hêtre couvre T0–T1 (ZON-34), débouché livré par ECO-30 |
 
-Jalon d'exécution : **ZON-35**.
+Jalon d'exécution : **ZON-35** ✅ (2026-07-29).
+
+> **L'écart sur l'herboriste, et pourquoi il est assumé.** La cible de 8–12 a été écrite quand
+> l'herboriste ne nourrissait qu'un métier. Le cuisinier (ECO-29) en a fait deux, et la loi
+> elle-même dit que **le compte suit les artisanats nourris**. Descendre à 12 aurait demandé de
+> supprimer huit plantes qui ont toutes un filon — dont la givrecoiffe, les spores fantômes et le
+> fruit du vide, que la **loi 10 ci-dessous cite nommément** comme exemples canoniques d'affinité.
+> Le document se serait contredit à deux paragraphes d'intervalle. Ce qui est tenu, et qui était le
+> vrai sujet de l'audit, c'est que **plus une seule des 20 n'est sans débouché**.
+
+> **Le kraken juvénile n'a pas été purgé.** Le plan prévoyait de le supprimer ; ECO-29 lui a donné
+> entre-temps le festin, la recette de plus haut palier du cuisinier. Supprimer l'item aurait
+> détruit une recette livrée : il reçoit donc une source — un banc de la Mer de Sel, profil T4 —
+> plutôt qu'une pierre tombale.
+
+> **La restriction nocturne du poisson-lune est reportée.** Le schéma de filon ne connaît pas de
+> fenêtre horaire (`explore` en a une, `gather` non), et lui en ajouter une serait un changement de
+> mécanisme. La rareté est portée par le palier T4 et par le gate de compétence (ECO-24c) ; la
+> nocturnité du Marais reste dite par sa signature d'améthyste, qui tire haut la nuit (ZON-32).
 
 ### L'affinité élémentaire (loi 10)
 

@@ -21,7 +21,7 @@ dans leurs plans d'origine :
 | ZON-32 ✅ | Signatures d'améthyste par zone (config) | S | ← ECO-21, ECO-22 |
 | ZON-33 | Tests de conformité aux lois de zone | S | ‖ au fil des jalons |
 | ZON-34 ✅ | La ligne du bois (domaine, essences, filons) | M | → ECO-30 (charpentier) |
-| ZON-35 | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
+| ZON-35 ✅ | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
 | ZON-36 | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
 | ZON-37 | La régénération d'un filon devient un débit ✅ | M | ∅ — **prérequis du recalibrage** |
 
@@ -131,19 +131,36 @@ ZON-33 en continu
 > Elle arrivera avec le charpentier, à qui elle sert. Livrer l'arbre sans elle donne la
 > matière tout de suite ; poser la hache d'abord aurait donné un outil sans rien à couper.
 
-### ZON-35 — Harmonisation des récoltes (S | ★★ | MOYENNE)
-> Applique la loi 9 (GAME_ZONES §3 ter) : le compte d'un domaine suit les artisanats
-> qu'il nourrit, échelle T0→T4 sans trou, tout a un débouché.
-> Prérequis : ← ECO-29 (le cuisinier absorbe les herbes banales en épices)
-- [ ] Purger les 5 plantes mortes (`dreamlily`, `sunblossom`, `thunderroot`,
-      `whisperweed`, `wolfsbane`) — ou en réaffecter au plus 2 si un besoin réel existe
-- [ ] Raccorder les 7 plantes sans débouché : banales → épices de cuisine (ECO-29),
-      rares (spores, givrecoiffe, fruit du vide) → intrants d'alchimie haute
-- [ ] Réveiller le **poisson-lune** en T4 : pêche nocturne rare du Marais (profil T4 du
-      calibrage, tirage restreint à la nuit) ; purger `fish-baby-kraken`
-- [ ] Vérifier l'échelle T0→T4 de chaque domaine après ZON-30/31/34 (le trou T1 du
-      dépeçage se comble par le gibier des Vallons, celui du bois par le hêtre T0–T1)
-- [ ] Tests : invariants de la loi 9 (échelle, débouché, plancher hub) par domaine
+### ZON-35 — Harmonisation des récoltes ✅ (S | ★★ | MOYENNE)
+> Applique la loi 9 (GAME_ZONES §3 ter). **Livré le 2026-07-29.**
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Les 5 plantes mortes purgées (`dreamlily`, `sunblossom`, `thunderroot`,
+      `whisperweed`, `wolfsbane`) — ni filon ni recette, donc ni source ni débouché
+- [x] Les **10** plantes sans débouché raccordées (l'audit en annonçait 7) : les quatre
+      banales — pissenlit, ortie, romarin, échinacée — absorbées par le **mélange
+      d'épices** du cuisinier, promesse reportée par ECO-29 ; les six rares — givrecoiffe,
+      spores fantômes, fruit du vide, feuille de drake, fleur de lune, fleur de phénix —
+      greffées sur six recettes d'alchimie haute
+- [x] Le **poisson-lune** réveillé en T4, filon du Marais gaté sur compétence
+- [x] Le **kraken juvénile** réveillé en T4 lui aussi, dans la Mer de Sel — voir l'écart
+      ci-dessous
+- [x] Les sept prix touchés recalculés selon la règle d'ECO-27 : ajouter un intrant sans
+      reprendre le prix aurait fait de sept recettes des destructrices de valeur
+- [x] Tests : 9 (`HarvestHarmonyTest`), les deux invariants de la loi 9 dans les deux sens
+
+> **Le kraken juvénile n'a pas été purgé**, contrairement à ce que la case prévoyait.
+> ECO-29 lui a donné entre-temps le festin, la recette de plus haut palier du cuisinier :
+> supprimer l'item aurait détruit une recette livrée deux jalons plus tôt. Il reçoit donc
+> une source plutôt qu'une pierre tombale.
+
+> **La restriction nocturne du poisson-lune est reportée.** Le schéma de filon ne connaît
+> pas de fenêtre horaire (`explore` en a une, `gather` non) ; lui en ajouter une serait un
+> changement de mécanisme. La rareté tient au palier T4 et au gate de compétence.
+
+> **L'herboriste reste à 20 plantes, pas 8–12.** Descendre à la cible aurait demandé de
+> supprimer huit plantes qui ont toutes un filon, dont trois que la loi 10 cite nommément
+> comme exemples canoniques d'affinité. L'invariant qui compte — plus une seule sans
+> débouché — est tenu. Écart documenté dans GAME_ZONES §3 ter.
 
 ### ZON-36 — Affinités élémentaires des ressources (S | ★★ | MOYENNE)
 > Applique la loi 10 (GAME_ZONES §3 ter, GAME_WORLD §2.2) : chaque ressource porte une

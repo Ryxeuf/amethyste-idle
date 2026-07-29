@@ -722,6 +722,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     // brutes au niveau 3, sans rien devoir a la paillasse d'en
                     // dessous ; la base de potion (niveau 1) est ce support.
                     ['slug' => 'crafted-potion-base', 'quantity' => 1],
+                    // ZON-35 : les spores fantomes du Marais se recoltaient sans
+                    // que rien ne les consomme. Elles entrent la ou leur biome les
+                    // destinait — la fiole de poison.
+                    ['slug' => 'plant-ghostshroom', 'quantity' => 1],
                 ],
                 'result_ref' => 'poison_vial',
                 'crafting_time' => 7,
@@ -743,6 +747,8 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     // nourrissant — le ragout du cuisinier en est un, et c'est
                     // le seul metier qui en fasse.
                     ['slug' => 'crafted-carp-stew', 'quantity' => 1],
+                    // ZON-35 : la feuille de drake, jusqu'ici recoltee pour rien.
+                    ['slug' => 'plant-dragonleaf', 'quantity' => 1],
                 ],
                 'result_ref' => 'elixir_force',
                 'crafting_time' => 8,
@@ -759,6 +765,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'crafted-potion-base', 'quantity' => 1],
                     ['slug' => 'plant-thyme', 'quantity' => 2],
                     ['slug' => 'plant-valerian', 'quantity' => 1],
+                    // ZON-35 : la givrecoiffe de la Crete. Un bouclier de glace
+                    // est ce que sa signature de zone promettait.
+                    ['slug' => 'plant-frostcap', 'quantity' => 1],
                 ],
                 'result_ref' => 'elixir_defense',
                 'crafting_time' => 8,
@@ -775,6 +784,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'crafted-potion-base', 'quantity' => 2],
                     ['slug' => 'plant-aloe-vera', 'quantity' => 2],
                     ['slug' => 'plant-mandrake', 'quantity' => 1],
+                    // ZON-35 : la fleur de phenix. Une potion de soin majeure est
+                    // le seul endroit du catalogue ou elle avait sa place.
+                    ['slug' => 'plant-phoenixflower', 'quantity' => 1],
                 ],
                 'result_ref' => 'healing_potion_major',
                 'crafting_time' => 10,
@@ -794,6 +806,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     // ECO-14 : la gemme catalytique. L'alchimiste ne dependait du
                     // joaillier qu'au niveau 10 — donc, en pratique, jamais.
                     ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                    // ZON-35 : la fleur de lune, cueillie de nuit et jusqu'ici
+                    // sans emploi.
+                    ['slug' => 'plant-moonflower', 'quantity' => 1],
                 ],
                 'result_ref' => 'elixir_vitality',
                 'crafting_time' => 12,
@@ -1021,6 +1036,27 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Cuit une miche au four : le blé des Vallons trouve enfin sa fin.',
                 'name_translations' => ['en' => 'Country Bread'],
             ],
+            // ZON-35 — le melange d'epices, second intermediaire vertical du
+            // cuisinier a cote du pain. Il absorbe les **quatre** herbes banales
+            // que rien ne consommait : pissenlit, ortie, romarin, echinacee.
+            'recipe_spice_blend' => [
+                'name' => 'Mélange d\'épices',
+                'slug' => 'recipe-spice-blend',
+                'craft' => 'cuisinier',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'plant-dandelion', 'quantity' => 2],
+                    ['slug' => 'plant-nettle', 'quantity' => 2],
+                    ['slug' => 'plant-rosemary', 'quantity' => 1],
+                    ['slug' => 'plant-echinacea', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_spice_blend',
+                'result_quantity' => 2,
+                'crafting_time' => 5,
+                'xp_reward' => 16,
+                'description' => 'Pile ensemble ce qui pousse au bord des chemins : le goût vient de là.',
+                'name_translations' => ['en' => 'Spice Blend'],
+            ],
             'recipe_fish_skewer' => [
                 'name' => 'Brochette du gué',
                 'slug' => 'recipe-fish-skewer',
@@ -1080,6 +1116,8 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'fish-moonfish', 'quantity' => 1],
                     ['slug' => 'crafted-bread', 'quantity' => 1],
+                    // ZON-35 : les epices que le plat attendait depuis ECO-29.
+                    ['slug' => 'crafted-spice-blend', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_moonfish_plate',
                 'crafting_time' => 9,
@@ -1110,6 +1148,8 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'fish-baby-kraken', 'quantity' => 1],
                     ['slug' => 'crafted-bread', 'quantity' => 2],
+                    // ZON-35 : on n'assaisonne pas une tablee entiere avec rien.
+                    ['slug' => 'crafted-spice-blend', 'quantity' => 2],
                 ],
                 'result_ref' => 'crafted_kraken_feast',
                 'crafting_time' => 15,
@@ -1657,6 +1697,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'plant-mandrake', 'quantity' => 3],
                     ['slug' => 'plant-ginseng', 'quantity' => 2],
                     ['slug' => 'crafted-gem-prismatic', 'quantity' => 1],
+                    // ZON-35 : le fruit du vide, la plus rare du monde, au sommet
+                    // de l'alchimie. C'est la seule place qui lui allait.
+                    ['slug' => 'plant-voidfruit', 'quantity' => 1],
                 ],
                 'result_ref' => 'masterwork_grand_elixir',
                 'crafting_time' => 25,

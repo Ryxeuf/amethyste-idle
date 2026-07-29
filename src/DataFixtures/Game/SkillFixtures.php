@@ -4326,6 +4326,20 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
 
             // Rang 5 (150+ pts) — 1 skill ultime
+            // ZON-35 — les deux prises de palier 4. Le poisson-lune et le kraken
+            // juvenile etaient **cuisines sans etre pechables** : deux recettes
+            // livrees par ECO-29 dont la matiere n'existait nulle part. Ces deux
+            // nœuds sont les portes de leurs filons (ECO-24c), et ils comblent le
+            // trou de palier haut de la peche (loi 9, GAME_ZONES § 3 ter).
+            'fisher_moonfish' => [
+                'slug' => 'fisher-moonfish',
+                'title' => 'Peche du poisson-lune',
+                'description' => 'Permet de lever le poisson-lune des tourbieres du Marais, la prise qu\'on ne fait pas en passant',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-moonfish-xs']]],
+                'requiredPoints' => 90,
+                'domain' => $d,
+                'requirements' => ['fisher_deep_sea'],
+            ],
             'fisher_master' => [
                 'slug' => 'fisher-master',
                 'title' => 'Maitre pecheur',
@@ -4334,6 +4348,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'requirements' => ['fisher_deep_sea', 'fisher_salmon_m'],
+            ],
+            'fisher_kraken' => [
+                'slug' => 'fisher-kraken',
+                'title' => 'Peche du kraken juvenile',
+                'description' => 'Permet de tirer un kraken juvenile des bancs de la Mer de Sel, la seule eau profonde du monde',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-kraken-xs']]],
+                'requiredPoints' => 200,
+                'domain' => $d,
+                'requirements' => ['fisher_master', 'fisher_moonfish'],
             ],
         ];
     }
@@ -4544,6 +4567,18 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'life' => 3,
+                'requirements' => ['cook_bread'],
+            ],
+            // ZON-35 — les epices, reportees par ECO-29 faute de ce jalon. Quatre
+            // herbes banales se recoltaient sans qu'une seule recette ne les
+            // consomme ; le melange les absorbe toutes les quatre.
+            'cook_spices' => [
+                'slug' => 'cook-spices',
+                'title' => 'Melange d\'epices',
+                'description' => 'Permet de piler le pissenlit, l\'ortie, le romarin et l\'echinacee en un melange qui releve les plats de haut palier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-spice-blend']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
                 'requirements' => ['cook_bread'],
             ],
 

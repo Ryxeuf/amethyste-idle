@@ -806,7 +806,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Restaure une grande quantité de points de vie',
                 'type' => 'stuff',
                 'slug' => 'healing-potion-major',
-                'price' => 220,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 340,
                 'space' => 1,
                 'energy_cost' => 0,
                 'spell' => 'potion_heal_major',
@@ -1306,7 +1308,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'poison-vial',
                 'spell' => 'poison_vial_spell',
                 'effect' => '{"action":"use_spell","slug":"poison-vial"}',
-                'price' => 170,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 220,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
@@ -1322,7 +1326,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'effect' => '{"action":"use_spell","slug":"elixir-force"}',
                 // ECO-29 : le ragout du cuisinier (40) entre dans le cout, et le
                 // prix suit la regle d'ECO-27 — 210 + 10 x 3.
-                'price' => 240,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 300,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
@@ -1336,7 +1342,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'elixir-defense',
                 'spell' => 'elixir_defense_spell',
                 'effect' => '{"action":"use_spell","slug":"elixir-defense"}',
-                'price' => 120,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 180,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
@@ -1363,7 +1371,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'elixir-vitality',
                 'spell' => 'elixir_vitality_spell',
                 'effect' => '{"action":"use_spell","slug":"elixir-vitality"}',
-                'price' => 300,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 370,
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
@@ -1506,7 +1516,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Les écailles irisées se soulèvent une à une. On mange lentement, et on s\'en souvient.',
                 'type' => 'crafted',
                 'slug' => 'crafted-moonfish-plate',
-                'price' => 100,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 150,
                 'space' => 1,
                 'energy_cost' => 0,
                 'spell' => 'stew_heal',
@@ -1528,13 +1540,39 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Rare,
             ],
+            // ZON-35 — les epices, reportees par ECO-29 faute de ce jalon.
+            //
+            // Quatre herbes banales — pissenlit, ortie, romarin, echinacee — se
+            // recoltaient dans quatre zones **sans qu'une seule recette ne les
+            // consomme**. Elles n'etaient pas mortes (elles avaient un filon),
+            // elles etaient inutiles, ce qui est pire : le joueur les ramasse,
+            // remplit son sac, et decouvre au comptoir qu'elles ne valent que
+            // leur prix de vente.
+            //
+            // Le melange est ce qui les absorbe toutes les quatre d'un coup, et
+            // il donne au cuisinier son second intermediaire vertical a cote du
+            // pain (loi 9, GAME_ZONES § 3 ter).
+            'crafted_spice_blend' => [
+                'name' => 'Mélange d\'épices',
+                'name_translations' => ['en' => 'Spice Blend'],
+                'description' => 'Pissenlit séché, ortie, romarin et échinacée, pilés ensemble. Ce qui poussait au bord des chemins devient du goût.',
+                'type' => 'crafted',
+                'slug' => 'crafted-spice-blend',
+                'price' => 50,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
             'crafted_kraken_feast' => [
                 'name' => 'Festin de kraken',
                 'name_translations' => ['en' => 'Kraken Feast'],
                 'description' => 'Un kraken juvénile et deux miches. Il en faut deux : le reste de la table en veut aussi.',
                 'type' => 'crafted',
                 'slug' => 'crafted-kraken-feast',
-                'price' => 250,
+                // ZON-35 : le prix suit les intrants ajoutes (regle d'ECO-27,
+                // prix = cout + 10 x niveau).
+                'price' => 350,
                 'space' => 1,
                 'energy_cost' => 0,
                 'spell' => 'stew_heal',
@@ -1826,18 +1864,13 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["poison", "paralysis_potion"]}',
             ],
-            'plant_wolfsbane' => [
-                'name' => 'Aconit',
-                'name_translations' => ['en' => 'Wolfsbane'],
-                'description' => 'Plante toxique aux propriétés mystiques',
-                'type' => 'plant',
-                'slug' => 'plant-wolfsbane',
-                'price' => 40,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["lycanthropy_cure", "protection_potion"]}',
-            ],
+            // ZON-35 — cinq plantes purgees ici : `plant-dreamlily`,
+            // `plant-sunblossom`, `plant-thunderroot`, `plant-whisperweed` et
+            // `plant-wolfsbane`. Elles n'avaient **ni filon ni recette** : ni
+            // source, ni debouche, ni raison. Les garder « au cas ou » gonflait
+            // le compte de l'herboriste sans rien offrir, et un catalogue qui
+            // ment sur sa taille finit par etre calibre sur ce mensonge (loi 9,
+            // GAME_ZONES § 3 ter).
             'plant_aloe_vera' => [
                 'name' => 'Aloe Vera',
                 'name_translations' => ['en' => 'Aloe Vera'],
@@ -1888,18 +1921,6 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'effect' => '{"action":"crafting_ingredient", "potions":["night_vision_potion", "lunar_blessing_potion"]}',
                 'rarity' => ItemRarity::Uncommon,
             ],
-            'plant_sunblossom' => [
-                'name' => 'Fleur Solaire',
-                'name_translations' => ['en' => 'Sunblossom'],
-                'description' => 'Plante qui absorbe l\'énergie du soleil',
-                'type' => 'plant',
-                'slug' => 'plant-sunblossom',
-                'price' => 70,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["fire_resistance_potion", "solar_energy_potion"]}',
-            ],
             'plant_dragonleaf' => [
                 'name' => 'Feuille de Dragon',
                 'name_translations' => ['en' => 'Dragonleaf'],
@@ -1936,43 +1957,6 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["invisibility_potion", "spirit_vision_potion"]}',
-            ],
-            'plant_thunderroot' => [
-                'name' => 'Racine Tonnerre',
-                'name_translations' => ['en' => 'Thunderroot'],
-                'description' => 'Racine qui accumule l\'énergie électrique',
-                'type' => 'plant',
-                'slug' => 'plant-thunderroot',
-                'price' => 80,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["lightning_resistance_potion", "shock_potion"]}',
-            ],
-            'plant_whisperweed' => [
-                'name' => 'Herbe Murmurante',
-                'name_translations' => ['en' => 'Whisperweed'],
-                'description' => 'Plante qui émet de légers murmures',
-                'type' => 'plant',
-                'slug' => 'plant-whisperweed',
-                'price' => 55,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["telepathy_potion", "animal_speech_potion"]}',
-            ],
-            'plant_dreamlily' => [
-                'name' => 'Lys des Rêves',
-                'name_translations' => ['en' => 'Dreamlily'],
-                'description' => 'Fleur qui influence les rêves',
-                'type' => 'plant',
-                'slug' => 'plant-dreamlily',
-                'price' => 90,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["dream_walking_potion", "prophetic_vision_potion"]}',
-                'rarity' => ItemRarity::Epic,
             ],
             'plant_voidfruit' => [
                 'name' => 'Fruit du Néant',
