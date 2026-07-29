@@ -301,7 +301,7 @@ class FactionTensionCatalog
     /**
      * @return list<mixed>
      */
-    private function asList($value, string $key, string $source): array
+    private function asList(mixed $value, string $key, string $source): array
     {
         if (!\is_array($value)) {
             throw new FactionTensionDefinitionException(sprintf('"%s" of "%s" must be a list.', $key, $source));
@@ -310,7 +310,7 @@ class FactionTensionCatalog
         return array_values($value);
     }
 
-    private function tier($value, string $key, string $source): ReputationTier
+    private function tier(mixed $value, string $key, string $source): ReputationTier
     {
         $tier = \is_string($value) ? ReputationTier::tryFrom($value) : null;
         if ($tier === null) {
