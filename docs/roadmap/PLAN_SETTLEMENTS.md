@@ -432,3 +432,44 @@ Phase 3 (enjeu)      : FOY-17 ✅ → FOY-08 ✅ → FOY-09 ✅ → FOY-14 ✅
 Phase 4 (conséquence): FOY-11 ✅ → FOY-12 ✅ → FOY-13 ✅ → FOY-15 ✅
 Phase 5 (tests)      : FOY-16  (parallélisable)
 ```
+
+---
+
+## Vague 2 — le logement dans les foyers (FOY-18 → FOY-21, ouverte le 2026-07-29)
+
+> Décline [../GAME_WORLD.md](../GAME_WORLD.md) **§12.6** : le housing livré (tâche 129,
+> HOU) rejoint le pilier territorial. Le Quartier des Jardins reste le plancher jamais
+> gaté ; le jardin ne change pas.
+
+### FOY-18 — Parcelles résidentielles par rang (M | ★★★ | HAUTE)
+> §12.6 b. `HousingManager::RESIDENTIAL_ZONE_SLUGS` (constante, une zone) devient une
+> règle : tout foyer Hameau+ est résidentiel, à capacité par rang.
+- [ ] Capacités par rang en config (`settlements.yaml` : Hameau ~8, Bourg ~20, Cité ~40,
+      Métropole ~80 à W = 1, mises à l'échelle par W)
+- [ ] **Jamais d'expulsion** : la régression ferme l'ouverture de nouvelles parcelles,
+      les demeures existantes restent (décision A, testée)
+- [ ] Le Quartier des Jardins reste résidentiel inconditionnel (le plancher)
+- [ ] Restitution : parcelles libres visibles sur l'écran de zone (bloc foyer)
+- [ ] Tests : capacité par rang, échelle W, non-expulsion, plancher
+
+### FOY-19 — Le loyer politique (S | ★★ | HAUTE)
+> §12.6 c. Le même canal que la taxe HV (GCC-11/ECO-04).
+- [ ] Loyer d'une zone à foyer → trésor de la guilde contrôlante de la région ; sans
+      guilde → sink (destruction) ; Quartier des Jardins → sink toujours
+- [ ] Restitution : la provenance « loyers » visible dans le trésor de guilde
+- [ ] Tests : routage par cas, sink par défaut
+
+### FOY-20 — Le retour au logis & les cheminées (M | ★★ | MOYENNE)
+> §12.6 d. La commodité de fin de session (playtest V2) et le grain de résidence.
+- [ ] **Retour au logis** : 1×/jour, voyage instantané vers sa zone de résidence
+      (jamais vers ailleurs — une commodité, pas un téléporteur)
+- [ ] **Coffre domestique** (stockage borné, complémentaire de la banque de zone)
+- [ ] **Grain de résidence** : chaque demeure habitée (loyer à jour) dépose un petit
+      grain quotidien au foyer de sa zone (table de dépôt §23.1, pondération énergie
+      sans objet — valeur propre, paramètre)
+- [ ] Tests : cadence 1/jour, cible unique, grain conditionné au loyer à jour
+
+### FOY-21 — Tests de la vague (S | ★★ | HAUTE)
+- [ ] Invariants : jamais d'expulsion, le plancher Jardins jamais gaté, le loyer
+      toujours routé ou détruit (jamais perdu en route), le retour au logis sans exploit
+      de voyage (pas de contournement du time-gating vers une zone tierce)
