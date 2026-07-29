@@ -11,6 +11,7 @@ use App\Entity\Game\Spell;
 use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
+use App\Enum\MateriaSlotType;
 use App\GameEngine\Economy\ResourceAffinityCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -156,6 +157,13 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
                 if (isset($data['materia_slots'])) {
                     $item->setMateriaSlots((int) $data['materia_slots']);
+                }
+
+                // DOM-03 : ce que la piece accepte. Absent = libre, et c'est ce
+                // qui rend le typage additif : une piece non typee se comporte
+                // exactement comme avant le jalon.
+                if (isset($data['materia_slot_type'])) {
+                    $item->setMateriaSlotType(MateriaSlotType::tryFrom((string) $data['materia_slot_type']));
                 }
 
                 // ZON-36 : meme derivation que dans les fixtures PHP, et depuis

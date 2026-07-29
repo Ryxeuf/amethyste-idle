@@ -5,6 +5,7 @@ namespace App\Entity\Game;
 use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
+use App\Enum\MateriaSlotType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -251,6 +252,23 @@ class Item
 
     #[ORM\Column(name: 'materia_slot_config', type: 'json', nullable: true)]
     private ?array $materiaSlotConfig = null;
+
+    /**
+     * Ce que les emplacements de cette piece acceptent — DOM-03.
+     *
+     * **Un type par piece, pas un par emplacement**, et c'est la lettre du canon :
+     * « la robe porte des emplacements de sort ; la plaque, des emplacements de
+     * technique ». Une piece est d'une famille, ses emplacements en heritent.
+     * Panacher les types au sein d'une meme piece aurait demande d'ordonner les
+     * emplacements, qui n'ont pas d'indice — et aurait fait dependre le
+     * sertissage de l'ordre des identifiants en base.
+     *
+     * `null` vaut `Free` : une piece qui ne dit rien accepte tout. Le typage est
+     * donc **additif**, et le plancher jour 1 tient sans qu'on l'ecrive piece
+     * par piece.
+     */
+    #[ORM\Column(name: 'materia_slot_type', type: 'string', length: 20, nullable: true, enumType: MateriaSlotType::class)]
+    private ?MateriaSlotType $materiaSlotType = null;
 
     #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
     private bool $isCosmetic = false;
@@ -717,6 +735,36 @@ class Item
     public function setMateriaSlots(int $materiaSlots): void
     {
         $this->materiaSlots = $materiaSlots;
+    }
+
+    /**
+     * Ce que les emplacements de cette piece acceptent (DOM-03).
+     *
+     * Jamais `null` en sortie : l'absence de declaration **est** une reponse, et
+     * c'est « libre ». Laisser fuir le `null` obligerait chaque appelant a
+     * refaire ce choix, et l'un d'eux finirait par le refaire autrement.
+     */
+    public function getMateriaSlotType(): MateriaSlotType
+    {
+        return $this->materiaSlotType ?? MateriaSlotType::Free;
+    }
+
+    public function setMateriaSlotType(?MateriaSlotType $type): void
+    {
+        $this->materiaSlotType = $type;
+    }
+
+    /**
+     * Le genre de materia que cet objet **est**, s'il en est une.
+     *
+     * Derive plutot que declare : une materia qui accorde un sort est une
+     * materia de sort. Ajouter une colonne aurait permis de la contredire — une
+     * materia declaree « technique » et porteuse d'un sort n'aurait eu aucun
+     * comportement defini.
+     */
+    public function getMateriaKind(): MateriaSlotType
+    {
+        return $this->spell !== null ? MateriaSlotType::Spell : MateriaSlotType::Technique;
     }
 
     public function getMateriaSlotConfig(): array

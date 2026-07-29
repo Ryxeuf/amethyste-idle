@@ -8,6 +8,7 @@ use App\Entity\App\Slot;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\ItemNotMateriaException;
 use App\Exception\ItemRequirementsException;
+use App\Exception\MateriaSlotTypeException;
 use App\GameEngine\Gear\MateriaGearSetter;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
@@ -76,6 +77,13 @@ class MateriaActionsController extends AbstractController
             return ApiResponse::error('action_rejected', 'L\'equipement n\'est plus porte.', 409);
         } catch (ItemNotMateriaException) {
             return ApiResponse::error('action_rejected', 'Cet objet n\'est pas une materia.', 409);
+        } catch (MateriaSlotTypeException) {
+            // DOM-03 : un refus de sertissage est une reponse metier, pas une
+            // erreur serveur. Sans ce cas, l'API rendait un 500 muet.
+            return ApiResponse::error('action_rejected', sprintf(
+                'Cet emplacement n\'accepte que les materia de %s.',
+                mb_strtolower($slot->getItem()->getGenericItem()->getMateriaSlotType()->label()),
+            ), 409);
         }
 
         return ApiResponse::success([
