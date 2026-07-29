@@ -4,6 +4,7 @@ namespace App\Tests\Unit\GameEngine\Fight;
 
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
+use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Progression\SynergyCalculator;
@@ -22,7 +23,10 @@ class CombatSkillResolverMateriaTest extends TestCase
         $equipmentSetResolver->method('getSetBonuses')->willReturn([
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0, 'protection' => 0,
         ]);
-        $this->resolver = new CombatSkillResolver($synergyCalculator, $equipmentSetResolver);
+        $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
+        $buildDomainResolver->method('isActive')->willReturn(true);
+
+        $this->resolver = new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver);
     }
 
     private function createSkillWithMateriaUnlock(string $spellSlug): Skill&MockObject

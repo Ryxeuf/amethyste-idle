@@ -8,6 +8,7 @@ use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\Enum\CombatRegister;
 use App\Enum\Element;
+use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
@@ -44,7 +45,13 @@ class CombatSkillResolverScopeTest extends TestCase
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0, 'protection' => 0,
         ]);
 
-        $this->resolver = new CombatSkillResolver($synergyCalculator, $equipmentSetResolver);
+        // La borne du build (DOM-02) est neutralisee ici : ce fichier verrouille
+        // la borne de l'action, et melanger les deux rendrait chaque echec
+        // ambigu. `BuildDomainResolverTest` tient l'autre moitie.
+        $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
+        $buildDomainResolver->method('isActive')->willReturn(true);
+
+        $this->resolver = new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver);
     }
 
     // =====================================================================
