@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
+> Derniere mise a jour : 2026-07-29 (**point global doc↔code** : DOM 8/8 complet, ZON-30→36 livres, FAC ouvert 1/10, FOY 17/17 + vague 2 FOY-18→21 ouverte, RET 7/7) ; 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
 > **PIVOT PBBG (juillet 2026)** : le jeu a abandonne la carte en tuiles au profit d'un monde en graphe de zones (energie, time-gating reel). Decision et equivalences : [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md) ; bilan de campagne : [docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md).
 
 ---
@@ -30,12 +30,18 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 15/15 | ✅ Termine |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) |
+| Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) — vague 2 ouverte : NAR-15→20 (l'an 1 des marees) |
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
 | **Consolidation post-pivot (ZON-22→27)** | **8/8** | ✅ Sprint 13 termine (2026-07-26) — dette du pivot soldee |
-| **Plan Economie joueur (ECO)** | **Pistes A/B/C completes** | ✅ Sprints 14-15 — reste Piste D (echoppes, ← housing) |
+| Plan Retention (RET-01→07) | 7/7 | ✅ Termine (2026-07-28) |
+| Plan Foyers (FOY-01→17) | 17/17 | ✅ Termine (2026-07-29) — vague 2 ouverte : FOY-18→21 (logement) |
+| Plan Zones (ZON-30→36) | 7/7 | ✅ Termine (2026-07-29) — +ZON-37/38 livres ; restent ZON-39/40 et des donnees |
+| Plan Domaines (DOM-01→08) | 8/8 | ✅ Termine (2026-07-29) — DOM-09 ouvert |
+| Plan Factions (FAC-01→10) | 1/10 | En cours (FAC-01 livre le 2026-07-29) |
+| Plan Repertoire (REP-01→06) | 0/6 | A faire (l'Autel d'eveil, apres FAC-04) |
+| **Plan Economie joueur (ECO)** | Pistes A→E, G, H completes | Reste ECO-28 (Piste F 3/4) et la Piste I ECO-32→35 (caravanes) |
 | Sprint 11 — Monde vivant | 6/6 | ✅ Termine (2026-07-26) |
-| Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
+| Sprint 12 — Technique & i18n | 3 taches restantes | En cours (134 perf, 135 i18n, 136 doc admin) — **seul sprint ouvert** |
 
 ---
 
@@ -52,16 +58,27 @@
 | ~~2~~ | ~~**ECO-24b**~~ ✅ | Sources des minerais de haut palier + etain, puis cuirs du tanneur | **Livre le 2026-07-28** (a + b) — carte de GAME_ZONES §3 appliquee, tables de butin posees. Plus aucune matiere de recette sans source hors reserves d'extension. **ECO-24c livre le 2026-07-28** (gate de competence sur les filons) |
 | ~~3~~ | ~~**FOY-17**~~ ✅ | Mesure de la charge (a) et facteur `W` (b) | **Livre le 2026-07-28** — `W` s'applique aux capacites de filon, `respawn_seconds` fixe. Debloque FOY-08/11, ECO-22 et le recalibrage |
 | ~~4~~ | ~~**Recalibrage filons**~~ ✅ | BALANCE §22.3, W=1 a ~50 joueurs/jour | **Livre le 2026-07-28**, apres ZON-37 qui en etait le prerequis cache. La couche de rarete cesse d'etre inerte : purete (ECO-22) et Paleur (FOY-11) ont desormais un signal a lire |
-| 5 | **FOY-01 → 05** | Socle des foyers (Sprint 16) | Le pilier territorial commence a exister |
+| ~~5~~ | ~~**FOY-01 → 05**~~ ✅ | Socle des foyers | **Livre le 2026-07-28** — le pilier territorial existe |
 | ~~6~~ | ~~**RET-02 + RET-03**~~ ✅ | Commission de la semaine + commande de guilde | **Livres le 2026-07-28** — le rendez-vous hebdomadaire personnel et le « on compte sur moi » existent |
-| ~~7~~ | ~~**FOY-06, 07, 10**~~ ✅ | Services gates, bonus d'atelier, regression bornee (Sprint 17) | **Livres le 2026-07-28** — faire vivre une zone y ouvre un marche et de meilleurs ateliers. **Piste B complete** |
+| ~~7~~ | ~~**FOY-06, 07, 10**~~ ✅ | Services gates, bonus d'atelier, regression bornee | **Livres le 2026-07-28** — faire vivre une zone y ouvre un marche et de meilleurs ateliers. **Piste B complete** |
 | ~~8~~ | ~~**RET-05**~~ ✅ | Chantier de la semaine (par foyer) | **Livre le 2026-07-28** — le foyer demande, et nomme ceux qui repondent |
 | ~~9~~ | ~~**ECO-21 → 22 → 23**~~ ✅ | Purete (bandes, tirage, marche/commandes) | **Livres le 2026-07-28.** Reveille `Recipe.quality`, donne un metier au prospecteur |
 | ~~10~~ | ~~**RET-06**~~ ✅ | Affleurement de la semaine | **Livre le 2026-07-28** — et personne n'en est informe, c'est le point |
-| 11 | **FOY-08 ✅, 09 ✅, 14 + RET-04** | La Crue + assiduite (Sprint 18) | **FOY-08, FOY-09 et FOY-14 livres le 2026-07-28** — l'enjeu politique existe, une grande ville plafonne desormais ses voisines (**Piste C complete**), et le journal de monde grave qui a bati quoi a chaque cloture de maree. **RET-04 livre le 2026-07-28** — l'assiduite en paliers. Bloc complet |
-| 12 | **ECO-25 ✅, 26 ✅, 27 ✅** | Chaine de production par paliers | Le levier anti-creux-du-milieu. **ECO-25 livre le 2026-07-28** — l'echelle du metal est continue du cuivre a l'orichalque, coefficient 1. **ECO-26 livre le 2026-07-28** — la purete remonte la chaine par le maillon le plus faible. **ECO-27 livre le 2026-07-28** — aucun craft ne detruit de la valeur. **Piste G complete** |
-| 13 | **FOY-11 ✅, 12 ✅, 13 ✅, 15 ✅** | Paleur, restauration, doctrine, marees consequence (Sprint 19) | La couche de consequence, en dernier — elle a besoin de tout le reste. **FOY-11 livre le 2026-07-28** : l'extraction laisse une trace, par filon et jamais par zone. **FOY-12 livre le 2026-07-29** : la sanction devient une depense politique, **Piste D complete**. **FOY-13 livre le 2026-07-29** : l'axe Extraire / Preserver devient un batiment, **Piste E complete**. **FOY-15 livre le 2026-07-29** : la saison devient une boucle — la maree qui vient est choisie par ce que le serveur a fait. **FOY-16 livre le 2026-07-29** : contrat transverse, **plan foyers complet 17/17** |
-| 14 | **ZON-30 → 36** | Contenu des zones ([PLAN_ZONES.md](PLAN_ZONES.md)) | **7/7 livres au 2026-07-29 — plan complet** : ZON-30 (Vallons d'Aubepine), ZON-31 (Dunes approfondies), ZON-32 (signatures d'amethyste), ZON-33 (les lois de zone valent contrat — deux plantes sourcees au passage), ZON-34 (ligne du bois), ZON-35 (recoltes harmonisees), ZON-36 (affinites elementaires — une regle et 25 corrections, pas une table) |
+| ~~11~~ | ~~**FOY-08, 09, 14 + RET-04**~~ ✅ | La Crue + assiduite | **Livres le 2026-07-28** — l'enjeu politique existe, une grande ville plafonne desormais ses voisines (**Piste C complete**), le journal de monde grave qui a bati quoi a chaque cloture de maree, et l'assiduite est en paliers. Bloc complet |
+| ~~12~~ | ~~**ECO-25 → 27**~~ ✅ | Chaine de production par paliers | **Livres le 2026-07-28** — l'echelle du metal est continue du cuivre a l'orichalque (coefficient 1), la purete remonte la chaine par le maillon le plus faible, aucun craft ne detruit de la valeur. **Piste G complete** |
+| ~~13~~ | ~~**FOY-11 → 16**~~ ✅ | Paleur, restauration, doctrine, marees consequence | **Livres les 2026-07-28/29** — l'extraction laisse une trace par filon (jamais par zone), la sanction devient une depense politique (**Piste D complete**), l'axe Extraire / Preserver devient un batiment (**Piste E complete**), la maree qui vient est choisie par ce que le serveur a fait, contrat transverse pose. **Plan foyers complet 17/17** |
+| ~~14~~ | ~~**ZON-30 → 36**~~ ✅ | Contenu des zones ([PLAN_ZONES.md](PLAN_ZONES.md)) | **7/7 livres au 2026-07-29 — plan complet** : Vallons d'Aubepine, Dunes approfondies, signatures d'amethyste, lois de zone en contrat, ligne du bois, recoltes harmonisees, affinites elementaires. **+ZON-37/38 livres** en chemin |
+| 15 | **BALANCE §24.0** | Ponderation du grain par l'energie | 1 ligne de config `settlements.yaml`, action immediate — toujours **non appliquee** au 2026-07-29 |
+| 16 | **ZON-39** | La loi de nommage appliquee aux libelles | Donnees pures (« Village de Lumiere » → « le Fanal », « Sanctuaire de Lumiere » → « Sanctuaire de la Voute », « Confrerie des Ombres » → « Confrerie des Ruelles ») |
+| 17 | **FAC-02 → 03** | Les gestes nourrissent la reputation, les consequences d'Hostile | La faction portee (FAC-01) doit se gagner par le jeu, pas par decret |
+| 18 | **FAC-04 → 05** | La Fonderie (faction + contrats d'approvisionnement) | La cinquieme faction devient jouable ; prerequis du Repertoire |
+| 19 | **ECO-28** | Commandes de service | Clot la **Piste F** ; prerequis tous livres |
+| 20 | **FAC-06 → 08** | Les Ruelles jouees (receleur, contrefacon, contrebande) | La face sombre de la Concorde, sans PvP |
+| 21 | **REP-01 → 06** | L'Autel d'eveil et le Repertoire ([PLAN_REPERTOIRE.md](PLAN_REPERTOIRE.md)) | Apres FAC-04 — le dernier systeme acte sans code |
+| 22 | **FOY-18 → 21** | Le logement dans les foyers (vague 2) | Le housing rejoint le pilier territorial |
+| 23 | **ECO-32 → 35** | Les caravanes (Piste I) | Affretement Bourg↔Bourg, escorte-astreinte, jamais d'interception joueur |
+| 24 | **NAR-15 → 20** | L'an 1 des marees ([PLAN_NARRATIVE.md](PLAN_NARRATIVE.md)) | Attention : la moitie « consequences » de NAR-15 est deja livree par FOY-15 |
+| 25 | **DOM-09, ZON-40, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), signatures inertes Foret/Vallons/Marais (ZON-40, a trancher), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
 
 Transverse, au fil de l'eau : **FOY-16 livre** (tests du pilier territorial ; **RET-07 livre**), mise a jour de `ROADMAP_DONE.md`
 a chaque jalon livre (regle 13 de CLAUDE.md).
@@ -86,7 +103,7 @@ a chaque jalon livre (regle 13 de CLAUDE.md).
 | **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | ✅ Termine 9/9 |
 | **Sprint 15** | **Commandes de craft — Piste C (ECO-05..09, ECO-20)** | **Haute** | ✅ Termine 8/8 (2026-07-26) |
 | **Sprint 11** | Monde vivant (128-133) | Basse | ✅ Termine 6/6 (2026-07-26) |
-| **Sprint 12** | Technique & i18n (134-135) | Basse | En cours (← bloque par ZON-24) |
+| **Sprint 12** | Technique & i18n (134-136) | Basse | En cours — **seul sprint ouvert** (134 perf, 135 i18n, 136 doc admin) |
 
 > **Numerotation** : les Sprints 7-10 reutilisent les numeros de l'ancien chantier Avatar (clos par
 > le pivot). Les Sprints 13-14 sont ouverts apres les Sprints 11-12 dans la numerotation, mais
@@ -125,53 +142,38 @@ risque pur pour aucun gain.
 ```
 CAMPAGNE ZON — MODELE ZONE ✅ TERMINEE (Sprints 7-10, ZON-01..21)
 
-SPRINT 13 — CONSOLIDATION POST-PIVOT (← ZON-21)     ✅ 7/7
-  ZON-22 Rebranchement PlayerMovedEvent   ✅
-  ZON-23 Couverture E2E zone              ✅
-  ZON-24 Realignement scenarios k6        ✅        → debloque 134
-  ZON-25 Evenements orphelins & residus   ✅
-  ZON-27 Couche PNJ (boutiques, dialogue) ✅
-  ZON-26a Densification du graphe         ✅
-  ZON-26b-a Population declarative (mobs)  ✅ → debloque 128
-  ZON-26b-b PNJ declaratifs                ✅
+SPRINT 13 — CONSOLIDATION POST-PIVOT ✅ 8/8 (2026-07-26)
+  ZON-22..27 livres (dont ZON-26a graphe, ZON-26b-a mobs declaratifs,
+  ZON-26b-b PNJ declaratifs — restent des donnees, cf. rang 25 de l'ordre de chantier)
 
-SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
-  ECO-01 BindType                         ∅   ← CRITIQUE (bloque ECO-02/05/10)
-  ECO-02 Plancher T1 & onboarding         ← ECO-01
-  ECO-03 HV regional                      ← modele zone ✅
-  ECO-04 Taxe HV → guilde controlante     ← ECO-03, GCC ✅
-  ECO-14 Interdependance des metiers      ∅ ‖
-  ECO-16 Moderation economique            ← ECO-03
+SPRINT 14 — ECONOMIE JOUEUR : SOCLE ✅ 9/9
+  ECO-01/02/03/04/14/16 livres
 
-SPRINT 11 — MONDE VIVANT (← Sprints 7-10)
-  128 Nouvelles zones Acte 4              ✅ complet (128a→d)
-  129 Housing joueur                      ✅ complet      → debloque ECO-10
-  130 Montures (temps de voyage)          ✅ transposee au modele zone
-  131 Events live                         ← ZON-15 ✅ (reste l'UI admin)
-  132 Classement saisonnier               quasi termine
-  133 Mini-jeux                           ∅ (peche ✅, defis chrono a faire)
+SPRINT 11 — MONDE VIVANT ✅ 6/6 (2026-07-26)
+  128 zones Acte 4, 129 housing, 130 montures, 131 events live,
+  132 classement saisonnier, 133 mini-jeux — tous livres
 
-SPRINT 12 — TECHNIQUE & I18N
-  134 Load testing & scaling              ← ZON-24 (jalons A/B/E/F restants)
+SPRINT 12 — TECHNIQUE & I18N (seul sprint encore ouvert)
+  134 Load testing & scaling              jalons restants (ZON-24 livre)
   135 Localisation i18n                   ∅ (contenu de jeu + ecrans du pivot)
+  136 Documentation admin
 
-SUITE ECONOMIE (apres Sprint 14)
-  ECO-05..09 Commandes de craft (pilier endgame)
-  ECO-10..13 Echoppes joueur              ← 129 housing
-  ECO-15 Gold sinks, ECO-17 Tests
+SUITE ECONOMIE ✅ LIVREE (Sprint 15 + Pistes D/E/G/H)
+  ECO-05..09 commandes de craft ✅, ECO-10..13 echoppes ✅, ECO-15 ✅, ECO-17 ✅
+
+RESTE — pilote par les plans annexes (cf. ordre de chantier, rangs 15+) :
+  FAC-02..10, REP-01..06, ECO-28, ECO-32..35 (caravanes),
+  FOY-18..21 (logement), NAR-15..20 (marees), DOM-09, ZON-39/40
 ```
 
 ---
 
 ## Parallelisation
 
-```
-Sprint 13 (dette du pivot) ────┬──── Sprint 11 (contenu monde)
-                               │
-Sprint 14 (economie, ‖) ───────┴──── Suite economie (ECO-05..17)
-
-Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
-```
+Les sprints numerotes sont **soldes**, a l'exception du **Sprint 12** (134 perf, 135 i18n, 136 doc admin),
+parallelisable a tout moment. Le travail est desormais pilote par les **plans annexes**
+(FAC, REP, ECO Piste I, FOY vague 2, NAR vague 2) ; la sequence de reference est
+l'« Ordre de chantier » ci-dessus.
 
 ---
 
@@ -198,9 +200,13 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
 - [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) ✅ — **7/7, plan complet** : l'horizon le plus fragile de la colonne de progression. La bascule du lundi est **une** — `WeekKey` en est le point de calcul unique, verrouille par `RetentionPlanContractTest`
-- [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) — **14/17, grand chantier en cours** (socle FOY-01→05 complet, Pistes B et C completes : FOY-06, FOY-07, FOY-08, FOY-09, FOY-10, FOY-14, FOY-17a/b livres) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
-- [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-31)](PLAN_PLAYER_ECONOMY.md) — **Piste G complete (2026-07-28)** : la chaine de production a une verticale, la purete la remonte par le maillon le plus faible, et aucun craft ne detruit de la valeur. Pistes A, B, C, D et E **completes** ; Piste F 3/4 (reste ECO-28) ; **Piste H complete (2026-07-29)** : cuisinier, charpentier et tailleur livres — les trois lignes que l'audit trouvait sans debouche (peche, bois, tissu) en ont une
-- [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)
+- [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) ✅ — **17/17, plan complet (2026-07-29)** ; **vague 2 ouverte : FOY-18→21** (le logement dans les foyers, decline GAME_WORLD §12.6) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
+- [Contenu des zones (ZON-30 a ZON-36)](PLAN_ZONES.md) ✅ — **7/7, plan complet (2026-07-29)** ; **+ZON-37/38 livres** en chemin ; restent **ZON-39** (la loi de nommage appliquee aux libelles — donnees pures) et **ZON-40** (signatures d'amethyste inertes sur Foret/Vallons/Marais — decision de design a trancher), plus les restes de donnees ZON-26b (Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre) ; decline [docs/GAME_ZONES.md](../GAME_ZONES.md)
+- [Factions (FAC-01 a FAC-10)](PLAN_FACTIONS.md) — **1/10, en cours** (FAC-01 livre le 2026-07-29 : la decote au-dela d'Ami, une seule faction portee, les bonus de palier appliques) : tension par paires, patronage, la Fonderie, les Ruelles, les cinq portes ; decline GAME_WORLD §6.4 et §12.2/12.4/12.5
+- [Arbres de domaine (DOM-01 a DOM-08)](PLAN_DOMAINS.md) ✅ — **8/8, plan complet (2026-07-29)** ; **DOM-09 ouvert** (bornage des nœuds partages + arbitrage Element wood/composes) ; decline [docs/GAME_DOMAINS.md](../GAME_DOMAINS.md)
+- [Repertoire des gestes retrouves (REP-01 a REP-06)](PLAN_REPERTOIRE.md) — **0/6, a faire** (l'Autel d'eveil ; apres FAC-04) ; decline GAME_WORLD §12.3
+- [Economie joueur (ECO-01 a ECO-17, ECO-21 a ECO-35)](PLAN_PLAYER_ECONOMY.md) — Pistes A, B, C, D, E, G et H **completes** (Piste G : la chaine de production a une verticale, la purete la remonte par le maillon le plus faible, aucun craft ne detruit de la valeur ; Piste H : cuisinier, charpentier et tailleur livres) ; reste **ECO-28** (commandes de service, Piste F 3/4) et la **Piste I ouverte : ECO-32→35** (les caravanes, decline GAME_WORLD §12.7)
+- [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25) ; **vague 2 ouverte : NAR-15→20** (l'an 1 des marees, decline [docs/GAME_SEASONS.md](../GAME_SEASONS.md) — attention, la moitie « consequences » de NAR-15 est deja livree par FOY-15)
 - [Controle de cite par les guildes (GCC-01 a GCC-20)](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Testing & qualite (TST-01 a TST-15)](PLAN_TESTING.md) ✅ — plan complet
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅ — termine, sans suite dans Amethyste (reutilisable pour un futur projet Zelda-like separe)

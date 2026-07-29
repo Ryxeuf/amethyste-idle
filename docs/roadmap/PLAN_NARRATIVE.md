@@ -207,12 +207,24 @@ Phase 5 (fond & tests) : NAR-13, NAR-14  (parallélisable)
 ### NAR-15 — Le tireur de marées (M | ★★★ | HAUTE)
 > La partition §0 devient un système : conséquence déclenchée > colonne datée > rotation.
 > Prérequis : moteur d'arc livré ; conditions Pâleur/Crue ← FOY-11 / FOY-08
-- [ ] Sélection de la marée suivante à la bascule de saison : priorité conséquences
-      (conditions vraies), puis colonne vertébrale (créneaux M2/M4/M8/M13), puis rotation
-      au **plus faible indice de sédiment mondial**
-- [ ] Gabarits en données (`config/game/tides.yaml`) : thème, indice nourri, beats types
-- [ ] La Pâleur passe avant l'Appel si les deux conditions sont vraies
+- [x] **Livré par FOY-15 (2026-07-28)** : la priorité des conséquences sur la rotation —
+      préemption du prochain créneau seulement si aucun thème n'est déjà posé
+      (`SeasonTickCommand::handleConsequenceTide`)
+- [x] **Livré par FOY-15 (2026-07-28)** : la Pâleur passe avant l'Appel si les deux
+      conditions sont vraies (`ConsequenceTide::precedence()`)
+- [ ] Reste : la **colonne vertébrale** — les créneaux M2/M4/M8/M13 des marées canon ;
+      aucun code ne les connaît aujourd'hui
+- [ ] Reste : la **rotation au plus faible indice de sédiment mondial** —
+      `SettlementIndex` existe, mais aucun sélecteur de marée ne le lit
+- [ ] Reste : les **6+2 gabarits rejouables** de GAME_SEASONS en données — aucune
+      existence aujourd'hui, seules les 2 conséquences vivent dans
+      `config/game/consequence_tides.yaml`
 - [ ] Tests : priorités, tirage par indice, déclencheurs
+
+> **Le fichier cible nommé par ce plan (`config/game/tides.yaml`) n'existe pas.** Les
+> gabarits de rotation s'ajouteront à côté de `config/game/consequence_tides.yaml` (ou
+> le renommeront) — à préciser au moment de NAR-15, pour ne pas créer un second
+> sélecteur concurrent de celui que FOY-15 a posé.
 
 ### NAR-16 — La Première Pierre (M | ★★★ | HAUTE)
 > M2 — le premier Bourg comme événement fondateur. Se cale sur BALANCE §23.3.

@@ -8,11 +8,13 @@
 > **passives uniquement** — jamais un sort actif.
 > Jalons d'exécution : [roadmap/PLAN_DOMAINS.md](roadmap/PLAN_DOMAINS.md) (DOM-01+).
 
-## 0. L'état des lieux (mesuré le 2026-07-28)
+## 0. L'état des lieux (mesuré le 2026-07-28, remesuré le 2026-07-29)
 
-Le système existe et il est grand : **491 compétences écrites à la main**
-(`src/DataFixtures/Game/SkillFixtures.php`, 5 200 lignes), les 32 domaines servis, la
-**Pyromancie comme domaine modèle** (15 nœuds). Échelle de coût 0 → 55 points, nœuds
+Le système existe et il est grand : **575 compétences** (551 écrites à la main dans
+`src/DataFixtures/Game/SkillFixtures.php`, ~6 000 lignes, plus 24 accords d'hybride
+**générés** — DOM-07), les **36 domaines** servis (24 combat + 5 récolte + 7 artisanat),
+la **Pyromancie comme domaine modèle** (14 nœuds : 13 écrits + 1 accord dormant).
+Échelle de coût 0 → 55 points, nœuds
 d'entrée à 0 point (la doctrine « matéria jour 1 » est respectée). Un nœud fait l'une de
 trois choses : **accorder une matéria** (`actions.materia.unlock`), donner un **passif**
 (`damage`/`heal`/`hit`/`critical`/`life`), **débloquer de l'équipement**.
@@ -96,6 +98,14 @@ ligne tissu est *le support des sorts* ; les bâtons et baguettes du **charpenti
 (ECO-30) sont les canaux de sort. Côté code, c'est une **donnée** (type d'emplacement
 par pièce), pas un moteur — 56 items portent déjà `elemental_damage_boost`.
 
+> **DOM-02 et DOM-03 ✅ livrés le 2026-07-29, avec un report explicite.** Seule la ligne
+> tissu est typée `spell` (7 pièces, palier 2+) ; plaque → technique et cuir → entre-deux
+> sont **reportés** tant qu'aucune matéria de technique n'existe — un test l'interdit
+> même activement : un emplacement qui refuserait tout ce qu'on peut lui présenter est
+> un mur sans porte, pire qu'un emplacement libre. Par ailleurs, « l'arme fixe le
+> registre des attaques de base » n'est **pas encore implémenté** côté attaque de base
+> (elle ne lit toujours pas les passifs — voir DOM-01).
+
 ## 4. Les caractéristiques du personnage *(état consigné)*
 
 **Il n'y a pas d'attributs primaires** (pas de Force/Intelligence/Dextérité distribuées)
@@ -162,10 +172,12 @@ d'armures, l'alchimiste des remèdes *ou* des toxines. Exclusive **au sein de l'
 jeu — le respec de points ordinaire reste doux). Aucune exclusivité *entre* arbres
 (doctrine §1).
 
-**Impact modèle** : `Player.craftSpecialization` existe mais au **singulier** (une pour
-tout le personnage) — à migrer vers une spécialisation **par arbre** (`Recipe.
-requiredSpecialization` la consomme déjà). C'est le nœud « on compte sur moi » de
-l'Acte III : *le* forgeron d'armes de la région est une personne, pas une case.
+**Impact modèle — migré (DOM-04 ✅, 2026-07-29)** : `Player.craftSpecialization` était au
+**singulier** (une pour tout le personnage) ; la migration a livré
+`PlayerCraftSpecialization` — une spécialisation **par arbre**, l'unicité portée par le
+schéma, changeable par le respec payant (`Recipe.requiredSpecialization` la consomme).
+La colonne héritée subsiste, mais le jeu ne la lit plus. C'est le nœud « on compte sur
+moi » de l'Acte III : *le* forgeron d'armes de la région est une personne, pas une case.
 
 ## 7. Les quatre arbres neufs
 
@@ -179,15 +191,25 @@ le combat), leurs arbres sont passifs + déblocages + spécialisation, ce qui es
 | **Charpentier** | §5.3 | armes de trait *ou* mobilier | canaux de sort (qualité des bâtons) ; flèches en lot |
 | **Tailleur** | §5.3 | robes de sort *ou* tenues de travail | emplacements de sort de qualité ; doublures (confort de récolte) |
 
+> **DOM-05 et DOM-06 ✅ livrés le 2026-07-29** : les quatre arbres sont au gabarit
+> (15 nœuds, deux entrées à 0 point), la hache du bûcheron existe, et la branche
+> terminale est devenue une porte d'arbre (motif de refus `other_branch`).
+
 ## 8. L'accord d'hybride dormant
 
 Chaque arbre de combat porte **un nœud d'accord réservé**, inactif au lancement, qui
 s'activera quand la **fusion** ouvrira (extension — GAME_WORLD §2.1/§2.2) : l'accord de
 l'hybride dont son élément est parent (le pyromancien pourra accorder Magma ou Inferno).
 Poser le nœud maintenant coûte une ligne de données et évite un refactor d'arbre le jour
-venu ; l'enum `Element` doit tolérer les éléments composés (déjà acté). Les **gestes
+venu ; l'enum `Element` devra tolérer les éléments composés — **pas encore fait dans
+l'enum** (contrairement à ce qu'une version antérieure de ce paragraphe affirmait) :
+l'arbitrage est porté par **DOM-09** (PLAN_DOMAINS). Les **gestes
 retrouvés** du Répertoire, eux, n'exigent pas de nouveau nœud : un geste retrouvé produit
 une matéria du **catalogue standard** — l'accord existant suffit.
+
+> **DOM-07 ✅ livré le 2026-07-29** : les 24 accords dormants sont posés, un par arbre de
+> combat, **générés** depuis une table déclarative. L'hybride n'est pas nommé — le nœud
+> déclare son élément parent, la seule chose que la doctrine fixe.
 
 ## 9. Ce que ce document ne décide pas
 

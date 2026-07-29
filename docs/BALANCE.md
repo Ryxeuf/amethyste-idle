@@ -826,7 +826,10 @@ depart ferait apparaitre une inflation infinie au premier jour.
 
 > Livrable d'**ECO-24**. Cartographie des 82 recettes livrees, a la recherche des
 > **paliers orphelins** : une recette de haut palier dont aucun intrant ne vient d'un
-> palier inferieur. Un palier orphelin tue la demande en matiere de debut de jeu des que
+> palier inferieur.
+>
+> *Note (2026-07-29) : les compteurs de cette section datent de l'audit — le catalogue
+> compte desormais **114 recettes** (ECO-29/30/31 + ZON-35).* Un palier orphelin tue la demande en matiere de debut de jeu des que
 > les joueurs atteignent le haut de l'echelle — c'est le mecanisme du **creux du milieu**
 > (cf. [GAME_WORLD.md](GAME_WORLD.md) §5.5).
 
@@ -978,7 +981,8 @@ decoule :
 
 ### 21.6 bis Prix de reference et cout propage (ECO-27, 2026-07-28)
 
-**Le constat.** Croisement des 84 recettes avec le prix de reference de leurs intrants :
+**Le constat.** Croisement des 84 recettes d'alors (au 2026-07-29 : **114 recettes** —
+ECO-29/30/31 + ZON-35) avec le prix de reference de leurs intrants :
 **28 recettes rendaient un objet valant moins que sa matiere**, de 0,35 (lingot d'orichalque :
 750 pour 2 150 de minerai) a 0,98. Raffiner faisait perdre de l'argent, **d'autant plus qu'on
 montait** — l'inverse exact d'une economie ou la production est le metier des joueurs.
@@ -1023,7 +1027,9 @@ PNJ), a revele que chaque metier a un bout de chaine casse :
 
 - **La peche entiere est sans debouche.** Aucune des 82 recettes ne consomme un poisson
   (6 especes). Le pecheur ne peut que vendre au PNJ. **Tranche** : le metier de cuisinier
-  (ECO-29, Piste H) devient son debouche.
+  (ECO-29, Piste H) devient son debouche. **Solde le 2026-07-29** par ECO-29 : le
+  cuisinier consomme chaque poisson — **8 recettes** avec le melange d'epices de ZON-35 —
+  et un test transverse verrouille qu'aucun poisson ne redevienne orphelin.
 - **Aucune armure tissu n'existe.** Sur les 121 items d'equipement, pas une robe ni une
   piece orientee magie : les domaines de sort s'habillent en cuir et en metal, et aucun
   metier ne les habille. **Tranche** : le tailleur (ECO-31) cree la categorie tissu
@@ -1593,6 +1599,11 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    config**) : la table de depot de `config/game/settlements.yaml` passe du grain
    uniforme au grain pondere par l'energie du geste (kill 1,7, evenement 3,3). FOY-02
    etant livre sur la table uniforme, c'est une correction de donnees, pas de moteur.
+   **Constat d'audit (2026-07-29)** : la ponderation n'est **toujours pas** appliquee —
+   la table `sediment:` de `config/game/settlements.yaml` est encore uniforme
+   (`mob_kill: grains: 1` au lieu de 1,7). `SedimentRule::$grains` est un float : la
+   valeur passe sans migration. Le biais Comptoir/Bastion decrit en §23.1 est donc
+   toujours actif. Reste l'**action immediate n°1**.
 
 1. **La passe post-arbres.** Les arbres de domaine (GAME_DOMAINS, DOM-01+) apporteront des
    passifs de **reduction de cout d'energie** et de **reduction de temps** (craft, voyage ?)
@@ -1608,3 +1619,21 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    complet : regen des PM entre et pendant les combats, couts des sorts par palier,
    duree moyenne d'un combat en tours, et l'interaction avec les passifs de cout des
    arbres (point 1). A instrumenter en jeu.
+
+3. **Seuils de foyer × facteur de monde `W` — arbitrage a trancher** (§24.3, constat
+   d'audit du 2026-07-29). La doc promet a trois endroits que les seuils de rang d'un
+   foyer sont multiplies par `W` : la note d'heritage FOY-17b → FOY-08 de
+   [PLAN_SETTLEMENTS.md](roadmap/PLAN_SETTLEMENTS.md), l'en-tete de
+   `config/game/settlements.yaml`, et le tableau d'application du §22.4 ci-dessus.
+   **Le code ne le fait pas** : aucun appel a `WorldScaleService` cote Settlement
+   (`src/GameEngine/Settlement/`). Effet : sur un monde a `W` eleve, les filons donnent
+   plus (capacite × W, branchee) mais les seuils de foyer n'ont pas bouge — les foyers
+   montent **plus vite** que le calibrage §23.3, et le « temps de montee constant » que
+   ces trois mentions garantissent est faux. A trancher explicitement : **implementer la
+   multiplication** (dette de code a solder), ou **acter le renoncement** et corriger les
+   trois mentions. **Decision utilisateur requise.**
+
+4. **Calibrage du rendement et de la duree du jardin** (herite du Sprint 11, tache 129 /
+   HOU-02) : 1 unite semee rend 2 a 3 en 3 h, sans energie ni presence — un rendement pose
+   sans chiffrage, jamais confronte au budget d'energie (§8) ni aux prix de reference
+   (§21.6 bis). A chiffrer ici.

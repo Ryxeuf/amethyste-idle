@@ -121,6 +121,11 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       plafond ~5 lots/semaine/joueur, accès Ami+ — les trois garde-fous en config
 - [ ] **Rumeurs** : achat d'informations (bandes hautes, filons reposés, Affleurement) ;
       Hostile = rumeurs empoisonnées (FAC-03)
+- [ ] **Renommage du libellé** « Confrérie des Ombres » → « Confrérie des Ruelles »
+      (name + traductions, slug `ombres` inchangé) — porté par **ZON-39** (PLAN_ZONES) ;
+      si ZON-39 n'est pas passé avant ce jalon, le faire ici. Aujourd'hui le canon
+      « les Ruelles » n'apparaît **nulle part côté joueur**, alors que le commentaire de
+      `factions.yaml` promet « le canon vit dans le libellé »
 - [ ] Tests : invisibilité avant contact, les trois garde-fous du receleur, rumeur vraie/fausse
 
 ### FAC-07 — La contrefaçon (M | ★★★ | HAUTE)

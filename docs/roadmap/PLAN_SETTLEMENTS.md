@@ -14,7 +14,9 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **17 livrés — plan complet.**
+**17 jalons** (**FOY-01** à **FOY-17**) organisés en 6 pistes. **17 livrés — vague 1
+complète.** **Vague 2 ouverte** le 2026-07-29 : le logement dans les foyers
+(**FOY-18** → **FOY-21**, voir en fin de document).
 
 Prérequis roadmap — tous **livrés** :
 **modèle zone** (ZON, Sprints 7-10) pour `Zone`, l'énergie et le time-gating ;
@@ -195,55 +197,13 @@ s'y branche.
 > Crue. Les seuils de sédiment d'un foyer devront être multipliés par `W` au même titre
 > que la capacité des filons — c'est ce qui garde constant le **temps** de montée.
 >
-> <s>Prérequis : ← FOY-17a</s>
-- [ ] `WorldScaleService` : facteur `W` par **paliers discrets** (0,5 / 0,75 / 1 / 1,5 /
-      2 / 3…) ancrés sur la population effective, `W = 1` à ~50 joueurs (BALANCE § 22.3)
-- [ ] **Asymétrie** : monte vite (n'importe quel tick quotidien), redescend lentement
-      (bascule de marée uniquement), sur moyenne glissante
-- [ ] **Plancher de `W` et période de grâce** : les premières marées ne contractent jamais
-- [ ] Application : `capacity` des filons × W ; **`respawn_seconds` reste fixe** — le
-      rythme du monde ne change pas, seule son ampleur change
-- [ ] **Interdit, à verrouiller par un test** : aucun bouclage sur la pression *locale*.
-      Vitalité, pureté et Pâleur ne sont jamais mises à l'échelle
-- [ ] Verrou manuel admin + inscription au journal de monde à chaque changement
-- [ ] Tests : paliers, asymétrie, respawn inchangé, signaux non mis à l'échelle, verrou
-
-<details>
-<summary>Cahier des charges d'origine (conservé pour référence)</summary>
-
-**FOY-17 — Facteur de monde (calibrage dynamique) (M | ★★★ | CRITIQUE)**
-> Le monde doit rester à la taille de son audience sans recalibrage manuel. Conception
-> complète et garde-fous : [../BALANCE.md § 22.4](../BALANCE.md).
-> Prérequis : ∅ — **précède FOY-08, FOY-11 et ECO-22**
-- [ ] **`WorldLoadService`** : population effective = énergie totale dépensée sur la marée ÷
-      énergie d'un joueur régulier (~4 200/marée). **On mesure la charge, pas les têtes**
-      (BALANCE § 22.5) — c'est ce qui immunise le dimensionnement contre le multi-compte
-- [ ] **`Player.lastActivityAt`** explicite, mis à jour **à la dépense d'énergie**. Remplace
-      le proxy `Player.updatedAt` d'`InfluenceAntiExploit::hasMinimumActiveMembers()`, que le
-      code lui-même signale comme approximatif — un champ de cycle de vie Doctrine bouge sur
-      des écritures système et une seule connexion vaut sept jours d'activité
-- [ ] `WorldScaleService` : facteur `W` dérivé de la population effective,
-      **par paliers discrets** (0,5 / 0,75 / 1 / 1,5 / 2 / 3…), jamais en continu
-- [ ] **Asymétrie** : monte vite, redescend lentement (moyenne glissante) — une baisse
-      passagère ne rétrécit pas le monde sous les pieds des joueurs présents
-- [ ] Application : `capacity` des filons × W, seuils de sédiment × W. **`respawn_seconds`
-      reste fixe** — le rythme du monde ne change pas, seule son ampleur change
-- [ ] **Interdit, et à verrouiller par un test** : aucun bouclage sur la pression *locale*.
-      Vitalité, pureté et Pâleur ne sont jamais mises à l'échelle — ce sont les signaux de jeu.
-      Un filon qui donnerait plus à mesure qu'on le presse annulerait sa propre rareté
-- [ ] **Contraction** uniquement à une bascule de marée (28 j) ; **expansion** possible à
-      n'importe quel tick quotidien (`app:season:tick`, 00h05) si la charge franchit un palier
-      — attendre 28 jours pour ouvrir le monde serait trop lent pour un jeune serveur
-- [ ] **Plancher de `W` et période de grâce au lancement** : les premières marées ne
-      contractent jamais. Un serveur qui démarre à cinq joueurs ne doit pas se refermer sur eux
-- [ ] Tout changement inscrit au journal de monde (« la Concorde s'étend ») — annoncé,
-      jamais silencieux
-- [ ] **Verrou manuel admin** : figer `W` pour un événement, un test, ou quand la valeur
-      automatique a tort
-- [ ] Anti-abus : même définition de joueur actif que le quota de Crue, via `InfluenceAntiExploit`
-- [ ] Tests : paliers, asymétrie, respawn inchangé, signaux non mis à l'échelle, verrou admin
-
-</details>
+> **Constat d'audit (2026-07-29)** : cette multiplication des seuils de sédiment n'est
+> **pas** implémentée — aucun appel à `WorldScaleService` dans
+> `src/GameEngine/Settlement/` — et la checklist de FOY-17b avait retiré l'item
+> « seuils de sédiment × W » sans corriger cette prose. L'arbitrage est à trancher
+> explicitement : soit une **dette de code à solder** (implémenter la multiplication),
+> soit un **renoncement à acter** (et corriger les mentions qui la promettent).
+> Consigné dans [../BALANCE.md](../BALANCE.md) §24.3.
 
 ### FOY-08 — Quotas indexés sur la population active ✅ (M | ★★★ | CRITIQUE)
 > Décision B. Sans quota, tout le monde monte tout et il n'y a pas d'enjeu de territoire.
@@ -440,6 +400,10 @@ Phase 5 (tests)      : FOY-16  (parallélisable)
 > Décline [../GAME_WORLD.md](../GAME_WORLD.md) **§12.6** : le housing livré (tâche 129,
 > HOU) rejoint le pilier territorial. Le Quartier des Jardins reste le plancher jamais
 > gaté ; le jardin ne change pas.
+>
+> **Chantier voisin, non jalonné ici** : le vrai système de mobilier (hérité de la
+> tâche 129 / Sprint 11 — `HouseFurnishing` reste minimal, le style payant `HouseStyle`
+> en tient lieu) sera à jalonner **avec ou après FOY-20**.
 
 ### FOY-18 — Parcelles résidentielles par rang (M | ★★★ | HAUTE)
 > §12.6 b. `HousingManager::RESIDENTIAL_ZONE_SLUGS` (constante, une zone) devient une

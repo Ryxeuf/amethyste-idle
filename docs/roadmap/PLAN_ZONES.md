@@ -11,8 +11,10 @@
 
 ## Vue d'ensemble
 
-**7 jalons** (**ZON-30** à **ZON-36**) — **plan complet 7/7 au 2026-07-29** —, plus trois chantiers **référencés** qui vivent
-dans leurs plans d'origine :
+**Plan d'origine complet : 7 jalons** (**ZON-30** à **ZON-36**, **7/7 ✅ au 2026-07-29**),
+plus **deux fixes livrés en chemin** (ZON-37, ZON-38 ✅), **deux jalons ouverts par l'audit
+du 2026-07-29** (ZON-39, ZON-40) et trois chantiers **référencés** qui vivent dans leurs
+plans d'origine :
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -23,7 +25,10 @@ dans leurs plans d'origine :
 | ZON-34 ✅ | La ligne du bois (domaine, essences, filons) | M | → ECO-30 (charpentier) |
 | ZON-35 ✅ | Harmonisation des récoltes (loi 9) | S | ← ECO-29 pour les épices |
 | ZON-36 ✅ | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
-| ZON-37 | La régénération d'un filon devient un débit ✅ | M | ∅ — **prérequis du recalibrage** |
+| ZON-37 ✅ | La régénération d'un filon devient un débit (fix) | M | ∅ — **prérequis du recalibrage** |
+| ZON-38 ✅ | La récolte redevient observable (fix) | S | ∅ |
+| ZON-39 | La loi de nommage rejoint les libellés | S | ∅ (donnée pure) |
+| ZON-40 | Les signatures cessent d'être inertes | S | décision à trancher avant |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -98,36 +103,13 @@ ZON-33 en continu
 > l'absence de tout filon du périmètre de pureté, et c'est ce que le test verrouille.
 
 ### ZON-33 — Tests de conformité aux lois de zone ✅ (S | ★★ | HAUTE)
-> Les huit lois de GAME_ZONES §0 valent contrat. ‖ au fil des jalons.
+> Les huit lois de GAME_ZONES §0 valent contrat — 8 tests (`ZoneLawsTest`).
 > **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
-- [x] Loi 1 testée : chaque zone du monde de base a au moins une source exclusive
-      (item ou monstre introuvable ailleurs). Une seule exemption, documentée : le
-      **quartier des Jardins**, qui n'est pas une zone mais le quartier d'artisanat du
-      sanctuaire (§2.1) — lui donner une exclusivité serait donner au Fanal une raison
-      de le quitter
-- [x] Loi 2 testée sur la ligne du métal : la largeur (nombre de sources) ne croît
-      jamais avec le palier — la forme entière, là où `OreSourceReferenceTest` n'en
-      tenait que les deux bouts
-- [x] Loi transverse, **étendue aux quêtes** : aucun ingrédient de recette *ni objectif
-      de collecte* sans source. Quatre voies acceptées (filon, recette, butin, étal)
-- [x] Le graphe reste connexe ; la Cité reste atteignable depuis les Dunes, et la
-      liaison directe est exigée **conditionnellement** (si la Mer de Sel quitte le
-      graphe) — voir l'écart ci-dessous
-- [x] Tests : 8 (`ZoneLawsTest`)
-
-> **Deux défauts muets trouvés, et corrigés par le même jalon.** Le champignon vénéneux
-> ne s'achetait qu'à l'échoppe de Morwen, et la racine de marais n'existait nulle part —
-> alors que la quête d'Acte II qui les demande dit « *récoltez* ». Le journal affichait
-> « 0 / 3 » sans jamais dire où chercher : le pire de cette famille de défauts, parce que
-> le joueur croit que c'est lui qui cherche mal. Tous deux avaient échappé à la loi 9
-> (ZON-35) parce que leurs slugs ne portent pas le préfixe `plant-`. C'est pourquoi
-> **aucune loi d'ici ne s'appuie sur un préfixe.**
 >
-> **L'écart de graphe est documenté plutôt que corrigé.** GAME_ZONES §1 écrivait la
-> liaison Dunes → Cité directe au lancement, la Mer de Sel devant s'intercaler plus tard.
-> Le monde livré a pris l'autre chemin — la Mer de Sel est là depuis l'Acte 4. Ajouter la
-> liaison directe **raccourcirait** la route, ce que la note interdit explicitement
-> (« le monde s'agrandit sans jamais rétrécir »).
+> L'essentiel : la loi transverse **étendue aux quêtes** a débusqué deux items demandés
+> sans source (champignon vénéneux, racine de marais — corrigés, et comptés dans les
+> affinités de ZON-36) ; aucune loi ne s'appuie sur un préfixe de slug ; l'écart de
+> graphe Dunes → Cité est **documenté plutôt que corrigé** (le monde ne rétrécit jamais).
 
 ### ZON-34 — La ligne du bois ✅ (M | ★★★ | HAUTE)
 > Décidé le 2026-07-28 (GAME_ZONES §3 bis) : la récolte du bois devient la cinquième
@@ -136,85 +118,77 @@ ZON-33 en continu
 > Le métier consommateur est **tranché** : le charpentier (ECO-30, Piste H de
 > PLAN_PLAYER_ECONOMY), qui prend ce jalon en prérequis.
 **Livré le 2026-07-29** (la matière). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
-- [x] Domaine `lumberjack` (Bûcheron) + arbre de récolte, 8 nœuds
-- [x] Items : 4 essences (hêtre T0, chêne murmurant T2, bois tourbé T3, bois pétrifié T4)
-- [x] Filons `profession: woodcutting` — Vallons + Forêt pour le hêtre, Forêt/Marais/Dunes
-      pour les exclusifs, profils de palier standard, gate de compétence sur les trois
-      exclusivités
-- [x] **Recettes — livrées par ECO-30 (charpentier) le 2026-07-29.** Elles n'appartenaient
-      à personne au moment de ZON-34 : le charpentier est le métier *tranché* de cette
-      ligne, et greffer une recette d'arc sur le forgeron pour tenir la case aurait créé un
-      rattachement à défaire ensuite. Même arbitrage qu'aux Vallons (ZON-30), et même
-      issue : le métier est venu, et chaque essence a un débouché.
-- [x] Tests : sources, paliers, gates, loi des biomes sans arbres
-
-> **Écart assumé : pas d'emplacement de hache.** Les quatre autres arbres de récolte
-> ouvrent un outil ; celui-ci non. La hache demande un type d'outil, un bit d'équipement
-> et un emplacement d'interface neufs — un changement de **mécanisme**, pas de données.
-> Elle arrivera avec le charpentier, à qui elle sert. Livrer l'arbre sans elle donne la
-> matière tout de suite ; poser la hache d'abord aurait donné un outil sans rien à couper.
+>
+> L'essentiel : domaine `lumberjack`, 4 essences (hêtre T0 → bois pétrifié T4), filons
+> `woodcutting` avec gates de compétence ; recettes livrées par ECO-30 (charpentier).
+> Les écarts d'origine (« pas d'emplacement de hache », arbre à 8 nœuds) sont **périmés** :
+> **DOM-05** (PLAN_DOMAINS) a livré la hache et porté l'arbre à 15 nœuds.
 
 ### ZON-35 — Harmonisation des récoltes ✅ (S | ★★ | MOYENNE)
-> Applique la loi 9 (GAME_ZONES §3 ter). **Livré le 2026-07-29.**
-> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
-- [x] Les 5 plantes mortes purgées (`dreamlily`, `sunblossom`, `thunderroot`,
-      `whisperweed`, `wolfsbane`) — ni filon ni recette, donc ni source ni débouché
-- [x] Les **10** plantes sans débouché raccordées (l'audit en annonçait 7) : les quatre
-      banales — pissenlit, ortie, romarin, échinacée — absorbées par le **mélange
-      d'épices** du cuisinier, promesse reportée par ECO-29 ; les six rares — givrecoiffe,
-      spores fantômes, fruit du vide, feuille de drake, fleur de lune, fleur de phénix —
-      greffées sur six recettes d'alchimie haute
-- [x] Le **poisson-lune** réveillé en T4, filon du Marais gaté sur compétence
-- [x] Le **kraken juvénile** réveillé en T4 lui aussi, dans la Mer de Sel — voir l'écart
-      ci-dessous
-- [x] Les sept prix touchés recalculés selon la règle d'ECO-27 : ajouter un intrant sans
-      reprendre le prix aurait fait de sept recettes des destructrices de valeur
-- [x] Tests : 9 (`HarvestHarmonyTest`), les deux invariants de la loi 9 dans les deux sens
-
-> **Le kraken juvénile n'a pas été purgé**, contrairement à ce que la case prévoyait.
-> ECO-29 lui a donné entre-temps le festin, la recette de plus haut palier du cuisinier :
-> supprimer l'item aurait détruit une recette livrée deux jalons plus tôt. Il reçoit donc
-> une source plutôt qu'une pierre tombale.
-
-> **La restriction nocturne du poisson-lune est reportée.** Le schéma de filon ne connaît
-> pas de fenêtre horaire (`explore` en a une, `gather` non) ; lui en ajouter une serait un
-> changement de mécanisme. La rareté tient au palier T4 et au gate de compétence.
-
-> **L'herboriste reste à 20 plantes, pas 8–12.** Descendre à la cible aurait demandé de
-> supprimer huit plantes qui ont toutes un filon, dont trois que la loi 10 cite nommément
-> comme exemples canoniques d'affinité. L'invariant qui compte — plus une seule sans
-> débouché — est tenu. Écart documenté dans GAME_ZONES §3 ter.
+> Applique la loi 9 (GAME_ZONES §3 ter) — 8 tests (`HarvestHarmonyTest`).
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> L'essentiel : 5 plantes mortes purgées, 10 sans débouché raccordées, poisson-lune et
+> kraken juvénile réveillés en T4, 7 prix recalculés (règle ECO-27). Écarts documentés
+> dans GAME_ZONES §3 ter : le kraken reçoit une source plutôt qu'une purge (ECO-29 lui
+> avait donné le festin), la restriction nocturne du poisson-lune est reportée (pas de
+> fenêtre horaire sur `gather`), l'herboriste reste à 20 plantes au lieu de 8–12.
 
 ### ZON-36 — Affinités élémentaires des ressources ✅ (S | ★★ | MOYENNE)
 > Applique la loi 10 (GAME_ZONES §3 ter, GAME_WORLD §2.2) : chaque ressource porte une
-> affinité de flux, dérivée de la signature de sa zone source. **Donnée pure** — aucun
-> système consommateur à construire ici.
+> affinité de flux, dérivée de la signature de sa zone source. **Donnée pure.**
 > **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
-- [x] Champ `Item::affinity` nullable (même enum `Element` que les domaines) + migration
-- [x] La **règle**, pas la table : `config/game/affinities.yaml` déclare la ligne de
-      récolte (défaut) et les **23 corrections** — écrire les cinquante valeurs à la main
-      aurait rendu la loi invisible, et personne n'aurait plus su lesquelles étaient une
-      décision
-- [x] L'améthyste reste **sans affinité** (substrat, canon §2.2) — cas testé, et distinct
-      du `null` de hors-périmètre : `covers()` sépare les deux
-- [x] Tests : 22 (`ResourceAffinityCatalogTest` sur la dérivation et les refus du loader,
-      `ResourceAffinityCoverageTest` sur le monde livré)
+>
+> L'essentiel : `Item::affinity` (distinct d'`element` — ce dont une matière est *faite*,
+> pas ce qu'une arme *projette*) + `config/game/affinities.yaml`, la **règle** (défaut par
+> ligne de récolte) et **25 corrections** — 23 à la livraison, 2 ajoutées par ZON-33
+> (`poisonous-mushroom`, `swamp-root`). L'améthyste reste **sans affinité** (substrat,
+> canon §2.2). 22 tests.
 
-> **Le champ est distinct de `element`, et c'est le seul vrai arbitrage du jalon.**
-> `Item::element` dit ce qu'une arme **projette** ; l'affinité dit ce dont une matière est
-> **faite**. Les confondre aurait fait d'une épée de feu une ressource Feu — et aurait
-> rendu impossible le seul cas que le canon nomme, celui de l'améthyste, dont la réponse
-> est « aucune » et non « neutre ».
->
-> **Le garde-fou du préfixe.** `leather-` désigne autant la dépouille que la botte qu'on
-> en tire. Un test exige que tout slug préfixé soit couvert **ou** explicitement exclu :
-> une pièce `leather-cape` livrée demain fait rougir la CI au lieu de devenir en silence
-> une matière première.
->
-> **Écarté : le typage de l'améthyste par zone.** La colonne « élément dominant » de la
-> signature de zone (ZON-32) reste non livrée. Elle décrit la teinte de l'améthyste
-> récoltée, pas l'affinité d'une matière — et personne ne la lirait, ce que le contrat du
-> pilier territorial (FOY-16) interdit.
+### ZON-39 — La loi de nommage rejoint les libellés (S | ★★ | MOYENNE)
+> **Constat (audit 2026-07-29).** La loi de nommage (GAME_WORLD §1, actée le 2026-07-28)
+> dit « renommages appliqués » et ne tolère que les **slugs** hérités — mais trois
+> libellés joueur portent encore des noms d'élément.
+- [ ] `config/game/zones/world_1.yaml:86` : « Village de Lumière » → « **le Fanal** » ;
+      description des Jardins (~l.457) : « lotissement de Lumiere » à reprendre
+- [ ] `src/DataFixtures/RegionFixtures.php:42` : « Sanctuaire de Lumière » →
+      « **Sanctuaire de la Voûte** »
+- [ ] `src/DataFixtures/Game/FactionFixtures.php:43` : « Confrérie des Ombres » →
+      « **Confrérie des Ruelles** » (name + traductions) — porté aussi par FAC-06
+      (PLAN_FACTIONS), le premier des deux qui passe le fait
+- [ ] Au passage : harmoniser capitales/accents des noms de zone (« Marais Brumeux »,
+      « Cite Ensevelie »)
+- [ ] Critère d'acceptance : aucun libellé joueur ne réutilise un nom d'élément (grep
+      sur fixtures + config)
+
+> **Données pures, aucune migration de slug** : `village-de-lumiere` et `ombres` restent —
+> la loi ne tolère que les slugs, et c'est précisément ce qui rend le jalon petit.
+
+### ZON-40 — Les signatures cessent d'être inertes (S | ★★★ | HAUTE)
+> **Constat (audit 2026-07-29).** 3 signatures sur 7 (Forêt = référence, Vallons, Marais)
+> ne s'appliquent **jamais** : ces zones n'ont aucun filon dans le périmètre de pureté
+> (préfixe `ore-`). La promesse phare — « le Marais nocturne est le premier endroit où un
+> joueur d'Acte II voit du Pur » (GAME_ZONES §2.5, `night_weight_shift: 30`) — est
+> **ininstanciable**. Symétriquement, la Mer de Sel et le Pas de Givre ont des filons
+> `ore-` **sans** signature : ils tirent comme la référence, ce qui contredit GAME_ZONES
+> §4. Les tests d'`AmethystSignatureTest` passent sur des zones synthétiques ; aucun test
+> ne croise la table des signatures avec la carte réelle des filons.
+- [ ] **Décision à trancher AVANT d'implémenter** — trois options : (a) poser un
+      affleurement d'améthyste dans les zones à signature inerte, (b) étendre le périmètre
+      de pureté à d'autres lignes de récolte, (c) réviser la promesse (GAME_ZONES §2.5)
+- [ ] Livrable dans tous les cas : un test croisant **signatures × filons réels** — une
+      signature sans filon dans le périmètre, ou l'inverse, fait rougir la CI
+- [ ] Livrable dans tous les cas : signatures pour les zones du Silence (Mer de Sel,
+      Pas de Givre)
+
+### Restes de données (ex-ZON-26b + promesses ouvertes)
+
+- **Marais Brumeux** et **Crête de Ventombre** : seules zones encore sans blocs
+  `mobs:`/`pnjs:` déclaratifs (dépendent de leur TMX) — transférés du Sprint 13 (ZON-26b).
+- **Illustrations de zone** : `Zone::illustrationPath` existe mais n'est ni lu par le
+  loader ni renseigné par les YAML.
+- **La 3e source de cuivre promise aux Vallons** (GAME_ZONES §3 : « la troisième viendra
+  avec ZON-30 ») n'a jamais été posée — ZON-30 est livré sans elle.
 
 ---
 

@@ -58,7 +58,7 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > génération hebdomadaire ultérieure ; l'idempotence par semaine ISO (`Parameter`) est le
 > mécanisme à réutiliser.
 
-### RET-02 — La Commission de la semaine 🟡 (M | ★★★ | CRITIQUE)
+### RET-02 — La Commission de la semaine ✅ (M | ★★★ | CRITIQUE)
 > Le rendez-vous hebdomadaire **personnel**. Générée depuis les domaines et zones du joueur,
 > **livrée à un foyer** — le solo participe au chantier collectif sans guilde.
 >
@@ -125,8 +125,9 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > et échoue si l'un d'eux nomme l'affleurement. La commande de rotation elle-même ne nomme pas
 > le filon tiré — les journaux d'exploitation finissent par être lus et recopiés.
 >
-> **Reporté à FOY-11** : un filon pâli ne peut pas être tiré. La Pâleur n'existe pas encore ;
-> le filtre s'ajoutera aux candidats sans changer le reste.
+> **Report soldé** (FOY-11 ✅) : un filon pâli ne peut plus être tiré — la Pâleur existe et
+> le filtre est branché : `WeeklyOutcropSelector` lit `paleness.dulls_purity_from` pour
+> écarter les candidats pâlis, comme prévu, sans changer le reste.
 
 ### RET-07 — Tests du plan ✅ (S | ★★ | HAUTE)
 > ‖ au fil des jalons. **Livré le 2026-07-28.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
