@@ -30,11 +30,11 @@ final class Version20260729BItemAffinity extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE item ADD COLUMN IF NOT EXISTS affinity VARCHAR(25) DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_items ADD COLUMN IF NOT EXISTS affinity VARCHAR(25) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE item DROP COLUMN IF EXISTS affinity');
+        $this->addSql('ALTER TABLE game_items DROP COLUMN IF EXISTS affinity');
     }
 }
