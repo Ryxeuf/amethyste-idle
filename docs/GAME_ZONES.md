@@ -237,6 +237,9 @@ Franche** (GAME_SEASONS §2).
   temps stagnant se dépose mal, mais quand il prend, il prend bien : le Marais nocturne
   est le premier endroit où un joueur d'Acte II voit du **Pur**. Élément Eau/Ténèbres.
   C'est l'information exclusive type du prospecteur (GAME_ZONE_ACTIONS).
+  *Note d'audit (2026-07-29)* : cette promesse est aujourd'hui **ininstanciable** — le
+  Marais n'a aucun filon du périmètre de pureté (préfixe `ore-`), sa signature
+  (`night_weight_shift: 30`) ne s'applique donc jamais. Voir **ZON-40** (PLAN_ZONES).
 - **Faune** : **non déclarée** — le Marais dépend encore de sa carte TMX d'origine.
   C'est le reste de ZON-26b (Sprint 13), pas un jalon neuf.
 - **Objets de désir** : semaine — la commande d'élixirs (les commandes de craft exigeant
@@ -396,6 +399,12 @@ Jalon d'exécution : **ZON-35** ✅ (2026-07-29), complété par **ZON-33** ✅ 
 > compte de l'herboriste passe donc de 20 à 22 — l'écart au-dessus reste le même, et pour la
 > même raison.
 
+> **Convention de comptage (tranchée par l'audit du 2026-07-29).** Le code compte **24
+> filons** pour l'herboriste, car `plant-wheat` et `plant-flax` (les récoltes agricoles des
+> Vallons) sont rangés sous `profession: herbalism` **faute de domaine agricole** — la table
+> de la loi 9 ci-dessus, elle, compte les plantes d'herboristerie **au sens strict**. Si
+> l'agriculture devient un jour une ligne à part, ces deux-là en sortiront.
+
 > **L'écart sur l'herboriste, et pourquoi il est assumé.** La cible de 8–12 a été écrite quand
 > l'herboriste ne nourrissait qu'un métier. Le cuisinier (ECO-29) en a fait deux, et la loi
 > elle-même dit que **le compte suit les artisanats nourris**. Descendre à 12 aurait demandé de
@@ -441,8 +450,9 @@ Eau et Air), et l'orientation des lectures du Répertoire. Jalon : **ZON-36** �
 (2026-07-29).
 
 > **Livré comme une règle, pas comme une table.** `config/game/affinities.yaml` déclare la
-> ligne de récolte — le défaut — et **23 corrections**, qui sont les seules décisions du
-> jalon. Écrire les cinquante valeurs à la main aurait rendu la dérivation invisible : on
+> ligne de récolte — le défaut — et **25 corrections** (23 à la livraison de ZON-36,
+> 2 ajoutées par ZON-33 : le champignon vénéneux et la racine de marais), qui sont les
+> seules décisions du jalon. Écrire les cinquante valeurs à la main aurait rendu la dérivation invisible : on
 > aurait vu un tableau, et personne n'aurait plus su lesquelles de ses lignes étaient une
 > décision et lesquelles n'étaient qu'une conséquence.
 >

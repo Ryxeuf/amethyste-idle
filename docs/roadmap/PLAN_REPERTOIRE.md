@@ -6,10 +6,11 @@
 > Décline [../GAME_WORLD.md](../GAME_WORLD.md) **§12.3** (l'Autel d'éveil, le Répertoire
 > des gestes retrouvés, l'équilibre — dossier tranché, y compris la nuance « le
 > Répertoire est orienté par les lectures ») et §2.1 (les trois verbes de la matéria).
-> C'était **le dernier système acté sans plan d'exécution**. Prérequis largement
-> livrés : fondre/lire (FAC-04b — chaque lecture est déjà versée à un crochet no-op
-> prévu pour ce plan), la pureté et le Parfait (ECO-21/22 ✅), le gate Métropole
-> (FOY-05/06 ✅), le journal de monde (NAR ✅).
+> C'était **le dernier système acté sans plan d'exécution**. Prérequis livrés : la
+> pureté et le Parfait (ECO-21/22 ✅), le gate Métropole (FOY-05/06 ✅), le journal de
+> monde (NAR ✅). **Attention (audit 2026-07-29)** : fondre/lire (**FAC-04b**) n'est
+> **pas** livré — le plan factions est à 1/10, et le crochet de versement des lectures
+> n'existe donc pas encore. **Ce plan démarre après FAC-04.**
 
 ## Vue d'ensemble
 
@@ -98,6 +99,11 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
       qui manque — l'objet de désir de l'horizon de l'an se voit
 - [ ] Tests : gate, taxe, réduction Sanctuaire, entrées/sortie, accord requis, jamais
       de sort inédit
+
+> **Vigilance (audit 2026-07-29)** : `awakening_altar` est déjà gaté dans
+> `config/game/settlements.yaml` (`minimum_rank: metropolis`) mais **absent du routeur**
+> `SettlementServiceDirectory` — un service « ouvert » sans écran. Couvrir par un test
+> de cohérence gate ↔ routeur au moment de REP-04.
 
 ### REP-05 — La restitution : le Scriptorium & le journal (S | ★★ | MOYENNE)
 > Le Répertoire doit se **voir** pour être un projet collectif.

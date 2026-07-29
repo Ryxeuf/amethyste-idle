@@ -1,6 +1,6 @@
 ## Sprint 12 — Technique & i18n
 
-> **2 taches** | Priorite : **Basse** | Origine : Vague 10, Piste C
+> **3 taches** (134, 135, 136) | Priorite : **Basse** | Origine : Vague 10, Piste C
 > Objectif : preparer l'infrastructure pour la montee en charge et l'internationalisation.
 > Prerequis : Sprints 1-6 ✅ (contenu stable avant scaling)
 

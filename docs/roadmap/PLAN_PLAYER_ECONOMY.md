@@ -10,7 +10,7 @@
 
 ## Vue d'ensemble
 
-**28 jalons** (**ECO-01** à **ECO-17**, puis **ECO-21** à **ECO-31**) organisés en 8 pistes.
+**32 jalons** (**ECO-01** à **ECO-17**, **ECO-21** à **ECO-35**) organisés en 9 pistes (A→I).
 *(ECO-18 à ECO-20 sont nés en cours de campagne et sont tracés dans `ROADMAP_DONE.md` /
 `BALANCE.md` — les numéros ne sont pas réutilisés.)*
 Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité** (GCC ✅),
@@ -18,26 +18,26 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 
 | Code | Sujet (résumé) |
 |------|----------------|
-| ECO-01 | Type de liaison des objets (enum BindType) |
-| ECO-02 | Plancher T1 PNJ & kit d'onboarding |
-| ECO-03 | HV régional (segmentation par région) |
-| ECO-04 | Taxe HV → trésor de guilde contrôlante |
-| ECO-05 | Entité CraftOrder & escrow |
-| ECO-06 | Tableau de commandes régional (public) |
-| ECO-07 | Exécution de commande & commande directe |
-| ECO-08 | Bind-on-pickup via commande & réputation d'artisan |
-| ECO-09 | Anti-abus commandes (expiration, annulation) |
-| ECO-10 | Entités échoppe & gating |
-| ECO-11 | Vente asynchrone, caisse & loyer |
-| ECO-12 | Vitrine UI & recherche transversale |
-| ECO-13 | Emplacements d'échoppe = actif de ville (option) |
-| ECO-14 | Interdépendance des métiers (audit recettes) |
-| ECO-15 | Gold sinks (durabilité / consommables) |
-| ECO-16 | Modération économique (anti price-fixing / RMT) |
-| ECO-17 | Tests unitaires du plan |
-| ECO-21 | Bandes de pureté & modèle |
-| ECO-22 | Tirage de pureté à la récolte |
-| ECO-23 | Pureté au marché et dans les commandes |
+| ECO-01 ✅ | Type de liaison des objets (enum BindType) |
+| ECO-02 ✅ | Plancher T1 PNJ & kit d'onboarding |
+| ECO-03 ✅ | HV régional (segmentation par région) |
+| ECO-04 ✅ | Taxe HV → trésor de guilde contrôlante |
+| ECO-05 ✅ | Entité CraftOrder & escrow |
+| ECO-06 ✅ | Tableau de commandes régional (public) |
+| ECO-07 ✅ | Exécution de commande & commande directe |
+| ECO-08 ✅ | Bind-on-pickup via commande & réputation d'artisan |
+| ECO-09 ✅ | Anti-abus commandes (expiration, annulation) |
+| ECO-10 ✅ | Entités échoppe & gating |
+| ECO-11 ✅ | Vente asynchrone, caisse & loyer |
+| ECO-12 ✅ | Vitrine UI & recherche transversale |
+| ECO-13 ✅ | Emplacements d'échoppe = actif de ville (option) |
+| ECO-14 ✅ | Interdépendance des métiers (audit recettes) |
+| ECO-15 ✅ | Gold sinks (durabilité / consommables) |
+| ECO-16 ✅ | Modération économique (anti price-fixing / RMT) |
+| ECO-17 ✅ | Tests unitaires du plan |
+| ECO-21 ✅ | Bandes de pureté & modèle |
+| ECO-22 ✅ | Tirage de pureté à la récolte |
+| ECO-23 ✅ | Pureté au marché et dans les commandes |
 | ECO-24 | Audit de la chaîne de production ✅ |
 | ECO-24b | Prérequis : sources des minerais ✅ (a) & cuirs du tanneur ✅ (b) |
 | ECO-25 ✅ | Chaînage des paliers raffinés |
@@ -47,16 +47,21 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-29 ✅ | Cuisinier — le débouché de la pêche et des vivres |
 | ECO-30 ✅ | Charpentier — le débouché du bois |
 | ECO-31 ✅ | Tailleur — la ligne tissu et l'armure des mages |
+| ECO-32 | Caravanes — l'affrètement (Piste I) |
+| ECO-33 | Caravanes — les rencontres & l'assurance (Piste I) |
+| ECO-34 | Caravanes — l'escorte (Piste I) |
+| ECO-35 | Caravanes — équilibrage & canon (Piste I) |
 
 ```
-Piste A — Socle & liaison        : ECO-01 → ECO-02
-Piste B — HV régional            : ECO-03 → ECO-04
-Piste C — Commandes de craft     : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
-Piste D — Échoppes               : ECO-10 → ECO-11 → ECO-12 → ECO-13
-Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
+Piste A — Socle & liaison        : ECO-01 ✅ → ECO-02 ✅  (complète)
+Piste B — HV régional            : ECO-03 ✅ → ECO-04 ✅  (complète)
+Piste C — Commandes de craft     : ECO-05 ✅ → ECO-06 ✅ → ECO-07 ✅ → ECO-08 ✅ → ECO-09 ✅  (complète)
+Piste D — Échoppes               : ECO-10 ✅ → ECO-11 ✅ → ECO-12 ✅ → ECO-13 ✅  (complète)
+Piste E — Métiers & équilibrage  : ECO-14 ✅, ECO-15 ✅, ECO-16 ✅, ECO-17 ✅  (complète)
 Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
-Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
+Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅  (complète)
 Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅  (complète)
+Piste I — Caravanes               : ECO-32 → ECO-33 → ECO-34 → ECO-35  (à faire)
 ```
 
 **Ordre de valeur/effort** (cf. GAME_PRINCIPLES §4.5, D7) :
@@ -67,96 +72,80 @@ Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅ 
 
 ## Piste A — Socle & liaison (séquentiel)
 
-### ECO-01 — Type de liaison des objets (S | ★★★ | CRITIQUE)
+### ECO-01 — Type de liaison des objets ✅ (S | ★★★ | CRITIQUE)
 > Fondation économique : distingue échangeable / lié-équipement / lié-obtention.
-- [ ] Enum `BindType` : `none`, `bind_on_equip`, `bind_on_pickup`
-- [ ] Migration : `Item.boundToPlayer` (bool) → `Item.bindType` (enum), rétro-compat
-      (`true` → `bind_on_pickup`, `false` → `none`)
-- [ ] `PlayerItem` : flag `bound` (matérialise la liaison effective, ex. après 1er équipement
-      pour `bind_on_equip`)
-- [ ] Blocage vente HV/échoppe si l'item est lié (garde-fou côté service)
-- [ ] Tests unitaires
+> **Livré le 2026-07-25** (Sprint 14). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### ECO-02 — Plancher T1 PNJ & kit d'onboarding (S | ★★ | CRITIQUE)
+### ECO-02 — Plancher T1 PNJ & kit d'onboarding ✅ (S | ★★ | CRITIQUE)
 > Anti cold-start : aucun joueur jamais hard-bloqué par un marché joueur vide.
-> Prérequis : ← ECO-01
-- [ ] Audit : lister le T1 de survie (outils de base, potions/consommables de base)
-- [ ] Garantir la disponibilité PNJ **ou** le loot garanti du tutoriel pour ce T1
-- [ ] Marquer le T1 comme échangeable (`BindType::None`)
-- [ ] Vérifier qu'un nouveau joueur peut progresser jusqu'au premier palier de craft
-      **sans** dépendre d'un autre joueur
+> Prérequis : ← ECO-01 ✅
+> **Livré le 2026-07-25** (Sprint 14). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ---
 
 ## Piste B — HV régional (séquentiel)
 
-### ECO-03 — HV régional — segmentation par région (M | ★★★ | HAUTE)
+### ECO-03 — HV régional — segmentation par région ✅ (M | ★★★ | HAUTE)
 > La géographie compte : arbitrage, transport = temps de voyage.
-> Prérequis : ← ZON (modèle zone), socle HV (Sprint 5 ✅)
-- [ ] `AuctionListing` rattaché à une région (via la zone du vendeur au moment du dépôt)
-- [ ] Recherche/consultation HV filtrée par région (marché local par défaut)
-- [ ] Décision actée : segmentation stricte vs marché global taxé (cf. GAME_PRINCIPLES §6)
-- [ ] Transport de marchandises entre régions = coût de voyage/énergie (réutilise le graphe)
-- [ ] Tests
+> Prérequis : ← ZON (modèle zone) ✅, socle HV (Sprint 5 ✅)
+> **Livré le 2026-07-25** (Sprint 14 — segmentation **stricte** actée, décision D13).
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### ECO-04 — Taxe HV → trésor de guilde contrôlante (S | ★★ | HAUTE)
+### ECO-04 — Taxe HV → trésor de guilde contrôlante ✅ (S | ★★ | HAUTE)
 > Branche l'HV sur le contrôle de cité (le champ `region_tax_rate` existe déjà).
-> Prérequis : ← ECO-03, GCC-10/GCC-11 ✅
-- [ ] À la vente, `region_tax_rate` prélevée → `gilsTreasury` de la guilde contrôlante
-      (réutiliser `RegionBonusProvider` / la logique de taxe GCC-11)
-- [ ] Réduction membre appliquée si acheteur dans la guilde contrôlante (cohérence GCC)
-- [ ] Aucune guilde contrôlante → taxe conservée comme gold sink (destruction de gils)
-- [ ] Tests
+> Prérequis : ← ECO-03 ✅, GCC-10/GCC-11 ✅
+> **Livré le 2026-07-25** (Sprint 14 — `AuctionSettlement` porte la répartition, gold sink
+> explicite sans guilde contrôlante). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ---
 
 ## Piste C — Commandes de craft (séquentiel — pilier endgame)
 
-### ECO-05 — Entité CraftOrder & escrow (M | ★★★ | CRITIQUE)
+### ECO-05 — Entité CraftOrder & escrow ✅ (M | ★★★ | CRITIQUE)
 > Le client fournit matériaux + commission ; l'artisan fournit plan + savoir-faire.
-> Prérequis : ← ECO-01
-- [ ] Enum `CraftOrderStatus` : `open`, `claimed`, `fulfilled`, `expired`, `cancelled`
-- [ ] Entité `CraftOrder` : commanditaire (Player), recipe (Recipe), matériaux fournis
-      (escrow), commission (gils, escrow), region, minQuality (nullable), crafter (nullable),
-      createdAt, expiresAt, claimedAt, fulfilledAt
-- [ ] **Escrow des deux côtés** : matériaux + commission bloqués à la création
-- [ ] Migration
-- [ ] Tests unitaires (escrow, restitution)
+> Prérequis : ← ECO-01 ✅
+> **Livré le 2026-07-26** (Sprint 15 — escrow des deux côtés dès la création).
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### ECO-06 — Tableau de commandes régional public (M | ★★ | HAUTE)
+### ECO-06 — Tableau de commandes régional public ✅ (M | ★★ | HAUTE)
 > Canal anonyme : n'importe quel artisan qualifié peut prendre la commande.
-> Prérequis : ← ECO-05
-- [ ] Route/UI : liste des commandes ouvertes de la région
-- [ ] Filtre par métier (`Recipe.craft`) / recette
-- [ ] Prise en charge : vérifie plan possédé + `requiredLevel` + `requiredSpecialization`
-- [ ] Une commande claimed est réservée à l'artisan (verrou anti-double-prise)
+> Prérequis : ← ECO-05 ✅
+> **Livré le 2026-07-26** (Sprint 15 — verrou anti-double-prise ; l'audit du gardien de
+> qualification a ouvert ECO-20). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### ECO-07 — Exécution de commande & commande directe (M | ★★★ | HAUTE)
+### ECO-07 — Exécution de commande & commande directe ✅ (M | ★★★ | HAUTE)
 > Le craft consomme l'escrow, respecte le time-gating, livre au client.
-> Prérequis : ← ECO-06
-- [ ] Exécution : consomme les matériaux **en escrow** (pas ceux de l'artisan), applique
-      `craftingTime` (time-gating réel), produit `result`
-- [ ] Livraison : objet au commanditaire, commission (moins taxe région) à l'artisan
-- [ ] **Commande directe** : le client cible un artisan précis (depuis sa vitrine/réputation)
-- [ ] Taxe de région sur la commission → guilde contrôlante (cohérence ECO-04)
-- [ ] Tests
+> Prérequis : ← ECO-06 ✅
+> **Livré le 2026-07-26** (Sprint 15, en deux sous-jalons a/b — `craftingTime` devient une
+> attente réelle, `AuctionSettlement` réutilisé tel quel).
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### ECO-08 — Bind-on-pickup via commande & réputation d'artisan (M | ★★★ | HAUTE)
+### ECO-08 — Bind-on-pickup via commande & réputation d'artisan ✅ (M | ★★★ | HAUTE)
 > Le seul canal produisant du stuff lié ; l'objet naît lié au commanditaire.
-> Prérequis : ← ECO-07
-- [ ] Un `result` marqué `bind_on_pickup` produit par commande est lié au **commanditaire**
-- [ ] Réputation d'artisan : livrer des commandes l'augmente (visibilité + tarifs)
-- [ ] Classement/recherche des artisans par métier et réputation
-- [ ] Tests (liaison au bon joueur, montée de réputation)
+> Prérequis : ← ECO-07 ✅
+> **Livré le 2026-07-26** (Sprint 15, en deux sous-jalons a/b — `CrafterReputation` par
+> métier, gagnée à la seule livraison). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
-### ECO-09 — Anti-abus commandes (S | ★★ | MOYENNE)
+### ECO-09 — Anti-abus commandes ✅ (S | ★★ | MOYENNE)
 > Expiration, annulation, restitution propre de l'escrow.
-> Prérequis : ← ECO-05
-- [ ] Expiration commande non prise → restitution matériaux + commission au client
-- [ ] Annulation par le client tant que `open` (non `claimed`)
-- [ ] Non-livraison dans le délai après `claimed` → libération + pénalité réputation artisan
-- [ ] Plafonds anti-farm (réutiliser patterns anti-exploit influence)
-- [ ] Tests
+> Prérequis : ← ECO-05 ✅
+> **Livré le 2026-07-26** (Sprint 15 — `app:craft-order:expire`, fenêtre de livraison de 24 h,
+> sanction de réputation, plafond par couple). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+
+### Suivis ouverts (hérités des sprints clos)
+
+> Quatre suivis nés aux Sprints 14/15 n'avaient plus de porteur après la clôture des
+> fichiers de sprint ; ils vivent désormais ici.
+- [ ] **Auditer l'escrow des commandes et des échoppes** (hérité d'ECO-16, Sprint 14) :
+      les canaux nés depuis l'audit anti-abus (ECO-05→09, ECO-10→13) ont chacun leur propre
+      escrow — étendre l'audit et les règles anti-abus à ces canaux.
+- [ ] **Orienter le tutoriel/onboarding vers les nœuds d'entrée de métier** (hérité
+      d'ECO-20b, Sprint 15) : les nœuds sont gratuits, personne n'est bloqué, mais
+      l'artisanat n'est plus découvert par accident — à rapprocher du plancher T1 (ECO-02).
+- [ ] **Notification Mercure de fin de `CraftJob`** (hérité d'ECO-20c, Sprint 15) : la fin
+      du travail à l'établi ne se voit aujourd'hui qu'au rechargement de l'écran.
+- [ ] **Refléter `craftQuality` sur les stats de l'objet** (hérité d'ECO-20a, Sprint 15) :
+      changement d'équilibrage — → [../BALANCE.md](../BALANCE.md) §24.
 
 ---
 
@@ -232,12 +221,11 @@ Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅ 
 
 ## Piste E — Métiers & équilibrage (parallélisable)
 
-### ECO-14 — Interdépendance des métiers (S | ★★ | MOYENNE)
+### ECO-14 — Interdépendance des métiers ✅ (S | ★★ | MOYENNE)
 > Aucun métier autosuffisant : chaque métier consomme la sortie d'un autre.
-- [ ] Audit des recettes : identifier les métiers autosuffisants
-- [ ] Rééquilibrer les `ingredients` pour croiser les métiers (ex. un craft a besoin d'un
-      intermédiaire produit par un autre métier)
-- [ ] Documenter la chaîne de production dans BALANCE.md
+> **Livré le 2026-07-25** (Sprint 14 — six liaisons croisées, aucune au palier d'entrée ;
+> chaîne documentée dans [../BALANCE.md](../BALANCE.md) §15).
+> Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
 
 ### ECO-15 — Gold sinks (S | ★★ | MOYENNE) ✅
 > Compenser la perte du gold sink « boutique PNJ » quand tout est crafté.
@@ -256,14 +244,12 @@ Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅ 
 > ont quitté une bourse sans être détruits. Les omettre ferait lire une déflation à chaque fois
 > que le marché se remplit.
 
-### ECO-16 — Modération économique (S | ★★ | HAUTE)
+### ECO-16 — Modération économique ✅ (S | ★★ | HAUTE)
 > Anti price-fixing, farm par alts, RMT.
-- [ ] Escrow système garanti sur tous les canaux (HV, commandes, échoppes)
-- [ ] Réutiliser les patterns anti-exploit influence (plafonds, diminishing returns, min
-      membres actifs) contre la manipulation
-- [ ] Journal/analytics des transactions pour détection d'anomalies (ShopSaleLog,
-      AuctionTransaction, CraftOrder fulfilled)
-- [ ] Outils de modération admin (suspension d'échoppe, annulation de listing)
+> **Livré le 2026-07-25** (Sprint 14, en deux sous-jalons a/b — règles anti-abus, journal
+> économique, outils de modération). Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+> L'extension de l'audit d'escrow aux canaux nés depuis (commandes, échoppes) est portée
+> par les **Suivis ouverts** en fin de Piste C.
 
 ### ECO-17 — Tests unitaires du plan (M | ★★ | HAUTE) ✅
 > Prérequis : ← ECO-05 ✅, ECO-07 ✅, ECO-10 ✅
@@ -540,7 +526,9 @@ Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅ 
       Les sept plats reprennent donc les trois sorts de soin déjà posés, par palier.
       Inventer le canal ici aurait fait de ce jalon un chantier de mécanique alors qu'il
       répare un trou de **contenu**.
-- [ ] **Épices — reporté à ZON-35** (loi 9), son prérequis déclaré.
+- [x] **Épices — le report à ZON-35 est soldé** (loi 9) : ZON-35 est livré et
+      `recipe-spice-blend` existe en fixtures. Le cuisinier compte donc **8 recettes**,
+      et non sept.
 
 > **Écart assumé : pas d'outil de cuisine.** `Item::CRAFT_TOOL_TYPES` ne cite pas le
 > cuisinier — on cuisine avec ce qu'on a. Une marmite aurait demandé un type d'outil, un
@@ -616,13 +604,15 @@ Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅ 
 ## Ordre d'implémentation recommandé
 
 ```
-Phase 1 (socle)        : ECO-01 → ECO-02
-Phase 2 (HV régional)  : ECO-03 → ECO-04
-Phase 3 (commandes)    : ECO-05 → ECO-06 → ECO-07 → ECO-08 → ECO-09
-Phase 4 (échoppes)     : ECO-10 → ECO-11 → ECO-12 → ECO-13
-Phase 5 (équilibrage)  : ECO-14, ECO-15, ECO-16, ECO-17  (parallélisable)
-Phase 6 (pureté)       : ECO-21 → ECO-22 → ECO-23
+Phase 1 (socle)        : ECO-01 ✅ → ECO-02 ✅
+Phase 2 (HV régional)  : ECO-03 ✅ → ECO-04 ✅
+Phase 3 (commandes)    : ECO-05 ✅ → ECO-06 ✅ → ECO-07 ✅ → ECO-08 ✅ → ECO-09 ✅
+Phase 4 (échoppes)     : ECO-10 ✅ → ECO-11 ✅ → ECO-12 ✅ → ECO-13 ✅
+Phase 5 (équilibrage)  : ECO-14 ✅, ECO-15 ✅, ECO-16 ✅, ECO-17 ✅
+Phase 6 (pureté)       : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅
 Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
+Phase 8 (métiers)      : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅
+Phase 9 (suite)        : ECO-28 (Piste F — prérequis tous livrés), puis Piste I (ECO-32 → ECO-35)
 ```
 
 **Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le

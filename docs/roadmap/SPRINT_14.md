@@ -5,8 +5,9 @@
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
 
-> **Pourquoi maintenant** : c'est le plus gros chantier structure encore **entierement a faire**
-> (17 jalons ECO, 0 livre), et le seul qui donne au monde persistant sa profondeur systemique — la
+> **Pourquoi maintenant** : c'etait le plus gros chantier structure encore **entierement a faire**
+> (17 jalons ECO — **tous livres depuis** : ECO-01 → ECO-17 ✅, Sprints 14/15 et suites), et le
+> seul qui donne au monde persistant sa profondeur systemique — la
 > raison d'etre affichee du pivot PBBG. La narration (NAR, 14/14 ✅) et le modele zone (ZON, 21/21 ✅)
 > sont termines ; l'economie est le pilier restant.
 >
@@ -72,8 +73,8 @@
 > Le retour d'objet a **l'expiration** est couvert depuis le 2026-07-26 : la requete a ete
 > deplacee dans `AuctionListingRepository::findExpirable()`, ou elle aurait du etre des le depart.
 >
-> **Reste ouvert** : etendre l'escrow et les regles anti-abus aux canaux suivants — les commandes
-> de craft (ECO-05→09 ✅) et les echoppes (ECO-10→13 ✅) ont leur propre escrow depuis, a auditer.
+> **Reste ouvert (auditer l'escrow des commandes et des echoppes)** : transfere dans
+> [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) (« Suivis ouverts (herites des sprints clos) »).
 
 > **ECO-19 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **17 recettes** manquantes et
 > les **15 objets** resultats ecrits, `recipe-poison-vial` rattache au nœud « Concentration

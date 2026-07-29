@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **toutes livrees** ✅ | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **8 taches** (ZON-22 → ZON-27, sous-jalons compris), **8/8 livrees — sprint termine** ✅ | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -72,18 +72,12 @@
 > portes de 10 a 13 ; **anneau peripherique** ferme (8 connexions au lieu de 6), pour que contourner
 > le hub devienne une alternative credible. Calibrage documente dans `BALANCE.md` §11.
 
-### ZON-26 — Nouvelles zones declaratives (sous-jalon b) (L | ★★★ | HAUTE)
-> Prerequis : ← ZON-26a ✅ | Bloque : **128** (Acte 4)
-> **Blocage identifie** : la promesse « ajouter du contenu = ajouter de la donnee » **n'est pas
-> encore tenue pour les rencontres**. Une zone declaree en YAML sans `source_map` fonctionne (voyage,
-> coffres, filons), mais son vivier de mobs reste vide : `ExploreService::resolveMob` lit
-> `MobRepository::findAvailableInZone`, et les `Mob` sont seedes par `MobFixtures` **en PHP**, a
-> partir d'une carte. `Mob::map` etant nullable et la requete filtrant sur `mob.zone`, rien n'empeche
-> techniquement une zone sans carte — il manque le **chemin declaratif**.
-- [ ] Section `mobs:` dans la config de zone (slug de monstre + effectif), consommee par `ZoneImporter`
-- [ ] Idem pour les PNJ (`pnjs:`) — sinon une nouvelle zone n'a ni marchand ni dialogue (cf. ZON-27)
-- [ ] Alors seulement : ajouter les nouvelles zones du World 1 (interieurs, zones secondaires)
-- [ ] Illustrations de zone + positions `map_x`/`map_y` sur la carte du monde (ZON-16)
+> **ZON-26 sous-jalon b — mecanisme livre** ✅ : les blocs `mobs:` / `pnjs:` declaratifs sont
+> consommes par `ZoneImporter` (ZON-26b-a/b) et les positions `map_x`/`map_y` sont posees sur les
+> 12 zones — une zone se peuple et se place desormais par la donnee seule.
+> Les restes — de pures **donnees** — sont transferes dans [PLAN_ZONES.md](PLAN_ZONES.md)
+> (« Restes de donnees ») : blocs `mobs:`/`pnjs:` du Marais Brumeux et de la Crete de Ventombre,
+> illustrations de zone (`Zone::illustrationPath` jamais lu ni renseigne).
 
 > **ZON-27 sous-jalon b livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : dialogue PNJ
 > server-rendered (`/game/pnj/{id}/talk`), accessible depuis l'ecran de zone, emettant

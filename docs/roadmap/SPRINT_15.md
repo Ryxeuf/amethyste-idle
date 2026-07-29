@@ -67,9 +67,8 @@
       au tarif de base
 - [x] Fixtures : les joueurs de demo recoivent les nœuds d'entree des quatre metiers (gratuits,
       0 point) — sans eux, un personnage ne voit plus **aucune** recette
-- [ ] **Suivi onboarding** : rien dans le tutoriel n'oriente un nouveau joueur vers ces nœuds
-      d'entree. Ils sont gratuits, donc personne n'est bloque, mais l'artisanat n'est plus
-      decouvert par accident — a rapprocher du plancher T1 d'ECO-02
+- **Suivi onboarding** : transfere dans [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md)
+  (« Suivis ouverts (herites des sprints clos) »)
 
 **2. `Recipe.craftingTime` a l'etabli** — ✅ **livre le 2026-07-26** (ECO-20c, chantier)
 - [x] Entite `CraftJob` : un travail a la fois par artisan, unicite garantie en base
@@ -80,15 +79,16 @@
 - [x] `craft()` ne subsiste que pour `ExperimentationManager`, ou la decouverte est elle-meme le
       cout ; aucune route ne l'expose
 - [x] Bandeau « Etabli occupe » avec decompte (`craft-job`) et bouton de recuperation
-- [ ] Reste ouvert : Mercure pour notifier la fin du travail sans rechargement
+- **Reste ouvert (notification Mercure de fin de `CraftJob`)** : transfere dans
+  [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) (« Suivis ouverts (herites des sprints clos) »)
 
 **3. La qualite de craft ne survit pas au craft** — ✅ **livre le 2026-07-26** (ECO-20a)
 - [x] `PlayerItem.craftQuality` : la qualite calculee est conservee, a l'etabli **et** sur
       commande, par la meme formule (`CraftingManager::computeQuality()`)
 - [x] `CraftOrder.minQuality` devient applicable : une piece sous le seuil est **retravaillee**,
       pas refusee, et le champ est enfin expose au depot
-- [ ] Reste ouvert : refleter la qualite sur les **stats** de l'objet (changement d'equilibrage,
-      volontairement hors de ce jalon)
+- **Reste ouvert (`craftQuality` → stats de l'objet)** : transfere dans
+  [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) (« Suivis ouverts (herites des sprints clos) »)
 
 ---
 

@@ -11,7 +11,8 @@
 
 ## Vue d'ensemble
 
-**8 jalons** (**DOM-01** à **DOM-08**) en 3 pistes — **plan complet 8/8 au 2026-07-29**.
+**8 jalons** (**DOM-01** à **DOM-08**) en 3 pistes — **plan d'origine complet 8/8 au
+2026-07-29** —, plus **DOM-09**, ouvert par l'audit du 2026-07-29.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -23,6 +24,7 @@
 | DOM-06 ✅ | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
 | DOM-07 ✅ | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
 | DOM-08 ✅ | Tests du plan | S | ‖ |
+| DOM-09 | La borne sans fuite (audit 2026-07-29) | M | ← DOM-01, DOM-02 |
 
 ```
 Piste A — Le système   : DOM-01 → DOM-02 ; DOM-03 ‖ ; DOM-04 ‖
@@ -155,7 +157,7 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
       points ordinaire reste doux
 - [x] Migration de données : les joueurs déjà spécialisés reprennent leur métier et sa
       première branche ; la colonne héritée reste, le jeu ne la lit plus
-- [x] Tests : 9 (`CraftBranchCatalogTest`) + 12 (`CraftSpecializationServiceTest`)
+- [x] Tests : 9 (`CraftBranchCatalogTest`) + 11 (`CraftSpecializationServiceTest`)
 
 > **Le défaut corrigé n'était pas un manque : c'était une violation de la doctrine.** Le
 > modèle livré fermait six arbres pour en ouvrir un — devenir Forgeron interdisait à jamais
@@ -275,6 +277,26 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > slug littéral d'accord dans les fixtures — ils sont générés, donc elle ne trouvait rien et
 > passait en vérifiant le vide. C'est exactement la famille de défaut que ce fichier existe
 > pour traquer : il lit désormais **le corps de la méthode qui porte la table**.
+
+### DOM-09 — La borne sans fuite (M | ★★★ | HAUTE)
+> **Constat (audit 2026-07-29).** La double borne est livrée, mais quatre fuites lui
+> échappent — trois dans les données, une dans le canon.
+- [ ] **Les 8 nœuds partagés** (`getSharedSkills()`, SkillFixtures ~l.5904-5973) portent
+      des stats de combat (heal/life/critical/hit) via des domaines de **métier** → ils
+      tombent dans la clause de rétro-compat de `CombatSkillResolver::skillAppliesTo()`
+      et s'appliquent à **toute** action de combat, hors de la double borne. Les borner
+      (ou acter qu'ils sont globaux) + durcir le test de contrat :
+      `DomainPlanContractTest::testEverySkillWithCombatStatsBelongsToADomain` vérifie
+      « a un domaine », pas « est borné »
+- [ ] **Étendre les nœuds partagés** au bûcheron et aux 3 métiers de la Piste H
+      (cuisinier/charpentier/tailleur), aujourd'hui hors synergies
+- [ ] **Données** : `t1/t2/t3_staff` rattachés au domaine paladin (light × melee) — un
+      bâton, censé canaliser les sorts (GAME_DOMAINS §3), active la famille **mêlée**
+      dans `BuildDomainResolver::carriedRegisters()`. À rattacher à un domaine de sorts
+- [ ] **Arbitrage Element** : `element: 'wood'` est porté par lumberjack et carpenter
+      sans cas dans l'enum `Element` (inoffensif car hors combat, mais incohérent) ;
+      GAME_DOMAINS §8 affirme que les composés sont « déjà actés » dans l'enum — **faux**.
+      Trancher : ajouter les cas (wood + composés dormants) ou corriger le canon
 
 ---
 
