@@ -190,11 +190,6 @@ class Skill
         $this->requirements->removeElement($requirement);
     }
 
-    /**
-     * Get requirements.
-     *
-     * @return Collection|Skill[]
-     */
     public function isDormant(): bool
     {
         return $this->dormant;
@@ -207,6 +202,11 @@ class Skill
         return $this;
     }
 
+    /**
+     * Get requirements.
+     *
+     * @return Collection|Skill[]
+     */
     public function getRequirements()
     {
         return $this->requirements;
