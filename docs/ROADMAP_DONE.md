@@ -20,7 +20,7 @@
 par des pointilles. L'information etait juste, la carte ne racontait rien — et sur telephone,
 atteindre une pastille au doigt relevait de l'adresse.
 
-**Le fond illustre arrive.** `assets/styles/images/world-map/world-1.png`, genere a partir des
+**Le fond illustre arrive.** `assets/styles/images/world-map/world-1.webp`, genere a partir des
 donnees reelles du monde (le prompt est versionne dans `docs/WORLD_MAP_IMAGE_PROMPT.md`, et se
 regenere si la geographie bouge). Il est purement decoratif : toute l'information reste portee
 par les pastilles et les libelles, qui n'ont pas bouge.
