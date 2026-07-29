@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\App\Map;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Quest;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -49,6 +48,18 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
         $guildeReq = $acte1Guilde->getRequirements();
         $guildeReq['talk_to'][0]['pnj_id'] = $claireMentor->getId();
         $acte1Guilde->setRequirements($guildeReq);
+
+        // ONB-15 : les trois premieres etapes de l'arc `intro` visaient
+        // `map_id => 1` — c'est-a-dire la « Carte de test », que `MapFixtures`
+        // cree en premier. Elles ne pointaient donc pas vers un mecanisme mort,
+        // mais vers une zone qui n'existe pas : l'acte I etait bloque des sa
+        // premiere etape. Elles parlent maintenant a quelqu'un, comme le reste
+        // de l'arc, et leur `pnj_id` se recale ici. Jamais le donneur de la
+        // quete : on ne demande pas de retourner voir celui qu'on vient de
+        // quitter — les trois sont donnees par Claire la Sage.
+        $this->pointTalkToAt($acte1Reveil, 'pnj_7');       // Marie la Herboriste
+        $this->pointTalkToAt($acte1PremiersPas, 'pnj_0');  // Gérard le Forgeron
+        $this->pointTalkToAt($acte1Cristal, 'pnj_18');     // Antoine le Mage
 
         // Chaine de fond « Foret des Murmures » (NAR-13) : rumeurs → meute → cœur.
         /** @var Quest $bgForetRumeurs */
@@ -169,14 +180,33 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
         $requirementsAppel['talk_to'][0]['pnj_id'] = $claire->getId();
         $acte3Appel->setRequirements($requirementsAppel);
 
-        // Fix map_id for the explore quest (Nexus dungeon map)
-        /** @var Map $convergenceMap */
-        $convergenceMap = $this->getReference('map_dungeon_convergence', Map::class);
-        $requirementsEpilogue = $acte3Epilogue->getRequirements();
-        $requirementsEpilogue['explore'][0]['map_id'] = $convergenceMap->getId();
-        $acte3Epilogue->setRequirements($requirementsEpilogue);
+        // ONB-15 : l'epilogue visait « le coeur du Nexus » par `map_id`, recale
+        // ici sur la carte du donjon de la Convergence. Or un donjon n'est pas
+        // une zone : cette carte n'a aucune `Zone` qui la prenne pour origine,
+        // donc `updateExplored()` ne pouvait jamais la reconnaitre. L'arc se
+        // terminait sur une etape impossible. Il se termine desormais chez celle
+        // qui attend la reponse depuis la premiere quete.
+        $this->pointTalkToAt($acte3Epilogue, 'pnj_15'); // Claire la Sage
 
         $manager->flush();
+    }
+
+    /**
+     * Recale le `pnj_id` d'un objectif « parler a » sur un PNJ reellement seede.
+     *
+     * Les fixtures de quete sont ecrites avant que les PNJ existent : elles
+     * posent un `pnj_id` a 0, corrige ici. Ecrire l'identifiant en dur dans la
+     * quete marcherait le jour ou on le tape, et casserait au premier PNJ
+     * insere avant lui.
+     */
+    private function pointTalkToAt(Quest $quest, string $pnjReference): void
+    {
+        /** @var Pnj $pnj */
+        $pnj = $this->getReference($pnjReference, Pnj::class);
+
+        $requirements = $quest->getRequirements();
+        $requirements['talk_to'][0]['pnj_id'] = $pnj->getId();
+        $quest->setRequirements($requirements);
     }
 
     public function getDependencies(): array

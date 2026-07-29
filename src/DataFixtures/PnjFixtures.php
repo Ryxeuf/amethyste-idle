@@ -184,13 +184,32 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
 
         $shopConfigs = $this->getShopConfigs();
 
+        // ONB-15 : les porteurs de l'arc `intro` habitent le village.
+        //
+        // Cette fixture posait tous ses PNJ sur `map_1`, c'est-a-dire la « Carte
+        // de test ». Aucune zone ne prend cette carte pour origine, donc
+        // `WorldEntityZoneListener` leur laissait une zone nulle — et l'ecran de
+        // zone, seul endroit d'ou l'on atteint un PNJ depuis ZON-27, liste par
+        // zone. Claire, Gerard, Marie et Antoine n'apparaissaient nulle part :
+        // l'etape « guilde » de l'arc etait deja injoignable avant meme les
+        // trois objectifs d'exploration repares ici.
+        //
+        // On ne deplace que les quatre porteurs de l'arc : basculer les soixante
+        // noierait l'ecran du village (plafonne a 20) et doublerait les roles de
+        // `VillageHubPnjFixtures`. La fusion des deux populations est le sujet
+        // d'ONB-16.
+        $acte1Residents = [0, 7, 15, 18];
+
         // Création de 60 PNJ
         for ($i = 0; $i < 60; ++$i) {
             $pnj = new Pnj();
             $pnj->setName($pnjNames[$i] ?? 'PNJ #' . ($i + 1));
             $pnj->setLife(10);
             $pnj->setMaxLife(10);
-            $pnj->setMap($this->getReference('map_1', Map::class));
+            $pnj->setMap($this->getReference(
+                in_array($i, $acte1Residents, true) ? 'map_2' : 'map_1',
+                Map::class,
+            ));
             $pnj->setCoordinates($coordinates[$i % count($coordinates)]);
             $pnj->setClassType($classTypes[$i % count($classTypes)]);
 
@@ -657,15 +676,15 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 2 — Proposer quête Réveil
             [
-                'text' => 'Vous semblez désorienté. Commencez par explorer la place du village pour reprendre vos repères. Cela vous aidera peut-être à retrouver la mémoire.',
+                'text' => 'Vous semblez désorienté. Allez donc voir Marie la Herboriste : une de ses tisanes vous éclaircira les idées. Cela vous aidera peut-être à retrouver la mémoire.',
                 'choices' => [
-                    ['text' => 'D\'accord, je vais explorer', 'action' => 'quest_offer', 'data' => ['quest' => $qReveil]],
+                    ['text' => 'D\'accord, je vais la voir', 'action' => 'quest_offer', 'data' => ['quest' => $qReveil]],
                     ['text' => 'Pas maintenant', 'action' => 'close'],
                 ],
             ],
             // 3 — Réveil en cours
             [
-                'text' => 'Allez explorer la place du village, {{player_name}}. Prenez le temps d\'observer les alentours.',
+                'text' => 'Allez voir Marie la Herboriste, {{player_name}}. Elle tient boutique à deux pas d\'ici.',
             ],
             // 4 — Proposer Premiers pas
             [
@@ -686,16 +705,16 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 7 — Proposer quête Cristal
             [
-                'text' => 'Vous avez fait du chemin, {{player_name}}. Je sens que vous êtes prêt. Il existe un cristal d\'améthyste caché dans une clairière au sud... Il pourrait détenir la clé de vos souvenirs perdus.',
+                'text' => 'Vous avez fait du chemin, {{player_name}}. Je sens que vous êtes prêt. Un cristal d\'améthyste résonne encore en vous, et je ne sais pas le lire seule — Antoine le Mage étudie ces échos depuis vingt ans. Allez le voir.',
                 'choices' => [
-                    ['text' => 'Je veux le trouver', 'action' => 'quest_offer', 'data' => ['quest' => $qCristal]],
+                    ['text' => 'Je vais le trouver', 'action' => 'quest_offer', 'data' => ['quest' => $qCristal]],
                     ['text' => 'Je ne suis pas encore prêt', 'action' => 'close'],
                 ],
             ],
             // 8 — Cristal trouvé (fin Acte 1)
             [
                 'next' => 9,
-                'text' => 'Vous l\'avez trouvé ! Le Cristal d\'Améthyste... Je savais que vous en étiez capable.',
+                'text' => 'Antoine vous a répondu, alors. Le Cristal d\'Améthyste... Je savais que vous en étiez capable.',
             ],
             // 9 — Épilogue
             [
