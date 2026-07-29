@@ -17,7 +17,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| FAC-01 | Tension par paires + patronage exclusif | M | ∅ |
+| FAC-01 ✅ | Tension par paires + patronage exclusif | M | ∅ |
 | FAC-02 | Les gestes nourrissent la réputation | S | ← FAC-01 |
 | FAC-03 | Hostile à conséquences | S | ← FAC-01 |
 | FAC-04 | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
@@ -45,19 +45,29 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 
 ## Piste A — Le système
 
-### FAC-01 — Tension par paires & patronage (M | ★★★ | CRITIQUE)
+### FAC-01 — Tension par paires & patronage (M | ★★★ | CRITIQUE) ✅
 > GAME_WORLD §6.4 a/c. Le cœur du rework : l'identité naît de ce qu'on renonce.
-> Prérequis : ∅
-- [ ] Paires de tension en config (`config/game/factions.yaml`) : `fonderie ↔ mages`,
-      `chevaliers ↔ ruelles` (slug de code hérité : `ombres`) ; Marchands hors tension. **Rien en dur**
-- [ ] Décote : tout gain au-delà du palier Ami chez l'un retire une fraction (paramètre,
-      ~50 %) chez l'opposé. Jamais de décroissance par inactivité (principe RET)
-- [ ] **Patronage** : une seule faction portée (choix du joueur, changeable hors combat) ;
-      seuls les bonus de stats du patron s'appliquent. Migration : les
-      `FactionReward` de stats existants deviennent des bonus de patronage
-- [ ] UI : l'écran de factions montre l'axe, les paires, le patronage porté
-- [ ] Tests : décote au-delà d'Ami seulement, pas de décote par inactivité, un seul
-      patronage actif
+> Prérequis : ∅ — **livré le 2026-07-29**
+- [x] Paires de tension en config (`config/game/factions.yaml`) : `fonderie ↔ mages`,
+      `chevaliers ↔ ruelles` (slug de code hérité : `ombres`) ; Marchands hors tension. **Rien en dur**.
+      La paire de la Fonderie est déclarée **avant** que la faction existe (FAC-04) : une paire dont
+      un membre manque est **inerte**, pas invalide — sans quoi il faudrait se souvenir de revenir ici
+- [x] Décote : la part du gain **au-delà du seuil d'Ami** retire 50 % chez l'opposé. Plancher
+      **dérivé** du palier (`-2000`) : on ne renonce pas à plus qu'on aurait pu donner. Aucun champ
+      de durée dans le catalogue, et un test le vérifie : l'absence ne coûte jamais rien
+- [x] **Patronage** : une seule faction portée, changeable hors combat, portée par une **colonne
+      unique** (`player.patron_faction_id`) — c'est le schéma qui tient l'exclusivité, pas un service
+- [x] Les `FactionReward` de stats **s'appliquent enfin**, et seulement pour le patron : ils
+      n'étaient lus par aucun calcul — l'écran affichait « +15 % de dégâts » et rien ne l'appliquait.
+      Un seul palier compte (le plus haut atteint), jamais leur somme
+- [x] UI : l'axe, l'opposé nommé, « hors tension » là où il n'y a pas d'opposition, les couleurs
+      portées, le choix et le retrait
+- [x] Tests : décote au-delà d'Ami seulement, pas de décote par inactivité, un seul patronage actif,
+      plancher, paire inerte, opposé jamais créé de rien
+
+**Reste ouvert, et volontairement.** `speed` figure dans les données livrées (le Pas de l'ombre des
+Ruelles) sans qu'aucune agrégation ne l'attende : le résolveur la rend visible plutôt que de l'avaler,
+et son application viendra avec le jalon qui donnera une vitesse au personnage.
 
 ### FAC-02 — Les gestes nourrissent (S | ★★ | HAUTE)
 > §6.4 b : les quêtes amorcent, les gestes font le régime de croisière.

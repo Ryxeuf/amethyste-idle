@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\GameEngine\Progression\SynergyCalculator;
+use App\GameEngine\Reputation\PatronageBonusResolver;
 
 class CombatSkillResolver
 {
@@ -13,6 +14,7 @@ class CombatSkillResolver
         private readonly BuildDomainResolver $buildDomainResolver,
         private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
+        private readonly PatronageBonusResolver $patronageBonusResolver,
     ) {
     }
 
@@ -122,7 +124,11 @@ class CombatSkillResolver
             $bonuses[$stat] += $setBonuses[$stat];
         }
 
-        return $bonuses;
+        // FAC-01 : les couleurs qu'on porte, et elles seules. Le patronage
+        // amplifie le total en dernier — il qualifie l'ensemble du geste, pas
+        // une source en particulier, et l'appliquer avant les sets ferait
+        // dependre son effet de l'ordre des additions.
+        return $this->patronageBonusResolver->amplify($player, $bonuses);
     }
 
     /**

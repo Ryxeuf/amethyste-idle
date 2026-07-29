@@ -8,6 +8,7 @@ use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Progression\SynergyCalculator;
+use App\GameEngine\Reputation\PatronageBonusResolver;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +27,7 @@ class CombatSkillResolverMateriaTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn(true);
 
-        $this->resolver = new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver);
+        $this->resolver = new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver, $this->neutralPatronage());
     }
 
     private function createSkillWithMateriaUnlock(string $spellSlug): Skill&MockObject
@@ -128,5 +129,24 @@ class CombatSkillResolverMateriaTest extends TestCase
         $player = $this->createPlayer([]);
 
         $this->assertFalse($this->resolver->hasUnlockedMateriaSpell($player, 'fire-ball'));
+    }
+
+    /**
+     * Un patronage neutre : aucune couleur portee, rien d'amplifie.
+     *
+     * FAC-01 a ajoute une derniere etape a l'agregation des bonus. Ces tests
+     * portent sur les bornes de domaine, pas sur les factions : un patronage
+     * qui rendrait les bonus tels quels est la seule facon de les garder
+     * lisibles — sans quoi chaque attendu chiffre porterait un pourcentage sans
+     * rapport avec ce qu'il verifie.
+     */
+    private function neutralPatronage(): PatronageBonusResolver
+    {
+        $patronage = $this->createMock(PatronageBonusResolver::class);
+        $patronage->method('amplify')->willReturnCallback(
+            static fn (Player $player, array $bonuses): array => $bonuses,
+        );
+
+        return $patronage;
     }
 }

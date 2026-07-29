@@ -1,0 +1,81 @@
+# =============================================================================
+# L'axe doctrinal : les paires de tension et le patronage (FAC-01)
+# =============================================================================
+# GAME_WORLD § 6.4 a : « progresser chez l'un fait decroitre chez son opposé
+# **au-delà du palier Ami** : Fonderie ↔ Cercle des Mages (Extraire /
+# Preserver), Ordre des Chevaliers ↔ Confrerie des Ruelles (Ordre / Liberte).
+# La Guilde des Marchands est **hors tension** — elle vend aux deux, c'est son
+# identite. On peut etre bien vu de tous jusqu'a Ami ; au-dela, il faut
+# choisir. »
+#
+# Ce que ce fichier change. Avant lui, les quatre factions montaient en
+# parallele : un joueur assidu finissait Exalte partout, et l'appartenance ne
+# disait plus rien de lui. La decote ne punit pas — elle demande de choisir.
+#
+# **Jamais de decroissance par inactivite** (principe du plan Retention). La
+# reputation ne descend que par le **geste oppose** : l'absence ne coute rien.
+# Aucun champ de ce fichier ne porte de duree, et c'est deliberé.
+#
+# Ajouter une faction, c'est ajouter une ligne ici. Rien en dur.
+# =============================================================================
+
+# --- Les paires de l'axe -----------------------------------------------------
+# Une paire est symetrique : ce qui monte chez l'un retire chez l'autre, dans
+# les deux sens. Une faction n'appartient **qu'a une seule paire** — deux
+# oppositions rendraient l'axe illisible, et le loader le refuse.
+#
+# `fonderie` n'existe pas encore comme entite (elle arrive avec FAC-04). La
+# paire est declaree quand meme : le jour ou la faction est semee, la tension
+# est deja la, et personne n'a a se souvenir de revenir ici. Une paire dont un
+# membre manque est **inerte**, pas invalide.
+tension_pairs:
+    -   left: 'fonderie'
+        right: 'mages'
+        axis: 'Extraire / Preserver'
+    -   left: 'chevaliers'
+        # Slug de code herite : la « Confrerie des Ombres » des fixtures est la
+        # Confrerie des Ruelles du canon. Renommer la donnee couterait une
+        # migration pour un mot ; le canon vit dans le libelle.
+        right: 'ombres'
+        axis: 'Ordre / Liberte'
+
+# --- Hors tension ------------------------------------------------------------
+# Se deduirait de l'absence dans les paires. On l'ecrit quand meme : une
+# faction oubliee des paires et une faction volontairement neutre se lisent
+# pareil dans le code, et pas du tout dans le jeu. Le loader refuse qu'une
+# faction soit a la fois neutre et opposee.
+neutral:
+    - 'marchands'
+
+# --- La decote ---------------------------------------------------------------
+# `beyond_tier` : le palier a partir duquel la tension mord. En dessous, on
+# peut etre bien vu de tout le monde — c'est ce qui permet de decouvrir les
+# cinq maisons avant d'avoir a choisir.
+#
+# `percent` : la fraction du gain **au-dela du palier** retiree a l'opposé. A
+# 50 %, deux gestes chez l'un valent un geste efface chez l'autre : on avance
+# encore en aidant les deux, mais deux fois moins vite qu'en choisissant.
+tension:
+    beyond_tier: 'ami'
+    percent: 50
+
+    # Le plancher de la decote, en miroir du palier ou elle commence : on ne
+    # peut pas renoncer a plus que ce qu'on aurait pu donner. Sans plancher, un
+    # joueur d'un an serait Hostile a un point que rien ne pourrait rattraper.
+    # La valeur n'est pas ecrite : elle est **derivee** de `beyond_tier`.
+    floor_mirrors_beyond_tier: true
+
+# --- Le patronage ------------------------------------------------------------
+# GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent un
+# patronage — on porte les couleurs d'une seule faction a la fois (changeable
+# hors combat). Un palier de reputation ouvre des portes ; il n'empile jamais
+# de la puissance. »
+#
+# `required_tier` reprend le palier de la tension, et ce n'est pas une
+# coincidence : c'est au meme endroit qu'on cesse d'etre un visiteur.
+patronage:
+    required_tier: 'ami'
+    # Le changement est libre — le renoncement se paie en reputation, pas en
+    # gils. Le seul moment ou il est refuse est le combat : porter d'autres
+    # couleurs entre deux tours changerait les statistiques en cours de geste.
+    forbidden_in_combat: true

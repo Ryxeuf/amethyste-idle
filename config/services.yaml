@@ -94,6 +94,12 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # FAC-01 : l'axe doctrinal — paires de tension, decote, patronage. Ajouter
+    # une faction, c'est ajouter une ligne dans `config/game/factions.yaml`.
+    App\GameEngine\Reputation\FactionTensionCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # DOM-04 : le seul respec payant du jeu (GAME_DOMAINS § 6). Ce qu'on paie
     # n'est pas d'avoir change d'avis sur un bonus, c'est d'avoir change
     # d'identite — le respec de points ordinaire reste doux.

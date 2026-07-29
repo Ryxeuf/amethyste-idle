@@ -757,7 +757,19 @@
       "reputation": "Réputation",
       "next_tier": "Prochain palier : %tier%",
       "max_tier": "Palier maximum atteint !",
-      "rewards_title": "Récompenses"
+      "rewards_title": "Récompenses",
+      "axis": {
+        "explain": "Au-delà du palier %tier%, progresser chez une faction retire %percent% % du gain chez son opposée. En deçà, on peut être bien vu de tout le monde. L'absence ne coûte jamais rien.",
+        "neutral": "Hors tension",
+        "opposed_to": "opposée à %faction%"
+      },
+      "patronage": {
+        "badge": "Couleurs portées",
+        "choose": "Porter ces couleurs",
+        "clear": "Ne plus porter de couleurs",
+        "current": "Vous portez les couleurs de %faction% : seuls ses bonus de statistiques s'appliquent.",
+        "none": "Vous ne portez aucune couleur. À partir du palier %tier%, une faction peut devenir votre patronage — une seule à la fois."
+      }
     },
     "friends": {
       "title": "Amis",
