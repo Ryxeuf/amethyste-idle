@@ -334,8 +334,9 @@ class ZoneDefinitionLoaderTest extends TestCase
         // accidentelle du graphe livre. 8 depuis ZON-26a (etoile + anneau),
         // 9 depuis HOU-01 (rattachement du Quartier des Jardins au hub),
         // 10 depuis ZON-26b (les Dunes d'Ambre au sud du marais),
-        // 14 depuis 128b (les quatre zones de l'Acte 4).
-        self::assertCount(14, $result['connections']);
+        // 14 depuis 128b (les quatre zones de l'Acte 4),
+        // 17 depuis ZON-30 (les Vallons, relies au hub, a la Foret et au Marais).
+        self::assertCount(17, $result['connections']);
 
         $dunes = null;
         foreach ($result['zones'] as $zone) {
