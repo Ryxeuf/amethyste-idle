@@ -157,6 +157,11 @@ class WorldMapControllerTest extends TestCase
         // Le joueur n'a jamais quitte le hub.
         $this->visitedZoneRepository->method('findVisitedZoneIds')->willReturn([]);
 
+        // Graphe volontairement **a sens unique** : la foret n'a aucune liaison
+        // retour vers le hub. Elle doit tout de meme etre reperee — le repere
+        // se lit sur les aretes sortantes des zones connues, jamais sur celles
+        // de la zone examinee, faute de quoi il ne marcherait que sur les
+        // connexions bidirectionnelles.
         $hubToForest = new ZoneConnection($hub, $forest, 300);
         $forestToGlacier = new ZoneConnection($forest, $glacier, 600);
         $refId = new \ReflectionProperty(ZoneConnection::class, 'id');

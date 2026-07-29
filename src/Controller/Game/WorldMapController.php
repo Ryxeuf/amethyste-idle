@@ -122,15 +122,28 @@ class WorldMapController extends AbstractController
             $discoveredIds[] = $currentZone->getId();
         }
 
+        // Zones reperees : celles ou l'on peut aller depuis une zone deja
+        // parcourue. On part des aretes **sortantes des zones connues**, et non
+        // des aretes sortantes de la zone examinee : ces dernieres ne diraient
+        // « reperee » que si le graphe portait aussi la liaison retour, ce qui
+        // est vrai des connexions bidirectionnelles du monde livre mais que
+        // rien n'impose au format.
+        $scoutedIds = [];
+        foreach ($discoveredIds as $discoveredId) {
+            foreach ($neighbours[$discoveredId] ?? [] as $neighbourId) {
+                $scoutedIds[$neighbourId] = true;
+            }
+        }
+
         $nodes = [];
         foreach ($placedZones as $zone) {
             $id = $zone->getId();
             $discovered = \in_array($id, $discoveredIds, true);
-            // « Reperee » : jamais visitee, mais voisine d'une zone qui l'a ete.
-            // On en connait la place et la forme, pas le contenu — c'est le
-            // « rumeur -> reperee -> cartographiee » de GAME_ZONE_ACTIONS,
-            // rendu ici en trois epaisseurs de brume.
-            $scouted = !$discovered && [] !== array_intersect($neighbours[$id] ?? [], $discoveredIds);
+            // « Reperee » : jamais visitee, mais joignable depuis une zone qui
+            // l'a ete. On en connait la place et la forme, pas le contenu —
+            // c'est le « rumeur -> reperee -> cartographiee » de
+            // GAME_ZONE_ACTIONS, rendu ici en trois epaisseurs de brume.
+            $scouted = !$discovered && isset($scoutedIds[$id]);
             $nodes[] = [
                 'id' => $id,
                 'slug' => $zone->getSlug(),
