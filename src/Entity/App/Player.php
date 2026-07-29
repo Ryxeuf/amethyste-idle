@@ -203,6 +203,23 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'trade_suspended_until', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $tradeSuspendedUntil = null;
 
+    /**
+     * Maitre du jeu (MJ).
+     *
+     * Marque **le personnage**, pas le compte : un membre du staff joue
+     * ordinairement avec son personnage habituel et bascule sur son personnage
+     * MJ pour animer. Le drapeau n'ouvre aucun ecran d'administration (cela
+     * reste l'affaire de `User::roles`) ; il leve les regulateurs de rythme du
+     * PBBG — energie d'action, regeneration des PV, duree de voyage — et se
+     * voit en jeu (sceau « MJ » a cote du nom).
+     *
+     * Contrepartie : un MJ ne pese pas sur le monde. Son energie etant
+     * gratuite, le compter dans la charge mondiale (FOY-17) ou dans
+     * l'assiduite hebdomadaire (RET-04) fausserait les deux mesures.
+     */
+    #[ORM\Column(name: 'is_game_master', type: 'boolean', options: ['default' => false])]
+    private bool $gameMaster = false;
+
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
 
@@ -818,6 +835,18 @@ class Player implements CharacterInterface
     public function setPrestigeTitle(?string $prestigeTitle): void
     {
         $this->prestigeTitle = $prestigeTitle;
+    }
+
+    public function isGameMaster(): bool
+    {
+        return $this->gameMaster;
+    }
+
+    public function setGameMaster(bool $gameMaster): static
+    {
+        $this->gameMaster = $gameMaster;
+
+        return $this;
     }
 
     public function getRenownScore(): int

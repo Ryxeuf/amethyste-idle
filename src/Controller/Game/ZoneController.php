@@ -124,6 +124,7 @@ class ZoneController extends AbstractController
             return $this->render('game/zone/index.html.twig', [
                 'zone' => null,
                 'connections' => [],
+                'isGameMaster' => $player->isGameMaster(),
                 'mount' => null,
                 'shopsPresent' => [],
                 'playersPresent' => [],
@@ -160,7 +161,12 @@ class ZoneController extends AbstractController
         // La zone courante compte comme decouverte (deverrouille les liaisons rapides).
         $this->zoneTravelService->markZoneVisited($player, $zone);
 
-        $connections = $this->zoneConnectionRepository->findEnabledFrom($zone);
+        // MJ : la liste montre aussi les liaisons desactivees — le contenu en
+        // preparation est precisement ce qu'il a besoin d'aller voir.
+        $isGameMaster = $player->isGameMaster();
+        $connections = $isGameMaster
+            ? $this->zoneConnectionRepository->findAllFrom($zone)
+            : $this->zoneConnectionRepository->findEnabledFrom($zone);
 
         $playersPresent = $this->entityManager
             ->getRepository(Player::class)
@@ -177,13 +183,17 @@ class ZoneController extends AbstractController
         foreach ($connections as $connection) {
             $connectionRows[] = [
                 'connection' => $connection,
-                'seconds' => $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds()),
+                'seconds' => $isGameMaster
+                    ? 0
+                    : $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds()),
+                'disabled' => !$connection->isEnabled() || !$connection->getToZone()->isEnabled(),
             ];
         }
 
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
             'connections' => $connectionRows,
+            'isGameMaster' => $isGameMaster,
             'mount' => $player->getActiveMount(),
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,
@@ -574,6 +584,7 @@ class ZoneController extends AbstractController
             'id' => $p->getId(),
             'name' => $p->getName(),
             'self' => $p->getId() === $player->getId(),
+            'gameMaster' => $p->isGameMaster(),
         ], $present);
 
         return new JsonResponse(['players' => $players]);

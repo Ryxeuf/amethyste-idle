@@ -378,6 +378,12 @@ class ChatManager
             $senderData['prestigeTitle'] = $sender->getPrestigeTitle();
         }
 
+        // Le sceau MJ voyage avec le message : un message arrive par Mercure
+        // doit se reconnaitre comme celui rendu par Twig, sans requete de plus.
+        if ($sender->isGameMaster()) {
+            $senderData['gameMaster'] = true;
+        }
+
         $data = [
             'type' => 'chat_message',
             'id' => $message->getId(),

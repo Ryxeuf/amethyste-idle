@@ -897,16 +897,21 @@
                             </div>
                         {% else %}
                             <ul class="space-y-1.5">
+                                {% set isGameMaster = isGameMaster|default(false) %}
                                 {% for row in connections %}
                                     {% set connection = row.connection %}
                                     {% set seconds = row.seconds %}
-                                    {% set locked = connection.requiresDiscovery and connection.toZone.id not in visitedZoneIds %}
+                                    {# Un MJ voyage sans decouverte prealable : rien ne lui est verrouille. #}
+                                    {% set locked = not isGameMaster and connection.requiresDiscovery and connection.toZone.id not in visitedZoneIds %}
                                     <li class="ds-row">
                                         <span class="ds-row__body">
                                             <span class="ds-row__name ds-name--sm">
                                                 {{ connection.toZone.localizedName(app.request.locale) }}
                                                 {% if locked %}
                                                     <span title="{{ 'game.zone.connections.locked'|trans }}">🔒</span>
+                                                {% endif %}
+                                                {% if row.disabled|default(false) %}
+                                                    <span class="ds-seal ds-seal--loss" title="{{ 'game.zone.connections.gm_disabled'|trans }}">{{ 'game.zone.connections.gm_disabled_short'|trans }}</span>
                                                 {% endif %}
                                             </span>
                                             {# Duree reelle, mono : elle vient des `connections` declarees. #}
@@ -916,7 +921,7 @@
                                                 {% else %}
                                                     {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (seconds / 60)|round}) }}
                                                 {% endif %}
-                                                {% if seconds < connection.travelSeconds %}
+                                                {% if not isGameMaster and seconds < connection.travelSeconds %}
                                                     <span title="{{ 'game.zone.connections.travel_mounted'|trans({'%mount%': mount|localized_mount_name, '%base%': (connection.travelSeconds / 60)|round}) }}">🐎</span>
                                                 {% endif %}
                                             </span>
@@ -962,7 +967,10 @@
                             {% else %}
                                 {% for presentPlayer in playersPresent %}
                                     <div class="ds-row min-h-0 py-1.5">
-                                        <a href="{{ path('app_game_player_profile', {id: presentPlayer.id}) }}" class="ds-row__body ds-row__name ds-name--sm truncate">{{ presentPlayer.name }}</a>
+                                        <a href="{{ path('app_game_player_profile', {id: presentPlayer.id}) }}" class="ds-row__body ds-row__name ds-name--sm truncate">
+                                            {{ include('components/_game_master_seal.html.twig', {player: presentPlayer, compact: true}, with_context = false) }}
+                                            {{ presentPlayer.name }}
+                                        </a>
                                         {% if app.user and presentPlayer.user is defined and presentPlayer.user == app.user %}
                                             <span class="ds-seal ds-seal-epic">{{ 'game.zone.players.you'|trans }}</span>
                                         {% else %}
@@ -983,6 +991,7 @@
                                     {% for message in zoneChat.messages %}
                                         <div class="text-xs py-0.5">
                                             <span class="ds-num ds-num--sm ds-num--muted mr-1">{{ message.createdAt ? message.createdAt|date('H:i') : '' }}</span>
+                                            {{ include('components/_game_master_seal.html.twig', {player: message.sender, compact: true}, with_context = false) }}
                                             <span class="font-semibold text-brand mr-1">{{ message.sender.name }}:</span>
                                             <span class="text-ink">{{ message.content }}</span>
                                         </div>

@@ -242,6 +242,37 @@ class PlayerController extends AbstractController
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
     }
 
+    /**
+     * Bascule le drapeau « maitre du jeu » du personnage.
+     *
+     * Reserve a ROLE_ADMIN, contrairement au reste de l'ecran : le drapeau leve
+     * les regulateurs de rythme du jeu (energie, PV, voyage) et se voit de tous
+     * en jeu. Un moderateur peut sanctionner un joueur, il ne fabrique pas un MJ.
+     */
+    #[Route('/{id}/game-master', name: 'game_master', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function toggleGameMaster(Request $request, Player $player): Response
+    {
+        if (!$this->isCsrfTokenValid('game_master' . $player->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+        }
+
+        $enabled = !$player->isGameMaster();
+        $player->setGameMaster($enabled);
+        $this->em->flush();
+
+        $this->adminLogger->log('game_master', 'Player', $player->getId(), $player->getName(), ['enabled' => $enabled]);
+        $this->addFlash('success', sprintf(
+            'Statut Maitre du jeu %s pour "%s".',
+            $enabled ? 'accorde' : 'retire',
+            $player->getName(),
+        ));
+
+        return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+    }
+
     #[Route('/{id}/give-item', name: 'give_item', methods: ['POST'])]
     public function giveItem(Request $request, Player $player): Response
     {

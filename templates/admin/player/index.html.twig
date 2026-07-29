@@ -37,7 +37,12 @@
                         <tr class="hover:bg-gray-800 transition-colors">
                             <td class="px-4 py-3 text-gray-500">{{ player.id }}</td>
                             <td class="px-4 py-3">{% include 'admin/_sprite_preview.html.twig' with { sprite_key: 'player_default', size: 'sm' } %}</td>
-                            <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ player.name }}</td>
+                            <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">
+                                {{ player.name }}
+                                {% if player.gameMaster %}
+                                    <span class="ml-1 inline-flex px-1.5 py-0.5 text-[10px] rounded-full bg-purple-900 text-purple-200 font-semibold align-middle">MJ</span>
+                                {% endif %}
+                            </td>
                             <td class="px-4 py-3 text-gray-400">{{ player.user.username ?? player.user.email }}</td>
                             <td class="px-4 py-3">
                                 {% if player.currentZone %}

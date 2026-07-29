@@ -50,16 +50,31 @@ class ZoneTravelService
         if ($player->getCurrentZone() !== $connection->getFromZone()) {
             throw new ZoneTravelException('game.zone.travel.error.wrong_origin');
         }
-        if (!$connection->isEnabled() || !$connection->getToZone()->isEnabled()) {
-            throw new ZoneTravelException('game.zone.travel.error.unavailable');
-        }
-        if ($connection->requiresDiscovery() && !$this->visitedZoneRepository->hasVisited($player, $connection->getToZone())) {
-            throw new ZoneTravelException('game.zone.travel.error.not_discovered');
+
+        // MJ : les garde-fous de progression tombent. Une liaison desactivee ou
+        // une zone pas encore decouverte, c'est precisement ce qu'il doit
+        // pouvoir aller voir — un contenu en preparation, ou un joueur bloque
+        // au bout d'un chemin qu'il n'a lui-meme jamais emprunte. Les deux
+        // refus qui restent au-dessus valent pour tout le monde : on ne part pas
+        // deux fois, et on ne part pas d'un combat.
+        $isGameMaster = $player->isGameMaster();
+
+        if (!$isGameMaster) {
+            if (!$connection->isEnabled() || !$connection->getToZone()->isEnabled()) {
+                throw new ZoneTravelException('game.zone.travel.error.unavailable');
+            }
+            if ($connection->requiresDiscovery() && !$this->visitedZoneRepository->hasVisited($player, $connection->getToZone())) {
+                throw new ZoneTravelException('game.zone.travel.error.not_discovered');
+            }
         }
 
         // Duree reellement subie : la monture active raccourcit le voyage
         // (tache 130), sans jamais alterer la duree de reference du graphe.
-        $seconds = $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
+        // Pour un MJ, la duree est nulle : l'arrivee se regle dans la foulee,
+        // par le meme chemin que les liaisons instantanees.
+        $seconds = $isGameMaster
+            ? 0
+            : $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
 
         $startedAt = new \DateTimeImmutable();
         $arrivesAt = $startedAt->modify(sprintf('+%d seconds', $seconds));

@@ -37,6 +37,16 @@
                     <dd class="text-gray-200 text-sm">{{ player.user.roles|join(', ') }}</dd>
                 </div>
                 <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Maitre du jeu</dt>
+                    <dd>
+                        {% if player.gameMaster %}
+                            <span class="inline-flex px-2 py-1 text-xs rounded-full bg-purple-900 text-purple-200 font-semibold">MJ</span>
+                        {% else %}
+                            <span class="text-gray-500 text-sm">non</span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Gils</dt>
                     <dd class="text-yellow-400 text-sm font-medium">{{ player.gils|number_format(0, ',', ' ') }}</dd>
                 </div>
@@ -301,6 +311,18 @@
                     Changer
                 </button>
             </form>
+
+            {# Maitre du jeu — reserve aux administrateurs #}
+            {% if is_granted('ROLE_ADMIN') %}
+                <form method="post" action="{{ path('admin_player_game_master', {id: player.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('game_master' ~ player.id) }}">
+                    <button type="submit"
+                            class="w-full {{ player.gameMaster ? 'bg-gray-700 hover:bg-gray-600' : 'bg-fuchsia-800 hover:bg-fuchsia-700' }} text-ink-on px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            onclick="return confirm('{{ player.gameMaster ? 'Retirer le statut Maitre du jeu ?' : 'Accorder le statut Maitre du jeu ? Ce personnage aura energie et PV pleins en permanence, des voyages instantanes, et sera visible comme MJ par tous les joueurs.' }}');">
+                        {{ player.gameMaster ? 'Retirer le statut Maitre du jeu' : 'Faire Maitre du jeu' }}
+                    </button>
+                </form>
+            {% endif %}
         </div>
 
         {# Give item #}

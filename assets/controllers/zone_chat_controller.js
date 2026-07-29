@@ -97,10 +97,22 @@ export default class extends Controller {
         content.textContent = data.content ?? '';
 
         line.appendChild(time);
+        if (data.sender?.gameMaster) {
+            line.appendChild(this._gameMasterSeal());
+        }
         line.appendChild(name);
         line.appendChild(content);
         this.messagesTarget.appendChild(line);
         this._scrollToBottom();
+    }
+
+    /** Sceau MJ : meme marque que le partiel Twig `_game_master_seal`. */
+    _gameMasterSeal() {
+        const seal = document.createElement('span');
+        seal.className = 'ds-seal ds-seal-amethyst px-1.5 py-0 text-[10px] shrink-0';
+        seal.textContent = 'MJ';
+
+        return seal;
     }
 
     async _refreshPresence() {
@@ -121,13 +133,20 @@ export default class extends Controller {
             const row = document.createElement('div');
             row.className = 'flex items-center justify-between gap-2 py-0.5';
 
+            const nameCell = document.createElement('span');
+            nameCell.className = 'flex items-center gap-1 min-w-0';
+            if (p.gameMaster) {
+                nameCell.appendChild(this._gameMasterSeal());
+            }
+
             const nameLink = document.createElement('a');
             nameLink.className = 'text-xs text-gray-200 hover:text-white truncate';
             nameLink.textContent = p.name + (p.self ? ' •' : '');
             if (this.profileUrlValue) {
                 nameLink.href = this.profileUrlValue.replace('__ID__', p.id);
             }
-            row.appendChild(nameLink);
+            nameCell.appendChild(nameLink);
+            row.appendChild(nameCell);
 
             if (!p.self && this.inviteUrlValue) {
                 const invite = document.createElement('button');

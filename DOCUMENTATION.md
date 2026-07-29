@@ -844,6 +844,30 @@ ROLE_USER (base)
 | `/game/*` | `ROLE_USER` |
 | `/(profiler\|wdt\|css\|images\|js)/` | Aucun (firewall dev) |
 
+### Maître du jeu (MJ)
+
+Le drapeau `Player::isGameMaster` (colonne `player.is_game_master`) marque **un
+personnage**, pas un compte : un membre du staff joue ordinairement avec son
+personnage habituel et bascule sur son personnage MJ pour animer. Il n'ouvre
+aucun écran d'administration — cela reste l'affaire de `User::roles`.
+
+| Levier | Effet MJ | Où |
+|--------|----------|-----|
+| Énergie d'action | Plein refait à chaque lecture ; dépense nulle | `ActionEnergyManager::refresh()` / `spend()` |
+| Régénération PV | Plein refait dès la sortie de combat | `LifeRegenManager::refresh()` |
+| Voyage | Durée nulle, arrivée réglée dans la foulée ; découverte et liaisons désactivées ignorées | `ZoneTravelService::startTravel()` |
+| Écran de zone | Les liaisons désactivées apparaissent, marquées « hors ligne » | `ZoneConnectionRepository::findAllFrom()` |
+| Distinction visuelle | Sceau améthyste « MJ » à côté du nom (présence de zone, chat, profil, admin) | `templates/components/_game_master_seal.html.twig` |
+
+**Un MJ ne pèse pas sur le monde** : son énergie étant gratuite, `spend()`
+n'alimente ni `lastActivityAt` / `actionEnergySpentTotal` (charge mondiale,
+FOY-17) ni l'assiduité hebdomadaire (RET-04). Compter une activité qui ne coûte
+rien fausserait les deux mesures.
+
+**Attribution** : `POST /admin/players/{id}/game-master`, réservé à `ROLE_ADMIN`
+(le reste de l'écran joueur est ouvert à `ROLE_MODERATOR` — un modérateur
+sanctionne, il ne fabrique pas un MJ). Journalisé par `AdminLogger`.
+
 ### Comptes de test (fixtures)
 
 | Email | Username | Mot de passe | Rôles |

@@ -283,6 +283,15 @@ export default class extends Controller {
             div.appendChild(time);
         }
 
+        // Sceau MJ : meme marque que celle rendue par Twig, pour qu'un message
+        // arrive en direct se lise comme un message deja en place.
+        if (data.sender.gameMaster) {
+            const seal = document.createElement('span');
+            seal.className = 'ds-seal ds-seal-amethyst px-1.5 py-0 text-[10px] mr-0.5';
+            seal.textContent = 'MJ';
+            div.appendChild(seal);
+        }
+
         // Prestige title
         if (data.sender.prestigeTitle) {
             const title = document.createElement('span');

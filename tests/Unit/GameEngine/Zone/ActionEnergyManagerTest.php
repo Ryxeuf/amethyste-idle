@@ -211,4 +211,54 @@ class ActionEnergyManagerTest extends TestCase
         $this->assertNull($player->getLastActivityAt());
         $this->assertSame(0, $player->getActionEnergySpentTotal());
     }
+
+    /**
+     * MJ : le plein est refait a la lecture, sans attendre la regen.
+     */
+    public function testGameMasterIsAlwaysRefilledOnRefresh(): void
+    {
+        $player = $this->buildPlayer(3, 100, new \DateTimeImmutable('-1 second'));
+        $player->setGameMaster(true);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        $granted = $this->manager->refresh($player);
+
+        $this->assertSame(97, $granted);
+        $this->assertSame(100, $player->getActionEnergy());
+        $this->assertNull($this->manager->secondsUntilNextPoint($player));
+    }
+
+    /**
+     * MJ : la depense ne retire rien, et surtout ne laisse aucune trace dans
+     * les compteurs d'activite — son energie etant gratuite, l'y compter
+     * gonflerait la charge mondiale (FOY-17) et fabriquerait une assiduite
+     * (RET-04) que le monde n'a pas vecue.
+     */
+    public function testGameMasterSpendsNothingAndCountsForNothing(): void
+    {
+        $player = $this->buildPlayer(10, 100);
+        $player->setGameMaster(true);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        $this->manager->spend($player, 40, false);
+
+        $this->assertSame(100, $player->getActionEnergy());
+        $this->assertNull($player->getLastActivityAt());
+        $this->assertSame(0, $player->getActionEnergySpentTotal());
+    }
+
+    /**
+     * Un MJ a court d'energie n'est jamais refuse : le refresh le remplit avant
+     * que le controle de cout ne s'applique.
+     */
+    public function testGameMasterIsNeverRefusedForLackOfEnergy(): void
+    {
+        $player = $this->buildPlayer(0, 100);
+        $player->setGameMaster(true);
+        $this->parameterRepository->method('findOneBy')->willReturn(null);
+
+        $this->manager->spend($player, 100, false);
+
+        $this->assertSame(100, $player->getActionEnergy());
+    }
 }

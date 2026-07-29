@@ -1,0 +1,15 @@
+{#
+    Sceau « MJ » — la marque visible d'un maitre du jeu.
+
+    Un joueur doit pouvoir reconnaitre un MJ sans le demander : dans une liste
+    de presence, dans le chat, sur une fiche. Le sceau est donc toujours le
+    meme, partout, et se pose a cote du nom — jamais a la place.
+
+    Parametres :
+      - player  : le Player a marquer (le sceau ne sort que s'il est MJ)
+      - compact : version courte (chat, listes denses) — defaut false
+#}
+{% if player is not null and player.gameMaster %}
+    <span class="ds-seal ds-seal-amethyst{% if compact|default(false) %} px-1.5 py-0 text-[10px]{% endif %}"
+          title="{{ 'game.game_master.seal_title'|trans }}">{{ 'game.game_master.seal'|trans }}</span>
+{% endif %}

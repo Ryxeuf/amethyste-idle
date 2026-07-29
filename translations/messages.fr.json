@@ -1258,7 +1258,9 @@
         "travel_minutes": "%count% min de voyage",
         "travel_instant": "Passage immédiat",
         "travel_mounted": "%mount% : %base% min à pied",
-        "locked": "Liaison rapide : découverte de la zone requise"
+        "locked": "Liaison rapide : découverte de la zone requise",
+        "gm_disabled": "Liaison désactivée — visible parce que vous êtes maître du jeu",
+        "gm_disabled_short": "hors ligne"
       },
       "players": {
         "heading": "Joueurs présents",
@@ -1652,6 +1654,10 @@
     },
     "housing": {
       "furnishing_kit_hint": "Un nécessaire d'ameublement, monté par un charpentier, remplace le prix quel que soit le style."
+    },
+    "game_master": {
+      "seal": "MJ",
+      "seal_title": "Maître du jeu"
     }
   },
   "common": {

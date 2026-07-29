@@ -34,4 +34,23 @@ class ZoneConnectionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Toutes les liaisons sortantes, desactivees comprises.
+     *
+     * Reservee a la vue MJ : c'est justement le contenu en preparation, celui
+     * qu'aucun joueur ne voit, qu'un maitre du jeu doit pouvoir aller regarder.
+     *
+     * @return list<ZoneConnection>
+     */
+    public function findAllFrom(Zone $zone): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.toZone', 'target')
+            ->andWhere('c.fromZone = :zone')
+            ->setParameter('zone', $zone)
+            ->orderBy('c.travelSeconds', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
