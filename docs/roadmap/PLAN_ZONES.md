@@ -28,7 +28,7 @@ plans d'origine :
 | ZON-37 ✅ | La régénération d'un filon devient un débit (fix) | M | ∅ — **prérequis du recalibrage** |
 | ZON-38 ✅ | La récolte redevient observable (fix) | S | ∅ |
 | ZON-39 | La loi de nommage rejoint les libellés | S | ∅ (donnée pure) |
-| ZON-40 | Les signatures cessent d'être inertes | S | décision à trancher avant |
+| ZON-40 | Les signatures cessent d'être inertes | S | tranché : option (a), affleurements à poser |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -173,9 +173,12 @@ ZON-33 en continu
 > `ore-` **sans** signature : ils tirent comme la référence, ce qui contredit GAME_ZONES
 > §4. Les tests d'`AmethystSignatureTest` passent sur des zones synthétiques ; aucun test
 > ne croise la table des signatures avec la carte réelle des filons.
-- [ ] **Décision à trancher AVANT d'implémenter** — trois options : (a) poser un
-      affleurement d'améthyste dans les zones à signature inerte, (b) étendre le périmètre
-      de pureté à d'autres lignes de récolte, (c) réviser la promesse (GAME_ZONES §2.5)
+- [x] **Décision tranchée le 2026-07-29 : option (a)** — poser un **affleurement
+      d'améthyste** (`ore-amethyst-crystal`, faible capacité, dans l'esprit de la loi 8 :
+      l'améthyste affleure, elle ne se mine pas en filon riche) dans la Forêt, les Vallons
+      et le Marais, pour que leurs signatures — dont le **Pur nocturne du Marais** —
+      s'appliquent enfin. Options écartées : (b) étendre le périmètre de pureté,
+      (c) réviser la promesse
 - [ ] Livrable dans tous les cas : un test croisant **signatures × filons réels** — une
       signature sans filon dans le périmètre, ou l'inverse, fait rougir la CI
 - [ ] Livrable dans tous les cas : signatures pour les zones du Silence (Mer de Sel,

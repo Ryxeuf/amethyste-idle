@@ -200,9 +200,9 @@ s'y branche.
 > **Constat d'audit (2026-07-29)** : cette multiplication des seuils de sédiment n'est
 > **pas** implémentée — aucun appel à `WorldScaleService` dans
 > `src/GameEngine/Settlement/` — et la checklist de FOY-17b avait retiré l'item
-> « seuils de sédiment × W » sans corriger cette prose. L'arbitrage est à trancher
-> explicitement : soit une **dette de code à solder** (implémenter la multiplication),
-> soit un **renoncement à acter** (et corriger les mentions qui la promettent).
+> « seuils de sédiment × W » sans corriger cette prose. **Tranché le 2026-07-29 : la doc
+> a raison.** Dette de code à solder : `SettlementRankCalculator` doit lire des seuils
+> × `W`, à implémenter avec la pondération du grain (§24.0), qui touche la même chaîne.
 > Consigné dans [../BALANCE.md](../BALANCE.md) §24.3.
 
 ### FOY-08 — Quotas indexés sur la population active ✅ (M | ★★★ | CRITIQUE)
