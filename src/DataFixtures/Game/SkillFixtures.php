@@ -62,6 +62,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 $skill->setLife((int) $data['life']);
             }
 
+            // DOM-07 : le nœud pose et pas encore ouvert.
+            if (isset($data['dormant'])) {
+                $skill->setDormant((bool) $data['dormant']);
+            }
+
             $manager->persist($skill);
 
             $this->addReference($reference, $skill);
@@ -124,7 +129,63 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getAlchimistSkills(),
             $this->getJewellerSkills(),
             $this->getSharedSkills(),
+            $this->getDormantHybridAccords(),
         );
+    }
+
+    /**
+     * L'accord d'hybride reserve de chaque arbre de combat (DOM-07).
+     *
+     * GAME_DOMAINS § 8 : « chaque arbre de combat porte un nœud d'accord
+     * reserve, inactif au lancement, qui s'activera quand la fusion ouvrira.
+     * Poser le nœud maintenant coute une ligne de donnees et evite un refactor
+     * d'arbre le jour venu. »
+     *
+     * **Genere plutot qu'ecrit vingt-quatre fois**, et c'est la forme la plus
+     * fidele a l'intention : le nœud est *le meme* dans les vingt-quatre arbres,
+     * a l'element pres. Le copier-coller aurait laisse vingt-quatre occasions de
+     * diverger sur un nœud dont tout l'interet est d'etre uniforme.
+     *
+     * **L'hybride n'est pas nomme**, et c'est delibere. Le canon ne nomme que
+     * Magma et Inferno, pour le feu ; inventer les sept autres couples serait
+     * decider de la fusion avant qu'elle n'existe. Le nœud declare son element
+     * parent — la seule chose que la doctrine fixe — et l'enum `Element`
+     * n'accueillera ses composes qu'au jalon qui les rendra jouables.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function getDormantHybridAccords(): array
+    {
+        // Les vingt-quatre arbres de combat, avec l'element dont leur hybride
+        // sera issu. La recolte et l'artisanat n'en portent pas : la fusion est
+        // une affaire de materia, et les metiers n'en ont pas (regle 9).
+        $combatDomains = [
+            'pyromancy' => 'fire', 'berserker' => 'fire', 'artificer' => 'fire',
+            'hydromancer' => 'water', 'healer' => 'water', 'tidecaller' => 'water',
+            'stormcaller' => 'air', 'archer' => 'air', 'wanderer' => 'air',
+            'geomancer' => 'earth', 'defender' => 'earth', 'guardian' => 'earth',
+            'soldier' => 'metal', 'knight' => 'metal', 'engineer' => 'metal',
+            'hunter' => 'beast', 'tamer' => 'beast', 'druid' => 'beast',
+            'paladin' => 'light', 'priest' => 'light', 'inquisitor' => 'light',
+            'assassin' => 'dark', 'necromancer' => 'dark', 'warlock' => 'dark',
+        ];
+
+        $accords = [];
+        foreach ($combatDomains as $domain => $element) {
+            $accords[$domain . '_hybrid_accord'] = [
+                'slug' => str_replace('_', '-', $domain) . '-hybrid-accord',
+                'title' => 'Accord d\'hybride',
+                'description' => 'Un accord reserve, pose et pas encore ouvert : il attend que la fusion des elements existe.',
+                'actions' => [['action' => 'materia.hybrid', 'element' => $element]],
+                // Le cout le plus haut de l'echelle : quand il ouvrira, ce sera
+                // un sommet d'arbre, pas une case a cocher en passant.
+                'requiredPoints' => 200,
+                'domain' => $domain,
+                'dormant' => true,
+            ];
+        }
+
+        return $accords;
     }
 
     // =========================================================================

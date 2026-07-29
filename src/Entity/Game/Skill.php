@@ -70,6 +70,21 @@ class Skill
     #[ORM\Column(name: 'life', type: 'integer', options: ['default' => 0])]
     private $life = 0;
 
+    /**
+     * Le nœud est pose mais ne s'apprend pas encore (DOM-07).
+     *
+     * GAME_DOMAINS § 8 : chaque arbre de combat porte un **accord reserve**,
+     * inactif au lancement, qui s'ouvrira quand la fusion ouvrira. « Poser le
+     * nœud maintenant coute une ligne de donnees et evite un refactor d'arbre le
+     * jour venu. »
+     *
+     * Un nœud dormant est visible et refuse : le laisser invisible reviendrait a
+     * ne pas le poser, et le laisser apprenable donnerait un accord vers une
+     * materia qui n'existe pas.
+     */
+    #[ORM\Column(name: 'dormant', type: 'boolean', options: ['default' => false])]
+    private bool $dormant = false;
+
     #[ORM\ManyToMany(targetEntity: Skill::class, mappedBy: 'requirements')]
     private $achievements;
 
@@ -180,6 +195,18 @@ class Skill
      *
      * @return Collection|Skill[]
      */
+    public function isDormant(): bool
+    {
+        return $this->dormant;
+    }
+
+    public function setDormant(bool $dormant): self
+    {
+        $this->dormant = $dormant;
+
+        return $this;
+    }
+
     public function getRequirements()
     {
         return $this->requirements;

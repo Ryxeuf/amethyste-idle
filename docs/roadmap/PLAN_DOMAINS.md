@@ -11,7 +11,7 @@
 
 ## Vue d'ensemble
 
-**8 jalons** (**DOM-01** à **DOM-08**) en 3 pistes.
+**8 jalons** (**DOM-01** à **DOM-08**) en 3 pistes — **plan complet 8/8 au 2026-07-29**.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -21,8 +21,8 @@
 | DOM-04 ✅ | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
 | DOM-05 ✅ | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
 | DOM-06 ✅ | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
-| DOM-07 | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
-| DOM-08 | Tests du plan | S | ‖ |
+| DOM-07 ✅ | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
+| DOM-08 ✅ | Tests du plan | S | ‖ |
 
 ```
 Piste A — Le système   : DOM-01 → DOM-02 ; DOM-03 ‖ ; DOM-04 ‖
@@ -241,18 +241,40 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > coupe de la toile du tailleur : tisser et tailler sont le même geste élémentaire, et faire
 > payer le second faisait de l'entrée un couloir.
 
-### DOM-07 — Nœuds d'hybride dormants (S | ★ | BASSE)
+### DOM-07 — Nœuds d'hybride dormants ✅ (S | ★ | BASSE)
 > GAME_DOMAINS §8. Une ligne de données par arbre de combat, inactive au lancement.
-> Prérequis : ← DOM-01 (l'enum `Element` doit tolérer les composés)
-- [ ] Nœud « accord d'hybride » par arbre de combat, flag `dormant` (invisible ou grisé)
-- [ ] Tests : inactivable, aucun effet tant que la fusion n'est pas ouverte
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] `Skill::dormant` + migration + sixième motif de refus (`dormant`), traduit FR/EN
+- [x] **24 accords réservés**, un par arbre de combat, **générés** depuis une table
+      déclarative — le nœud est *le même* partout à l'élément près
+- [x] Tests : couverts par `DomainPlanContractTest`
 
-### DOM-08 — Tests du plan (S | ★★ | HAUTE)
+> **L'hybride n'est pas nommé, et c'est délibéré.** Le canon ne nomme que Magma et Inferno,
+> pour le feu ; inventer les sept autres couples serait décider de la fusion avant qu'elle
+> n'existe. Le nœud déclare son **élément parent** — la seule chose que la doctrine fixe — et
+> l'enum `Element` n'accueillera ses composés qu'au jalon qui les rendra jouables.
+>
+> **Visible et refusé, plutôt qu'invisible.** Le cacher reviendrait à ne pas le poser ; un
+> nœud qui apparaîtrait le jour d'une mise à jour se relirait comme un ajout, alors que c'est
+> une porte qu'on savait là. Le refus passe **avant** les autres : un joueur qui a les points
+> doit lire « pas encore ouvert », pas un motif qui lui ferait croire qu'il lui manque
+> quelque chose.
+
+### DOM-08 — Tests du plan ✅ (S | ★★ | HAUTE)
 > ‖ au fil des jalons.
-- [ ] Invariants : aucun sort actif par compétence (garde existante étendue), aucun
-      passif non borné après migration, le savoir jamais borné (acquérir un nœud n'est
-      jamais bloqué par le build), plancher de sertissage T1
-- [ ] Conformité des arbres neufs au gabarit (proportions vérifiées par test de données)
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Aucun sort actif par compétence — la garde de `CombatSkillResolver` étendue **côté
+      données**, là où un nœud pourrait la rouvrir
+- [x] Aucun passif non borné : tout nœud qui donne des statistiques appartient à un domaine
+- [x] Le savoir jamais borné : l'acquisition ne lit **jamais** l'équipement
+- [x] Plancher de sertissage T1 : les pièces d'entrée acceptent tout
+- [x] L'accord d'hybride posé partout, ouvert nulle part — et jamais sur un métier
+- [x] Tests : 6 (`DomainPlanContractTest`)
+
+> **Un test de contrat n'a pas le droit d'être vacuous.** La première écriture cherchait un
+> slug littéral d'accord dans les fixtures — ils sont générés, donc elle ne trouvait rien et
+> passait en vérifiant le vide. C'est exactement la famille de défaut que ce fichier existe
+> pour traquer : il lit désormais **le corps de la méthode qui porte la table**.
 
 ---
 
