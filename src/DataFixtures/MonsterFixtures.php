@@ -326,6 +326,81 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'elementalResistances' => ['beast' => 0.2, 'fire' => -0.3],
             ],
+            // =================================================================
+            // ZON-30 — la faune des Vallons d'Aubepine
+            // =================================================================
+            // Quatre especes, toutes T1, toutes **depecables** : les Vallons
+            // sont la zone-ecole du depeceur (GAME_ZONES § 2.2). La Foret ne
+            // pouvait pas l'etre — sa faune est trop disputee et trop melee de
+            // non-depecables, et c'est le defaut de la loi 5 que cette zone
+            // vient combler.
+            //
+            // **Aucune n'est nocturne**, et c'est acte : la nuit des Vallons est
+            // calme, en contraste voulu avec la Foret. On y entend la hulotte,
+            // on ne la combat pas.
+            'hedge_boar' => [
+                'name' => 'Sanglier des haies',
+                'name_translations' => ['en' => 'Hedge Boar'],
+                // La rencontre type : il charge et il encaisse. C'est le premier
+                // adversaire qui ne se laisse pas simplement frapper.
+                'life' => 26,
+                'hit' => 76,
+                'speed' => 7,
+                'attack' => 'sharp_blade',
+                'level' => 2,
+                'difficulty' => 1,
+                'aiPattern' => [
+                    'spell_chance' => 0,
+                ],
+                'elementalResistances' => ['beast' => 0.2, 'wood' => 0.1],
+            ],
+            'hawthorn_stag' => [
+                'name' => 'Cerf d\'aubépine',
+                'name_translations' => ['en' => 'Hawthorn Stag'],
+                // Fuyard : rapide, peu resistant. Il **se chasse**, il ne
+                // s'affronte pas — et c'est lui qui rend le cuir a taux plein.
+                'life' => 22,
+                'hit' => 70,
+                'speed' => 16,
+                'attack' => 'none_attack_1',
+                'level' => 3,
+                'difficulty' => 1,
+                'aiPattern' => [
+                    'spell_chance' => 0,
+                ],
+                'elementalResistances' => ['beast' => 0.3, 'wood' => 0.2],
+            ],
+            'orchard_vixen' => [
+                'name' => 'Renarde des vergers',
+                'name_translations' => ['en' => 'Orchard Vixen'],
+                // La premiere proie du debutant : vive, fragile, sans surprise.
+                'life' => 14,
+                'hit' => 80,
+                'speed' => 13,
+                'attack' => 'none_attack_1',
+                'level' => 1,
+                'difficulty' => 1,
+                'aiPattern' => [
+                    'spell_chance' => 0,
+                ],
+                'elementalResistances' => ['beast' => 0.2],
+            ],
+            'harvest_crow' => [
+                'name' => 'Corbeau moissonneur',
+                'name_translations' => ['en' => 'Harvest Crow'],
+                // En nuee au-dessus des carres de ble. Ses plumes attendent le
+                // charpentier (ECO-30) : elles empenneront les fleches.
+                'life' => 11,
+                'hit' => 84,
+                'speed' => 15,
+                'attack' => 'none_attack_1',
+                'level' => 1,
+                'difficulty' => 1,
+                'aiPattern' => [
+                    'spell_chance' => 0,
+                ],
+                'elementalResistances' => ['beast' => 0.1, 'wind' => 0.2],
+            ],
             'scorpion' => [
                 'name' => 'Scorpion',
                 'name_translations' => ['en' => 'Scorpion'],

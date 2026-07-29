@@ -47,3 +47,14 @@ App\Entity\Game\Item:
     slug: 'fish-baby-kraken'
     price: 150
     domain: '@fisherman'
+  # ZON-30 — la peche d'apprentissage des Vallons, entre la truite de la Foret
+  # (5) et la carpe du Marais. Elle ne remplace ni l'une ni l'autre : elle donne
+  # au debutant un plan d'eau **calme** ou apprendre le geste (GAME_ZONES § 2.2).
+  fish_perch (extends item):
+    id: 94
+    name: 'Perche du gué'
+    description: 'Une perche rayée pêchée au gué des Vallons, chair ferme et arêtes franches.'
+    type: 'resource'
+    slug: 'fish-perch'
+    price: 7
+    domain: '@fisherman'

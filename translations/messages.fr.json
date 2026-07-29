@@ -1556,7 +1556,8 @@
         "stone": "Pierre & gemme",
         "water": "Eau & sel",
         "wood": "Bois & fibre",
-        "amethyst": "Améthyste"
+        "amethyst": "Améthyste",
+        "farm": "Champs & fibres"
       },
       "work": {
         "need": {

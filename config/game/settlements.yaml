@@ -174,6 +174,13 @@ workshop:
         water: { alchimiste: 3 }
         wood: {}
         amethyst: {}
+        # ZON-30 — la ligne agricole des Vallons. Vide comme le bois et
+        # l'amethyste : le ble et le lin n'ont pas encore d'etabli en face
+        # (cuisinier ECO-29, tailleur ECO-31). La declarer maintenant n'est pas
+        # une anticipation gratuite — une zone qui porte un foyer **doit** nommer
+        # sa ligne, sans quoi elle n'accorderait que son rang et rien ne le
+        # dirait.
+        farm: {}
 
     # Plafond du cumul. Ce n'est pas un detail de calibrage : sans lui, une
     # Metropole batie sur sa propre ligne accorderait 10 points, soit davantage
@@ -190,6 +197,7 @@ workshop:
         marais-brumeux: water
         crete-de-ventombre: stone
         dunes-d-ambre: leather
+        vallons-d-aubepine: farm
 
 # La Crue (FOY-08). Decision B du socle de monde : sans quota, tout le monde
 # monte tout et il n'y a pas d'enjeu de territoire.
@@ -258,8 +266,11 @@ seed:
     marais-brumeux: { rank: camp, stock: 400 }
     crete-de-ventombre: { rank: camp, stock: 400 }
     dunes-d-ambre: { rank: camp, stock: 300 }
-    # Les Vallons (ZON-30) demarreront en Ruine : zone neuve, tout est a batir.
-    # C'est le premier chantier collectif offert aux joueurs.
+    # Les Vallons (ZON-30) naissent en **Ruine**, stock nul : zone neuve, tout
+    # est a batir. C'est le premier chantier collectif offert aux joueurs — le
+    # Vieux Moulin est une ruine dans le lore parce qu'il en est une dans les
+    # donnees, et le foyer que les joueurs y feront lever sera le leur.
+    vallons-d-aubepine: { rank: ruin, stock: 0 }
 
 # Zones sans foyer, et pourquoi. Une zone absente de `seed` mais absente d'ici
 # serait une omission ; l'ecrire est ce qui distingue les deux.

@@ -557,6 +557,29 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'ancient_root', 'item' => 'materia_stone_throw', 'probability' => 15],
             // Drop garanti du boss
             ['monster' => 'ancient_root', 'item' => 'guardian_thorn_staff', 'probability' => 10, 'guaranteed' => true],
+
+            // --- ZON-30 : la faune des Vallons, la zone-ecole du depeceur ---
+            //
+            // Le **cuir a taux plein** est ici et nulle part ailleurs a ce
+            // palier : c'est ce qui fait des Vallons la source du `leather-raw`
+            // du debutant. La Foret en donne aussi, mais melee de bestiaire non
+            // depecable et disputee par toute la population du serveur.
+            ['monster' => 'hedge_boar', 'item' => 'leather_raw', 'probability' => 85],
+            ['monster' => 'hedge_boar', 'item' => 'meat_game', 'probability' => 70],
+            ['monster' => 'hedge_boar', 'item' => 'mushroom', 'probability' => 20],
+
+            // Le cerf est le meilleur cuir de la zone — et il fuit. Chasser
+            // rapporte plus qu'affronter, ce qui est exactement la lecon que la
+            // zone-ecole doit transmettre.
+            ['monster' => 'hawthorn_stag', 'item' => 'leather_raw', 'probability' => 95],
+            ['monster' => 'hawthorn_stag', 'item' => 'meat_game', 'probability' => 60],
+            ['monster' => 'hawthorn_stag', 'item' => 'leather_thick', 'probability' => 20],
+
+            ['monster' => 'orchard_vixen', 'item' => 'leather_raw', 'probability' => 60],
+            ['monster' => 'orchard_vixen', 'item' => 'meat_game', 'probability' => 25],
+
+            ['monster' => 'harvest_crow', 'item' => 'feather_raw', 'probability' => 80],
+            ['monster' => 'harvest_crow', 'item' => 'plant_wheat', 'probability' => 30],
         ];
 
         foreach ($monsterItems as $data) {

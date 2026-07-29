@@ -1350,6 +1350,68 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Rare,
             ],
             // Plantes
+            //
+            // ZON-30 — les deux cultures des Vallons d'Aubepine. Elles ne sont
+            // pas des herbes : ce sont les premieres matieres **agricoles** du
+            // monde, et elles ouvrent deux lignes que rien n'alimentait.
+            'plant_wheat' => [
+                'name' => 'Blé',
+                'name_translations' => ['en' => 'Wheat'],
+                'description' => 'Une gerbe de blé des carrés d\'Aubépine. Le grenier du monde tient dans une poignée.',
+                'type' => 'plant',
+                'slug' => 'plant-wheat',
+                // T0, au niveau du cuir brut : c'est la matiere la plus commune
+                // du monde, et son prix doit le dire.
+                'price' => 4,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // L'**exclusivite** des Vallons (GAME_ZONES § 2.2, loi 1) : le lin
+            // est la fibre du tanneur et du textile, et aucune autre zone n'en
+            // produira. C'est ce qui ramenera un veteran dans une zone d'Acte I.
+            'plant_flax' => [
+                'name' => 'Lin',
+                'name_translations' => ['en' => 'Flax'],
+                'description' => 'Une brassée de lin des linières du gué. Filé, il devient fil ; roui, il devient toile.',
+                'type' => 'plant',
+                'slug' => 'plant-flax',
+                'price' => 9,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            // Matieres animales des Vallons (ZON-30). Elles n'ont pas encore de
+            // consommateur : la viande attend le cuisinier (ECO-29), les plumes
+            // le charpentier (ECO-30). Les poser **maintenant** est deliberé —
+            // la loi « chaque item de recette a une source » se tient plus
+            // facilement quand la source precede la recette que l'inverse.
+            'meat_game' => [
+                'name' => 'Viande de gibier',
+                'name_translations' => ['en' => 'Game Meat'],
+                'description' => 'Une pièce de gibier fraîchement levée, à cuisiner sans attendre.',
+                'type' => 'resource',
+                'slug' => 'meat-game',
+                'price' => 6,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
+            'feather_raw' => [
+                'name' => 'Plumes de corbeau',
+                'name_translations' => ['en' => 'Crow Feathers'],
+                'description' => 'Une poignée de plumes noires, raides comme il faut pour empenner.',
+                'type' => 'resource',
+                'slug' => 'feather-raw',
+                'price' => 3,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'effect' => '{"action":"crafting_ingredient"}',
+            ],
             'plant_lavender' => [
                 'name' => 'Lavande',
                 'name_translations' => ['en' => 'Lavender'],
