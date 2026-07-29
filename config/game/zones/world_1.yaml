@@ -399,6 +399,12 @@ zones:
             # ZON-34 — l'exclusivite du Marais : un bois que l'eau morte a
             # noirci. Il ne pourrit plus, il a deja fini de le faire. Profil T3.
             - { slug: souches-tourbees, item: wood-peat, profession: woodcutting, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2, requires_skill: lumber-peat-xs }
+            # ZON-35 — le poisson-lune se reveille. Il etait livre, cuisine par
+            # une recette de palier 4 (ECO-29) et **peche nulle part** : le seul
+            # poisson du monde dont la source manquait. Profil T4, et gate sur un
+            # savoir (ECO-24c) : c'est la prise rare du Marais, celle qu'on ne
+            # trouve pas en passant.
+            - { slug: poissons-lune, item: fish-moonfish, profession: fishing, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 1, requires_skill: fisher-moonfish }
 
     crete-de-ventombre:
         name: 'Crête de Ventombre'
@@ -556,6 +562,13 @@ zones:
             - { monster: dune_wraith, count: 2, nocturnal: true }
         gather:
             - { slug: gemme-de-sel, item: ore-ruby, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
+            # ZON-35 — le kraken juvenile se reveille, lui aussi. Le plan des
+            # zones prevoyait de le **purger** ; ECO-29 lui a donne entre-temps le
+            # festin, la recette de plus haut palier du cuisinier. Supprimer
+            # l'item aurait detruit une recette livree : il recoit donc une
+            # source plutot qu'une pierre tombale. Profil T4, dans la seule eau
+            # profonde du monde.
+            - { slug: bancs-de-krakens, item: fish-baby-kraken, profession: fishing, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 1, requires_skill: fisher-kraken }
 
     cite-ensevelie:
         name: 'Cite Ensevelie'

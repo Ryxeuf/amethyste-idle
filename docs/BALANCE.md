@@ -1052,6 +1052,9 @@ PNJ), a revele que chaque metier a un bout de chaine casse :
   `crafted-cloth`, `leather-skin-1/2` (doublons ECO-02). A purger ou a reveiller par
   les jalons concernes. **`crafted-cloth` est reveille** par ECO-31 : il est desormais
   produit par le tailleur et consomme par onze recettes, dont une du tanneur.
+  **Solde le 2026-07-29** par ZON-35 : les 5 plantes sont purgees, les 2 poissons
+  recoivent un filon de palier 4 (§ 23.13). Plus aucune matiere recoltable n'est sans
+  debouche, et plus aucune plante ou poisson declare n'est sans source.
 
 ---
 
@@ -1532,3 +1535,40 @@ prime sur l'interdependance.
 **Le lin des Vallons alimente deux metiers**, la toile du tailleur et le fil qui coud les
 jambieres du tanneur. C'est le seul intrant du monde dans ce cas, et c'est deliberé : une
 exclusivite de zone dont un seul metier dependrait s'eteindrait avec lui.
+
+### 23.13 Les recoltes harmonisees (ZON-35)
+
+Le compte par domaine apres le jalon, contre la cible de la loi 9 (GAME_ZONES § 3 ter) :
+
+| Domaine | Matieres | Cible | Ecart |
+|---|---:|---:|---|
+| Mineur | 14 | 10–13 | gabarit de reference, inchange |
+| Herboriste | 20 | 8–12 | **assume** — voir ci-dessous |
+| Pecheur | 7 | 5–6 | +2 volontaires : les deux orphelins de palier 4 |
+| Bucheron | 4 | 4–6 | dans la cible |
+
+**L'ecart de l'herboriste.** La cible de 8–12 a ete ecrite quand l'herboriste ne nourrissait qu'un
+metier. Le cuisinier (ECO-29) en a fait deux, et la loi dit elle-meme que le compte suit les
+artisanats nourris. Descendre a 12 aurait demande de supprimer huit plantes qui ont **toutes un
+filon**, dont trois — givrecoiffe, spores fantomes, fruit du vide — que la loi 10 du meme document
+cite nommement comme exemples canoniques d'affinite elementaire. Le vrai sujet de l'audit n'etait
+pas le nombre : c'etait que douze des 22 ne servaient a rien. Il n'en reste aucune.
+
+**Les sept prix recalcules**, apres ajout d'un intrant a des recettes existantes. Sans cette passe,
+sept recettes seraient devenues destructrices de valeur — le defaut exact qu'ECO-27 a corrige, et
+la meme regle le repare : `prix = cout + 10 x niveau`.
+
+| Recette | Niv. | Nouveau cout | Ancien prix | Nouveau prix |
+|---|---:|---:|---:|---:|
+| Fiole de poison | 3 | 193 | 170 | 220 |
+| Elixir de force | 3 | 270 | 240 | 300 |
+| Elixir de defense | 3 | 152 | 120 | 180 |
+| Potion de soin majeure | 4 | 300 | 220 | 340 |
+| Elixir de vitalite | 5 | 320 | 300 | 370 |
+| Poisson-lune en ecailles | 4 | 110 | 100 | 150 |
+| Festin de kraken | 6 | 290 | 250 | 350 |
+
+**Les deux prises de palier 4** suivent le profil T4 du recalibrage (§ 22.3) : capacite 22, repousse
+64 800 s, soit 1,2 unite/heure et ~1,5 recolteur regulier soutenu. C'est le debit le plus faible du
+monde, et c'est voulu : ce sont les deux matieres qui ouvrent les deux recettes de plus haut palier
+du cuisinier.
