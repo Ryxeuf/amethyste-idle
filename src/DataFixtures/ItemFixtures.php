@@ -99,6 +99,13 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 $item->setMateriaSlots($data['materiaSlots']);
             }
 
+            // DOM-03 : ce que la piece accepte. Absent = libre, et c'est ce qui
+            // rend le typage additif : une piece non typee se comporte
+            // exactement comme avant le jalon.
+            if (isset($data['materiaSlotType'])) {
+                $item->setMateriaSlotType($data['materiaSlotType']);
+            }
+
             if (isset($data['bindType'])) {
                 $item->setBindType(BindType::from($data['bindType']));
             } elseif (isset($data['boundToPlayer'])) {

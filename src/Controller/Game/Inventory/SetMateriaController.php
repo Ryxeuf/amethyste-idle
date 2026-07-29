@@ -6,6 +6,7 @@ use App\Entity\App\Slot;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\ItemNotMateriaException;
 use App\Exception\ItemRequirementsException;
+use App\Exception\MateriaSlotTypeException;
 use App\GameEngine\Gear\MateriaGearSetter;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
@@ -95,6 +96,14 @@ class SetMateriaController extends AbstractController
             $this->addFlash('error', 'L\'équipement n\'est plus porté.');
         } catch (ItemNotMateriaException) {
             $this->addFlash('error', 'Cet objet n\'est pas une materia.');
+        } catch (MateriaSlotTypeException) {
+            // DOM-03 : dire **quoi**, jamais « reessayez ». Le refus est
+            // definitif pour ce couple piece/materia, et le joueur doit savoir
+            // que la piece se porte quand meme.
+            $this->addFlash('error', sprintf(
+                'Cet emplacement n\'accepte que les materia de %s. La pièce reste portable.',
+                mb_strtolower($slot->getItem()->getGenericItem()->getMateriaSlotType()->label()),
+            ));
         } catch (\Throwable) {
             $this->addFlash('error', 'Impossible d\'équiper cette materia. Réessayez.');
         }

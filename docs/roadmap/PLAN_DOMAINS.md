@@ -17,7 +17,7 @@
 |------|----------|--------|-------------|
 | DOM-01 ✅ | Passifs typés : élément × registre (refactor du format) | M | ∅ |
 | DOM-02 ✅ | Activation par build (domaines actifs = sources portées) | M | ← DOM-01 |
-| DOM-03 | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
+| DOM-03 ✅ | Emplacements typés sur l'équipement (sort/technique/libre) | M | ∅ |
 | DOM-04 | Spécialisation par arbre d'artisanat (migration) | S | ∅ |
 | DOM-05 | Arbre du bûcheron | S | ← ZON-34 (le domaine) |
 | DOM-06 | Arbres cuisinier, charpentier, tailleur | M → 1/arbre | ← ECO-29/30/31 (les domaines) |
@@ -107,18 +107,41 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > en rangeant une arme, sans que rien ne l'explique. C'est l'écran des arbres qui porte la
 > distinction, et il la porte en toutes lettres.
 
-### DOM-03 — Emplacements typés sur l'équipement (M | ★★★ | HAUTE)
+### DOM-03 — Emplacements typés sur l'équipement ✅ (M | ★★★ | HAUTE)
 > GAME_DOMAINS §3. La robe porte des emplacements de sort, la plaque des emplacements
 > de technique. Donnée, pas moteur.
-> Prérequis : ∅ (‖ DOM-01)
-- [ ] Type d'emplacement par pièce (`sort` / `technique` / `libre`) en fixtures
-- [ ] Sertissage contrôlé par le type ; **garde-fou testé : les kits T1 portent au moins
-      un emplacement libre** (le plancher jour 1)
-- [ ] Jamais d'interdit de port : aucune pièce ne gate par « classe » — seuls les
-      prérequis de compétence existants s'appliquent
-- [ ] Passe sur l'existant : typage des 121 pièces livrées (robes absentes — la ligne
-      tissu arrive avec ECO-31, qui pose ses emplacements de sort dès la création)
-- [ ] Tests : sertissage refusé/accepté par type, plancher T1, aucun gate de port
+> **Livré le 2026-07-29.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] `MateriaSlotType` (sort / technique / libre) + `Item::materiaSlotType` — **un type
+      par pièce**, pas un par emplacement : les emplacements n'ont pas d'indice, et
+      panacher aurait fait dépendre le sertissage de l'ordre des identifiants en base
+- [x] Sertissage contrôlé dans `MateriaGearSetter`, avec une exception dédiée — et les
+      **deux** chemins (écran et API v1) disent enfin *quoi*
+- [x] Le genre d'une matéria est **dérivé** : celle qui accorde un sort est une matéria de
+      sort. Le déclarer aurait permis de la contredire
+- [x] La ligne tissu (ECO-31) porte ses emplacements de sort à partir du palier 2
+- [x] Tests : 8 (`MateriaSlotTypeTest`) + 4 (`MateriaSlotTypingTest`)
+
+> **Le `null` vaut « libre », et c'est ce qui rend le typage additif.** Les 121 pièces
+> livrées se comportent exactement comme avant tant que personne ne les type — et le
+> plancher jour 1 tient sans qu'on l'écrive pièce par pièce.
+>
+> **Le palier 1 du tissu reste libre, délibérément.** Le typer ne casserait rien
+> *aujourd'hui* — toutes les matéria livrées sont des matéria de sort. C'est justement pour
+> cela que le test existe : le jour où une matéria de technique arrivera, un débutant en
+> robe de lin découvrirait qu'il ne peut pas la sertir, et rien n'aurait signalé la
+> régression.
+>
+> **Aucune pièce n'est typée `technique`, et un test l'interdit.** Aucune matéria de
+> technique n'existe : un tel emplacement occuperait une case du build en refusant tout ce
+> qu'on peut lui présenter. Un mur sans porte est pire qu'un emplacement libre.
+>
+> **Le refus porte sur le sertissage, jamais sur le port** — c'est le premier garde-fou du
+> §3, et le message le dit en toutes lettres (« la pièce reste portable »). Défaut trouvé au
+> passage : l'API v1 n'avait aucun filet, et un refus métier y serait sorti en 500 muet.
+>
+> **Écarté : `materiaSlotConfig`.** Le champ JSON dormant aurait permis un type par
+> emplacement, au prix d'un ordre de slots qui n'existe pas. Le canon parle de pièces, pas
+> d'emplacements individuels.
 
 ### DOM-04 — Spécialisation par arbre (S | ★★ | HAUTE)
 > GAME_DOMAINS §6. `Player.craftSpecialization` (singulier) → une spécialisation par

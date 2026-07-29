@@ -659,6 +659,11 @@ App\Entity\Game\Item:
   # --- Palier 2 : lin fin (uncommon, niveau 8) ---
   # Le pendant du cuir renforce. La laniere du tanneur entre ici : aucun metier
   # n'est autosuffisant (ECO-14).
+  #
+  # DOM-03 : c'est ici que le typage commence. Le palier 1 reste **libre** — le
+  # plancher jour 1 veut qu'une premiere materia se sertisse quelle que soit la
+  # tenue, et la robe de lin est la tenue du debutant lanceur de sorts. A partir
+  # du lin fin, le tissu assume ce qu'il est : le support des sorts.
   fine_linen_hood (extends item):
     name: "Capuche de lin fin"
     description: "Un lin battu et lisse jusqu'a la soie, borde d'une laniere de cuir souple"
@@ -671,6 +676,7 @@ App\Entity\Game\Item:
     protection: 2
     effect: '{"action":"magic_boost","amount":9}'
     materia_slots: 1
+    materia_slot_type: 'spell'
     level: 8
   fine_linen_robe (extends item):
     name: "Robe de lin fin"
@@ -684,6 +690,7 @@ App\Entity\Game\Item:
     protection: 3
     effect: '{"action":"magic_boost","amount":16}'
     materia_slots: 1
+    materia_slot_type: 'spell'
     level: 8
     space: 2
   fine_linen_gloves (extends item):
@@ -698,6 +705,7 @@ App\Entity\Game\Item:
     protection: 2
     effect: '{"action":"magic_boost","amount":9}'
     materia_slots: 1
+    materia_slot_type: 'spell'
     level: 8
 
   # --- Palier 3 : soie d'ombre (rare, niveau 18) ---
@@ -716,6 +724,7 @@ App\Entity\Game\Item:
     protection: 3
     effect: '{"action":"magic_boost","amount":20}'
     materia_slots: 2
+    materia_slot_type: 'spell'
     level: 18
   shadowsilk_robe (extends item):
     name: "Robe de soie d'ombre"
@@ -730,6 +739,7 @@ App\Entity\Game\Item:
     protection: 5
     effect: '{"action":"magic_boost","amount":34}'
     materia_slots: 2
+    materia_slot_type: 'spell'
     level: 18
     space: 2
 
@@ -748,6 +758,7 @@ App\Entity\Game\Item:
     protection: 5
     effect: '{"action":"magic_boost","amount":32}'
     materia_slots: 2
+    materia_slot_type: 'spell'
     level: 28
   archivist_robe (extends item):
     name: "Robe de l'archiviste"
@@ -761,5 +772,6 @@ App\Entity\Game\Item:
     protection: 7
     effect: '{"action":"magic_boost","amount":48}'
     materia_slots: 3
+    materia_slot_type: 'spell'
     level: 28
     space: 3
