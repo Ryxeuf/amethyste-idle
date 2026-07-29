@@ -43,6 +43,35 @@ coût (spécialisation, patronage) — jamais des verrous de savoir. Interdire u
 serait interdire un geste : contradiction frontale avec le principe fondateur, et retour
 des « classes » par la fenêtre.
 
+> **Précision (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §6)** — *le champ est
+> infini, l'entrée est un acte.* Cette section dit ce qui est **ouvert** à un personnage, pas
+> ce qu'il a **appris** : elle interdit qu'un geste soit **fermé**, elle n'affirme pas qu'il
+> est **déjà acquis**. Personne ne sait tenir une pioche, forger ou lancer un sort sans
+> l'avoir appris — tout le monde sait seulement **que ça existe**, et c'est le rôle du
+> catalogue public (les 32 arbres, leur case élément × registre, ce qu'on y apprend, où
+> trouver leur parchemin ; jamais les nœuds ni les valeurs).
+>
+> L'accès à un arbre passe donc par un **parchemin de registre** — acheté à un PNJ de métier
+> ou reçu en récompense. Il n'exclut rien : c'est l'acte d'apprendre lui-même, et on peut les
+> accumuler tous les 32 et les mener de front. Quatre conditions non négociables le
+> garantissent : (1) tout parchemin est accessible à tout le monde, sans prérequis de peuple,
+> de faction, de progression ni de choix antérieur ; (2) en posséder un n'en interdit aucun
+> autre ; (3) aucun n'est unique ni limité — un PNJ le vend toujours à prix fixe ; (4) aucun
+> parchemin payant sur le chemin critique de l'acte I. Le borneur réel de la progression reste
+> **l'énergie**, comme ce tableau le dit déjà.
+>
+> **Portée** : le parchemin ouvre un **métier ou une famille d'arme**, jamais un verbe
+> élémentaire du jeu — marcher, voyager, explorer, parler, ramasser et se battre **à mains
+> nues** restent libres pour tous, sans condition. Sur les armes, le garde-fou « jamais
+> d'interdit de port » (§3) réserve déjà le cas : *seul un prérequis de compétence peut gater
+> une pièce*. Le parchemin d'arme est ce prérequis.
+>
+> **Les arbres retrouvés** (GAME_ONBOARDING §6.4, jalon DOM-10) sont l'exception assumée : des
+> arbres **hors catalogue**, ouverts par une rencontre que l'accomplissement déclenche. Ils
+> obéissent aux deux lois du Répertoire (GAME_WORLD §12.3) — **latéral jamais vertical**,
+> **cumulatif jamais manqué** — plus deux propres : jamais nécessaires, et leur parchemin est
+> **lié** (ce qui circule entre joueurs est l'information, pas l'objet).
+
 ## 2. La double borne des passifs *(validée)*
 
 Tout passif de combat est borné **deux fois** : par l'**élément** de son domaine et par
@@ -85,9 +114,23 @@ Le build (préset livré) n'est pas un menu : c'est **ce qu'on porte**.
 
 **Trois garde-fous** :
 
-1. **Jamais d'interdit de port** (pas de classes) : tout le monde peut tout porter — la
-   limitation vient des emplacements et des bonus. Seul un prérequis de *compétence* peut
-   gater une pièce (règle 9, déjà en place).
+1. **Jamais d'interdit de port** (pas de classes) : tout le monde peut **apprendre** à tout
+   porter — la limitation vient des emplacements et des bonus. Seul un prérequis de
+   *compétence* peut gater une pièce (règle 9, déjà en place).
+   > **Amendement (2026-07-29, [GAME_ONBOARDING.md](GAME_ONBOARDING.md) §6.0 bis)** — ce
+   > prérequis de compétence n'est plus l'exception mais **la règle générale** : armes,
+   > armures et outils se portent après avoir appris à les porter. Le garde-fou tient parce
+   > que ces nœuds sont des **points d'entrée gratuits** (0 point de domaine) des arbres, et
+   > que tout arbre s'ouvre avec un parchemin accessible à tous : *le mage en plaque existe
+   > toujours*, il a seulement dû l'apprendre. On ne lit jamais un interdit — on lit **ce
+   > qu'il manque et où l'apprendre**. Le port s'apprend **par famille d'arme, ligne d'armure
+   > ou outil de métier**, sur une **échelle** : échelon 1 gratuit (le port de base, palier
+   > T1), échelons suivants **paliés et chaînés** pour les pièces évoluées — *on ne se sert
+   > pas d'un arc à poulie sans maîtriser l'arc, ni du marteau de précision sans avoir usé le
+   > marteau ordinaire*. Les compétences d'arme déjà en base (`*_weapon_t2` → `t3`) **sont**
+   > cette échelle et restent inchangées ; il manque l'échelon 1 et les échelles d'armures et
+   > d'outils. Chaque échelon est **partagé** par tous les arbres qui l'enseignent : plusieurs
+   > chemins mènent à la hache de guerre.
 2. **Le plancher jour 1** : les kits T1 portent au moins un emplacement **libre** — la
    première matéria se sertit toujours, quelle que soit la tenue (GAME_WORLD §2.1).
 3. **La progression du support reste actée** : plus d'emplacements, de meilleurs bonus,
