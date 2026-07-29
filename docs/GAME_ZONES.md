@@ -75,6 +75,13 @@ Rappel opposable — chaque dossier de zone ci-dessous est écrit contre ces hui
 > Dunes → Cité ensevelie est **directe** (la piste des caravanes d'autrefois). Quand
 > l'Extension 1 ouvre, la Mer de Sel s'intercale et rallonge la route — le monde
 > s'agrandit sans jamais rétrécir.
+>
+> **Écart constaté et assumé (ZON-33, 2026-07-29).** Le monde livré a pris l'autre chemin :
+> la Mer de Sel est déjà là (tâche 128b, Acte 4) et la route du sud passe par elle. Ajouter
+> aujourd'hui la liaison directe **raccourcirait** la route — exactement ce que la dernière
+> phrase de cette note interdit. L'invariant qui compte est donc verrouillé sous sa forme
+> conditionnelle : la Cité reste atteignable depuis les Dunes, et *si* la Mer de Sel quittait
+> le graphe, la piste directe devrait exister (`ZoneLawsTest`).
 
 | Zone | Région | Palier | Foyer | Ligne de production | Exclusivité (loi 1) |
 |---|---|---|---|---|---|
@@ -378,7 +385,16 @@ l'égalité brute : **le compte suit les artisanats nourris**.
 | Pêcheur | cuisine | 5–6 | **7** — le poisson-lune **et** le kraken juvénile se pêchent enfin, tous deux en T4 |
 | Bûcheron | charpenterie + housing | 4–6 | **4** — le hêtre couvre T0–T1 (ZON-34), débouché livré par ECO-30 |
 
-Jalon d'exécution : **ZON-35** ✅ (2026-07-29).
+Jalon d'exécution : **ZON-35** ✅ (2026-07-29), complété par **ZON-33** ✅ (2026-07-29).
+
+> **Deux plantes de plus, trouvées par la loi transverse (ZON-33).** Le **champignon
+> vénéneux** ne s'achetait qu'à l'échoppe de Morwen, et la **racine de marais** n'existait
+> nulle part — alors que la quête d'Acte II qui les demande dit « *récoltez* des champignons
+> vénéneux et des racines de marais ». Toutes deux avaient échappé à la loi 9 parce que leurs
+> slugs ne portent pas le préfixe `plant-` : une faille de nommage, pas de conception. Elles
+> reçoivent un filon T1 au Marais, et la racine son débouché dans la fiole de poison. Le
+> compte de l'herboriste passe donc de 20 à 22 — l'écart au-dessus reste le même, et pour la
+> même raison.
 
 > **L'écart sur l'herboriste, et pourquoi il est assumé.** La cible de 8–12 a été écrite quand
 > l'herboriste ne nourrissait qu'un métier. Le cuisinier (ECO-29) en a fait deux, et la loi

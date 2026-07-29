@@ -405,6 +405,15 @@ zones:
             # savoir (ECO-24c) : c'est la prise rare du Marais, celle qu'on ne
             # trouve pas en passant.
             - { slug: poissons-lune, item: fish-moonfish, profession: fishing, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 1, requires_skill: fisher-moonfish }
+            # ZON-33 — les deux plantes que la loi transverse a trouvees. Le
+            # champignon veneneux et la racine de marais sont demandes par une
+            # quete d'Acte II dont le texte dit « **recoltez** des champignons
+            # veneneux et des racines de marais » : le premier ne s'achetait qu'a
+            # l'echoppe de Morwen, la seconde n'existait nulle part. Deux zones
+            # d'ombre que ZON-35 avait manquees, parce que leurs slugs ne portent
+            # pas le prefixe `plant-` sur lequel la loi 9 s'appuyait.
+            - { slug: champignons-veneneux, item: poisonous-mushroom, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            - { slug: racines-de-marais, item: swamp-root, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
 
     crete-de-ventombre:
         name: 'Crête de Ventombre'

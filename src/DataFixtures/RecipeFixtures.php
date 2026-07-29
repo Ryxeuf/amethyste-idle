@@ -726,6 +726,12 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     // que rien ne les consomme. Elles entrent la ou leur biome les
                     // destinait — la fiole de poison.
                     ['slug' => 'plant-ghostshroom', 'quantity' => 1],
+                    // ZON-33 : la racine de marais. Une quete d'Acte II en
+                    // demandait trois et aucune recette n'en voulait — l'inverse
+                    // exact du defaut de ZON-35, et le meme silence. La fiole est
+                    // la recette du Marais ; une racine gorgee d'eau stagnante y
+                    // a sa place plus qu'ailleurs.
+                    ['slug' => 'swamp-root', 'quantity' => 1],
                 ],
                 'result_ref' => 'poison_vial',
                 'crafting_time' => 7,
