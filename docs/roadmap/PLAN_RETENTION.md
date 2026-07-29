@@ -14,6 +14,8 @@
 
 **7 jalons** (**RET-01** à **RET-07**), volontairement petits — la plupart s'appuient sur des
 systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foyers, pureté).
+**Vague 4 ouverte le 2026-07-29** (RET-08→10) : le tableau du lundi — la surface UI des six
+briques, cadrée par [../GAME_DASHBOARD.md](../GAME_DASHBOARD.md).
 
 > **Avancement : 7/7 — plan complet** (2026-07-28 ; détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md)).
 > La bascule du lundi 00h00 est **une** : `WeekKey` en est le point de calcul unique, les quatre
@@ -30,12 +32,16 @@ systèmes livrés (quotidiennes, commandes de craft, saisons) ou planifiés (foy
 | RET-05 ✅ | Le chantier de la semaine | Guilde | ✅ **livré (2026-07-28)** |
 | RET-06 ✅ | L'Affleurement de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-07 ✅ | Tests du plan | — | ✅ **livré (2026-07-28)** |
+| RET-08 | Le bloc « La semaine » sur le hub | Solo+Guilde | RET-01→06 ✅ ; cadrage GAME_DASHBOARD §3/§5 |
+| RET-09 | Le lundi — récap de la semaine close | Solo | RET-08 |
+| RET-10 | Les dettes d'écran du hub | — | ‖ RET-08 |
 
 ```
 Vague 1 (indépendant)   : RET-01 → RET-02 → RET-03
 Vague 2 (après FOY)     : RET-04 ✅, RET-05 ✅
 Vague 3 (après pureté)  : RET-06
 Transverse              : RET-07 ✅
+Vague 4 (UI, cadrée)    : RET-08 → RET-09, RET-10 ‖
 ```
 
 **Pourquoi cet ordre.** Le critère de priorisation de la colonne
@@ -148,6 +154,61 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 
 ---
 
+## Vague 4 — le tableau du lundi (ouverte le 2026-07-29)
+
+> Cadrage complet : [../GAME_DASHBOARD.md](../GAME_DASHBOARD.md) (source de vérité de
+> l'écran hub). Origine : verdict V1 du playtest papier — le lundi coûte de la tête, pas
+> de l'énergie ; il faut aujourd'hui cinq écrans pour faire le tour de sa semaine, et le
+> hub ne connaît de la semaine que l'assiduité.
+
+### RET-08 — Le bloc « La semaine » sur le hub (M | ★★★ | HAUTE)
+
+- [ ] Un **seul** panneau en colonne principale (entre reprise et attentes), 5 lignes max
+      au format `ds-row` + jauge : commission (progression, zone, récompense choisie),
+      défis de guilde (agrégat « 1/3 » + le plus proche), commande de guilde, chantier du
+      foyer de la **zone courante** (ligne absente sinon), assiduité (paliers visualisés,
+      gils **et** énergie du prochain palier — calculée aujourd'hui, jamais affichée)
+- [ ] Chaque ligne dit **ce qui reste**, cliquable vers l'écran du geste — le hub lit,
+      il ne fait pas ; lecture seule via l'extension de `PlayerHubDigest` (ou un
+      `WeeklyDigest`), zéro requête dans le gabarit
+- [ ] **Le choix de récompense de commission remonte au hub** : si l'état de reprise est
+      `ready` et la commission sans choix, c'est l'action primaire (POST existant) ; la
+      livraison reste en zone
+- [ ] Repère de semaine discret (« Semaine du 27 juillet » ; dès samedi « se referme
+      demain soir ») — jamais de compte à rebours en heures
+- [ ] Dette payée en chemin : extraire `GuildController::buildChallengeEntries()` en
+      service de lecture, rebrancher l'écran de guilde dessus
+- [ ] Sans guilde / sans commission : lignes **absentes**, pas d'état vide culpabilisant
+- [ ] Interdit testé : l'**Affleurement** n'apparaît nulle part sur le hub (grep de
+      gabarit dans le test, même esprit que RET-06)
+
+### RET-09 — Le lundi : le récap de la semaine close (S | ★★★ | HAUTE)
+
+- [ ] Détection **sans cron ni table neuve** : `weekKey` de dernière visite stockée sur
+      le joueur, comparée à la semaine courante — le lundi est un **état** du bloc, pas
+      un écran ni une modale
+- [ ] À la première visite de la semaine : récap de la semaine close en tête du bloc —
+      palier d'assiduité atteint (et ce qu'il a payé), commission livrée ou « repartie
+      sans vous » (constat, jamais reproche), défis réussis, contribution au chantier
+- [ ] **Une ligne de chronique** : le fait de monde le plus récent concernant la zone
+      d'attache — première surface joueur de la chronique des foyers (aujourd'hui
+      lisible uniquement via le Codex)
+- [ ] Dès la visite suivante : le bloc redevient compact, à sa place normale
+- [ ] Invariant hérité de RET-04, testé : le récap ne mentionne **jamais** une série ni
+      un manque (vocabulaire de la série interdit, comme dans les moteurs)
+
+### RET-10 — Les dettes d'écran du hub (S | ★★ | MOYENNE)
+
+- [ ] L'XP disponible n'est plus comptée deux fois : la ligne d'attente `talent_xp`
+      gagne (actionnable), le bloc domaines ne garde que ses jauges
+- [ ] L'état vide replié de la maquette 5D : une ligne qui se déplie au premier contenu,
+      remplace les 4 `ds-empty` pleins ; clés `hub.empty.*` créées
+- [ ] La ligne `house_rent` porte l'échéance et le montant (déjà sur `PlayerHouse`)
+- [ ] L'enchantement rejoint les attentes (il a un `remainingSeconds`, même règle
+      d'admission que `CraftJob`)
+
+---
+
 ## Risques
 
 | Risque | Parade |
@@ -156,3 +217,4 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 | L'Affleurement annoncé publiquement → ruée sans découverte | La discrétion est un critère d'acceptance testé, pas une option |
 | Cinq mécaniques hebdomadaires = cinq horloges qui dérivent | Un seul point de rotation (lundi 00h00), contrat testé en RET-07 |
 | La série d'assiduité réintroduite « parce que c'est standard » | Interdit explicite en RET-04 ; l'invariant est testé |
+| Le hub devient un centre de commande (tout se fait depuis le tableau) | Une seule exception écrite (choix de commission) ; tout le reste renvoie vers l'écran du geste (GAME_DASHBOARD §3) |
