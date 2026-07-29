@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -61,7 +62,11 @@ class BannedUserSubscriber implements EventSubscriberInterface
 
         $this->security->logout(false);
 
-        $event->getRequest()->getSession()->getFlashBag()->add('error', self::BAN_MESSAGE);
+        $session = $event->getRequest()->getSession();
+        if ($session instanceof FlashBagAwareSessionInterface) {
+            $session->getFlashBag()->add('error', self::BAN_MESSAGE);
+        }
+
         $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_login')));
     }
 }
