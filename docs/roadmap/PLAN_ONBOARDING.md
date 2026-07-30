@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **14/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **15/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -43,8 +43,7 @@
 | ONB-14 ✅ | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
 | ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
-| ONB-17a ✅ | Le coach : le mécanisme, les lois, les 3 écrans de l'acte I | M | ★★ |
-| ONB-17b | Le coach : les 7 écrans restants (pur branchement) | S | ★★ |
+| ONB-17 ✅ | Le coach par écran, les dix encarts (ferme D10) | M | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
@@ -491,7 +490,7 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 
 ## Piste E — Apprentissage et preuve
 
-### ONB-17a — Le coach par écran : le mécanisme et l'acte I ✅ (M | ★★ | MOYENNE)
+### ONB-17 — Le coach par écran ✅ (M | ★★ | MOYENNE)
 > Ferme **D10**. Décision A3.
 > Prérequis : ← ONB-05, ONB-09 ; croise WIK-02 et RET-08→10
 - [x] `Player.seenCoachMarks` (tableau JSON de slugs) — pas de nouvelle entité
@@ -506,7 +505,7 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] **C1** : jamais un système inutilisable · **C2** : toujours le coût · **C3** : à
       l'arrivée, jamais au temps écoulé
 - [x] Le coach du **hub** n'apparaît qu'après l'acte I
-- [ ] Relecture depuis l'aide (lien wiki ; dégradation acceptable sans WIK-02)
+- [ ] Relecture depuis l'aide (lien wiki) — **attend WIK-02**, dégradation acceptable d'ici là
 - [x] Le coach est **par personnage**
 - [x] Tests : affichage unique, persistance, C1/C2/C3 respectées, idempotence de la fermeture
 

@@ -1840,6 +1840,41 @@
         "title": "Your bag and your gear",
         "body": "What you wear is set here. Every piece carries materia slots — that is where your character is built, not in a class.",
         "cost": "Equipping and socketing cost no energy."
+      },
+      "tree-catalog": {
+        "title": "The thirty-two trees",
+        "body": "Here you read what each tree teaches and where to find its scroll — never its nodes nor its numbers. A scroll opens the tree; it does not learn it for you.",
+        "cost": "Browsing is free. A scroll costs 100 gils, the same price for everyone."
+      },
+      "quests": {
+        "title": "Your journal",
+        "body": "The current arc is at the top, daily quests below. A quest is never lost: it waits, and you can abandon it without breaking anything.",
+        "cost": "Accepting, turning in or abandoning costs no energy."
+      },
+      "crafting": {
+        "title": "The workshop",
+        "body": "A recipe needs materials and the tree node that allows it. What you craft keeps the purity of its weakest link.",
+        "cost": "Crafting costs no energy — the only free gesture in the game."
+      },
+      "world-map": {
+        "title": "The world map",
+        "body": "Zones form a graph: you travel from one zone to its neighbour, never in a straight line. What the mist covers has not been walked yet.",
+        "cost": "Every journey costs real time — the duration is shown before you leave."
+      },
+      "hub": {
+        "title": "What awaits you",
+        "body": "This screen is not played: it gathers what moved without you and what needs a decision. The week reads in five lines.",
+        "cost": "Nothing here costs energy."
+      },
+      "market": {
+        "title": "The auction house",
+        "body": "Your surplus sells here, in your region and nowhere else. The city takes a tax on every sale, and its treasury lives on it.",
+        "cost": "Listing is free; the tax is taken from the sale price."
+      },
+      "guild": {
+        "title": "Guilds",
+        "body": "A guild shares a treasury, weekly challenges and influence over regions. You join for what you cannot do alone, never to go faster.",
+        "cost": "Joining or leaving costs no energy."
       }
     }
   },

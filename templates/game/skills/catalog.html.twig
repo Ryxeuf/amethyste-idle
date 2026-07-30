@@ -17,6 +17,7 @@
     (DOM-10) apparaitrait hors liste.
 #}
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('tree-catalog')}) }}
 <div class="game-page">
 
     <div class="mb-4">

@@ -1840,6 +1840,41 @@
         "title": "Votre sac et votre équipement",
         "body": "Ce que vous portez se règle ici. Chaque pièce d'équipement porte des emplacements de matéria — c'est là que se construit votre personnage, pas dans une classe.",
         "cost": "Équiper et sertir ne coûtent aucune énergie."
+      },
+      "tree-catalog": {
+        "title": "Les trente-deux arbres",
+        "body": "Vous lisez ici ce que chaque arbre enseigne et où trouver son parchemin — jamais ses nœuds ni ses chiffres. Un parchemin ouvre l'arbre ; il ne l'apprend pas à votre place.",
+        "cost": "Consulter est gratuit. Un parchemin coûte 100 gils, le même prix pour tout le monde."
+      },
+      "quests": {
+        "title": "Votre journal",
+        "body": "L'arc en cours se lit en haut, les quêtes quotidiennes en dessous. Une quête ne se perd pas : elle attend, et vous pouvez l'abandonner sans rien casser.",
+        "cost": "Accepter, rendre ou abandonner ne coûte aucune énergie."
+      },
+      "crafting": {
+        "title": "L'atelier",
+        "body": "Une recette demande des matériaux et le nœud d'arbre qui l'autorise. Ce que vous fabriquez garde la pureté du maillon le plus faible.",
+        "cost": "Fabriquer ne coûte aucune énergie — c'est le seul geste gratuit du jeu."
+      },
+      "world-map": {
+        "title": "La carte du monde",
+        "body": "Les zones forment un graphe : on va d'une zone à sa voisine, jamais en ligne droite. Ce que la brume couvre n'a pas encore été parcouru.",
+        "cost": "Chaque trajet coûte du temps réel — la durée s'affiche avant le départ."
+      },
+      "hub": {
+        "title": "Ce qui vous attend",
+        "body": "Cet écran ne se joue pas : il rassemble ce qui a avancé sans vous et ce qui demande une décision. La semaine s'y lit en cinq lignes.",
+        "cost": "Rien ici ne coûte d'énergie."
+      },
+      "market": {
+        "title": "L'hôtel des ventes",
+        "body": "Votre surplus se vend ici, dans votre région et pas ailleurs. La cité prélève une taxe sur chaque vente, et son trésor en vit.",
+        "cost": "Mettre en vente est gratuit ; la taxe se prend sur le prix de vente."
+      },
+      "guild": {
+        "title": "Les guildes",
+        "body": "Une guilde partage un trésor, des défis hebdomadaires et de l'influence sur les régions. On y va pour ce qu'on ne peut pas faire seul, jamais pour aller plus vite.",
+        "cost": "Rejoindre ou quitter ne coûte aucune énergie."
       }
     }
   },

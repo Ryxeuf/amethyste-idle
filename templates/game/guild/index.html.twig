@@ -3,6 +3,7 @@
 {% block title %}Guilde{% endblock %}
 
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('guild')}) }}
 <div class="game-page">
     {# Navigation #}
     <div class="mb-3 text-right flex justify-end gap-3">

@@ -3,6 +3,7 @@
 {% block title %}{{ 'game.title'|trans }}{% endblock %}
 
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('hub')}) }}
 {#
    Le hub — premier ecran apres connexion.
 
