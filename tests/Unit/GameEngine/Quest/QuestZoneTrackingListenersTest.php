@@ -62,6 +62,6 @@ class QuestZoneTrackingListenersTest extends TestCase
 
     private function makeZone(): Zone
     {
-        return (new Zone())->setSlug('foret-des-murmures')->setName('Forêt des murmures');
+        return (new Zone())->setSlug('foret-des-murmures')->setName('Forêt des Murmures');
     }
 }

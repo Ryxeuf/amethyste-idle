@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * PNJs de la Forêt des murmures — zone lvl 5-15.
+ * PNJs de la Forêt des Murmures — zone lvl 5-15.
  *
  * 5 PNJ : garde forestier, herboriste, ermite, bûcheron, chasseuse.
  */
@@ -72,7 +72,7 @@ class ForestPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/guard.png',
                 'dialog' => [
                     [
-                        'text' => 'Halte, voyageur. Bienvenue dans la Forêt des murmures. Les bois sont dangereux pour les imprudents, mais recèlent bien des trésors pour qui sait chercher.',
+                        'text' => 'Halte, voyageur. Bienvenue dans la Forêt des Murmures. Les bois sont dangereux pour les imprudents, mais recèlent bien des trésors pour qui sait chercher.',
                         'choices' => [
                             [
                                 'text' => 'Que peut-on trouver ici ?',

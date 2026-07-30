@@ -418,7 +418,7 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'spawnWeather' => WeatherType::Snow,
             ],
 
-            // === Foret des murmures (map_3) et Mines profondes (map_4) ===
+            // === Foret des murmures (map_3) et Mines Profondes (map_4) ===
             //
             // Les populations de ces deux zones sont desormais **declarees**
             // dans `config/game/zones/world_1.yaml` (bloc `mobs:`, ZON-26b) et

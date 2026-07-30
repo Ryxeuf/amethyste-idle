@@ -610,7 +610,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'explore' => [
                         [
                             'zone_slug' => 'cite-ensevelie',
-                            'name' => 'Cite Ensevelie',
+                            'name' => 'Cité Ensevelie',
                         ],
                     ],
                     'monsters' => [
@@ -1245,7 +1245,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte2_foret_murmures' => [
                 'name' => 'Les Fragments — Les Murmures s\'intensifient',
                 'name_translations' => ['en' => 'The Fragments — The Whispers Grow Stronger'],
-                'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
+                'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des Murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
                 'description_translations' => ['en' => 'Since touching the Amethyst Crystal, you have been sensing strange echoes coming from the Whispering Forest. Thadeus the Hermit, who lives north of the forest, may have answers.'],
                 'requirements' => [
                     'talk_to' => [
@@ -1325,7 +1325,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte2_mines_tremblements' => [
                 'name' => 'Les Fragments — Tremblements souterrains',
                 'name_translations' => ['en' => 'The Fragments — Underground Tremors'],
-                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines Profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
                 'description_translations' => ['en' => 'Since your contact with the Amethyst Crystal, you sense dull vibrations coming from the Deep Mines. Grimmur the Foreman, stationed at the entrance, may know more.'],
                 'requirements' => [
                     'talk_to' => [
@@ -2486,7 +2486,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'explore' => [
                         [
                             'zone_slug' => 'foret-des-murmures',
-                            'name' => 'Forêt des murmures',
+                            'name' => 'Forêt des Murmures',
                         ],
                     ],
                     'collect' => [
@@ -2520,7 +2520,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'explore' => [
                         [
                             'zone_slug' => 'mines-profondes',
-                            'name' => 'Mines profondes',
+                            'name' => 'Mines Profondes',
                         ],
                     ],
                     'collect' => [

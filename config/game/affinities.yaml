@@ -73,7 +73,7 @@ line_slugs:
 # qui ne se justifierait ni par l'une ni par l'autre serait une table arbitraire
 # — precisement ce que la loi refuse d'etre.
 corrections:
-    # --- Les Mines profondes (signature Metal, fond Tenebres) ---------------
+    # --- Les Mines Profondes (signature Metal, fond Tenebres) ---------------
     # Le sombracier vient du fond des galeries, la ou le temps est le plus
     # tasse : la signature du fond prime la ligne du metal. Canon.
     ore-darksteel: dark

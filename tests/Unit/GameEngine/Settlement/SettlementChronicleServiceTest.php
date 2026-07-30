@@ -54,7 +54,7 @@ class SettlementChronicleServiceTest extends TestCase
 
     public function testAPromotionIsEngravedAndCreditedToTheLeadingGuild(): void
     {
-        $this->settlement('mines-profondes', 'Mines profondes', SettlementRank::Hamlet, SettlementRank::Town);
+        $this->settlement('mines-profondes', 'Mines Profondes', SettlementRank::Hamlet, SettlementRank::Town);
         $this->leadingGuilds['mines-profondes'] = 'Les Fondeurs';
 
         self::assertSame(1, $this->service()->recordTide($this->season()));
@@ -176,7 +176,7 @@ class SettlementChronicleServiceTest extends TestCase
      */
     public function testTheSlugIsDeterministicPerArcAndZone(): void
     {
-        $this->settlement('mines-profondes', 'Mines profondes', SettlementRank::Hamlet, SettlementRank::Town);
+        $this->settlement('mines-profondes', 'Mines Profondes', SettlementRank::Hamlet, SettlementRank::Town);
         $this->settlement('crete', 'Crête', SettlementRank::Town, SettlementRank::Hamlet);
 
         $this->service()->recordTide($this->season());

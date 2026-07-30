@@ -107,7 +107,7 @@ class GatherServiceTest extends TestCase
     {
         $config = [] === $resources ? null : ['resources' => $resources];
 
-        return (new Zone())->setSlug('mines')->setName('Mines profondes')->setIsSafe($safe)->setGatherConfig($config);
+        return (new Zone())->setSlug('mines')->setName('Mines Profondes')->setIsSafe($safe)->setGatherConfig($config);
     }
 
     /**

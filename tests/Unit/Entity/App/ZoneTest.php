@@ -45,12 +45,12 @@ class ZoneTest extends TestCase
     public function testLocalizedNameFallsBackToBaseName(): void
     {
         $zone = new Zone();
-        $zone->setName('Forêt des murmures');
+        $zone->setName('Forêt des Murmures');
         $zone->setNameTranslations(['en' => 'Whispering Forest']);
 
         $this->assertSame('Whispering Forest', $zone->getLocalizedName('en'));
-        $this->assertSame('Forêt des murmures', $zone->getLocalizedName('fr'));
-        $this->assertSame('Forêt des murmures', $zone->getLocalizedName(null));
+        $this->assertSame('Forêt des Murmures', $zone->getLocalizedName('fr'));
+        $this->assertSame('Forêt des Murmures', $zone->getLocalizedName(null));
     }
 
     public function testLocalizedDescriptionFallsBackToBaseDescription(): void

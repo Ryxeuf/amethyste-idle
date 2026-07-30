@@ -542,10 +542,10 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'destinationCoordinates' => '31.31',
             ],
 
-            // === Forêt des murmures ↔ Village (bidirectionnels) ===
+            // === Forêt des Murmures ↔ Village (bidirectionnels) ===
             // Village → Forêt (sortie est du village)
             'portal-village-to-forest' => [
-                'name' => 'Chemin vers la Forêt des murmures',
+                'name' => 'Chemin vers la Forêt des Murmures',
                 'map' => $map2,
                 'coordinates' => '38.20',
                 'destinationMapId' => $map3->getId(),
@@ -567,10 +567,10 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'destinationCoordinates' => '37.20',
             ],
 
-            // === Mines profondes ↔ Village (bidirectionnels) ===
+            // === Mines Profondes ↔ Village (bidirectionnels) ===
             // Village → Mines (sortie ouest du village)
             'portal-village-to-mines' => [
-                'name' => 'Descente vers les Mines profondes',
+                'name' => 'Descente vers les Mines Profondes',
                 'map' => $map2,
                 'coordinates' => '1.20',
                 'destinationMapId' => $map4->getId(),

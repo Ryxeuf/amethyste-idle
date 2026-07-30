@@ -125,7 +125,7 @@ class QuestTrackingFormaterTest extends TestCase
         // Forme cible depuis ZON-22 : la cible d'exploration est une zone.
         $result = $this->formater->formatExplore([
             'explore' => [
-                ['zone_slug' => 'foret-des-murmures', 'name' => 'Forêt des murmures'],
+                ['zone_slug' => 'foret-des-murmures', 'name' => 'Forêt des Murmures'],
             ],
         ]);
 
@@ -133,7 +133,7 @@ class QuestTrackingFormaterTest extends TestCase
         $this->assertEquals('foret-des-murmures', $result[0]['zone_slug']);
         $this->assertNull($result[0]['map_id']);
         $this->assertNull($result[0]['coordinates']);
-        $this->assertEquals('Forêt des murmures', $result[0]['name']);
+        $this->assertEquals('Forêt des Murmures', $result[0]['name']);
     }
 
     public function testFormatEscortAcceptsDestinationZoneSlug(): void

@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Met à jour les dialogues des PNJ de la Forêt des murmures pour l'Acte 2.
+ * Met à jour les dialogues des PNJ de la Forêt des Murmures pour l'Acte 2.
  *
  * Thadeus l'Ermite : lance la chaîne Fragment Forêt (quêtes 1, 2, 4).
  * Elara l'Herboriste : dialogue lié à la quête 3 (Remède Ancestral).
