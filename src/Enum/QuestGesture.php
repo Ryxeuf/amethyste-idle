@@ -52,6 +52,36 @@ enum QuestGesture: string
     case CastSpell = 'cast_spell';
 
     /**
+     * Recolter — le tour 3, quel que soit le metier.
+     *
+     * L'etape 7 de l'acte I ne peut pas nommer ce qu'elle attend : le metier
+     * vient d'etre choisi parmi cinq a l'etape 6. Un objectif `collect` designe
+     * un objet, donc il choisirait a la place du joueur. Le geste, lui, se
+     * contente de constater qu'on a recolte — et la cible, quand elle est
+     * declaree, nomme le **metier**, jamais l'objet.
+     */
+    case Gather = 'gather';
+
+    /**
+     * Fabriquer — l'etablis, ou le premier geste qui ne coute pas d'energie.
+     *
+     * Meme raison que `Gather` : l'etape 8 fabrique « avec ce qu'on a
+     * recolte », et ce qu'on a recolte depend du metier choisi deux etapes plus
+     * tot. Nommer une recette reviendrait a choisir le metier a la place du
+     * joueur.
+     */
+    case CraftItem = 'craft_item';
+
+    /**
+     * Voyager — la premiere attente reelle du jeu.
+     *
+     * L'etape 9 propose **trois destinations, aucune imposee**. Un objectif
+     * d'exploration nomme une zone et les additionne ; le geste, lui, constate
+     * qu'on est parti — ce qui est exactement la lecon.
+     */
+    case Travel = 'travel';
+
+    /**
      * Lancer une expedition — quitter le jeu en le laissant travailler.
      */
     case StartExpedition = 'start_expedition';

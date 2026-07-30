@@ -16,50 +16,44 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Chaîne Acte 1 : L'Éveil (5 quêtes séquentielles)
-        /** @var Quest $acte1Reveil */
-        $acte1Reveil = $this->getReference('quest_acte1_reveil', Quest::class);
-        /** @var Quest $acte1PremiersPas */
-        $acte1PremiersPas = $this->getReference('quest_acte1_premiers_pas', Quest::class);
-        /** @var Quest $acte1Bapteme */
-        $acte1Bapteme = $this->getReference('quest_acte1_bapteme_du_feu', Quest::class);
-        /** @var Quest $acte1Recolte */
-        $acte1Recolte = $this->getReference('quest_acte1_recolte', Quest::class);
-        /** @var Quest $acte1Cristal */
-        $acte1Cristal = $this->getReference('quest_acte1_cristal', Quest::class);
+        // =================================================================
+        // Acte I — dix etapes, trois tours de boucle (ONB-12b)
+        // =================================================================
+        // La chaine est strictement sequentielle : chaque etape enseigne ce que
+        // la suivante suppose acquis. Un embranchement ici ferait de l'ordre une
+        // suggestion, et l'on ne pourrait plus garantir qu'un joueur arrive a
+        // l'accord (etape 4) avec une materia en poche.
+        $acteOne = [];
+        foreach ([
+            'quest_acte1_reveil',            // 1 — le maitre d'armes
+            'quest_acte1_premiers_pas',      // 2 — apprendre  (tour 1)
+            'quest_acte1_bapteme_du_feu',    // 3 — le mannequin
+            'quest_acte1_accord',            // 4 — l'accord   (tour 2)
+            'quest_acte1_second_mannequin',  // 5 — le second mannequin
+            'quest_acte1_metier',            // 6 — le metier  (tour 3)
+            'quest_acte1_recolte',           // 7 — la recolte
+            'quest_acte1_premiere_potion',   // 8 — l'atelier
+            'quest_acte1_cristal',           // 9 — le depart
+            'quest_acte1_guilde',            // 10 — l'expedition
+        ] as $reference) {
+            $acteOne[] = $this->getReference($reference, Quest::class);
+        }
 
-        $acte1PremiersPas->setPrerequisiteQuests([$acte1Reveil->getId()]);
-        $acte1Bapteme->setPrerequisiteQuests([$acte1PremiersPas->getId()]);
-        $acte1Recolte->setPrerequisiteQuests([$acte1Bapteme->getId()]);
-        $acte1Cristal->setPrerequisiteQuests([$acte1Recolte->getId()]);
+        for ($step = 1; $step < \count($acteOne); ++$step) {
+            $acteOne[$step]->setPrerequisiteQuests([$acteOne[$step - 1]->getId()]);
+        }
 
-        // Arc « intro » (NAR-03) : deux étapes finales chaînées après le Cristal —
-        // craft T1 (première potion) puis découverte des guildes.
-        /** @var Quest $acte1PremierePotion */
-        $acte1PremierePotion = $this->getReference('quest_acte1_premiere_potion', Quest::class);
-        /** @var Quest $acte1Guilde */
-        $acte1Guilde = $this->getReference('quest_acte1_guilde', Quest::class);
-        $acte1PremierePotion->setPrerequisiteQuests([$acte1Cristal->getId()]);
-        $acte1Guilde->setPrerequisiteQuests([$acte1PremierePotion->getId()]);
+        // La porte de l'acte 2 reste l'etape 9 : quatre fixtures de dialogue la
+        // designent par cette reference, et c'est aussi le moment ou le joueur
+        // quitte reellement le Fanal.
+        $acte1Cristal = $acteOne[8];
 
-        // Back-patch du PNJ mentor (Claire la Sage, pnj_15) pour l'étape « guilde ».
-        /** @var Pnj $claireMentor */
-        $claireMentor = $this->getReference('pnj_15', Pnj::class);
-        $guildeReq = $acte1Guilde->getRequirements();
-        $guildeReq['talk_to'][0]['pnj_id'] = $claireMentor->getId();
-        $acte1Guilde->setRequirements($guildeReq);
-
-        // ONB-15 : les trois premieres etapes de l'arc `intro` visaient
-        // `map_id => 1` — c'est-a-dire la « Carte de test », que `MapFixtures`
-        // cree en premier. Elles ne pointaient donc pas vers un mecanisme mort,
-        // mais vers une zone qui n'existe pas : l'acte I etait bloque des sa
-        // premiere etape. Elles parlent maintenant a quelqu'un, comme le reste
-        // de l'arc, et leur `pnj_id` se recale ici. Jamais le donneur de la
-        // quete : on ne demande pas de retourner voir celui qu'on vient de
-        // quitter — les trois sont donnees par Claire la Sage.
-        $this->pointTalkToAt($acte1Reveil, 'pnj_7');       // Marie la Herboriste
-        $this->pointTalkToAt($acte1PremiersPas, 'pnj_0');  // Gérard le Forgeron
-        $this->pointTalkToAt($acte1Cristal, 'pnj_18');     // Antoine le Mage
+        // ONB-15 : les `pnj_id` sont poses a 0 dans les fixtures de quete —
+        // celles-ci sont ecrites avant que les PNJ existent — et recales ici sur
+        // un PNJ reellement seede. Ecrire l'identifiant en dur marcherait le
+        // jour ou on le tape, et casserait au premier PNJ insere avant lui.
+        $this->pointTalkToAt($acteOne[0], 'village_pnj_0'); // Ysold, maitresse d'armes
+        $this->pointTalkToAt($acteOne[5], 'village_pnj_6'); // Lyra, guide du Fanal
 
         // Chaine de fond « Foret des Murmures » (NAR-13) : rumeurs → meute → cœur.
         /** @var Quest $bgForetRumeurs */
@@ -214,6 +208,7 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
         return [
             QuestFixtures::class,
             PnjFixtures::class,
+            VillageHubPnjFixtures::class,
             ForestPnjFixtures::class,
             MinesPnjFixtures::class,
             MaraisPnjFixtures::class,

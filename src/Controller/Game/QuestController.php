@@ -9,6 +9,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
 use App\GameEngine\Mount\MountQuestRewardGranter;
+use App\GameEngine\Progression\ActOneMateriaGranter;
 use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\PlayerQuestUpdater;
@@ -41,6 +42,7 @@ class QuestController extends AbstractController
         private readonly QuestMonsterBySlugResolver $questMonsterBySlugResolver,
         private readonly MountQuestRewardGranter $mountQuestRewardGranter,
         private readonly QuestArcGrouper $questArcGrouper,
+        private readonly ActOneMateriaGranter $actOneMateriaGranter,
     ) {
     }
 
@@ -519,6 +521,19 @@ class QuestController extends AbstractController
             $messages[] = $count > 1
                 ? sprintf('+%d %s', $count, $itemName)
                 : sprintf('+%s', $itemName);
+        }
+
+        // ONB-12b : la materia de l'etape 3 de l'acte I, derivee de l'arbre que
+        // le joueur a ouvert a l'etape 1. La recompense est un **drapeau**, pas
+        // un slug : la quete ne peut pas nommer l'objet, puisque le choix vient
+        // du joueur et qu'elle est ecrite avant lui.
+        if (($rewards['act_one_materia'] ?? false) === true) {
+            $granted = $this->actOneMateriaGranter->resolve($player);
+            if (null !== $granted) {
+                $this->inventoryHelper->addItemId($granted['item']->getId(), false);
+                $this->actOneMateriaGranter->grantAccordPoints($player, $granted['domain'], $granted['points']);
+                $messages[] = sprintf('+%s', $granted['item']->getName());
+            }
         }
 
         // Apply mount rewards (list of mount slugs). Idempotent: a slug already

@@ -11,6 +11,59 @@
 
 ---
 
+## ONB-12b — la chaine de l'acte I : dix quetes, trois tours de boucle (2026-07-30)
+
+> Seconde moitie d'ONB-12. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 10/20 + ONB-12a +
+> ONB-20a + ONB-20b-a + ONB-07a.
+
+**Le tutoriel comptait sept etapes, commençait par le voyage — le seul geste time-gate du jeu,
+place en premier — et ne mentionnait jamais la materia.** C'est-a-dire ni la seule source
+d'actions de combat (regle 10), ni le build du personnage. Un joueur pouvait le terminer sans
+savoir que le systeme existait.
+
+**Dix etapes, trois tours de la meme boucle** — parchemin → arbre → geste — sur l'arme, la
+materia et la recolte. La repeter trois fois au jour 1 vaut mieux que l'expliquer une fois : a la
+troisieme, le joueur n'a plus besoin qu'on la lui explique.
+
+**Le mecanisme de choix existait deja et n'avait jamais servi a cela.** `Quest::choiceOutcome` —
+cle, libelle, recompenses — est livre depuis NAR-03, avec son entite, son controleur et sa
+fenetre modale. L'acte I s'en sert pour ses deux vrais choix : six armes a l'etape 1, cinq
+metiers a l'etape 6. **Chaque option remet l'arme et le parchemin de l'arbre qui l'autorise** ;
+les separer laisserait un joueur avec une arme qu'il ne peut pas porter — le refus d'ONB-20b,
+sans le remede.
+
+**Deriver la materia par l'element aurait ete faux.** Le berserker est feu, et `m1-fire` est une
+materia de feu ; mais son sort est debloque par un nœud de l'arbre du **pyromancien**. Un
+berserker aurait donc reçu une materia qu'il ne peut pas sertir — exactement ce que le canon
+interdit, et sans aucun message (`canEquipMateria()` se contente de refuser). La derivation
+exacte est **la materia que l'arbre ouvert apprend a utiliser** : on lit son nœud `materia.unlock`
+le moins cher et l'on remet la materia dont il ouvre le sort, avec les points que ce nœud coute.
+Par construction, elle est utilisable, et l'etape 4 consiste precisement a prendre ce nœud.
+
+**Une quete ne nomme jamais ce qu'elle ne peut pas savoir.** Le metier est choisi a l'etape 6 :
+les etapes 7 et 8 ne peuvent designer ni un objet a recolter, ni une recette — elles
+choisiraient le metier a la place du joueur et bloqueraient les quatre autres. Elles constatent
+donc un **geste** (ONB-12a). Trois s'ajoutent aux quatre livres : recolter, fabriquer, voyager.
+Ce sont exactement les trois que la chaine ne peut pas nommer, et c'est ce qui les justifie.
+
+**L'etape 9 reste la porte de l'acte 2.** Quatre fixtures de dialogue et `PnjFixtures` designent
+`quest_acte1_cristal` par cette reference : la renommer aurait casse quatre chaines d'acte 2 sans
+qu'aucun test ne parle d'elles. Les dix etapes reutilisent les sept cles existantes et en
+ajoutent trois.
+
+**Un trou trouve en chemin, et c'etait la plus courante des armes.** ONB-20b avait pose les
+prerequis de port sur les armes `t1-*` ; or la famille de l'epee n'a pas de `t1-sword` — son arme
+de palier 1 s'appelle `short-sword`. Elle etait donc la **seule** dont l'echelon de port restait
+inerte, et c'est celle que l'acte I met le plus souvent entre les mains. La loi qui verifiait les
+armes T1 enumerait les cinq autres ; elle enumere desormais les six familles de l'echelle, et
+refuse qu'il en manque une.
+
+**Ce qui reste** : les libelles du Fanal (NAR-20), et le fait qu'une etape 2 sans cible accepte
+n'importe quelle piece portee — les six options etant toutes des armes, nommer une famille
+reviendrait a annuler le choix qu'on vient d'offrir.
+
+---
+
 ## ONB-12a — les quatre gestes que la chaine doit pouvoir constater (2026-07-30)
 
 > Premiere moitie d'ONB-12, decoupee (regle #8). [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md)

@@ -24,18 +24,34 @@ final class OnboardingKitTest extends AbstractIntegrationTestCase
 
         $slugs = [];
         foreach ($questRepository->findByStoryArc('intro') as $quest) {
-            $items = $quest->getRewards()['items'] ?? [];
-            foreach ($items as $key => $entry) {
-                if (\is_array($entry) && isset($entry['genericItemSlug'])) {
-                    $slugs[] = $entry['genericItemSlug'];
-                } elseif (\is_string($key)) {
-                    // Forme heritee : slug => quantite.
-                    $slugs[] = $key;
-                }
+            $this->collectItemSlugs($quest->getRewards()['items'] ?? [], $slugs);
+
+            // ONB-12b : depuis que l'acte I fait choisir, l'essentiel du kit
+            // n'est plus dans `rewards` mais dans les options — l'arme a
+            // l'etape 1, le parchemin de metier a l'etape 6. Ne lire que
+            // `rewards` reviendrait a verifier le kit sans regarder le kit.
+            foreach ($quest->getChoiceOutcome() ?? [] as $outcome) {
+                $this->collectItemSlugs($outcome['bonusRewards']['items'] ?? [], $slugs);
             }
         }
 
         return array_values(array_unique($slugs));
+    }
+
+    /**
+     * @param array<array-key, mixed> $items
+     * @param string[]                $slugs
+     */
+    private function collectItemSlugs(array $items, array &$slugs): void
+    {
+        foreach ($items as $key => $entry) {
+            if (\is_array($entry) && isset($entry['genericItemSlug'])) {
+                $slugs[] = $entry['genericItemSlug'];
+            } elseif (\is_string($key)) {
+                // Forme heritee : slug => quantite.
+                $slugs[] = $key;
+            }
+        }
     }
 
     public function testIntroGrantsAnExchangeableWeaponWithAttackSpell(): void
@@ -45,7 +61,6 @@ final class OnboardingKitTest extends AbstractIntegrationTestCase
         $weapon = $this->em->getRepository(Item::class)->findOneBy(['slug' => 'short-sword']);
         self::assertNotNull($weapon);
 
-        // Arme principale equipable des le depart (aucun prerequis d'equipement).
         self::assertSame(Item::GEAR_LOCATION_MAIN_WEAPON, $weapon->getGearLocation());
         // Elle porte un sort : l'action d'attaque de la boucle coeur devient resolvable
         // (le PlayerAttackHandler exige une arme equipee dotee d'un sort).

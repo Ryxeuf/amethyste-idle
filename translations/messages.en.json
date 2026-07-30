@@ -1770,6 +1770,9 @@
         "socket_materia": "Socket the materia",
         "cast_spell": "Cast the spell",
         "start_expedition": "Send an expedition",
+        "gather": "Gather",
+        "craft_item": "Craft",
+        "travel": "Travel",
         "fallback": "Perform the gesture",
         "done": "Done",
         "todo": "To do"

@@ -1770,6 +1770,9 @@
         "socket_materia": "Sertir la matéria",
         "cast_spell": "Lancer le sort",
         "start_expedition": "Lancer une expédition",
+        "gather": "Récolter",
+        "craft_item": "Fabriquer",
+        "travel": "Voyager",
         "fallback": "Accomplir le geste",
         "done": "Fait",
         "todo": "À faire"

@@ -10,6 +10,8 @@ use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Enum\Purity;
+use App\Enum\QuestGesture;
+use App\Event\Game\PlayerGestureEvent;
 use App\Event\Zone\ZoneGatherEvent;
 use App\GameEngine\Economy\PurityDrawer;
 use App\GameEngine\Generator\PlayerItemGenerator;
@@ -285,6 +287,14 @@ class GatherService
         $this->eventDispatcher->dispatch(
             new ZoneGatherEvent($player, $zone, $resource['slug'], $resource['item'], $quantity),
             ZoneGatherEvent::NAME,
+        );
+
+        // ONB-12b : les lectures de la cible sont le **metier** et le filon,
+        // jamais l'objet — l'etape 7 de l'acte I attend « une recolte », et le
+        // metier vient d'etre choisi parmi cinq.
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::Gather, [$resource['profession'], $resource['slug']]),
+            PlayerGestureEvent::NAME,
         );
 
         return new GatherResult(

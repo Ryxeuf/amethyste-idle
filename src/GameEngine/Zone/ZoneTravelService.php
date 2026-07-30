@@ -6,6 +6,8 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedZone;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Enum\QuestGesture;
+use App\Event\Game\PlayerGestureEvent;
 use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
 use App\GameEngine\GameMaster\GameMasterPolicy;
@@ -144,6 +146,14 @@ class ZoneTravelService
         $this->eventDispatcher->dispatch(
             new PlayerTraveledEvent($player, $destination, $origin),
             PlayerTraveledEvent::NAME
+        );
+
+        // ONB-12b : l'etape 9 de l'acte I propose trois destinations et n'en
+        // impose aucune. La cible est la zone atteinte ; une quete qui ne la
+        // declare pas se contente du depart, ce qui est la lecon.
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::Travel, [$destination->getSlug()]),
+            PlayerGestureEvent::NAME,
         );
 
         return $destination;

@@ -7,8 +7,10 @@ use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Enum\Purity;
+use App\Enum\QuestGesture;
 use App\Event\CraftEvent;
 use App\Event\Game\DomainLevelUpEvent;
+use App\Event\Game\PlayerGestureEvent;
 use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
@@ -397,6 +399,14 @@ class CraftingManager
             CraftEvent::NAME
         );
 
+        // ONB-12b : l'etape 8 de l'acte I fabrique « avec ce qu'on a recolte »,
+        // et le metier vient d'etre choisi parmi cinq. La cible est donc la
+        // recette, jamais imposee par la quete.
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::CraftItem, [$resultItem->getSlug()]),
+            PlayerGestureEvent::NAME,
+        );
+
         return [
             'success' => true,
             'crafted' => $units,
@@ -523,6 +533,14 @@ class CraftingManager
         $this->eventDispatcher->dispatch(
             new CraftEvent($player, $recipe, $resultItem, $recipe->getResultQuantity()),
             CraftEvent::NAME
+        );
+
+        // ONB-12b : l'etape 8 de l'acte I fabrique « avec ce qu'on a recolte »,
+        // et le metier vient d'etre choisi parmi cinq. La cible est donc la
+        // recette, jamais imposee par la quete.
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::CraftItem, [$resultItem->getSlug()]),
+            PlayerGestureEvent::NAME,
         );
 
         $qualityLabel = QualityCalculator::getQualityLabel($finalQuality);
