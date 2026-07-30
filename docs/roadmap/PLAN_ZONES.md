@@ -145,24 +145,20 @@ ZON-33 en continu
 > (`poisonous-mushroom`, `swamp-root`). L'améthyste reste **sans affinité** (substrat,
 > canon §2.2). 22 tests.
 
-### ZON-39 — La loi de nommage rejoint les libellés (S | ★★ | MOYENNE)
-> **Constat (audit 2026-07-29).** La loi de nommage (GAME_WORLD §1, actée le 2026-07-28)
-> dit « renommages appliqués » et ne tolère que les **slugs** hérités — mais trois
-> libellés joueur portent encore des noms d'élément.
-- [ ] `config/game/zones/world_1.yaml:86` : « Village de Lumière » → « **le Fanal** » ;
-      description des Jardins (~l.457) : « lotissement de Lumiere » à reprendre
-- [ ] `src/DataFixtures/RegionFixtures.php:42` : « Sanctuaire de Lumière » →
-      « **Sanctuaire de la Voûte** »
-- [ ] `src/DataFixtures/Game/FactionFixtures.php:43` : « Confrérie des Ombres » →
-      « **Confrérie des Ruelles** » (name + traductions) — porté aussi par FAC-06
-      (PLAN_FACTIONS), le premier des deux qui passe le fait
-- [ ] Au passage : harmoniser capitales/accents des noms de zone (« Marais Brumeux »,
-      « Cite Ensevelie »)
-- [ ] Critère d'acceptance : aucun libellé joueur ne réutilise un nom d'élément (grep
-      sur fixtures + config)
-
-> **Données pures, aucune migration de slug** : `village-de-lumiere` et `ombres` restent —
-> la loi ne tolère que les slugs, et c'est précisément ce qui rend le jalon petit.
+### ZON-39 — La loi de nommage rejoint les libellés ✅ (M | ★★ | MOYENNE)
+> Requalifié S → M à la livraison : les trois lignes annoncées valaient **29 chaînes dans
+> 13 fichiers**, plus 47 chaînes de capitalisation. Livré avec **NAR-20**, qui réécrit les
+> mêmes textes. **Livré le 2026-07-30.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> L'essentiel : le hub devient **le Fanal**, la région le **Sanctuaire de la Voûte**, la
+> faction la **Confrérie des Ruelles** ; les slugs restent hérités. La loi vit désormais dans
+> `NamingLaw`, dont les termes **dérivent** d'`Element::cases()` et de `Purity::cases()` —
+> ajouter un flux étend la loi le jour même. C'est elle qui a fait sortir un quatrième
+> contrevenant que l'audit n'avait pas vu : **Terres Sauvages** → **Marches Sauvages**.
+> L'étymologie du Codex (« dressèrent le Village de Lumière comme un fanal ») est réécrite,
+> pas substituée. 12 zones + cartes + régions + factions vérifiées par `NamingLawTest`.
+>
+> **FAC-06** (PLAN_FACTIONS) portait aussi le renommage de la Confrérie : c'est fait.
 
 ### ZON-40 — Les signatures cessent d'être inertes (S | ★★★ | HAUTE)
 > **Constat (audit 2026-07-29).** 3 signatures sur 7 (Forêt = référence, Vallons, Marais)

@@ -22,7 +22,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
  * se lit sur leur somme, le type sur le dominant. C'est ce qui permet a deux
  * villes de meme rang de ne pas se ressembler.
  *
- * **Toutes les zones n'ont pas de foyer.** Lumiere et les Jardins sont batis sur
+ * **Toutes les zones n'ont pas de foyer.** le Fanal et les Jardins sont batis sur
  * la Voute — rien ne s'y depose (GAME_WORLD §3.4) ; la Cite ensevelie est un
  * donjon, on la fouille, elle ne monte pas. L'absence d'un `Settlement` est donc
  * une decision, pas un oubli : `config/game/settlements.yaml` la documente zone

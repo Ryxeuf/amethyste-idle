@@ -73,7 +73,7 @@ class SettlementWorkshopBonus
 
         $settlement = $this->settlementRepository->findOneByZone($zone);
         if ($settlement === null) {
-            // Lumiere et les Jardins sont batis sur la Voute : rien ne s'y
+            // le Fanal et les Jardins sont batis sur la Voute : rien ne s'y
             // depose, donc rien n'y ameliore un etabli. Le plancher T1 y reste
             // entier (ECO-02) — un debutant n'est pas penalise, il n'est
             // simplement pas avantage.
