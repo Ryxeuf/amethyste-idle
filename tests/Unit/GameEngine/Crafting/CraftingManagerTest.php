@@ -10,7 +10,9 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftSpecialization;
+use App\Enum\QuestGesture;
 use App\Event\CraftEvent;
+use App\Event\Game\PlayerGestureEvent;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\QualityCalculator;
@@ -145,14 +147,24 @@ class CraftingManagerTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->eventDispatcher->expects($this->once())
+        // ONB-12b : deux annonces, et elles ne disent pas la meme chose.
+        // `CraftEvent` porte la recette et sert la progression ; le geste dit
+        // seulement « ce joueur a fabrique quelque chose », ce que l'etape 8 de
+        // l'acte I attend sans pouvoir nommer de recette.
+        $dispatched = [];
+        $this->eventDispatcher->expects($this->exactly(2))
             ->method('dispatch')
-            ->with(
-                $this->isInstanceOf(CraftEvent::class),
-                CraftEvent::NAME
-            );
+            ->willReturnCallback(function (object $event, string $name) use (&$dispatched): object {
+                $dispatched[$name] = $event;
+
+                return $event;
+            });
 
         $result = $this->craftingManager->craft($player, $recipe);
+
+        $this->assertInstanceOf(CraftEvent::class, $dispatched[CraftEvent::NAME] ?? null);
+        $this->assertInstanceOf(PlayerGestureEvent::class, $dispatched[PlayerGestureEvent::NAME] ?? null);
+        $this->assertSame(QuestGesture::CraftItem, $dispatched[PlayerGestureEvent::NAME]->getGesture());
 
         $this->assertTrue($result['success']);
         $this->assertSame($resultItem, $result['item']);
