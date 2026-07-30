@@ -47,12 +47,15 @@ class PnjScheduleFixtures extends Fixture implements DependentFixtureInterface
     private function getRoutines(): array
     {
         return [
-            // Aldric le Forgeron : forge (7h-19h), taverne (20h-23h), maison (0h-6h)
+            // ONB-16 — Ysold, maîtresse d'armes : cour d'armes (7h-19h), taverne
+            // (20h-23h), maison (0h-6h). Ce poste était Aldric le Forgeron, un
+            // doublon de Gérard ; la routine, elle, n'avait rien de fautif et
+            // suit le personnage.
             [
                 'pnjRef' => 'village_pnj_0',
                 'schedules' => [
-                    ['hour' => 0, 'coordinates' => '4.4', 'label' => 'Dort chez lui'],
-                    ['hour' => 7, 'coordinates' => '7.7', 'label' => 'Travaille à la forge'],
+                    ['hour' => 0, 'coordinates' => '4.4', 'label' => 'Dort chez elle'],
+                    ['hour' => 7, 'coordinates' => '7.7', 'label' => 'Tient la cour d\'armes'],
                     ['hour' => 20, 'coordinates' => '20.15', 'label' => 'Se détend à la taverne'],
                 ],
             ],

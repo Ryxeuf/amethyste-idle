@@ -24,6 +24,11 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($pnjs as $index => $data) {
             $pnj = new Pnj();
+            // ONB-16 : le slug est la cle d'idempotence des habitants declares
+            // (convention ZON-26b-b). Sans lui, la seule facon de retrouver un
+            // PNJ du Fanal est son **nom affiche** — ce qui interdit de le
+            // renommer, et fait dependre le code d'un texte de fiction.
+            $pnj->setSlug($data['slug']);
             $pnj->setName($data['name']);
             $pnj->setLife(10);
             $pnj->setMaxLife(10);
@@ -65,13 +70,42 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
     private function getVillagePnjs(): array
     {
         return [
-            // 0 — Aldric le Forgeron (NW, près du bâtiment 4,4)
+            // 0 — Ysold, maîtresse d'armes (ONB-16)
+            //
+            // **Ce poste était Aldric le Forgeron, et c'était un doublon.** Le
+            // Fanal comptait deux forgerons : celui-ci, et Gérard le Forgeron,
+            // porteur de l'arc `intro` que les quêtes désignent par sa référence
+            // de fixture (`pnj_0`). Gérard reste — on ne débranche pas un
+            // donneur de quête —, et ce poste devient **le rôle qui manquait**.
+            //
+            // Car la chaîne de l'acte I commence chez le maître d'armes
+            // (GAME_ONBOARDING § 5.2, étape 1) et il n'existait pas. Le
+            // transformer plutôt que d'en ajouter un neuvième règle les deux
+            // dettes d'un coup : le doublon disparaît, le manque est comblé, et
+            // l'étal d'armes déjà écrit sert exactement le bon personnage.
+            //
+            // Au passage, « Aldric » cesse d'être porté par deux personnages :
+            // **Aldric l'Ancien**, l'ermite de la Crête, est un donneur de quête
+            // de l'acte 2. Deux Aldric à trois zones d'écart, dont un seul
+            // compte pour une quête, est le genre de collision qu'on ne
+            // découvre qu'en jouant.
             [
-                'name' => 'Aldric le Forgeron',
+                'slug' => 'fanal-maitresse-armes-ysold',
+                'name' => 'Ysold, maîtresse d\'armes',
                 'coordinates' => '7.7',
-                'classType' => 'blacksmith',
+                'classType' => 'warrior',
                 'portrait' => '/styles/images/portraits/blacksmith.png',
-                'shopItems' => ['short-sword', 'long-sword', 'iron-sword', 'wooden-shield', 'leather-armor', 'leather-boots', 'leather-hat', 'leather-helmet'],
+                // Elle vend les armes de palier 1 **et les parchemins des arbres
+                // qui apprennent à les tenir** (ONB-08/ONB-20b). C'est ce qui
+                // fait de l'étape 1 un vrai choix : on repart avec une arme
+                // **et** la voie qui l'autorise.
+                'shopItems' => [
+                    'short-sword', 'long-sword', 'iron-sword', 'wooden-shield',
+                    'leather-armor', 'leather-boots', 'leather-hat', 'leather-helmet',
+                    'soldier-domain-parchment', 'berserker-domain-parchment',
+                    'archer-domain-parchment', 'assassin-domain-parchment',
+                    'knight-domain-parchment', 'paladin-domain-parchment',
+                ],
                 'opensAt' => 7,
                 'closesAt' => 20,
                 'shopStock' => [
@@ -86,7 +120,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'dialog' => [
                     [
-                        'text' => 'Bienvenue dans ma forge, voyageur ! Le Village de Lumière est réputé pour la qualité de ses armes. Que puis-je faire pour vous ?',
+                        'text' => 'Tiens. Une main qui n\'a encore rien tenu. Ici on n\'apprend pas à se battre : on apprend à tenir une arme, et le reste vient tout seul. Que cherches-tu ?',
                         'choices' => [
                             [
                                 'text' => 'Voir la boutique',
@@ -94,7 +128,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                                 'datas' => [],
                             ],
                             [
-                                'text' => 'Parlez-moi du village',
+                                'text' => 'Comment apprend-on à tenir une arme ?',
                                 'action' => 'next',
                             ],
                             [
@@ -104,10 +138,10 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'text' => 'Le Village de Lumière est le cœur de cette région. Fondé il y a des siècles, il sert de refuge aux aventuriers entre deux expéditions. Vous y trouverez tout ce dont vous avez besoin : armes, potions, et conseils.',
+                        'text' => 'Par un parchemin, comme tout le reste. Il ne t\'apprendra rien — il t\'ouvre une voie, et c\'est toi qui la parcours. Prends l\'arme qui te va, prends la voie qui l\'autorise, et va voir les mannequins dans la cour. Ils ne mordent pas.',
                         'choices' => [
                             [
-                                'text' => 'Merci pour ces informations',
+                                'text' => 'Merci, maîtresse d\'armes',
                                 'action' => 'close',
                             ],
                         ],
@@ -116,11 +150,12 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 1 — Iris l'Alchimiste (NE, près du bâtiment 33,4)
             [
+                'slug' => 'fanal-alchimiste-iris',
                 'name' => 'Iris l\'Alchimiste',
                 'coordinates' => '33.8',
                 'classType' => 'mage',
                 'portrait' => '/styles/images/portraits/herbalist.png',
-                'shopItems' => ['life-potion', 'healing-potion-small', 'healing-potion-medium', 'healing-potion-major', 'antidote', 'energy-potion-small', 'crafted-potion-base'],
+                'shopItems' => ['life-potion', 'healing-potion-small', 'healing-potion-medium', 'healing-potion-major', 'antidote', 'energy-potion-small', 'crafted-potion-base', 'alchimist-domain-parchment'],
                 'opensAt' => 6,
                 'closesAt' => 22,
                 'shopStock' => [
@@ -163,6 +198,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 2 — Marcellin le Marchand (W, près du bâtiment 4,20)
             [
+                'slug' => 'fanal-marchand-marcellin',
                 'name' => 'Marcellin le Marchand',
                 'coordinates' => '7.23',
                 'classType' => 'merchant',
@@ -223,6 +259,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 3 — Oriane la Maîtresse des Quêtes (E, près du bâtiment 33,20)
             [
+                'slug' => 'fanal-quetes-oriane',
                 'name' => 'Oriane la Maîtresse des Quêtes',
                 'coordinates' => '33.23',
                 'classType' => 'noble',
@@ -254,6 +291,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 4 — Théodore le Banquier (N, près du bâtiment 18,4)
             [
+                'slug' => 'fanal-banquier-theodore',
                 'name' => 'Théodore le Banquier',
                 'coordinates' => '20.8',
                 'classType' => 'noble',
@@ -285,6 +323,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 5 — Gareth le Garde (près de l'entrée sud, 20,35)
             [
+                'slug' => 'fanal-garde-gareth',
                 'name' => 'Gareth le Garde',
                 'coordinates' => '20.35',
                 'classType' => 'guard',
@@ -316,6 +355,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 6 — Lyra la Guide (près du spawn joueur, 20,18)
             [
+                'slug' => 'fanal-guide-lyra',
                 'name' => 'Lyra la Guide',
                 'coordinates' => '20.18',
                 'classType' => 'healer',
