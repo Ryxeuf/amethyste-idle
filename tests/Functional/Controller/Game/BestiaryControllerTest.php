@@ -6,6 +6,8 @@ use App\Controller\Game\BestiaryController;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerBestiary;
 use App\Entity\Game\Monster;
+use App\GameEngine\Bestiary\BestiaryRevealPolicy;
+use App\GameEngine\Race\RaceCapabilityResolver;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerBestiaryRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +39,10 @@ class BestiaryControllerTest extends TestCase
             $this->playerHelper,
             $this->bestiaryRepository,
             $this->entityManager,
+            // ONB-07b : le bestiaire ne decide plus seul de ce qu'il laisse
+            // lire — le flair de l'Orc est un second chemin vers la meme
+            // information.
+            new BestiaryRevealPolicy(new RaceCapabilityResolver()),
         );
 
         $this->controller->setContainer($this->createContainer());
