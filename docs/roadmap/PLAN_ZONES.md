@@ -27,8 +27,8 @@ plans d'origine :
 | ZON-36 ✅ | Affinités élémentaires des ressources (loi 10) | S | ∅ (donnée pure) |
 | ZON-37 ✅ | La régénération d'un filon devient un débit (fix) | M | ∅ — **prérequis du recalibrage** |
 | ZON-38 ✅ | La récolte redevient observable (fix) | S | ∅ |
-| ZON-39 | La loi de nommage rejoint les libellés | S | ∅ (donnée pure) |
-| ZON-40 | Les signatures cessent d'être inertes | S | tranché : option (a), affleurements à poser |
+| ZON-39 ✅ | La loi de nommage rejoint les libellés | M | ∅ (donnée pure) |
+| ZON-40 ✅ | Les signatures cessent d'être inertes | M | tranché : option (a), affleurements posés |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -160,25 +160,30 @@ ZON-33 en continu
 >
 > **FAC-06** (PLAN_FACTIONS) portait aussi le renommage de la Confrérie : c'est fait.
 
-### ZON-40 — Les signatures cessent d'être inertes (S | ★★★ | HAUTE)
-> **Constat (audit 2026-07-29).** 3 signatures sur 7 (Forêt = référence, Vallons, Marais)
-> ne s'appliquent **jamais** : ces zones n'ont aucun filon dans le périmètre de pureté
-> (préfixe `ore-`). La promesse phare — « le Marais nocturne est le premier endroit où un
-> joueur d'Acte II voit du Pur » (GAME_ZONES §2.5, `night_weight_shift: 30`) — est
-> **ininstanciable**. Symétriquement, la Mer de Sel et le Pas de Givre ont des filons
-> `ore-` **sans** signature : ils tirent comme la référence, ce qui contredit GAME_ZONES
-> §4. Les tests d'`AmethystSignatureTest` passent sur des zones synthétiques ; aucun test
-> ne croise la table des signatures avec la carte réelle des filons.
-- [x] **Décision tranchée le 2026-07-29 : option (a)** — poser un **affleurement
-      d'améthyste** (`ore-amethyst-crystal`, faible capacité, dans l'esprit de la loi 8 :
-      l'améthyste affleure, elle ne se mine pas en filon riche) dans la Forêt, les Vallons
-      et le Marais, pour que leurs signatures — dont le **Pur nocturne du Marais** —
-      s'appliquent enfin. Options écartées : (b) étendre le périmètre de pureté,
-      (c) réviser la promesse
-- [ ] Livrable dans tous les cas : un test croisant **signatures × filons réels** — une
-      signature sans filon dans le périmètre, ou l'inverse, fait rougir la CI
-- [ ] Livrable dans tous les cas : signatures pour les zones du Silence (Mer de Sel,
-      Pas de Givre)
+### ZON-40 — Les signatures cessent d'être inertes ✅ (M | ★★★ | HAUTE)
+> Requalifié S → M à la livraison : l'affleurement ne pouvait pas être posé sans trancher
+> ce que **devient l'améthystite**. Livré avec ZON-39. **Livré le 2026-07-30.** Détail dans
+> [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> L'essentiel : trois affleurements (Forêt, Vallons, Marais) instancient les trois
+> signatures mortes, dont le **Pur nocturne du Marais** ; la Mer de Sel (+18) et le Pas de
+> Givre (+22) cessent de tirer comme la Forêt. Deux lois neuves croisent la table avec la
+> carte réelle des filons, **dans les deux sens**.
+>
+> **L'arbitrage que le jalon a dû prendre** — celui que BALANCE §21.5 avait laissé ouvert
+> en toutes lettres : l'améthystite était modélisée en T5 légendaire à 800 gils, réservée
+> aux maîtres mineurs, quand le canon (GAME_WORLD §13.3) en fait un sous-produit universel.
+> Branche retenue, **présente partout** : prix 800 → 15, rareté légendaire → commune,
+> profil de calibrage « A affleurement » (16/21600) qui n'est pas un palier. Impact
+> économique réel nul — rien ne la consommait, rien ne la vendait.
+>
+> **Deux trous fermés au passage** : `amethyst_ring` existait sans recette et l'améthystite
+> sans débouché (loi 9) — la recette de joaillerie relie les deux, à 400 gils par la règle
+> ECO-27, soit le prix que l'anneau portait déjà.
+>
+> **Écart consigné** : la compétence `miner-amethystite-xs` (rang 5, 100 points) garde son
+> intitulé et son objet — le spot `spot-amethystite-xs` de l'ancien système de carte — alors
+> que l'améthyste affleure désormais sans gate. L'arbre du mineur relève de PLAN_DOMAINS.
 
 ### Restes de données (ex-ZON-26b + promesses ouvertes)
 

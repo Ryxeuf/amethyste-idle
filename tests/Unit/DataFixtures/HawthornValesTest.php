@@ -34,6 +34,28 @@ class HawthornValesTest extends TestCase
     private const OPEN_PROFILES = [72 => 25200, 60 => 32400];
 
     /**
+     * L'amethyste, exemptee de la loi du non-goulot (ZON-40).
+     *
+     * La loi protege **l'apprentissage** : un tampon etroit transformerait la
+     * premiere heure de jeu en file d'attente. Ce qu'elle vise est donc ce dont
+     * la progression d'un debutant **depend** — le ble, le lin, la perche, le
+     * hetre : quatre matieres qui ouvrent des recettes d'entree.
+     *
+     * L'amethyste n'en est pas. Elle n'entre dans aucune recette d'entree, son
+     * unique debouche est un anneau de niveau 7, et le debutant qui trouve
+     * l'affleurement a sec n'attend pour rien — il n'en a besoin nulle part.
+     * C'est une curiosite, pas un goulot : la signature des Vallons dit
+     * exactement cela, « le debutant y apprend qu'il **existe** de l'amethyste,
+     * pas ou la chercher pure ».
+     *
+     * Meme raison que la constante `WITHOUT_TIER` d'`OreSourceReferenceTest` :
+     * l'amethyste n'a pas de palier, donc aucune loi de palier ne la juge.
+     *
+     * @var list<string>
+     */
+    private const WITHOUT_TIER = ['ore-amethyst-crystal'];
+
+    /**
      * @return array{zones: list<array<string, mixed>>, connections: list<array<string, mixed>>}
      */
     private function world(): array
@@ -95,6 +117,10 @@ class HawthornValesTest extends TestCase
     public function testNoVeinOfTheValesIsEverABottleneck(): void
     {
         foreach ($this->vales()['gather'] as $resource) {
+            if (\in_array($resource['item'], self::WITHOUT_TIER, true)) {
+                continue;
+            }
+
             self::assertArrayHasKey(
                 $resource['capacity'],
                 self::OPEN_PROFILES,
@@ -115,14 +141,16 @@ class HawthornValesTest extends TestCase
      * perche (peche d'apprentissage) — puis le hetre, que ZON-34 y a pose :
      * les Vallons sont l'une des **deux** sources du bois commun, celle du
      * bocage, et c'est ce qui empeche le T0 de la ligne du bois d'etre un
-     * goulot.
+     * goulot. ZON-40 y ajoute l'affleurement d'amethyste, qui instancie la
+     * signature de la zone — la seule des cinq a n'ouvrir aucune recette
+     * d'entree, et la seule a ne pas porter de palier.
      */
     public function testTheDeclaredHarvestsAreThere(): void
     {
         $items = array_column($this->vales()['gather'], 'item');
         sort($items);
 
-        self::assertSame(['fish-perch', 'plant-flax', 'plant-wheat', 'wood-beech'], $items);
+        self::assertSame(['fish-perch', 'ore-amethyst-crystal', 'plant-flax', 'plant-wheat', 'wood-beech'], $items);
     }
 
     /**

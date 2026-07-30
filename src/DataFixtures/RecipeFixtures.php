@@ -992,6 +992,37 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
             ],
 
             // --- Joaillerie T3 : mithril et gemmes rares (niveau 5-6) ---
+            // ZON-40 — le debouche de l'amethystite, et la fin d'un objet sans
+            // recette. `amethyst_ring` existait dans les fixtures d'equipement
+            // (400 gils, epique, element dark) sans qu'aucune recette ne le
+            // produise ; l'amethystite, symetriquement, n'etait consommee par
+            // rien. Les deux moities se manquaient.
+            //
+            // La composition suit la description de l'anneau au mot pres — « une
+            // amethyste sombre sertie dans de l'obsidienne » : le sombracier
+            // pour la monture, l'amethystite pour la pierre, une gemme fine pour
+            // la taille (loi du palier non orphelin : une recette de niveau >= 3
+            // consomme au moins un produit d'artisanat).
+            //
+            // Prix derive par la regle ECO-27 — cout des intrants + 10 x niveau :
+            // 6 x 15 + 120 + 120 = 330, + 70 = 400, soit exactement le prix que
+            // l'anneau portait deja. Rien a recalibrer.
+            'recipe_amethyst_ring' => [
+                'name' => 'Anneau d\'améthyste',
+                'slug' => 'recipe-amethyst-ring',
+                'craft' => 'joaillier',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'ore-amethyst-crystal', 'quantity' => 6],
+                    ['slug' => 'ore-darksteel', 'quantity' => 1],
+                    ['slug' => 'crafted-gem-fine', 'quantity' => 1],
+                ],
+                'result_ref' => 'amethyst_ring',
+                'crafting_time' => 14,
+                'xp_reward' => 45,
+                'description' => 'Sertit une améthystite sombre dans une monture de sombracier.',
+                'name_translations' => ['en' => 'Amethyst Ring'],
+            ],
             'recipe_cut_gem_rare' => [
                 'name' => 'Taille de gemme rare',
                 'slug' => 'recipe-cut-gem-rare',

@@ -215,6 +215,88 @@ class AmethystSignatureTest extends TestCase
     }
 
     // =====================================================================
+    // La table croisee avec la carte reelle des filons (ZON-40)
+    // =====================================================================
+
+    /**
+     * Une signature vaut pour des filons qui existent, et reciproquement.
+     *
+     * Les lois precedentes verifiaient la table **contre elle-meme** : la Foret
+     * est a zero, le Marais est le seul erratique, aucune zone signee n'a
+     * disparu. Aucune ne croisait la table avec la carte des filons — et les
+     * deux moities avaient diverge en silence, dans les deux sens :
+     *
+     * - **trois signatures ne s'appliquaient jamais** (Foret, Vallons, Marais),
+     *   faute du moindre filon du perimetre de purete dans ces zones. La
+     *   reference du monde etait elle-meme ininstanciable, et la promesse phare
+     *   du modele — « le Marais nocturne est le premier endroit ou un joueur
+     *   d'Acte II voit du Pur », `night_weight_shift: 30` — ne decrivait rien ;
+     * - **deux zones tiraient sans signature** (Mer de Sel, Pas de Givre) : deux
+     *   bouts de carte qui rendaient exactement ce que rend la Foret.
+     *
+     * Un parametre qui ne s'applique a rien et une zone qui n'applique aucun
+     * parametre se lisent pareil dans le code — c'est-a-dire pas du tout.
+     */
+    public function testEverySignatureAppliesToARealVeinAndEveryVeinIsSigned(): void
+    {
+        $loader = new ZoneDefinitionLoader($this->root());
+        $scope = new PurityScope(new PurityDefinitionLoader($this->root()));
+        $signatures = (new PurityDefinitionLoader($this->root()))->load()['signatures'];
+
+        $zonesWithAmethyst = [];
+        foreach ($loader->loadFile($loader->defaultFile())['zones'] as $zone) {
+            foreach ($zone['gather'] ?? [] as $resource) {
+                if ($scope->coversSlug($resource['item'])) {
+                    $zonesWithAmethyst[(string) $zone['slug']] = true;
+                    break;
+                }
+            }
+        }
+
+        self::assertNotEmpty($zonesWithAmethyst, 'Aucun filon du perimetre de purete : la loi ne verifie rien.');
+
+        $inert = array_values(array_diff(array_keys($signatures), array_keys($zonesWithAmethyst)));
+        $unsigned = array_values(array_diff(array_keys($zonesWithAmethyst), array_keys($signatures)));
+
+        self::assertSame([], $inert, 'Ces zones portent une signature qui ne s\'applique a aucun filon : le parametre est ecrit pour personne.');
+        self::assertSame([], $unsigned, 'Ces zones ont un filon du perimetre de purete sans signature : elles tirent comme la Foret, ce que GAME_ZONES § 4 interdit.');
+    }
+
+    /**
+     * Le Pur nocturne du Marais est atteignable, filon en main.
+     *
+     * La loi ci-dessus dit que la signature s'applique a **quelque chose** ;
+     * celle-ci dit que ce quelque chose tient la promesse. Un affleurement
+     * ereinte ne rendrait rien de mieux la nuit que le jour — c'est la vitalite
+     * qui gagne — donc la promesse ne vaut qu'a filon vivant, et c'est ce que
+     * cette loi fixe.
+     */
+    public function testTheMarshVeinCanActuallyYieldPureAtNight(): void
+    {
+        $loader = new ZoneDefinitionLoader($this->root());
+        $scope = new PurityScope(new PurityDefinitionLoader($this->root()));
+
+        $marshVeins = [];
+        foreach ($loader->loadFile($loader->defaultFile())['zones'] as $zone) {
+            if ('marais-brumeux' !== $zone['slug']) {
+                continue;
+            }
+
+            foreach ($zone['gather'] ?? [] as $resource) {
+                if ($scope->coversSlug($resource['item'])) {
+                    $marshVeins[] = (string) $resource['slug'];
+                }
+            }
+        }
+
+        self::assertNotEmpty($marshVeins, 'Le Marais n\'a aucun filon du perimetre de purete : le Pur nocturne reste une phrase de document.');
+
+        $night = $this->drawer(true)->weightsFor(Purity::Parfait, 0, $this->zone('marais-brumeux'));
+
+        self::assertGreaterThan(0, $night['pur']);
+    }
+
+    // =====================================================================
     // Fixtures
     // =====================================================================
 
