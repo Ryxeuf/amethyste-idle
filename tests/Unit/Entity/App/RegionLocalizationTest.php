@@ -41,7 +41,7 @@ class RegionLocalizationTest extends TestCase
     public function testSetNameTranslationsIgnoresBlankValuesAndInvalidKeys(): void
     {
         $region = new Region();
-        $region->setName('Terres Sauvages');
+        $region->setName('Marches Sauvages');
         $region->setNameTranslations([
             'en' => 'Wildlands',
             'de' => '   ',
@@ -52,20 +52,20 @@ class RegionLocalizationTest extends TestCase
 
         $this->assertSame(['en' => 'Wildlands'], $region->getNameTranslations());
         $this->assertSame('Wildlands', $region->getLocalizedName('en'));
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('de'));
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('es'));
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('it'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('de'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('es'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('it'));
     }
 
     public function testSetNameTranslationsWithNullResetsStorage(): void
     {
         $region = new Region();
-        $region->setName('Terres Sauvages');
+        $region->setName('Marches Sauvages');
         $region->setNameTranslations(['en' => 'Wildlands']);
         $region->setNameTranslations(null);
 
         $this->assertSame([], $region->getNameTranslations());
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('en'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('en'));
     }
 
     public function testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull(): void

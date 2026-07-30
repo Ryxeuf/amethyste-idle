@@ -53,9 +53,9 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($sanctuaire);
         $this->addReference('region_sanctuaire', $sanctuaire);
 
-        // Région 3 : Terres Sauvages (future zone d'expansion, contestable)
+        // Région 3 : Marches Sauvages (future zone d'expansion, contestable)
         $terresSauvages = new Region();
-        $terresSauvages->setName('Terres Sauvages');
+        $terresSauvages->setName('Marches Sauvages');
         $terresSauvages->setNameTranslations(['en' => 'Wildlands']);
         $terresSauvages->setSlug('terres-sauvages');
         $terresSauvages->setDescription('Contrées dangereuses au-delà des plaines. Riches en minerais rares mais peuplées de monstres redoutables.');
@@ -73,7 +73,7 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         // seule region portait des cartes, et un joueur aux mines, au marais ou
         // sur la crete n'appartenait a aucun marche.
         //
-        // L'ecart de taxe (5 % dans les Plaines, 8 % dans les Terres Sauvages)
+        // L'ecart de taxe (5 % dans les Plaines, 8 % dans les Marches Sauvages)
         // est le levier d'arbitrage : la matiere premiere se recolte au nord,
         // la demande est au sud, et le transport se paie en temps de voyage.
         foreach (['map_4', 'map_5', 'map_6'] as $mapReference) {
