@@ -1,0 +1,38 @@
+{% extends 'game/character/tunnel/_shell.html.twig' %}
+
+{% block step_body %}
+    {# ONB-05 : le seul pas sans refus possible. Une absence de choix est un
+       defaut acceptable, et bloquer la creation sur une couleur de cheveux
+       serait absurde. #}
+    <form method="post" action="{{ path('app_character_tunnel_step', {step: 'face'}) }}" class="space-y-5">
+        {% for field in ['body', 'hair'] %}
+            <div>
+                <span class="ds-label block mb-2">{{ ('game.character.tunnel.face.' ~ field)|trans }}</span>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {% for key, value in choices[field] ?? {} %}
+                        <label class="ds-row cursor-pointer text-center text-xs">
+                            <input type="radio" name="{{ field }}" value="{{ value }}"
+                                   {% if attribute(draft, field) == value %}checked{% endif %}>
+                            <span class="block truncate">{{ key }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div>
+            <span class="ds-label block mb-2">{{ 'game.character.tunnel.face.hair_color'|trans }}</span>
+            <div class="flex flex-wrap gap-2">
+                {% for label, hex in hairColors %}
+                    <label class="cursor-pointer">
+                        <input type="radio" name="hairColor" value="{{ hex }}" class="sr-only"
+                               {% if draft.hairColor == hex %}checked{% endif %}>
+                        <span class="inline-block w-8 h-8 rounded-full border border-line" style="background: {{ hex }}" title="{{ label }}"></span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="ds-btn ds-btn--primary w-full">{{ 'game.character.tunnel.face.done'|trans }}</button>
+    </form>
+{% endblock %}

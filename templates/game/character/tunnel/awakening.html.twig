@@ -1,0 +1,21 @@
+{# ONB-05 — l'eveil : un paragraphe, **un bouton**, vers l'ecran de zone.
+
+   Jamais le hub. Le premier ecran d'un joueur doit etre un lieu ou il peut
+   agir, pas un tableau de bord qui n'a encore rien a lui raconter (A4). #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'game.character.tunnel.awakening.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+    <div class="w-full max-w-lg text-center">
+        <div class="ds-card">
+            <h1 class="ds-title mb-4">{{ 'game.character.tunnel.awakening.title'|trans }}</h1>
+            <p class="text-sm text-ink-soft mb-8">{{ 'game.character.tunnel.awakening.fiction'|trans }}</p>
+            <a href="{{ path('app_game_zone') }}" class="ds-btn ds-btn--primary w-full">
+                {{ 'game.character.tunnel.awakening.action'|trans }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

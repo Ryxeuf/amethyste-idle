@@ -1,0 +1,25 @@
+{% extends 'game/character/tunnel/_shell.html.twig' %}
+
+{% block step_body %}
+    {# ONB-05 : le peuple est la seule decision du tunnel qui porte quelque
+       chose. Elle a donc son ecran, et chaque option montre ce qu'elle
+       apporte — une capacite qui touche ce qu'on **sait**, jamais ce qu'on
+       produit (§ 4.5). #}
+    <form method="post" action="{{ path('app_character_tunnel_step', {step: 'people'}) }}" class="space-y-3">
+        {% for race in races %}
+            {% set capability = capabilities[race.slug] ?? null %}
+            <label class="ds-row cursor-pointer flex items-start gap-3">
+                <input type="radio" name="race" value="{{ race.slug }}" class="mt-1"
+                       {% if draft.raceSlug == race.slug %}checked{% endif %} required>
+                <span class="min-w-0">
+                    <span class="block font-medium text-ink">{{ race.name }}</span>
+                    {% if capability is not null %}
+                        <span class="block text-xs text-brand">{{ capability.name|trans }}</span>
+                        <span class="block text-xs text-ink-soft">{{ capability.description|trans }}</span>
+                    {% endif %}
+                </span>
+            </label>
+        {% endfor %}
+        <button type="submit" class="ds-btn ds-btn--primary w-full">{{ 'game.character.tunnel.continue'|trans }}</button>
+    </form>
+{% endblock %}
