@@ -146,7 +146,11 @@ class PlayerQuestHelper
         $necessary = 0;
         $tracking = $playerQuest->getTracking();
 
-        foreach (['monsters', 'collect', 'craft', 'deliver', 'explore', 'talk_to', 'boss_challenge', 'defend', 'escort', 'puzzle'] as $type) {
+        // Tout type produit par `QuestTrackingFormater` doit figurer ici : un
+        // type absent ne compte pour rien, et une quete qui n'a que celui-la
+        // arrive a `necessary === 0` — donc « terminee » des l'acceptation.
+        // `QuestGestureContractTest` tient la liste alignee sur le formateur.
+        foreach (['monsters', 'collect', 'craft', 'deliver', 'explore', 'talk_to', 'boss_challenge', 'defend', 'escort', 'puzzle', 'gesture'] as $type) {
             if (isset($tracking[$type])) {
                 foreach ($tracking[$type] as $entry) {
                     $count += $entry['count'] ?? 0;

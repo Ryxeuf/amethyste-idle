@@ -3,6 +3,7 @@
 namespace App\GameEngine\Quest;
 
 use App\Entity\Game\Quest;
+use App\Enum\QuestGesture;
 
 class QuestTrackingFormater
 {
@@ -59,6 +60,11 @@ class QuestTrackingFormater
         $puzzle = $this->formatPuzzle($requirements);
         if (!empty($puzzle)) {
             $tracking['puzzle'] = $puzzle;
+        }
+
+        $gesture = $this->formatGesture($requirements);
+        if (!empty($gesture)) {
+            $tracking['gesture'] = $gesture;
         }
 
         return $tracking;
@@ -278,6 +284,53 @@ class QuestTrackingFormater
         }
 
         return $escort;
+    }
+
+    /**
+     * Format gesture requirements into tracking entries (ONB-12a).
+     *
+     * Requirements format: [['gesture' => 'equip_item', 'target' => 'sword', 'name' => 'Porter une arme']]
+     *
+     * `target` est facultatif : absent, n'importe quelle cible convient — « sertir
+     * une materia », sans dire laquelle. Present, il est compare aux lectures
+     * annoncees par l'emetteur (slug, famille, element).
+     *
+     * Un geste inconnu de `QuestGesture` est **refuse ici**, a la construction du
+     * suivi : une quete dont l'objectif n'est alimente par personne ne se termine
+     * jamais, et rien ne le signale — le joueur reste bloque sans message.
+     *
+     * @param array<string, mixed> $requirements
+     *
+     * @return array<int, array{count: int, necessary: int, gesture: string, target: string|null, name: string}>
+     */
+    public function formatGesture(array $requirements): array
+    {
+        $declared = $requirements['gesture'] ?? null;
+        if (!\is_array($declared)) {
+            return [];
+        }
+
+        $gestures = [];
+        foreach ($declared as $entry) {
+            if (!\is_array($entry)) {
+                continue;
+            }
+
+            $gesture = QuestGesture::tryFrom((string) ($entry['gesture'] ?? ''));
+            if (null === $gesture) {
+                throw new \InvalidArgumentException(sprintf('Geste de quete inconnu : « %s ». Aucun appelant ne l\'emet, l\'objectif ne se terminerait jamais.', (string) ($entry['gesture'] ?? '')));
+            }
+
+            $gestures[] = [
+                'count' => 0,
+                'necessary' => (int) ($entry['count'] ?? 1),
+                'gesture' => $gesture->value,
+                'target' => isset($entry['target']) ? (string) $entry['target'] : null,
+                'name' => (string) ($entry['name'] ?? $gesture->labelKey()),
+            ];
+        }
+
+        return $gestures;
     }
 
     /**

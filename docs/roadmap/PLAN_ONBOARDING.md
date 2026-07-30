@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **9/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **9/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -37,7 +37,8 @@
 | ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
 | ONB-11 ✅ | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
-| ONB-12 | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
+| ONB-12a ✅ | Les quatre gestes que la chaîne doit constater (moteur) | M | ★★★ |
+| ONB-12b | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
 | ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
 | ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
@@ -53,7 +54,7 @@
 Piste A — Le compte existe    : ONB-01 → ONB-02 → ONB-03 → ONB-04
 Piste B — Le tunnel           : ONB-05 → ONB-06, ONB-07        (06 et 07 paralleles)
 Piste C — La boucle du jeu    : ONB-20 → ONB-08 → ONB-09
-                                ONB-10, ONB-11  (paralleles)  → ONB-12 → ONB-13
+                                ONB-10, ONB-11  (paralleles)  → ONB-12a → ONB-12b → ONB-13
 Piste D — L'acte I repare     : ONB-14, ONB-15, ONB-16        (paralleles)
 Piste E — Apprentissage & preuve : ONB-17, ONB-18, ONB-19
 ```
@@ -345,11 +346,29 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       lanceur sur un vrai monstre, et le mannequin sans zone
 - [ ] **Reste à ONB-12** : la quête qui déclenche les deux combats
 
-### ONB-12 — La chaîne de l'acte I : dix quêtes, trois tours de boucle (L | ★★★ | HAUTE)
+### ONB-12a — Les quatre gestes que la chaîne doit constater ✅ (M | ★★★ | HAUTE)
+> Découpé d'ONB-12 (règle #8). Le moteur de quête savait compter des monstres, des objets, des
+> zones et des PNJ ; il ne savait rien dire du **troisième temps** de la boucle. La moitié des dix
+> étapes n'avait donc aucune condition de fin.
+> Prérequis : ← ONB-11, ONB-20b
+- [x] Une famille d'objectif unique, `gesture` : un **acte ponctuel dont la preuve est l'acte
+      lui-même** — pas de cible structurée, donc pas quatre types
+- [x] Quatre gestes, chacun prouvant **un tour de boucle entier** : porter une pièce (le nœud de
+      port exige l'arbre, qui exige le parchemin), sertir une matéria (le nœud d'accord),
+      lancer un sort, lancer une expédition
+- [x] Le **lancer** compte, jamais le coup au but : rater n'est pas ne pas avoir appris
+- [x] La cible est annoncée en **plusieurs lectures** (slug *et* famille d'arme ; slug *et*
+      élément) — c'est ce qui permettra à l'étape 3 de demander « une matéria de votre élément »
+- [x] Contrat vérifié **dans les deux sens** : un geste écrit dans une fixture existe, et un geste
+      déclaré est réellement émis par un appelant
+- [x] Piège fermé : `getPlayerQuestProgress()` rend **100** quand le total nécessaire vaut zéro —
+      un type de suivi oublié produit une quête terminée dès son acceptation, pas une quête bloquée
+
+### ONB-12b — La chaîne de l'acte I : dix quêtes, trois tours de boucle (L | ★★★ | HAUTE)
 > Décision A14, et le cœur du dossier. Le tutoriel actuel commence par le voyage (**D6**, seul
 > geste time-gaté) et **ne mentionne jamais la matéria** — la seule source d'actions de combat
 > (règle 10) et le build du personnage.
-> Prérequis : ← ONB-08, ONB-09, ONB-10, ONB-11, ONB-15, ONB-16 ; croise NAR-20
+> Prérequis : ← ONB-08, ONB-09, ONB-10, ONB-11, ONB-12a, ONB-15, ONB-16 ; croise NAR-20
 - [ ] La chaîne de GAME_ONBOARDING §5.2, en dix quêtes :
   - [ ] **1 — Le maître d'armes.** Récompense : **une arme au choix** + **le parchemin de
         l'arbre qui l'autorise**

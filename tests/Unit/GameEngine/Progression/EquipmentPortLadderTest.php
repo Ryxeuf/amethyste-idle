@@ -194,6 +194,52 @@ class EquipmentPortLadderTest extends TestCase
     }
 
     /**
+     * Chaque echelon se retrouve depuis son slug de competence (ONB-12a).
+     *
+     * `familyOfPortSkill()` repond a « ceci est-il une epee ? » sans table
+     * parallele — c'est deja l'echelle qui le sait.
+     *
+     * L'echelon 1 declare son slug ici meme : rien ne peut deriver. Les
+     * echelons 2 et 3, eux, sont declares par **reference de fixture** — le
+     * rewiring de `SkillFixtures` en a besoin — et leur slug s'en deduit par la
+     * convention du projet (`_` → `-`). C'est la que se situe le risque : si un
+     * slug cessait de la suivre, la famille deviendrait introuvable **en
+     * silence**, et un objectif de port ne se terminerait jamais.
+     */
+    public function testEveryRungIsReachableFromItsSkillSlug(): void
+    {
+        $skills = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/Game/SkillFixtures.php');
+        $catalog = $this->catalog();
+
+        $unreachable = [];
+        foreach ($catalog->families() as $key => $family) {
+            self::assertSame($key, $catalog->familyOfPortSkill($family['rung1']['slug']));
+
+            foreach ([$family['rung2'], $family['rung3']] as $reference) {
+                $slug = str_replace('_', '-', $reference);
+                if (!str_contains($skills, sprintf("'slug' => '%s'", $slug))) {
+                    $unreachable[] = $key . '/' . $slug;
+                    continue;
+                }
+                self::assertSame($key, $catalog->familyOfPortSkill($slug));
+            }
+        }
+
+        self::assertSame([], $unreachable, sprintf(
+            "Ces echelons n'ont aucune competence livree portant ce slug : %s.\nLa famille serait introuvable, et l'objectif de port ne se terminerait jamais.",
+            implode(', ', $unreachable),
+        ));
+    }
+
+    /**
+     * Une competence etrangere a l'echelle n'appartient a aucune famille.
+     */
+    public function testASkillOutsideTheLadderBelongsToNoFamily(): void
+    {
+        self::assertNull($this->catalog()->familyOfPortSkill('berserk-apprenti-1'));
+    }
+
+    /**
      * Garde-fou du garde-fou : la derivation d'element doit trouver un domaine.
      */
     public function testTheElementLookupActuallyFindsDomains(): void

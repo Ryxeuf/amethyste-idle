@@ -3,7 +3,11 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\PlayerItem;
+use App\Entity\Game\Skill;
+use App\Enum\QuestGesture;
+use App\Event\Game\PlayerGestureEvent;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
@@ -11,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/game/inventory/equipment/equip/{id}', name: 'app_game_inventory_equipment_equip', methods: ['POST'])]
 class EquipItemController extends AbstractController
@@ -21,6 +26,8 @@ class EquipItemController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly PlayerItemHelper $playerItemHelper,
+        private readonly EquipmentPortCatalog $equipmentPortCatalog,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -84,6 +91,7 @@ class EquipItemController extends AbstractController
 
             $itemToEquip->setGear($gearValue);
             $this->entityManager->flush();
+            $this->announceEquipped($itemToEquip);
 
             return $this->redirectToRoute('app_game_inventory_equipment_list');
         }
@@ -112,7 +120,40 @@ class EquipItemController extends AbstractController
 
         $itemToEquip->setGear($gearValue);
         $this->entityManager->flush();
+        $this->announceEquipped($itemToEquip);
 
         return $this->redirectToRoute('app_game_inventory_equipment_list');
+    }
+
+    /**
+     * Annonce le port (ONB-12a).
+     *
+     * Le geste est annonce **apres** les deux refus qui le precedent — pas
+     * d'emplacement d'outil, pas de nœud de port (ONB-20b) — donc jamais pour
+     * une piece qui n'a pas ete portee. C'est ce qui en fait une preuve
+     * suffisante du tour de boucle : parchemin, arbre, nœud, arme.
+     */
+    private function announceEquipped(PlayerItem $item): void
+    {
+        $generic = $item->getGenericItem();
+
+        // Les lectures possibles de la cible : le slug de l'objet et la famille
+        // d'arme. Une quete d'introduction demande « une arme », jamais une epee
+        // courte precise — sinon le choix de l'etape 1 n'en serait pas un.
+        $targets = [$generic->getSlug()];
+        foreach ($generic->getRequirements() as $requirement) {
+            if (!$requirement instanceof Skill) {
+                continue;
+            }
+            $family = $this->equipmentPortCatalog->familyOfPortSkill($requirement->getSlug());
+            if (null !== $family) {
+                $targets[] = $family;
+            }
+        }
+
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::EquipItem, $targets),
+            PlayerGestureEvent::NAME,
+        );
     }
 }
