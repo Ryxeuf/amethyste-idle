@@ -462,18 +462,13 @@
                             Tutoriel — {{ tuto_step.label }} ({{ tuto_step.stepNumber }}/{{ tuto_step.totalSteps }})
                         </div>
                         <div class="text-sm text-ink truncate">{{ tuto_step.objective }}</div>
-                        {# Hint link: direct shortcut to the relevant page #}
-                        {% if tuto_step.value in [0, 1] %}
-                            <a href="{{ path('app_game_zone') }}" class="tutorial-hint-link mt-0.5">
-                                <span class="tutorial-hint-arrow">→</span> Aller a la Zone
-                            </a>
-                        {% elseif tuto_step.value == 3 %}
-                            <a href="{{ path('app_game_quests') }}" class="tutorial-hint-link mt-0.5">
-                                <span class="tutorial-hint-arrow">→</span> Voir les Quetes
-                            </a>
-                        {% elseif tuto_step.value == 4 %}
-                            <a href="{{ path('app_game_craft') }}" class="tutorial-hint-link mt-0.5">
-                                <span class="tutorial-hint-arrow">→</span> Aller a l'Artisanat
+                        {# ONB-14 : la destination vient de l'etape, pas d'un `if`
+                           sur sa valeur entiere. Le raccourci vivait ici, donc
+                           ajouter une etape demandait d'y penser a deux endroits
+                           — et celui-ci ne se plaint jamais. #}
+                        {% if tuto_step.hintRoute is not null %}
+                            <a href="{{ path(tuto_step.hintRoute) }}" class="tutorial-hint-link mt-0.5">
+                                <span class="tutorial-hint-arrow">→</span> {{ ('game.onboarding.hint.' ~ tuto_step.name|lower)|trans }}
                             </a>
                         {% endif %}
                     </div>

@@ -7,7 +7,6 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\Game\Race;
 use App\Entity\User;
-use App\Enum\TutorialStep;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Service\Avatar\AvatarHashRecalculator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,7 +60,6 @@ class PlayerFactory
         $player->setSpeed(self::BASE_SPEED);
         $player->setHit(self::BASE_HIT);
         $player->setGils(0);
-        $player->setTutorialStep(TutorialStep::Movement->value);
 
         $spawnMap = $this->getSpawnMap();
         $player->setMap($spawnMap);

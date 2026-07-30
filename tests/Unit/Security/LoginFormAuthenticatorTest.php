@@ -4,9 +4,11 @@ namespace App\Tests\Unit\Security;
 
 use App\Entity\App\Player;
 use App\Entity\User;
+use App\GameEngine\Tutorial\TutorialManager;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,12 +27,14 @@ use Symfony\Component\Security\Http\SecurityRequestAttributes;
 class LoginFormAuthenticatorTest extends TestCase
 {
     private UrlGeneratorInterface $urlGenerator;
+    private TutorialManager&MockObject $tutorialManager;
     private LoginFormAuthenticator $authenticator;
 
     protected function setUp(): void
     {
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
-        $this->authenticator = new LoginFormAuthenticator($this->urlGenerator);
+        $this->tutorialManager = $this->createMock(TutorialManager::class);
+        $this->authenticator = new LoginFormAuthenticator($this->urlGenerator, $this->tutorialManager);
     }
 
     public function testRedirectsToCharacterCreateWhenNoPlayers(): void
@@ -89,8 +93,9 @@ class LoginFormAuthenticatorTest extends TestCase
      */
     public function testRedirectsToTheZoneScreenWhenTheIntroIsUnfinished(): void
     {
+        // ONB-14 : l'etat d'onboarding se lit a un seul endroit — l'arc.
         $player = new Player();
-        $player->setTutorialStep(2);
+        $this->tutorialManager->method('isInTutorial')->willReturn(true);
 
         $user = $this->createMock(User::class);
         $user->method('getPlayers')->willReturn(new ArrayCollection([$player]));

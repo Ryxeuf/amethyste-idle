@@ -3,86 +3,95 @@
 namespace App\GameEngine\Tutorial;
 
 use App\Entity\App\Player;
+use App\Entity\App\PlayerQuest;
 use App\Enum\TutorialStep;
-use App\Event\Game\TutorialCompletedEvent;
+use App\Repository\PlayerQuestCompletedRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * L'etat d'onboarding, lu a un seul endroit (ONB-14).
+ *
+ * **Ferme la dette D7.** Ce service ecrivait `player.tutorial_step` et faisait
+ * avancer un compteur que cinq abonnements alimentaient en parallele de l'arc
+ * `intro`. Deux etats, aucun lien : on pouvait terminer le tutoriel sans avoir
+ * touche a l'arc, abandonner l'arc en restant « en tutoriel », et « passer le
+ * tutoriel » n'abandonnait rien.
+ *
+ * Il ne conserve plus rien. L'arc est la source ; tout se deduit du nombre de
+ * ses quetes terminees, et le seul etat propre a l'onboarding est **le refus** :
+ * un joueur qui a dit « passer » l'a dit une fois pour toutes.
+ */
 class TutorialManager
 {
+    public const ARC = 'intro';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly PlayerQuestCompletedRepository $completedRepository,
     ) {
     }
 
     public function getCurrentStep(Player $player): ?TutorialStep
     {
-        $step = $player->getTutorialStep();
+        if ($player->hasSkippedOnboarding()) {
+            return null;
+        }
 
-        return null !== $step ? TutorialStep::tryFrom($step) : null;
+        return TutorialStep::fromCompletedSteps($this->completedSteps($player));
     }
 
     public function isCompleted(Player $player): bool
     {
-        return null === $player->getTutorialStep();
+        return null === $this->getCurrentStep($player);
     }
 
     public function isInTutorial(Player $player): bool
     {
-        return null !== $player->getTutorialStep();
+        return null !== $this->getCurrentStep($player);
     }
 
-    public function advanceIfOnStep(Player $player, TutorialStep $expectedStep): bool
+    /**
+     * Quetes de l'arc `intro` terminees par ce joueur.
+     */
+    public function completedSteps(Player $player): int
     {
-        $current = $this->getCurrentStep($player);
-
-        if (null === $current || $current !== $expectedStep) {
-            return false;
-        }
-
-        return $this->advance($player);
+        return $this->completedRepository->countCompletedInArc($player, self::ARC);
     }
 
-    public function advance(Player $player): bool
-    {
-        $current = $this->getCurrentStep($player);
-
-        if (null === $current) {
-            return false;
-        }
-
-        $next = $current->next();
-
-        if (null === $next) {
-            $this->complete($player);
-
-            return true;
-        }
-
-        $player->setTutorialStep($next->value);
-        $this->entityManager->flush();
-
-        return true;
-    }
-
+    /**
+     * Passer le tutoriel, c'est abandonner l'arc — et c'est le meme geste.
+     *
+     * C'etait la moitie la plus visible de D7 : le bandeau disparaissait, les
+     * quetes restaient au journal, et le joueur gardait une chaine ouverte
+     * qu'il venait explicitement de refuser.
+     */
     public function skip(Player $player): void
     {
-        if ($this->isCompleted($player)) {
+        if ($player->hasSkippedOnboarding()) {
             return;
         }
 
-        $this->complete($player);
+        $player->skipOnboarding();
+
+        foreach ($this->activeArcQuests($player) as $playerQuest) {
+            $this->entityManager->remove($playerQuest);
+        }
+
+        $this->entityManager->flush();
     }
 
-    private function complete(Player $player): void
+    /**
+     * @return list<PlayerQuest>
+     */
+    private function activeArcQuests(Player $player): array
     {
-        $player->setTutorialStep(null);
-        $this->entityManager->flush();
+        $active = [];
+        foreach ($player->getQuests() as $playerQuest) {
+            if ($playerQuest instanceof PlayerQuest && self::ARC === $playerQuest->getQuest()->getStoryArc()) {
+                $active[] = $playerQuest;
+            }
+        }
 
-        $this->eventDispatcher->dispatch(
-            new TutorialCompletedEvent($player),
-            TutorialCompletedEvent::NAME,
-        );
+        return $active;
     }
 }

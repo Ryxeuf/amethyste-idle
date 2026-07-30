@@ -1781,6 +1781,13 @@
     "onboarding": {
       "home": {
         "letter": "A letter awaits you. The people of %zone% have noticed your work — you now have a name there, and someone who knows you."
+      },
+      "hint": {
+        "weapon": "Go to the Zone",
+        "materia": "Go to the Zone",
+        "trade": "See the Quests",
+        "departure": "Go to the Zone",
+        "expedition": "Go to the Zone"
       }
     }
   },

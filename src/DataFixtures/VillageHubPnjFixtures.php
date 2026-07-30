@@ -387,43 +387,43 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                     ['next' => 6],
                 ],
             ],
-            // 1 — Step Movement
+            // 1 — L'arme (arc 1-2)
             [
-                'text' => 'Bienvenue dans le Village de Lumière, {{player_name}} ! Je suis Lyra, et je suis là pour vous guider dans vos premiers pas. Commencez par vous déplacer : cliquez sur une case adjacente sur la carte pour bouger.',
+                'text' => 'Bienvenue au Fanal, {{player_name}} ! Je suis Lyra. Allez voir Ysold, notre maîtresse d\'armes : elle vous fera choisir une arme, et la voie qui apprend à la tenir. Lisez le parchemin, prenez le nœud, portez l\'arme — c\'est la boucle de tout le jeu.',
                 'choices' => [
-                    ['text' => 'Comment je me déplace ?', 'action' => 'next', 'next' => 7],
+                    ['text' => 'Un parchemin, une voie ?', 'action' => 'next', 'next' => 7],
                     ['text' => 'Compris, merci !', 'action' => 'close'],
                 ],
             ],
-            // 2 — Step Combat
+            // 2 — La materia (arc 3-5)
             [
-                'text' => 'Bravo pour vos premiers pas, {{player_name}} ! Maintenant, il est temps d\'affronter votre premier monstre. Quittez le village et explorez les environs — des créatures rôdent dans les zones sauvages.',
+                'text' => 'Bravo, {{player_name}} ! Gareth a planté un mannequin sur la place — il ne rend pas les coups. Battez-le, on vous remettra une matéria de votre voie. Accordez-la, sertissez-la, puis lancez son sort sur le second mannequin.',
                 'choices' => [
-                    ['text' => 'Des conseils pour le combat ?', 'action' => 'next', 'next' => 8],
+                    ['text' => 'Qu\'est-ce qu\'une matéria ?', 'action' => 'next', 'next' => 8],
                     ['text' => 'J\'y vais !', 'action' => 'close'],
                 ],
             ],
-            // 3 — Step Inventory
+            // 3 — Le metier (arc 6-8)
             [
-                'text' => 'Excellent combat, {{player_name}} ! Après chaque victoire, vous pouvez récupérer du butin. N\'oubliez pas de collecter vos récompenses sur l\'écran de butin !',
+                'text' => 'Vous savez vous battre, {{player_name}}. Il vous reste un choix, et c\'est le plus structurant de votre semaine : un métier de récolte. Cinq voies, aucune fermée. Récoltez, puis fabriquez ce que vous aurez ramassé.',
                 'choices' => [
-                    ['text' => 'Où va mon butin ?', 'action' => 'next', 'next' => 9],
+                    ['text' => 'Lequel choisir ?', 'action' => 'next', 'next' => 9],
                     ['text' => 'Compris !', 'action' => 'close'],
                 ],
             ],
-            // 4 — Step Quests
+            // 4 — Le depart (arc 9)
             [
-                'text' => 'Votre inventaire se remplit bien ! Il est temps de vous lancer dans une quête. Parlez aux habitants du village — certains ont des missions à vous confier. Cherchez les icônes au-dessus des PNJ.',
+                'text' => 'Il est temps de partir, {{player_name}}. Trois chemins quittent le Fanal, et je ne vous en imposerai aucun. Sachez seulement qu\'un voyage prend du temps réel : c\'est la première attente que ce monde vous demandera.',
                 'choices' => [
-                    ['text' => 'Qui donne des quêtes ici ?', 'action' => 'next', 'next' => 10],
+                    ['text' => 'Où aller en premier ?', 'action' => 'next', 'next' => 10],
                     ['text' => 'Je vais explorer', 'action' => 'close'],
                 ],
             ],
-            // 5 — Step Craft
+            // 5 — L'expedition (arc 10)
             [
-                'text' => 'Bientôt un véritable aventurier, {{player_name}} ! Il vous reste à découvrir l\'artisanat. Rendez-vous à un atelier pour fabriquer votre premier objet à partir des matériaux que vous avez collectés.',
+                'text' => 'Une dernière chose, {{player_name}}, et c\'est celle qu\'on oublie. Avant de fermer, envoyez-vous en expédition : votre personnage travaillera sans vous, et quelque chose vous attendra au retour.',
                 'choices' => [
-                    ['text' => 'Comment fonctionne l\'artisanat ?', 'action' => 'next', 'next' => 11],
+                    ['text' => 'Combien de temps ?', 'action' => 'next', 'next' => 11],
                     ['text' => 'J\'y vais !', 'action' => 'close'],
                 ],
             ],
@@ -437,35 +437,35 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // 7 — Detail: Movement help
             [
-                'text' => 'Cliquez sur une case voisine de votre personnage pour vous y déplacer. Vous pouvez aussi cliquer sur une case plus éloignée — votre personnage trouvera le chemin tout seul. Le village est une zone sûre, profitez-en pour vous familiariser !',
+                'text' => 'Un parchemin ouvre un arbre — c\'est tout ce qu\'il fait, et il se vend à tout le monde au même prix. L\'arbre ouvert, vous y prenez le nœud qui autorise votre arme. Sans ce nœud, l\'arme reste dans le sac : ce n\'est pas une punition, c\'est le sens du geste.',
                 'choices' => [
                     ['text' => 'Merci !', 'action' => 'close'],
                 ],
             ],
             // 8 — Detail: Combat help
             [
-                'text' => 'En combat, vous attaquez automatiquement avec votre arme. Gardez un œil sur vos points de vie et utilisez des potions si nécessaire. Iris l\'Alchimiste, au nord-est du village, vend des potions de soin.',
+                'text' => 'Une matéria est un geste appris qu\'on porte sur soi. Elle ne s\'équipe pas : elle s\'accorde — un nœud dans votre arbre — puis se sertit dans un emplacement de votre équipement. C\'est la seule façon de lancer un sort. Iris vend des potions de soin, au cas où.',
                 'choices' => [
                     ['text' => 'Compris, merci !', 'action' => 'close'],
                 ],
             ],
             // 9 — Detail: Inventory help
             [
-                'text' => 'Votre butin est stocké dans votre sac. Ouvrez votre inventaire pour voir vos objets, les équiper ou les utiliser. Vous pouvez aussi déposer des objets à la banque chez Théodore, au nord du village.',
+                'text' => 'Celui que vous voudrez : les cinq se récoltent aux portes du Fanal, et aucun n\'en ferme un autre. Prenez celui dont le geste vous plaît — vous y passerez vos semaines. Théodore garde vos affaires si le sac déborde.',
                 'choices' => [
                     ['text' => 'Bien noté !', 'action' => 'close'],
                 ],
             ],
             // 10 — Detail: Quest help
             [
-                'text' => 'Oriane la Maîtresse des Quêtes se trouve à l\'est du village. D\'autres habitants peuvent aussi avoir des missions. Cherchez les icônes de quête au-dessus de leur tête — un point d\'exclamation signifie qu\'une quête est disponible.',
+                'text' => 'Là où vous avez travaillé, on vous connaît déjà un peu. Suivez ça. Oriane, à l\'est, garde les demandes des environs si vous préférez qu\'on vous dise où aller.',
                 'choices' => [
                     ['text' => 'J\'y vais, merci !', 'action' => 'close'],
                 ],
             ],
             // 11 — Detail: Craft help
             [
-                'text' => 'Pour fabriquer un objet, il vous faut des matériaux et une recette. Les matériaux se trouvent en explorant ou en vainquant des monstres. Rendez-vous à un atelier de craft pour combiner vos ressources.',
+                'text' => 'Une heure, quatre, ou douze — à vous. La plus courte suffit pour comprendre. Ce monde continue de tourner quand vous n\'êtes pas là, et c\'est voulu : personne ne devrait avoir à rester devant.',
                 'choices' => [
                     ['text' => 'Compris !', 'action' => 'close'],
                 ],

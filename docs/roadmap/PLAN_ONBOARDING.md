@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **11/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **12/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -40,7 +40,7 @@
 | ONB-12a ✅ | Les quatre gestes que la chaîne doit constater (moteur) | M | ★★★ |
 | ONB-12b ✅ | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
 | ONB-13 ✅ | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
-| ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
+| ONB-14 ✅ | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
 | ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
 | ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
@@ -410,13 +410,13 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 
 ## Piste D — L'acte I répare (parallélisable)
 
-### ONB-14 — Une seule source d'état d'onboarding (S | ★★ | MOYENNE)
+### ONB-14 — Une seule source d'état d'onboarding ✅ (S | ★★ | MOYENNE)
 > Ferme **D7**.
 > Prérequis : ← ONB-12
-- [ ] L'arc `intro` devient la **source** ; `TutorialStep` devient une **projection**
-- [ ] « Passer le tutoriel » et « abandonner l'arc » deviennent le même geste
-- [ ] `tutorial-complete` reste attaché à la clôture de l'arc
-- [ ] Tests : aucun état d'onboarding écrit à deux endroits (test de contrat)
+- [x] L'arc `intro` devient la **source** ; `TutorialStep` devient une **projection**
+- [x] « Passer le tutoriel » et « abandonner l'arc » deviennent le même geste
+- [x] `tutorial-complete` reste attaché à la clôture de l'arc
+- [x] Tests : aucun état d'onboarding écrit à deux endroits (test de contrat)
 
 ### ONB-15 — Réparer les quêtes `explore` de l'arc (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-29
 > Ferme **D4**. Le diagnostic était **en dessous de la réalité** : `map_id => 1` ne désigne pas

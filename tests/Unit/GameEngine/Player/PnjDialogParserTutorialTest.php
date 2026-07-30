@@ -5,6 +5,7 @@ namespace App\Tests\Unit\GameEngine\Player;
 use App\Entity\App\Player;
 use App\Enum\TutorialStep;
 use App\GameEngine\Player\PnjDialogParser;
+use App\GameEngine\Tutorial\TutorialManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,26 +18,30 @@ class PnjDialogParserTutorialTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
     private PlayerHelper&MockObject $playerHelper;
+    private TutorialManager&MockObject $tutorialManager;
     private PnjDialogParser $parser;
 
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->playerHelper = $this->createMock(PlayerHelper::class);
-        $this->parser = new PnjDialogParser($this->em, $this->playerHelper);
+        $this->tutorialManager = $this->createMock(TutorialManager::class);
+        $this->parser = new PnjDialogParser($this->em, $this->playerHelper, $this->tutorialManager);
     }
 
     public function testTutorialStepConditionMatchesCurrent(): void
     {
-        $player = $this->createPlayer(TutorialStep::Combat->value);
+        $player = new Player();
+        $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Materia);
+        $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $dialog = [
             [
                 'text' => '',
                 'conditional_next' => [
-                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Movement->value]]],
-                    ['next' => 2, 'next_condition' => ['tutorial_step' => [TutorialStep::Combat->value]]],
+                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Weapon->value]]],
+                    ['next' => 2, 'next_condition' => ['tutorial_step' => [TutorialStep::Materia->value]]],
                     ['next' => 3],
                 ],
             ],
@@ -52,15 +57,17 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialStepConditionNoMatchFallsThrough(): void
     {
-        $player = $this->createPlayer(TutorialStep::Craft->value);
+        $player = new Player();
+        $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Expedition);
+        $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $dialog = [
             [
                 'text' => '',
                 'conditional_next' => [
-                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Movement->value]]],
-                    ['next' => 2, 'next_condition' => ['tutorial_step' => [TutorialStep::Combat->value]]],
+                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Weapon->value]]],
+                    ['next' => 2, 'next_condition' => ['tutorial_step' => [TutorialStep::Materia->value]]],
                     ['next' => 3],
                 ],
             ],
@@ -76,7 +83,9 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialStepAcceptsMultipleValues(): void
     {
-        $player = $this->createPlayer(TutorialStep::Quests->value);
+        $player = new Player();
+        $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Departure);
+        $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $dialog = [
@@ -84,8 +93,8 @@ class PnjDialogParserTutorialTest extends TestCase
                 'text' => '',
                 'conditional_next' => [
                     ['next' => 1, 'next_condition' => ['tutorial_step' => [
-                        TutorialStep::Quests->value,
-                        TutorialStep::Craft->value,
+                        TutorialStep::Departure->value,
+                        TutorialStep::Expedition->value,
                     ]]],
                     ['next' => 2],
                 ],
@@ -101,14 +110,16 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialCompletedConditionWhenDone(): void
     {
-        $player = $this->createPlayer(null);
+        $player = new Player();
+        $this->tutorialManager->method('getCurrentStep')->willReturn(null);
+        $this->tutorialManager->method('isCompleted')->willReturn(true);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $dialog = [
             [
                 'text' => '',
                 'conditional_next' => [
-                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Movement->value]]],
+                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Weapon->value]]],
                     ['next' => 2, 'next_condition' => ['tutorial_completed' => true]],
                     ['next' => 3],
                 ],
@@ -125,7 +136,9 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialCompletedConditionWhenInProgress(): void
     {
-        $player = $this->createPlayer(TutorialStep::Movement->value);
+        $player = new Player();
+        $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Weapon);
+        $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $dialog = [
@@ -153,7 +166,7 @@ class PnjDialogParserTutorialTest extends TestCase
             [
                 'text' => '',
                 'conditional_next' => [
-                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Movement->value]]],
+                    ['next' => 1, 'next_condition' => ['tutorial_step' => [TutorialStep::Weapon->value]]],
                     ['next' => 2, 'next_condition' => ['tutorial_completed' => true]],
                     ['next' => 3],
                 ],
@@ -168,12 +181,4 @@ class PnjDialogParserTutorialTest extends TestCase
         $this->assertSame(3, $result[0]['next']);
     }
 
-    private function createPlayer(?int $tutorialStep): Player
-    {
-        $player = new Player();
-        $player->setName('TestPlayer');
-        $player->setTutorialStep($tutorialStep);
-
-        return $player;
-    }
 }

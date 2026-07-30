@@ -4,144 +4,179 @@ namespace App\Tests\Unit\GameEngine\Tutorial;
 
 use App\Entity\App\Player;
 use App\Enum\TutorialStep;
-use App\Event\Game\TutorialCompletedEvent;
 use App\GameEngine\Tutorial\TutorialManager;
+use App\Repository\PlayerQuestCompletedRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Un seul etat d'onboarding (ONB-14).
+ *
+ * **La dette D7, telle qu'elle se jouait.** `player.tutorial_step` avancait par
+ * cinq abonnements a des evenements de jeu, l'arc `intro` avancait par ses
+ * quetes, et rien ne les reliait. Un joueur pouvait terminer le tutoriel sans
+ * avoir touche a l'arc — il suffisait de voyager, de tuer, de ramasser, de
+ * rendre une quete quelconque et de fabriquer — puis obtenir le succes
+ * `tutorial-complete` bien avant la vraie fin de l'acte I.
+ *
+ * Le remede n'est pas de synchroniser les deux : c'est de n'en garder qu'un.
+ * **Deux etats ne peuvent plus diverger quand il n'y en a qu'un.**
+ */
 class TutorialManagerTest extends TestCase
 {
-    private EntityManagerInterface&MockObject $em;
-    private EventDispatcherInterface&MockObject $dispatcher;
+    private PlayerQuestCompletedRepository&MockObject $completed;
     private TutorialManager $manager;
 
     protected function setUp(): void
     {
-        $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->manager = new TutorialManager($this->em, $this->dispatcher);
+        $this->completed = $this->createMock(PlayerQuestCompletedRepository::class);
+        $this->manager = new TutorialManager(
+            $this->createMock(EntityManagerInterface::class),
+            $this->completed,
+        );
     }
 
-    public function testGetCurrentStepReturnsNullWhenCompleted(): void
+    /**
+     * L'etape se deduit de l'arc, elle ne se stocke pas.
+     *
+     * Les bornes sont les trois tours de la boucle, pas cinq etapes
+     * arbitraires : l'arme (1-2), la materia (3-5), le metier (6-8), puis le
+     * depart et l'expedition.
+     */
+    public function testTheStepIsDerivedFromTheArc(): void
     {
-        $player = $this->createPlayer(null);
-
-        $this->assertNull($this->manager->getCurrentStep($player));
+        foreach ([
+            0 => TutorialStep::Weapon,
+            1 => TutorialStep::Weapon,
+            2 => TutorialStep::Materia,
+            4 => TutorialStep::Materia,
+            5 => TutorialStep::Trade,
+            7 => TutorialStep::Trade,
+            8 => TutorialStep::Departure,
+            9 => TutorialStep::Expedition,
+        ] as $done => $expected) {
+            self::assertSame($expected, TutorialStep::fromCompletedSteps($done), sprintf('%d quete(s) terminee(s) devrait donner « %s ».', $done, $expected->name));
+        }
     }
 
-    public function testGetCurrentStepReturnsEnum(): void
+    /**
+     * L'arc termine ferme le tutoriel, et rien d'autre ne le ferme.
+     */
+    public function testTheArcClosesTheTutorial(): void
     {
-        $player = $this->createPlayer(TutorialStep::Combat->value);
-
-        $this->assertSame(TutorialStep::Combat, $this->manager->getCurrentStep($player));
+        self::assertNull(TutorialStep::fromCompletedSteps(TutorialStep::ARC_STEPS));
+        self::assertNull(TutorialStep::fromCompletedSteps(TutorialStep::ARC_STEPS + 3), 'Un compte superieur — arc rejoue — doit rester termine.');
     }
 
-    public function testIsCompletedWhenNull(): void
+    public function testAPlayerWhoHasDoneNothingIsInTheTutorial(): void
     {
-        $player = $this->createPlayer(null);
+        $this->completed->method('countCompletedInArc')->willReturn(0);
 
-        $this->assertTrue($this->manager->isCompleted($player));
+        $player = new Player();
+
+        self::assertTrue($this->manager->isInTutorial($player));
+        self::assertFalse($this->manager->isCompleted($player));
+        self::assertSame(TutorialStep::Weapon, $this->manager->getCurrentStep($player));
     }
 
-    public function testIsNotCompletedWhenInProgress(): void
+    public function testAFinishedArcLeavesNoStep(): void
     {
-        $player = $this->createPlayer(TutorialStep::Movement->value);
+        $this->completed->method('countCompletedInArc')->willReturn(TutorialStep::ARC_STEPS);
 
-        $this->assertFalse($this->manager->isCompleted($player));
+        $player = new Player();
+
+        self::assertTrue($this->manager->isCompleted($player));
+        self::assertNull($this->manager->getCurrentStep($player));
     }
 
-    public function testAdvanceMovesToNextStep(): void
+    /**
+     * Le refus est le seul etat que l'arc n'exprime pas.
+     *
+     * Un joueur qui a passe le tutoriel l'a dit une fois pour toutes, et aucune
+     * quete n'enregistre cela — c'est la seule raison pour laquelle une colonne
+     * subsiste.
+     */
+    public function testRefusalOutranksProgress(): void
     {
-        $player = $this->createPlayer(TutorialStep::Movement->value);
+        $this->completed->method('countCompletedInArc')->willReturn(3);
 
-        $this->em->expects($this->once())->method('flush');
-        $this->dispatcher->expects($this->never())->method('dispatch');
+        $player = new Player();
+        $player->skipOnboarding();
 
-        $result = $this->manager->advance($player);
-
-        $this->assertTrue($result);
-        $this->assertSame(TutorialStep::Combat->value, $player->getTutorialStep());
+        self::assertTrue($this->manager->isCompleted($player));
+        self::assertNull($this->manager->getCurrentStep($player));
     }
 
-    public function testAdvanceLastStepCompletesTutorial(): void
-    {
-        $player = $this->createPlayer(TutorialStep::Craft->value);
-
-        $this->em->expects($this->once())->method('flush');
-        $this->dispatcher->expects($this->once())->method('dispatch')
-            ->with(
-                $this->isInstanceOf(TutorialCompletedEvent::class),
-                TutorialCompletedEvent::NAME,
-            );
-
-        $result = $this->manager->advance($player);
-
-        $this->assertTrue($result);
-        $this->assertNull($player->getTutorialStep());
-    }
-
-    public function testAdvanceReturnsFalseWhenAlreadyCompleted(): void
-    {
-        $player = $this->createPlayer(null);
-
-        $this->assertFalse($this->manager->advance($player));
-    }
-
-    public function testAdvanceIfOnStepMatchingStep(): void
-    {
-        $player = $this->createPlayer(TutorialStep::Combat->value);
-
-        $this->em->expects($this->once())->method('flush');
-
-        $result = $this->manager->advanceIfOnStep($player, TutorialStep::Combat);
-
-        $this->assertTrue($result);
-        $this->assertSame(TutorialStep::Inventory->value, $player->getTutorialStep());
-    }
-
-    public function testAdvanceIfOnStepWrongStep(): void
-    {
-        $player = $this->createPlayer(TutorialStep::Movement->value);
-
-        $result = $this->manager->advanceIfOnStep($player, TutorialStep::Combat);
-
-        $this->assertFalse($result);
-        $this->assertSame(TutorialStep::Movement->value, $player->getTutorialStep());
-    }
-
-    public function testSkipCompletesTutorial(): void
-    {
-        $player = $this->createPlayer(TutorialStep::Movement->value);
-
-        $this->em->expects($this->once())->method('flush');
-        $this->dispatcher->expects($this->once())->method('dispatch')
-            ->with(
-                $this->isInstanceOf(TutorialCompletedEvent::class),
-                TutorialCompletedEvent::NAME,
-            );
-
-        $this->manager->skip($player);
-
-        $this->assertNull($player->getTutorialStep());
-    }
-
-    public function testSkipDoesNothingWhenAlreadyCompleted(): void
-    {
-        $player = $this->createPlayer(null);
-
-        $this->em->expects($this->never())->method('flush');
-        $this->dispatcher->expects($this->never())->method('dispatch');
-
-        $this->manager->skip($player);
-    }
-
-    private function createPlayer(?int $tutorialStep): Player
+    public function testRefusalIsRecordedOnlyOnce(): void
     {
         $player = new Player();
-        $player->setTutorialStep($tutorialStep);
 
-        return $player;
+        self::assertFalse($player->hasSkippedOnboarding());
+
+        $player->skipOnboarding();
+        $first = $player->getOnboardingSkippedAt();
+
+        $player->skipOnboarding();
+
+        self::assertSame($first, $player->getOnboardingSkippedAt(), 'Un second refus a reecrit la date : le geste n\'est plus idempotent.');
+    }
+
+    /**
+     * Passer le tutoriel abandonne l'arc, et c'est le meme geste.
+     *
+     * C'etait la moitie la plus visible de D7 : le bandeau disparaissait, les
+     * quetes restaient au journal, et le joueur gardait ouverte une chaine
+     * qu'il venait explicitement de refuser.
+     */
+    public function testSkippingAbandonsTheArc(): void
+    {
+        $manager = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/GameEngine/Tutorial/TutorialManager.php');
+
+        self::assertStringContainsString('$this->entityManager->remove($playerQuest)', $manager);
+        self::assertStringContainsString('$player->skipOnboarding()', $manager);
+    }
+
+    /**
+     * Plus aucun compteur parallele n'existe.
+     *
+     * Le verifier par la **forme** : un service qui recommencerait a ecrire un
+     * avancement le ferait sans qu'aucun scenario ne s'en plaigne, puisque les
+     * deux etats seraient d'accord le premier jour. C'est precisement ainsi que
+     * D7 s'est installee.
+     */
+    public function testNoParallelCounterSurvives(): void
+    {
+        self::assertFileDoesNotExist(
+            \dirname(__DIR__, 4) . '/src/GameEngine/Tutorial/TutorialProgressListener.php',
+            'Le listener qui faisait avancer un second etat d\'onboarding est de retour.',
+        );
+
+        $writers = [];
+        foreach ($this->phpSources() as $relative => $source) {
+            if (str_contains($source, 'setTutorialStep(')) {
+                $writers[] = $relative;
+            }
+        }
+
+        self::assertSame([], $writers, 'Un second etat d\'onboarding est ecrit quelque part : il finira par contredire l\'arc.');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function phpSources(): array
+    {
+        $root = \dirname(__DIR__, 4);
+        $sources = [];
+
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/src', \FilesystemIterator::SKIP_DOTS));
+        foreach ($files as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $sources[substr($file->getPathname(), \strlen($root) + 1)] = (string) file_get_contents($file->getPathname());
+            }
+        }
+
+        return $sources;
     }
 }
