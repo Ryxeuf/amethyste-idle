@@ -99,7 +99,7 @@ class ActOnePerimeterTest extends TestCase
         }
 
         self::assertSame([], $ores, sprintf(
-            "Le Fanal rend %s. Sous la Voute, le temps ne se depose pas : on vit a cote de la plus grande "
+            'Le Fanal rend %s. Sous la Voute, le temps ne se depose pas : on vit a cote de la plus grande '
             . "amethyste du monde et on n'en ramasse pas un eclat.\n"
             . 'La cinquieme recolte vit a une liaison d\'ici, et le premier voyage offert l\'y amene sans attendre.',
             implode(', ', $ores),
