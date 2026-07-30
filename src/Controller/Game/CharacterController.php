@@ -33,8 +33,11 @@ class CharacterController extends AbstractController
         private readonly ForbiddenNameChecker $forbiddenNameChecker,
         private readonly PlayerNameNormalizer $playerNameNormalizer,
         private readonly AvatarHashRecalculator $avatarHashRecalculator,
-        private readonly RaceCapabilityResolver $raceCapabilityResolver,
         #[Autowire('%app.max_players_per_user%')] private readonly int $maxPlayersPerUser,
+        // Ajoute en dernier : les tests fonctionnels construisent ce controleur
+        // par arguments positionnels, et l'inserer au milieu decale tout ce qui
+        // suit sans qu'aucun appel ne change de forme.
+        private readonly RaceCapabilityResolver $raceCapabilityResolver,
     ) {
     }
 
