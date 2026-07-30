@@ -3,7 +3,6 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\Guild;
-use App\Entity\App\GuildChallengeProgress;
 use App\Entity\App\GuildInfluence;
 use App\Entity\App\GuildInvitation;
 use App\Entity\App\GuildMember;
@@ -13,7 +12,6 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Entity\App\RegionControl;
-use App\Entity\App\WeeklyChallenge;
 use App\Enum\SeasonStatus;
 use App\GameEngine\Crafting\GuildCraftOrderManager;
 use App\GameEngine\Guild\GuildManager;
@@ -22,6 +20,7 @@ use App\GameEngine\Guild\GuildVaultManager;
 use App\GameEngine\Guild\RegionUpgradeManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Guild\WeeklyChallengeReader;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +42,10 @@ class GuildController extends AbstractController
         private readonly SeasonManager $seasonManager,
         private readonly RegionUpgradeManager $regionUpgradeManager,
         private readonly TownControlManager $townControlManager,
+        // En dernier, toujours : les tests fonctionnels construisent les
+        // controleurs avec des arguments positionnels, et une dependance
+        // inseree au milieu decalerait tout sans un mot.
+        private readonly WeeklyChallengeReader $weeklyChallengeReader,
     ) {
     }
 
@@ -62,7 +65,7 @@ class GuildController extends AbstractController
         $season = $this->seasonManager->getCurrentSeason();
         $weekly = ['active' => [], 'completed' => []];
         if ($guild !== null && $season !== null) {
-            $weekly = $this->buildChallengeEntries($guild, $season, new \DateTime());
+            $weekly = $this->weeklyChallengeReader->entriesFor($guild, $season, new \DateTime());
         }
 
         // RET-03 : la commande de la semaine, et qui l'a prise. Un rendez-vous
@@ -79,101 +82,6 @@ class GuildController extends AbstractController
             'season' => $season,
             'weeklyChallenges' => $weekly['active'],
         ]);
-    }
-
-    /**
-     * Progression de la guilde sur les defis d'une saison, repartie entre ce qui
-     * court encore et ce qui est clos (complete ou expire).
-     *
-     * @return array{active: list<array<string, mixed>>, completed: list<array<string, mixed>>}
-     */
-    private function buildChallengeEntries(Guild $guild, InfluenceSeason $season, \DateTimeInterface $now): array
-    {
-        $challenges = $this->entityManager->getRepository(WeeklyChallenge::class)
-            ->createQueryBuilder('wc')
-            ->where('wc.season = :season')
-            ->setParameter('season', $season)
-            ->orderBy('wc.weekNumber', 'DESC')
-            ->addOrderBy('wc.startsAt', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        if ($challenges === []) {
-            return ['active' => [], 'completed' => []];
-        }
-
-        $progressMap = [];
-        $progressRecords = $this->entityManager->getRepository(GuildChallengeProgress::class)
-            ->createQueryBuilder('gcp')
-            ->where('gcp.guild = :guild')
-            ->andWhere('gcp.challenge IN (:challenges)')
-            ->setParameter('guild', $guild)
-            ->setParameter('challenges', $challenges)
-            ->getQuery()
-            ->getResult();
-
-        foreach ($progressRecords as $p) {
-            $progressMap[$p->getChallenge()->getId()] = $p;
-        }
-
-        $active = [];
-        $completed = [];
-
-        foreach ($challenges as $challenge) {
-            $progress = $progressMap[$challenge->getId()] ?? null;
-            $entry = [
-                'challenge' => $challenge,
-                'progress' => $progress,
-                'current' => $progress ? $progress->getProgress() : 0,
-                'target' => $challenge->getTarget(),
-                'percentage' => $progress ? $progress->getPercentage() : 0,
-                'completed' => $progress && $progress->isCompleted(),
-                'remaining' => self::humanizeRemaining($challenge->getEndsAt(), $now),
-            ];
-
-            if ($challenge->getEndsAt() >= $now && !($progress && $progress->isCompleted())) {
-                $active[] = $entry;
-            } else {
-                $completed[] = $entry;
-            }
-        }
-
-        return ['active' => $active, 'completed' => $completed];
-    }
-
-    /**
-     * Temps restant avant l'echeance d'un defi, en unite + quantite.
-     *
-     * On rend une structure, pas une phrase : la phrase se compose dans le
-     * gabarit, ou elle passe par le catalogue de traduction. Un `sprintf`
-     * francais ici ferait lire du francais a un joueur anglophone sans que
-     * personne s'en plaigne — c'est exactement le defaut que traque
-     * `HardcodedTextScanner`.
-     *
-     * Volontairement grossier : a l'echelle de la semaine, « 3 jours » se lit
-     * mieux que « 2 j 19 h 41 min », et personne n'optimise a la minute un
-     * rendez-vous qui dure sept jours.
-     *
-     * @return array{unit: 'days'|'hours'|'minutes'|'ended', count: int}
-     */
-    private static function humanizeRemaining(\DateTimeInterface $endsAt, \DateTimeInterface $now): array
-    {
-        $seconds = $endsAt->getTimestamp() - $now->getTimestamp();
-        if ($seconds <= 0) {
-            return ['unit' => 'ended', 'count' => 0];
-        }
-
-        $days = intdiv($seconds, 86400);
-        if ($days >= 1) {
-            return ['unit' => 'days', 'count' => $days];
-        }
-
-        $hours = intdiv($seconds, 3600);
-        if ($hours >= 1) {
-            return ['unit' => 'hours', 'count' => $hours];
-        }
-
-        return ['unit' => 'minutes', 'count' => max(1, intdiv($seconds, 60))];
     }
 
     #[Route('/create', name: 'app_game_guild_create', methods: ['POST'])]
@@ -714,7 +622,7 @@ class GuildController extends AbstractController
         $season = $this->seasonManager->getCurrentSeason();
 
         $entries = $season !== null
-            ? $this->buildChallengeEntries($guild, $season, new \DateTime())
+            ? $this->weeklyChallengeReader->entriesFor($guild, $season, new \DateTime())
             : ['active' => [], 'completed' => []];
 
         return $this->render('game/guild/challenges.html.twig', [
