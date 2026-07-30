@@ -31,6 +31,11 @@ class MobRepository extends ServiceEntityRepository
             ->andWhere('mob.zone = :zone')
             ->andWhere('mob.fight IS NULL')
             ->andWhere('mob.life > 0')
+            // ONB-11 : un mannequin d'entrainement n'est **pas une rencontre**.
+            // Le filtre est pose au depot et non chez les appelants : explorer
+            // et chasser partent tous deux d'ici, et tout appelant a venir en
+            // heritera sans avoir a connaitre la regle.
+            ->andWhere('monster.trainingMode IS NULL')
             ->setParameter('zone', $zone)
             ->setMaxResults($limit)
             ->getQuery()
@@ -50,6 +55,9 @@ class MobRepository extends ServiceEntityRepository
             ->andWhere('mob.monster = :monster')
             ->andWhere('mob.fight IS NULL')
             ->andWhere('mob.life > 0')
+            // ONB-11 : meme regle qu'au-dessus. Viser un mannequin par son slug
+            // ne doit pas ouvrir la porte que le tirage ferme.
+            ->andWhere('monster.trainingMode IS NULL')
             ->setParameter('zone', $zone)
             ->setParameter('monster', $monster)
             ->setMaxResults(1)

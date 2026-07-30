@@ -27,6 +27,7 @@ use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Tests des assertions metier TST-14 dans le GameEngine.
@@ -49,6 +50,7 @@ class BusinessAssertionsTest extends TestCase
             $statusEffectManager,
             $combatLogger,
             $em,
+            $this->trainingTranslator(),
         );
 
         $monster = new Monster();
@@ -87,6 +89,7 @@ class BusinessAssertionsTest extends TestCase
             $statusEffectManager,
             $combatLogger,
             $em,
+            $this->trainingTranslator(),
         );
 
         $mob = new Mob();
@@ -267,5 +270,19 @@ class BusinessAssertionsTest extends TestCase
 
         $this->assertNotEmpty($timeline);
         $this->assertSame('player', $timeline[0]['type']);
+    }
+
+    /**
+     * Le traducteur du mannequin (ONB-11).
+     *
+     * Il rend la cle : ce qui est verifie ici est le comportement du mannequin,
+     * pas la formulation de son message.
+     */
+    private function trainingTranslator(): TranslatorInterface
+    {
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
+        return $translator;
     }
 }

@@ -19,6 +19,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MobActionHandlerTest extends TestCase
 {
@@ -54,6 +55,7 @@ class MobActionHandlerTest extends TestCase
             $this->statusEffectManager,
             $this->combatLogger,
             $this->entityManager,
+            $this->trainingTranslator(),
         );
     }
 
@@ -396,5 +398,19 @@ class MobActionHandlerTest extends TestCase
         $result = $handler->doAction($fight);
 
         $this->assertIsArray($result['messages']);
+    }
+
+    /**
+     * Le traducteur du mannequin (ONB-11).
+     *
+     * Il rend la cle : ce qui est verifie ici est le comportement du mannequin,
+     * pas la formulation de son message.
+     */
+    private function trainingTranslator(): TranslatorInterface
+    {
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
+        return $translator;
     }
 }
