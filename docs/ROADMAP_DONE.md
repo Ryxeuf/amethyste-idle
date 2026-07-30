@@ -11,6 +11,47 @@
 
 ---
 
+## ONB-16 — une population de PNJ au Fanal, dont le maitre d'armes (2026-07-30)
+
+> Ferme la dette **D5**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 9/20 + ONB-20a +
+> ONB-20b-a + ONB-07a.
+
+**Deux fixtures peuplaient le hub sans se connaitre.** `PnjFixtures` y avait installe les quatre
+porteurs de l'arc `intro` (ONB-15), `VillageHubPnjFixtures` y tenait sept figures a dialogue.
+Resultat : **deux forgerons**, et **aucun maitre d'armes** — alors que la chaine de l'acte I
+commence chez lui.
+
+**Le doublon et le manque se reglent d'un seul geste.** Gerard reste : les quetes le designent
+par sa reference de fixture (`pnj_0`), et l'on ne debranche pas un donneur. L'autre poste devient
+**Ysold, maitresse d'armes** — le role que la chaine exigeait et qui n'existait pas. Le
+transformer plutot que d'ajouter un neuvieme habitant evite de laisser le doublon en place, et
+l'etal d'armes deja ecrit sert exactement le bon personnage.
+
+**Chaque parchemin de l'acte I a desormais un vendeur**, ce qui referme la moitie d'ONB-08 restee
+ouverte : les 36 parchemins existaient, aucun n'avait de marchand. Ysold vend les six arbres de
+combat qui apprennent a tenir une arme de palier 1 ; Iris vend l'alchimie ; Gerard et Marie
+vendent la forge et l'herboristerie. L'etape 1 devient un vrai choix — on repart avec une arme
+**et** la voie qui l'autorise.
+
+**Les slugs entrent au Fanal** (convention ZON-26b-b). Sans eux, la seule facon de retrouver un
+habitant est son **nom affiche** : le code dependrait d'un texte de fiction, et ZON-39 — qui
+reecrit precisement les libelles — arrive juste apres.
+
+**Une collision de nom trouvee au passage.** « Aldric » etait porte par deux personnages :
+le forgeron du hub, et **Aldric l'Ancien**, l'ermite de la Crete, donneur de quete de l'acte 2.
+Deux Aldric a trois zones d'ecart, dont un seul compte pour une quete, est le genre de collision
+qu'on ne decouvre qu'en jouant — et qu'on met longtemps a croire.
+
+**Le role se lit dans le slug, pas dans `classType`.** Ce dernier designe une classe de sprite,
+et deux metiers distincts peuvent legitimement la partager : la maitresse des quetes et le
+banquier sont tous deux `noble`. La loi anti-doublon porte donc sur le poste, pas sur le sprite.
+
+**Ce qui reste, et qui n'est pas une dette** : les soixante habitants historiques restent sur la
+carte de test. Les basculer noierait l'ecran du Fanal, plafonne a vingt — c'est un sujet de
+contenu.
+
+---
+
 ## ONB-11 — les mannequins d'entrainement (2026-07-30)
 
 > Decision **A13**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 8/20 + ONB-20a +

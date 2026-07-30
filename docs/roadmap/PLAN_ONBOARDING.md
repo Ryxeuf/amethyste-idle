@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **8/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **9/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -41,7 +41,7 @@
 | ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
 | ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
-| ONB-16 | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
+| ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
 | ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
@@ -424,17 +424,32 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - **Hors périmètre, assumé** : `defend` porte bien un `map_id`, mais il se résout par
   `Mob::map` et fonctionne — ce n'est pas la même faute
 
-### ONB-16 — Une population de PNJ au Fanal, dont le maître d'armes (M | ★★ | MOYENNE)
+### ONB-16 — Une population de PNJ au Fanal, dont le maître d'armes (M | ★★ | MOYENNE) — ✅ LIVRÉ 2026-07-30
 > Ferme **D5** : `PnjFixtures` (Gérard le Forgeron, Marie la Herboriste, Claire la Sage) et
 > `VillageHubPnjFixtures` (Aldric le Forgeron, Iris l'Alchimiste, Lyra la Guide…) coexistent —
 > **deux forgerons**, et **aucun maître d'armes** alors que la chaîne (ONB-12) commence chez lui.
 > Prérequis : à faire **avec NAR-20**, sinon on renomme deux fois
-- [ ] Une seule population au Fanal ; les porteurs de l'arc en font partie
-- [ ] Rôles en double fusionnés, dialogues reportés
-- [ ] **Le maître d'armes** existe, et il vend des parchemins d'arbres de combat (ONB-08)
-- [ ] Chaque PNJ de métier du Fanal vend le parchemin de son arbre
-- [ ] Slugs comme clé d'idempotence (convention ZON-26b-b)
-- [ ] Tests : aucun rôle en double ; chaque parchemin de l'acte I a un vendeur identifié
+- [x] Rôle en double fusionné : le Fanal comptait **deux forgerons**. Gérard reste — les quêtes
+      le désignent par sa référence de fixture (`pnj_0`), on ne débranche pas un donneur — et
+      l'autre poste **devient le maître d'armes**. Le transformer plutôt que d'en ajouter un
+      neuvième règle les deux dettes d'un coup, et l'étal d'armes déjà écrit sert exactement le
+      bon personnage
+- [x] **Le maître d'armes** existe (Ysold), et il vend les parchemins des six arbres de combat
+      qui apprennent à tenir une arme de palier 1 (ONB-08/ONB-20b)
+- [x] Chaque PNJ de métier du Fanal vend le parchemin de son arbre — alchimie chez Iris, forge
+      et herboristerie chez leurs porteurs d'arc. **C'est la moitié d'ONB-08 qui restait
+      ouverte** : les 36 parchemins existaient, aucun n'avait de marchand
+- [x] Slugs comme clé d'idempotence (convention ZON-26b-b) — sans eux, la seule façon de
+      retrouver un habitant est son **nom affiché**, ce qui interdit de le renommer. ZON-39, qui
+      réécrit précisément les libellés, arrive juste après
+- [x] **Au passage** : « Aldric » cesse d'être porté par deux personnages. **Aldric l'Ancien**
+      est l'ermite de la Crête, donneur de quête de l'acte 2 — deux Aldric à trois zones
+      d'écart, dont un seul compte pour une quête
+- [x] Tests : aucun métier tenu deux fois ; chaque parchemin de l'acte I a un vendeur, et chaque
+      parchemin en rayon ouvre un arbre qui existe
+- [ ] **Reste** : les soixante habitants historiques de `PnjFixtures` restent sur la carte de
+      test. Les basculer noierait l'écran du Fanal (plafonné à 20) — c'est un sujet de contenu,
+      pas de dette
 
 ---
 

@@ -18,7 +18,7 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
         return [
             // Gérard le Forgeron — armes et armures (ouvert de 8h à 20h)
             0 => [
-                'items' => ['short-sword', 'long-sword', 'leather-armor', 'leather-boots', 'leather-hat'],
+                'items' => ['short-sword', 'long-sword', 'leather-armor', 'leather-boots', 'leather-hat', 'blacksmith-domain-parchment'],
                 'greeting' => 'Bienvenue dans ma forge ! J\'ai les meilleures armes et armures de la région.',
                 'shop_prompt' => 'Voyons ce que j\'ai en stock pour vous.',
                 'opensAt' => 8,
@@ -56,7 +56,7 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // Marie la Herboriste — plantes et outils herboristerie (ouverte de 6h à 18h)
             7 => [
-                'items' => ['plant-mint', 'plant-sage', 'plant-lavender', 'plant-thyme', 'plant-rosemary', 'sickle-bronze', 'sickle-iron'],
+                'items' => ['plant-mint', 'plant-sage', 'plant-lavender', 'plant-thyme', 'plant-rosemary', 'sickle-bronze', 'sickle-iron', 'herbalist-domain-parchment'],
                 'greeting' => 'Bonjour ! Mon jardin regorge de plantes médicinales. Vous en cherchez ?',
                 'shop_prompt' => 'Regardez mes herbes et mes outils de récolte.',
                 'opensAt' => 6,
@@ -196,8 +196,13 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
         //
         // On ne deplace que les quatre porteurs de l'arc : basculer les soixante
         // noierait l'ecran du village (plafonne a 20) et doublerait les roles de
-        // `VillageHubPnjFixtures`. La fusion des deux populations est le sujet
-        // d'ONB-16.
+        // `VillageHubPnjFixtures`.
+        //
+        // ONB-16 a tranche le doublon restant : le Fanal comptait **deux
+        // forgerons**, Gerard ici et Aldric la-bas. Gerard reste — les quetes le
+        // designent par sa reference (`pnj_0`), on ne debranche pas un donneur —
+        // et l'autre poste est devenu la **maitresse d'armes**, le role que la
+        // chaine de l'acte I exigeait et qui n'existait pas.
         $acte1Residents = [0, 7, 15, 18];
 
         // Création de 60 PNJ
