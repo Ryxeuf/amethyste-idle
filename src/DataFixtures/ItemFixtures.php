@@ -586,6 +586,11 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100,
                 'materiaSlots' => 1,
+                // ONB-12b : l'epee de palier 1 est `short-sword`, pas `t1-sword` —
+                // la famille n'en a pas. Elle etait donc la **seule** dont
+                // l'echelon de port restait inerte (ONB-20b), et c'est l'arme
+                // que l'acte I met le plus souvent entre les mains.
+                'requirements' => ['port_sword'],
             ],
             'long_sword' => [
                 'name' => 'Epée longue',

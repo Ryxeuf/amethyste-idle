@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **9/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **10/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -38,7 +38,7 @@
 | ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
 | ONB-11 ✅ | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
 | ONB-12a ✅ | Les quatre gestes que la chaîne doit constater (moteur) | M | ★★★ |
-| ONB-12b | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
+| ONB-12b ✅ | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
 | ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
 | ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
@@ -364,33 +364,33 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] Piège fermé : `getPlayerQuestProgress()` rend **100** quand le total nécessaire vaut zéro —
       un type de suivi oublié produit une quête terminée dès son acceptation, pas une quête bloquée
 
-### ONB-12b — La chaîne de l'acte I : dix quêtes, trois tours de boucle (L | ★★★ | HAUTE)
+### ONB-12b — La chaîne de l'acte I : dix quêtes, trois tours de boucle ✅ (L | ★★★ | HAUTE)
 > Décision A14, et le cœur du dossier. Le tutoriel actuel commence par le voyage (**D6**, seul
 > geste time-gaté) et **ne mentionne jamais la matéria** — la seule source d'actions de combat
 > (règle 10) et le build du personnage.
 > Prérequis : ← ONB-08, ONB-09, ONB-10, ONB-11, ONB-12a, ONB-15, ONB-16 ; croise NAR-20
-- [ ] La chaîne de GAME_ONBOARDING §5.2, en dix quêtes :
-  - [ ] **1 — Le maître d'armes.** Récompense : **une arme au choix** + **le parchemin de
+- [x] La chaîne de GAME_ONBOARDING §5.2, en dix quêtes :
+  - [x] **1 — Le maître d'armes.** Récompense : **une arme au choix** + **le parchemin de
         l'arbre qui l'autorise**
-  - [ ] **2 — Apprendre.** Parchemin → l'arbre s'ouvre → nœud d'équipement → arme équipée
+  - [x] **2 — Apprendre.** Parchemin → l'arbre s'ouvre → nœud d'équipement → arme équipée
         *(tour 1 de la boucle)*
-  - [ ] **3 — Le mannequin.** Combat n° 1. Récompense : **une matéria de l'élément du domaine
+  - [x] **3 — Le mannequin.** Combat n° 1. Récompense : **une matéria de l'élément du domaine
         choisi** + **les points de domaine pour en prendre l'accord** — on ne montre jamais une
         matéria qu'on ne peut pas utiliser
-  - [ ] **4 — L'accord.** Nœud d'accord → matéria sertie *(tour 2)*
-  - [ ] **5 — Le second mannequin.** Lancer le sort
-  - [ ] **6 — Le métier.** Un parchemin de récolte **parmi les cinq** *(tour 3)*
-  - [ ] **7 — La récolte.** Aller dans la zone, récolter (l'exploration est le moyen, pas une
+  - [x] **4 — L'accord.** Nœud d'accord → matéria sertie *(tour 2)*
+  - [x] **5 — Le second mannequin.** Lancer le sort
+  - [x] **6 — Le métier.** Un parchemin de récolte **parmi les cinq** *(tour 3)*
+  - [x] **7 — La récolte.** Aller dans la zone, récolter (l'exploration est le moyen, pas une
         étape : on explore pour trouver où récolter)
-  - [ ] **8 — L'atelier.** Fabriquer — la première fois qu'un geste ne coûte pas d'énergie
-  - [ ] **9 — Le départ.** Voyager vers une vraie zone : **le voyage coûte du temps réel**, et
+  - [x] **8 — L'atelier.** Fabriquer — la première fois qu'un geste ne coûte pas d'énergie
+  - [x] **9 — Le départ.** Voyager vers une vraie zone : **le voyage coûte du temps réel**, et
         on le dit
-  - [ ] **10 — L'expédition.** En lancer une avant de fermer — **comment quitter le jeu en le
+  - [x] **10 — L'expédition.** En lancer une avant de fermer — **comment quitter le jeu en le
         laissant travailler**, la leçon qui fait revenir au jour 2
-- [ ] **Le choix est réel à chaque tour** : quelle arme, quel élément, quel métier, où partir
-- [ ] La récompense de l'étape 3 est **dérivée du domaine choisi à l'étape 1** — pas un objet fixe
-- [ ] Une étape = **une** quête de l'arc `intro`
-- [ ] Tests : la matéria est garantie, accordée et lancée ; les cinq métiers et les armes sont
+- [x] **Le choix est réel à chaque tour** : quelle arme, quel élément, quel métier, où partir
+- [x] La récompense de l'étape 3 est **dérivée du domaine choisi à l'étape 1** — pas un objet fixe
+- [x] Une étape = **une** quête de l'arc `intro`
+- [x] Tests : la matéria est garantie, accordée et lancée ; les cinq métiers et les armes sont
       réellement proposés ; **aucune étape avant la 9ᵉ n'est time-gatée** ; la matéria reçue
       correspond à l'élément du domaine choisi
 

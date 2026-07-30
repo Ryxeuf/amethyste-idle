@@ -55,7 +55,11 @@ final class QuestCoordinateContractTest extends AbstractIntegrationTestCase
      */
     public function testEveryIntroStepUsesAPivotObjective(): void
     {
-        $pivotVerbs = ['talk_to', 'monsters', 'collect', 'craft', 'deliver', 'explore', 'harvest'];
+        // ONB-12a : `gesture` rejoint la liste. C'est le seul objectif qui
+        // n'exige pas de nommer sa cible — et c'est ce qui permet aux etapes 7
+        // et 8 de l'acte I d'attendre une recolte et une fabrication sans
+        // choisir le metier a la place du joueur.
+        $pivotVerbs = ['talk_to', 'monsters', 'collect', 'craft', 'deliver', 'explore', 'harvest', 'gesture'];
 
         foreach ($this->em->getRepository(Quest::class)->findBy(['storyArc' => 'intro']) as $quest) {
             $verbs = array_keys($quest->getRequirements() ?? []);

@@ -685,20 +685,43 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'arcOrder' => 5,
                 // prerequisiteQuests set after flush (needs ID of quest_acte4_par_dela_la_crete)
             ],
-            // --- Chaîne narrative Acte 1 : L'Éveil (5 quêtes tutoriel) ---
+            // =================================================================
+            // Acte I — la boucle, trois fois (ONB-12b)
+            // =================================================================
+            // GAME_ONBOARDING § 5.2 : dix etapes, trois tours de la meme boucle
+            // — **parchemin → arbre → geste** — sur l'arme, la materia et la
+            // recolte. La chaine heritee en comptait sept, commençait par le
+            // voyage (le seul geste time-gate) et **ne mentionnait jamais la
+            // materia**, c'est-a-dire ni la seule source d'actions de combat
+            // (regle 10), ni le build du personnage.
+            //
+            // Deux principes tiennent la forme de ce bloc :
+            //
+            // 1. **A chaque tour, le choix est reel** — quelle arme, quel
+            //    element, quel metier, ou partir. Il passe par `choiceOutcome`,
+            //    qui existait deja : la quete propose, le joueur tranche a la
+            //    remise, et la recompense suit son choix.
+            // 2. **Une quete ne nomme jamais ce qu'elle ne peut pas savoir.**
+            //    Le metier est choisi a l'etape 6 : les etapes 7 et 8 ne peuvent
+            //    donc designer ni un objet a recolter, ni une recette. Elles
+            //    constatent le **geste** (ONB-12a), et c'est ce qui empeche la
+            //    chaine de choisir a la place du joueur.
+            //
+            // Les cles de reference sont conservees : `quest_acte1_cristal` est
+            // la porte de l'acte 2 pour quatre fixtures de dialogue, et
+            // `PnjFixtures` en designe cinq. Les renommer aurait casse tout cela
+            // pour un gain nul.
             'quest_acte1_reveil' => [
-                'name' => 'L\'Éveil — Réveil',
-                'name_translations' => ['en' => 'The Awakening — Awakening'],
-                'description' => 'Vous ouvrez les yeux dans un lieu inconnu, sans aucun souvenir. Claire la Sage vous envoie chez Marie la Herboriste : une tisane vous éclaircira les idées avant toute chose.',
-                'description_translations' => ['en' => 'You open your eyes in an unfamiliar place, without any memory. Claire the Wise sends you to Marie the Herbalist: a herbal brew will clear your head before anything else.'],
+                'name' => 'L\'Éveil — Le maître d\'armes',
+                'name_translations' => ['en' => 'The Awakening — The Weapon Master'],
+                'description' => 'Vous ouvrez les yeux au Fanal, sans aucun souvenir. Ysold, maîtresse d\'armes, ne vous demande rien : elle vous fait choisir. Une arme, et la voie qui apprend à la tenir.',
+                'description_translations' => ['en' => 'You open your eyes at the Beacon, without any memory. Ysold, mistress of arms, asks nothing of you: she makes you choose. A weapon, and the path that teaches you to hold it.'],
                 'requirements' => [
-                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
-                    // Jamais le donneur de la quete : on ne demande pas de
-                    // retourner voir celui qu'on vient de quitter.
+                    // `pnj_id` recale apres flush par `QuestChainFixtures`.
                     'talk_to' => [
                         [
                             'pnj_id' => 0,
-                            'name' => 'Marie la Herboriste',
+                            'name' => 'Ysold, maîtresse d\'armes',
                         ],
                     ],
                 ],
@@ -706,130 +729,123 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'xp' => 20,
                     'gold' => 10,
                 ],
+                // Le premier vrai choix, et il est indolore : chaque option
+                // remet **l'arme et le parchemin de l'arbre qui l'autorise**.
+                // En separer les deux laisserait un joueur avec une arme qu'il
+                // ne peut pas porter — le refus d'ONB-20b, sans le remede.
+                'choiceOutcome' => [
+                    [
+                        'key' => 'sword',
+                        'label' => 'L\'épée — la voie du soldat',
+                        'bonusRewards' => ['items' => ['short-sword' => 1, 'soldier-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'axe',
+                        'label' => 'La hache — la voie du berserker',
+                        'bonusRewards' => ['items' => ['t1-axe' => 1, 'berserker-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'bow',
+                        'label' => 'L\'arc — la voie de l\'archer',
+                        'bonusRewards' => ['items' => ['t1-bow' => 1, 'archer-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'dagger',
+                        'label' => 'La dague — la voie de l\'assassin',
+                        'bonusRewards' => ['items' => ['t1-dagger' => 1, 'assassin-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'lance',
+                        'label' => 'La lance — la voie du chevalier',
+                        'bonusRewards' => ['items' => ['t1-lance' => 1, 'knight-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'staff',
+                        'label' => 'Le bâton — la voie du paladin',
+                        'bonusRewards' => ['items' => ['t1-staff' => 1, 'paladin-domain-parchment' => 1]],
+                    ],
+                ],
                 'prerequisiteQuests' => null,
                 'storyArc' => 'intro',
                 'arcOrder' => 1,
             ],
             'quest_acte1_premiers_pas' => [
-                'name' => 'L\'Éveil — Premiers pas',
-                'name_translations' => ['en' => 'The Awakening — First Steps'],
-                'description' => 'Claire vous conseille d\'aller voir Gérard le Forgeron pour vous équiper. Rendez-vous à sa forge et recevez votre première arme.',
-                'description_translations' => ['en' => 'Claire advises you to visit Gerard the Blacksmith to get equipped. Go to his forge and receive your first weapon.'],
+                'name' => 'L\'Éveil — Apprendre',
+                'name_translations' => ['en' => 'The Awakening — Learning'],
+                'description' => 'Le parchemin ouvre un arbre ; l\'arbre donne le nœud qui autorise votre arme ; le nœud vous laisse la porter. Lisez, apprenez, équipez. C\'est la boucle du jeu entier, et vous venez d\'en faire le premier tour.',
+                'description_translations' => ['en' => 'The scroll opens a tree; the tree grants the node that allows your weapon; the node lets you wear it. Read, learn, equip. This is the loop of the whole game, and you have just completed its first turn.'],
                 'requirements' => [
-                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
-                    'talk_to' => [
-                        [
-                            'pnj_id' => 0,
-                            'name' => 'Gérard le Forgeron',
-                        ],
+                    // Sans cible : les six options de l\'etape 1 sont toutes des
+                    // armes, et nommer une famille reviendrait a annuler le
+                    // choix qu\'on vient d\'offrir.
+                    'gesture' => [
+                        ['gesture' => 'equip_item', 'name' => 'Porter votre arme'],
                     ],
                 ],
                 'rewards' => [
                     'xp' => 30,
                     'gold' => 15,
-                    'items' => [
-                        [
-                            'type' => 'gear',
-                            'count' => 1,
-                            'genericItemSlug' => 'short-sword',
-                        ],
-                    ],
                 ],
-                // prerequisiteQuests set after flush
                 'storyArc' => 'intro',
                 'arcOrder' => 2,
             ],
             'quest_acte1_bapteme_du_feu' => [
-                'name' => 'L\'Éveil — Baptême du feu',
-                'name_translations' => ['en' => 'The Awakening — Baptism by Fire'],
-                'description' => 'Gérard vous a remis une épée. Il est temps de prouver votre valeur ! Éliminez deux slimes qui rôdent aux abords du village.',
-                'description_translations' => ['en' => 'Gerard has handed you a sword. It is time to prove your worth! Eliminate two slimes roaming the outskirts of the village.'],
+                'name' => 'L\'Éveil — Le mannequin',
+                'name_translations' => ['en' => 'The Awakening — The Dummy'],
+                'description' => 'Gareth a planté un mannequin sur la place. Il ne rend pas les coups — il tourne sur lui-même. Frappez-le jusqu\'à ce qu\'il tombe : personne ne perd contre un mannequin, et c\'est fait pour.',
+                'description_translations' => ['en' => 'Gareth has planted a training dummy on the square. It does not strike back — it spins on itself. Hit it until it falls: nobody loses to a dummy, and that is the point.'],
                 'requirements' => [
                     'monsters' => [
                         [
-                            'name' => 'Slime',
-                            'slug' => 'slime',
-                            'count' => 2,
+                            'name' => 'Mannequin d\'entraînement',
+                            'slug' => 'training_dummy_still',
+                            'count' => 1,
                         ],
                     ],
                 ],
                 'rewards' => [
                     'xp' => 40,
                     'gold' => 20,
-                    'items' => [
-                        [
-                            'type' => 'stuff',
-                            'count' => 2,
-                            'genericItemSlug' => 'life-potion',
-                        ],
-                    ],
+                    // ONB-12b : derivee de l\'arbre ouvert a l\'etape 1, jamais un
+                    // objet fixe. On ne montre jamais une materia qu\'on ne peut
+                    // pas utiliser — les points de l\'accord viennent avec.
+                    'act_one_materia' => true,
                 ],
-                // prerequisiteQuests set after flush
                 'storyArc' => 'intro',
                 'arcOrder' => 3,
             ],
-            'quest_acte1_recolte' => [
-                'name' => 'L\'Éveil — Récolte',
-                'name_translations' => ['en' => 'The Awakening — Harvest'],
-                'description' => 'Marie la Herboriste a besoin de champignons pour préparer des remèdes. Récoltez-en dans les environs et rapportez-les-lui.',
-                'description_translations' => ['en' => 'Marie the Herbalist needs mushrooms to prepare remedies. Gather some in the area and bring them back to her.'],
+            'quest_acte1_accord' => [
+                'name' => 'L\'Éveil — L\'accord',
+                'name_translations' => ['en' => 'The Awakening — The Attunement'],
+                'description' => 'Une matéria ne se porte pas : elle s\'accorde. Prenez le nœud d\'accord dans votre arbre, puis sertissez-la dans un emplacement de votre équipement. Deuxième tour de la boucle.',
+                'description_translations' => ['en' => 'A materia is not worn: it is attuned. Take the attunement node in your tree, then socket it into one of your equipment slots. Second turn of the loop.'],
                 'requirements' => [
-                    'collect' => [
-                        'mushroom' => 3,
+                    'gesture' => [
+                        ['gesture' => 'socket_materia', 'name' => 'Sertir votre matéria'],
                     ],
                 ],
                 'rewards' => [
                     'xp' => 35,
-                    'gold' => 25,
-                    'items' => [
-                        [
-                            'type' => 'stuff',
-                            'count' => 1,
-                            'genericItemSlug' => 'herbalist-domain-parchment',
-                        ],
-                    ],
+                    'gold' => 20,
                 ],
-                // prerequisiteQuests set after flush
                 'storyArc' => 'intro',
                 'arcOrder' => 4,
             ],
-            'quest_acte1_cristal' => [
-                'name' => 'L\'Éveil — Le Cristal d\'Améthyste',
-                'name_translations' => ['en' => 'The Awakening — The Amethyst Crystal'],
-                'description' => 'Claire la Sage vous parle d\'un cristal d\'améthyste dont l\'écho résonne encore en vous. Elle ne sait pas le lire seule : Antoine le Mage étudie ces résonances depuis vingt ans. Allez le voir.',
-                'description_translations' => ['en' => 'Claire the Wise speaks of an amethyst crystal whose echo still resonates within you. She cannot read it alone: Antoine the Mage has studied these resonances for twenty years. Go and see him.'],
+            'quest_acte1_second_mannequin' => [
+                'name' => 'L\'Éveil — Le second mannequin',
+                'name_translations' => ['en' => 'The Awakening — The Second Dummy'],
+                'description' => 'Celui-ci rend les coups. Faiblement, et il ne peut pas vous tuer — mais votre barre descendra, et c\'est ce qui apprend à quoi servent les soins. Lancez votre sort au moins une fois.',
+                'description_translations' => ['en' => 'This one strikes back. Weakly, and it cannot kill you — but your bar will drop, and that is what teaches what healing is for. Cast your spell at least once.'],
                 'requirements' => [
-                    // ONB-15 : `pnj_id` recale apres flush par `QuestChainFixtures`.
-                    'talk_to' => [
+                    'monsters' => [
                         [
-                            'pnj_id' => 0,
-                            'name' => 'Antoine le Mage',
-                        ],
-                    ],
-                ],
-                'rewards' => [
-                    'xp' => 60,
-                    'gold' => 30,
-                    'items' => [
-                        [
-                            'type' => 'stuff',
+                            'name' => 'Mannequin de passe d\'armes',
+                            'slug' => 'training_dummy_sparring',
                             'count' => 1,
-                            'genericItemSlug' => 'm1-life',
                         ],
                     ],
-                ],
-                // prerequisiteQuests set after flush
-                'storyArc' => 'intro',
-                'arcOrder' => 5,
-            ],
-            'quest_acte1_premiere_potion' => [
-                'name' => 'L\'Éveil — Première potion',
-                'name_translations' => ['en' => 'The Awakening — First Potion'],
-                'description' => 'Marie la Herboriste vous initie à l\'alchimie. Récoltez de la menthe et de la sauge, puis préparez une petite potion de soin à l\'atelier. Un aventurier qui sait se soigner survit plus longtemps.',
-                'description_translations' => ['en' => 'Marie the Herbalist introduces you to alchemy. Gather mint and sage, then brew a small healing potion at the workshop. An adventurer who can heal survives longer.'],
-                'requirements' => [
-                    'craft' => [
-                        'healing-potion-small' => 1,
+                    'gesture' => [
+                        ['gesture' => 'cast_spell', 'name' => 'Lancer votre sort'],
                     ],
                 ],
                 'rewards' => [
@@ -843,30 +859,141 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                 ],
-                // prerequisiteQuests set after flush (← cristal)
                 'storyArc' => 'intro',
-                'arcOrder' => 6,
+                'arcOrder' => 5,
             ],
-            'quest_acte1_guilde' => [
-                'name' => 'L\'Éveil — L\'appel des guildes',
-                'name_translations' => ['en' => 'The Awakening — The Call of the Guilds'],
-                'description' => 'Vos premiers pas sont derrière vous. Claire la Sage vous parle des guildes d\'aventuriers : ensemble, on va plus loin. Retournez la voir pour qu\'elle vous oriente vers la vie de guilde.',
-                'description_translations' => ['en' => 'Your first steps are behind you. Claire the Wise tells you about adventurer guilds: together, we go further. Return to her so she can guide you toward guild life.'],
+            'quest_acte1_metier' => [
+                'name' => 'L\'Éveil — Le métier',
+                'name_translations' => ['en' => 'The Awakening — The Trade'],
+                'description' => 'Lyra connaît les chemins qui partent du Fanal, et ce qu\'on y ramasse. Choisissez un métier de récolte : c\'est la décision la plus structurante de votre première semaine, et elle ne ferme aucune porte — elle en ouvre une.',
+                'description_translations' => ['en' => 'Lyra knows the paths leaving the Beacon, and what one gathers along them. Choose a gathering trade: it is the most structuring decision of your first week, and it closes no door — it opens one.'],
                 'requirements' => [
+                    // `pnj_id` recale apres flush par `QuestChainFixtures`.
                     'talk_to' => [
                         [
                             'pnj_id' => 0,
-                            'name' => 'Claire la Sage',
+                            'name' => 'Lyra, guide du Fanal',
                         ],
                     ],
                 ],
                 'rewards' => [
-                    'xp' => 50,
-                    'gold' => 40,
+                    'xp' => 40,
+                    'gold' => 20,
                 ],
-                // prerequisiteQuests + talk_to pnj_id set after flush (← premiere_potion, Claire)
+                // Les **cinq** recoltes, et elles sont toutes atteignables dans
+                // le perimetre de l\'acte I (ONB-10). Un choix parmi cinq qui
+                // deboucherait sur une seule recolte possible serait un faux
+                // choix — et tout le monde deviendrait herboriste.
+                'choiceOutcome' => [
+                    [
+                        'key' => 'herbalist',
+                        'label' => 'Herboriste — les plantes',
+                        'bonusRewards' => ['items' => ['herbalist-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'miner',
+                        'label' => 'Mineur — les filons',
+                        'bonusRewards' => ['items' => ['miner-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'fisherman',
+                        'label' => 'Pêcheur — les eaux',
+                        'bonusRewards' => ['items' => ['fisherman-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'lumberjack',
+                        'label' => 'Bûcheron — les essences',
+                        'bonusRewards' => ['items' => ['lumberjack-domain-parchment' => 1]],
+                    ],
+                    [
+                        'key' => 'skinner',
+                        'label' => 'Dépeceur — le gibier',
+                        'bonusRewards' => ['items' => ['skinner-domain-parchment' => 1]],
+                    ],
+                ],
+                'storyArc' => 'intro',
+                'arcOrder' => 6,
+            ],
+            'quest_acte1_recolte' => [
+                'name' => 'L\'Éveil — La récolte',
+                'name_translations' => ['en' => 'The Awakening — The Harvest'],
+                'description' => 'Votre parchemin lu, votre arbre ouvert, il reste le geste. Sortez du Fanal et récoltez. Explorer n\'est pas une corvée à cocher : c\'est ainsi qu\'on trouve où récolter.',
+                'description_translations' => ['en' => 'Your scroll read, your tree open, the gesture remains. Leave the Beacon and gather. Exploring is not a chore to tick off: it is how one finds where to gather.'],
+                'requirements' => [
+                    // Sans cible : le metier vient d\'etre choisi a l\'etape 6, et
+                    // nommer une plante ferait de ce choix une decoration.
+                    'gesture' => [
+                        ['gesture' => 'gather', 'count' => 3, 'name' => 'Récolter trois fois'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 40,
+                    'gold' => 25,
+                ],
                 'storyArc' => 'intro',
                 'arcOrder' => 7,
+            ],
+            'quest_acte1_premiere_potion' => [
+                'name' => 'L\'Éveil — L\'atelier',
+                'name_translations' => ['en' => 'The Awakening — The Workshop'],
+                'description' => 'Fabriquez quelque chose avec ce que vous avez ramassé. Vous remarquerez une chose : l\'établi ne coûte aucune énergie. C\'est le premier geste gratuit du jeu, et ce n\'est pas un oubli.',
+                'description_translations' => ['en' => 'Craft something with what you gathered. You will notice one thing: the workbench costs no energy. It is the first free gesture in the game, and it is no oversight.'],
+                'requirements' => [
+                    'gesture' => [
+                        ['gesture' => 'craft_item', 'name' => 'Fabriquer un objet'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 45,
+                    'gold' => 25,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 2,
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
+                'storyArc' => 'intro',
+                'arcOrder' => 8,
+            ],
+            'quest_acte1_cristal' => [
+                'name' => 'L\'Éveil — Le départ',
+                'name_translations' => ['en' => 'The Awakening — The Departure'],
+                'description' => 'Trois chemins partent du Fanal, et aucun ne vous est imposé. Prenez-en un. Sachez seulement ceci : un voyage prend du temps réel, et c\'est la première attente que le jeu vous demandera.',
+                'description_translations' => ['en' => 'Three paths leave the Beacon, and none is imposed on you. Take one. Know only this: a journey takes real time, and it is the first wait the game will ask of you.'],
+                'requirements' => [
+                    // Sans cible : trois destinations, aucune imposee. Un
+                    // objectif d\'exploration nomme une zone et **additionne**
+                    // celles qu\'on declare — il ferait donc des trois chemins
+                    // une liste a cocher.
+                    'gesture' => [
+                        ['gesture' => 'travel', 'name' => 'Voyager vers une vraie zone'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 30,
+                ],
+                'storyArc' => 'intro',
+                'arcOrder' => 9,
+            ],
+            'quest_acte1_guilde' => [
+                'name' => 'L\'Éveil — L\'expédition',
+                'name_translations' => ['en' => 'The Awakening — The Expedition'],
+                'description' => 'Avant de fermer, envoyez-vous en expédition. Le personnage travaille pendant votre absence, et quelque chose vous attendra au retour. C\'est la leçon qui fait revenir demain.',
+                'description_translations' => ['en' => 'Before you close, send yourself on an expedition. Your character works while you are away, and something will be waiting on your return. This is the lesson that brings you back tomorrow.'],
+                'requirements' => [
+                    'gesture' => [
+                        ['gesture' => 'start_expedition', 'name' => 'Lancer une expédition'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 40,
+                ],
+                'storyArc' => 'intro',
+                'arcOrder' => 10,
             ],
             // --- Quetes d'evenement de Saison 1 (arc `season_saison-1`, NAR-09) ---
             // Chaque quete est rattachee a un beat (GameEvent) : elle n'est

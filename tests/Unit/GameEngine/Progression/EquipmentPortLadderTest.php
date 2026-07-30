@@ -158,17 +158,41 @@ class EquipmentPortLadderTest extends TestCase
     {
         $items = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/ItemFixtures.php');
 
-        foreach (['axe', 'staff', 'bow', 'dagger', 'lance'] as $family) {
+        // ONB-12b : la famille de l'epee n'a pas de `t1-sword` — son arme de
+        // palier 1 s'appelle `short-sword`. Elle echappait donc a cette loi, et
+        // c'etait la **seule** dont l'echelon de port restait inerte : l'arme
+        // que l'acte I met le plus souvent entre les mains.
+        $tierOneWeapons = [
+            'axe' => 't1-axe',
+            'staff' => 't1-staff',
+            'bow' => 't1-bow',
+            'dagger' => 't1-dagger',
+            'lance' => 't1-lance',
+            'sword' => 'short-sword',
+        ];
+
+        $declared = array_keys($tierOneWeapons);
+        $families = array_keys($this->catalog()->families());
+        sort($declared);
+        sort($families);
+
+        self::assertSame(
+            $families,
+            $declared,
+            'Une famille de l\'echelle n\'a pas d\'arme de palier 1 declaree ici : son echelon de port serait inerte sans que rien ne le dise.',
+        );
+
+        foreach ($tierOneWeapons as $family => $slug) {
             self::assertSame(1, preg_match(
-                sprintf("/'slug' => 't1-%s',(.*?)\n            \],/s", $family),
+                sprintf("/'slug' => '%s',(.*?)\n            \],/s", preg_quote($slug, '/')),
                 $items,
                 $match,
-            ), sprintf('L\'arme t1-%s a disparu.', $family));
+            ), sprintf('L\'arme %s a disparu.', $slug));
 
             self::assertStringContainsString(
                 sprintf("'requirements' => ['port_%s']", $family),
                 $match[1],
-                sprintf('L\'arme t1-%s n\'exige pas l\'echelon 1 de sa famille : l\'echelle serait declaree mais inerte.', $family),
+                sprintf('L\'arme %s n\'exige pas l\'echelon 1 de sa famille : l\'echelle serait declaree mais inerte.', $slug),
             );
         }
     }
