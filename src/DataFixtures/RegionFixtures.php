@@ -37,10 +37,11 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         // ECO-03 : la forêt est le prolongement naturel du hub de départ.
         $this->getReference('map_3', Map::class)->setRegion($plaines);
 
-        // Région 2 : Sanctuaire de Lumière (zone safe, non contestable)
+        // Région 2 : Sanctuaire de la Voûte (zone safe, non contestable)
+        // Slug herite : la loi de nommage ne tolere que les slugs (GAME_WORLD §1).
         $sanctuaire = new Region();
-        $sanctuaire->setName('Sanctuaire de Lumière');
-        $sanctuaire->setNameTranslations(['en' => 'Sanctuary of Light']);
+        $sanctuaire->setName('Sanctuaire de la Voûte');
+        $sanctuaire->setNameTranslations(['en' => 'Sanctuary of the Vault']);
         $sanctuaire->setSlug('sanctuaire-lumiere');
         $sanctuaire->setDescription('Zone protégée par les anciens. Aucune guilde ne peut en revendiquer le contrôle.');
         $sanctuaire->setDescriptionTranslations(['en' => 'A zone protected by the ancients. No guild may claim control of it.']);

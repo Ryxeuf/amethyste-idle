@@ -60,12 +60,12 @@ class FactionLocalizationTest extends TestCase
     public function testSetNameTranslationsWithNullResetsStorage(): void
     {
         $faction = new Faction();
-        $faction->setName('Confrérie des Ombres');
-        $faction->setNameTranslations(['en' => 'Brotherhood of Shadows']);
+        $faction->setName('Confrérie des Ruelles');
+        $faction->setNameTranslations(['en' => 'Brotherhood of the Alleys']);
         $faction->setNameTranslations(null);
 
         $this->assertSame([], $faction->getNameTranslations());
-        $this->assertSame('Confrérie des Ombres', $faction->getLocalizedName('en'));
+        $this->assertSame('Confrérie des Ruelles', $faction->getLocalizedName('en'));
     }
 
     public function testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull(): void

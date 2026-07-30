@@ -39,9 +39,11 @@ class FactionFixtures extends Fixture
                 'ref' => 'faction_mages',
             ],
             [
+                // Slug herite : la loi de nommage (GAME_WORLD §1) ne tolere que
+                // les slugs, le libelle porte le canon.
                 'slug' => 'ombres',
-                'name' => 'Confrérie des Ombres',
-                'name_translations' => ['en' => 'Brotherhood of Shadows'],
+                'name' => 'Confrérie des Ruelles',
+                'name_translations' => ['en' => 'Brotherhood of the Alleys'],
                 'description' => 'Un réseau clandestin de voleurs, espions et assassins. Bien que leur réputation soit douteuse, leur savoir-faire est inégalé pour ceux qui savent gagner leur confiance.',
                 'description_translations' => ['en' => 'A clandestine network of thieves, spies and assassins. Although their reputation is questionable, their craftsmanship is unmatched for those who can earn their trust.'],
                 'icon' => 'faction_ombres',

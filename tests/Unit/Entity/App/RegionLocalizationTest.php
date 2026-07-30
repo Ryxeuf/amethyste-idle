@@ -31,11 +31,11 @@ class RegionLocalizationTest extends TestCase
     public function testGetLocalizedNameFallsBackWhenLocaleMissing(): void
     {
         $region = new Region();
-        $region->setName('Sanctuaire de Lumiere');
-        $region->setNameTranslations(['en' => 'Sanctuary of Light']);
+        $region->setName('Sanctuaire de la Voute');
+        $region->setNameTranslations(['en' => 'Sanctuary of the Vault']);
 
-        $this->assertSame('Sanctuaire de Lumiere', $region->getLocalizedName('es'));
-        $this->assertSame('Sanctuaire de Lumiere', $region->getLocalizedName('ja'));
+        $this->assertSame('Sanctuaire de la Voute', $region->getLocalizedName('es'));
+        $this->assertSame('Sanctuaire de la Voute', $region->getLocalizedName('ja'));
     }
 
     public function testSetNameTranslationsIgnoresBlankValuesAndInvalidKeys(): void
@@ -71,12 +71,12 @@ class RegionLocalizationTest extends TestCase
     public function testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull(): void
     {
         $region = new Region();
-        $region->setName('Sanctuaire de Lumiere');
-        $region->setNameTranslations(['en' => 'Sanctuary of Light']);
+        $region->setName('Sanctuaire de la Voute');
+        $region->setNameTranslations(['en' => 'Sanctuary of the Vault']);
         $region->setNameTranslations(['en' => '   ', 'de' => '']);
 
         $this->assertSame([], $region->getNameTranslations());
-        $this->assertSame('Sanctuaire de Lumiere', $region->getLocalizedName('en'));
+        $this->assertSame('Sanctuaire de la Voute', $region->getLocalizedName('en'));
     }
 
     public function testGetNameTranslationsDefaultsToEmptyArray(): void

@@ -2026,8 +2026,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_faction_ombres_intro' => [
                 'name' => 'Dans l\'ombre des gobelins',
                 'name_translations' => ['en' => 'In the Shadow of the Goblins'],
-                'description' => 'Aurélie l\'Archère travaille discrètement pour la Confrérie des Ombres. Un camp de gobelins espionne les routes marchandes — éliminez leurs éclaireurs avant qu\'ils ne deviennent une menace.',
-                'description_translations' => ['en' => 'Aurelie the Archer works discreetly for the Brotherhood of Shadows. A goblin camp is spying on the trade routes — eliminate their scouts before they become a threat.'],
+                'description' => 'Aurélie l\'Archère travaille discrètement pour la Confrérie des Ruelles. Un camp de gobelins espionne les routes marchandes — éliminez leurs éclaireurs avant qu\'ils ne deviennent une menace.',
+                'description_translations' => ['en' => 'Aurelie the Archer works discreetly for the Brotherhood of the Alleys. A goblin camp is spying on the trade routes — eliminate their scouts before they become a threat.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
