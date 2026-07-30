@@ -3,6 +3,7 @@
 {% block title %}Hotel des ventes{% endblock %}
 
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('market', app.user is not null and app.user.emailVerifiedAt is not null)}) }}
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">

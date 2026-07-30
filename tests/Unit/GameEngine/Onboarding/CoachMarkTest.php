@@ -188,4 +188,45 @@ class CoachMarkTest extends TestCase
         self::assertTrue($first->hasSeenCoachMark(CoachMark::Zone));
         self::assertFalse($second->hasSeenCoachMark(CoachMark::Zone));
     }
+
+    /**
+     * Les dix encarts sont branches, et chacun a ses trois textes (ONB-17b).
+     *
+     * Un encart declare mais jamais inclus dans un gabarit ne se plaint pas : il
+     * ne s'affiche simplement jamais, et rien ne le distingue d'un encart deja
+     * lu. C'est le defaut que cette loi ferme — et elle vaut aussi pour le
+     * texte, un encart sans sa phrase de cout s'affichant avec la cle brute.
+     */
+    public function testEveryMarkIsWiredAndWorded(): void
+    {
+        $root = \dirname(__DIR__, 4);
+
+        $templates = '';
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/templates', \FilesystemIterator::SKIP_DOTS));
+        foreach ($files as $file) {
+            if ($file->isFile() && $file->getExtension() === 'twig') {
+                $templates .= (string) file_get_contents($file->getPathname());
+            }
+        }
+
+        /** @var array<string, mixed> $catalog */
+        $catalog = json_decode((string) file_get_contents($root . '/translations/messages.fr.json'), true);
+        $coach = $catalog['game']['coach'] ?? [];
+
+        $unwired = [];
+        $unworded = [];
+        foreach (CoachMark::cases() as $mark) {
+            if (!str_contains($templates, sprintf("coach_mark('%s'", $mark->value))) {
+                $unwired[] = $mark->value;
+            }
+            foreach (['title', 'body', 'cost'] as $part) {
+                if (!isset($coach[$mark->value][$part])) {
+                    $unworded[] = $mark->value . '.' . $part;
+                }
+            }
+        }
+
+        self::assertSame([], $unwired, sprintf('Ces encarts ne sont inclus dans aucun gabarit : %s.', implode(', ', $unwired)));
+        self::assertSame([], $unworded, sprintf('Ces textes d\'encart manquent : %s.', implode(', ', $unworded)));
+    }
 }

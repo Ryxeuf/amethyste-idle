@@ -3,6 +3,7 @@
 {% block title %}Journal de quetes{% endblock %}
 
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('quests')}) }}
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
