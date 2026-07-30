@@ -31,7 +31,7 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialStepConditionMatchesCurrent(): void
     {
-        $player = new Player();
+        $player = $this->player();
         $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Materia);
         $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
@@ -57,7 +57,7 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialStepConditionNoMatchFallsThrough(): void
     {
-        $player = new Player();
+        $player = $this->player();
         $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Expedition);
         $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
@@ -83,7 +83,7 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialStepAcceptsMultipleValues(): void
     {
-        $player = new Player();
+        $player = $this->player();
         $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Departure);
         $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
@@ -110,7 +110,7 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialCompletedConditionWhenDone(): void
     {
-        $player = new Player();
+        $player = $this->player();
         $this->tutorialManager->method('getCurrentStep')->willReturn(null);
         $this->tutorialManager->method('isCompleted')->willReturn(true);
         $this->playerHelper->method('getPlayer')->willReturn($player);
@@ -136,7 +136,7 @@ class PnjDialogParserTutorialTest extends TestCase
 
     public function testTutorialCompletedConditionWhenInProgress(): void
     {
-        $player = new Player();
+        $player = $this->player();
         $this->tutorialManager->method('getCurrentStep')->willReturn(TutorialStep::Weapon);
         $this->tutorialManager->method('isCompleted')->willReturn(false);
         $this->playerHelper->method('getPlayer')->willReturn($player);
@@ -179,5 +179,19 @@ class PnjDialogParserTutorialTest extends TestCase
         $result = $this->parser->parseDialog($dialog);
 
         $this->assertSame(3, $result[0]['next']);
+    }
+    /**
+     * Un joueur nomme.
+     *
+     * Le parser interpole `{{player_name}}` : un `Player` fraîchement
+     * construit n'a pas de nom, et l'acces leve avant meme d'atteindre la
+     * condition qu'on veut tester.
+     */
+    private function player(): Player
+    {
+        $player = new Player();
+        $player->setName('Testeur');
+
+        return $player;
     }
 }
