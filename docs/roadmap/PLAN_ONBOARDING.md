@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **6/20 livrés + ONB-20a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **6/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -46,7 +46,8 @@
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
-| ONB-20b | Le port de l'equipement par nœuds d'entree | L | ★★★ |
+| ONB-20b-a ✅ | Le port des **armes** par nœuds d'entree (echelon 1) | M | ★★★ |
+| ONB-20b-b | Le port des **armures et outils** (echelles restantes) | M | ★★ |
 
 ```
 Piste A — Le compte existe    : ONB-01 → ONB-02 → ONB-03 → ONB-04
@@ -480,7 +481,10 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
   - [x] Un sort manquant en base **rate le coup**, il ne lève pas — une exception ici
         recréerait exactement le défaut réparé
   - [x] Une arme sans sort vaut une main vide
-- **ONB-20b — reste à faire** (l'échelle de port ci-dessous)
+- **ONB-20b-a ✅ LIVRÉ 2026-07-30 — l'échelle de port des armes.** Découpé au titre de la
+  règle #8 : les armes portent l'échelle héritée et le défaut le plus net (porter une hache
+  imposait le feu, porter un bâton imposait un arbre de mêlée). Les armures et les outils de
+  métier suivent en **ONB-20b-b**
 - [ ] Le prérequis d'équipement par compétence est **déjà en place** (`Item::requirements`
       ManyToMany vers `Skill`, `PlayerItemHelper::canBeEquipped()` qui exige *toutes* les
       compétences) — rien à construire, seulement à généraliser

@@ -1,0 +1,205 @@
+<?php
+
+namespace App\Tests\Unit\GameEngine\Progression;
+
+use App\Entity\Game\Domain;
+use App\GameEngine\Progression\EquipmentPortCatalog;
+use App\GameEngine\Progression\EquipmentPortDefinitionException;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Les lois de l'echelle de port (ONB-20b).
+ *
+ * GAME_ONBOARDING § 6.0 bis. Trois d'entre elles sont des **reparations**, pas
+ * des ajouts : l'echelle heritee existait deja, mais elle etait posee par
+ * domaine, donc elle faisait payer un element pour tenir une arme.
+ */
+class EquipmentPortLadderTest extends TestCase
+{
+    private function catalog(): EquipmentPortCatalog
+    {
+        return new EquipmentPortCatalog(\dirname(__DIR__, 4));
+    }
+
+    /**
+     * Regle (a) — **l'echelon 1 de toute echelle est gratuit**.
+     *
+     * C'est ce qui fait du parchemin le cout reel. Un echelon 1 payant
+     * remettrait un peage a l'entree de l'arbre, juste apres celui qu'on vient
+     * de payer.
+     */
+    public function testTheFirstRungOfEveryLadderIsFree(): void
+    {
+        foreach ($this->catalog()->families() as $key => $family) {
+            self::assertTrue($family['rung1']['free'], sprintf('L\'echelon 1 de « %s » n\'est pas gratuit.', $key));
+        }
+    }
+
+    /**
+     * Regle (c) — **jamais borne par l'element**.
+     *
+     * Un domaine porte une borne `element x registre` (DOM-01) : une famille
+     * enseignee par un seul arbre impose donc son element par la bande. C'etait
+     * litteralement le cas — la hache derriere le berserker (feu), le baton
+     * derriere le paladin (lumiere **et melee**, pour une arme de sorts).
+     *
+     * Le test va plus loin que le loader : il exige que les arbres qui
+     * enseignent une famille ne partagent pas tous le meme element.
+     */
+    public function testNoFamilyIsBoundToASingleElement(): void
+    {
+        $elements = $this->shippedDomainElements();
+
+        foreach ($this->catalog()->families() as $key => $family) {
+            $found = [];
+            foreach ($family['taught_by'] as $domainKey) {
+                self::assertArrayHasKey($domainKey, $elements, sprintf('« %s » est enseignee par un arbre inexistant : %s.', $key, $domainKey));
+                $found[$elements[$domainKey]] = true;
+            }
+
+            self::assertGreaterThan(1, \count($found), sprintf(
+                'La famille « %s » n\'est enseignee que par des arbres de l\'element « %s » : porter cette arme imposerait un element.',
+                $key,
+                array_key_first($found),
+            ));
+        }
+    }
+
+    /**
+     * Le loader refuse une famille enseignee par un seul arbre.
+     */
+    public function testTheLoaderRefusesAFamilyTaughtByASingleTree(): void
+    {
+        $this->expectException(EquipmentPortDefinitionException::class);
+
+        $this->catalog()->normalize(['families' => [
+            'axe' => [
+                'label' => 'Hache',
+                'taught_by' => ['berserker'],
+                'rung1' => ['reference' => 'port_axe', 'slug' => 'port-axe', 'title' => 'Port de la hache', 'free' => true],
+                'rung2' => 'berserk_weapon_t2',
+                'rung3' => 'berserk_weapon_t3',
+            ],
+        ]]);
+    }
+
+    /**
+     * Le loader refuse un echelon 1 payant.
+     */
+    public function testTheLoaderRefusesAPaidFirstRung(): void
+    {
+        $this->expectException(EquipmentPortDefinitionException::class);
+
+        $this->catalog()->normalize(['families' => [
+            'axe' => [
+                'label' => 'Hache',
+                'taught_by' => ['berserker', 'soldier'],
+                'rung1' => ['reference' => 'port_axe', 'slug' => 'port-axe', 'title' => 'Port de la hache', 'free' => false],
+                'rung2' => 'berserk_weapon_t2',
+                'rung3' => 'berserk_weapon_t3',
+            ],
+        ]]);
+    }
+
+    /**
+     * Regle (b) — **un echelon ouvert dans un arbre autorise la piece partout**.
+     *
+     * Le kit d'un arbre se lit par famille : tout arbre qui enseigne une
+     * famille livre le meme nœud, donc en ouvrir un seul suffit.
+     */
+    public function testARungOpenedInOneTreeIsTheSameNodeEverywhere(): void
+    {
+        $catalog = $this->catalog();
+
+        foreach ($catalog->families() as $family) {
+            $reference = $family['rung1']['reference'];
+
+            foreach ($family['taught_by'] as $domainKey) {
+                self::assertContains(
+                    $reference,
+                    $catalog->rungOneReferencesTaughtBy($domainKey),
+                    sprintf('L\'arbre « %s » n\'enseigne pas l\'echelon qu\'il declare enseigner.', $domainKey),
+                );
+            }
+        }
+    }
+
+    /**
+     * L'echelle **suit les paliers d'objets deja en place**, et ne renomme rien.
+     *
+     * Le canon est explicite : « les competences d'arme existantes SONT cette
+     * echelle et ne bougent pas ». Ce qui a change est a quels arbres elles
+     * appartiennent, pas leur identite — un slug reecrit casserait les objets
+     * qui le referencent.
+     */
+    public function testTheHigherRungsKeepTheirHistoricalReferences(): void
+    {
+        $shipped = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/Game/SkillFixtures.php');
+
+        foreach ($this->catalog()->families() as $key => $family) {
+            foreach (['rung2', 'rung3'] as $rung) {
+                self::assertStringContainsString(
+                    sprintf("'%s' => [", $family[$rung]),
+                    $shipped,
+                    sprintf('L\'echelon %s de « %s » ne designe aucune competence livree.', $rung, $key),
+                );
+            }
+        }
+    }
+
+    /**
+     * Chaque arme de palier 1 exige l'echelon 1 de sa famille.
+     *
+     * Sans cela, l'echelle serait declaree mais inerte : le cadrage y insiste,
+     * « les armes T1 n'ont aucun prerequis aujourd'hui » est precisement le
+     * trou que ce jalon bouche.
+     */
+    public function testEveryTierOneWeaponRequiresItsFirstRung(): void
+    {
+        $items = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/ItemFixtures.php');
+
+        foreach (['axe', 'staff', 'bow', 'dagger', 'lance'] as $family) {
+            self::assertSame(1, preg_match(
+                sprintf("/'slug' => 't1-%s',(.*?)\n            \],/s", $family),
+                $items,
+                $match,
+            ), sprintf('L\'arme t1-%s a disparu.', $family));
+
+            self::assertStringContainsString(
+                sprintf("'requirements' => ['port_%s']", $family),
+                $match[1],
+                sprintf('L\'arme t1-%s n\'exige pas l\'echelon 1 de sa famille : l\'echelle serait declaree mais inerte.', $family),
+            );
+        }
+    }
+
+    /**
+     * Cle de domaine => element, lu dans les fixtures livrees.
+     *
+     * @return array<string, string>
+     */
+    private function shippedDomainElements(): array
+    {
+        $source = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/DomainFixtures.php');
+
+        preg_match_all("/'([a-z]+)' => \['title' => '[^']+', 'element' => '([a-z]+)'/", $source, $matches, PREG_SET_ORDER);
+        self::assertNotEmpty($matches, 'Aucun domaine trouve : la loi ne verifierait rien.');
+
+        $elements = [];
+        foreach ($matches as [, $key, $element]) {
+            $elements[$key] = $element;
+        }
+
+        return $elements;
+    }
+
+    /**
+     * Garde-fou du garde-fou : la derivation d'element doit trouver un domaine.
+     */
+    public function testTheElementLookupActuallyFindsDomains(): void
+    {
+        self::assertArrayHasKey('berserker', $this->shippedDomainElements());
+        self::assertSame('fire', $this->shippedDomainElements()['berserker']);
+        self::assertInstanceOf(Domain::class, new Domain());
+    }
+}

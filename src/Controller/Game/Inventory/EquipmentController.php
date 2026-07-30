@@ -52,11 +52,18 @@ class EquipmentController extends AbstractController
         $availableGear = [];
         $availableTools = [];
         $canEquipMap = [];
+        $portHintMap = [];
         $toolEquipStates = [];
         foreach ($bagInventory->getItems() as $item) {
             if ($item->getGenericItem()->isGear() && !$this->gearHelper->isEquipped($item)) {
                 $availableGear[] = $item;
                 $canEquipMap[$item->getId()] = $this->playerItemHelper->canBeEquipped($item);
+                // A19 — une piece non portable dit **ce qui manque et ou
+                // l'apprendre**. Un cadenas grise laisse chercher, et comme
+                // rien ne dit ou chercher, on conclut que la piece est cassee.
+                if (!$canEquipMap[$item->getId()]) {
+                    $portHintMap[$item->getId()] = $this->describeMissingPort($item);
+                }
             }
             if ($item->getGenericItem()->isTool() && !$this->gearHelper->isToolEquipped($item)) {
                 $availableTools[] = $item;
@@ -95,6 +102,7 @@ class EquipmentController extends AbstractController
             'availableGear' => $availableGear,
             'availableTools' => $availableTools,
             'canEquipMap' => $canEquipMap,
+            'portHintMap' => $portHintMap,
             'stats' => $stats,
             'player' => $player,
             'activeSets' => $activeSets,
@@ -105,6 +113,32 @@ class EquipmentController extends AbstractController
             'gearGroups' => $this->groupGearBySlot($availableGear),
             'avatarPayload' => $this->avatarPayloadBuilder->build($player),
         ]);
+    }
+
+    /**
+     * Ce qui manque pour tenir cette piece, et ou l'apprendre (ONB-20b, A19).
+     *
+     * Les arbres cites sont ceux qui enseignent reellement le nœud — lus dans
+     * `Skill::domains`, pas dans une liste tenue a la main. Un nœud de port est
+     * **partage** : plusieurs chemins menent a la meme chose, et l'ecran doit
+     * les montrer tous, sinon le joueur croit devoir entrer dans un arbre
+     * precis alors qu'il en a le choix.
+     */
+    private function describeMissingPort(PlayerItem $item): string
+    {
+        $lines = [];
+        foreach ($this->playerItemHelper->missingPortSkills($item) as $skill) {
+            $trees = [];
+            foreach ($skill->getDomains() as $domain) {
+                $trees[] = $domain->getTitle();
+            }
+
+            $lines[] = $trees === []
+                ? $skill->getTitle()
+                : sprintf('%s — %s', $skill->getTitle(), implode(', ', $trees));
+        }
+
+        return implode(' · ', $lines);
     }
 
     /**

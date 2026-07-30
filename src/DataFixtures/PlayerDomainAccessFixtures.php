@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerDomainAccess;
 use App\Entity\Game\Domain;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -31,11 +32,28 @@ use Doctrine\Persistence\ObjectManager;
  */
 class PlayerDomainAccessFixtures extends Fixture implements DependentFixtureInterface
 {
+    public function __construct(
+        private readonly EquipmentPortCatalog $portCatalog,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
+        $rungOne = $this->portCatalog->rungOneSlugs();
+
         foreach ($manager->getRepository(Player::class)->findAll() as $player) {
             foreach ($this->practisedDomains($player) as $domain) {
                 $manager->persist(new PlayerDomainAccess($player, $domain));
+
+                // ONB-20b : ouvrir un arbre livre son kit de port. Le
+                // grand-perisage doit le rejouer, sinon un personnage de
+                // fixtures se reveillerait incapable de tenir l'arme de palier
+                // 1 qu'il portait la veille.
+                foreach ($domain->getSkills() as $skill) {
+                    if (\in_array($skill->getSlug(), $rungOne, true) && !$player->hasSkill($skill)) {
+                        $player->addSkill($skill);
+                    }
+                }
             }
         }
 

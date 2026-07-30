@@ -2927,6 +2927,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 60,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"damage","amount":2}',
+                'requirements' => ['port_axe'],
             ],
             't1_staff' => [
                 'name' => 'Bâton de novice',
@@ -2943,6 +2944,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 60,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"magic_boost","amount":5}',
+                'requirements' => ['port_staff'],
             ],
             't1_bow' => [
                 'name' => 'Arc court',
@@ -2959,6 +2961,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 60,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"precision_boost","amount":5}',
+                'requirements' => ['port_bow'],
             ],
             't1_dagger' => [
                 'name' => 'Dague ébréchée',
@@ -2975,6 +2978,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 50,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"critical_boost","amount":5}',
+                'requirements' => ['port_dagger'],
             ],
             't1_lance' => [
                 'name' => 'Pique en bois',
@@ -2991,6 +2995,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 60,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"damage","amount":1,"range":2}',
+                'requirements' => ['port_lance'],
             ],
 
             // --- Tier 2 — Armes de qualité (uncommon, niveau 5) ---

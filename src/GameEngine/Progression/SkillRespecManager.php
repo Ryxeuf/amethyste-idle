@@ -12,9 +12,34 @@ class SkillRespecManager
     ) {
     }
 
+    /**
+     * Les competences qu'un respec redistribue, c'est-a-dire celles qui ont
+     * coute des points (ONB-20b).
+     *
+     * **Un nœud gratuit n'est pas redistribuable** : il n'a rien coute, donc il
+     * n'y a rien a rembourser, et le retirer ne libere aucun point. Le retirer
+     * quand meme etait un piege paye — les nœuds d'entree gratuits sont les
+     * **echelons 1 de port** (ONB-20b) et les nœuds d'artisanat d'entree
+     * (ECO-20). Un joueur qui payait un respec se retrouvait incapable de tenir
+     * l'arme qu'il portait et sans aucune recette, pour un remboursement nul.
+     *
+     * @return list<\App\Entity\Game\Skill>
+     */
+    private function paidSkills(Player $player): array
+    {
+        $paid = [];
+        foreach ($player->getSkills() as $skill) {
+            if ($skill->getRequiredPoints() > 0) {
+                $paid[] = $skill;
+            }
+        }
+
+        return $paid;
+    }
+
     public function getRespecCost(Player $player): int
     {
-        $skillCount = $player->getSkills()->count();
+        $skillCount = \count($this->paidSkills($player));
 
         if ($skillCount === 0) {
             return 0;
@@ -28,7 +53,7 @@ class SkillRespecManager
 
     public function canRespec(Player $player): bool
     {
-        if ($player->getSkills()->isEmpty()) {
+        if ($this->paidSkills($player) === []) {
             return false;
         }
 
@@ -50,14 +75,17 @@ class SkillRespecManager
         // Retirer les gils
         $player->removeGils($cost);
 
-        // Calculer le total de vie bonus des skills
+        // Calculer le total de vie bonus des skills redistribues
+        $paid = $this->paidSkills($player);
+
         $totalLifeBonus = 0;
-        foreach ($player->getSkills() as $skill) {
+        foreach ($paid as $skill) {
             $totalLifeBonus += $skill->getLife();
         }
 
-        // Retirer tous les skills
-        foreach ($player->getSkills()->toArray() as $skill) {
+        // Retirer les skills payes, et eux seuls : les nœuds d'entree gratuits
+        // ne se remboursent pas, donc les retirer ne rend rien.
+        foreach ($paid as $skill) {
             $player->removeSkill($skill);
         }
 

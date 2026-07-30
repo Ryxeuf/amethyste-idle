@@ -11,6 +11,59 @@
 
 ---
 
+## ONB-20b-a — l'echelle de port des armes (2026-07-30)
+
+> Premiere moitie d'ONB-20b, decoupee au titre de la regle #8 de `CLAUDE.md`.
+> Applique **A18** et **A19**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md).
+
+**L'echelle de port existait deja. Elle etait posee par domaine, donc elle faisait payer un
+element pour tenir une arme.** `berserk_weapon_t2` est feu x melee et `paladin_weapon_t2` est
+lumiere x melee : porter une hache imposait le feu, et porter un **baton** — une arme de
+lanceur de sorts — imposait un arbre de **melee**. C'est exactement ce que DOM-01 a separe : le
+domaine est element x registre, c'est l'**arme** qui fixe le registre.
+
+**La reparation ne renomme rien.** Le canon est explicite — « les competences d'arme existantes
+SONT cette echelle et ne bougent pas ». Les slugs sont conserves ; ce qui change est **a quels
+arbres elles appartiennent** (`Skill::domains` est un ManyToMany) et **ce qu'elles exigent** :
+l'echelon *n* exige l'echelon *n−1* de la **meme famille**, jamais un nœud propre a un arbre.
+Sans cela, un soldat qui voulait la hache T2 devait entrer dans l'arbre du berserker — « en
+ouvrir un seul suffit » etait faux.
+
+**L'echelon 1 manquait entierement** : les armes de palier 1 n'avaient aucun prerequis. Il
+existe, il est **gratuit**, et **ouvrir un arbre le livre immediatement**. C'est ce qui garantit
+le plancher jour 1 : on ne donne jamais une arme qu'on ne peut pas tenir, et le cout reel reste
+le parchemin.
+
+**Le kit se lit dans le graphe reel** — les competences de l'arbre dont le slug est un echelon 1
+— plutot que dans une table de correspondance entre cles de fixtures et domaines. Le catalogue
+declare les familles par cle de fixture, qui n'existe pas a l'execution ; passer par les
+competences evite d'inventer un second identifiant de domaine, et fait suivre tout arbre qui se
+met a enseigner une famille.
+
+**Trois defauts trouves au passage, tous invisibles jusqu'ici.**
+
+`PlayerItemHelper::canBeEquipped()` comparait par `array_intersect` **sur des entites**, donc
+par leur **titre** — la meme faute que `PlayerSkillHelper::meetsRequirements` avait deja. Elle
+etait latente tant que les prerequis d'equipement etaient rares ; les nœuds de port etant
+**partages entre arbres**, les titres se repetent par construction, et elle serait devenue
+systematique. La comparaison passe par `Player::hasSkill()`, qui compare par identifiant.
+
+**Le respec effacait toutes les competences, y compris les nœuds gratuits.** Un respec
+redistribue des **points** : un nœud a 0 point n'en a coute aucun, il n'y a rien a rembourser,
+et le retirer ne libere rien. Un joueur payait donc pour ressortir incapable de tenir son arme
+(echelon 1 de port) et sans aucune recette (nœuds d'artisanat d'entree, ECO-20). Le respec ne
+retire — et ne facture — que ce qu'il redistribue.
+
+**Une piece non portable disait « verrouille » et rien d'autre.** Elle dit desormais ce qui
+manque **et ou l'apprendre**, en citant tous les arbres qui enseignent le nœud — un nœud de port
+est partage, et n'en montrer qu'un ferait croire a un chemin oblige.
+
+**Ce qui reste** : les armures, les boucliers et les outils de metier n'ont pas encore
+d'echelle — c'est **ONB-20b-b**. Les declarer sans les appliquer aurait donne l'illusion d'une
+couverture qui n'existe pas.
+
+---
+
 ## ONB-09 — le catalogue des arbres, et l'arbre ouvert (2026-07-30)
 
 > Les trois etats de GAME_ONBOARDING § 6.1.
