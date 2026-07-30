@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * PNJs du Village de Lumière — hub central entre les zones (zone safe).
+ * PNJs du Fanal — hub central entre les zones (zone safe).
  *
  * 7 PNJ : forgeron, alchimiste, marchand général, maître des quêtes, banquier, garde, guide tutoriel.
  * Chaque marchand a sa boutique et ses horaires.
@@ -187,6 +187,25 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'text' => 'Emportez toujours des potions de soin avec vous. Les monstres dans les environs sont dangereux, et une bonne préparation peut faire la différence entre la vie et la mort. Et n\'oubliez pas les antidotes — certaines créatures sont venimeuses !',
+                        // Un seul choix : `talk.html.twig` rend **tout** choix
+                        // comme un lien vers le nœud suivant des lors qu'il y en
+                        // a un. Un « Au revoir » place ici n'aurait pas ferme le
+                        // dialogue — il aurait avance d'un nœud.
+                        'choices' => [
+                            [
+                                'text' => 'Une dernière chose, avant que je parte',
+                                'action' => 'next',
+                            ],
+                        ],
+                    ],
+                    // NAR-20 — le teaser du Cristal, en **une** replique : ce que
+                    // le joueur ramasse dans un filon et ce qui dort sous le
+                    // village sont la meme matiere (trame, GAME_WORLD §13.3).
+                    // Iris le dit parce qu'elle est la seule du Fanal a peser de
+                    // l'amethyste au gramme ; personne ne confirme, et c'est
+                    // voulu — l'acte I plante le fil, il ne le tire pas.
+                    [
+                        'text' => 'Ce que vous ramassez dans un filon, ces éclats violets qu\'on vend trois pièces au marché... c\'est exactement la même matière que le Cristal sous la Voûte. Le même dépôt, à une autre échelle. Personne ici n\'aime que je le dise à voix haute.',
                         'choices' => [
                             [
                                 'text' => 'Bien noté, merci',
@@ -229,7 +248,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'dialog' => [
                     [
-                        'text' => 'Holà, aventurier ! Marcellin, marchand général du Village de Lumière, pour vous servir. J\'ai de tout : outils, nourriture, parchemins... Faites votre choix !',
+                        'text' => 'Holà, aventurier ! Marcellin, marchand général du Fanal, pour vous servir. J\'ai de tout : outils, nourriture, parchemins... Faites votre choix !',
                         'choices' => [
                             [
                                 'text' => 'Voir la boutique',
@@ -266,7 +285,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/sage.png',
                 'dialog' => [
                     [
-                        'text' => 'Bienvenue au tableau des quêtes du Village de Lumière, {{player_name}}. Je coordonne les missions pour les aventuriers de la région. Consultez régulièrement votre journal de quêtes — de nouvelles missions sont ajoutées fréquemment.',
+                        'text' => 'Bienvenue au tableau des quêtes du Fanal, {{player_name}}. Je coordonne les missions pour les aventuriers de la région. Consultez régulièrement votre journal de quêtes — de nouvelles missions sont ajoutées fréquemment.',
                         'choices' => [
                             [
                                 'text' => 'Des conseils pour progresser ?',
@@ -330,7 +349,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/guard.png',
                 'dialog' => [
                     [
-                        'text' => 'Halte ! Bienvenue au Village de Lumière, {{player_name}}. Ce village est une zone sûre — aucun monstre ne peut y pénétrer. Reposez-vous ici avant de repartir à l\'aventure.',
+                        'text' => 'Halte ! Bienvenue au Fanal, {{player_name}}. Ce village est une zone sûre — aucun monstre ne peut y pénétrer. Reposez-vous ici avant de repartir à l\'aventure.',
                         'choices' => [
                             [
                                 'text' => 'Que peut-on trouver dans ce village ?',

@@ -33,9 +33,9 @@ tension_pairs:
         right: 'mages'
         axis: 'Extraire / Preserver'
     -   left: 'chevaliers'
-        # Slug de code herite : la « Confrerie des Ombres » des fixtures est la
-        # Confrerie des Ruelles du canon. Renommer la donnee couterait une
-        # migration pour un mot ; le canon vit dans le libelle.
+        # Slug de code herite : la faction `ombres` porte depuis ZON-39 le
+        # libelle canonique « Confrerie des Ruelles ». Renommer le slug
+        # couterait une migration pour un mot ; le canon vit dans le libelle.
         right: 'ombres'
         axis: 'Ordre / Liberte'
 

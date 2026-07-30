@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * PNJs des Mines profondes — zone lvl 10-25.
+ * PNJs des Mines Profondes — zone lvl 10-25.
  *
  * 5 PNJ : contremaître mineur, ingénieure mécanicienne, marchand souterrain, guérisseuse de galerie, vieux prospecteur.
  */
@@ -72,7 +72,7 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/guard.png',
                 'dialog' => [
                     [
-                        'text' => "Bienvenue dans les Mines profondes. Autrefois, elles fournissaient tout le minerai du royaume. Aujourd'hui, seuls les plus courageux osent s'y aventurer.",
+                        'text' => "Bienvenue dans les Mines Profondes. Autrefois, elles fournissaient tout le minerai du royaume. Aujourd'hui, seuls les plus courageux osent s'y aventurer.",
                         'choices' => [
                             [
                                 'text' => "Qu'est-ce qui a changé ?",

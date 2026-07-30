@@ -31,17 +31,17 @@ class RegionLocalizationTest extends TestCase
     public function testGetLocalizedNameFallsBackWhenLocaleMissing(): void
     {
         $region = new Region();
-        $region->setName('Sanctuaire de Lumiere');
-        $region->setNameTranslations(['en' => 'Sanctuary of Light']);
+        $region->setName('Sanctuaire de la Voute');
+        $region->setNameTranslations(['en' => 'Sanctuary of the Vault']);
 
-        $this->assertSame('Sanctuaire de Lumiere', $region->getLocalizedName('es'));
-        $this->assertSame('Sanctuaire de Lumiere', $region->getLocalizedName('ja'));
+        $this->assertSame('Sanctuaire de la Voute', $region->getLocalizedName('es'));
+        $this->assertSame('Sanctuaire de la Voute', $region->getLocalizedName('ja'));
     }
 
     public function testSetNameTranslationsIgnoresBlankValuesAndInvalidKeys(): void
     {
         $region = new Region();
-        $region->setName('Terres Sauvages');
+        $region->setName('Marches Sauvages');
         $region->setNameTranslations([
             'en' => 'Wildlands',
             'de' => '   ',
@@ -52,31 +52,31 @@ class RegionLocalizationTest extends TestCase
 
         $this->assertSame(['en' => 'Wildlands'], $region->getNameTranslations());
         $this->assertSame('Wildlands', $region->getLocalizedName('en'));
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('de'));
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('es'));
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('it'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('de'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('es'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('it'));
     }
 
     public function testSetNameTranslationsWithNullResetsStorage(): void
     {
         $region = new Region();
-        $region->setName('Terres Sauvages');
+        $region->setName('Marches Sauvages');
         $region->setNameTranslations(['en' => 'Wildlands']);
         $region->setNameTranslations(null);
 
         $this->assertSame([], $region->getNameTranslations());
-        $this->assertSame('Terres Sauvages', $region->getLocalizedName('en'));
+        $this->assertSame('Marches Sauvages', $region->getLocalizedName('en'));
     }
 
     public function testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull(): void
     {
         $region = new Region();
-        $region->setName('Sanctuaire de Lumiere');
-        $region->setNameTranslations(['en' => 'Sanctuary of Light']);
+        $region->setName('Sanctuaire de la Voute');
+        $region->setNameTranslations(['en' => 'Sanctuary of the Vault']);
         $region->setNameTranslations(['en' => '   ', 'de' => '']);
 
         $this->assertSame([], $region->getNameTranslations());
-        $this->assertSame('Sanctuaire de Lumiere', $region->getLocalizedName('en'));
+        $this->assertSame('Sanctuaire de la Voute', $region->getLocalizedName('en'));
     }
 
     public function testGetNameTranslationsDefaultsToEmptyArray(): void

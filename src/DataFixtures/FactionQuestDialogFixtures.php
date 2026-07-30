@@ -14,7 +14,7 @@ use Doctrine\Persistence\ObjectManager;
  *
  * Mages : Antoine le Mage (pnj_18) — Cercle des Mages
  * Chevaliers : Sébastien le Chevalier (pnj_24) — Ordre des Chevaliers
- * Ombres : Aurélie l'Archère (pnj_17) — Confrérie des Ombres
+ * Ombres : Aurélie l'Archère (pnj_17) — Confrérie des Ruelles
  * Marchands : Chloé l'Exploratrice (pnj_26) — Guilde des Marchands
  */
 class FactionQuestDialogFixtures extends Fixture implements DependentFixtureInterface
@@ -54,7 +54,7 @@ class FactionQuestDialogFixtures extends Fixture implements DependentFixtureInte
                 'greeting' => 'Chut... Pas si fort. Je suis Aurélie. Disons que je travaille pour... des gens qui préfèrent rester dans l\'ombre.',
                 'ask' => 'Vos amis ont-ils besoin d\'aide ?',
                 'leave' => 'Je n\'ai rien entendu.',
-                'intro' => "Peut-être. Un campement de gobelins espionne les routes marchandes pour le compte de brigands. Mes... associés de la Confrérie des Ombres souhaitent les faire disparaître avant qu'ils ne deviennent gênants.",
+                'intro' => "Peut-être. Un campement de gobelins espionne les routes marchandes pour le compte de brigands. Mes... associés de la Confrérie des Ruelles souhaitent les faire disparaître avant qu'ils ne deviennent gênants.",
                 'volunteer' => 'Je peux être discret.',
                 'decline' => 'Je préfère ne pas me mêler de ça.',
                 'offer' => 'Éliminez quatre éclaireurs gobelins. Nulle trace, nulle gloire — juste le travail bien fait. La Confrérie récompense ses amis silencieux, et votre nom circulera dans les bons cercles.',

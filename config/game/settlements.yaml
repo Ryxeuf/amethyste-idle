@@ -276,7 +276,7 @@ seed:
 # Zones sans foyer, et pourquoi. Une zone absente de `seed` mais absente d'ici
 # serait une omission ; l'ecrire est ce qui distingue les deux.
 without_settlement:
-    village-de-lumiere: 'batie sur la Voute — rien ne s''y depose (GAME_WORLD § 3.4)'
+    village-de-lumiere: 'bati sur la Voute — rien ne s''y depose (GAME_WORLD § 3.4)'
     quartier-des-jardins: 'meme Voute que Lumiere'
     cite-ensevelie: 'donjon, pas foyer : on la fouille, elle ne monte pas (GAME_ZONES § 2.8)'
     mer-de-sel: 'le Silence / Extension 1 (GAME_WORLD § 4.3)'

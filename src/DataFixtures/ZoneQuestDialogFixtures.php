@@ -36,7 +36,7 @@ class ZoneQuestDialogFixtures extends Fixture implements DependentFixtureInterfa
                 'bye' => 'Merci, Diane. Bonne chasse !',
             ]],
             ['ref' => 'forest_pnj_0', 'quest' => 'quest_zone_foret_venin', 'dialog' => [
-                'greeting' => 'Halte, voyageur. Bienvenue dans la Forêt des murmures. Les bois sont dangereux pour les imprudents, mais recèlent bien des trésors pour qui sait chercher.',
+                'greeting' => 'Halte, voyageur. Bienvenue dans la Forêt des Murmures. Les bois sont dangereux pour les imprudents, mais recèlent bien des trésors pour qui sait chercher.',
                 'ask' => 'Des problèmes en ce moment ?',
                 'leave' => 'Je suis de passage. Au revoir.',
                 'intro' => "Des serpents venimeux et des scorpions se sont installés près de l'entrée de la forêt. Les voyageurs se font mordre avant même d'atteindre la clairière. Je ne peux pas quitter mon poste...",

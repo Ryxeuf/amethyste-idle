@@ -37,10 +37,11 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         // ECO-03 : la forêt est le prolongement naturel du hub de départ.
         $this->getReference('map_3', Map::class)->setRegion($plaines);
 
-        // Région 2 : Sanctuaire de Lumière (zone safe, non contestable)
+        // Région 2 : Sanctuaire de la Voûte (zone safe, non contestable)
+        // Slug herite : la loi de nommage ne tolere que les slugs (GAME_WORLD §1).
         $sanctuaire = new Region();
-        $sanctuaire->setName('Sanctuaire de Lumière');
-        $sanctuaire->setNameTranslations(['en' => 'Sanctuary of Light']);
+        $sanctuaire->setName('Sanctuaire de la Voûte');
+        $sanctuaire->setNameTranslations(['en' => 'Sanctuary of the Vault']);
         $sanctuaire->setSlug('sanctuaire-lumiere');
         $sanctuaire->setDescription('Zone protégée par les anciens. Aucune guilde ne peut en revendiquer le contrôle.');
         $sanctuaire->setDescriptionTranslations(['en' => 'A zone protected by the ancients. No guild may claim control of it.']);
@@ -52,9 +53,9 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($sanctuaire);
         $this->addReference('region_sanctuaire', $sanctuaire);
 
-        // Région 3 : Terres Sauvages (future zone d'expansion, contestable)
+        // Région 3 : Marches Sauvages (future zone d'expansion, contestable)
         $terresSauvages = new Region();
-        $terresSauvages->setName('Terres Sauvages');
+        $terresSauvages->setName('Marches Sauvages');
         $terresSauvages->setNameTranslations(['en' => 'Wildlands']);
         $terresSauvages->setSlug('terres-sauvages');
         $terresSauvages->setDescription('Contrées dangereuses au-delà des plaines. Riches en minerais rares mais peuplées de monstres redoutables.');
@@ -72,7 +73,7 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         // seule region portait des cartes, et un joueur aux mines, au marais ou
         // sur la crete n'appartenait a aucun marche.
         //
-        // L'ecart de taxe (5 % dans les Plaines, 8 % dans les Terres Sauvages)
+        // L'ecart de taxe (5 % dans les Plaines, 8 % dans les Marches Sauvages)
         // est le levier d'arbitrage : la matiere premiere se recolte au nord,
         // la demande est au sud, et le transport se paie en temps de voyage.
         foreach (['map_4', 'map_5', 'map_6'] as $mapReference) {

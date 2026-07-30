@@ -42,10 +42,25 @@ class CodexEntryFixtures extends Fixture
                 // Codex n'en garde trace.
                 'slug' => 'region-village-de-lumiere',
                 'category' => CodexEntry::CATEGORY_REGION,
-                'title' => 'Le Village de Lumière',
-                'title_translations' => ['en' => 'The Village of Light'],
-                'description' => "Un cercle de murs bas, une forge qui ne s'éteint pas et des jardins de temple où poussent le thym et la lavande. Le Village de Lumière n'est pas grand ; il est simplement le seul endroit du monde connu où l'on dort sans monter la garde.",
-                'description_translations' => ['en' => 'A ring of low walls, a forge that never goes out, and temple gardens where thyme and lavender grow. The Village of Light is not large; it is simply the only place in the known world where one sleeps without standing watch.'],
+                'title' => 'Le Fanal',
+                'title_translations' => ['en' => 'The Beacon'],
+                'description' => "Un cercle de murs bas, une forge qui ne s'éteint pas et des jardins de temple où poussent le thym et la lavande. Le Fanal n'est pas grand ; il est simplement le seul endroit du monde connu où l'on dort sans monter la garde.",
+                'description_translations' => ['en' => 'A ring of low walls, a forge that never goes out, and temple gardens where thyme and lavender grow. The Beacon is not large; it is simply the only place in the known world where one sleeps without standing watch.'],
+                'unlockType' => CodexEntry::UNLOCK_ZONE_VISIT,
+                'unlockKey' => 'village-de-lumiere',
+            ],
+            [
+                // NAR-20 — l'autre moitie du teaser du Cristal. La replique
+                // d'Iris se perd si le joueur passe la boutique ; le Codex la
+                // rattrape, et il est le seul endroit ou le fil se relit.
+                // Meme cle de deblocage que l'entree de region : arriver au
+                // Fanal ouvre les deux.
+                'slug' => 'la-voute',
+                'category' => CodexEntry::CATEGORY_WORLD_FACT,
+                'title' => 'La Voûte',
+                'title_translations' => ['en' => 'The Vault'],
+                'description' => "Sous le Fanal dort le Cristal d'Améthyste, et par-dessus lui une porte que personne n'a jamais vue s'ouvrir. Les alchimistes du village avancent, à voix basse, que les éclats ramassés dans n'importe quel filon sont de la même matière que ce Cristal — le même dépôt, à une autre échelle. Nul ne l'a démenti. Nul ne l'a confirmé.",
+                'description_translations' => ['en' => 'Beneath the Beacon sleeps the Amethyst Crystal, and above it a door no one has ever seen open. The village alchemists claim, in a low voice, that the shards gathered from any vein are the same matter as that Crystal — the same deposit, at another scale. No one has denied it. No one has confirmed it.'],
                 'unlockType' => CodexEntry::UNLOCK_ZONE_VISIT,
                 'unlockKey' => 'village-de-lumiere',
             ],
@@ -76,8 +91,8 @@ class CodexEntryFixtures extends Fixture
                 'category' => CodexEntry::CATEGORY_BESTIARY_LORE,
                 'title' => "Chronique de l'Éveil",
                 'title_translations' => ['en' => 'Chronicle of the Awakening'],
-                'description' => "Sans souvenir ni nom, vous avez ouvert les yeux au Village de Lumière. La Sage vous a guidé jusqu'au Cristal d'Améthyste — première pierre d'un chemin qui reste à écrire.",
-                'description_translations' => ['en' => 'Without memory or name, you woke in the Village of Light. The Wise One guided you to the Amethyst Crystal — the first stone of a path yet to be written.'],
+                'description' => "Sans souvenir ni nom, vous avez ouvert les yeux au Fanal. La Sage vous a guidé jusqu'au Cristal d'Améthyste — première pierre d'un chemin qui reste à écrire.",
+                'description_translations' => ['en' => 'Without memory or name, you woke at the Beacon. The Wise One guided you to the Amethyst Crystal — the first stone of a path yet to be written.'],
                 'unlockType' => CodexEntry::UNLOCK_ARC_COMPLETED,
                 'unlockKey' => 'intro',
             ],
@@ -86,10 +101,10 @@ class CodexEntryFixtures extends Fixture
                 // guilde seront générés par les résolutions de saison canon (NAR-11/12).
                 'slug' => 'fondation-du-village-de-lumiere',
                 'category' => CodexEntry::CATEGORY_WORLD_FACT,
-                'title' => 'La Fondation du Village de Lumière',
-                'title_translations' => ['en' => 'The Founding of the Village of Light'],
-                'description' => "Bien avant l'Éveil des sans-mémoire, des colons dressèrent le Village de Lumière comme un fanal contre les ténèbres environnantes. Il demeure le premier refuge de tout nouvel arrivant.",
-                'description_translations' => ['en' => 'Long before the awakening of the memoryless, settlers raised the Village of Light as a beacon against the surrounding dark. It remains the first refuge of every newcomer.'],
+                'title' => 'La Fondation du Fanal',
+                'title_translations' => ['en' => 'The Founding of the Beacon'],
+                'description' => "Bien avant l'Éveil des sans-mémoire, des colons dressèrent une tour et y allumèrent un feu contre les ténèbres environnantes. Nul ne l'a jamais laissé s'éteindre : le village n'a pas eu besoin d'un autre nom. Il demeure le premier refuge de tout nouvel arrivant.",
+                'description_translations' => ['en' => 'Long before the awakening of the memoryless, settlers raised a tower and lit a fire on it against the surrounding dark. No one ever let it go out: the village needed no other name. It remains the first refuge of every newcomer.'],
                 'unlockType' => CodexEntry::UNLOCK_MANUAL,
                 'unlockKey' => null,
             ],

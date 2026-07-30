@@ -31,11 +31,11 @@ class MapLocalizationTest extends TestCase
     public function testGetLocalizedNameFallsBackWhenLocaleMissing(): void
     {
         $map = new Map();
-        $map->setName('Mines profondes');
+        $map->setName('Mines Profondes');
         $map->setNameTranslations(['en' => 'Deep Mines']);
 
-        $this->assertSame('Mines profondes', $map->getLocalizedName('es'));
-        $this->assertSame('Mines profondes', $map->getLocalizedName('ja'));
+        $this->assertSame('Mines Profondes', $map->getLocalizedName('es'));
+        $this->assertSame('Mines Profondes', $map->getLocalizedName('ja'));
     }
 
     public function testSetNameTranslationsIgnoresBlankValuesAndInvalidKeys(): void
@@ -71,12 +71,12 @@ class MapLocalizationTest extends TestCase
     public function testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull(): void
     {
         $map = new Map();
-        $map->setName('Mines profondes');
+        $map->setName('Mines Profondes');
         $map->setNameTranslations(['en' => 'Deep Mines']);
         $map->setNameTranslations(['en' => '   ', 'de' => '']);
 
         $this->assertSame([], $map->getNameTranslations());
-        $this->assertSame('Mines profondes', $map->getLocalizedName('en'));
+        $this->assertSame('Mines Profondes', $map->getLocalizedName('en'));
     }
 
     public function testGetNameTranslationsDefaultsToEmptyArray(): void

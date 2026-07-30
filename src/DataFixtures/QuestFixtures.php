@@ -610,7 +610,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'explore' => [
                         [
                             'zone_slug' => 'cite-ensevelie',
-                            'name' => 'Cite Ensevelie',
+                            'name' => 'Cité Ensevelie',
                         ],
                     ],
                     'monsters' => [
@@ -714,8 +714,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_reveil' => [
                 'name' => 'L\'Éveil — Le maître d\'armes',
                 'name_translations' => ['en' => 'The Awakening — The Weapon Master'],
-                'description' => 'Vous ouvrez les yeux au Fanal, sans aucun souvenir. Ysold, maîtresse d\'armes, ne vous demande rien : elle vous fait choisir. Une arme, et la voie qui apprend à la tenir.',
-                'description_translations' => ['en' => 'You open your eyes at the Beacon, without any memory. Ysold, mistress of arms, asks nothing of you: she makes you choose. A weapon, and the path that teaches you to hold it.'],
+                'description' => 'Vous ouvrez les yeux au Fanal, sans aucun souvenir. Ici on appelle cela un Limpide : quelqu\'un sur qui rien ne s\'est encore déposé. Ysold, maîtresse d\'armes, ne vous demande pas d\'où vous venez — elle vous fait choisir. Une arme, et la voie qui apprend à la tenir.',
+                'description_translations' => ['en' => 'You open your eyes at the Beacon, without any memory. Here they call that a Limpide: someone on whom nothing has settled yet. Ysold, mistress of arms, does not ask where you come from — she makes you choose. A weapon, and the path that teaches you to hold it.'],
                 'requirements' => [
                     // `pnj_id` recale apres flush par `QuestChainFixtures`.
                     'talk_to' => [
@@ -817,8 +817,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_accord' => [
                 'name' => 'L\'Éveil — L\'accord',
                 'name_translations' => ['en' => 'The Awakening — The Attunement'],
-                'description' => 'Une matéria ne se porte pas : elle s\'accorde. Prenez le nœud d\'accord dans votre arbre, puis sertissez-la dans un emplacement de votre équipement. Deuxième tour de la boucle.',
-                'description_translations' => ['en' => 'A materia is not worn: it is attuned. Take the attunement node in your tree, then socket it into one of your equipment slots. Second turn of the loop.'],
+                'description' => 'Une matéria est un éclat d\'améthyste où le geste de quelqu\'un est resté lisible. Elle ne se porte donc pas : elle s\'accorde. Prenez le nœud d\'accord dans votre arbre, puis sertissez-la dans un emplacement de votre équipement. Deuxième tour de la boucle.',
+                'description_translations' => ['en' => 'A materia is a shard of amethyst in which someone\'s gesture stayed legible. So it is not worn: it is attuned. Take the attunement node in your tree, then socket it into one of your equipment slots. Second turn of the loop.'],
                 'requirements' => [
                     'gesture' => [
                         ['gesture' => 'socket_materia', 'name' => 'Sertir votre matéria'],
@@ -960,8 +960,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_cristal' => [
                 'name' => 'L\'Éveil — Le départ',
                 'name_translations' => ['en' => 'The Awakening — The Departure'],
-                'description' => 'Trois chemins partent du Fanal, et aucun ne vous est imposé. Prenez-en un. Sachez seulement ceci : un voyage prend du temps réel, et c\'est la première attente que le jeu vous demandera.',
-                'description_translations' => ['en' => 'Three paths leave the Beacon, and none is imposed on you. Take one. Know only this: a journey takes real time, and it is the first wait the game will ask of you.'],
+                'description' => 'Le Fanal est bâti sur la Voûte, et nul vivant ne dit y être entré. Trois chemins en partent, et aucun ne vous est imposé. Prenez-en un. Sachez seulement ceci : un voyage prend du temps réel, et c\'est la première attente que le jeu vous demandera.',
+                'description_translations' => ['en' => 'The Beacon is built upon the Vault, and no living soul claims to have entered it. Three paths leave the village, and none is imposed on you. Take one. Know only this: a journey takes real time, and it is the first wait the game will ask of you.'],
                 'requirements' => [
                     // Sans cible : trois destinations, aucune imposee. Un
                     // objectif d\'exploration nomme une zone et **additionne**
@@ -1001,8 +1001,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_season1_amorce' => [
                 'name' => 'Éveil — L\'appel des cloches',
                 'name_translations' => ['en' => 'Awakening — The Call of the Bells'],
-                'description' => 'Les cloches du Village de Lumière sonnent l\'alerte. Rendez-vous sur la place pour entendre le héraut annoncer la menace de la saison.',
-                'description_translations' => ['en' => 'The bells of the Village of Light ring the alarm. Head to the square to hear the herald announce the season\'s threat.'],
+                'description' => 'Les cloches du Fanal sonnent l\'alerte. Rendez-vous sur la place pour entendre le héraut annoncer la menace de la saison.',
+                'description_translations' => ['en' => 'The bells of the Beacon ring the alarm. Head to the square to hear the herald announce the season\'s threat.'],
                 'requirements' => [
                     'explore' => [
                         ['zone_slug' => 'village-de-lumiere', 'name' => 'Place du village'],
@@ -1245,7 +1245,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte2_foret_murmures' => [
                 'name' => 'Les Fragments — Les Murmures s\'intensifient',
                 'name_translations' => ['en' => 'The Fragments — The Whispers Grow Stronger'],
-                'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
+                'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des Murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
                 'description_translations' => ['en' => 'Since touching the Amethyst Crystal, you have been sensing strange echoes coming from the Whispering Forest. Thadeus the Hermit, who lives north of the forest, may have answers.'],
                 'requirements' => [
                     'talk_to' => [
@@ -1325,7 +1325,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte2_mines_tremblements' => [
                 'name' => 'Les Fragments — Tremblements souterrains',
                 'name_translations' => ['en' => 'The Fragments — Underground Tremors'],
-                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines Profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
                 'description_translations' => ['en' => 'Since your contact with the Amethyst Crystal, you sense dull vibrations coming from the Deep Mines. Grimmur the Foreman, stationed at the entrance, may know more.'],
                 'requirements' => [
                     'talk_to' => [
@@ -2026,8 +2026,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_faction_ombres_intro' => [
                 'name' => 'Dans l\'ombre des gobelins',
                 'name_translations' => ['en' => 'In the Shadow of the Goblins'],
-                'description' => 'Aurélie l\'Archère travaille discrètement pour la Confrérie des Ombres. Un camp de gobelins espionne les routes marchandes — éliminez leurs éclaireurs avant qu\'ils ne deviennent une menace.',
-                'description_translations' => ['en' => 'Aurelie the Archer works discreetly for the Brotherhood of Shadows. A goblin camp is spying on the trade routes — eliminate their scouts before they become a threat.'],
+                'description' => 'Aurélie l\'Archère travaille discrètement pour la Confrérie des Ruelles. Un camp de gobelins espionne les routes marchandes — éliminez leurs éclaireurs avant qu\'ils ne deviennent une menace.',
+                'description_translations' => ['en' => 'Aurelie the Archer works discreetly for the Brotherhood of the Alleys. A goblin camp is spying on the trade routes — eliminate their scouts before they become a threat.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
@@ -2486,7 +2486,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'explore' => [
                         [
                             'zone_slug' => 'foret-des-murmures',
-                            'name' => 'Forêt des murmures',
+                            'name' => 'Forêt des Murmures',
                         ],
                     ],
                     'collect' => [
@@ -2520,7 +2520,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'explore' => [
                         [
                             'zone_slug' => 'mines-profondes',
-                            'name' => 'Mines profondes',
+                            'name' => 'Mines Profondes',
                         ],
                     ],
                     'collect' => [

@@ -15,7 +15,7 @@ use Doctrine\Persistence\ObjectManager;
  * heritees de l'editeur de cartes). Ici, chaque Zone est un noeud du graphe de
  * monde PBBG et reprend une carte TMX existante (sourceMap) pour permettre la
  * migration des positions et spawns (ZON-03 / ZON-04). Topologie en etoile
- * autour du Village de Lumiere + liaisons laterales foret-marais et mines-crete.
+ * autour du Fanal + liaisons laterales foret-marais et mines-crete.
  *
  * ZON-11 : la definition vit desormais dans `config/game/zones/world_1.yaml`
  * (source de verite unique, partagee avec la commande `app:zone:import`). Cette

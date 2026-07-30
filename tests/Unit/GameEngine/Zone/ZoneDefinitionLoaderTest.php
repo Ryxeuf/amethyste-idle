@@ -52,7 +52,7 @@ class ZoneDefinitionLoaderTest extends TestCase
                     'description_en' => 'Trees',
                     'type' => 'wilderness',
                     'safe' => false,
-                    'source_map' => 'Forêt des murmures',
+                    'source_map' => 'Forêt des Murmures',
                     'explore' => [
                         'weights' => ['mob' => 60, 'nothing' => 40, 'ignored' => 'x'],
                         'chest_gils_min' => 5,
@@ -67,7 +67,7 @@ class ZoneDefinitionLoaderTest extends TestCase
 
         $zone = $result['zones'][0];
         self::assertSame('Forest', $zone['name_en']);
-        self::assertSame('Forêt des murmures', $zone['source_map']);
+        self::assertSame('Forêt des Murmures', $zone['source_map']);
         self::assertSame(['mob' => 60, 'nothing' => 40], $zone['explore']['weights']);
         self::assertSame(5, $zone['explore']['chest_gils_min']);
         self::assertSame(30, $zone['explore']['chest_gils_max']);

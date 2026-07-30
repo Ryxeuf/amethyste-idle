@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Met à jour les dialogues des PNJ des Mines profondes pour l'Acte 2.
+ * Met à jour les dialogues des PNJ des Mines Profondes pour l'Acte 2.
  *
  * Grimmur le Contremaître : lance la chaîne Fragment Mines (quêtes 1, 2, 3, 4).
  * Hilda l'Ingénieure : dialogue lié à la quête 2 (Minerai Ancien).
@@ -53,7 +53,7 @@ class MinesActe2DialogFixtures extends Fixture implements DependentFixtureInterf
         return [
             // 0 — Accueil
             [
-                'text' => "Bienvenue dans les Mines profondes. Autrefois, elles fournissaient tout le minerai du royaume. Aujourd'hui, seuls les plus courageux osent s'y aventurer.",
+                'text' => "Bienvenue dans les Mines Profondes. Autrefois, elles fournissaient tout le minerai du royaume. Aujourd'hui, seuls les plus courageux osent s'y aventurer.",
                 'choices' => [
                     ['text' => "Qu'est-ce qui a changé ?", 'action' => 'next'],
                     ['text' => 'Je ne fais que passer.', 'action' => 'close'],

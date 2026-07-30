@@ -90,7 +90,7 @@
 
 zones:
     # =========================================================================
-    # ZONE 1 — Village de Lumiere (hub, zone sure)
+    # ZONE 1 — Le Fanal (hub, zone sure)
     # =========================================================================
     #
     # Le point de depart de tout personnage, et le seul lieu ou l'on ne risque
@@ -98,17 +98,17 @@ zones:
     # declarer une population ici n'aurait aucun effet, d'ou l'absence de bloc
     # `mobs:`.
     village-de-lumiere:
-        name: 'Village de Lumière'
-        name_en: 'Village of Light'
-        description: "Le hub central du World 1. Un fanal dresse contre les tenebres alentour : la forge, les echoppes, les jardins du temple et les voyageurs de passage. Ici, rien ne mord."
-        description_en: 'The central hub of World 1. A beacon raised against the surrounding dark: the forge, the shops, the temple gardens and passing travelers. Nothing bites here.'
+        name: 'Le Fanal'
+        name_en: 'The Beacon'
+        description: "Le hub central du World 1. Le feu du haut de la tour n'a jamais ete laisse s'eteindre, et c'est de lui que le village tient son nom : la forge, les echoppes, les jardins du temple et les voyageurs de passage. Ici, rien ne mord."
+        description_en: 'The central hub of World 1. The fire atop the tower has never been let go out, and the village takes its name from it: the forge, the shops, the temple gardens and passing travelers. Nothing bites here.'
         type: city
         safe: true
         map_x: 50
         map_y: 55
         map_shape: '50,43 58,39 66,45 67,56 58,62 50,59 46,50'
         enabled: true
-        source_map: 'Village de Lumière'
+        source_map: 'Le Fanal'
         explore:
             # Ce qu'on trouve en flanant dans un village, ce sont des gens. Sans
             # bloc `explore`, la zone tombait sur les defauts du service (mob 50
@@ -189,7 +189,7 @@ zones:
     # d'origine via `MobFixtures`, ce qui melait deux sources de verite pour un
     # meme contenu.
     foret-des-murmures:
-        name: 'Forêt des murmures'
+        name: 'Forêt des Murmures'
         name_en: 'Whispering Forest'
         description: "Arbres centenaires, clairieres et riviere aux eaux vives. On y apprend a se battre et a cueillir — et, la nuit venue, a ne pas s'attarder."
         description_en: 'Ancient trees, clearings and a river of quick water. Here one learns to fight and to forage — and, once night falls, not to linger.'
@@ -199,7 +199,7 @@ zones:
         map_y: 38
         map_shape: '12,22 24,15 40,17 50,26 47,36 36,41 24,42 13,36'
         enabled: true
-        source_map: 'Forêt des murmures'
+        source_map: 'Forêt des Murmures'
         explore:
             weights: { mob: 45, chest: 12, harvest: 12, pnj: 8, nothing: 23 }
             chest_gils_min: 5
@@ -299,14 +299,14 @@ zones:
               greeting: "Le jour, la foret n'est qu'une foret. Apres le crepuscule, ce qui marche entre les arbres n'a plus de souffle. Rentre."
 
     # =========================================================================
-    # ZONE 3 — Mines profondes (extraction, palier au-dessus de la foret)
+    # ZONE 3 — Mines Profondes (extraction, palier au-dessus de la foret)
     # =========================================================================
     #
     # La zone d'extraction du monde de depart : c'est d'ici que sort la matiere
     # premiere de toute la chaine de forge. La recolte y prime sur la rencontre,
     # et le sous-sol ne connait pas le jour — mais les galeries desertees, si.
     mines-profondes:
-        name: 'Mines profondes'
+        name: 'Mines Profondes'
         name_en: 'Deep Mines'
         description: "Tunnels etayes, bassins noirs et filons a perte de galerie. On y descend pour le minerai ; ce qui remonte n'est pas toujours ce qu'on y a laisse."
         description_en: 'Propped tunnels, black pools and veins running the length of the gallery. One goes down for ore; what comes back up is not always what was left there.'
@@ -316,7 +316,7 @@ zones:
         map_y: 36
         map_shape: '62,30 76,28 90,29 99,28 99,44 88,47 74,45 64,40'
         enabled: true
-        source_map: 'Mines profondes'
+        source_map: 'Mines Profondes'
         explore:
             # Zone d'extraction : la recolte prime sur la rencontre, et les
             # coffres (caches de mineurs) sont plus genereux qu'en foret.
@@ -484,14 +484,14 @@ zones:
     quartier-des-jardins:
         name: 'Quartier des Jardins'
         name_en: 'Garden Quarter'
-        description: "Le lotissement de Lumiere : allees de terre battue, murets bas et parcelles a vendre. On y bruit des projets plus que des combats."
-        description_en: 'The residential quarter of Lumiere: dirt lanes, low walls and plots for sale. Plans are hatched here more often than fights.'
+        description: "Le lotissement du Fanal : allees de terre battue, murets bas et parcelles a vendre. On y bruit des projets plus que des combats."
+        description_en: "The Beacon's residential quarter: dirt lanes, low walls and plots for sale. Plans are hatched here more often than fights."
         type: city
         safe: true
         map_x: 42
         map_y: 46
         map_shape: '30,44 40,41 48,42 50,48 44,53 34,52 29,48'
-        source_map: 'Village de Lumière'
+        source_map: 'Le Fanal'
 
     dunes-d-ambre:
         name: 'Dunes d''Ambre'
@@ -614,7 +614,7 @@ zones:
             - { slug: bancs-de-krakens, item: fish-baby-kraken, profession: fishing, capacity: 22, respawn_seconds: 64800, yield_min: 1, yield_max: 1, requires_skill: fisher-kraken }
 
     cite-ensevelie:
-        name: 'Cite Ensevelie'
+        name: 'Cité Ensevelie'
         name_en: 'Buried City'
         description: "Des toits qui affleurent le sable. On ne sait pas qui vivait la, et ce qui l'occupe aujourd'hui ne le dira pas."
         description_en: 'Rooftops breaking the surface of the sand. Nobody knows who lived here, and what occupies it today will not say.'

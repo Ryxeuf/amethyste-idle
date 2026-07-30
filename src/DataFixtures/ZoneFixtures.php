@@ -88,7 +88,7 @@ class ZoneFixtures extends Fixture implements DependentFixtureInterface
         // Map 2 (Village): single safe zone
         $map2 = $this->getReference('map_2', Map::class);
         $village = new Area();
-        $village->setName('Village de Lumière');
+        $village->setName('Le Fanal');
         $village->setSlug('village-lumiere');
         $village->setCoordinates('0.0');
         $village->setFullData(json_encode(['cells' => []]));

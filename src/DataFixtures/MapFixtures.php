@@ -29,8 +29,8 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
 
         // Village central — hub principal entre les zones (zone safe, aucun monstre)
         $village = new Map();
-        $village->setName('Village de Lumière');
-        $village->setNameTranslations(['en' => 'Village of Light']);
+        $village->setName('Le Fanal');
+        $village->setNameTranslations(['en' => 'The Beacon']);
         $village->setWorld($this->getReference('world_1', World::class));
         $village->setAreaWidth(40);
         $village->setAreaHeight(40);
@@ -40,9 +40,9 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($village);
         $this->addReference('map_2', $village);
 
-        // Forêt des murmures — zone lvl 5-15, arbres, clairières, rivière
+        // Forêt des Murmures — zone lvl 5-15, arbres, clairières, rivière
         $forest = new Map();
-        $forest->setName('Forêt des murmures');
+        $forest->setName('Forêt des Murmures');
         $forest->setNameTranslations(['en' => 'Whispering Forest']);
         $forest->setWorld($this->getReference('world_1', World::class));
         $forest->setAreaWidth(60);
@@ -53,9 +53,9 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($forest);
         $this->addReference('map_3', $forest);
 
-        // Mines profondes — zone lvl 10-25, tunnels, salles, filons, boss
+        // Mines Profondes — zone lvl 10-25, tunnels, salles, filons, boss
         $mines = new Map();
-        $mines->setName('Mines profondes');
+        $mines->setName('Mines Profondes');
         $mines->setNameTranslations(['en' => 'Deep Mines']);
         $mines->setWorld($this->getReference('world_1', World::class));
         $mines->setAreaWidth(60);
@@ -94,7 +94,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
 
         // Donjon : Racines de la foret — carte instanciee pour le donjon
         $dungeonRoots = new Map();
-        $dungeonRoots->setName('Racines de la foret (donjon)');
+        $dungeonRoots->setName('Racines de la Forêt (donjon)');
         $dungeonRoots->setNameTranslations(['en' => 'Roots of the Forest (dungeon)']);
         $dungeonRoots->setWorld($this->getReference('world_1', World::class));
         $dungeonRoots->setAreaWidth(20);

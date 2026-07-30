@@ -257,24 +257,19 @@ Phase 5 (fond & tests) : NAR-13, NAR-14  (parallélisable)
       ECO Piste D), fenêtre de prix — précurseur des caravanes
 - [ ] Tests : tirage de zone/foyer, fenêtres, récompenses
 
-### NAR-20 — Révision de l'acte d'introduction : le réveil au Fanal (M | ★★ | MOYENNE)
-> L'acte 1 (5 quêtes tutoriel « L'Éveil ») et les Fragments sont livrés et **gardent leur
-> structure** — cette révision est un alignement de contenu sur le canon acté depuis :
-> aucune mécanique neuve.
-> Prérequis : ∅ (textes) ; le crochet foyer d'attache s'active avec la création de
-> personnage par race (CLAUDE.md règle 12)
-- [ ] **Renommage narratif** : le réveil se passe **au Fanal**, la **Voûte** est nommée
-      et montrée, le joueur est dit **Limpide** (GAME_WORLD §7.2) — textes des 5 quêtes
-      d'acte 1 et dialogues des 7 PNJ du hub alignés (loi de nommage, §1)
-- [ ] **Le teaser du Cristal** : l'acte 1 plante le fil « l'améthyste qu'on ramasse est
-      la même matière que le Cristal sous la Voûte » (trame §13.3) — une réplique et une
-      entrée de Codex, pas plus
-- [ ] **La première matéria dans l'acte** : vérifier que la chaîne la met en main avec
-      son accord à 0 point expliqué (doctrine §2.1 — jour 1, jamais gaté)
-- [ ] **La lettre du foyer d'attache** : l'acte 1 se clôt par une lettre selon la race
-      (Nain → Mines, Elfe → Forêt, Orc → Crête/Dunes, Humain → libre — §13.1) : première
-      destination, kit, et **les 3-4 arbres du foyer montrés en premier** (le mur des 32
-      arbres est le risque n° 1 de l'Acte I, GAME_PROGRESSION §3)
-- [ ] **Rejouabilité second personnage inchangée** (règle 12) — notée, pas retouchée
-- [ ] Tests : textes alignés (aucune occurrence des anciens noms dans les quêtes d'acte),
-      lettre par race, matéria garantie
+### NAR-20 — Révision de l'acte d'introduction : le réveil au Fanal ✅ (M | ★★ | MOYENNE)
+> Livré avec **ZON-39**, qui touche les mêmes textes. **Livré le 2026-07-30.** Détail dans
+> [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> L'essentiel : trois des cinq points étaient déjà livrés par la piste d'onboarding — la
+> matéria garantie, accordée et lancée (ONB-12b), la lettre du foyer d'attache (ONB-13) et la
+> rejouabilité du second personnage. Restait la **fiction**, posée sans qu'aucune mécanique
+> bouge : le joueur est dit **Limpide** (étape 1), la matéria devient un éclat d'améthyste où
+> un geste est resté lisible (étape 4), le Fanal est **bâti sur la Voûte** (étape 9). Le
+> teaser du Cristal est planté **deux fois** — une réplique d'Iris l'Alchimiste et une entrée
+> de Codex « La Voûte » — et pas davantage. `ActOneNarrativeTest` tient la fiction là où
+> `ActOneChainTest` tient la forme.
+>
+> **Écart assumé** : le jalon demandait une lettre **par race** ; GAME_ONBOARDING l'amende
+> (le foyer d'attache se gagne, il ne se choisit pas) et ONB-13 a livré l'amendement — la
+> lettre suit les gestes de l'acte I, pas le peuple.

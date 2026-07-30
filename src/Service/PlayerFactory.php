@@ -136,9 +136,16 @@ class PlayerFactory
         /** @var \Doctrine\ORM\EntityRepository<Map> $mapRepository */
         $mapRepository = $this->entityManager->getRepository(Map::class);
 
-        $village = $mapRepository->findOneBy(['name' => 'Village de Lumière']);
-        if ($village instanceof Map) {
-            return $village;
+        // Le hub porte le nom « Le Fanal » depuis la loi de nommage (ZON-39).
+        // L'ancien libelle reste tente en second : une base seedee avant le
+        // renommage ferait sinon apparaitre les nouveaux joueurs sur la carte
+        // de test, sans erreur ni trace.
+        foreach (['Le Fanal', 'Village de Lumière'] as $name) {
+            $village = $mapRepository->findOneBy(['name' => $name]);
+
+            if ($village instanceof Map) {
+                return $village;
+            }
         }
 
         $firstMap = $mapRepository->findOneBy([]);

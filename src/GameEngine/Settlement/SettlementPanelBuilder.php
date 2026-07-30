@@ -67,7 +67,7 @@ class SettlementPanelBuilder
     {
         $settlement = $this->settlementRepository->findOneByZone($zone);
         if ($settlement === null) {
-            // Lumiere et les Jardins sont batis sur la Voute : il n'y a rien a
+            // le Fanal et les Jardins sont batis sur la Voute : il n'y a rien a
             // montrer, et surtout pas une jauge a zero qui laisserait croire a
             // un chantier abandonne.
             return null;

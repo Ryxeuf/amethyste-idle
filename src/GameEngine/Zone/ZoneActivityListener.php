@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * defaut : c'est le geste que l'acte I demande explicitement d'aller faire
  * ailleurs (etape 7), donc le seul qui distingue reellement une zone d'une
  * autre au moment ou le foyer se constate. L'exemple du canon le dit tel quel :
- * *« les mineurs des Mines profondes ont remarque votre travail »*.
+ * *« les mineurs des Mines Profondes ont remarque votre travail »*.
  *
  * **Ce qui n'y est pas, et pourquoi.** La chasse et l'exploration remettent
  * elles aussi quelque chose au joueur, mais `ExploreService` et `HuntService`

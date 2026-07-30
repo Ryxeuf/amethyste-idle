@@ -58,7 +58,7 @@ class SettlementGate
         $settlement = $this->settlementRepository->findOneByZone($zone);
         if ($settlement === null) {
             // Une zone sans foyer n'a pas de rang, donc pas de service nouveau.
-            // Ce n'est pas une privation : Lumiere et les Jardins sont batis sur
+            // Ce n'est pas une privation : le Fanal et les Jardins sont batis sur
             // la Voute, rien ne s'y accumule et rien n'y grandit.
             return SettlementGateVerdict::closed($service, $required, SettlementRank::Ruin);
         }

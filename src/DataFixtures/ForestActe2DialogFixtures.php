@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Met à jour les dialogues des PNJ de la Forêt des murmures pour l'Acte 2.
+ * Met à jour les dialogues des PNJ de la Forêt des Murmures pour l'Acte 2.
  *
  * Thadeus l'Ermite : lance la chaîne Fragment Forêt (quêtes 1, 2, 4).
  * Elara l'Herboriste : dialogue lié à la quête 3 (Remède Ancestral).
@@ -138,7 +138,7 @@ class ForestActe2DialogFixtures extends Fixture implements DependentFixtureInter
             ],
             // 11 — Dialogue normal (pas encore Acte 2)
             [
-                'text' => 'Oh oui. Cette forêt est ancienne, bien plus ancienne que le Village de Lumière. Elle garde en mémoire les échos du passé. Parfois, la nuit, on peut apercevoir des esprits errants entre les arbres... Les feux follets ne sont pas de simples créatures, ce sont des fragments de souvenirs oubliés.',
+                'text' => 'Oh oui. Cette forêt est ancienne, bien plus ancienne que le Fanal. Elle garde en mémoire les échos du passé. Parfois, la nuit, on peut apercevoir des esprits errants entre les arbres... Les feux follets ne sont pas de simples créatures, ce sont des fragments de souvenirs oubliés.',
                 'choices' => [
                     ['text' => "C'est fascinant. Merci, vieil homme.", 'action' => 'close'],
                 ],
