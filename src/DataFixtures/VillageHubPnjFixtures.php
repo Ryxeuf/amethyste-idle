@@ -187,6 +187,25 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                     ],
                     [
                         'text' => 'Emportez toujours des potions de soin avec vous. Les monstres dans les environs sont dangereux, et une bonne préparation peut faire la différence entre la vie et la mort. Et n\'oubliez pas les antidotes — certaines créatures sont venimeuses !',
+                        // Un seul choix : `talk.html.twig` rend **tout** choix
+                        // comme un lien vers le nœud suivant des lors qu'il y en
+                        // a un. Un « Au revoir » place ici n'aurait pas ferme le
+                        // dialogue — il aurait avance d'un nœud.
+                        'choices' => [
+                            [
+                                'text' => 'Une dernière chose, avant que je parte',
+                                'action' => 'next',
+                            ],
+                        ],
+                    ],
+                    // NAR-20 — le teaser du Cristal, en **une** replique : ce que
+                    // le joueur ramasse dans un filon et ce qui dort sous le
+                    // village sont la meme matiere (trame, GAME_WORLD §13.3).
+                    // Iris le dit parce qu'elle est la seule du Fanal a peser de
+                    // l'amethyste au gramme ; personne ne confirme, et c'est
+                    // voulu — l'acte I plante le fil, il ne le tire pas.
+                    [
+                        'text' => 'Ce que vous ramassez dans un filon, ces éclats violets qu\'on vend trois pièces au marché... c\'est exactement la même matière que le Cristal sous la Voûte. Le même dépôt, à une autre échelle. Personne ici n\'aime que je le dise à voix haute.',
                         'choices' => [
                             [
                                 'text' => 'Bien noté, merci',

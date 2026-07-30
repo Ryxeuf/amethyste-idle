@@ -714,8 +714,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_reveil' => [
                 'name' => 'L\'Éveil — Le maître d\'armes',
                 'name_translations' => ['en' => 'The Awakening — The Weapon Master'],
-                'description' => 'Vous ouvrez les yeux au Fanal, sans aucun souvenir. Ysold, maîtresse d\'armes, ne vous demande rien : elle vous fait choisir. Une arme, et la voie qui apprend à la tenir.',
-                'description_translations' => ['en' => 'You open your eyes at the Beacon, without any memory. Ysold, mistress of arms, asks nothing of you: she makes you choose. A weapon, and the path that teaches you to hold it.'],
+                'description' => 'Vous ouvrez les yeux au Fanal, sans aucun souvenir. Ici on appelle cela un Limpide : quelqu\'un sur qui rien ne s\'est encore déposé. Ysold, maîtresse d\'armes, ne vous demande pas d\'où vous venez — elle vous fait choisir. Une arme, et la voie qui apprend à la tenir.',
+                'description_translations' => ['en' => 'You open your eyes at the Beacon, without any memory. Here they call that a Limpide: someone on whom nothing has settled yet. Ysold, mistress of arms, does not ask where you come from — she makes you choose. A weapon, and the path that teaches you to hold it.'],
                 'requirements' => [
                     // `pnj_id` recale apres flush par `QuestChainFixtures`.
                     'talk_to' => [
@@ -817,8 +817,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_accord' => [
                 'name' => 'L\'Éveil — L\'accord',
                 'name_translations' => ['en' => 'The Awakening — The Attunement'],
-                'description' => 'Une matéria ne se porte pas : elle s\'accorde. Prenez le nœud d\'accord dans votre arbre, puis sertissez-la dans un emplacement de votre équipement. Deuxième tour de la boucle.',
-                'description_translations' => ['en' => 'A materia is not worn: it is attuned. Take the attunement node in your tree, then socket it into one of your equipment slots. Second turn of the loop.'],
+                'description' => 'Une matéria est un éclat d\'améthyste où le geste de quelqu\'un est resté lisible. Elle ne se porte donc pas : elle s\'accorde. Prenez le nœud d\'accord dans votre arbre, puis sertissez-la dans un emplacement de votre équipement. Deuxième tour de la boucle.',
+                'description_translations' => ['en' => 'A materia is a shard of amethyst in which someone\'s gesture stayed legible. So it is not worn: it is attuned. Take the attunement node in your tree, then socket it into one of your equipment slots. Second turn of the loop.'],
                 'requirements' => [
                     'gesture' => [
                         ['gesture' => 'socket_materia', 'name' => 'Sertir votre matéria'],
@@ -960,8 +960,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_acte1_cristal' => [
                 'name' => 'L\'Éveil — Le départ',
                 'name_translations' => ['en' => 'The Awakening — The Departure'],
-                'description' => 'Trois chemins partent du Fanal, et aucun ne vous est imposé. Prenez-en un. Sachez seulement ceci : un voyage prend du temps réel, et c\'est la première attente que le jeu vous demandera.',
-                'description_translations' => ['en' => 'Three paths leave the Beacon, and none is imposed on you. Take one. Know only this: a journey takes real time, and it is the first wait the game will ask of you.'],
+                'description' => 'Le Fanal est bâti sur la Voûte, et nul vivant ne dit y être entré. Trois chemins en partent, et aucun ne vous est imposé. Prenez-en un. Sachez seulement ceci : un voyage prend du temps réel, et c\'est la première attente que le jeu vous demandera.',
+                'description_translations' => ['en' => 'The Beacon is built upon the Vault, and no living soul claims to have entered it. Three paths leave the village, and none is imposed on you. Take one. Know only this: a journey takes real time, and it is the first wait the game will ask of you.'],
                 'requirements' => [
                     // Sans cible : trois destinations, aucune imposee. Un
                     // objectif d\'exploration nomme une zone et **additionne**

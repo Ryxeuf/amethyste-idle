@@ -50,6 +50,21 @@ class CodexEntryFixtures extends Fixture
                 'unlockKey' => 'village-de-lumiere',
             ],
             [
+                // NAR-20 — l'autre moitie du teaser du Cristal. La replique
+                // d'Iris se perd si le joueur passe la boutique ; le Codex la
+                // rattrape, et il est le seul endroit ou le fil se relit.
+                // Meme cle de deblocage que l'entree de region : arriver au
+                // Fanal ouvre les deux.
+                'slug' => 'la-voute',
+                'category' => CodexEntry::CATEGORY_WORLD_FACT,
+                'title' => 'La Voûte',
+                'title_translations' => ['en' => 'The Vault'],
+                'description' => "Sous le Fanal dort le Cristal d'Améthyste, et par-dessus lui une porte que personne n'a jamais vue s'ouvrir. Les alchimistes du village avancent, à voix basse, que les éclats ramassés dans n'importe quel filon sont de la même matière que ce Cristal — le même dépôt, à une autre échelle. Nul ne l'a démenti. Nul ne l'a confirmé.",
+                'description_translations' => ['en' => 'Beneath the Beacon sleeps the Amethyst Crystal, and above it a door no one has ever seen open. The village alchemists claim, in a low voice, that the shards gathered from any vein are the same matter as that Crystal — the same deposit, at another scale. No one has denied it. No one has confirmed it.'],
+                'unlockType' => CodexEntry::UNLOCK_ZONE_VISIT,
+                'unlockKey' => 'village-de-lumiere',
+            ],
+            [
                 'slug' => 'bestiary-gardien-foret',
                 'category' => CodexEntry::CATEGORY_BESTIARY_LORE,
                 'title' => 'Le Gardien de la Forêt',
