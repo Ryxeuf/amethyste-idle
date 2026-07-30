@@ -1,11 +1,11 @@
 <?php
 
 /*
- * Garde de style local — rejoue hors Docker huit regles de la CI PHP-CS-Fixer.
+ * Garde de style local — rejoue hors Docker neuf regles de la CI PHP-CS-Fixer.
  *
  * Ce script n'a AUCUNE dependance (ni vendor/, ni Composer, ni Docker) : il
  * s'appuie uniquement sur `token_get_all()`. Il ne remplace pas
- * `vendor/bin/php-cs-fixer` — il attrape avant le push les huit regles qui
+ * `vendor/bin/php-cs-fixer` — il attrape avant le push les neuf regles qui
  * cassent le plus souvent la CI, quand l'environnement de travail n'a pas
  * de conteneur PHP.
  *
@@ -22,7 +22,8 @@
  * vide est refuse par `no_blank_lines_after_phpdoc`, et le coller a la
  * constante ferait passer une notice de fichier pour la documentation de
  * `DEFAULT_PATHS`. C'est la huitieme regle, apprise en cassant la CI avec ce
- * fichier meme.
+ * fichier meme. La neuvieme — l'alignement des colonnes d'un bloc de `@param` —
+ * a ete apprise de la meme facon, deux chantiers plus tard.
  */
 
 /*
@@ -125,7 +126,7 @@ printf("\n%d fichier(s) analyse(s), %d violation(s).\n", \count($files), \count(
 exit([] === $violations ? 0 : 1);
 
 /**
- * Applique les sept regles a un fichier et retourne la liste des violations.
+ * Applique les neuf regles a un fichier et retourne la liste des violations.
  *
  * @return list<array{rule: string, line: int, message: string}>
  */
@@ -450,6 +451,26 @@ function checkPhpdoc(array $tokens): array
             }
         }
 
+        // phpdoc_align, l'autre moitie : dans un bloc de `@param` consecutifs,
+        // les colonnes sont alignees sur l'entree la plus longue, avec UN seul
+        // espace de separation. Deux espaces « pour faire joli » suffisent a
+        // faire rougir la CI — c'est ce qui est arrive a ce garde meme.
+        $params = [];
+        foreach ($content as $entry) {
+            // Le type est capture en non-greedy : `array<string, int|string>`
+            // contient un espace, et un `\S+` ne prendrait que sa moitie —
+            // c'est ce qui faisait crier le garde sur du code deja CI-vert.
+            if (1 === preg_match('/^@param\s+(.+?)\s+(\$\S+)\s+(\S.*)$/', $entry['text'], $m)) {
+                $params[] = ['line' => $entry['line'], 'type' => $m[1], 'name' => $m[2], 'desc' => $m[3], 'raw' => $entry['text']];
+                continue;
+            }
+
+            $violations = array_merge($violations, alignedParamViolations($params));
+            $params = [];
+        }
+
+        $violations = array_merge($violations, alignedParamViolations($params));
+
         // phpdoc_align : une description de tag continuee sur la ligne suivante
         // est realignee par la CI sur la colonne de la description. Le garde ne
         // signale que les continuations ecrites « au fil du texte », c'est-a-dire
@@ -557,6 +578,45 @@ function checkBlankLines(array $lines): array
                 'rule' => 'blank_line_between_class_members',
                 'line' => $i + 1,
                 'message' => 'il manque une ligne vide entre deux membres de classe.',
+            ];
+        }
+    }
+
+    return $violations;
+}
+
+/**
+ * Colonnes mal alignees dans un bloc de `@param` consecutifs.
+ *
+ * php-cs-fixer aligne le nom sur le type le plus long, et la description sur le
+ * nom le plus long — un seul espace de separation dans les deux cas.
+ *
+ * @param list<array{line: int, type: string, name: string, desc: string, raw: string}> $params bloc contigu
+ *
+ * @return list<array{rule: string, line: int, message: string}>
+ */
+function alignedParamViolations(array $params): array
+{
+    if (\count($params) < 2) {
+        return []; // Un `@param` seul n'a rien a aligner.
+    }
+
+    $typeWidth = max(array_map(static fn (array $p): int => \strlen($p['type']), $params));
+    $nameWidth = max(array_map(static fn (array $p): int => \strlen($p['name']), $params));
+
+    $violations = [];
+
+    foreach ($params as $param) {
+        // Egalite stricte, et non `str_starts_with` : un espace surnumeraire
+        // apres le nom passerait le prefixe sans etre vu, alors que c'est
+        // exactement le defaut qu'on cherche.
+        $expected = sprintf('@param %s %s %s', str_pad($param['type'], $typeWidth), str_pad($param['name'], $nameWidth), $param['desc']);
+
+        if ($param['raw'] !== $expected) {
+            $violations[] = [
+                'rule' => 'phpdoc_align',
+                'line' => $param['line'],
+                'message' => 'les colonnes d\'un bloc de @param s\'alignent sur l\'entree la plus longue, avec un seul espace de separation.',
             ];
         }
     }

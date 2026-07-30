@@ -34,9 +34,9 @@ final readonly class HubWeek
     public array $rows;
 
     /**
-     * @param list<HubWeekRow> $rows            dans l'ordre canonique du § 3
-     * @param string           $weekKey         semaine ISO courante (`2026-W31`), pour le repere d'en-tete
-     * @param bool             $closesTomorrow  vrai a partir du samedi : « se referme demain soir »
+     * @param list<HubWeekRow> $rows           dans l'ordre canonique du § 3
+     * @param string           $weekKey        semaine ISO courante (`2026-W31`), pour le repere d'en-tete
+     * @param bool             $closesTomorrow vrai a partir du samedi : « se referme demain soir »
      */
     public function __construct(
         array $rows,
@@ -47,7 +47,9 @@ final readonly class HubWeek
         // parce qu'un systeme de plus s'est declare. La ligne perdue est la
         // derniere de l'ordre canonique, et le test du digest verifie qu'on
         // n'en arrive jamais la.
-        $this->rows = \array_slice(array_values($rows), 0, self::MAX_ROWS);
+        // `array_slice` sans preservation de cles rend deja une liste : un
+        // `array_values` par-dessus serait sans effet, et PHPStan le dit.
+        $this->rows = \array_slice($rows, 0, self::MAX_ROWS);
     }
 
     /**
