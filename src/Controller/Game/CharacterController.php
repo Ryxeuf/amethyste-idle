@@ -119,7 +119,6 @@ class CharacterController extends AbstractController
         ]);
     }
 
-
     /**
      * ONB-06 — « libre / pris », et rien de plus.
      *
