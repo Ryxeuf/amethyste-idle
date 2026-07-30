@@ -11,6 +11,53 @@
 
 ---
 
+## ONB-12a — les quatre gestes que la chaine doit pouvoir constater (2026-07-30)
+
+> Premiere moitie d'ONB-12, decoupee (regle #8). [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md)
+> 10/21 + ONB-20a + ONB-20b-a + ONB-07a.
+
+**GAME_ONBOARDING § 5.2 decrit l'acte I comme trois tours d'une meme boucle : parchemin → arbre →
+geste.** Le moteur de quete savait compter des monstres, des objets, des zones et des PNJ. Il ne
+savait rien dire du troisieme temps — ni « vous avez porte l'arme », ni « vous avez serti la
+materia », ni « vous avez lance le sort », ni « vous avez lance une expedition ». La chaine en dix
+quetes ne pouvait donc pas etre ecrite : la moitie de ses etapes n'avait aucune condition de fin.
+
+**Un geste est un acte ponctuel dont la preuve est l'acte lui-meme.** C'est ce qui justifie une
+famille unique plutot que quatre types : aucun ne porte de cible structuree (ni `pnj_id`, ni
+`zone_slug`, ni conditions), tous se satisfont d'un nom de geste et, au plus, d'une cible libre.
+
+**Chaque geste prouve un tour de boucle entier, pas une etape.** Porter une piece exige le nœud de
+port (ONB-20b), qui exige l'arbre, qui exige le parchemin : constater le port, c'est constater les
+trois temps d'un coup. Sertir une materia exige le nœud d'accord — meme raisonnement. C'est ce qui
+permet de n'ajouter **aucun** objectif « apprendre tel nœud », qui aurait fait dependre la chaine
+de la forme interne des arbres.
+
+**Le lancer compte, pas le coup au but.** Rater n'est pas ne pas avoir appris. Une chaine
+d'introduction qui bloque sur un jet de des enseigne exactement le contraire de ce qu'elle veut
+montrer — l'annonce est donc emise avant de savoir si le sort touche.
+
+**La cible est annoncee en plusieurs lectures.** Pour une epee : son slug **et** sa famille d'arme ;
+pour une materia : son slug **et** son element. C'est ce qui permettra a l'etape 3 de demander « une
+materia de votre element » sans nommer d'objet : la recompense derive du domaine choisi a l'etape 1,
+et la quete ne peut pas connaitre son slug a l'avance.
+
+**Le contrat est verifie dans les deux sens.** Une enumeration empeche d'ecrire un nom fantaisiste
+dans une fixture ; elle n'empeche pas d'ajouter un cas qu'aucun appelant ne declenche — et c'est la
+moitie qui manque le plus souvent. Un test parcourt donc `src/` pour verifier que chaque geste
+declare est reellement emis quelque part. Un objectif mal cable ne se plaint jamais : la quete reste
+ouverte, le joueur refait le geste, et la seule facon de s'en apercevoir est de jouer la chaine
+jusqu'au bout.
+
+**Un piege trouve en chemin.** `getPlayerQuestProgress()` renvoie **100** quand le total necessaire
+vaut zero. Un type de suivi absent de sa liste ne produit donc pas une quete bloquee, mais une quete
+**terminee des son acceptation**. Un test aligne desormais la liste sur ce que le formateur produit
+reellement.
+
+**Ce qui reste** : la chaine elle-meme (ONB-12b) — les dix quetes, les recompenses derivees, et les
+lois de chaine (une etape = une quete, aucune etape avant la 9e n'est time-gatee).
+
+---
+
 ## ONB-16 — une population de PNJ au Fanal, dont le maitre d'armes (2026-07-30)
 
 > Ferme la dette **D5**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 9/20 + ONB-20a +

@@ -83,6 +83,36 @@ class EquipmentPortCatalog
     }
 
     /**
+     * La famille d'arme dont ce slug de competence est un echelon (ONB-12a).
+     *
+     * Sert a repondre a « ceci est-il une epee ? » sans table parallele : c'est
+     * deja l'echelle qui le sait, puisque porter une epee passe par ses
+     * echelons et par eux seuls.
+     *
+     * Les echelons 2 et 3 sont declares par **reference de fixture** — le
+     * rewiring de `SkillFixtures` en a besoin. Leur slug s'en deduit par la
+     * convention du projet (`_` → `-`), que `EquipmentPortLadderTest` verifie
+     * echelon par echelon : si elle cassait, la famille deviendrait
+     * introuvable en silence, et un objectif de port ne se terminerait jamais.
+     */
+    public function familyOfPortSkill(string $skillSlug): ?string
+    {
+        foreach ($this->families() as $key => $family) {
+            $rungs = [
+                $family['rung1']['slug'],
+                str_replace('_', '-', $family['rung2']),
+                str_replace('_', '-', $family['rung3']),
+            ];
+
+            if (\in_array($skillSlug, $rungs, true)) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return array<string, array{label: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      *
      * @throws EquipmentPortDefinitionException

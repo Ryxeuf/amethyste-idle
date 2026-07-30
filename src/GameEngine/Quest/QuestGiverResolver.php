@@ -82,6 +82,11 @@ class QuestGiverResolver
         if (!empty($requirements['puzzle'])) {
             return 'puzzle';
         }
+        // En dernier : un geste accompagne souvent un autre objectif (aller
+        // recolter *puis* fabriquer). C'est l'autre qui nomme la quete.
+        if (!empty($requirements['gesture'])) {
+            return 'gesture';
+        }
 
         return 'other';
     }

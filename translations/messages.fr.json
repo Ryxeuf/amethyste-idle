@@ -1763,6 +1763,17 @@
           "description": "Sur tout objet : ce qui le consomme, et qui l'achète."
         }
       }
+    },
+    "quest": {
+      "gesture": {
+        "equip_item": "Porter la pièce",
+        "socket_materia": "Sertir la matéria",
+        "cast_spell": "Lancer le sort",
+        "start_expedition": "Lancer une expédition",
+        "fallback": "Accomplir le geste",
+        "done": "Fait",
+        "todo": "À faire"
+      }
     }
   },
   "common": {

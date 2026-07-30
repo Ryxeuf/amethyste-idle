@@ -15,6 +15,7 @@ use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Ce qu'un emplacement accepte (DOM-03).
@@ -141,12 +142,15 @@ class MateriaSlotTypeTest extends TestCase
         $playerItemHelper = $this->createMock(PlayerItemHelper::class);
         $playerItemHelper->method('canEquipMateria')->willReturn(true);
 
-        return new MateriaGearSetter($gearHelper, $this->createMock(EntityManagerInterface::class), $playerItemHelper);
+        return new MateriaGearSetter($gearHelper, $this->createMock(EntityManagerInterface::class), $playerItemHelper, $this->createMock(EventDispatcherInterface::class));
     }
 
     private function materia(bool $spell): PlayerItem&MockObject
     {
         $generic = new Item();
+        // ONB-12a : le sertissage s'annonce, et l'annonce porte le slug de la
+        // materia. Une materia sans slug n'existe pas en jeu.
+        $generic->setSlug('m1-sujet');
         if ($spell) {
             $generic->setSpell(new Spell());
         }

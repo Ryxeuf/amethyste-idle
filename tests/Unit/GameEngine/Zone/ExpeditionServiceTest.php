@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ExpeditionServiceTest extends TestCase
 {
@@ -33,6 +34,7 @@ class ExpeditionServiceTest extends TestCase
     private InventoryHelper&MockObject $inventoryHelper;
     private PlayerJournalEntryRepository&MockObject $journalRepository;
     private NotificationService&MockObject $notificationService;
+    private EventDispatcherInterface&MockObject $eventDispatcher;
 
     private ExpeditionService $service;
 
@@ -53,8 +55,10 @@ class ExpeditionServiceTest extends TestCase
         $this->inventoryHelper = $this->createMock(InventoryHelper::class);
         $this->journalRepository = $this->createMock(PlayerJournalEntryRepository::class);
         $this->notificationService = $this->createMock(NotificationService::class);
+        // ONB-12a : lancer une expedition est un geste annonce.
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $this->service = new class($this->entityManager, $this->expeditionRepository, $this->zoneTravelService, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, $this->notificationService) extends ExpeditionService {
+        $this->service = new class($this->entityManager, $this->expeditionRepository, $this->zoneTravelService, $this->playerItemGenerator, $this->inventoryHelper, $this->journalRepository, $this->notificationService, $this->eventDispatcher) extends ExpeditionService {
             /** @var list<int> */
             public array $rolls = [];
             public \DateTimeImmutable $currentTime;

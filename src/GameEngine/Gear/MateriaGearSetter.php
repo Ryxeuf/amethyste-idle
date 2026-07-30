@@ -4,6 +4,9 @@ namespace App\GameEngine\Gear;
 
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
+use App\Enum\Element;
+use App\Enum\QuestGesture;
+use App\Event\Game\PlayerGestureEvent;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\ItemNotMateriaException;
 use App\Exception\ItemRequirementsException;
@@ -11,10 +14,11 @@ use App\Exception\MateriaSlotTypeException;
 use App\Helper\GearHelper;
 use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class MateriaGearSetter
 {
-    public function __construct(private readonly GearHelper $gearHelper, private readonly EntityManagerInterface $entityManager, private readonly PlayerItemHelper $playerItemHelper)
+    public function __construct(private readonly GearHelper $gearHelper, private readonly EntityManagerInterface $entityManager, private readonly PlayerItemHelper $playerItemHelper, private readonly EventDispatcherInterface $eventDispatcher)
     {
     }
 
@@ -49,6 +53,35 @@ class MateriaGearSetter
         $slot->setItemSet($materia);
         $this->entityManager->persist($slot);
         $this->entityManager->flush();
+
+        // ONB-12a : annonce apres le flush — un geste se constate quand il a
+        // reellement eu lieu, pas quand on s'apprete a le faire.
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::SocketMateria, $this->readingsOf($materia)),
+            PlayerGestureEvent::NAME,
+        );
+    }
+
+    /**
+     * Les lectures possibles d'une materia sertie.
+     *
+     * Son slug, et son element : une quete de l'acte I demande « une materia de
+     * votre element », jamais un objet precis — c'est le joueur qui a choisi son
+     * domaine, et la recompense en decoule (GAME_ONBOARDING § 5.2).
+     *
+     * @return list<string>
+     */
+    private function readingsOf(PlayerItem $materia): array
+    {
+        $generic = $materia->getGenericItem();
+
+        $readings = [$generic->getSlug()];
+        $element = $generic->getElement();
+        if (Element::None !== $element) {
+            $readings[] = $element->value;
+        }
+
+        return $readings;
     }
 
     public function unsetMateria(Slot $slot): void

@@ -1763,6 +1763,17 @@
           "description": "On any object: what consumes it, and who buys it."
         }
       }
+    },
+    "quest": {
+      "gesture": {
+        "equip_item": "Wear the piece",
+        "socket_materia": "Socket the materia",
+        "cast_spell": "Cast the spell",
+        "start_expedition": "Send an expedition",
+        "fallback": "Perform the gesture",
+        "done": "Done",
+        "todo": "To do"
+      }
     }
   },
   "common": {

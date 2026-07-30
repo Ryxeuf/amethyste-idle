@@ -4,6 +4,7 @@ namespace App\GameEngine\Quest;
 
 use App\Entity\App\Mob;
 use App\Entity\App\Zone;
+use App\Enum\QuestGesture;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -383,6 +384,49 @@ class PlayerQuestUpdater
         }
 
         return $correct;
+    }
+
+    /**
+     * Called when the player performs a gesture (ONB-12a).
+     *
+     * `$targets` porte les lectures possibles de la cible : pour une epee, son
+     * slug et sa famille d'arme. Un objectif sans cible accepte n'importe
+     * laquelle — « sertir une materia », sans dire laquelle.
+     *
+     * Les quetes journalieres sont volontairement hors du champ : un geste est
+     * une etape d'apprentissage, pas une besogne a repeter tous les jours.
+     *
+     * @param list<string> $targets
+     */
+    public function updateGesture(QuestGesture $gesture, array $targets = []): void
+    {
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $changed = false;
+
+        foreach ($quests as $quest) {
+            if ($this->playerQuestHelper->isPlayerQuestCompleted($quest)) {
+                continue;
+            }
+            $tracking = $quest->getTracking();
+            if (!isset($tracking['gesture'])) {
+                continue;
+            }
+            foreach ($tracking['gesture'] as $idx => $entry) {
+                if ($entry['gesture'] !== $gesture->value || $entry['count'] >= $entry['necessary']) {
+                    continue;
+                }
+                if (null !== ($entry['target'] ?? null) && !\in_array($entry['target'], $targets, true)) {
+                    continue;
+                }
+                $tracking['gesture'][$idx]['count'] = ($entry['count'] ?? 0) + 1;
+                $changed = true;
+            }
+            $quest->setTracking($tracking);
+        }
+
+        if ($changed) {
+            $this->entityManager->flush();
+        }
     }
 
     private function updateTrackingEntries(string $type, string $slug, int $quantity): void

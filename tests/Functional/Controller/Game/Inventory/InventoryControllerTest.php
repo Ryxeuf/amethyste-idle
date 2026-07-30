@@ -13,6 +13,7 @@ use App\Entity\Game\Spell;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -31,6 +32,7 @@ use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class InventoryControllerTest extends TestCase
 {
@@ -56,6 +58,9 @@ class InventoryControllerTest extends TestCase
         $genericItem = $this->createMock(Item::class);
         $genericItem->method('isGear')->willReturn(true);
         $genericItem->method('getGearLocation')->willReturn('head');
+        // ONB-12a : le port est annonce, et l'annonce lit les prerequis de la
+        // piece pour en deduire la famille d'arme.
+        $genericItem->method('getRequirements')->willReturn(new ArrayCollection([]));
 
         $playerItem = $this->createMock(PlayerItem::class);
         $playerItem->method('getId')->willReturn(42);
@@ -190,6 +195,8 @@ class InventoryControllerTest extends TestCase
             $this->entityManager,
             $this->createMock(PlayerActionHelper::class),
             $this->playerItemHelper,
+            new EquipmentPortCatalog(\dirname(__DIR__, 6)),
+            $this->createMock(EventDispatcherInterface::class),
         );
         $controller->setContainer($this->createContainerWithRouter());
 

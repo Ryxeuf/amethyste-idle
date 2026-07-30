@@ -8,12 +8,15 @@ use App\Entity\App\PlayerExpedition;
 use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Zone;
 use App\Entity\Game\Item;
+use App\Enum\QuestGesture;
+use App\Event\Game\PlayerGestureEvent;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Notification\NotificationService;
 use App\Helper\InventoryHelper;
 use App\Repository\PlayerExpeditionRepository;
 use App\Repository\PlayerJournalEntryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Expeditions time-gated (pivot PBBG, ZON-13).
@@ -60,6 +63,7 @@ class ExpeditionService
         private readonly InventoryHelper $inventoryHelper,
         private readonly PlayerJournalEntryRepository $journalRepository,
         private readonly NotificationService $notificationService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -124,6 +128,15 @@ class ExpeditionService
         $expedition = new PlayerExpedition($player, $zone, $durationKey, $now, $endsAt);
         $this->entityManager->persist($expedition);
         $this->entityManager->flush();
+
+        // ONB-12a : la derniere lecon de l'acte I — quitter le jeu en le
+        // laissant travailler. La cible est le palier choisi : la quete
+        // d'introduction accepte le plus court, elle n'impose pas d'attendre
+        // douze heures pour finir le tutoriel.
+        $this->eventDispatcher->dispatch(
+            new PlayerGestureEvent(QuestGesture::StartExpedition, [$durationKey]),
+            PlayerGestureEvent::NAME,
+        );
 
         return $expedition;
     }
