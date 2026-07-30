@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **16/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **17/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -45,7 +45,8 @@
 | ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
 | ONB-17 ✅ | Le coach par écran, les dix encarts (ferme D10) | M | ★★ |
 | ONB-18 ✅ | Écrans d'entrée au design system | S | ★★ |
-| ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
+| ONB-19a ✅ | `OnboardingPlanContractTest` — les invariants du plan | S | ★★ |
+| ONB-19b | Les sept indicateurs du tunnel + exposition admin | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
 | ONB-20b-a ✅ | Le port des **armes** par nœuds d'entree (echelon 1) | M | ★★★ |
 | ONB-20b-b | Le port des **armures et outils** (echelles restantes) | M | ★★ |
@@ -521,20 +522,24 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] Le tunnel se traverse au pouce : `.ds-field` fait 44 px, comme `.ds-btn` — un champ plus
       court qu'un bouton se rate une fois sur trois
 
-### ONB-19 — Instrumentation du tunnel et tests de contrat (M | ★★ | MOYENNE)
+### ONB-19a — Les invariants du plan, tenus par un test ✅ (S | ★★ | MOYENNE)
 > Sans mesure, on répare à l'aveugle (cadrage §9).
 > Prérequis : ← pistes A, B, C
-- [ ] Sept indicateurs : inscriptions → personnages ; **pas d'abandon dans le tunnel** ;
+- [x] `OnboardingPlanContractTest` — **huit** invariants tenus au même endroit : aucune quête
+      d'`intro` par carte (15) ; la matéria garantie, accordée et lancée (12) ; le parchemin
+      reste un coût — prix unique, aucun prérequis, les trois premiers donnés (08) ; le
+      catalogue n'expose aucun nœud d'arbre fermé (09) ; aucun contenu gaté par la race ni par
+      le foyer (07, 13) ; un seul état d'onboarding (14) ; aucune décision de build dans le
+      tunnel (05) ; le coach n'explique jamais un système fermé (17)
+- [ ] **ONB-19b** — sept indicateurs : inscriptions → personnages ; **pas d'abandon dans le tunnel** ;
       personnages → acte I terminé ; **répartition des armes, éléments et métiers choisis** ;
       **répartition des peuples** ; % vérifiés à J+7 ; **retour à J+1 et J+7**
 - [ ] La répartition des métiers est l'indicateur de santé de **D11** ; celle des peuples,
       l'indicateur d'équilibre de **ONB-07**
 - [ ] Exposition dans l'admin (une section de l'existant)
-- [ ] `OnboardingPlanContractTest` — les invariants à ne jamais perdre : aucune quête d'`intro`
-      par coordonnées (15) ; la matéria garantie et accordée (12) ; un seul point de décision
-      pour la porte (04) ; **aucun contenu gaté par la race ni par le foyer d'attache** (07, 13) ;
-      **les quatre conditions du parchemin** (08) ; le catalogue contient toujours les 32 et
-      n'expose aucun nœud d'un arbre fermé (09) ; un seul état d'onboarding (14)
+> ⚠️ L'invariant « un seul point de décision pour la porte » (**04**) n'est pas asservi : la
+> vérification d'e-mail n'existe pas — ONB-02/04 sont bloqués faute de `symfony/mailer`. Il
+> rejoindra le test avec eux.
 
 ### ONB-20 — Mains nues, et le port de l'équipement par nœuds d'entrée (L | ★★★ | HAUTE)
 > Ferme **D13** et rend applicables **A18** et **A19**. Deux choses à la fois, indissociables :
