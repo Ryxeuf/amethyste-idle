@@ -90,6 +90,36 @@ class HubWeekTest extends TestCase
     }
 
     /**
+     * Le hub ne dit jamais l'Affleurement de la semaine.
+     *
+     * GAME_DASHBOARD § 6, qui reaffirme la decision de RET-06 : l'Affleurement
+     * n'est annonce nulle part. C'est **l'information des prospecteurs**, et
+     * elle se monnaye entre joueurs — l'afficher gratuitement au tableau de
+     * bord effacerait d'un trait le seul savoir qui ait une valeur marchande
+     * dans le jeu.
+     *
+     * L'interdit se verifie sur le gabarit et sur le digest : la tentation de
+     * « juste une ligne de plus » viendra de l'un ou de l'autre.
+     */
+    public function testTheHubNeverNamesTheWeeklyOutcrop(): void
+    {
+        $root = \dirname(__DIR__, 4);
+
+        foreach (['templates/game/index.html.twig', 'src/GameEngine/Player/PlayerHubDigest.php'] as $file) {
+            $source = file_get_contents($root . '/' . $file);
+            self::assertIsString($source, sprintf('%s est illisible.', $file));
+
+            foreach (['outcrop', 'Outcrop', 'affleurement', 'Affleurement'] as $needle) {
+                self::assertStringNotContainsString(
+                    $needle,
+                    $source,
+                    sprintf('%s mentionne l\'Affleurement. C\'est l\'information des prospecteurs : elle se monnaye, elle ne s\'affiche pas.', $file),
+                );
+            }
+        }
+    }
+
+    /**
      * Une ligne du hub ne peut **pas** devenir un bouton.
      *
      * La regle « le hub lit, il ne fait pas » se verifie sur ce que le type
