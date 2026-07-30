@@ -32,7 +32,7 @@
 | ONB-05 | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
-| ONB-07b | Les quatre capacités branchées sur leurs écrans (1/4 : le flair) | M | ★★ |
+| ONB-07b | Les quatre capacités branchées (1/4 livré ; **3 bloquées**, voir le jalon) | M | ★★ |
 | ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
@@ -220,12 +220,28 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
   - [ ] **Nain — Lire la pierre** : la bande de pureté d'un filon est lisible **avant** la
         récolte. ⚠️ Ne pas marcher sur le prospecteur : le Nain lit **le filon devant lui**,
         le prospecteur sait **où et pour combien de temps** (RET-06)
+        🚧 **Bloqué — décision de conception, pas d'implémentation.** La pureté est **tirée au
+        moment de la récolte** (`PurityDrawer::draw()`), à partir de la vitalité du filon et
+        d'un jet. Il n'existe donc **aucune bande « du filon »** à lire d'avance : la rendre
+        lisible exige de décider si le tirage devient déterministe par état de filon — ce qui
+        touche ECO-21/22 et la façon dont la pureté se négocie. À trancher avant de coder.
   - [ ] **Elfe — L'œil des lisières** : une exploration « rien » rend **un repérage**.
         ⚠️ **Jamais de butin, jamais de réduction de coût** — sinon E9 tombe
+        🚧 **Bloqué — le repérage n'existe pas.** GAME_ZONE_ACTIONS décrit les trois états de
+        découverte (rumeur → repérée → cartographiée) et le repérage cumulatif, mais **aucune
+        entité par joueur ne les porte** : il n'y a ni `PlayerVein`, ni découverte de monstre
+        par joueur. La capacité rendrait quelque chose qui n'a nulle part où être rangé. Elle
+        suit la reprise de l'écran de zone, elle ne la précède pas.
   - [x] **Orc — Le flair** ✅ : élément et faiblesse d'un monstre lisibles **dès la première
         rencontre**, sans attendre le palier de bestiaire
   - [ ] **Humain — Les usages** : sur tout objet, les recettes qui le consomment et les PNJ qui
         l'achètent, sans l'avoir découvert (s'appuie sur `PlayerResourceCatalog`)
+        🚧 **Bloqué — l'écran ne montre pas ce qu'il faudrait avancer.** Le palier
+        `TIER_RECIPES` (25 récoltes) existe et son **badge** s'affiche, mais
+        `templates/game/catalog/index.html.twig` n'a **aucun bloc de détail** pour les recettes
+        ni pour les acheteurs — seuls l'élément/valeur (palier 1) et le titre de spécialiste
+        (palier 3) sont rendus. Avancer la lecture d'un contenu qui n'est jamais affiché ne
+        changerait qu'une couleur de pastille. Construire le bloc d'abord.
 - [ ] Écran du peuple : qui vous êtes, d'où vous venez, **et ce que vous voyez**. Jamais un
       métier, une destination ni des arbres (A8)
 - [ ] Tests : aucune capacité ne modifie dégâts, PV, rendement, coût, nombre d'actions ni prix ;
