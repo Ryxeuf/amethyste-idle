@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Enum\TrainingMode;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -14,6 +15,51 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $monsters = [
+            // =================================================================
+            // Les deux mannequins d'entrainement du Fanal (ONB-11)
+            // =================================================================
+            //
+            // Ils ouvrent la liste et non la ferment : ce sont les deux
+            // premieres creatures qu'un joueur rencontrera, et les seules qui ne
+            // soient pas des creatures.
+            //
+            // **Ce ne sont pas des monstres affaiblis pour les debutants.** Le
+            // monde ne raconte jamais que ses monstres sont inoffensifs : le
+            // premier vrai monstre garde tout son mordant. Un mannequin tourne
+            // sur lui-meme, c'est ce que fait un mannequin.
+            //
+            // Ils n'appartiennent a **aucune zone** : `TrainingFightLauncher`
+            // les dresse le temps d'un combat scripte. C'est ce qui permet
+            // d'enseigner le combat au Fanal sans lever son `safe: true`.
+            'training_dummy_still' => [
+                'name' => "Mannequin d'entraînement",
+                'name_translations' => ['en' => 'Training Dummy'],
+                // Assez de vie pour laisser le temps de lire l'interface, assez
+                // peu pour que le combat finisse dans la meme minute.
+                'life' => 30,
+                'hit' => 0,
+                'speed' => 1,
+                'attack' => 'none_attack_1',
+                'level' => 1,
+                'difficulty' => 1,
+                'trainingMode' => TrainingMode::Inert,
+                'aiPattern' => ['spell_chance' => 0],
+            ],
+            'training_dummy_sparring' => [
+                'name' => 'Mannequin de riposte',
+                'name_translations' => ['en' => 'Sparring Dummy'],
+                'life' => 40,
+                // Il touche souvent — le joueur **doit** voir sa barre
+                // descendre pour comprendre a quoi servent les soins. Ce qui le
+                // rend sur n'est pas de rater, c'est de ne pas pouvoir tuer.
+                'hit' => 80,
+                'speed' => 5,
+                'attack' => 'none_attack_1',
+                'level' => 1,
+                'difficulty' => 1,
+                'trainingMode' => TrainingMode::Capped,
+                'aiPattern' => ['spell_chance' => 0],
+            ],
             'slime' => [
                 'name' => 'Gelée',
                 'name_translations' => ['en' => 'Slime'],
@@ -1458,6 +1504,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // Boss
             if (isset($data['isBoss']) && $data['isBoss']) {
                 $monster->setIsBoss(true);
+            }
+
+            // ONB-11 : mannequin d'entrainement. `null` = un vrai monstre.
+            if (isset($data['trainingMode'])) {
+                $monster->setTrainingMode($data['trainingMode']);
             }
 
             // Boss phases

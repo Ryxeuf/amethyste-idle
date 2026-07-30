@@ -687,7 +687,10 @@
         "error_collect": "Une erreur est survenue lors de la récupération des objets."
       },
       "error_action": "Une erreur est survenue lors de l'action.",
-      "difficulty": "Difficulté %level%/5"
+      "difficulty": "Difficulté %level%/5",
+      "training_dummy": {
+        "spins": "%name% tourne lentement sur lui-même."
+      }
     },
     "ranking": {
       "title": "Classement",

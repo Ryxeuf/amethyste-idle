@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\TrainingMode;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,6 +72,21 @@ class Monster
 
     #[ORM\Column(name: 'is_boss', type: 'boolean', options: ['default' => false])]
     private bool $isBoss = false;
+
+    /**
+     * Mannequin d'entrainement, et lequel (ONB-11).
+     *
+     * `null` designe **un vrai monstre**, et c'est la valeur de tout ce qui vit
+     * dans le monde. Un mannequin n'est pas un monstre affaibli pour les
+     * debutants : c'est un mannequin, ce qui evite au monde de raconter que ses
+     * monstres sont inoffensifs.
+     *
+     * Un mannequin n'entre **jamais** dans un tirage de rencontre : il se
+     * declenche par une quete. C'est ce qui permet d'enseigner le combat au
+     * Fanal sans toucher a son `safe: true` — « ici, rien ne mord » reste vrai.
+     */
+    #[ORM\Column(name: 'training_mode', type: 'string', length: 20, nullable: true, enumType: TrainingMode::class)]
+    private ?TrainingMode $trainingMode = null;
 
     #[ORM\Column(name: 'boss_phases', type: 'json', nullable: true)]
     private ?array $bossPhases = null;
@@ -305,6 +321,27 @@ class Monster
     public function isBoss(): bool
     {
         return $this->isBoss;
+    }
+
+    public function getTrainingMode(): ?TrainingMode
+    {
+        return $this->trainingMode;
+    }
+
+    public function setTrainingMode(?TrainingMode $trainingMode): void
+    {
+        $this->trainingMode = $trainingMode;
+    }
+
+    /**
+     * Est-ce un mannequin ? (ONB-11).
+     *
+     * Le seul predicat que les tirages de rencontre doivent consulter : un
+     * mannequin ne s'y presente jamais.
+     */
+    public function isTrainingDummy(): bool
+    {
+        return $this->trainingMode !== null;
     }
 
     public function setIsBoss(bool $isBoss): void

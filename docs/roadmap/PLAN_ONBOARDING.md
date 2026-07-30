@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **7/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **8/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -36,7 +36,7 @@
 | ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
-| ONB-11 | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
+| ONB-11 ✅ | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
 | ONB-12 | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
 | ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
 | ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
@@ -320,22 +320,30 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] Tests : les quatre professions de filon et l'école du dépeceur atteignables dans le
       périmètre ; le hub ne rend aucun minerai ; le Fanal reste `safe` et sans population
 
-### ONB-11 — Les mannequins d'entraînement (M | ★★★ | HAUTE)
+### ONB-11 — Les mannequins d'entraînement (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-30
 > Décision A13. Le Fanal est `safe: true`, donc `ExploreService` force `mob: 0` : **aucun
 > combat n'y est possible**. Un combat **scripté par une quête** n'est pas un tirage de
 > rencontre — le mannequin enseigne donc le combat au Fanal **sans lever sa sûreté**, et évite
 > de faire voyager (donc attendre) un joueur avant son premier combat.
 > Cadrage : GAME_ONBOARDING §5.3
-- [ ] Combat scripté déclenché par une quête, hors tirage de rencontre — `safe: true` intact
-- [ ] **Mannequin n° 1** : son action est « tourne sur lui-même », **zéro dégât**. **Perdre est
-      impossible** — c'est ce qui permet d'afficher toute l'interface sans qu'un joueur qui lit
-      lentement se fasse tuer
-- [ ] **Mannequin n° 2** : il riposte faiblement et **ne peut pas tuer** (plancher à 1 PV). Le
-      joueur doit voir sa barre descendre pour comprendre à quoi servent les soins
-- [ ] Diégétique : ce sont des mannequins, **pas des monstres affaiblis** — le monde ne raconte
-      jamais que ses monstres sont inoffensifs
-- [ ] Tests : le mannequin 1 n'inflige jamais de dégât ; le mannequin 2 ne descend jamais sous
-      1 PV ; ni l'un ni l'autre n'apparaît dans un tirage de rencontre ; le Fanal reste `safe`
+- [x] Combat scripté hors tirage de rencontre — `TrainingFightLauncher` dresse le mannequin
+      **le temps du combat**, rattaché à aucune zone. `safe: true` intact
+- [x] **Mannequin n° 1** (`training_dummy_still`) : il tourne sur lui-même et **ne frappe
+      jamais**. Le retour est placé *avant* la résolution du sort, et non après avec un dégât
+      forcé à zéro : un mannequin inerte ne doit pas non plus appliquer d'effet de statut, ni
+      déclencher d'alerte de danger, ni consommer un temps de recharge
+- [x] **Mannequin n° 2** (`training_dummy_sparring`) : il riposte et **ne peut pas tuer**. Le
+      plancher est posé dans `SpellApplicator`, là où la vie s'écrit — donc il vaut quel que
+      soit le chemin (attaque, statut, riposte), et non seulement pour l'attaque de base
+- [x] **Le plancher regarde l'agresseur, jamais la cible.** C'est ce qui empêche la clémence de
+      fuir : un joueur qui sort du Fanal meurt comme tout le monde, dès le premier loup
+- [x] Diégétique : `training_mode` à `null` désigne **un vrai monstre**, et c'est la valeur de
+      tout ce qui vit dans le monde
+- [x] **L'exclusion du tirage est posée au dépôt**, pas chez les appelants : explorer et chasser
+      partent tous deux de `MobRepository`, et tout appelant à venir en héritera
+- [x] Tests : les deux garanties, l'exclusion des deux requêtes de rencontre, le refus du
+      lanceur sur un vrai monstre, et le mannequin sans zone
+- [ ] **Reste à ONB-12** : la quête qui déclenche les deux combats
 
 ### ONB-12 — La chaîne de l'acte I : dix quêtes, trois tours de boucle (L | ★★★ | HAUTE)
 > Décision A14, et le cœur du dossier. Le tutoriel actuel commence par le voyage (**D6**, seul

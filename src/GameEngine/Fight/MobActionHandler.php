@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MobActionHandler
 {
@@ -29,6 +30,7 @@ class MobActionHandler
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatLogger $combatLogger,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -86,6 +88,24 @@ class MobActionHandler
             $this->logger->debug('[MobActionHandler] Mob is paralyzed/frozen, skipping turn');
             $result['messages'][] = sprintf('%s est immobilise !', $mob->getName());
             $this->combatLogger->logImmobilized($fight, $mob);
+
+            return $result;
+        }
+
+        // ONB-11 — le premier mannequin **tourne sur lui-meme**.
+        //
+        // Il ne frappe pas, donc perdre est impossible : c'est ce qui permet
+        // d'afficher toute l'interface — l'ordre des tours, les points de vie,
+        // la fuite, les encarts de tutoriel — sans qu'un joueur qui lit
+        // lentement se fasse tuer pendant qu'il lit.
+        //
+        // Le retour est place avant la resolution du sort, et non apres, avec un
+        // degat force a zero : un mannequin inerte ne doit pas non plus appliquer
+        // d'effet de statut, ni declencher d'alerte de danger, ni consommer un
+        // temps de recharge. Il ne fait rien.
+        $trainingMode = $mob->getMonster()->getTrainingMode();
+        if ($trainingMode !== null && !$trainingMode->strikes()) {
+            $result['messages'][] = $this->translator->trans($trainingMode->idleActionKey(), ['%name%' => $mob->getName()]);
 
             return $result;
         }

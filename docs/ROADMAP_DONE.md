@@ -11,6 +11,54 @@
 
 ---
 
+## ONB-11 — les mannequins d'entrainement (2026-07-30)
+
+> Decision **A13**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 8/20 + ONB-20a +
+> ONB-20b-a + ONB-07a.
+
+**Aucun combat n'etait possible au Fanal.** Le hub est `safe: true`, ce qui force `mob: 0` dans
+`ExploreService` : le premier combat de l'acte I devait donc faire voyager le joueur, c'est-a-dire
+le faire attendre, avant meme de lui avoir appris ce qu'est un tour de jeu.
+
+**Un combat scripte n'est pas un tirage de rencontre**, et c'est toute la trouvaille : rien
+n'interdit de **poser** un combat la ou il ne peut pas **survenir**. Le mannequin s'enseigne au
+Fanal sans toucher a sa surete — « ici, rien ne mord » reste vrai, et rien ne mord effectivement.
+
+**Les deux garanties ne sont pas la meme.** Le premier mannequin **ne frappe jamais** : perdre
+est impossible, donc on peut afficher toute l'interface — l'ordre des tours, les points de vie,
+la fuite — sans qu'un joueur qui lit lentement se fasse tuer pendant qu'il lit. Le second
+**frappe et ne peut pas tuer** : la barre descend, et c'est ce qui apprend a quoi servent les
+soins.
+
+**Le mannequin inerte rend avant la resolution du sort**, et non apres avec un degat force a
+zero. Un mannequin qui ne fait rien ne doit pas non plus appliquer d'effet de statut, declencher
+une alerte de danger ou consommer un temps de recharge.
+
+**Le plancher a 1 PV est pose la ou la vie s'ecrit** (`SpellApplicator`), pas dans le calcul des
+degats : il vaut donc quel que soit le chemin — attaque, effet de statut, riposte. Un plancher
+pose sur la seule attaque de base aurait suffi qu'un chemin soit oublie pour tuer un debutant.
+
+**Et il regarde l'agresseur, jamais la cible.** C'est ce qui empeche la clemence de fuir : un
+joueur qui sort du Fanal meurt comme tout le monde, des le premier loup. Un plancher attache a
+la cible — « ce joueur est en acte I » — aurait demande de decider quand il cesse de
+s'appliquer, et on aurait trouve un jour un debutant invincible.
+
+**Ce ne sont pas des monstres affaiblis pour les debutants.** `training_mode` a `null` designe
+**un vrai monstre**, et c'est la valeur de tout ce qui vit dans le monde : le premier vrai
+monstre garde tout son mordant, et le monde ne raconte jamais que ses monstres sont inoffensifs.
+
+**L'exclusion du tirage est posee au depot**, pas chez les appelants. Explorer et chasser partent
+tous deux de `MobRepository` ; y poser le filtre fait que tout appelant a venir en heritera sans
+avoir a connaitre la regle. Un mannequin n'habite d'ailleurs **aucune zone** — il existe le temps
+du combat : s'il peuplait une zone, il apparaitrait dans la liste des proies, dans le bestiaire
+et dans les compteurs de presence, et il faudrait expliquer partout pourquoi il n'est pas une
+rencontre.
+
+**Ce qui reste** : la quete qui declenche les deux combats appartient a **ONB-12**. Le mecanisme
+est la, le fil narratif suit.
+
+---
+
 ## ONB-10 — les cinq recoltes dans le perimetre de l'acte I (2026-07-30)
 
 > Ferme la dette **D11**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 7/20 + ONB-20a +

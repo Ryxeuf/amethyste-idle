@@ -127,6 +127,20 @@ class SpellApplicator
         $life = min($capMax, $life);
         $life = max(0, $life);
 
+        // ONB-11 — le second mannequin **ne peut pas tuer**.
+        //
+        // Le joueur doit voir sa barre descendre pour comprendre a quoi servent
+        // les soins, mais l'apprentissage ne peut pas se solder par une mort. Le
+        // plancher est pose **ici** et non dans le calcul des degats : il doit
+        // valoir quel que soit le chemin — attaque, effet de statut, riposte —
+        // sans quoi il suffirait d'un chemin oublie pour tuer un debutant.
+        //
+        // Un plancher a 1 et non a 0 : a 0 le personnage est mort, et le combat
+        // se terminerait exactement comme on voulait l'eviter.
+        if ($life < 1 && $this->isStruckByTrainingDummy($sender)) {
+            $life = 1;
+        }
+
         $target->setLife($life);
 
         if ($target->getLife() > 0) {
@@ -210,6 +224,19 @@ class SpellApplicator
     /**
      * Get the total shield absorption available for a character.
      */
+    /**
+     * Le coup vient-il d'un mannequin d'entrainement ? (ONB-11).
+     *
+     * Le plancher a 1 PV ne s'applique qu'aux coups d'un mannequin — jamais a
+     * ceux d'un vrai monstre. Attacher la clemence a **l'agresseur** et non a la
+     * cible est ce qui empeche la mesure de fuir : un joueur qui sort du Fanal
+     * meurt comme tout le monde, des le premier loup.
+     */
+    private function isStruckByTrainingDummy(CharacterInterface $sender): bool
+    {
+        return $sender instanceof Mob && $sender->getMonster()->isTrainingDummy();
+    }
+
     private function getShieldAbsorb(Fight $fight, CharacterInterface $character): int
     {
         $effects = $this->statusEffectManager->getActiveEffects($fight, $character);
