@@ -1777,6 +1777,11 @@
         "done": "Fait",
         "todo": "À faire"
       }
+    },
+    "onboarding": {
+      "home": {
+        "letter": "Une lettre vous attend. Les gens de %zone% ont remarqué votre travail — vous y avez désormais un nom, et quelqu'un qui vous connaît."
+      }
     }
   },
   "common": {

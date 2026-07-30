@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **10/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **11/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -39,7 +39,7 @@
 | ONB-11 ✅ | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
 | ONB-12a ✅ | Les quatre gestes que la chaîne doit constater (moteur) | M | ★★★ |
 | ONB-12b ✅ | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
-| ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
+| ONB-13 ✅ | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
 | ONB-14 | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
 | ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
@@ -394,17 +394,17 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       réellement proposés ; **aucune étape avant la 9ᵉ n'est time-gatée** ; la matéria reçue
       correspond à l'élément du domaine choisi
 
-### ONB-13 — Le foyer d'attache constaté à la clôture (M | ★★ | MOYENNE)
+### ONB-13 — Le foyer d'attache constaté à la clôture ✅ (M | ★★ | MOYENNE)
 > Ferme **D8**, applique l'**amendement à GAME_WORLD §13.1** (A9) : le foyer d'attache ne se
 > choisit pas, **il se gagne**.
 > Prérequis : ← ONB-12 ; croise NAR-20 (la lettre) et FAC-01
-- [ ] Mesure de l'activité par zone pendant l'acte I ; foyer constaté à la clôture
-- [ ] Défaut sans activité distinctive : **le Fanal**
-- [ ] Ce qu'il apporte : une **lettre** suggérant une destination, **un PNJ qui vous connaît**,
+- [x] Mesure de l'activité par zone pendant l'acte I ; foyer constaté à la clôture
+- [x] Défaut sans activité distinctive : **le Fanal**
+- [x] Ce qu'il apporte : une **lettre** suggérant une destination, **un PNJ qui vous connaît**,
       **un cran de réputation**, **une ligne au journal**
-- [ ] **Aucun contenu ouvert ou fermé, aucun arbre mis en avant, aucun bonus de rendement** —
+- [x] **Aucun contenu ouvert ou fermé, aucun arbre mis en avant, aucun bonus de rendement** —
       verrouillé par un test
-- [ ] Tests : foyer dérivé des gestes et non de la race ; défaut au Fanal ; aucun contenu gaté
+- [x] Tests : foyer dérivé des gestes et non de la race ; défaut au Fanal ; aucun contenu gaté
 
 ---
 

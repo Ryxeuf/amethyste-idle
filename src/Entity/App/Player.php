@@ -135,6 +135,31 @@ class Player implements CharacterInterface
     private ?Zone $currentZone = null;
 
     /**
+     * Foyer d'attache — la zone ou le joueur a travaille pendant l'acte I (ONB-13).
+     *
+     * GAME_ONBOARDING § 4.4 amende GAME_WORLD § 13.1 : **il ne se choisit pas,
+     * il se gagne**. Le deriver de la race revenait a demander une orientation
+     * de carriere avant toute experience de jeu.
+     *
+     * Il n'ouvre et ne ferme **rien**. Le lire pour autoriser un acces serait
+     * exactement ce que l'amendement evite : une classe deguisee, entree par la
+     * fenetre. `HomeSettlementTest` tient la liste des fichiers autorises a le
+     * lire.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'home_zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $homeZone = null;
+
+    /**
+     * Quand le foyer a ete constate.
+     *
+     * Distinct de `homeZone !== null` : l'arc `intro` est rejouable, et sans
+     * cette date un second passage redonnerait le cran de renommee.
+     */
+    #[ORM\Column(name: 'home_zone_claimed_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $homeZoneClaimedAt = null;
+
+    /**
      * Voyage en cours (pivot PBBG, ZON-06) : destination + horodatage d'arrivee.
      * L'arrivee est resolue paresseusement par ZoneTravelService::settleArrival.
      */
@@ -471,6 +496,40 @@ class Player implements CharacterInterface
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getHomeZone(): ?Zone
+    {
+        return $this->homeZone;
+    }
+
+    public function hasClaimedHomeZone(): bool
+    {
+        return null !== $this->homeZoneClaimedAt;
+    }
+
+    public function getHomeZoneClaimedAt(): ?\DateTimeImmutable
+    {
+        return $this->homeZoneClaimedAt;
+    }
+
+    /**
+     * Constate le foyer. Sans effet si le joueur en a deja un.
+     *
+     * Le refus est porte par l'entite, pas par l'appelant : c'est la seule
+     * facon qu'un second chemin de cloture — un rejeu de l'arc, un correctif
+     * de donnees — ne puisse pas redonner ce qui a deja ete donne.
+     */
+    public function claimHomeZone(Zone $zone): bool
+    {
+        if (null !== $this->homeZoneClaimedAt) {
+            return false;
+        }
+
+        $this->homeZone = $zone;
+        $this->homeZoneClaimedAt = new \DateTimeImmutable();
+
+        return true;
     }
 
     public function getCurrentZone(): ?Zone

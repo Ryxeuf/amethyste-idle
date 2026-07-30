@@ -11,6 +11,54 @@
 
 ---
 
+## ONB-13 — le foyer d'attache se gagne, il ne se choisit pas (2026-07-30)
+
+> Ferme la dette **D8** et applique l'amendement a GAME_WORLD § 13.1 (GAME_ONBOARDING § 4.4).
+> [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 11/20 + ONB-12a + ONB-20a + ONB-20b-a +
+> ONB-07a.
+
+**Le canon derivait le foyer d'attache de la race** : kit, destination, reputation de depart et
+premiere chaine de quetes decides avant toute experience de jeu. C'est une orientation de
+carriere demandee a quelqu'un qui n'a encore rien vu — donc une classe deguisee, exactement ce
+que le projet a renonce a faire. Et l'Elfe qui voulait miner se retrouvait pousse ailleurs.
+
+**Le foyer est desormais la zone ou le joueur a reellement travaille pendant l'acte I.**
+L'intention de § 13.1 est conservee — ne pas eparpiller la population, differencier par la
+destination — mais l'activite fait le lieu, ce qui est deja la loi des foyers.
+
+**Le constater demandait de le mesurer, et rien ne le mesurait.** Le journal du joueur porte
+bien une trace par recolte, mais il est **plafonne a 200 entrees** : un compteur derive de lui
+aurait perdu exactement les joueurs les plus actifs. D'ou une ligne par couple joueur/zone, qui
+ne s'efface pas.
+
+**Voyager n'est pas travailler**, et c'est la distinction qui fait tout tenir. Sans elle, le
+foyer de tout le monde serait la zone ou l'acte I se termine — la meme pour tous, ce qui vide le
+mecanisme de son objet. Ce qui compte aujourd'hui est la **recolte**, et elle seule : c'est le
+geste que l'etape 7 demande d'aller faire ailleurs, donc le seul qui distingue une zone d'une
+autre au moment du constat. La chasse et l'exploration rejoindront la liste quand elles
+annonceront quelque chose — c'est la dette que `ZoneActionObservabilityTest` tient comptable, en
+attente de FOY-02, et elles s'abonneront alors sans rien changer d'autre.
+
+**Sans activite distinctive, le Fanal.** Le canon le reservait a l'Humain ; le cas humain devient
+le cas par defaut de tout le monde. Un joueur qui n'a rien fait de distinctif n'a rien decide, et
+le lui faire decider retroactivement serait pire que de ne rien dire.
+
+**La loi qui compte n'est pas le calcul, c'est ce que le foyer ne fait pas.** Il apporte une
+lettre au journal, un cran de renommee et une premiere destination suggeree — **aucun contenu
+ouvert, aucun contenu ferme, aucun bonus de rendement**. Un test enumere les fichiers autorises
+a lire `getHomeZone()` : deux, celui qui le porte et celui qui le constate. Chercher les
+mots-cles d'un `if` serait contournable par accident ; enumerer les lecteurs ne l'est pas. Le
+declencheur de la cloture n'y figure pas, et c'est le point — il declenche sans jamais relire.
+
+**La cloture se declenche au rang, jamais a un slug.** Un nom de quete ecrit dans le listener
+serait un second endroit ou vit l'ordre de la chaine : NAR-20 en reecrira les libelles, et la
+cloture partirait au mauvais moment sans que rien ne le signale.
+
+**Ce qui reste** : « un PNJ qui vous connait » attend NAR-20, qui ecrit les dialogues du Fanal —
+la donnee est la, le texte lui appartient.
+
+---
+
 ## ONB-12b — la chaine de l'acte I : dix quetes, trois tours de boucle (2026-07-30)
 
 > Seconde moitie d'ONB-12. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 10/20 + ONB-12a +
