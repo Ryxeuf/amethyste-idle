@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **6/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **7/20 livrés + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -35,7 +35,7 @@
 | ONB-07b | Les quatre capacités branchées sur leurs écrans | M | ★★ |
 | ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
-| ONB-10 | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
+| ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
 | ONB-11 | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
 | ONB-12 | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
 | ONB-13 | Le foyer d'attache constaté à la clôture (ferme D8) | M | ★★ |
@@ -299,17 +299,25 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] Tests : le catalogue couvre exactement les arbres livrés (dans les deux sens) ; aucun
       nœud d'un arbre fermé n'est exposé — type, gabarits, écran Twig **et** payload JSON
 
-### ONB-10 — Les cinq récoltes dans le périmètre de l'acte I (M | ★★★ | HAUTE)
+### ONB-10 — Les cinq récoltes dans le périmètre de l'acte I (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-30
 > Ferme **D11**. Le Fanal n'expose que **deux filons, tous deux d'herboristerie** (thym,
 > lavande). Un choix parmi cinq parchemins de récolte qui débouche sur une seule récolte
 > possible est un **faux choix** — et tout le monde deviendrait herboriste.
 > Prérequis : ∅ (données de zone) ; à instruire avec **PLAN_ZONES**
-- [ ] **Les cinq récoltes atteignables** dans le périmètre de l'acte I, au palier T0 :
-      herboristerie (existe), minerai, bois, pêche, dépeçage — au Fanal ou dans un voisin immédiat
-- [ ] **Le premier voyage est offert** : durée nulle, une seule fois, narrativement accompagné.
-      Le joueur apprend le voyage **comme geste** ici, et **comme temps réel** à l'étape 9
-- [ ] Cohérence avec le plancher T1 PNJ et les lois de zone (GAME_ZONES)
-- [ ] Tests : les cinq professions atteignables sans attendre ; le Fanal reste `safe`
+- [x] **Les cinq récoltes atteignables** dans le périmètre de l'acte I. Quatre l'étaient déjà
+      chez les voisins immédiats ; **le minerai était la seule sans source à moins de dix
+      minutes** — la carrière du rempart la pose au Fanal même, au palier T0. C'est aussi la
+      **troisième source de cuivre** que la roadmap listait en reste de ZON-26b
+- [x] **Le premier voyage est offert** : durée nulle, une seule fois. La faveur se consomme
+      même si le voyage était déjà instantané — ce qui est offert est **le premier voyage**,
+      pas la première attente, sinon elle devient une monnaie à optimiser. L'écran l'annonce
+      **avant** le départ : un trajet de dix minutes qui n'en prend aucune, non annoncé, se lit
+      comme un bug
+- [x] Cohérence avec les lois de zone : le Fanal garde ses deux sources exclusives (thym,
+      lavande), et la **rareté inversée** tient — T0 passe de 2 à 3 sources, les paliers au
+      dessus restent à 1
+- [x] Tests : les quatre professions de filon et l'école du dépeceur atteignables dans le
+      périmètre ; le hub n'est plus mono-métier ; le Fanal reste `safe` et sans population
 
 ### ONB-11 — Les mannequins d'entraînement (M | ★★★ | HAUTE)
 > Décision A13. Le Fanal est `safe: true`, donc `ExploreService` force `mob: 0` : **aucun

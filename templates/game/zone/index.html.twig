@@ -891,6 +891,12 @@
                     {# ── Connexions ──────────────────────────────── #}
                     <div>
                         <h4 class="ds-label mb-2">{{ 'game.zone.connections.heading'|trans }}</h4>
+                        {# ONB-10 — la faveur s'annonce avant le depart. Un trajet
+                           de dix minutes qui n'en prend aucune, non annonce, se lit
+                           comme un bug et non comme un cadeau. #}
+                        {% if firstTravelOffered|default(false) %}
+                            <p class="ds-hint mb-2">{{ 'game.zone.connections.first_travel_offered'|trans }}</p>
+                        {% endif %}
                         {% if connections is empty %}
                             <div class="ds-empty">
                                 <p class="ds-empty__hint">{{ 'game.zone.connections.empty'|trans }}</p>

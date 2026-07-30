@@ -126,6 +126,7 @@ class ZoneController extends AbstractController
             return $this->render('game/zone/index.html.twig', [
                 'zone' => null,
                 'connections' => [],
+                'firstTravelOffered' => false,
                 'isGameMaster' => $player->isGameMaster(),
                 'mount' => null,
                 'shopsPresent' => [],
@@ -184,11 +185,16 @@ class ZoneController extends AbstractController
         // Chaque liaison porte la duree **reellement subie**, monture comprise
         // (tache 130) : annoncer la duree de reference alors qu'une monture la
         // raccourcit ferait passer le bonus pour inoperant.
+        // ONB-10 : le premier voyage est offert. L'ecran doit l'annoncer **avant**
+        // le depart, sinon la faveur passe pour un bug — un trajet de dix
+        // minutes qui n'en prend aucune ne se lit pas comme un cadeau.
+        $firstTravelOffered = !$isGameMaster && $player->hasFirstTravelOffer();
+
         $connectionRows = [];
         foreach ($connections as $connection) {
             $connectionRows[] = [
                 'connection' => $connection,
-                'seconds' => $isGameMaster
+                'seconds' => $isGameMaster || $firstTravelOffered
                     ? 0
                     : $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds()),
                 'disabled' => !$connection->isEnabled() || !$connection->getToZone()->isEnabled(),
@@ -198,6 +204,7 @@ class ZoneController extends AbstractController
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
             'connections' => $connectionRows,
+            'firstTravelOffered' => $firstTravelOffered,
             'isGameMaster' => $isGameMaster,
             'mount' => $player->getActiveMount(),
             'playersPresent' => $playersPresent,

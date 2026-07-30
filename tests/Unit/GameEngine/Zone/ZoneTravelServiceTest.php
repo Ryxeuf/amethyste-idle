@@ -39,12 +39,65 @@ class ZoneTravelServiceTest extends TestCase
         return (new Zone())->setSlug($slug)->setName(ucfirst($slug));
     }
 
+    /**
+     * Un personnage qui a **deja voyage**.
+     *
+     * ONB-10 offre le premier voyage : sans cela, chaque cas de ce fichier
+     * mesurerait la faveur au lieu de la duree qu'il verifie. La faveur a son
+     * propre test, plus bas — c'est la le bon endroit pour la mesurer.
+     */
     private function buildPlayerIn(Zone $zone): Player
     {
         $player = new Player();
         $player->setCurrentZone($zone);
+        $player->spendFirstTravel();
 
         return $player;
+    }
+
+    /**
+     * ONB-10 — le premier voyage est offert, et une seule fois.
+     *
+     * L'acte I fait rejoindre une zone pour y recolter (etape 7) bien avant
+     * d'enseigner que le voyage coute du temps reel (etape 9). Sans faveur, la
+     * chaine s'arrete sur une attente que rien n'a preparee, juste avant la
+     * premiere recolte.
+     */
+    public function testTheFirstJourneyIsFree(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('vallons');
+        $player = new Player();
+        $player->setCurrentZone($from);
+
+        self::assertTrue($player->hasFirstTravelOffer());
+
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($from, $to, 600));
+
+        self::assertEqualsWithDelta(time(), $arrivesAt->getTimestamp(), 2, 'Le premier voyage n\'est pas offert.');
+        self::assertSame($to, $player->getCurrentZone(), 'Un voyage instantane doit etre regle dans la foulee.');
+        self::assertFalse($player->hasFirstTravelOffer(), 'La faveur n\'a pas ete consommee.');
+    }
+
+    /**
+     * Et le second se paie.
+     *
+     * La faveur est **le premier voyage**, pas la premiere attente : la garder
+     * pour plus tard en ferait une monnaie a optimiser.
+     */
+    public function testTheSecondJourneyCostsRealTime(): void
+    {
+        $village = $this->buildZone('village');
+        $vallons = $this->buildZone('vallons');
+        $foret = $this->buildZone('foret');
+
+        $player = new Player();
+        $player->setCurrentZone($village);
+
+        $this->service->startTravel($player, new ZoneConnection($village, $vallons, 240));
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($vallons, $foret, 300));
+
+        self::assertEqualsWithDelta(time() + 300, $arrivesAt->getTimestamp(), 2);
     }
 
     public function testStartTravelSetsDestinationAndArrival(): void

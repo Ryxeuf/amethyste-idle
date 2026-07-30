@@ -84,6 +84,22 @@ class ZoneTravelService
             ? 0
             : $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
 
+        // ONB-10 — le **premier voyage est offert**, une seule fois.
+        //
+        // L'acte I demande de rejoindre une zone pour y recolter (etape 7) bien
+        // avant d'enseigner que le voyage coute du temps reel (etape 9). Sans
+        // cette exception, la chaine s'arrete net sur une attente de quatre a
+        // dix minutes qu'aucune etape n'a preparee, juste avant la premiere
+        // recolte — soit exactement le moment ou l'on ferme l'onglet.
+        //
+        // La faveur se consomme meme si le voyage etait deja instantane : ce qui
+        // est offert est **le premier voyage**, pas la premiere attente. La
+        // garder pour plus tard en ferait une monnaie a optimiser.
+        if (!$isGameMaster && $player->hasFirstTravelOffer()) {
+            $seconds = 0;
+            $player->spendFirstTravel();
+        }
+
         $startedAt = new \DateTimeImmutable();
         $arrivesAt = $startedAt->modify(sprintf('+%d seconds', $seconds));
         $player->setTravelToZone($connection->getToZone());

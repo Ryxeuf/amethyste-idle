@@ -312,6 +312,21 @@ class Player implements CharacterInterface
     private Collection $craftSpecializations;
 
     /**
+     * Quand le **premier voyage offert** a ete depense (ONB-10).
+     *
+     * `null` veut dire qu'il reste a prendre. Le premier voyage d'un personnage
+     * est instantane, **une seule fois** : sans cela, l'acte I s'arrete net avant
+     * la premiere recolte, sur une attente de quatre a dix minutes que le joueur
+     * n'a aucune raison de comprendre — il n'a pas encore appris que le voyage
+     * coute du temps reel, c'est l'etape 9 qui le lui enseigne.
+     *
+     * Une date plutot qu'un booleen : elle se relit dans les indicateurs du
+     * tunnel (ONB-19) sans qu'on ait a la deduire d'autre chose.
+     */
+    #[ORM\Column(name: 'first_travel_spent_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $firstTravelSpentAt = null;
+
+    /**
      * Les arbres que ce personnage a ouverts (ONB-08).
      *
      * Aucune exclusivite : les 32 arbres sont cumulables, et en ouvrir un n'en
@@ -987,6 +1002,24 @@ class Player implements CharacterInterface
         if (!$this->craftSpecializations->contains($specialization)) {
             $this->craftSpecializations->add($specialization);
         }
+    }
+
+    /**
+     * Le premier voyage offert est-il encore a prendre ? (ONB-10).
+     */
+    public function hasFirstTravelOffer(): bool
+    {
+        return $this->firstTravelSpentAt === null;
+    }
+
+    public function getFirstTravelSpentAt(): ?\DateTimeImmutable
+    {
+        return $this->firstTravelSpentAt;
+    }
+
+    public function spendFirstTravel(): void
+    {
+        $this->firstTravelSpentAt ??= new \DateTimeImmutable();
     }
 
     /**
