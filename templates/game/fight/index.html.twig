@@ -265,6 +265,16 @@
 			</div>
 		{% endif %}
 
+		{# ONB-17 — le coach de combat, sur le **premier mannequin** et nulle part
+		   ailleurs : c'est le seul combat ou lire ne tue pas, le mannequin inerte
+		   ne frappant jamais (ONB-11). Sur une vraie rencontre, lire couterait des
+		   points de vie — l'encart declare donc sa condition, et le resolveur
+		   refuse de la deviner. #}
+		{# `filter` plutot qu'une boucle : un `set` pose dans un `for` ne survit
+		   pas a son `endfor` en Twig, et le drapeau serait toujours faux. #}
+		{% set onInertDummy = fight.mobs|filter(m => m.monster.trainingMode is not null and m.monster.trainingMode.value == 'inert')|length > 0 %}
+		{{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('combat', onInertDummy)}) }}
+
 		{# ===== BOSS HEALTH BAR ===== #}
 		{% for mob in fight.mobs %}
 			{% if mob.monster.isBoss and not mob.isDead %}

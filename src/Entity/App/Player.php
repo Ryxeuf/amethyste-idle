@@ -11,6 +11,7 @@ use App\Entity\Game\Mount;
 use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
+use App\Enum\CoachMark;
 use App\Enum\CraftSpecialization;
 use App\Repository\PlayerRepository;
 use App\Service\PlayerNameNormalizer;
@@ -133,6 +134,23 @@ class Player implements CharacterInterface
     #[ORM\ManyToOne(targetEntity: Zone::class)]
     #[ORM\JoinColumn(name: 'current_zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Zone $currentZone = null;
+
+    /**
+     * Les encarts de coach deja lus (ONB-17).
+     *
+     * Un tableau de slugs, et **pas une entite** : il n'y a rien a interroger,
+     * rien a dater, rien a joindre. Une table pour dix booleens par personnage
+     * couterait une jointure a chaque rendu d'ecran pour ne jamais servir a
+     * autre chose.
+     *
+     * Le coach est **par personnage** : deux personnages du meme joueur
+     * decouvrent le jeu chacun a son rythme, et le second a souvent une raison
+     * d'etre — essayer autre chose.
+     *
+     * @var list<string>
+     */
+    #[ORM\Column(name: 'seen_coach_marks', type: 'json', options: ['default' => '[]'])]
+    private array $seenCoachMarks = [];
 
     /**
      * Foyer d'attache — la zone ou le joueur a travaille pendant l'acte I (ONB-13).
@@ -504,6 +522,29 @@ class Player implements CharacterInterface
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function hasSeenCoachMark(CoachMark $mark): bool
+    {
+        return \in_array($mark->value, $this->seenCoachMarks, true);
+    }
+
+    /**
+     * Retient qu'un encart a ete lu. Rend `false` s'il l'etait deja.
+     *
+     * Le rendu permet a l'appelant de ne pas ecrire pour rien : une fermeture
+     * repetee — double-clic, rechargement — ne doit produire ni doublon ni
+     * ecriture inutile.
+     */
+    public function markCoachSeen(CoachMark $mark): bool
+    {
+        if ($this->hasSeenCoachMark($mark)) {
+            return false;
+        }
+
+        $this->seenCoachMarks[] = $mark->value;
+
+        return true;
     }
 
     public function getHomeZone(): ?Zone

@@ -17,6 +17,7 @@
 {% endmacro %}
 
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('zone')}) }}
 {# L'import vit dans le bloc : en heritage Twig, ce qui est declare au niveau
    du template n'est pas visible depuis les blocs rendus par le parent. #}
 {% import _self as fmt %}
