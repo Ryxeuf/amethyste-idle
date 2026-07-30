@@ -479,11 +479,16 @@
         "empty_hint": "Les PNJ des zones sûres en confient.",
         "view_all_short": "Journal de quêtes"
       },
-      "attendance": {
-        "title": "Votre semaine",
-        "days": "%count% jour%plural% actif%plural% cette semaine.",
-        "next": "Encore %count% jour%plural% pour le prochain palier (%gils% gils).",
-        "all_reached": "Tous les paliers de la semaine sont atteints."
+      "week": {
+        "title": "La semaine",
+        "closing": "Se referme demain soir",
+        "commission": "Commission : %current%/%target%, à livrer à %zone%",
+        "commission_ready": "Commission prête — livrable à %zone%",
+        "guild_challenges": "Défis de guilde : %done% réussi sur %total%",
+        "guild_order": "Commande de guilde : %count% en cours",
+        "settlement_work": "Chantier de %zone% — %percent%%%",
+        "settlement_work_done": "Chantier de %zone% : achevé",
+        "attendance": "Encore %days% jour%plural% pour %gils% gils et %energy% énergie"
       }
     },
     "footer": {

@@ -6,6 +6,10 @@ namespace App\GameEngine\Player;
 
 use App\Entity\App\Player;
 use App\Entity\Game\Quest;
+use App\GameEngine\Crafting\GuildCraftOrderManager;
+use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\SeasonManager;
+use App\GameEngine\Guild\WeeklyChallengeReader;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Retention\WeekKey;
 use App\GameEngine\Retention\WeeklyAttendanceService;
@@ -17,6 +21,7 @@ use App\Repository\PlayerHouseRepository;
 use App\Repository\PlayerJournalEntryRepository;
 use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
+use App\Repository\SettlementWeeklyWorkRepository;
 
 /**
  * Modele de lecture du tableau de bord : reprise, attentes, recap.
@@ -73,6 +78,14 @@ final class PlayerHubDigest
         private readonly PlayerWeeklyCommissionRepository $commissionRepository,
         private readonly PlayerQuestHelper $questHelper,
         private readonly WeeklyAttendanceService $weeklyAttendance,
+        // En dernier : les nouvelles dependances s'ajoutent en queue, jamais au
+        // milieu — un service insere entre deux autres decalerait toute
+        // construction positionnelle sans un mot.
+        private readonly SettlementWeeklyWorkRepository $weeklyWorkRepository,
+        private readonly GuildManager $guildManager,
+        private readonly SeasonManager $seasonManager,
+        private readonly WeeklyChallengeReader $challengeReader,
+        private readonly GuildCraftOrderManager $guildOrderManager,
     ) {
     }
 
@@ -336,6 +349,124 @@ final class PlayerHubDigest
         }
 
         return new HubAttendance($days, $next->days, $next->gils, $next->energy);
+    }
+
+    /**
+     * Le bloc « La semaine » : cinq systemes hebdomadaires en cinq lignes.
+     *
+     * GAME_DASHBOARD § 3. L'ordre est canonique et ne se negocie pas —
+     * commission, defis de guilde, commande de guilde, chantier du foyer,
+     * assiduite : du plus personnel au plus collectif, et le rendez-vous qu'on
+     * peut rater en premier.
+     *
+     * **Une ligne absente ne laisse pas de vide.** Sans guilde, les deux lignes
+     * de guilde n'existent pas ; sans commission ouverte, celle-ci non plus. Le
+     * cadrage l'exige : pas d'etat vide qui culpabilise, la ligne manquante
+     * suffit a dire qu'il n'y a rien la.
+     *
+     * Chaque ligne dit **ce qui reste**, jamais une donnee brute a convertir.
+     */
+    public function week(Player $player, ?\DateTimeImmutable $now = null): HubWeek
+    {
+        $now ??= new \DateTimeImmutable();
+        $weekKey = WeekKey::of($now);
+        $rows = [];
+
+        // 1. La commission de la semaine.
+        $commission = $this->commissionRepository->findCurrent($player, $weekKey);
+        if (null !== $commission) {
+            $complete = $commission->isComplete();
+            $zone = $commission->getDeliveryZone();
+            $rows[] = new HubWeekRow(
+                $complete ? 'commission_ready' : 'commission',
+                'app_game_zone',
+                [
+                    '%current%' => $commission->getProgress(),
+                    '%target%' => $commission->getTarget(),
+                    '%zone%' => $zone?->getName() ?? '',
+                ],
+                current: $commission->getProgress(),
+                target: $commission->getTarget(),
+                tone: $complete ? HubWeekRow::TONE_GAIN : HubWeekRow::TONE_NEUTRAL,
+            );
+        }
+
+        $guild = $this->guildManager->getPlayerMembership($player)?->getGuild();
+        $season = $this->seasonManager->getCurrentSeason();
+
+        // 2. Les defis de guilde, en agregat : « 1 reussi / 3 ». Le detail des
+        //    trois barres appartient a l'ecran de guilde.
+        if (null !== $guild && null !== $season) {
+            $entries = $this->challengeReader->entriesFor($guild, $season, $now);
+            $total = \count($entries['active']) + \count($entries['completed']);
+
+            if ($total > 0) {
+                $done = \count($entries['completed']);
+                $rows[] = new HubWeekRow(
+                    'guild_challenges',
+                    'app_game_guild_challenges',
+                    ['%done%' => $done, '%total%' => $total],
+                    current: $done,
+                    target: $total,
+                    tone: $done >= $total ? HubWeekRow::TONE_DONE : HubWeekRow::TONE_NEUTRAL,
+                );
+            }
+        }
+
+        // 3. La commande de la semaine.
+        if (null !== $guild) {
+            $open = $this->guildOrderManager->activeThisWeek($guild, $now);
+            if ($open > 0) {
+                $rows[] = new HubWeekRow(
+                    'guild_order',
+                    'app_game_guild',
+                    ['%count%' => $open],
+                    tone: HubWeekRow::TONE_NEUTRAL,
+                );
+            }
+        }
+
+        // 4. Le chantier du foyer — celui de la **zone courante** seulement. Le
+        //    hub ne fait pas la tournee des foyers du monde : il dit ce qui se
+        //    passe la ou le personnage se tient.
+        $zone = $player->getCurrentZone();
+        if (null !== $zone) {
+            $work = $this->weeklyWorkRepository->findCurrentForZone($zone, $weekKey);
+            if (null !== $work) {
+                $percent = $work->getProgressPercent();
+                $rows[] = new HubWeekRow(
+                    null !== $work->getCompletedAt() ? 'settlement_work_done' : 'settlement_work',
+                    'app_game_zone',
+                    ['%zone%' => $zone->getName(), '%percent%' => $percent],
+                    current: $percent,
+                    target: 100,
+                    tone: null !== $work->getCompletedAt() ? HubWeekRow::TONE_DONE : HubWeekRow::TONE_NEUTRAL,
+                );
+            }
+        }
+
+        // 5. L'assiduite. La seule ligne qui dit une recompense **calculee et
+        //    jamais affichee** jusqu'ici : l'energie du prochain palier.
+        $attendance = $this->attendance($player, $now);
+        if ($attendance->hasNextTier()) {
+            $rows[] = new HubWeekRow(
+                'attendance',
+                'app_game',
+                [
+                    '%days%' => $attendance->daysToNextTier(),
+                    '%plural%' => $attendance->daysToNextTier() > 1 ? 's' : '',
+                    '%gils%' => $attendance->nextTierGils,
+                    '%energy%' => $attendance->nextTierEnergy,
+                ],
+                current: $attendance->activeDays,
+                target: $attendance->nextTierDays,
+                tone: HubWeekRow::TONE_GAIN,
+            );
+        }
+
+        // Samedi (6) et dimanche (7) : la semaine se referme. Jamais un compte a
+        // rebours en heures — la semaine n'est pas un timer (§ 3).
+        return new HubWeek($rows, $weekKey, (int) $now->format('N') >= 6);
     }
 
     /**

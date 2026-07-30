@@ -32,7 +32,7 @@ briques, cadrée par [../GAME_DASHBOARD.md](../GAME_DASHBOARD.md).
 | RET-05 ✅ | Le chantier de la semaine | Guilde | ✅ **livré (2026-07-28)** |
 | RET-06 ✅ | L'Affleurement de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-07 ✅ | Tests du plan | — | ✅ **livré (2026-07-28)** |
-| RET-08 | Le bloc « La semaine » sur le hub | Solo+Guilde | RET-01→06 ✅ ; cadrage GAME_DASHBOARD §3/§5 |
+| RET-08 ✅ | Le bloc « La semaine » sur le hub | Solo+Guilde | RET-01→06 ✅ ; cadrage GAME_DASHBOARD §3/§5 |
 | RET-09 | Le lundi — récap de la semaine close | Solo | RET-08 |
 | RET-10 | Les dettes d'écran du hub | — | ‖ RET-08 |
 
@@ -161,26 +161,31 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > de l'énergie ; il faut aujourd'hui cinq écrans pour faire le tour de sa semaine, et le
 > hub ne connaît de la semaine que l'assiduité.
 
-### RET-08 — Le bloc « La semaine » sur le hub (M | ★★★ | HAUTE)
+### RET-08 — Le bloc « La semaine » sur le hub ✅ (M | ★★★ | HAUTE)
+> **Livré le 2026-07-30.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> L'essentiel : `PlayerHubDigest::week()` agrège les cinq sources dans l'ordre canonique,
+> et le bloc **absorbe l'ancien encart d'assiduité** — qui s'intitulait déjà « Votre
+> semaine » et vivait seul dans son coin. L'assiduité y devient la cinquième ligne et
+> gagne l'**énergie** de son palier, calculée depuis RET-04 et jamais montrée.
+>
+> Deux règles du cadrage sont tenues **par la forme** plutôt que par convention : le
+> plafond de cinq lignes est appliqué à la construction de `HubWeek`, et `HubWeekRow` n'a
+> ni action, ni méthode HTTP, ni jeton — « le hub lit, il ne fait pas » devient impossible
+> à violer sans changer le type. L'interdit de l'Affleurement (§6) est testé sur le
+> gabarit **et** sur le digest.
+>
+> La dette §7 (extraction de `buildChallengeEntries`) est soldée par une PR séparée.
 
-- [ ] Un **seul** panneau en colonne principale (entre reprise et attentes), 5 lignes max
-      au format `ds-row` + jauge : commission (progression, zone, récompense choisie),
-      défis de guilde (agrégat « 1/3 » + le plus proche), commande de guilde, chantier du
-      foyer de la **zone courante** (ligne absente sinon), assiduité (paliers visualisés,
-      gils **et** énergie du prochain palier — calculée aujourd'hui, jamais affichée)
-- [ ] Chaque ligne dit **ce qui reste**, cliquable vers l'écran du geste — le hub lit,
-      il ne fait pas ; lecture seule via l'extension de `PlayerHubDigest` (ou un
-      `WeeklyDigest`), zéro requête dans le gabarit
-- [ ] **Le choix de récompense de commission remonte au hub** : si l'état de reprise est
-      `ready` et la commission sans choix, c'est l'action primaire (POST existant) ; la
-      livraison reste en zone
-- [ ] Repère de semaine discret (« Semaine du 27 juillet » ; dès samedi « se referme
-      demain soir ») — jamais de compte à rebours en heures
-- [ ] Dette payée en chemin : extraire `GuildController::buildChallengeEntries()` en
-      service de lecture, rebrancher l'écran de guilde dessus
-- [ ] Sans guilde / sans commission : lignes **absentes**, pas d'état vide culpabilisant
-- [ ] Interdit testé : l'**Affleurement** n'apparaît nulle part sur le hub (grep de
-      gabarit dans le test, même esprit que RET-06)
+**Restent à faire, hors de ce jalon :**
+
+- [ ] **Le choix de récompense de commission depuis le hub** — la seule action que le
+      cadrage autorise (§5). Elle suppose un POST dans un écran conçu en lecture seule :
+      à traiter avec RET-10, qui reprend les actions du hub, plutôt qu'en exception isolée
+- [ ] **Le libellé de semaine daté** (« Semaine du 27 juillet ») — `HubWeek::weekKey`
+      porte la donnée (`2026-W31`), le rendu s'arrête au « se referme demain soir » de
+      samedi. Il manque un formatage de date localisé, qui n'existe nulle part dans le
+      catalogue aujourd'hui
 
 ### RET-09 — Le lundi : le récap de la semaine close (S | ★★★ | HAUTE)
 

@@ -479,11 +479,16 @@
         "empty_hint": "NPCs in safe zones hand them out.",
         "view_all_short": "Quest journal"
       },
-      "attendance": {
-        "title": "Your week",
-        "days": "%count% active day%plural% this week.",
-        "next": "%count% more day%plural% for the next tier (%gils% gils).",
-        "all_reached": "Every tier of the week has been reached."
+      "week": {
+        "title": "The week",
+        "closing": "Closes tomorrow evening",
+        "commission": "Commission: %current%/%target%, to deliver at %zone%",
+        "commission_ready": "Commission ready — deliverable at %zone%",
+        "guild_challenges": "Guild challenges: %done% of %total% completed",
+        "guild_order": "Guild order: %count% in progress",
+        "settlement_work": "%zone% worksite — %percent%%%",
+        "settlement_work_done": "%zone% worksite: complete",
+        "attendance": "%days% more day%plural% for %gils% gils and %energy% energy"
       }
     },
     "footer": {

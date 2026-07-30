@@ -64,7 +64,9 @@ class IndexController extends AbstractController
             'resume' => $this->hubDigest->resume($player),
             'pending' => $this->hubDigest->pending($player),
             'recap' => $this->hubDigest->recap($player),
-            'attendance' => $this->hubDigest->attendance($player),
+            // RET-08 : l'assiduite n'est plus un encart a elle seule — elle est
+            // la cinquieme ligne du bloc « La semaine ».
+            'week' => $this->hubDigest->week($player),
             'domainExperiences' => $player->getDomainExperiences(),
             'quests' => $this->hubDigest->quests($player),
             'energy' => [
