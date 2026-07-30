@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerCraftSpecialization;
 use App\Entity\Game\Skill;
 use App\Enum\CraftSpecialization;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
@@ -97,7 +98,13 @@ class PlayerSkillBranchGateTest extends TestCase
         $playerHelper = $this->createMock(PlayerHelper::class);
         $playerHelper->method('getPlayer')->willReturn($player);
 
-        return new PlayerSkillHelper($playerHelper, $this->createMock(PlayerDomainHelper::class));
+        // ONB-08 : ce test isole la borne de branche. L'ouverture d'arbre est
+        // donc accordee, sans quoi chaque cas echouerait sur `domain_closed`
+        // avant d'atteindre ce qu'il verifie.
+        $domainAccess = $this->createMock(DomainAccessManager::class);
+        $domainAccess->method('isSkillReachable')->willReturn(true);
+
+        return new PlayerSkillHelper($playerHelper, $this->createMock(PlayerDomainHelper::class), $domainAccess);
     }
 
     private function branchNode(string $craft, string $branch): Skill&MockObject

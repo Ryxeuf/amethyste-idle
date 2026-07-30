@@ -580,7 +580,8 @@
           "not_enough_xp": "Points d'expérience de domaine insuffisants.",
           "missing_requirements": "Il vous manque un prérequis pour cette compétence.",
           "other_branch": "Ce nœud appartient à l'autre branche de l'arbre. Changez de branche à l'établi pour y accéder.",
-          "dormant": "Cet accord n'est pas encore ouvert : il attend que la fusion des éléments existe."
+          "dormant": "Cet accord n'est pas encore ouvert : il attend que la fusion des éléments existe.",
+          "domain_closed": "Cet arbre ne vous est pas encore ouvert. Lisez son parchemin — un marchand le vend, à prix fixe, à qui le demande."
         }
       }
     },

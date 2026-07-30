@@ -6,6 +6,7 @@ use App\Entity\App\DomainExperience;
 use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
@@ -17,13 +18,43 @@ class PlayerSkillHelperTest extends TestCase
 {
     private PlayerHelper&MockObject $playerHelper;
     private PlayerDomainHelper&MockObject $playerDomainHelper;
+    private DomainAccessManager&MockObject $domainAccessManager;
     private PlayerSkillHelper $helper;
 
     protected function setUp(): void
     {
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->playerDomainHelper = $this->createMock(PlayerDomainHelper::class);
-        $this->helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper);
+        // ONB-08 : par defaut l'arbre est ouvert. Ces cas parlent des points,
+        // des prerequis et du plafond — pas de la porte d'entree, qui a son
+        // propre test plus bas.
+        $this->domainAccessManager = $this->createMock(DomainAccessManager::class);
+        $this->domainAccessManager->method('isSkillReachable')->willReturn(true);
+        $this->helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper, $this->domainAccessManager);
+    }
+
+    /**
+     * ONB-08 — un arbre ferme n'accorde aucun nœud.
+     *
+     * Le refus passe **avant** le compte des points : repondre « pas assez
+     * d'experience » a quelqu'un qui n'est pas entre dans l'arbre l'enverrait
+     * chercher des points qu'il a deja.
+     */
+    public function testAClosedTreeGrantsNoNode(): void
+    {
+        $domain = $this->createDomain(1);
+        $skill = $this->createSkill('fireball', 0, [$domain]);
+
+        $player = $this->createPlayerWithUsedExperience([0]);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerDomainHelper->method('getAvailableDomainExperience')->willReturn(1000);
+
+        $closed = $this->createMock(DomainAccessManager::class);
+        $closed->method('isSkillReachable')->willReturn(false);
+        $helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper, $closed);
+
+        $this->assertSame(PlayerSkillHelper::REFUSAL_DOMAIN_CLOSED, $helper->refusalFor($skill));
+        $this->assertFalse($helper->canAcquireSkill($skill));
     }
 
     public function testGetTotalUsedPointsSumsAllDomains(): void

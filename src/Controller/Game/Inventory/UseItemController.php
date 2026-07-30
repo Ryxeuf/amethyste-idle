@@ -4,6 +4,7 @@ namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\PlayerItem;
 use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\InventoryHelper;
 use App\Helper\ItemHelper;
@@ -25,6 +26,7 @@ class UseItemController extends AbstractController
         private readonly SkillAcquiring $skillAcquiring,
         private readonly PlayerSkillHelper $playerSkillHelper,
         private readonly SpellApplicator $spellApplicator,
+        private readonly DomainAccessManager $domainAccessManager,
     ) {
     }
 
@@ -86,6 +88,18 @@ class UseItemController extends AbstractController
 
             $this->skillAcquiring->acquireSkill($skill);
             $this->addFlash('success', sprintf('Vous étudiez %s et apprenez la compétence « %s » !', $item->getName(), $skill->getTitle()));
+        }
+        // Cas 3 : Ouverture d'un arbre (parchemin de domaine, ONB-08)
+        elseif ($domain = $this->itemHelper->getItemDomainOpening($item)) {
+            // Relire un parchemin deja lu ne consomme rien : l'objet garde sa
+            // valeur marchande, et le joueur n'est pas puni d'un double clic.
+            if (!$this->domainAccessManager->open($player, $domain)) {
+                $this->addFlash('warning', sprintf('Vous connaissez déjà la voie du %s.', $domain->getTitle()));
+
+                return $this->redirectToRoute('app_game_inventory_items_list');
+            }
+
+            $this->addFlash('success', sprintf('Vous déchiffrez %s : l\'arbre du %s s\'ouvre à vous.', $item->getName(), $domain->getTitle()));
         }
 
         // Décrémenter les usages

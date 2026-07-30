@@ -6,6 +6,7 @@ use App\Api\ApiResponse;
 use App\Entity\App\PlayerItem;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -42,6 +43,7 @@ class InventoryActionsController extends AbstractController
         private readonly SkillAcquiring $skillAcquiring,
         private readonly SpellApplicator $spellApplicator,
         private readonly EntityManagerInterface $entityManager,
+        private readonly DomainAccessManager $domainAccessManager,
     ) {
     }
 
@@ -196,6 +198,14 @@ class InventoryActionsController extends AbstractController
 
             $this->skillAcquiring->acquireSkill($skill);
             $effect = 'skill';
+        } elseif ($domain = $this->itemHelper->getItemDomainOpening($item)) {
+            // ONB-08 : un parchemin relu n'est pas consomme — l'ouverture est
+            // idempotente, et le refus le dit plutot que de bruler l'objet.
+            if (!$this->domainAccessManager->open($player, $domain)) {
+                return ApiResponse::error('action_rejected', 'Vous connaissez deja la voie du ' . $domain->getTitle() . '.', 409);
+            }
+
+            $effect = 'domain';
         }
 
         // Decrementer les usages (-1 = illimite)

@@ -12,6 +12,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -220,6 +221,7 @@ class InventoryControllerTest extends TestCase
             $this->createMock(SkillAcquiring::class),
             $this->createMock(PlayerSkillHelper::class),
             $spellApplicator,
+            $this->createMock(DomainAccessManager::class),
         );
         $controller->setContainer($this->createContainerWithRouter());
 

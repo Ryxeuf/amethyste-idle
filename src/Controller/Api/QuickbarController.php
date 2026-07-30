@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\App\PlayerItem;
 use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\InventoryHelper;
 use App\Helper\ItemHelper;
@@ -25,6 +26,7 @@ class QuickbarController extends AbstractController
         private readonly SpellApplicator $spellApplicator,
         private readonly SkillAcquiring $skillAcquiring,
         private readonly PlayerSkillHelper $playerSkillHelper,
+        private readonly DomainAccessManager $domainAccessManager,
     ) {
     }
 
@@ -101,6 +103,12 @@ class QuickbarController extends AbstractController
             }
             $this->skillAcquiring->acquireSkill($skill);
             $message = sprintf('Compétence « %s » apprise !', $skill->getTitle());
+        } elseif ($domain = $this->itemHelper->getItemDomainOpening($item)) {
+            // ONB-08 — ouverture idempotente : relire ne consomme pas.
+            if (!$this->domainAccessManager->open($player, $domain)) {
+                return $this->json(['success' => false, 'message' => sprintf('Vous connaissez déjà la voie du %s.', $domain->getTitle())], 400);
+            }
+            $message = sprintf('L\'arbre du %s s\'ouvre à vous !', $domain->getTitle());
         }
 
         $nbUsages = $playerItem->getNbUsages();

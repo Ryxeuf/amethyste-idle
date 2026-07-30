@@ -747,7 +747,10 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet de devenir apprenti soigneur',
                 'type' => 'stuff',
                 'slug' => 'life-domain-parchment',
-                'effect' => '{"action":"learn_skill", "slug":"healer-materia-1" }',
+                // ONB-08 — le parchemin ouvre l'arbre, il n'accorde plus une
+                // competence precise. Le slug vise le domaine, tel que
+                // `Domain::getSlug()` le derive du titre (accents compris).
+                'effect' => '{"action":"open_domain", "slug":"guérisseur" }',
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 0,
@@ -759,7 +762,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet de devenir apprenti mineur',
                 'type' => 'stuff',
                 'slug' => 'miner-domain-parchment',
-                'effect' => '{"action":"learn_skill", "slug":"miner-copper-xs" }',
+                'effect' => '{"action":"open_domain", "slug":"mineur" }',
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 0,
@@ -1080,7 +1083,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet de devenir apprenti herboriste',
                 'type' => 'stuff',
                 'slug' => 'herbalist-domain-parchment',
-                'effect' => '{"action":"learn_skill", "slug":"herbalist-mint-xs" }',
+                'effect' => '{"action":"open_domain", "slug":"herboriste" }',
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 0,

@@ -4,6 +4,7 @@ namespace App\Helper;
 
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
+use App\GameEngine\Progression\DomainAccessManager;
 
 class PlayerSkillHelper
 {
@@ -32,9 +33,21 @@ class PlayerSkillHelper
      * qu'on savait la.
      */
     public const REFUSAL_DORMANT = 'dormant';
+    /**
+     * L'arbre n'est pas ouvert (ONB-08).
+     *
+     * Ce refus se leve en **lisant un parchemin**, jamais en jouant plus : il
+     * doit donc nommer le geste, sinon le joueur cherchera des points qu'il a
+     * deja. Ce n'est pas un verrou de contenu — le parchemin est vendu a tout
+     * le monde, a prix fixe, sans aucun prerequis.
+     */
+    public const REFUSAL_DOMAIN_CLOSED = 'domain_closed';
 
-    public function __construct(private readonly PlayerHelper $playerHelper, private readonly PlayerDomainHelper $playerDomainHelper)
-    {
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly PlayerDomainHelper $playerDomainHelper,
+        private readonly DomainAccessManager $domainAccessManager,
+    ) {
     }
 
     public function canAcquireSkill(Skill $skill): bool
@@ -67,6 +80,18 @@ class PlayerSkillHelper
         // motif qui lui ferait croire qu'il lui manque quelque chose.
         if ($skill->isDormant()) {
             return self::REFUSAL_DORMANT;
+        }
+
+        // ONB-08 : un arbre ferme n'accorde aucun nœud. Le refus passe avant
+        // les points, parce qu'il ne parle pas de la meme chose : compter des
+        // points dans un arbre ou l'on n'est pas entre revient a repondre a une
+        // question que le joueur n'a pas posee.
+        //
+        // Un nœud partage entre plusieurs arbres suffit a **un** arbre ouvert
+        // (« plusieurs chemins pour la meme chose »), et une competence sans
+        // domaine reste libre pour tous.
+        if (!$this->domainAccessManager->isSkillReachable($player, $skill)) {
+            return self::REFUSAL_DOMAIN_CLOSED;
         }
 
         // Limite globale multi-domaine

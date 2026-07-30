@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **4/20 livrés + ONB-20a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **5/20 livrés + ONB-20a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -33,7 +33,7 @@
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
 | ONB-07b | Les quatre capacités branchées sur leurs écrans | M | ★★ |
-| ONB-08 | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
+| ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
 | ONB-11 | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
@@ -233,7 +233,7 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 
 ## Piste C — La boucle du jeu
 
-### ONB-08 — L'accès à un arbre : le parchemin l'ouvre (M | ★★★ | HAUTE)
+### ONB-08 — L'accès à un arbre : le parchemin l'ouvre (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-30
 > **Le pivot technique du plan** (A12). Les parchemins existent déjà en fixtures
 > (`life-domain-parchment`, `miner-domain-parchment`, `herbalist-domain-parchment`, 100 gils,
 > deux déjà donnés en récompense de quête) mais leur effet est
@@ -242,31 +242,31 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 > ⚠️ **Ce jalon précise GAME_DOMAINS §1**, qui écrit « interdire un arbre serait interdire un
 > geste ». La réconciliation est en GAME_ONBOARDING §6.3 : **le parchemin est un coût, jamais
 > un verrou** — à relire avec DOM avant de coder.
-- [ ] Notion d'**arbre ouvert pour un personnage** (le modèle ne l'a pas)
-- [ ] Nouvel effet d'objet **« ouvrir un domaine »**, distinct de `learn_skill`
-- [ ] Un parchemin par domaine — **les 32**, avec le PNJ vendeur de chacun
-- [ ] **Les actions de base sont concernées** (A16) : sans parchemin, on ne mine ni ne forge.
-      Le mécanisme existe en données (`requires_skill` sur les filons, aujourd'hui posé
-      seulement au haut palier : `miner-darksteel-xs`, `lumber-whisperoak-xs`) — il faut le
-      généraliser au palier T0. ⚠️ **C'est un changement de comportement** : deux garde-fous
-      obligatoires, sous peine de bloquer des joueurs en place —
-  - [ ] **migration : les personnages existants sont grand-périsés** sur les métiers qu'ils
-        pratiquent déjà (dérivés de leurs `DomainExperience` et de leur historique de récolte)
-  - [ ] l'acte I **donne** les trois premiers parchemins (ONB-12)
-- [ ] **La frontière, testée** : le parchemin ouvre un **métier ou une famille d'arme**, jamais
-      un verbe élémentaire. **Restent libres pour tous, sans condition** : marcher, voyager,
-      explorer, parler, ramasser, se battre **à mains nues**. Sans cette ligne, le jeu devient
-      une parade de verrous — et un personnage sans arme apprise se retrouverait sans défense
-- [ ] **Les quatre conditions non négociables**, chacune verrouillée par un test :
-  - [ ] tout parchemin est accessible à **tout le monde** (aucun prérequis de peuple, de
-        faction, de progression ou de choix antérieur)
-  - [ ] en posséder un **n'en interdit aucun autre** — les 32 sont cumulables
-  - [ ] aucun n'est **unique ni limité** : un PNJ le vend, toujours, à prix fixe
-  - [ ] **aucun parchemin payant sur le chemin critique de l'acte I** — les trois premiers sont
-        donnés en récompense (ONB-12)
-- [ ] Migration des trois parchemins existants vers la nouvelle sémantique
-- [ ] Barème de prix des 29 autres → à poser avec **PLAN_PLAYER_ECONOMY** (gold sink)
-- [ ] Tests : les quatre conditions ; ouverture idempotente ; un arbre fermé n'accorde aucun nœud
+- [x] Notion d'**arbre ouvert pour un personnage** — `PlayerDomainAccess`, unicité
+      `(player, domain)` portée par le schéma : l'ouverture est idempotente par construction
+- [x] Nouvel effet d'objet **« ouvrir un domaine »** (`open_domain`), distinct de `learn_skill`
+- [x] Un parchemin par domaine — **les 36** (le cadrage en annonçait 32 : la Piste H a livré
+      depuis le cuisinier, le charpentier et le tailleur, ZON-34 le bûcheron). Le **vendeur**
+      de chacun reste à poser : c'est ONB-16
+- [x] **Les actions de base sont concernées** (A16) : sans parchemin, on ne mine ni ne forge.
+      Il n'a **rien fallu généraliser sur les filons** — les actions de récolte sont portées par
+      des **nœuds d'arbre** (`PlayerActionHelper::getHarvestSpots()` les dérive des compétences),
+      donc fermer l'arbre ferme le geste, sans toucher à `requires_skill`
+  - [x] **migration : les personnages existants sont grand-périsés** — tout arbre dont ils
+        portent une compétence **ou** une expérience de domaine. La règle sur-ouvre
+        volontairement : ouvrir un arbre de trop coûte un parchemin non vendu, en fermer un de
+        trop bloque un joueur
+  - [ ] l'acte I **donne** les trois premiers parchemins — reste à **ONB-12**
+- [x] **La frontière, testée** : une compétence sans domaine reste libre pour tous, et un nœud
+      partagé suffit à **un seul** arbre ouvert
+- [x] **Les quatre conditions non négociables**, verrouillées par `DomainParchmentContractTest`
+      — tenues par la **forme des données**, pas par du code
+- [x] Migration des trois parchemins existants vers la nouvelle sémantique (slugs conservés :
+      `life-domain-parchment` désigne l'arbre du Guérisseur, le renommer casserait les
+      récompenses de quête qui le visent)
+- [ ] Barème de prix des 33 autres → à poser avec **PLAN_PLAYER_ECONOMY** (gold sink). 100 gils
+      partout est provisoire ; c'est **l'uniformité** du prix qui est la règle, pas sa valeur
+- [x] Tests : les quatre conditions ; ouverture idempotente ; un arbre fermé n'accorde aucun nœud
 
 ### ONB-09 — Le catalogue des 32 arbres, et l'arbre ouvert (M | ★★★ | HAUTE)
 > Les trois états de GAME_ONBOARDING §6.1. Aujourd'hui `DomainInfoController` montre **tous les
