@@ -57,7 +57,12 @@ class ClosedTreeExposureTest extends TestCase
         foreach (['catalog', 'domain_catalog_card'] as $template) {
             $source = $this->read('templates/game/skills/' . $template . '.html.twig');
 
-            foreach (['skills', 'requiredPoints', 'canBeAcquired', 'acquired', 'harvestSpots'] as $forbidden) {
+            // Les jetons visent une **iteration ou un acces de propriete**, pas
+            // le mot « skill » : `path('app_game_skills')` est une route et
+            // `game.skills.catalog` une cle de traduction. Interdire le mot
+            // ferait echouer le test sur un lien de navigation et sur ses
+            // propres libelles — un garde-fou qui crie sans rien garder.
+            foreach (['card.skills', 'domain.skills', 'skill.', 'requiredPoints', 'canBeAcquired', 'harvestSpots', 'equippableTools'] as $forbidden) {
                 self::assertStringNotContainsString($forbidden, $source, sprintf(
                     'Le gabarit « %s » expose « %s » : un arbre ferme y laisserait fuir ses nœuds.',
                     $template,

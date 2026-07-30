@@ -86,9 +86,30 @@ class DomainAccessManager
         } catch (\Throwable $e) {
             $this->logger->warning('Ouverture de domaine non annoncee : {error}', [
                 'error' => $e->getMessage(),
-                'player' => $player->getId(),
+                'player' => $this->identify($player),
                 'domain' => $domain->getSlug(),
             ]);
+        }
+    }
+
+    /**
+     * L'identifiant du personnage, ou `null` s'il n'en a pas encore.
+     *
+     * **Le rattrapage ne doit pas pouvoir echouer a son tour.** `Player::$id`
+     * est une propriete typee non initialisee tant que Doctrine n'a pas ecrit :
+     * lire `getId()` sur un personnage non persiste leve une `Error`, qui
+     * remonterait **depuis le `catch`** et annulerait precisement l'ouverture
+     * que ce bloc protege. Le defaut se lisait d'autant plus mal qu'il ne
+     * survient que sur le chemin d'echec.
+     *
+     * L'idiome est deja celui de `Player::getSkillId()`.
+     */
+    private function identify(Player $player): ?int
+    {
+        try {
+            return $player->getId();
+        } catch (\Error) {
+            return null;
         }
     }
 

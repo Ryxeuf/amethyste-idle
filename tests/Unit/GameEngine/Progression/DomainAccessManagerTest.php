@@ -61,6 +61,13 @@ class DomainAccessManagerTest extends TestCase
      *
      * Le joueur a consomme son parchemin : perdre l'arbre parce que le hub
      * temps reel est injoignable serait un vol.
+     *
+     * Le personnage de ce test n'est **pas persiste**, et c'est volontaire :
+     * c'est ce qui verifie que le rattrapage ne peut pas echouer a son tour.
+     * `Player::$id` est une propriete typee non initialisee tant que Doctrine
+     * n'a pas ecrit, et la lire depuis le `catch` levait une `Error` qui
+     * annulait l'ouverture — un defaut qui ne survient que sur le chemin
+     * d'echec, donc exactement celui qu'on ne voit jamais en jouant.
      */
     public function testAFailedAnnouncementStillOpensTheTree(): void
     {

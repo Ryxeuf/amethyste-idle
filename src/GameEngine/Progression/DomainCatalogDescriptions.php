@@ -114,12 +114,7 @@ class DomainCatalogDescriptions
             // public, et c'est precisement ce que § 6.2 interdit.
             $unknown = array_diff(array_keys($entry), ['teaches', 'equips']);
             if ($unknown !== []) {
-                throw new DomainCatalogDefinitionException(sprintf(
-                    'Tree "%s" declares unknown field(s) "%s" in "%s": the catalogue says what a tree teaches, never its nodes.',
-                    $slug,
-                    implode('", "', $unknown),
-                    $source,
-                ));
+                throw new DomainCatalogDefinitionException(sprintf('Tree "%s" declares unknown field(s) "%s" in "%s": the catalogue says what a tree teaches, never its nodes.', $slug, implode('", "', $unknown), $source));
             }
 
             $normalized[mb_strtolower(trim($slug))] = [

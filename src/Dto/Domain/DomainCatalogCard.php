@@ -44,7 +44,7 @@ final class DomainCatalogCard
      */
     public function family(): string
     {
-        return $this->register?->value ?? 'craft';
+        return $this->register !== null ? $this->register->value : 'craft';
     }
 
     public static function fromDomain(
