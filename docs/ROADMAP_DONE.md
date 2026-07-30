@@ -11,6 +11,51 @@
 
 ---
 
+## ONB-10 — les cinq recoltes dans le perimetre de l'acte I (2026-07-30)
+
+> Ferme la dette **D11**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 7/20 + ONB-20a +
+> ONB-20b-a + ONB-07a.
+
+**Un choix parmi cinq qui debouche sur une seule recolte est un faux choix.** L'etape 6 de
+l'acte I fait choisir un parchemin de recolte parmi les cinq, mais le Fanal n'exposait que
+**deux filons, tous deux d'herboristerie** : tout le monde serait devenu herboriste, et
+l'indicateur de repartition des metiers (ONB-19) l'aurait constate des mois trop tard.
+
+**Le diagnostic etait plus etroit qu'annonce, et c'est une bonne nouvelle.** Quatre des cinq
+recoltes etaient deja atteignables chez les voisins immediats du hub : le bois et le depecage
+aux Vallons (4 min), la peche a la Foret (5 min), l'herboristerie sur place. **Seul le minerai
+n'avait aucune source a moins de dix minutes** — les Mines, un voisin immediat, sont a 10 min.
+
+**Et une carriere au Fanal n'etait pas la reponse.** L'idee etait tentante : un village se batit
+ou il y a de la pierre, et le choix de l'etape 6 devenait reel sans bouger. Mais toute la ligne
+du cristal porte le prefixe `ore-`, et le Cristal sous la Voute est **un cœur, pas un
+gisement** — *on vit a cote de la plus grande amethyste du monde et on n'en ramasse pas un
+eclat* (loi tenue depuis ZON-32). La loi est plus ancienne et elle a raison : le hub reste sans
+minerai, et `ActOnePerimeterTest` redit la regle **depuis le perimetre de l'acte I**, la ou
+l'envie de densifier le hub reviendra.
+
+**Le vrai manque etait ailleurs : le premier voyage.** L'acte I fait rejoindre une zone pour y
+recolter (etape 7) bien avant d'enseigner que le voyage coute du temps reel (etape 9). Sans
+faveur, la chaine s'arrete net sur une attente de quatre a dix minutes qu'aucune etape n'a
+preparee — juste avant la premiere recolte, c'est-a-dire exactement au moment ou l'on ferme
+l'onglet. Le premier voyage est desormais **instantane, une seule fois**.
+
+**La faveur se consomme meme si le voyage etait deja instantane.** Ce qui est offert est **le
+premier voyage**, pas la premiere attente : la garder pour plus tard en ferait une monnaie a
+optimiser, et l'acte I ne s'apprend pas en jouant contre lui.
+
+**L'ecran l'annonce avant le depart**, et pas apres : un trajet de dix minutes qui n'en prend
+aucune, non annonce, se lit comme un bug et non comme un cadeau.
+
+**Les personnages en place ont deja voyage** : la colonne est horodatee pour eux. Offrir un
+trajet gratuit a un veteran ne repare rien et cree un bon a garder pour le bon moment.
+
+**Ce qui rend le choix reel n'est donc pas un filon de plus, c'est le voyage.** Les cinq
+recoltes vivent dans le perimetre ; la faveur les met toutes a portee immediate, et le joueur
+choisit son metier au lieu de choisir le plus proche.
+
+---
+
 ## ONB-20b-a — l'echelle de port des armes (2026-07-30)
 
 > Premiere moitie d'ONB-20b, decoupee au titre de la regle #8 de `CLAUDE.md`.

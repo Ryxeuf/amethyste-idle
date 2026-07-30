@@ -1299,7 +1299,8 @@
         "travel_mounted": "%mount% : %base% min à pied",
         "locked": "Liaison rapide : découverte de la zone requise",
         "gm_disabled": "Liaison désactivée — visible parce que vous êtes maître du jeu",
-        "gm_disabled_short": "hors ligne"
+        "gm_disabled_short": "hors ligne",
+        "first_travel_offered": "Votre premier voyage est offert : il part sans attendre. Le suivant coûtera du temps réel."
       },
       "players": {
         "heading": "Joueurs présents",

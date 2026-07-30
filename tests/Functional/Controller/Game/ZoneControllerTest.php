@@ -367,6 +367,10 @@ class ZoneControllerTest extends TestCase
         $player->setMaxLife(100);
         $player->setLife(100);
         $player->setCurrentZone($zone);
+        // ONB-10 : un personnage qui a deja voyage. Sans cela l'ecran
+        // annoncerait la faveur du premier voyage — 0 seconde partout — et ce
+        // cas mesurerait la faveur au lieu de la duree qu'il verifie.
+        $player->spendFirstTravel();
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $this->zoneTravelService->expects($this->once())->method('settleArrival')->with($player)->willReturn(null);

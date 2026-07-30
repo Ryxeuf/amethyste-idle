@@ -1299,7 +1299,8 @@
         "travel_mounted": "%mount%: %base% min on foot",
         "locked": "Fast link: zone discovery required",
         "gm_disabled": "Disabled link — visible because you are a game master",
-        "gm_disabled_short": "offline"
+        "gm_disabled_short": "offline",
+        "first_travel_offered": "Your first journey is a gift: it leaves at once. The next will cost real time."
       },
       "players": {
         "heading": "Players present",

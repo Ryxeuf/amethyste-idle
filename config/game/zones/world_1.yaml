@@ -136,6 +136,17 @@ zones:
             # plancher T1 de l'economie ne dependra jamais d'une zone hostile.
             - { slug: carre-de-thym, item: plant-thyme, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
             - { slug: bordure-de-lavande, item: plant-lavender, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            # ONB-10 — **et pourquoi le minerai n'est pas ici.**
+            #
+            # Le Fanal n'expose que de l'herboristerie, et ce n'est pas un oubli.
+            # Une carriere au pied du rempart aurait rapproche la cinquieme
+            # recolte du hub, mais toute la ligne du cristal porte le prefixe
+            # `ore-` (`config/game/purity.yaml`), et le Cristal sous la Voute est
+            # **un cœur, pas un gisement** : on vit a cote de la plus grande
+            # amethyste du monde et on n'en ramasse pas un eclat.
+            #
+            # La cinquieme recolte vit donc a une liaison d'ici — et c'est le
+            # **premier voyage offert** qui la rend atteignable sans attendre.
         pnjs:
             # Habitants declares (ZON-26b-b). Ils **completent** les sept PNJ de
             # `VillageHubPnjFixtures` (forgeron, alchimiste, marchand, maitresse
