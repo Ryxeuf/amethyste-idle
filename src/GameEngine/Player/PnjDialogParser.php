@@ -8,6 +8,7 @@ use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Quest;
+use App\GameEngine\Tutorial\TutorialManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -35,6 +36,7 @@ class PnjDialogParser
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerHelper $playerHelper,
+        private readonly TutorialManager $tutorialManager,
     ) {
     }
 
@@ -251,9 +253,12 @@ class PnjDialogParser
             return false;
         }
 
-        $currentStep = $player->getTutorialStep();
+        // ONB-14 : l'etape se **deduit** de l'arc `intro`, elle ne se lit plus
+        // sur le joueur. Un dialogue qui interrogeait la colonne pouvait
+        // contredire le journal de quetes du meme joueur.
+        $currentStep = $this->tutorialManager->getCurrentStep($player);
 
-        return null !== $currentStep && \in_array($currentStep, $steps, true);
+        return null !== $currentStep && \in_array($currentStep->value, $steps, true);
     }
 
     private function tutorialCompleted(): bool
@@ -263,6 +268,6 @@ class PnjDialogParser
             return false;
         }
 
-        return null === $player->getTutorialStep();
+        return $this->tutorialManager->isCompleted($player);
     }
 }

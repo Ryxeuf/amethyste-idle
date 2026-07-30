@@ -3,8 +3,10 @@
 namespace App\EventListener;
 
 use App\Event\Game\QuestCompletedEvent;
+use App\Event\Game\TutorialCompletedEvent;
 use App\GameEngine\Progression\HomeSettlementResolver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * La cloture de l'acte I constate le foyer d'attache (ONB-13).
@@ -22,8 +24,10 @@ class ActOneClosureListener implements EventSubscriberInterface
      */
     public const CLOSING_STEP = 10;
 
-    public function __construct(private readonly HomeSettlementResolver $homeSettlementResolver)
-    {
+    public function __construct(
+        private readonly HomeSettlementResolver $homeSettlementResolver,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -42,5 +46,14 @@ class ActOneClosureListener implements EventSubscriberInterface
         }
 
         $this->homeSettlementResolver->claim($event->getPlayer());
+
+        // ONB-14 : le tutoriel se termine **avec l'arc**, et pas ailleurs.
+        // `TutorialManager` faisait avancer un compteur parallele et emettait
+        // cet evenement de son cote ; le succes `tutorial-complete` pouvait donc
+        // tomber sans que l'acte I soit fini.
+        $this->eventDispatcher->dispatch(
+            new TutorialCompletedEvent($event->getPlayer()),
+            TutorialCompletedEvent::NAME,
+        );
     }
 }

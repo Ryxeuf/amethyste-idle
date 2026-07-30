@@ -1781,6 +1781,13 @@
     "onboarding": {
       "home": {
         "letter": "Une lettre vous attend. Les gens de %zone% ont remarqué votre travail — vous y avez désormais un nom, et quelqu'un qui vous connaît."
+      },
+      "hint": {
+        "weapon": "Aller à la Zone",
+        "materia": "Aller à la Zone",
+        "trade": "Voir les Quêtes",
+        "departure": "Aller à la Zone",
+        "expedition": "Aller à la Zone"
       }
     }
   },

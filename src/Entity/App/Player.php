@@ -386,8 +386,16 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'unlocked_tool_slots', type: 'json', options: ['default' => '[]'])]
     private array $unlockedToolSlots = [];
 
-    #[ORM\Column(name: 'tutorial_step', type: 'smallint', nullable: true)]
-    private ?int $tutorialStep = null;
+    /**
+     * Le joueur a refuse l'onboarding (ONB-14).
+     *
+     * Remplace `tutorial_step`, qui portait un **second** etat d'avancement a
+     * cote de l'arc `intro` et pouvait le contredire (dette D7). Le seul etat
+     * qui ne se deduit pas de l'arc est le refus : un joueur qui a dit
+     * « passer » l'a dit une fois pour toutes, et rien dans l'arc ne l'exprime.
+     */
+    #[ORM\Column(name: 'onboarding_skipped_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $onboardingSkippedAt = null;
 
     /** @var int[] */
     #[ORM\Column(name: 'blocked_players', type: 'json', options: ['default' => '[]'])]
@@ -1181,14 +1189,19 @@ class Player implements CharacterInterface
         }
     }
 
-    public function getTutorialStep(): ?int
+    public function hasSkippedOnboarding(): bool
     {
-        return $this->tutorialStep;
+        return null !== $this->onboardingSkippedAt;
     }
 
-    public function setTutorialStep(?int $tutorialStep): void
+    public function getOnboardingSkippedAt(): ?\DateTimeImmutable
     {
-        $this->tutorialStep = $tutorialStep;
+        return $this->onboardingSkippedAt;
+    }
+
+    public function skipOnboarding(): void
+    {
+        $this->onboardingSkippedAt ??= new \DateTimeImmutable();
     }
 
     /** @return int[] */

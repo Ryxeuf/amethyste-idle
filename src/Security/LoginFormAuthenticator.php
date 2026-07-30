@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\App\Player;
 use App\Entity\User;
+use App\GameEngine\Tutorial\TutorialManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,8 +38,10 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      */
     public const GENERIC_FAILURE_MESSAGE = 'Identifiants invalides.';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private TutorialManager $tutorialManager,
+    ) {
     }
 
     public function authenticate(Request $request): Passport
@@ -116,7 +119,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
         $player = $players->first();
 
-        if ($player instanceof Player && $player->getTutorialStep() !== null) {
+        // ONB-14 : l'etat d'onboarding se lit a un seul endroit. Le tester ici
+        // sur une colonne revenait a en dependre sans passer par la source.
+        if ($player instanceof Player && $this->tutorialManager->isInTutorial($player)) {
             return 'app_game_zone';
         }
 

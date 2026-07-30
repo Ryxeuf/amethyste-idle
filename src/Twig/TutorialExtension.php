@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Enum\TutorialStep;
+use App\GameEngine\Tutorial\TutorialManager;
 use App\Helper\PlayerHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -14,6 +15,7 @@ final class TutorialExtension extends AbstractExtension
 
     public function __construct(
         private readonly PlayerHelper $playerHelper,
+        private readonly TutorialManager $tutorialManager,
     ) {
     }
 
@@ -37,8 +39,7 @@ final class TutorialExtension extends AbstractExtension
             return null;
         }
 
-        $stepValue = $player->getTutorialStep();
-        $this->cache['step'] = null !== $stepValue ? TutorialStep::tryFrom($stepValue) : null;
+        $this->cache['step'] = $this->tutorialManager->getCurrentStep($player);
 
         return $this->cache['step'];
     }

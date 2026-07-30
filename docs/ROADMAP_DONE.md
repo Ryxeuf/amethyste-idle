@@ -11,6 +11,49 @@
 
 ---
 
+## ONB-14 — une seule source d'etat d'onboarding (2026-07-30)
+
+> Ferme la dette **D7**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 12/20 + ONB-12a +
+> ONB-20a + ONB-20b-a + ONB-07a.
+
+**Deux etats d'onboarding vivaient cote a cote et ne se parlaient pas.** La colonne
+`player.tutorial_step` avançait par cinq abonnements a des evenements de jeu ; l'arc de quetes
+`intro` avançait par ses quetes. Consequences, toutes silencieuses : on terminait le tutoriel
+sans avoir touche a l'arc — voyager, tuer, ramasser, rendre une quete quelconque, fabriquer
+suffisait —, on abandonnait l'arc en restant « en tutoriel », et **« passer le tutoriel »
+n'abandonnait rien** : le bandeau disparaissait, les quetes restaient au journal.
+
+**Le remede n'est pas de synchroniser les deux, c'est de n'en garder qu'un.** L'arc est la
+source ; l'etape se **deduit** du nombre de ses quetes terminees. Deux etats ne peuvent plus
+diverger quand il n'y en a qu'un — et le compteur parallele, lui, a disparu avec son listener.
+
+**Les cinq cases de `TutorialStep` survivent, valeurs comprises.** Les dialogues de PNJ s'y
+branchent par leur entier (`tutorial_step: [0..4]`), et les renumeroter aurait fait dire
+n'importe quoi au guide du Fanal sans rien casser de visible. Ce qui change est leur **sens** :
+les anciennes etapes enseignaient le voyage en premier, c'est-a-dire exactement l'ordre
+qu'ONB-12b a defait. Elles suivent desormais les trois tours de la boucle — l'arme, la materia,
+le metier — puis le depart et l'expedition.
+
+**Le seul etat qui subsiste est le refus.** Aucune quete n'enregistre « ce joueur a dit passer »,
+et c'est la seule raison pour laquelle une colonne demeure. Elle est idempotente : un second
+refus ne reecrit pas la date.
+
+**`tutorial-complete` se gagne desormais a la cloture de l'arc**, au meme endroit que le foyer
+d'attache (ONB-13). Un seul evenement de cloture, deux consequences — au lieu d'un succes qui
+pouvait tomber bien avant la fin de l'acte I.
+
+**Un reste du pivot trouve en chemin.** Le guide du Fanal expliquait encore comment *« cliquer
+sur une case adjacente sur la carte »* — la carte navigable a ete supprimee par ZON-21. Ses cinq
+branches decrivaient le tutoriel d'avant ; elles decrivent maintenant l'acte I tel qu'il est
+joue.
+
+**La loi de contrat** enumere les ecrivains : aucun fichier de `src/` ne doit ecrire un
+avancement d'onboarding. Le verifier par la forme, et non par un scenario, est ce qui compte —
+un second compteur reintroduit serait d'accord avec l'arc le premier jour, et ne divergerait
+qu'apres.
+
+---
+
 ## ONB-13 — le foyer d'attache se gagne, il ne se choisit pas (2026-07-30)
 
 > Ferme la dette **D8** et applique l'amendement a GAME_WORLD § 13.1 (GAME_ONBOARDING § 4.4).
