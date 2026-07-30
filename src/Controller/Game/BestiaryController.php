@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\Game\Monster;
+use App\GameEngine\Bestiary\BestiaryRevealPolicy;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerBestiaryRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,7 @@ class BestiaryController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerBestiaryRepository $bestiaryRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly BestiaryRevealPolicy $revealPolicy,
     ) {
     }
 
@@ -39,6 +41,10 @@ class BestiaryController extends AbstractController
             'totalMonsters' => $totalMonsters,
             'discoveredCount' => \count($entries),
             'totalKills' => $totalKills,
+            // ONB-07b : le gabarit consulte une liste plutot que de rejouer la
+            // regle a chacun des deux endroits qui l'affichent.
+            'readableWeaknesses' => $this->revealPolicy->readableMonsterIds($entries),
+            'readsByScent' => $this->revealPolicy->readsByScent($player),
         ]);
     }
 }

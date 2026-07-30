@@ -66,7 +66,12 @@
 
                             {# Tier badges #}
                             <div class="flex gap-1.5 mb-2">
-                                <span class="px-1.5 py-0.5 rounded text-[10px] {% if entry.weaknessesRevealed %}bg-blue-900/60 border border-blue-700 text-blue-300{% else %}bg-gray-800 border border-gray-700 text-gray-500{% endif %}">
+                                {# ONB-07b : `readableWeaknesses` porte la regle, badge et
+                                   detail la lisent au meme endroit. Le palier de dix mises a
+                                   mort reste affiche : le flair de l'Orc est un second chemin
+                                   vers la meme information, pas sa suppression. #}
+                                {% set readable = monster.id in readableWeaknesses %}
+                                <span class="px-1.5 py-0.5 rounded text-[10px] {% if readable %}bg-blue-900/60 border border-blue-700 text-blue-300{% else %}bg-gray-800 border border-gray-700 text-gray-500{% endif %}">
                                     {{ 'game.bestiary.tier_weaknesses'|trans }}
                                 </span>
                                 <span class="px-1.5 py-0.5 rounded text-[10px] {% if entry.lootTableRevealed %}bg-yellow-900/60 border border-yellow-700 text-yellow-300{% else %}bg-gray-800 border border-gray-700 text-gray-500{% endif %}">
@@ -91,9 +96,11 @@
                             {% endif %}
 
                             {# Weaknesses (tier 1) #}
-                            {% if entry.weaknessesRevealed and monster.elementalResistances is not null %}
+                            {% if readable and monster.elementalResistances is not null %}
                                 <div class="mt-2 pt-2 border-t border-gray-600">
-                                    <span class="text-[10px] text-gray-500">{{ 'game.bestiary.weaknesses'|trans }} :</span>
+                                    <span class="text-[10px] text-gray-500">
+                                        {{ 'game.bestiary.weaknesses'|trans }}{% if readsByScent and not entry.weaknessesRevealed %} — {{ 'game.race.capability.the-scent.name'|trans }}{% endif %} :
+                                    </span>
                                     <div class="flex flex-wrap gap-2 mt-1">
                                         {% for element, value in monster.elementalResistances %}
                                             <span class="text-xs {% if value < 0 %}text-red-400{% elseif value > 0 %}text-green-400{% else %}text-gray-400{% endif %}">
