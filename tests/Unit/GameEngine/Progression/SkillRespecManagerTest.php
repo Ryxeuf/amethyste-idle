@@ -134,6 +134,61 @@ class SkillRespecManagerTest extends TestCase
         $this->assertSame(85, $player->getMaxLife());
     }
 
+    /**
+     * ONB-20b — un nœud d'entree gratuit survit au respec.
+     *
+     * Le respec **redistribue des points**. Un nœud a 0 point n'en a coute
+     * aucun : il n'y a rien a rembourser, et le retirer ne libere rien. Le
+     * retirer quand meme etait un piege paye — le joueur ressortait de son
+     * respec incapable de tenir l'arme qu'il portait (echelon 1 de port,
+     * ONB-20b) et sans aucune recette (nœuds d'artisanat d'entree, ECO-20).
+     */
+    public function testAFreeEntryNodeSurvivesARespec(): void
+    {
+        $domain = $this->createDomain(1, 'Berserker');
+
+        $paid = $this->createSkill('berserk-weapon-t2', 10, 1, 0, 0, 0, 0);
+        $paid->addDomain($domain);
+        $free = $this->createSkill('port-axe', 0, 0, 0, 0, 0, 0);
+        $free->addDomain($domain);
+
+        $player = $this->createRealPlayer([$paid, $free], 1000, 0, [], 100);
+
+        $this->manager->respec($player);
+
+        self::assertSame(1, $player->getSkills()->count());
+        self::assertTrue($player->hasSkill($free), 'Le nœud d\'entree gratuit a ete retire par le respec.');
+        self::assertFalse($player->hasSkill($paid));
+    }
+
+    /**
+     * Et le cout ne compte que ce qu'il redistribue.
+     *
+     * Facturer les nœuds gratuits ferait payer le joueur pour des points qu'il
+     * ne recuperera pas.
+     */
+    public function testFreeNodesAreNotBilledByTheRespecCost(): void
+    {
+        $paid = $this->createSkill('paid', 10, 0, 0, 0, 0, 0);
+        $free = $this->createSkill('free', 0, 0, 0, 0, 0, 0);
+
+        $player = $this->createRealPlayer([$paid, $free], 1000, 0, [], 100);
+
+        // 50 * 1 competence payee * 1.25^0 = 50
+        self::assertSame(50, $this->manager->getRespecCost($player));
+    }
+
+    /**
+     * Un personnage qui n'a que des nœuds gratuits n'a rien a redistribuer.
+     */
+    public function testAPlayerWithOnlyFreeNodesCannotRespec(): void
+    {
+        $free = $this->createSkill('port-axe', 0, 0, 0, 0, 0, 0);
+        $player = $this->createRealPlayer([$free], 100000, 0, [], 100);
+
+        self::assertFalse($this->manager->canRespec($player));
+    }
+
     public function testRespecFailsWithInsufficientGils(): void
     {
         $skill = $this->createSkill('skill-1', 20, 0, 0, 0, 0, 0);

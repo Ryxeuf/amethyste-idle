@@ -1,0 +1,83 @@
+# =============================================================================
+# L'echelle de port des armes (ONB-20b)
+# =============================================================================
+# GAME_ONBOARDING § 6.0 bis : « porter une piece exige d'avoir appris a la
+# porter ». Le mecanisme existait deja — `Item::requirements` vers `Skill`, et
+# `PlayerItemHelper::canBeEquipped()` — mais il n'etait pose **que** sur les
+# armes de palier 2 et 3, et il etait pose **par domaine**.
+#
+# Le defaut que ce fichier repare, litteralement : `berserk_weapon_t2` est
+# feu x melee et `paladin_weapon_t2` est lumiere x melee. Pris tels quels,
+# **porter une hache imposait un element**, et **porter un baton — une arme de
+# lanceur de sorts — imposait un arbre de melee**. C'est exactement ce que
+# DOM-01 a separe : le domaine est element x registre, c'est l'**arme** qui fixe
+# le registre.
+#
+# La reparation ne renomme rien. Les competences existantes **sont** l'echelle
+# et gardent leurs slugs (le canon le demande explicitement) ; ce qui change est
+# **a quels arbres elles appartiennent** — `Skill::domains` est un ManyToMany —
+# et **ce qu'elles exigent** : l'echelon n exige l'echelon n-1 de la meme
+# famille, jamais un nœud propre a un arbre.
+#
+# Trois regles tenues par la forme de ce fichier :
+#
+# 1. **L'echelon 1 est gratuit** (`rung1.free`), et il est livre a l'ouverture
+#    de l'arbre. Le cout reel est le parchemin, jamais les points.
+# 2. **Une famille est enseignee par plusieurs arbres**, et en ouvrir **un
+#    seul** suffit. Une famille enseignee par un seul arbre serait un element
+#    impose par la bande — `EquipmentPortCatalog` la refuse.
+# 3. **L'echelle suit les paliers d'objets deja en place** (T1/T2/T3). Aucun
+#    cran invente.
+#
+# Hors perimetre, assume : les armures, les boucliers et les outils de metier
+# n'ont pas encore d'echelle (ONB-20b-b). Les declarer ici sans les appliquer
+# donnerait l'illusion d'une couverture qui n'existe pas.
+# =============================================================================
+
+families:
+    axe:
+        label: 'Hache'
+        # La hache de **guerre**. La hache de bucheron est un nœud entierement
+        # separe, dans l'arbre du bucheron (GAME_ONBOARDING § 6.0 bis d).
+        taught_by: [berserker, soldier, guardian, tamer]
+        rung1: { reference: port_axe, slug: port-axe, title: 'Port de la hache', free: true }
+        rung2: berserk_weapon_t2
+        rung3: berserk_weapon_t3
+
+    sword:
+        label: 'Épée'
+        taught_by: [soldier, knight, paladin, inquisitor, wanderer, assassin]
+        rung1: { reference: port_sword, slug: port-sword, title: 'Port de l''épée', free: true }
+        rung2: soldier_weapon_t2
+        rung3: soldier_weapon_t3
+
+    dagger:
+        label: 'Dague'
+        taught_by: [assassin, wanderer, hunter, tamer]
+        rung1: { reference: port_dagger, slug: port-dagger, title: 'Port de la dague', free: true }
+        rung2: assassin_weapon_t2
+        rung3: assassin_weapon_t3
+
+    lance:
+        label: 'Lance'
+        taught_by: [knight, guardian, defender, tamer]
+        rung1: { reference: port_lance, slug: port-lance, title: 'Port de la lance', free: true }
+        rung2: knight_weapon_t2
+        rung3: knight_weapon_t3
+
+    bow:
+        label: 'Arc'
+        taught_by: [archer, hunter, wanderer]
+        rung1: { reference: port_bow, slug: port-bow, title: 'Port de l''arc', free: true }
+        rung2: archer_weapon_t2
+        rung3: archer_weapon_t3
+
+    staff:
+        label: 'Bâton'
+        # Le baton etait enseigne par le **paladin**, un arbre de melee. Une arme
+        # de lanceur de sorts derriere une porte de melee : c'est le defaut le
+        # plus net de l'echelle heritee.
+        taught_by: [pyromancy, hydromancer, healer, stormcaller, geomancer, druid, priest, necromancer, warlock, paladin]
+        rung1: { reference: port_staff, slug: port-staff, title: 'Port du bâton', free: true }
+        rung2: paladin_weapon_t2
+        rung3: paladin_weapon_t3

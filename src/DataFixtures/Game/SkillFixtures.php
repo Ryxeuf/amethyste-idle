@@ -5,12 +5,18 @@ namespace App\DataFixtures\Game;
 use App\DataFixtures\DomainFixtures;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class SkillFixtures extends Fixture implements DependentFixtureInterface
 {
+    public function __construct(
+        private readonly EquipmentPortCatalog $portCatalog,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
         $skillsData = $this->getSkillsData();
@@ -91,6 +97,14 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
     private function getSkillsData(): array
     {
+        return $this->rewireWeaponPortLadders($this->declaredSkills());
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function declaredSkills(): array
+    {
         return array_merge(
             $this->getPyromancySkills(),
             $this->getBerserkerSkills(),
@@ -130,7 +144,77 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getJewellerSkills(),
             $this->getSharedSkills(),
             $this->getDormantHybridAccords(),
+            $this->getWeaponPortRungs(),
         );
+    }
+
+    /**
+     * Les echelons 1 de l'echelle de port, generes depuis leur declaration
+     * (ONB-20b).
+     *
+     * Un nœud par **famille d'arme**, gratuit, rattache a **tous** les arbres
+     * qui l'enseignent : `Skill::domains` est un ManyToMany, et « en ouvrir un
+     * seul suffit ». Les ecrire arbre par arbre aurait recree exactement le
+     * defaut qu'ONB-20b repare — un port different selon la porte par laquelle
+     * on entre.
+     *
+     * Zero point de domaine, et aucune statistique : l'echelon 1 est le nœud
+     * d'entree, pas une recompense. Le cout reel est le parchemin.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function getWeaponPortRungs(): array
+    {
+        $rungs = [];
+        foreach ($this->portCatalog->families() as $family) {
+            $rungs[$family['rung1']['reference']] = [
+                'title' => $family['rung1']['title'],
+                'slug' => $family['rung1']['slug'],
+                'description' => sprintf('Permet de tenir une %s de palier 1.', mb_strtolower($family['label'])),
+                'requiredPoints' => 0,
+                'domain' => $family['taught_by'],
+            ];
+        }
+
+        return $rungs;
+    }
+
+    /**
+     * Recable les echelons 2 et 3 sur leur famille (ONB-20b).
+     *
+     * Deux corrections, et la seconde est celle qui compte :
+     *
+     * 1. **Les arbres** — `berserk_weapon_t2` (« Maitrise de la hache ») vivait
+     *    dans le seul arbre du berserker, feu x melee. Porter une hache
+     *    imposait donc le feu. L'echelon rejoint tous les arbres qui enseignent
+     *    la famille.
+     * 2. **Le prerequis** — il exigeait `berserk_apprenti_1`, un nœud propre au
+     *    berserker. Un soldat qui voulait la hache T2 devait donc entrer dans
+     *    l'arbre du berserker : « en ouvrir un seul suffit » etait faux. Un
+     *    echelon exige desormais **l'echelon precedent de sa famille**, ce que
+     *    le canon demande (*l'arc a poulie exige l'arc*).
+     *
+     * @param array<string, array<string, mixed>> $skills
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function rewireWeaponPortLadders(array $skills): array
+    {
+        foreach ($this->portCatalog->families() as $family) {
+            $chain = [$family['rung1']['reference'], $family['rung2'], $family['rung3']];
+
+            foreach ([1, 2] as $index) {
+                $reference = $chain[$index];
+                if (!isset($skills[$reference])) {
+                    continue;
+                }
+
+                $skills[$reference]['domain'] = $family['taught_by'];
+                $skills[$reference]['requirements'] = [$chain[$index - 1]];
+            }
+        }
+
+        return $skills;
     }
 
     /**

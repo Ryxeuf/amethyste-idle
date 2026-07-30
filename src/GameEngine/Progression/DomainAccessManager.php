@@ -36,6 +36,7 @@ class DomainAccessManager
         private readonly EntityManagerInterface $entityManager,
         private readonly NotificationService $notificationService,
         private readonly LoggerInterface $logger,
+        private readonly EquipmentPortCatalog $portCatalog,
     ) {
     }
 
@@ -60,6 +61,12 @@ class DomainAccessManager
         $player->addDomainAccess($access);
         $this->entityManager->persist($access);
 
+        // ONB-20b — ouvrir un arbre livre immediatement son **kit de port**.
+        // C'est ce qui garantit le plancher jour 1 : on ne donne jamais une
+        // arme qu'on ne peut pas tenir. Le cout reel est le parchemin, jamais
+        // les points.
+        $this->grantPortKit($player, $domain);
+
         // ONB-09 — l'ouverture est **notifiee**. Un arbre qui apparaitrait
         // simplement dans un menu se lirait comme un changement d'interface,
         // alors que c'est le seul moment de la boucle *parchemin -> arbre ->
@@ -67,6 +74,33 @@ class DomainAccessManager
         $this->announce($player, $domain);
 
         return true;
+    }
+
+    /**
+     * Livre les nœuds d'entree gratuits de l'arbre (ONB-20b).
+     *
+     * Le kit se lit dans le **graphe reel** — les competences du domaine dont
+     * le slug est un echelon 1 — et non dans une table de correspondance entre
+     * cles de fixtures et domaines. Le catalogue declare les familles par cle
+     * de fixture, qui n'existe pas a l'execution ; passer par les competences
+     * evite d'inventer un second identifiant de domaine, et fait suivre
+     * automatiquement tout arbre qui se met a enseigner une famille.
+     */
+    public function grantPortKit(Player $player, Domain $domain): int
+    {
+        $rungOne = $this->portCatalog->rungOneSlugs();
+
+        $granted = 0;
+        foreach ($domain->getSkills() as $skill) {
+            if (!\in_array($skill->getSlug(), $rungOne, true) || $player->hasSkill($skill)) {
+                continue;
+            }
+
+            $player->addSkill($skill);
+            ++$granted;
+        }
+
+        return $granted;
     }
 
     private function announce(Player $player, Domain $domain): void

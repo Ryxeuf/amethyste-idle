@@ -21,14 +21,44 @@ class PlayerItemHelper
      */
     public function canBeEquipped(PlayerItem $item): bool
     {
-        if ($item->getGenericItem()->getRequirements()->count() === 0) {
-            $playerMeetRequirements = true;
-        } else {
-            $intersect = array_intersect($item->getGenericItem()->getRequirements()->toArray(), $this->playerHelper->getPlayer()->getSkills()->toArray());
-            $playerMeetRequirements = count($intersect) === $item->getGenericItem()->getRequirements()->count();
+        return $this->inventoryHelper->hasItem($item) && $this->missingPortSkills($item) === [];
+    }
+
+    /**
+     * Les competences de port qui manquent pour tenir cette piece (ONB-20b).
+     *
+     * **Le defaut repare ici** : la comparaison passait par `array_intersect`
+     * sur des entites, qui les compare **converties en chaine** — donc par leur
+     * titre. C'est la meme faute que `PlayerSkillHelper::meetsRequirements`
+     * avait deja, et ONB-20b la rendait systematique : les nœuds de port sont
+     * **partages entre arbres**, donc les titres se repetent par construction
+     * (« Maitrise de la hache (T2) » vit dans quatre arbres). Deux competences
+     * homonymes deja apprises comptaient pour deux correspondances d'un meme
+     * prerequis, l'egalite des cardinalites devenait fausse, et la piece
+     * restait refusee sans explication. La comparaison porte sur les objets
+     * possedes, via `Player::hasSkill()`, qui compare par identifiant.
+     *
+     * Retourner **ce qui manque** plutot qu'un booleen sert l'affordance (A19) :
+     * une piece non portable doit dire ce qui manque et ou l'apprendre, jamais
+     * un grise muet.
+     *
+     * @return list<\App\Entity\Game\Skill>
+     */
+    public function missingPortSkills(PlayerItem $item): array
+    {
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return [];
         }
 
-        return $this->inventoryHelper->hasItem($item) && $playerMeetRequirements;
+        $missing = [];
+        foreach ($item->getGenericItem()->getRequirements() as $requirement) {
+            if (!$player->hasSkill($requirement)) {
+                $missing[] = $requirement;
+            }
+        }
+
+        return $missing;
     }
 
     /**

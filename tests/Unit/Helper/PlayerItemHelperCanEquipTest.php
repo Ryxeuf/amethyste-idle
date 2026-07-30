@@ -10,7 +10,6 @@ use App\GameEngine\Fight\CombatSkillResolver;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -101,6 +100,52 @@ class PlayerItemHelperCanEquipTest extends TestCase
         $this->assertFalse($this->helper->canBeEquipped($playerItem));
     }
 
+    /**
+     * ONB-20b — deux nœuds homonymes ne comptent plus pour deux prerequis.
+     *
+     * La verification passait par `array_intersect` sur des entites, qui les
+     * compare **converties en chaine** — donc par leur titre. Le defaut etait
+     * latent tant que les prerequis d'equipement etaient rares ; les nœuds de
+     * port sont **partages entre arbres**, donc les titres se repetent par
+     * construction, et il serait devenu systematique.
+     *
+     * Ici le joueur possede un homonyme d'un autre arbre **et** le vrai
+     * prerequis : l'ancienne comparaison comptait deux correspondances pour un
+     * seul prerequis et refusait la piece sans rien dire.
+     */
+    public function testAHomonymousSkillFromAnotherTreeDoesNotConfuseTheCheck(): void
+    {
+        $required = $this->createSkill('port-axe');
+        $homonym = $this->createSkill('port-axe-autre');
+        $homonym->setTitle($required->getTitle());
+
+        $item = $this->createGearItem([$required]);
+        $playerItem = $this->createPlayerItem($item);
+
+        $player = $this->createPlayerWithSkills([$homonym, $required]);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->inventoryHelper->method('hasItem')->willReturn(true);
+
+        self::assertTrue($this->helper->canBeEquipped($playerItem));
+        self::assertSame([], $this->helper->missingPortSkills($playerItem));
+    }
+
+    /**
+     * A19 — l'ecran doit pouvoir dire **ce qui manque**, pas seulement « non ».
+     */
+    public function testWhatIsMissingIsNamed(): void
+    {
+        $required = $this->createSkill('port-axe');
+        $item = $this->createGearItem([$required]);
+        $playerItem = $this->createPlayerItem($item);
+
+        $player = $this->createPlayerWithSkills([]);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->inventoryHelper->method('hasItem')->willReturn(true);
+
+        self::assertSame([$required], $this->helper->missingPortSkills($playerItem));
+    }
+
     private function createSkill(string $slug): Skill
     {
         $skill = new Skill();
@@ -133,10 +178,22 @@ class PlayerItemHelperCanEquipTest extends TestCase
         return $playerItem;
     }
 
-    private function createPlayerWithSkills(array $skills): Player&MockObject
+    /**
+     * Un **vrai** personnage, pas un double.
+     *
+     * Le double ne rendait que `getSkills()`, ce qui suffisait tant que la
+     * verification passait par `array_intersect`. Elle passe desormais par
+     * `Player::hasSkill()`, dont tout l'interet est de comparer par
+     * identifiant : le simuler reviendrait a tester la simulation.
+     *
+     * @param Skill[] $skills
+     */
+    private function createPlayerWithSkills(array $skills): Player
     {
-        $player = $this->createMock(Player::class);
-        $player->method('getSkills')->willReturn(new ArrayCollection($skills));
+        $player = new Player();
+        foreach ($skills as $skill) {
+            $player->addSkill($skill);
+        }
 
         return $player;
     }

@@ -7,6 +7,7 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Notification\NotificationService;
 use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -28,6 +29,7 @@ class DomainAccessManagerTest extends TestCase
             $this->createMock(EntityManagerInterface::class),
             $this->createMock(NotificationService::class),
             new NullLogger(),
+            new EquipmentPortCatalog(\dirname(__DIR__, 4)),
         );
     }
 
@@ -47,6 +49,7 @@ class DomainAccessManagerTest extends TestCase
             $this->createMock(EntityManagerInterface::class),
             $notifier,
             new NullLogger(),
+            new EquipmentPortCatalog(\dirname(__DIR__, 4)),
         );
 
         $player = new Player();
@@ -78,6 +81,7 @@ class DomainAccessManagerTest extends TestCase
             $this->createMock(EntityManagerInterface::class),
             $notifier,
             new NullLogger(),
+            new EquipmentPortCatalog(\dirname(__DIR__, 4)),
         );
 
         $player = new Player();
@@ -181,12 +185,49 @@ class DomainAccessManagerTest extends TestCase
     }
 
     /**
+     * ONB-20b — ouvrir un arbre livre immediatement son kit de port.
+     *
+     * C'est ce qui garantit le plancher jour 1 : on ne donne jamais une arme
+     * qu'on ne peut pas tenir. Le kit se lit dans le graphe reel — les
+     * competences de l'arbre dont le slug est un echelon 1 — et non dans une
+     * table de correspondance entre cles de fixtures et domaines.
+     */
+    public function testOpeningATreeDeliversItsPortKit(): void
+    {
+        $player = new Player();
+        $domain = $this->domain(1);
+
+        $port = $this->skill([$domain], 'port-axe');
+        $paid = $this->skill([$domain], 'berserk-weapon-t2');
+        $domain->addSkill($port);
+        $domain->addSkill($paid);
+
+        $this->manager->open($player, $domain);
+
+        self::assertTrue($player->hasSkill($port), 'Le kit de port n\'a pas ete livre.');
+        self::assertFalse($player->hasSkill($paid), 'Un echelon payant a ete offert avec le kit.');
+    }
+
+    /**
+     * Le kit ne se livre qu'une fois, et n'echoue pas sur ce qui est deja su.
+     */
+    public function testThePortKitIsGrantedOnlyOnce(): void
+    {
+        $player = new Player();
+        $domain = $this->domain(1);
+        $domain->addSkill($this->skill([$domain], 'port-axe'));
+
+        self::assertSame(1, $this->manager->grantPortKit($player, $domain));
+        self::assertSame(0, $this->manager->grantPortKit($player, $domain));
+    }
+
+    /**
      * @param Domain[] $domains
      */
-    private function skill(array $domains): Skill
+    private function skill(array $domains, string $slug = 'node'): Skill
     {
         $skill = new Skill();
-        $skill->setSlug('node');
+        $skill->setSlug($slug);
         $skill->setTitle('Nœud');
         $skill->setDescription('.');
         $skill->setRequiredPoints(0);
