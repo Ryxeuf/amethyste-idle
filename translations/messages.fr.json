@@ -53,7 +53,9 @@
     "remember_me": "Se souvenir de moi",
     "login": "Se connecter",
     "no_account": "Pas encore de compte ?",
-    "register_link": "Inscrivez-vous"
+    "register_link": "Inscrivez-vous",
+    "subtitle": "Entrez vos identifiants pour accéder au jeu.",
+    "email_placeholder": "votre@email.com"
   },
   "game": {
     "title": "Améthyste",
@@ -999,7 +1001,9 @@
         "title_full": "Limite de personnages atteinte",
         "title_short": "Limite atteinte",
         "body": "Vous avez atteint la limite de %count% personnage%plural% par compte.",
-        "back": "Retour au jeu"
+        "back": "Retour au jeu",
+        "what_to_do": "Reprenez le personnage que vous avez, ou changez-en si vous en avez plusieurs.",
+        "switch": "Changer de personnage"
       },
       "create": {
         "title": "Créer un personnage",

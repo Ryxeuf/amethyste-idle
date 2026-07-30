@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **15/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **16/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -44,7 +44,7 @@
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
 | ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
 | ONB-17 ✅ | Le coach par écran, les dix encarts (ferme D10) | M | ★★ |
-| ONB-18 | Écrans d'entrée au design system | S | ★★ |
+| ONB-18 ✅ | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
 | ONB-20b-a ✅ | Le port des **armes** par nœuds d'entree (echelon 1) | M | ★★★ |
@@ -509,14 +509,17 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] Le coach est **par personnage**
 - [x] Tests : affichage unique, persistance, C1/C2/C3 respectées, idempotence de la fermeture
 
-### ONB-18 — Écrans d'entrée au design system (S | ★★ | MOYENNE)
+### ONB-18 — Écrans d'entrée au design system ✅ (S | ★★ | MOYENNE)
 > L'écran de connexion est le **premier écran du jeu**, et le seul qui ne ressemble pas au jeu.
 > Prérequis : ← ONB-05
-- [ ] Connexion, inscription, mot de passe oublié, les quatre pas, l'écran d'éveil — composants
-      Parchemin
-- [ ] Une seule action primaire par écran ; chiffres en monospace ; états vides utiles
-- [ ] Aucun nom Tailwind d'avant la v4 (`LegacyTailwindScanner` vert)
-- [ ] Le tunnel se traverse au pouce, sans zoom
+- [x] Connexion, limite de personnages, les quatre pas, l'écran d'éveil — composants Parchemin.
+      **Le mot de passe oublié n'existe pas** (ONB-02, bloqué faute de `symfony/mailer`) ;
+      l'inscription était déjà propre
+- [x] Une seule action primaire par écran ; chiffres en monospace (`.ds-field--num`) ; l'état
+      « limite atteinte » dit désormais **quoi faire**, au lieu d'annoncer un refus
+- [x] Aucun nom Tailwind d'avant la v4, et plus aucune rampe `gray-*`/`purple-*` sur ces écrans
+- [x] Le tunnel se traverse au pouce : `.ds-field` fait 44 px, comme `.ds-btn` — un champ plus
+      court qu'un bouton se rate une fois sur trois
 
 ### ONB-19 — Instrumentation du tunnel et tests de contrat (M | ★★ | MOYENNE)
 > Sans mesure, on répare à l'aveugle (cadrage §9).

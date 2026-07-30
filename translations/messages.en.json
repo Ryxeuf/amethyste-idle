@@ -53,7 +53,9 @@
     "remember_me": "Remember me",
     "login": "Log in",
     "no_account": "No account yet?",
-    "register_link": "Register"
+    "register_link": "Register",
+    "subtitle": "Enter your credentials to reach the game.",
+    "email_placeholder": "you@email.com"
   },
   "game": {
     "title": "Amethyst",
@@ -999,7 +1001,9 @@
         "title_full": "Character limit reached",
         "title_short": "Limit reached",
         "body": "You have reached the limit of %count% character%plural% per account.",
-        "back": "Back to the game"
+        "back": "Back to the game",
+        "what_to_do": "Carry on with the character you have, or switch if you have several.",
+        "switch": "Switch character"
       },
       "create": {
         "title": "Create a character",
