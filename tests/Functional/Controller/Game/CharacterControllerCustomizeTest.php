@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Controller\Game;
 
 use App\Controller\Game\CharacterController;
+use App\GameEngine\Race\RaceCapabilityResolver;
 use App\Helper\PlayerHelper;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\ForbiddenNameChecker;
@@ -38,6 +39,7 @@ class CharacterControllerCustomizeTest extends TestCase
             new PlayerNameNormalizer(),
             $this->recalculator,
             1,
+            new RaceCapabilityResolver(),
         );
 
         $this->controller->setContainer($this->createContainer());

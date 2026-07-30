@@ -8,7 +8,7 @@ use App\Entity\User;
 use App\Enum\CreationStep;
 use App\Form\CharacterCreateType;
 use App\GameEngine\Onboarding\CharacterDraft;
-use App\GameEngine\Race\RaceCapability;
+use App\GameEngine\Race\RaceCapabilityResolver;
 use App\Helper\PlayerHelper;
 use App\Service\Avatar\AvatarCatalogProvider;
 use App\Service\ForbiddenNameChecker;
@@ -51,6 +51,7 @@ class TunnelController extends AbstractController
         private readonly ForbiddenNameChecker $forbiddenNameChecker,
         private readonly PlayerNameNormalizer $playerNameNormalizer,
         private readonly AvatarCatalogProvider $avatarCatalogProvider,
+        private readonly RaceCapabilityResolver $raceCapabilityResolver,
         private readonly TranslatorInterface $translator,
     ) {
     }
@@ -106,7 +107,7 @@ class TunnelController extends AbstractController
             'total' => CreationStep::total(),
             'draft' => $draft,
             'races' => CreationStep::People === $current ? $this->races() : [],
-            'capabilities' => CreationStep::People === $current ? $this->raceCapabilities() : [],
+            'capabilities' => CreationStep::People === $current ? $this->raceCapabilityResolver->byRaceSlug() : [],
             'choices' => CreationStep::Face === $current ? $this->avatarCatalogProvider->getCreationChoices() : [],
             'hairColors' => CharacterCreateType::HAIR_COLORS,
         ]);
@@ -238,22 +239,6 @@ class TunnelController extends AbstractController
         $race = $this->entityManager->getRepository(Race::class)->findOneBy(['slug' => $slug]);
 
         return $race instanceof Race && $race->isAvailableAtCreation() ? $race : null;
-    }
-
-    /**
-     * @return array<string, array{name: string, description: string}>
-     */
-    private function raceCapabilities(): array
-    {
-        $capabilities = [];
-        foreach (RaceCapability::cases() as $capability) {
-            $capabilities[$capability->raceSlug()] = [
-                'name' => $capability->nameKey(),
-                'description' => $capability->descriptionKey(),
-            ];
-        }
-
-        return $capabilities;
     }
 
     private function isNameTaken(string $name): bool
