@@ -998,7 +998,7 @@ class Player implements CharacterInterface
     }
 
     /**
-     * Cet arbre est-il ouvert pour ce personnage ? (ONB-08)
+     * Cet arbre est-il ouvert pour ce personnage ? (ONB-08).
      *
      * La comparaison porte sur l'identifiant, pas sur l'identite d'objet : deux
      * instances Doctrine du meme domaine se croisent des qu'un test ou un
