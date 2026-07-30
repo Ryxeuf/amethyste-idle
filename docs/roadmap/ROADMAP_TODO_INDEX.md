@@ -35,7 +35,7 @@
 | **Consolidation post-pivot (ZON-22→27)** | **8/8** | ✅ Sprint 13 termine (2026-07-26) — dette du pivot soldee |
 | Plan Retention (RET-01→07) | 7/7 | ✅ Termine (2026-07-28) — vague 4 ouverte : RET-08→10 (le tableau du lundi) |
 | Plan Foyers (FOY-01→17) | 17/17 | ✅ Termine (2026-07-29) — vague 2 ouverte : FOY-18→21 (logement) |
-| Plan Zones (ZON-30→36) | 7/7 | ✅ Termine (2026-07-29) — +ZON-37/38/39 livres ; reste ZON-40 et des donnees |
+| Plan Zones (ZON-30→36) | 7/7 | ✅ Termine (2026-07-29) — +ZON-37/38/39/40 livres ; restent des donnees |
 | Plan Domaines (DOM-01→08) | 8/8 | ✅ Termine (2026-07-29) — DOM-09 ouvert |
 | Plan Factions (FAC-01→10) | 1/10 | En cours (FAC-01 livre le 2026-07-29) |
 | **Plan Onboarding (ONB-01→20)** | **0/20** | **A faire — bloquant** : `/register` leve un 404, aucun compte ne peut naitre |
@@ -82,7 +82,7 @@
 | 26 | **FOY-18 → 21** | Le logement dans les foyers (vague 2) | Le housing rejoint le pilier territorial |
 | 27 | **ECO-32 → 35** | Les caravanes (Piste I) | Affretement Bourg↔Bourg, escorte-astreinte, jamais d'interception joueur |
 | 28 | **NAR-15 → 19** | L'an 1 des marees ([PLAN_NARRATIVE.md](PLAN_NARRATIVE.md)) | Attention : la moitie « consequences » de NAR-15 est deja livree par FOY-15. **NAR-20 est livree le 2026-07-30**, avec ZON-39 — l'acte d'intro s'est reecrit avec le tunnel, pas apres |
-| 29 | **DOM-09, ZON-40, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), signatures inertes Foret/Vallons/Marais (ZON-40, tranche le 2026-07-29 : affleurements d'amethyste a poser), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
+| 29 | **DOM-09, restes ZON-26b** | Au fil de l'eau | Bornage des nœuds partages + arbitrage Element wood/composes (DOM-09), Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre |
 | 30 | **WIK-02 → 03** | Le wiki joueur en ligne ([PLAN_WIKI.md](PLAN_WIKI.md)) | Contenu WIK-01 ✅ livre (docs/wiki/, 7 chapitres) ; reste le controleur public /wiki et l'acces site + jeu |
 
 Transverse, au fil de l'eau : **FOY-16 livre** (tests du pilier territorial ; **RET-07 livre**), mise a jour de `ROADMAP_DONE.md`
@@ -169,7 +169,7 @@ SUITE ECONOMIE ✅ LIVREE (Sprint 15 + Pistes D/E/G/H)
 RESTE — pilote par les plans annexes (cf. ordre de chantier, rangs 15+) :
   ONB-01..20 (compte, personnage, arrivee — bloquant, cf. rangs 15/16/20),
   FAC-02..10, REP-01..06, ECO-28, ECO-32..35 (caravanes),
-  FOY-18..21 (logement), NAR-15..19 (marees), DOM-09, ZON-40
+  FOY-18..21 (logement), NAR-15..19 (marees), DOM-09
 ```
 
 ---
@@ -207,7 +207,7 @@ l'« Ordre de chantier » ci-dessus.
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
 - [Retention hebdomadaire (RET-01 a RET-07)](PLAN_RETENTION.md) ✅ — **7/7, plan complet** : l'horizon le plus fragile de la colonne de progression. La bascule du lundi est **une** — `WeekKey` en est le point de calcul unique, verrouille par `RetentionPlanContractTest`
 - [Foyers, Crue et Paleur (FOY-01 a FOY-17)](PLAN_SETTLEMENTS.md) ✅ — **17/17, plan complet (2026-07-29)** ; **vague 2 ouverte : FOY-18→21** (le logement dans les foyers, decline GAME_WORLD §12.6) : le monde bati par les joueurs (socle de monde adopte, cf. [docs/GAME_WORLD.md](../GAME_WORLD.md))
-- [Contenu des zones (ZON-30 a ZON-36)](PLAN_ZONES.md) ✅ — **7/7, plan complet (2026-07-29)** ; **+ZON-37/38 livres** en chemin ; **ZON-39** livre le 2026-07-30 (la loi de nommage rejoint les libelles, avec NAR-20) ; reste **ZON-40** (signatures d'amethyste inertes sur Foret/Vallons/Marais — tranche : affleurements d'amethyste a poser), plus les restes de donnees ZON-26b (Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre) ; decline [docs/GAME_ZONES.md](../GAME_ZONES.md)
+- [Contenu des zones (ZON-30 a ZON-36)](PLAN_ZONES.md) ✅ — **7/7, plan complet (2026-07-29)** ; **+ZON-37/38 livres** en chemin ; **ZON-39** et **ZON-40** livres le 2026-07-30 (la loi de nommage rejoint les libelles avec NAR-20 ; l'amethyste affleure et les signatures cessent d'etre inertes), plus les restes de donnees ZON-26b (Marais/Crete declaratifs, illustrations de zone, 3e source de cuivre) ; decline [docs/GAME_ZONES.md](../GAME_ZONES.md)
 - [Factions (FAC-01 a FAC-10)](PLAN_FACTIONS.md) — **1/10, en cours** (FAC-01 livre le 2026-07-29 : la decote au-dela d'Ami, une seule faction portee, les bonus de palier appliques) : tension par paires, patronage, la Fonderie, les Ruelles, les cinq portes ; decline GAME_WORLD §6.4 et §12.2/12.4/12.5
 - [Arbres de domaine (DOM-01 a DOM-08)](PLAN_DOMAINS.md) ✅ — **8/8, plan complet (2026-07-29)** ; **DOM-09 ouvert** (bornage des nœuds partages + arbitrage Element wood/composes) ; **DOM-10 ouvert** (les arbres retrouves — hors catalogue, ouverts par une rencontre que l'accomplissement declenche ; ← ONB-08. Repare le fait que **terminer un arbre ne donne rien** aujourd'hui) ; decline [docs/GAME_DOMAINS.md](../GAME_DOMAINS.md)
 - [Compte, personnage et arrivee en jeu (ONB-01 a ONB-20)](PLAN_ONBOARDING.md) — **0/20, a faire, bloquant** : l'inscription n'existe pas (`/register` → 404), il n'y a ni mailer ni recuperation de mot de passe, le login n'a aucun garde-fou et l'arc d'intro est casse par le pivot. Decline [docs/GAME_ONBOARDING.md](../GAME_ONBOARDING.md) (e-mail differe derriere une porte economique et sociale, tunnel unique en 4 pas, coach par ecran ; **R1** : aucune decision de build dans le tunnel — le peuple n'oriente rien, le foyer d'attache **se gagne par les gestes** (amendement a GAME_WORLD §13.1) ; **R2** : le peuple porte **une capacite** qui touche ce qu'on sait et jamais ce qu'on produit, l'acces a un arbre passe par **un parchemin** — catalogue public complet, puis parchemin, puis arbre ouvert — et le combat s'enseigne sur **deux mannequins** au Fanal, ce qui evite d'avoir a lever son `safe: true` ; **R3** : le juste milieu est nomme — *le champ est infini, l'entree est un acte* : rien n'est ferme et tout se mene de front, mais rien n'est su avant d'avoir ete appris, **actions de base comprises** (avec grand-perisage des personnages existants ; marcher, voyager, explorer, parler et se battre a mains nues restent libres). Ouvre **DOM-10**, les arbres retrouves)

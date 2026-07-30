@@ -237,9 +237,11 @@ Franche** (GAME_SEASONS §2).
   temps stagnant se dépose mal, mais quand il prend, il prend bien : le Marais nocturne
   est le premier endroit où un joueur d'Acte II voit du **Pur**. Élément Eau/Ténèbres.
   C'est l'information exclusive type du prospecteur (GAME_ZONE_ACTIONS).
-  *Note d'audit (2026-07-29)* : cette promesse est aujourd'hui **ininstanciable** — le
-  Marais n'a aucun filon du périmètre de pureté (préfixe `ore-`), sa signature
-  (`night_weight_shift: 30`) ne s'applique donc jamais. Remede tranche le 2026-07-29 : un affleurement d'amethyste sera pose dans la Foret, les Vallons et le Marais — voir **ZON-40** (PLAN_ZONES).
+  *Résolu par ZON-40 (2026-07-30)* : la promesse était **ininstanciable** — le Marais
+  n'avait aucun filon du périmètre de pureté (préfixe `ore-`), sa signature
+  (`night_weight_shift: 30`) ne s'appliquait donc jamais. L'affleurement
+  `affleurement-d-amethyste-des-tourbieres` l'instancie, et deux lois croisent désormais
+  la table des signatures avec la carte réelle des filons.
 - **Faune** : **non déclarée** — le Marais dépend encore de sa carte TMX d'origine.
   C'est le reste de ZON-26b (Sprint 13), pas un jalon neuf.
 - **Objets de désir** : semaine — la commande d'élixirs (les commandes de craft exigeant
