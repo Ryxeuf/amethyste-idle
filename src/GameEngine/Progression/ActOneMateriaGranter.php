@@ -41,9 +41,12 @@ class ActOneMateriaGranter
     /**
      * Remet la materia du dernier arbre de combat ouvert, et de quoi l'accorder.
      *
-     * @return array{item: Item, domain: Domain, points: int}|null null si le
-     *                                                            joueur n'a ouvert aucun arbre de combat, ou si celui-ci
-     *                                                            n'enseigne aucune materia
+     * Rend `null` si le joueur n'a ouvert aucun arbre de combat, ou si celui-ci
+     * n'enseigne aucune materia. L'appelant ne remet alors rien plutot que de
+     * remettre n'importe quoi : une materia arbitraire serait une materia
+     * qu'on ne peut pas sertir.
+     *
+     * @return array{item: Item, domain: Domain, points: int}|null
      */
     public function resolve(Player $player): ?array
     {
