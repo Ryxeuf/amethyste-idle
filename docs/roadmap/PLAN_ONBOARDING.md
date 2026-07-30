@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **13/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **14/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -43,7 +43,8 @@
 | ONB-14 ✅ | Une seule source d'état d'onboarding (ferme D7) | S | ★★ |
 | ONB-15 ✅ | Réparer les quêtes `explore` de l'arc (ferme D4) | S | ★★★ |
 | ONB-16 ✅ | Une population de PNJ au Fanal, dont le maître d'armes (ferme D5) | M | ★★ |
-| ONB-17 | Le coach par écran (ferme D10) | M | ★★ |
+| ONB-17a ✅ | Le coach : le mécanisme, les lois, les 3 écrans de l'acte I | M | ★★ |
+| ONB-17b | Le coach : les 7 écrans restants (pur branchement) | S | ★★ |
 | ONB-18 | Écrans d'entrée au design system | S | ★★ |
 | ONB-19 | Instrumentation du tunnel + tests de contrat | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
@@ -490,21 +491,24 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 
 ## Piste E — Apprentissage et preuve
 
-### ONB-17 — Le coach par écran (M | ★★ | MOYENNE)
+### ONB-17a — Le coach par écran : le mécanisme et l'acte I ✅ (M | ★★ | MOYENNE)
 > Ferme **D10**. Décision A3.
 > Prérequis : ← ONB-05, ONB-09 ; croise WIK-02 et RET-08→10
-- [ ] `Player.seenCoachMarks` (tableau JSON de slugs) — pas de nouvelle entité
-- [ ] Composant Twig + contrôleur Stimulus : deux phrases, le geste, **son coût en énergie**,
+- [x] `Player.seenCoachMarks` (tableau JSON de slugs) — pas de nouvelle entité
+- [x] Composant Twig + contrôleur Stimulus : deux phrases, le geste, **son coût en énergie**,
       une croix. Ne revient jamais seul
-- [ ] Les huit écrans d'ouverture + les deux différés (cadrage §7.2)
-- [ ] Le coach de combat s'affiche sur **le premier mannequin** — le seul combat où lire ne tue
+- [x] Les **dix** encarts déclarés dans `CoachMark` ; **trois branchés** (zone, combat,
+      inventaire) — les sept autres sont une ligne de gabarit chacun (**ONB-17b**)
+- [ ] Les sept écrans restants : catalogue des arbres, quêtes, artisanat, carte du monde, hub,
+      marché, guilde (**ONB-17b**)
+- [x] Le coach de combat s'affiche sur **le premier mannequin** — le seul combat où lire ne tue
       pas (ONB-11)
-- [ ] **C1** : jamais un système inutilisable · **C2** : toujours le coût · **C3** : à
+- [x] **C1** : jamais un système inutilisable · **C2** : toujours le coût · **C3** : à
       l'arrivée, jamais au temps écoulé
-- [ ] Le coach du **hub** n'apparaît qu'après l'acte I
+- [x] Le coach du **hub** n'apparaît qu'après l'acte I
 - [ ] Relecture depuis l'aide (lien wiki ; dégradation acceptable sans WIK-02)
-- [ ] Le coach est **par personnage**
-- [ ] Tests : affichage unique, persistance, C1 respectée, aucun coach au retour d'absence
+- [x] Le coach est **par personnage**
+- [x] Tests : affichage unique, persistance, C1/C2/C3 respectées, idempotence de la fermeture
 
 ### ONB-18 — Écrans d'entrée au design system (S | ★★ | MOYENNE)
 > L'écran de connexion est le **premier écran du jeu**, et le seul qui ne ressemble pas au jeu.

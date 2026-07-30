@@ -1,0 +1,25 @@
+{# ONB-17 — l'encart de coach : deux phrases, le geste, son cout, une croix.
+
+   Il ne revient jamais seul. La croix le ferme pour de bon ; la relecture
+   passe par l'aide, jamais par une reapparition — un encart qui revient se lit
+   comme un reproche.
+
+   `coachMark` est `null` sur tout ecran deja lu : l'inclusion ne coute alors
+   rien, et l'appelant n'a pas a savoir pourquoi. #}
+{% if coachMark is not null %}
+    <div class="ds-panel mb-4" data-controller="coach-mark"
+         data-coach-mark-url-value="{{ path('app_game_coach_dismiss', {mark: coachMark.value}) }}">
+        <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+                <p class="ds-label">{{ coachMark.titleKey|trans }}</p>
+                <p class="text-sm text-ink mt-1">{{ coachMark.bodyKey|trans }}</p>
+                {# C2 : toujours le cout. Un ecran qui presente un geste sans son
+                   prix apprend au joueur a le decouvrir en le payant. #}
+                <p class="ds-hint mt-1">{{ coachMark.costKey|trans }}</p>
+            </div>
+            <button type="button" class="ds-btn ds-btn--quiet ds-btn--sm shrink-0"
+                    data-action="coach-mark#dismiss"
+                    aria-label="{{ 'game.coach.dismiss'|trans }}">✕</button>
+        </div>
+    </div>
+{% endif %}

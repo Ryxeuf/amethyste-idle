@@ -3,6 +3,7 @@
 {% block title %}{{ 'game.inventory.title'|trans }}{% endblock %}
 
 {% block game_content %}
+    {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('inventory')}) }}
 <div class="game-page" {{ stimulus_controller('inventory', {
     labels: {
         level: 'game.inventory.compare.level'|trans,

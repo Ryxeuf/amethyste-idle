@@ -1823,6 +1823,24 @@
         "departure": "Go to the Zone",
         "expedition": "Go to the Zone"
       }
+    },
+    "coach": {
+      "dismiss": "Close",
+      "zone": {
+        "title": "You are in a zone",
+        "body": "Everything you can attempt here is listed below: explore, hunt, gather. Each attempt spends energy, which refills on its own.",
+        "cost": "Exploring, hunting or gathering: 3 energy per attempt."
+      },
+      "combat": {
+        "title": "Turn-based combat",
+        "body": "Your weapon attack is free and always available. A socketed materia adds a spell; fleeing ends the fight without loot.",
+        "cost": "Attacking costs nothing. A spell spends its materia's charges."
+      },
+      "inventory": {
+        "title": "Your bag and your gear",
+        "body": "What you wear is set here. Every piece carries materia slots — that is where your character is built, not in a class.",
+        "cost": "Equipping and socketing cost no energy."
+      }
     }
   },
   "common": {

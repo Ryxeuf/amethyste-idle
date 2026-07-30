@@ -1823,6 +1823,24 @@
         "departure": "Aller à la Zone",
         "expedition": "Aller à la Zone"
       }
+    },
+    "coach": {
+      "dismiss": "Fermer",
+      "zone": {
+        "title": "Vous êtes dans une zone",
+        "body": "Tout ce que vous pouvez tenter ici est listé ci-dessous : explorer, chasser, récolter. Chaque tentative consomme de l'énergie, qui se régénère seule.",
+        "cost": "Explorer, chasser ou récolter : 3 points d'énergie par tentative."
+      },
+      "combat": {
+        "title": "Le combat, tour par tour",
+        "body": "Votre attaque d'arme est gratuite et toujours disponible. Une matéria sertie ajoute un sort ; fuir met fin au combat sans butin.",
+        "cost": "Attaquer ne coûte rien. Un sort consomme les charges de sa matéria."
+      },
+      "inventory": {
+        "title": "Votre sac et votre équipement",
+        "body": "Ce que vous portez se règle ici. Chaque pièce d'équipement porte des emplacements de matéria — c'est là que se construit votre personnage, pas dans une classe.",
+        "cost": "Équiper et sertir ne coûtent aucune énergie."
+      }
     }
   },
   "common": {
