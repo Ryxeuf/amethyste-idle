@@ -55,7 +55,7 @@ class Dungeon
      * uniquement par la liste globale `/game/dungeon` (donjons solo legacy).
      *
      * C'est ce lien, et non `map`, qui rattache un donjon au monde : plusieurs
-     * zones peuvent partager une meme `sourceMap` (le Village de Lumiere en est
+     * zones peuvent partager une meme `sourceMap` (le Fanal en est
      * un cas dans `config/game/zones/world_1.yaml`), la carte est donc un
      * rattachement ambigu.
      */

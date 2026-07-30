@@ -29,8 +29,8 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
 
         // Village central — hub principal entre les zones (zone safe, aucun monstre)
         $village = new Map();
-        $village->setName('Village de Lumière');
-        $village->setNameTranslations(['en' => 'Village of Light']);
+        $village->setName('Le Fanal');
+        $village->setNameTranslations(['en' => 'The Beacon']);
         $village->setWorld($this->getReference('world_1', World::class));
         $village->setAreaWidth(40);
         $village->setAreaHeight(40);

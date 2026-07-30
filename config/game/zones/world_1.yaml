@@ -90,7 +90,7 @@
 
 zones:
     # =========================================================================
-    # ZONE 1 — Village de Lumiere (hub, zone sure)
+    # ZONE 1 — Le Fanal (hub, zone sure)
     # =========================================================================
     #
     # Le point de depart de tout personnage, et le seul lieu ou l'on ne risque
@@ -98,17 +98,17 @@ zones:
     # declarer une population ici n'aurait aucun effet, d'ou l'absence de bloc
     # `mobs:`.
     village-de-lumiere:
-        name: 'Village de Lumière'
-        name_en: 'Village of Light'
-        description: "Le hub central du World 1. Un fanal dresse contre les tenebres alentour : la forge, les echoppes, les jardins du temple et les voyageurs de passage. Ici, rien ne mord."
-        description_en: 'The central hub of World 1. A beacon raised against the surrounding dark: the forge, the shops, the temple gardens and passing travelers. Nothing bites here.'
+        name: 'Le Fanal'
+        name_en: 'The Beacon'
+        description: "Le hub central du World 1. Le feu du haut de la tour n'a jamais ete laisse s'eteindre, et c'est de lui que le village tient son nom : la forge, les echoppes, les jardins du temple et les voyageurs de passage. Ici, rien ne mord."
+        description_en: 'The central hub of World 1. The fire atop the tower has never been let go out, and the village takes its name from it: the forge, the shops, the temple gardens and passing travelers. Nothing bites here.'
         type: city
         safe: true
         map_x: 50
         map_y: 55
         map_shape: '50,43 58,39 66,45 67,56 58,62 50,59 46,50'
         enabled: true
-        source_map: 'Village de Lumière'
+        source_map: 'Le Fanal'
         explore:
             # Ce qu'on trouve en flanant dans un village, ce sont des gens. Sans
             # bloc `explore`, la zone tombait sur les defauts du service (mob 50
@@ -484,14 +484,14 @@ zones:
     quartier-des-jardins:
         name: 'Quartier des Jardins'
         name_en: 'Garden Quarter'
-        description: "Le lotissement de Lumiere : allees de terre battue, murets bas et parcelles a vendre. On y bruit des projets plus que des combats."
-        description_en: 'The residential quarter of Lumiere: dirt lanes, low walls and plots for sale. Plans are hatched here more often than fights.'
+        description: "Le lotissement du Fanal : allees de terre battue, murets bas et parcelles a vendre. On y bruit des projets plus que des combats."
+        description_en: "The Beacon's residential quarter: dirt lanes, low walls and plots for sale. Plans are hatched here more often than fights."
         type: city
         safe: true
         map_x: 42
         map_y: 46
         map_shape: '30,44 40,41 48,42 50,48 44,53 34,52 29,48'
-        source_map: 'Village de Lumière'
+        source_map: 'Le Fanal'
 
     dunes-d-ambre:
         name: 'Dunes d''Ambre'

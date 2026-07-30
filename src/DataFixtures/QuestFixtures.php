@@ -1001,8 +1001,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             'quest_season1_amorce' => [
                 'name' => 'Éveil — L\'appel des cloches',
                 'name_translations' => ['en' => 'Awakening — The Call of the Bells'],
-                'description' => 'Les cloches du Village de Lumière sonnent l\'alerte. Rendez-vous sur la place pour entendre le héraut annoncer la menace de la saison.',
-                'description_translations' => ['en' => 'The bells of the Village of Light ring the alarm. Head to the square to hear the herald announce the season\'s threat.'],
+                'description' => 'Les cloches du Fanal sonnent l\'alerte. Rendez-vous sur la place pour entendre le héraut annoncer la menace de la saison.',
+                'description_translations' => ['en' => 'The bells of the Beacon ring the alarm. Head to the square to hear the herald announce the season\'s threat.'],
                 'requirements' => [
                     'explore' => [
                         ['zone_slug' => 'village-de-lumiere', 'name' => 'Place du village'],

@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * PNJs du Village de Lumière — hub central entre les zones (zone safe).
+ * PNJs du Fanal — hub central entre les zones (zone safe).
  *
  * 7 PNJ : forgeron, alchimiste, marchand général, maître des quêtes, banquier, garde, guide tutoriel.
  * Chaque marchand a sa boutique et ses horaires.
@@ -229,7 +229,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'dialog' => [
                     [
-                        'text' => 'Holà, aventurier ! Marcellin, marchand général du Village de Lumière, pour vous servir. J\'ai de tout : outils, nourriture, parchemins... Faites votre choix !',
+                        'text' => 'Holà, aventurier ! Marcellin, marchand général du Fanal, pour vous servir. J\'ai de tout : outils, nourriture, parchemins... Faites votre choix !',
                         'choices' => [
                             [
                                 'text' => 'Voir la boutique',
@@ -266,7 +266,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/sage.png',
                 'dialog' => [
                     [
-                        'text' => 'Bienvenue au tableau des quêtes du Village de Lumière, {{player_name}}. Je coordonne les missions pour les aventuriers de la région. Consultez régulièrement votre journal de quêtes — de nouvelles missions sont ajoutées fréquemment.',
+                        'text' => 'Bienvenue au tableau des quêtes du Fanal, {{player_name}}. Je coordonne les missions pour les aventuriers de la région. Consultez régulièrement votre journal de quêtes — de nouvelles missions sont ajoutées fréquemment.',
                         'choices' => [
                             [
                                 'text' => 'Des conseils pour progresser ?',
@@ -330,7 +330,7 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/guard.png',
                 'dialog' => [
                     [
-                        'text' => 'Halte ! Bienvenue au Village de Lumière, {{player_name}}. Ce village est une zone sûre — aucun monstre ne peut y pénétrer. Reposez-vous ici avant de repartir à l\'aventure.',
+                        'text' => 'Halte ! Bienvenue au Fanal, {{player_name}}. Ce village est une zone sûre — aucun monstre ne peut y pénétrer. Reposez-vous ici avant de repartir à l\'aventure.',
                         'choices' => [
                             [
                                 'text' => 'Que peut-on trouver dans ce village ?',

@@ -10,7 +10,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Routines quotidiennes des PNJ du Village de Lumière.
+ * Routines quotidiennes des PNJ du Fanal.
  *
  * Chaque PNJ a 3-4 positions dans la journée (travail, pause, maison, taverne).
  * L'heure est en temps in-game (0-23).

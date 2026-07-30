@@ -12,10 +12,10 @@ class ZoneTest extends TestCase
     {
         $zone = new Zone();
         $zone->setSlug('village-de-lumiere');
-        $zone->setName('Village de Lumière');
+        $zone->setName('Le Fanal');
 
         $this->assertSame('village-de-lumiere', $zone->getSlug());
-        $this->assertSame('Village de Lumière', $zone->getName());
+        $this->assertSame('Le Fanal', $zone->getName());
         $this->assertNull($zone->getDescription());
         $this->assertNull($zone->getIllustrationPath());
         $this->assertSame(Zone::TYPE_WILDERNESS, $zone->getType());
@@ -23,7 +23,7 @@ class ZoneTest extends TestCase
         $this->assertTrue($zone->isEnabled());
         $this->assertNull($zone->getSourceMap());
         $this->assertCount(0, $zone->getConnections());
-        $this->assertSame('Village de Lumière', (string) $zone);
+        $this->assertSame('Le Fanal', (string) $zone);
     }
 
     public function testSetTypeAcceptsAllValidTypes(): void

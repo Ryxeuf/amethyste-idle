@@ -520,7 +520,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
         $portals = [
             // Depuis carte principale → village (entrée sud du village)
             'portal-to-village' => [
-                'name' => 'Portail vers le Village de Lumière',
+                'name' => 'Portail vers le Fanal',
                 'map' => $map1,
                 'coordinates' => '30.30',
                 'destinationMapId' => $map2->getId(),
@@ -553,14 +553,14 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             ],
             // Forêt → Village (entrée sud de la forêt)
             'portal-forest-to-village' => [
-                'name' => 'Retour au Village de Lumière',
+                'name' => 'Retour au Fanal',
                 'map' => $map3,
                 'coordinates' => '29.57',
                 'destinationMapId' => $map2->getId(),
                 'destinationCoordinates' => '37.20',
             ],
             'portal-forest-to-village-2' => [
-                'name' => 'Retour au Village de Lumière',
+                'name' => 'Retour au Fanal',
                 'map' => $map3,
                 'coordinates' => '30.57',
                 'destinationMapId' => $map2->getId(),
@@ -578,14 +578,14 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             ],
             // Mines → Village (sortie sud des mines)
             'portal-mines-to-village' => [
-                'name' => 'Retour au Village de Lumière',
+                'name' => 'Retour au Fanal',
                 'map' => $map4,
                 'coordinates' => '2.28',
                 'destinationMapId' => $map2->getId(),
                 'destinationCoordinates' => '2.20',
             ],
             'portal-mines-to-village-2' => [
-                'name' => 'Retour au Village de Lumière',
+                'name' => 'Retour au Fanal',
                 'map' => $map4,
                 'coordinates' => '3.28',
                 'destinationMapId' => $map2->getId(),
@@ -603,14 +603,14 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             ],
             // Montagne → Village (entrée sud de la montagne)
             'portal-mountain-to-village' => [
-                'name' => 'Retour au Village de Lumière',
+                'name' => 'Retour au Fanal',
                 'map' => $map6,
                 'coordinates' => '25.49',
                 'destinationMapId' => $map2->getId(),
                 'destinationCoordinates' => '20.2',
             ],
             'portal-mountain-to-village-2' => [
-                'name' => 'Retour au Village de Lumière',
+                'name' => 'Retour au Fanal',
                 'map' => $map6,
                 'coordinates' => '26.49',
                 'destinationMapId' => $map2->getId(),
