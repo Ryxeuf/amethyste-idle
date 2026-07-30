@@ -5935,7 +5935,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'jewel-masterwork',
                 'title' => 'Bijoux d\'exception',
                 'description' => 'Permet de creer des bijoux d\'exception aux stats elevees',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-mithril-ring', 'recipe-mithril-amulet']]],
+                // ZON-40 — l'anneau d'amethyste rejoint le rang qui porte deja
+                // les anneaux de mithril (niveau 6, contre 7 pour celui-ci).
+                // Une recette qu'aucun nœud d'arbre ne debloque est du contenu
+                // livre et inatteignable (loi ECO-20b).
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-mithril-ring', 'recipe-mithril-amulet', 'recipe-amethyst-ring']]],
                 'requiredPoints' => 60,
                 'domain' => $d,
                 'requirements' => ['jewel_cut_rare', 'jewel_ring_gold'],
