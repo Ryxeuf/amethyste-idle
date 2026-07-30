@@ -1,11 +1,11 @@
 <?php
 
-/**
- * Garde de style local — rejoue hors Docker sept regles de la CI PHP-CS-Fixer.
+/*
+ * Garde de style local — rejoue hors Docker huit regles de la CI PHP-CS-Fixer.
  *
  * Ce script n'a AUCUNE dependance (ni vendor/, ni Composer, ni Docker) : il
  * s'appuie uniquement sur `token_get_all()`. Il ne remplace pas
- * `vendor/bin/php-cs-fixer` — il attrape avant le push les sept regles qui
+ * `vendor/bin/php-cs-fixer` — il attrape avant le push les huit regles qui
  * cassent le plus souvent la CI, quand l'environnement de travail n'a pas
  * de conteneur PHP.
  *
@@ -17,9 +17,24 @@
  *
  * Sortie : une ligne `fichier:ligne: REGLE message` par violation, code de
  * sortie 1 si au moins une violation est trouvee.
+ *
+ * Ce bloc s'ecrit `/*` et non `/**` a dessein : un phpdoc suivi d'une ligne
+ * vide est refuse par `no_blank_lines_after_phpdoc`, et le coller a la
+ * constante ferait passer une notice de fichier pour la documentation de
+ * `DEFAULT_PATHS`. C'est la huitieme regle, apprise en cassant la CI avec ce
+ * fichier meme.
  */
 
-const DEFAULT_PATHS = ['src', 'tests', 'config'];
+/*
+ * Perimetre par defaut : celui du finder de `.php-cs-fixer.dist.php`, tout le
+ * depot moins ses exclusions. `scripts/` en faisait partie et pas de la
+ * premiere version de ce fichier — c'est ainsi que le garde a laisse passer
+ * une violation qui vivait dans le garde lui-meme.
+ */
+
+const DEFAULT_PATHS = ['.'];
+
+const EXCLUDED_DIRS = ['var', 'vendor', 'node_modules', 'public/assets', 'data', '.git'];
 
 /** Ponctuations acceptees par phpdoc_summary en fin de resume. */
 const SUMMARY_END = ['.', '?', '!', '。'];
@@ -45,6 +60,9 @@ $files = [];
 
 foreach ($paths as $path) {
     $absolute = str_starts_with($path, '/') ? $path : $root . '/' . $path;
+    // Sans normalisation, `.` produit des chemins « /racine/./data/... » dont le
+    // segment relatif commence par « ./ » : les exclusions ne mordraient pas.
+    $absolute = realpath($absolute) ?: $absolute;
 
     if (is_file($absolute)) {
         $files[] = $absolute;
@@ -59,12 +77,23 @@ foreach ($paths as $path) {
     $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($absolute, FilesystemIterator::SKIP_DOTS));
 
     foreach ($iterator as $file) {
-        if ($file->isFile() && 'php' === $file->getExtension()) {
-            $files[] = $file->getPathname();
+        if (!$file->isFile() || 'php' !== $file->getExtension()) {
+            continue;
         }
+
+        $relative = str_starts_with($file->getPathname(), $root . '/') ? substr($file->getPathname(), \strlen($root) + 1) : $file->getPathname();
+
+        foreach (EXCLUDED_DIRS as $excluded) {
+            if (str_starts_with($relative, $excluded . '/')) {
+                continue 2;
+            }
+        }
+
+        $files[] = $file->getPathname();
     }
 }
 
+$files = array_values(array_unique($files));
 sort($files);
 
 $violations = [];
@@ -111,6 +140,7 @@ function inspect(string $source): array
         checkRedundantNullsafeCoalesce($tokens),
         checkOrderedImports($tokens),
         checkPhpdoc($tokens),
+        checkBlankLineAfterPhpdoc($tokens),
         checkBlankLines($lines),
     );
 }
@@ -458,6 +488,39 @@ function checkPhpdoc(array $tokens): array
             }
 
             $tagColumn = null;
+        }
+    }
+
+    return $violations;
+}
+
+/**
+ * no_blank_lines_after_phpdoc : un phpdoc est colle a ce qu'il documente.
+ *
+ * @param list<array{0: int, 1: string, 2: int}|string> $tokens
+ *
+ * @return list<array{rule: string, line: int, message: string}>
+ */
+function checkBlankLineAfterPhpdoc(array $tokens): array
+{
+    $violations = [];
+    $count = \count($tokens);
+
+    for ($i = 0; $i < $count; ++$i) {
+        $token = $tokens[$i];
+
+        if (!\is_array($token) || T_DOC_COMMENT !== $token[0]) {
+            continue;
+        }
+
+        $next = $tokens[$i + 1] ?? null;
+
+        if (\is_array($next) && T_WHITESPACE === $next[0] && substr_count($next[1], "\n") > 1) {
+            $violations[] = [
+                'rule' => 'no_blank_lines_after_phpdoc',
+                'line' => $token[2],
+                'message' => 'un phpdoc ne peut pas etre suivi d\'une ligne vide (un bloc d\'en-tete de fichier s\'ecrit `/*`, pas `/**`).',
+            ];
         }
     }
 
