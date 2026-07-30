@@ -580,7 +580,8 @@
           "not_enough_xp": "Not enough domain experience.",
           "missing_requirements": "You are missing a prerequisite for this skill.",
           "other_branch": "This node belongs to the tree's other branch. Change branch at the workbench to reach it.",
-          "dormant": "This accord is not open yet: it waits for elemental fusion to exist."
+          "dormant": "This accord is not open yet: it waits for elemental fusion to exist.",
+          "domain_closed": "This tree is not open to you yet. Read its parchment — a merchant sells it, at a fixed price, to anyone who asks."
         }
       }
     },

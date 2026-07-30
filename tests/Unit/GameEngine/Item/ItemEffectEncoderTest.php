@@ -124,7 +124,25 @@ class ItemEffectEncoderTest extends TestCase
         $this->assertSame('use_spell', ItemEffectEncoder::ACTION_USE_SPELL);
         $this->assertSame('learn_skill', ItemEffectEncoder::ACTION_LEARN_SKILL);
         $this->assertSame('build_item', ItemEffectEncoder::ACTION_BUILD_ITEM);
+        $this->assertSame('open_domain', ItemEffectEncoder::ACTION_OPEN_DOMAIN);
         $this->assertSame('slug', ItemEffectEncoder::KEY_SLUG);
+    }
+
+    /**
+     * ONB-08 — ouvrir un arbre est une action a part entiere, pas une variante
+     * de `learn_skill` : c'est toute la difference entre ouvrir le champ et le
+     * parcourir a la place du joueur.
+     */
+    public function testEncodeOpenDomain(): void
+    {
+        $json = $this->encoder->encodeItemEffect([
+            'action' => ItemEffectEncoder::ACTION_OPEN_DOMAIN,
+            'slug' => 'mineur',
+        ]);
+        $decoded = json_decode($json, true);
+
+        $this->assertSame('open_domain', $decoded['action']);
+        $this->assertSame('mineur', $decoded['slug']);
     }
 
     public function testNullValuesAreStrippedFromJson(): void

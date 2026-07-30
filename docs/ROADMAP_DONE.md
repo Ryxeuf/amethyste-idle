@@ -11,6 +11,53 @@
 
 ---
 
+## ONB-08 — le parchemin ouvre un arbre (2026-07-30)
+
+> Le **pivot technique** du plan d'onboarding. Applique **A12** et precise
+> **GAME_DOMAINS §1**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 5/20 + ONB-20a + ONB-07a.
+
+**Le modele n'avait pas la notion d'arbre ouvert pour un personnage.** Un domaine etait un
+catalogue de nœuds que quiconque avait les points pouvait prendre : l'entree dans un metier
+n'etait un acte nulle part. `player_domain_access` est la trace de cet acte, et son unicite
+`(player, domain)` est portee par le **schema** — l'ouverture est idempotente par construction,
+quel que soit le chemin de code qui l'ecrit.
+
+**Le geste joueur etait deja le bon ; c'est la semantique qui ne l'etait pas.** Les trois
+parchemins livres portaient `{"action":"learn_skill","slug":"miner-copper-xs"}` : ils accordaient
+**une competence precise**, ce qui en faisait un raccourci de progression. Le nouvel effet
+`open_domain` ouvre le champ **sans le parcourir a la place du joueur** — ce qu'on y apprend
+reste a apprendre.
+
+**Les 36 arbres ont leur parchemin** (le cadrage en annonce 32 : la Piste H a livre depuis le
+cuisinier, le charpentier et le tailleur, et ZON-34 le bucheron). Les trois historiques gardent
+leurs slugs — `life-domain-parchment` designe l'arbre du Guerisseur, et le renommer casserait
+les recompenses de quete qui le visent.
+
+**Les quatre conditions non negociables sont tenues par la forme des donnees, pas par du code**
+(`DomainParchmentContractTest`) : accessible a tout le monde (aucun prerequis n'existe, et
+aucun champ ne permettrait d'en poser un), cumulables, ni unique ni limite (prix fixe et
+identique), et **aucun parchemin payant sur le chemin critique de l'acte I** — les trois donnes
+sont exactement les trois historiques.
+
+**La frontiere est testee autant que la porte.** Une competence sans domaine reste libre pour
+tous, et un nœud partage entre plusieurs arbres suffit a **un seul** arbre ouvert : exiger tous
+ses arbres rendrait un nœud partage plus cher qu'un nœud exclusif, soit l'inverse de
+l'intention. Sans cette ligne, le jeu deviendrait « une parade de verrous ».
+
+**Le grand-perisage est la moitie importante de la migration.** ONB-08 change un comportement en
+place : tout arbre dont un personnage porte deja une competence **ou** une experience de domaine
+est ouvert. La regle sur-ouvre volontairement — ouvrir un arbre de trop coute un parchemin non
+vendu, en fermer un de trop bloque un joueur. `PlayerDomainAccessFixtures` rejoue le meme
+enonce, pour que les tests ne decrivent pas un monde plus permissif que la base.
+
+**Ce qui reste ouvert, et assume** : un personnage neuf ne nait avec aucun arbre. L'arc d'intro
+lui donne deja les parchemins du mineur et de l'herboriste, et les mains nues (ONB-20a) lui
+laissent le combat ; le parchemin d'arme au premier pas, lui, arrive avec **ONB-12**. Le bareme
+des 33 parchemins non offerts reste un gold sink a poser avec PLAN_PLAYER_ECONOMY : 100 gils
+partout est provisoire, et c'est **l'uniformite** du prix qui est la regle, pas sa valeur.
+
+---
+
 ## ONB-07a — le peuple cesse de porter des chiffres (2026-07-29)
 
 > Premiere moitie d'ONB-07, decoupee au titre de la regle #8 de `CLAUDE.md`.

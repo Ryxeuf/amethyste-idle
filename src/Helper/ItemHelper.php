@@ -4,10 +4,12 @@ namespace App\Helper;
 
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\GameEngine\Item\ItemEffectEncoder;
+use App\GameEngine\Progression\DomainCatalog;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -23,7 +25,16 @@ class ItemHelper implements ResetInterface
      */
     private array $skills = [];
 
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly PlayerDomainHelper $playerDomainHelper, private readonly PlayerHelper $playerHelper)
+    /**
+     * Domaines ouverts par un objet, `null` compris — l'absence d'ouverture est
+     * une reponse, et la memoriser evite de redecoder l'effet a chaque appel
+     * d'`isUsable()` (l'inventaire l'appelle une fois par ligne).
+     *
+     * @var array<int, Domain|null>
+     */
+    private array $domains = [];
+
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly PlayerDomainHelper $playerDomainHelper, private readonly PlayerHelper $playerHelper, private readonly DomainCatalog $domainCatalog)
     {
     }
 
@@ -80,9 +91,36 @@ class ItemHelper implements ResetInterface
         return null;
     }
 
+    /**
+     * Le domaine qu'un parchemin ouvre, ou `null` si l'objet n'en ouvre aucun
+     * (ONB-08).
+     *
+     * Un slug qui ne designe aucun domaine rend `null` plutot que de lever :
+     * un parchemin oublie en base apres un renommage de domaine doit rester
+     * inerte, pas rendre l'inventaire inutilisable.
+     */
+    public function getItemDomainOpening(Item $item): ?Domain
+    {
+        if (\array_key_exists($item->getId(), $this->domains)) {
+            return $this->domains[$item->getId()];
+        }
+
+        $domain = null;
+        if ($item->getEffect()) {
+            $effect = json_decode($item->getEffect(), true, 512, JSON_THROW_ON_ERROR);
+            if (ItemEffectEncoder::ACTION_OPEN_DOMAIN === ($effect['action'] ?? false)) {
+                $domain = $this->domainCatalog->findBySlug((string) ($effect['slug'] ?? ''));
+            }
+        }
+
+        return $this->domains[$item->getId()] = $domain;
+    }
+
     public function isUsable(Item $item): bool
     {
-        return $this->getItemSpell($item) !== null || $this->getItemSkillLearning($item) !== null;
+        return $this->getItemSpell($item) !== null
+            || $this->getItemSkillLearning($item) !== null
+            || $this->getItemDomainOpening($item) !== null;
     }
 
     public function getItemBuildItem(Item $item): ?Item
@@ -116,5 +154,6 @@ class ItemHelper implements ResetInterface
     {
         $this->spells = [];
         $this->skills = [];
+        $this->domains = [];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Entity\App;
 use App\Entity\App\Traits\CharacterStatsTrait;
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
+use App\Entity\Game\Domain;
 use App\Entity\Game\Faction;
 use App\Entity\Game\Mount;
 use App\Entity\Game\Race;
@@ -63,6 +64,7 @@ class Player implements CharacterInterface
         $this->resourceCatalogEntries = new ArrayCollection();
         $this->achievements = new ArrayCollection();
         $this->craftSpecializations = new ArrayCollection();
+        $this->domainAccesses = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -308,6 +310,18 @@ class Player implements CharacterInterface
      */
     #[ORM\OneToMany(targetEntity: PlayerCraftSpecialization::class, mappedBy: 'player', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $craftSpecializations;
+
+    /**
+     * Les arbres que ce personnage a ouverts (ONB-08).
+     *
+     * Aucune exclusivite : les 32 arbres sont cumulables, et en ouvrir un n'en
+     * ferme aucun autre. Cette collection dit ce qu'on a **appris a apprendre**,
+     * pas ce qu'on sait faire — les nœuds restent a prendre un par un.
+     *
+     * @var Collection<int, PlayerDomainAccess>
+     */
+    #[ORM\OneToMany(targetEntity: PlayerDomainAccess::class, mappedBy: 'player', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $domainAccesses;
 
     /**
      * Les couleurs qu'on porte (FAC-01).
@@ -972,6 +986,40 @@ class Player implements CharacterInterface
     {
         if (!$this->craftSpecializations->contains($specialization)) {
             $this->craftSpecializations->add($specialization);
+        }
+    }
+
+    /**
+     * @return Collection<int, PlayerDomainAccess>
+     */
+    public function getDomainAccesses(): Collection
+    {
+        return $this->domainAccesses;
+    }
+
+    /**
+     * Cet arbre est-il ouvert pour ce personnage ? (ONB-08).
+     *
+     * La comparaison porte sur l'identifiant, pas sur l'identite d'objet : deux
+     * instances Doctrine du meme domaine se croisent des qu'un test ou un
+     * chemin d'import recharge l'entite, et une comparaison par reference
+     * refuserait alors un arbre pourtant ouvert.
+     */
+    public function hasOpenedDomain(Domain $domain): bool
+    {
+        foreach ($this->domainAccesses as $access) {
+            if ($access->getDomain()->getId() === $domain->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function addDomainAccess(PlayerDomainAccess $access): void
+    {
+        if (!$this->domainAccesses->contains($access)) {
+            $this->domainAccesses->add($access);
         }
     }
 
