@@ -180,6 +180,7 @@ class PnjDialogParserTutorialTest extends TestCase
 
         $this->assertSame(3, $result[0]['next']);
     }
+
     /**
      * Un joueur nomme.
      *
