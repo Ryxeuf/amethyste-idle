@@ -136,23 +136,17 @@ zones:
             # plancher T1 de l'economie ne dependra jamais d'une zone hostile.
             - { slug: carre-de-thym, item: plant-thyme, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
             - { slug: bordure-de-lavande, item: plant-lavender, profession: herbalism, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
-            # ONB-10 — la carriere du rempart, **troisieme source de cuivre**.
+            # ONB-10 — **et pourquoi le minerai n'est pas ici.**
             #
-            # Le hub n'exposait que deux filons, tous deux d'herboristerie. Or
-            # l'acte I fait choisir un parchemin de recolte **parmi cinq** : un
-            # choix qui debouche sur une seule recolte possible est un faux
-            # choix, et tout le monde serait devenu herboriste (dette D11).
+            # Le Fanal n'expose que de l'herboristerie, et ce n'est pas un oubli.
+            # Une carriere au pied du rempart aurait rapproche la cinquieme
+            # recolte du hub, mais toute la ligne du cristal porte le prefixe
+            # `ore-` (`config/game/purity.yaml`), et le Cristal sous la Voute est
+            # **un cœur, pas un gisement** : on vit a cote de la plus grande
+            # amethyste du monde et on n'en ramasse pas un eclat.
             #
-            # Le minerai etait la seule des cinq sans source a moins de dix
-            # minutes du Fanal — les Vallons donnent le bois et le depecage a
-            # 4 min, la Foret la peche a 5 min, mais les Mines sont a 10 min.
-            #
-            # Une carriere au pied du rempart n'est pas un ajout gratuit : un
-            # village se batit ou il y a de la pierre. Le cuivre est **T0 et ne
-            # doit jamais etre un goulot** (BALANCE § 22.3) ; une troisieme
-            # source apres les Mines et les Dunes etait deja identifiee comme un
-            # reste de ZON-26b.
-            - { slug: carriere-du-rempart, item: ore-copper, profession: mining, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            # La cinquieme recolte vit donc a une liaison d'ici — et c'est le
+            # **premier voyage offert** qui la rend atteignable sans attendre.
         pnjs:
             # Habitants declares (ZON-26b-b). Ils **completent** les sept PNJ de
             # `VillageHubPnjFixtures` (forgeron, alchimiste, marchand, maitresse

@@ -76,22 +76,33 @@ class ActOnePerimeterTest extends TestCase
     }
 
     /**
-     * Le hub n'est plus mono-metier.
+     * **Le hub ne rend rien de la ligne du cristal**, et c'est pour cela que le
+     * minerai n'y est pas.
      *
-     * C'est la formulation exacte de la dette : deux filons, tous deux
-     * d'herboristerie. Le hub n'a pas a porter les cinq — mais il ne doit plus
-     * n'en porter qu'une, sinon le premier geste de recolte oriente.
+     * Rapprocher la cinquieme recolte du Fanal etait tentant : une carriere au
+     * pied du rempart, et le choix de l'etape 6 devenait reel sans bouger. Mais
+     * toute la ligne du cristal porte le prefixe `ore-`, et le Cristal sous la
+     * Voute est **un cœur, pas un gisement** — `AmethystSignatureTest` le tient
+     * deja depuis ZON-32.
+     *
+     * La loi est plus ancienne, et elle a raison. Ce test la redit **ici**,
+     * depuis le perimetre de l'acte I, pour qu'un futur jalon qui chercherait a
+     * densifier le hub trouve l'explication a l'endroit ou l'envie lui viendra.
      */
-    public function testTheHubExposesMoreThanOneProfession(): void
+    public function testTheHubYieldsNothingOfTheCrystalLine(): void
     {
-        $professions = [];
+        $ores = [];
         foreach ($this->world()['zones'][self::HUB]['gather'] ?? [] as $vein) {
-            $professions[$vein['profession']] = true;
+            if (str_starts_with((string) $vein['item'], 'ore-')) {
+                $ores[] = $vein['item'];
+            }
         }
 
-        self::assertGreaterThan(1, \count($professions), sprintf(
-            'Le Fanal n\'expose qu\'une seule recolte (%s) : le premier geste orienterait tout le monde vers le meme metier.',
-            implode(', ', array_keys($professions)),
+        self::assertSame([], $ores, sprintf(
+            "Le Fanal rend %s. Sous la Voute, le temps ne se depose pas : on vit a cote de la plus grande "
+            . "amethyste du monde et on n'en ramasse pas un eclat.\n"
+            . 'La cinquieme recolte vit a une liaison d\'ici, et le premier voyage offert l\'y amene sans attendre.',
+            implode(', ', $ores),
         ));
     }
 

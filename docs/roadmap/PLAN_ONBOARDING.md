@@ -305,19 +305,20 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 > possible est un **faux choix** — et tout le monde deviendrait herboriste.
 > Prérequis : ∅ (données de zone) ; à instruire avec **PLAN_ZONES**
 - [x] **Les cinq récoltes atteignables** dans le périmètre de l'acte I. Quatre l'étaient déjà
-      chez les voisins immédiats ; **le minerai était la seule sans source à moins de dix
-      minutes** — la carrière du rempart la pose au Fanal même, au palier T0. C'est aussi la
-      **troisième source de cuivre** que la roadmap listait en reste de ZON-26b
+      chez les voisins immédiats ; le minerai est à 10 min (les Mines), et **une carrière au
+      Fanal n'était pas la réponse** : toute la ligne du cristal porte le préfixe `ore-`, et le
+      Cristal sous la Voûte est un cœur, pas un gisement (loi tenue depuis ZON-32). C'est le
+      **voyage offert** qui rend le choix réel, pas un filon de plus
 - [x] **Le premier voyage est offert** : durée nulle, une seule fois. La faveur se consomme
       même si le voyage était déjà instantané — ce qui est offert est **le premier voyage**,
       pas la première attente, sinon elle devient une monnaie à optimiser. L'écran l'annonce
       **avant** le départ : un trajet de dix minutes qui n'en prend aucune, non annoncé, se lit
       comme un bug
-- [x] Cohérence avec les lois de zone : le Fanal garde ses deux sources exclusives (thym,
-      lavande), et la **rareté inversée** tient — T0 passe de 2 à 3 sources, les paliers au
-      dessus restent à 1
+- [x] Cohérence avec les lois de zone : le hub ne rend **rien de la ligne du cristal**, et
+      `ActOnePerimeterTest` redit la règle depuis le périmètre de l'acte I — là où l'envie de
+      densifier le hub reviendra
 - [x] Tests : les quatre professions de filon et l'école du dépeceur atteignables dans le
-      périmètre ; le hub n'est plus mono-métier ; le Fanal reste `safe` et sans population
+      périmètre ; le hub ne rend aucun minerai ; le Fanal reste `safe` et sans population
 
 ### ONB-11 — Les mannequins d'entraînement (M | ★★★ | HAUTE)
 > Décision A13. Le Fanal est `safe: true`, donc `ExploreService` force `mob: 0` : **aucun
