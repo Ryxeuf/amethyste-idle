@@ -50,6 +50,14 @@ class CharacterController extends AbstractController
             ]);
         }
 
+        // ONB-05 : le tunnel en quatre pas sert le **premier** personnage.
+        // L'ecran unique reste la voie du second : quelqu'un qui en cree un
+        // deuxieme sait deja ce qu'est un peuple, et lui refaire la visite
+        // guidee serait le ralentir pour rien.
+        if ($user->getPlayers()->isEmpty()) {
+            return $this->redirectToRoute('app_character_tunnel');
+        }
+
         $form = $this->createForm(CharacterCreateType::class);
         $form->handleRequest($request);
 

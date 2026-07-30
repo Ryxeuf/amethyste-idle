@@ -1,0 +1,39 @@
+{# ONB-05 — l'ossature d'un pas du tunnel.
+
+   Un ecran, une decision, une phrase de fiction. La barre compte **quatre**
+   pas et non trois : le compte est deja franchi, et le retirer donnerait
+   l'impression que le tunnel recommence. #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ step.titleKey|trans }}{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+    <div class="w-full max-w-xl">
+        <div class="ds-card">
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="ds-label">{{ 'game.character.tunnel.progress'|trans({'%step%': step.position, '%total%': total}) }}</span>
+                    {% if step.previous is not null %}
+                        <a href="{{ path('app_character_tunnel_step', {step: step.previous.value}) }}" class="ds-btn ds-btn--quiet ds-btn--sm">
+                            {{ 'game.character.tunnel.back'|trans }}
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-line/40 overflow-hidden">
+                    <div class="h-full bg-brand rounded-full" style="width: {{ (step.position / total * 100)|round }}%"></div>
+                </div>
+            </div>
+
+            <h1 class="ds-title mb-2">{{ step.titleKey|trans }}</h1>
+            <p class="text-sm text-ink-soft mb-6">{{ step.fictionKey|trans }}</p>
+
+            {% for message in app.flashes('error') %}
+                <p class="ds-hint mb-4 text-red-400">{{ message }}</p>
+            {% endfor %}
+
+            {% block step_body %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

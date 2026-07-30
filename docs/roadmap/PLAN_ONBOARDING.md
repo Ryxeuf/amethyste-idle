@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **12/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **13/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -165,18 +165,18 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 
 ## Piste B — Le tunnel
 
-### ONB-05 — Le tunnel en quatre pas (M | ★★★ | HAUTE)
+### ONB-05 — Le tunnel en quatre pas ✅ (M | ★★★ | HAUTE)
 > Décision A2. Deux formulaires administratifs d'affilée aujourd'hui.
 > Prérequis : ← ONB-01
-- [ ] **Compte → nom → peuple → visage**, un écran par pas, une décision par écran, une phrase
+- [x] **Compte → nom → peuple → visage**, un écran par pas, une décision par écran, une phrase
       de fiction par écran
-- [ ] **Aucune décision de build** : ni métier, ni élément, ni arme, ni destination (P3, A8)
-- [ ] Barre de progression, retour arrière partout, aucune saisie perdue
-- [ ] Écran d'éveil : un paragraphe, **un bouton**, vers **l'écran de zone** (A4)
-- [ ] Afficher ce qui engage : **le nom et le peuple**, rien d'autre (§4.3)
-- [ ] Les écrans existants restent la voie du 2ᵉ personnage
-- [ ] `limit_reached` : dit **quoi faire**
-- [ ] Tests : parcours complet, retour arrière, reprise d'un tunnel interrompu
+- [x] **Aucune décision de build** : ni métier, ni élément, ni arme, ni destination (P3, A8)
+- [x] Barre de progression, retour arrière partout, aucune saisie perdue
+- [x] Écran d'éveil : un paragraphe, **un bouton**, vers **l'écran de zone** (A4)
+- [x] Afficher ce qui engage : **le nom et le peuple**, rien d'autre (§4.3)
+- [x] Les écrans existants restent la voie du 2ᵉ personnage
+- [x] `limit_reached` : dit **quoi faire**
+- [x] Tests : parcours complet, retour arrière, reprise d'un tunnel interrompu
 
 ### ONB-06 — Le nom : unicité robuste et immédiate (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-29
 > Ferme **D9**.

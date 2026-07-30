@@ -1029,6 +1029,40 @@
         "hair": "Hair",
         "hair_color": "Hair color",
         "submit": "Save"
+      },
+      "tunnel": {
+        "progress": "Step %step% of %total%",
+        "back": "Back",
+        "continue": "Continue",
+        "name": {
+          "title": "What are you called?",
+          "fiction": "The Beacon's watchman waits, his register open. He will write only once.",
+          "label": "Your name",
+          "placeholder": "Aldric, Elara, Thorin…",
+          "rule": "3 to 16 letters, spaces and hyphens.",
+          "invalid": "That name will not do: 3 to 16 letters, spaces and hyphens.",
+          "forbidden": "That name is not allowed.",
+          "taken": "That name is already taken.",
+          "just_taken": "That name was just taken. Your other choices are kept."
+        },
+        "people": {
+          "title": "Where do you come from?",
+          "fiction": "Your people decide neither your trade nor your fate. They decide what you notice before anyone else.",
+          "unknown": "No such people."
+        },
+        "face": {
+          "title": "What do you look like?",
+          "fiction": "Nothing that follows commits you to anything. Take the face you like.",
+          "body": "Build",
+          "hair": "Hair",
+          "hair_color": "Hair colour",
+          "done": "Open your eyes"
+        },
+        "awakening": {
+          "title": "The Awakening",
+          "fiction": "You open your eyes at the Beacon. The crystal beneath the Vault beats somewhere under your feet, and nobody here is surprised by it any more. Someone is waiting for you on the square.",
+          "action": "Open your eyes"
+        }
       }
     },
     "chat": {

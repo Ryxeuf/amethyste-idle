@@ -1029,6 +1029,40 @@
         "hair": "Coiffure",
         "hair_color": "Couleur de cheveux",
         "submit": "Enregistrer"
+      },
+      "tunnel": {
+        "progress": "Pas %step% sur %total%",
+        "back": "Revenir",
+        "continue": "Continuer",
+        "name": {
+          "title": "Comment vous appelle-t-on ?",
+          "fiction": "Le veilleur du Fanal attend, son registre ouvert. Il n'écrira qu'une fois.",
+          "label": "Votre nom",
+          "placeholder": "Aldric, Elara, Thorin…",
+          "rule": "De 3 à 16 lettres, espaces et tirets.",
+          "invalid": "Ce nom ne convient pas : de 3 à 16 lettres, espaces et tirets.",
+          "forbidden": "Ce nom n'est pas autorisé.",
+          "taken": "Ce nom est déjà porté.",
+          "just_taken": "Ce nom vient d'être pris. Le reste de vos choix est conservé."
+        },
+        "people": {
+          "title": "D'où venez-vous ?",
+          "fiction": "Votre peuple ne décide ni de votre métier ni de votre destin. Il décide de ce que vous remarquez avant les autres.",
+          "unknown": "Ce peuple n'existe pas."
+        },
+        "face": {
+          "title": "À quoi ressemblez-vous ?",
+          "fiction": "Rien de ce qui suit n'engage quoi que ce soit. Prenez le visage qui vous plaît.",
+          "body": "Silhouette",
+          "hair": "Coiffure",
+          "hair_color": "Couleur des cheveux",
+          "done": "Ouvrir les yeux"
+        },
+        "awakening": {
+          "title": "L'éveil",
+          "fiction": "Vous ouvrez les yeux au Fanal. Le cristal sous la Voûte bat quelque part sous vos pieds, et personne ici ne s'en étonne plus. Quelqu'un vous attend sur la place.",
+          "action": "Ouvrir les yeux"
+        }
       }
     },
     "chat": {

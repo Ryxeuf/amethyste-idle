@@ -11,6 +11,47 @@
 
 ---
 
+## ONB-05 — le tunnel d'entree en quatre pas (2026-07-30)
+
+> Decision A2. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 13/20 + ONB-12a + ONB-20a +
+> ONB-20b-a + ONB-07a.
+
+**Deux formulaires administratifs d'affilee.** Le second demandait le nom, le peuple et
+l'apparence **sur le meme ecran** : trois decisions de nature differente presentees comme une
+seule corvee, ou la seule qui porte quelque chose — le peuple, et sa capacite — se noyait entre
+un champ texte et une palette de couleurs de cheveux.
+
+**Compte → nom → peuple → visage**, un ecran par pas, une decision par ecran, une phrase de
+fiction par ecran. La barre compte **quatre** pas et non trois : le compte est deja franchi, et
+le retirer donnerait l'impression que le tunnel recommence.
+
+**« Aucune saisie perdue » est la contrainte qui donne sa forme au brouillon.** Un tunnel en
+quatre pas sans memoire serait pire que le formulaire unique qu'il remplace : revenir corriger un
+nom couterait le peuple et le visage deja choisis. Le brouillon vit en **session** et non en base
+— rien n'est encore un personnage, et un abandon ne doit rien laisser derriere lui. Il se
+serialise en tableau pour la meme raison : une session ne doit pas contenir d'objet dont la
+classe pourrait changer sous elle.
+
+**Le cas ONB-06 devient indolore.** Quand l'index tranche entre deux creations simultanees, le
+joueur repart au pas du nom **avec son peuple et son visage intacts**. C'est precisement ce que
+le brouillon existe pour garantir.
+
+**Le tunnel sert le premier personnage ; l'ecran unique reste la voie du second.** Quelqu'un qui
+en cree un deuxieme sait deja ce qu'est un peuple : lui refaire la visite guidee serait le
+ralentir pour rien.
+
+**La loi qui compte n'est pas la mecanique du tunnel, c'est ce qu'il ne demande pas.** Aucun pas
+ne porte de decision de build — ni metier, ni element, ni arme, ni destination. Le controle porte
+sur les **champs du brouillon** : c'est par la qu'une decision de build entrerait, et une capture
+de gabarit passerait a cote d'un champ ajoute sans ecran. Un tunnel qui ferait choisir un metier
+remettrait la classe a l'entree, sous une forme plus jolie.
+
+**L'eveil mene a la zone, jamais au hub** (A4) : un paragraphe, **un bouton**, et un test qui
+compte les liens. Le premier ecran d'un joueur doit etre un lieu ou il peut agir, pas un tableau
+de bord qui n'a encore rien a lui raconter.
+
+---
+
 ## ONB-14 — une seule source d'etat d'onboarding (2026-07-30)
 
 > Ferme la dette **D7**. [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 12/20 + ONB-12a +

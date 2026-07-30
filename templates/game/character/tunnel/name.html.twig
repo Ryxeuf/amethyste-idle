@@ -1,0 +1,13 @@
+{% extends 'game/character/tunnel/_shell.html.twig' %}
+
+{% block step_body %}
+    <form method="post" action="{{ path('app_character_tunnel_step', {step: 'name'}) }}" class="space-y-4">
+        <label for="name" class="ds-label block">{{ 'game.character.tunnel.name.label'|trans }}</label>
+        <input id="name" name="name" type="text" required minlength="3" maxlength="16" autocomplete="off"
+               value="{{ draft.name ?? '' }}"
+               placeholder="{{ 'game.character.tunnel.name.placeholder'|trans }}"
+               class="w-full rounded-lg border border-line bg-transparent px-3 py-2 text-ink">
+        <p class="text-xs text-ink-soft">{{ 'game.character.tunnel.name.rule'|trans }}</p>
+        <button type="submit" class="ds-btn ds-btn--primary w-full">{{ 'game.character.tunnel.continue'|trans }}</button>
+    </form>
+{% endblock %}
