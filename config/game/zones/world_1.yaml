@@ -72,6 +72,16 @@
 #       | T2 peu commun   |       32 |     8 h |    15 min | 1-2       |     4,0 |        4,8 |
 #       | T3 rare         |       24 |    10 h |    25 min | 1-2       |     2,4 |        2,9 |
 #       | T4 epique       |       22 |    18 h |    49 min | 1-2       |     1,2 |        1,5 |
+#       | A affleurement  |       16 |     6 h |    22 min | 1-1       |     2,7 |        3,2 |
+#
+#       Le profil **A** n'est pas un palier : c'est l'amethyste, et elle n'en a
+#       pas (ZON-40, GAME_WORLD § 13.3 — aucun gisement, un sous-produit
+#       universel). Son tampon est le plus petit du monde parce qu'elle
+#       **affleure** — on n'en fait pas une rafale de trente (GAME_ZONES, loi 8) —
+#       et son debit reste franc parce qu'elle est **partout**. Ces deux
+#       proprietes vont ensemble : c'est ce qui la distingue d'un filon rare.
+#       Elle ne figure donc pas dans la ligne du metal, et la loi des raretes
+#       inversees (ZoneLawsTest) ne s'y applique pas.
 #
 #       La **periode** n'est pas monotone (9 h en T1 contre 8 h en T2) : c'est
 #       normal, elle n'est pas la variable de conception. Le tampon decroit plus
@@ -221,6 +231,12 @@ zones:
             - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             - { slug: ginseng-des-sous-bois, item: plant-ginseng, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
             - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            # ZON-40 — l'affleurement d'amethyste. La Foret est la **reference**
+            # du monde (`config/game/purity.yaml`) : c'est contre elle que les
+            # signatures des autres zones se lisent. Elle n'avait aucun filon du
+            # perimetre de purete, donc la reference elle-meme etait
+            # ininstanciable — on comparait a un etalon qui n'existait pas.
+            - { slug: affleurement-d-amethyste-des-clairieres, item: ore-amethyst-crystal, profession: mining, capacity: 16, respawn_seconds: 21600, yield_min: 1, yield_max: 1 }
             # ECO-02 : la camomille n'avait aucune source dans le monde livre, ce
             # qui rendait `recipe_potion_base` — la premiere recette d'alchimie —
             # impossible a realiser.
@@ -424,6 +440,13 @@ zones:
             # Pire cas des quatre : une quete en demande deux exemplaires.
             - { slug: mandragore-des-tourbieres, item: plant-mandrake, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
             - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            # ZON-40 — l'affleurement d'amethyste, et **la promesse phare du
+            # modele de purete** : « le Marais nocturne est le premier endroit ou
+            # un joueur d'Acte II voit du Pur » (GAME_ZONES § 2.5). Le
+            # `night_weight_shift: 30` de la table etait ecrit depuis ZON-32 et
+            # ne s'appliquait a rien — la zone n'avait aucun filon du perimetre
+            # de purete. C'est ce filon qui rend la promesse instanciable.
+            - { slug: affleurement-d-amethyste-des-tourbieres, item: ore-amethyst-crystal, profession: mining, capacity: 16, respawn_seconds: 21600, yield_min: 1, yield_max: 1 }
             - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 24, respawn_seconds: 36000, yield_min: 1, yield_max: 2 }
             - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
             # ZON-34 — l'exclusivite du Marais : un bois que l'eau morte a
@@ -746,6 +769,11 @@ zones:
             - { slug: linieres-du-gue, item: plant-flax, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             # Le gue — la peche d'apprentissage, entre la truite et la carpe.
             - { slug: perches-du-gue, item: fish-perch, profession: fishing, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
+            # ZON-40 — l'affleurement d'amethyste. La signature des Vallons dit
+            # « la strate la plus jeune du monde : le debutant y apprend qu'il
+            # **existe** de l'amethyste, pas ou la chercher pure » — encore
+            # fallait-il qu'il puisse en ramasser une seule fois.
+            - { slug: affleurement-d-amethyste-des-labours, item: ore-amethyst-crystal, profession: mining, capacity: 16, respawn_seconds: 21600, yield_min: 1, yield_max: 1 }
             # ZON-34 — la ligne du bois. Le hetre a **deux** sources (ici et la
             # Foret) et ne doit jamais etre un goulot : c'est le T0 de sa ligne,
             # au meme titre que le cuivre pour le metal.

@@ -59,6 +59,26 @@ class OreSourceReferenceTest extends TestCase
     private const BASE_ORES = ['ore-copper', 'ore-tin'];
 
     /**
+     * L'amethyste, seule matiere du monde a n'avoir aucun palier (ZON-40).
+     *
+     * Les lois de rarete inversee de ce fichier parlent de **minerais** : une
+     * matiere de haut palier a une source, une source unique la rend rare.
+     * L'amethyste n'entre pas dans ce raisonnement, et le canon le dit sans
+     * detour (GAME_WORLD § 13.3) : « **aucun gisement** — l'amethyste est un
+     * sous-produit universel : toute action, partout, peut en rendre, en
+     * quantite et bande variables selon la zone ». Elle est rare **par sa
+     * bande**, jamais par sa geographie.
+     *
+     * L'exception est donc nommee ici plutot que contournee : elle vaut pour
+     * cette matiere-la, pour cette raison-la, et pour aucune autre. Le jour ou
+     * une seconde matiere sans palier apparaitrait, c'est cette liste qu'il
+     * faudrait defendre — pas un test a reecrire.
+     *
+     * @var list<string>
+     */
+    private const WITHOUT_TIER = ['ore-amethyst-crystal'];
+
+    /**
      * @return array{zones: list<array<string, mixed>>, connections: list<array<string, mixed>>}
      */
     private function world(): array
@@ -236,6 +256,9 @@ class OreSourceReferenceTest extends TestCase
         foreach ($this->world()['zones'] as $zone) {
             foreach ((array) ($zone['gather'] ?? []) as $resource) {
                 $item = (string) $resource['item'];
+                if (\in_array($item, self::WITHOUT_TIER, true)) {
+                    continue;
+                }
                 if (str_starts_with($item, 'ore-') && (int) $resource['capacity'] < 32) {
                     $counts[$item] = ($counts[$item] ?? 0) + 1;
                 }
@@ -272,6 +295,10 @@ class OreSourceReferenceTest extends TestCase
             '32/28800' => 'T2 peu commun',
             '24/36000' => 'T3 rare',
             '22/64800' => 'T4 epique',
+            // ZON-40 — l'affleurement d'amethyste. Pas un palier : le plus petit
+            // tampon du monde (elle affleure, GAME_ZONES loi 8) pour un debit
+            // franc (elle est partout, GAME_WORLD § 13.3). Les deux ensemble.
+            '16/21600' => 'A affleurement',
         ];
 
         $offenders = [];

@@ -125,15 +125,35 @@ App\Entity\Game\Item:
 
   # =====================================================================
   # T5 — LÉGENDAIRE (zones endgame)
+  #
+  # L'amethystite y figure encore par son rang de fichier, plus par son
+  # palier : elle n'en a plus (voir juste dessous). Le voidium reste le seul
+  # legendaire de la ligne.
   # =====================================================================
+  # ZON-40 — l'amethystite quitte le palier legendaire.
+  #
+  # Elle y avait ete posee par l'ancien lore, ou le Cristal d'Amethyste etait
+  # l'artefact final. Le socle de monde dit l'inverse (GAME_WORLD § 1 et § 13.3) :
+  # « sediment durci, minerai, **inerte, commercable** », et surtout **aucun
+  # gisement** — l'amethyste est un sous-produit universel, presente partout, et
+  # seule sa **bande de purete** varie selon le lieu.
+  #
+  # Une matiere qu'on trouve dans trois zones de depart ne peut pas valoir 800
+  # gils ni etre « reservee aux maitres mineurs ». Le prix descend a 15 — entre
+  # le fer et l'argent : ce qu'elle vaut brute est modeste, et c'est la purete
+  # (ECO-23) qui fait le reste de sa valeur au comptoir.
+  #
+  # BALANCE § 21.5 avait laisse l'arbitrage ouvert en toutes lettres — « source
+  # unique et rare, ou presente partout, la purete seule variant selon le
+  # lieu ». C'est la seconde branche qui est prise.
   ore_amethyst_crystal (extends item):
     id: 24
     name: 'Améthystite'
-    description: 'Un cristal violet aux reflets magiques, signature du monde d''Améthyste. Seuls les maîtres mineurs peuvent l''extraire.'
+    description: 'Un cristal violet aux reflets magiques, signature du monde d''Améthyste. Elle affleure un peu partout — c''est sa pureté, jamais sa rareté, qui fait son prix.'
     type: 'resource'
     slug: 'ore-amethyst-crystal'
-    price: 800
-    rarity: 'legendary'
+    price: 15
+    rarity: 'common'
     domain: '@miner'
   ore_voidium (extends item):
     id: 93
