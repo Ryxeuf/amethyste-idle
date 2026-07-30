@@ -13,9 +13,9 @@ use App\GameEngine\Gear\MateriaGearSetter;
 use App\Helper\GearHelper;
 use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Ce qu'un emplacement accepte (DOM-03).

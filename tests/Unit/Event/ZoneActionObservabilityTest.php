@@ -70,6 +70,25 @@ class ZoneActionObservabilityTest extends TestCase
     ];
 
     /**
+     * Evenements qui ne comptent pas comme une remise.
+     *
+     * La loi porte sur ce que l'action **remet au joueur** — des ressources, de
+     * l'or, de la progression — et sur ce qui devrait en decouler : indice de
+     * foyer, influence de guilde, succes. Tout `dispatch(` n'est pas cela.
+     *
+     * `PlayerGestureEvent` (ONB-12a) annonce qu'un joueur a **accompli un
+     * geste** : il sert l'apprentissage de l'acte I, jamais la comptabilite du
+     * monde. Le compter rendrait `ExpeditionService` « observable » alors que la
+     * question que FOY-02 doit trancher — une releve d'expedition depose-t-elle
+     * dans la zone de depart ou d'arrivee ? — reste entiere. La dette sortirait
+     * de la liste sans avoir ete payee, et l'exception, une fois retiree,
+     * n'excuserait plus rien : elle **masquerait**.
+     *
+     * @var list<string>
+     */
+    private const NOT_A_HANDOVER = ['PlayerGestureEvent'];
+
+    /**
      * @return list<string>
      */
     private function dispatchingServices(): array
@@ -79,12 +98,39 @@ class ZoneActionObservabilityTest extends TestCase
             $path = \dirname(__DIR__, 3) . '/src/GameEngine/Zone/' . $class . '.php';
             self::assertFileExists($path, sprintf('Le service "%s" a disparu : mettez la loi a jour.', $class));
 
-            if (str_contains((string) file_get_contents($path), '->dispatch(')) {
+            if ($this->handsSomethingOver((string) file_get_contents($path))) {
                 $dispatching[] = $class;
             }
         }
 
         return $dispatching;
+    }
+
+    /**
+     * Le service emet-il au moins un evenement de remise ?
+     *
+     * Chaque appel est lu jusqu'a son point-virgule : c'est ce qui permet de
+     * distinguer l'evenement emis d'un simple `->dispatch(` compte au fil du
+     * texte, et donc d'ignorer ceux que {@see NOT_A_HANDOVER} exclut.
+     */
+    private function handsSomethingOver(string $source): bool
+    {
+        foreach (explode('->dispatch(', $source) as $index => $fragment) {
+            if ($index === 0) {
+                continue;
+            }
+
+            $call = substr($fragment, 0, (int) strpos($fragment . ';', ';'));
+            foreach (self::NOT_A_HANDOVER as $excluded) {
+                if (str_contains($call, $excluded)) {
+                    continue 2;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     public function testEveryZoneActionIsObservableOrExplicitlyExcused(): void

@@ -3,7 +3,6 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\PlayerItem;
-use App\Entity\Game\Skill;
 use App\Enum\QuestGesture;
 use App\Event\Game\PlayerGestureEvent;
 use App\GameEngine\Player\PlayerActionHelper;
@@ -142,9 +141,6 @@ class EquipItemController extends AbstractController
         // courte precise — sinon le choix de l'etape 1 n'en serait pas un.
         $targets = [$generic->getSlug()];
         foreach ($generic->getRequirements() as $requirement) {
-            if (!$requirement instanceof Skill) {
-                continue;
-            }
             $family = $this->equipmentPortCatalog->familyOfPortSkill($requirement->getSlug());
             if (null !== $family) {
                 $targets[] = $family;
