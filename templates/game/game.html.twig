@@ -466,11 +466,9 @@
                            sur sa valeur entiere. Le raccourci vivait ici, donc
                            ajouter une etape demandait d'y penser a deux endroits
                            — et celui-ci ne se plaint jamais. #}
-                        {% if tuto_step.hintRoute is not null %}
-                            <a href="{{ path(tuto_step.hintRoute) }}" class="tutorial-hint-link mt-0.5">
-                                <span class="tutorial-hint-arrow">→</span> {{ ('game.onboarding.hint.' ~ tuto_step.name|lower)|trans }}
-                            </a>
-                        {% endif %}
+                        <a href="{{ path(tuto_step.hintRoute) }}" class="tutorial-hint-link mt-0.5">
+                            <span class="tutorial-hint-arrow">→</span> {{ ('game.onboarding.hint.' ~ tuto_step.name|lower)|trans }}
+                        </a>
                     </div>
                 </div>
                 <form action="{{ path('app_game_tutorial_skip') }}" method="post" class="shrink-0">

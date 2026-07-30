@@ -87,7 +87,7 @@ class TutorialManager
     {
         $active = [];
         foreach ($player->getQuests() as $playerQuest) {
-            if ($playerQuest instanceof PlayerQuest && self::ARC === $playerQuest->getQuest()->getStoryArc()) {
+            if (self::ARC === $playerQuest->getQuest()->getStoryArc()) {
                 $active[] = $playerQuest;
             }
         }

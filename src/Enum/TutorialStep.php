@@ -102,13 +102,14 @@ enum TutorialStep: int
     }
 
     /**
-     * Ou envoyer le joueur pour avancer, ou `null` s'il est deja au bon endroit.
+     * Ou envoyer le joueur pour avancer.
      *
      * Le lien vivait dans le gabarit, sous la forme d'un `if` sur la valeur
-     * entiere de l'etape. Ajouter une etape demandait donc de penser a deux
-     * endroits, et l'un des deux ne se plaint jamais.
+     * entiere de l'etape — et il n'en couvrait que trois sur cinq. Ajouter une
+     * etape demandait donc de penser a deux endroits, dont un qui ne se plaint
+     * jamais. Toute etape a une destination : c'est ce que le type dit.
      */
-    public function hintRoute(): ?string
+    public function hintRoute(): string
     {
         return match ($this) {
             self::Weapon, self::Materia, self::Departure, self::Expedition => 'app_game_zone',
