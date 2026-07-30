@@ -32,7 +32,7 @@
 | ONB-05 | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
-| ONB-07b | Les quatre capacités branchées sur leurs écrans | M | ★★ |
+| ONB-07b | Les quatre capacités branchées sur leurs écrans (1/4 : le flair) | M | ★★ |
 | ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
@@ -222,7 +222,7 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
         le prospecteur sait **où et pour combien de temps** (RET-06)
   - [ ] **Elfe — L'œil des lisières** : une exploration « rien » rend **un repérage**.
         ⚠️ **Jamais de butin, jamais de réduction de coût** — sinon E9 tombe
-  - [ ] **Orc — Le flair** : élément et faiblesse d'un monstre lisibles **dès la première
+  - [x] **Orc — Le flair** ✅ : élément et faiblesse d'un monstre lisibles **dès la première
         rencontre**, sans attendre le palier de bestiaire
   - [ ] **Humain — Les usages** : sur tout objet, les recettes qui le consomment et les PNJ qui
         l'achètent, sans l'avoir découvert (s'appuie sur `PlayerResourceCatalog`)
