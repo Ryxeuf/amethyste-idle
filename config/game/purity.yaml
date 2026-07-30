@@ -131,3 +131,28 @@ signatures:
 
     # On n'y recolte pas, on y **retrouve**. Le premier avant-gout de l'Etale.
     cite-ensevelie: { weight_shift: 20 }
+
+    # ------------------------------------------------------------------------
+    # Les zones du Silence (ZON-40)
+    # ------------------------------------------------------------------------
+    # Elles portaient des filons du perimetre de purete — la gemme de sel, le
+    # filon d'emeraude — **sans signature** : elles tiraient donc comme la Foret,
+    # la zone de reference du monde de depart. Deux zones de bout de carte qui
+    # rendent exactement ce que rend la premiere foret venue, c'est GAME_ZONES §4
+    # contredit en silence.
+
+    # Le sel **conserve**, comme l'ambre des Dunes, et il concentre en plus : ce
+    # qui a resiste a l'evaporation est ce qu'il y avait de plus dense. Signature
+    # haute, un cran sous la Cite ensevelie — on y retrouve moins qu'on y
+    # ramasse.
+    mer-de-sel: { weight_shift: 18 }
+
+    # Le prolongement de la Crete, et sa logique poussee d'un cran : le vent y a
+    # emporte le meuble, le gel fige ce qui reste. Juste sous la Crete, dont il
+    # est le col — le monde ne se remet pas a zero quand on franchit une
+    # frontiere.
+    pas-de-givre: { weight_shift: 22 }
+
+    # Le Glacier du Silence n'a **pas** de signature, et c'est correct : aucun de
+    # ses filons n'entre dans le perimetre de purete (deux plantes). Une
+    # signature y serait un parametre que personne ne lit.
