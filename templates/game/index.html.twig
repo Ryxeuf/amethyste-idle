@@ -175,32 +175,42 @@
         {# ===== COLONNE LATERALE ===== #}
         <div class="space-y-4 sm:space-y-6">
 
-            {# ===== 3 bis. ASSIDUITE (RET-04) — une restitution, pas une relance. #}
-            {# On dit ce qui a ete fait et ce qui reste a portee ; jamais ce qui a #}
-            {# ete manque, jamais la semaine derniere, jamais d'echeance. Un joueur #}
-            {# de retour apres deux semaines lit exactement la meme chose qu'un    #}
-            {# joueur qui n'est jamais parti.                                      #}
-            <div class="game-card">
-                <div class="game-card-header">
-                    <h2 class="ds-name">{{ 'game.home.attendance.title'|trans }}</h2>
+            {# ===== 3 bis. LA SEMAINE (RET-08) — un seul panneau, jamais cinq. #}
+            {# Cinq systemes hebdomadaires s'y lisent d'un coup d'œil ; chaque    #}
+            {# ligne mene a l'ecran ou le geste se fait. Le hub lit, il ne fait   #}
+            {# pas : aucune de ces lignes ne poste quoi que ce soit, et le DTO    #}
+            {# n'a rien pour le permettre (GAME_DASHBOARD § 3).                   #}
+            {# Ce bloc absorbe l'ancien encart d'assiduite, qui disait « Votre    #}
+            {# semaine » tout seul dans son coin : l'assiduite en est desormais   #}
+            {# la cinquieme ligne, avec l'energie de son palier — calculee depuis #}
+            {# RET-04 et jamais affichee jusqu'ici.                               #}
+            {% if not week.isEmpty %}
+                <div class="game-card">
+                    <div class="game-card-header flex items-center justify-between">
+                        <h2 class="ds-name">{{ 'game.home.week.title'|trans }}</h2>
+                        {% if week.closesTomorrow %}
+                            <span class="ds-hint">{{ 'game.home.week.closing'|trans }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="game-card-body space-y-1.5">
+                        {% for row in week.rows %}
+                            <a href="{{ path(row.route, row.routeParams) }}" class="ds-row" data-testid="week-row">
+                                <span class="ds-row__body">
+                                    <span class="ds-row__name block truncate">{{ ('game.home.week.' ~ row.key)|trans(row.params) }}</span>
+                                    {% if row.hasGauge %}
+                                        <span class="ds-meter mt-1 block">
+                                            <span class="ds-meter__fill block" style="width: {{ row.percent }}%"></span>
+                                        </span>
+                                    {% endif %}
+                                </span>
+                                {% if row.hasGauge %}
+                                    <span class="ds-num ds-row__meta">{{ row.percent }}%</span>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="game-card-body">
-                    <p class="ds-hint">
-                        {{ 'game.home.attendance.days'|trans({'%count%': attendance.activeDays, '%plural%': attendance.activeDays > 1 ? 's' : ''}) }}
-                    </p>
-                    {% if attendance.hasNextTier %}
-                        <p class="ds-hint mt-1">
-                            {{ 'game.home.attendance.next'|trans({
-                                '%count%': attendance.daysToNextTier,
-                                '%plural%': attendance.daysToNextTier > 1 ? 's' : '',
-                                '%gils%': attendance.nextTierGils,
-                            }) }}
-                        </p>
-                    {% else %}
-                        <p class="ds-hint mt-1">{{ 'game.home.attendance.all_reached'|trans }}</p>
-                    {% endif %}
-                </div>
-            </div>
+            {% endif %}
 
             {# ===== 4. PROGRESSION — la seule mesure d'avancement du jeu ===== #}
             <div class="game-card">

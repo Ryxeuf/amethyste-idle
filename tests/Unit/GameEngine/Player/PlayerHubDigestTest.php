@@ -17,6 +17,10 @@ use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerWeeklyCommission;
 use App\Entity\App\Zone;
 use App\Enum\InfluenceActivityType;
+use App\GameEngine\Crafting\GuildCraftOrderManager;
+use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\SeasonManager;
+use App\GameEngine\Guild\WeeklyChallengeReader;
 use App\GameEngine\Player\HubPendingItem;
 use App\GameEngine\Player\HubResume;
 use App\GameEngine\Player\PlayerHubDigest;
@@ -30,6 +34,7 @@ use App\Repository\PlayerHouseRepository;
 use App\Repository\PlayerJournalEntryRepository;
 use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
+use App\Repository\SettlementWeeklyWorkRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -464,6 +469,15 @@ class PlayerHubDigestTest extends TestCase
             $overrides['commissionRepository'] ?? $this->createMock(PlayerWeeklyCommissionRepository::class),
             $questHelper,
             $overrides['weeklyAttendance'] ?? $this->createMock(WeeklyAttendanceService::class),
+            // RET-08 — les cinq sources du bloc « La semaine ». Elles sont en
+            // queue de constructeur, ce qui laisse les dix arguments precedents
+            // a leur place : sans cette regle, chaque ajout de service aurait
+            // decale toute cette liste en silence.
+            $overrides['weeklyWorkRepository'] ?? $this->createMock(SettlementWeeklyWorkRepository::class),
+            $overrides['guildManager'] ?? $this->createMock(GuildManager::class),
+            $overrides['seasonManager'] ?? $this->createMock(SeasonManager::class),
+            $overrides['challengeReader'] ?? $this->createMock(WeeklyChallengeReader::class),
+            $overrides['guildOrderManager'] ?? $this->createMock(GuildCraftOrderManager::class),
         );
     }
 
