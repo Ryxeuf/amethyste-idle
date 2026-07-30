@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **5/20 livrés + ONB-20a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **6/20 livrés + ONB-20a + ONB-07a.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -34,7 +34,7 @@
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
 | ONB-07b | Les quatre capacités branchées sur leurs écrans | M | ★★ |
 | ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
-| ONB-09 | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
+| ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
 | ONB-11 | Les mannequins d'entraînement (combat scripté au Fanal) | M | ★★★ |
 | ONB-12 | La chaîne de l'acte I — dix quêtes, trois tours de boucle | L | ★★★ |
@@ -268,26 +268,35 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       partout est provisoire ; c'est **l'uniformité** du prix qui est la règle, pas sa valeur
 - [x] Tests : les quatre conditions ; ouverture idempotente ; un arbre fermé n'accorde aucun nœud
 
-### ONB-09 — Le catalogue des 32 arbres, et l'arbre ouvert (M | ★★★ | HAUTE)
+### ONB-09 — Le catalogue des 32 arbres, et l'arbre ouvert (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-07-30
 > Les trois états de GAME_ONBOARDING §6.1. Aujourd'hui `DomainInfoController` montre **tous les
 > nœuds de n'importe quel domaine à n'importe qui**, et l'écran des arbres empile les 32 : c'est
 > le **risque n° 1 de l'acte I** (GAME_PROGRESSION §3).
 > Prérequis : ← ONB-08
-- [ ] **Le catalogue** *(public, complet, dès la première minute)* : les 32 arbres, présentés
-      comme la **roue élément × registre** (8 × 3, + 5 récoltes, + 4 artisanats). Pour chacun :
-      ce qu'on y apprend **en une phrase**, ce qu'il permet d'équiper **en famille**, et **où
-      trouver son parchemin**
-- [ ] **Ce que le catalogue ne dit pas** : la liste des nœuds, les valeurs, les prérequis
-      internes, **ni même le premier nœud**, ni la spécialisation terminale
-- [ ] **Le catalogue omet, il ne ment pas** : il est complet pour tout ce qui s'atteint par le
-      jeu ordinaire. Les **arbres retrouvés** (DOM-10) n'y figurent pas et n'existent, pour le
-      joueur, qu'après la rencontre — l'écran doit donc être conçu pour qu'un arbre puisse
-      apparaître **hors liste**, sans que le compte affiché ait jamais menti
-- [ ] **L'arbre ouvert** : le détail complet, après parchemin
-- [ ] `DomainInfoController` sert le catalogue pour un arbre fermé, l'arbre pour un arbre ouvert
-- [ ] L'ouverture d'un arbre est **notifiée** — c'est un moment, pas un changement d'état muet
-- [ ] Tests : le catalogue contient toujours les 32 ; aucun nœud d'un arbre fermé n'est exposé
-      (y compris via l'API et le rendu Twig) ; aucun arbre n'est rendu inatteignable
+- [x] **Le catalogue** *(public, complet, dès la première minute)* : `/game/skills/catalog`,
+      groupé par élément (les 36 arbres livrés). Pour chacun : ce qu'on y apprend **en une
+      phrase**, ce qu'il permet d'équiper **en famille**, et **son parchemin avec son prix** —
+      résolu par l'**effet** de l'objet, jamais par une table parallèle, donc impossible à
+      désynchroniser
+- [x] **Ce que le catalogue ne dit pas** : `DomainCatalogCard` n'a **aucune propriété** pour
+      un nœud, une valeur ou un prérequis, et le loader YAML **refuse** un champ inconnu au
+      lieu de l'ignorer. Une donnée qui n'existe pas ne fuit pas
+- [x] **Le catalogue omet, il ne ment pas** : aucun compte total n'est affiché, précisément
+      pour qu'un arbre retrouvé (DOM-10) puisse apparaître hors liste sans démentir l'écran
+- [x] **L'arbre ouvert** : le détail complet, après parchemin
+- [x] `DomainInfoController` sert le catalogue pour un arbre fermé, l'arbre pour un arbre
+      ouvert — et **tranche avant** de lire la moindre compétence, pour qu'aucune variable de
+      nœud n'existe dans ce contexte
+- [x] L'ouverture d'un arbre est **notifiée** (`domain_opened`) — et une annonce ratée n'annule
+      jamais l'ouverture : le parchemin est déjà consommé
+- [x] **Au passage** : l'écran des arbres listait les domaines où le joueur avait de
+      l'**expérience**. Deux défauts opposés — un arbre tout juste ouvert n'y apparaissait pas,
+      et un arbre **fermé** pouvait y apparaître (`CrossDomainSkillResolver` crédite tous les
+      domaines d'un nœud partagé). Twig et JSON listent désormais les arbres **ouverts**
+- [x] **Au passage (2)** : l'élément `bois` livré par ZON-34 n'avait pas de pastille dans le
+      système de design. Invisible tant qu'aucun écran ne rangeait les domaines par élément
+- [x] Tests : le catalogue couvre exactement les arbres livrés (dans les deux sens) ; aucun
+      nœud d'un arbre fermé n'est exposé — type, gabarits, écran Twig **et** payload JSON
 
 ### ONB-10 — Les cinq récoltes dans le périmètre de l'acte I (M | ★★★ | HAUTE)
 > Ferme **D11**. Le Fanal n'expose que **deux filons, tous deux d'herboristerie** (thym,

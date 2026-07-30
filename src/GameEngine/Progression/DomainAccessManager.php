@@ -6,7 +6,9 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerDomainAccess;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
+use App\GameEngine\Notification\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Ouvrir un arbre, et savoir s'il l'est (ONB-08).
@@ -30,8 +32,11 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class DomainAccessManager
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly NotificationService $notificationService,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function isOpen(Player $player, Domain $domain): bool
@@ -55,7 +60,57 @@ class DomainAccessManager
         $player->addDomainAccess($access);
         $this->entityManager->persist($access);
 
+        // ONB-09 — l'ouverture est **notifiee**. Un arbre qui apparaitrait
+        // simplement dans un menu se lirait comme un changement d'interface,
+        // alors que c'est le seul moment de la boucle *parchemin -> arbre ->
+        // geste* ou quelque chose se gagne.
+        $this->announce($player, $domain);
+
         return true;
+    }
+
+    private function announce(Player $player, Domain $domain): void
+    {
+        // Une annonce ratee ne doit jamais annuler une ouverture : le joueur a
+        // consomme son parchemin, et perdre l'arbre pour un hub injoignable
+        // serait un vol.
+        try {
+            $this->notificationService->notify(
+                $player,
+                'domain_opened',
+                'Un arbre s\'ouvre',
+                sprintf('Vous avez déchiffré la voie du %s. Ce qu\'on y apprend reste à apprendre.', $domain->getTitle()),
+                '📜',
+                '/game/skills',
+            );
+        } catch (\Throwable $e) {
+            $this->logger->warning('Ouverture de domaine non annoncee : {error}', [
+                'error' => $e->getMessage(),
+                'player' => $this->identify($player),
+                'domain' => $domain->getSlug(),
+            ]);
+        }
+    }
+
+    /**
+     * L'identifiant du personnage, ou `null` s'il n'en a pas encore.
+     *
+     * **Le rattrapage ne doit pas pouvoir echouer a son tour.** `Player::$id`
+     * est une propriete typee non initialisee tant que Doctrine n'a pas ecrit :
+     * lire `getId()` sur un personnage non persiste leve une `Error`, qui
+     * remonterait **depuis le `catch`** et annulerait precisement l'ouverture
+     * que ce bloc protege. Le defaut se lisait d'autant plus mal qu'il ne
+     * survient que sur le chemin d'echec.
+     *
+     * L'idiome est deja celui de `Player::getSkillId()`.
+     */
+    private function identify(Player $player): ?int
+    {
+        try {
+            return $player->getId();
+        } catch (\Error) {
+            return null;
+        }
     }
 
     /**

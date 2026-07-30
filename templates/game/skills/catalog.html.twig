@@ -1,0 +1,86 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ "game.skills.catalog.title"|trans }}{% endblock %}
+
+{#
+    Le catalogue des arbres (ONB-09) — le premier des trois etats.
+
+    Public, complet, des la premiere minute. Il dit que l'arbre existe, sa case
+    element x registre, ce qu'on y apprend, ce qu'il permet d'equiper et ou
+    trouver son parchemin. Il ne dit **jamais** un nœud, une valeur, un
+    prerequis, ni la specialisation terminale — le DTO `DomainCatalogCard` n'a
+    aucune propriete pour les porter, donc ce gabarit ne peut pas les afficher
+    par accident.
+
+    Aucun compte total n'est affiche : le catalogue **omet, il ne ment pas**, et
+    un « 36 arbres » grave ici deviendrait faux le jour ou un arbre retrouve
+    (DOM-10) apparaitrait hors liste.
+#}
+{% block game_content %}
+<div class="game-page">
+
+    <div class="mb-4">
+        <h1 class="ds-title">{{ "game.skills.catalog.title"|trans }}</h1>
+        <p class="ds-hint mt-0.5">{{ "game.skills.catalog.intro"|trans }}</p>
+        <a href="{{ path('app_game_skills') }}" class="ds-btn ds-btn--quiet ds-btn--sm mt-3 inline-flex">
+            {{ "game.skills.catalog.back_to_trees"|trans }}
+        </a>
+    </div>
+
+    {% for element, cards in groups %}
+        <section class="mb-5">
+            <h2 class="ds-label mb-2 flex items-center gap-2">
+                <span class="ds-elem ds-elem-{{ element }} w-2 h-2"></span>
+                <span>{{ ("game.skills.catalog.element." ~ element)|trans }}</span>
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {% for card in cards %}
+                    <article class="ds-card p-3 flex flex-col gap-2">
+                        <header class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="ds-name">{{ card.title }}</h3>
+                                <p class="ds-hint">
+                                    {{ ("game.skills.catalog.family." ~ card.family)|trans }}
+                                </p>
+                            </div>
+                            {% if card.opened %}
+                                <span class="ds-pill shrink-0">{{ "game.skills.catalog.opened"|trans }}</span>
+                            {% endif %}
+                        </header>
+
+                        <p class="ds-body">{{ card.teaches }}</p>
+
+                        <p class="ds-hint">
+                            <span class="ds-label">{{ "game.skills.catalog.equips"|trans }}</span>
+                            {{ card.equips }}
+                        </p>
+
+                        <footer class="mt-auto pt-2 border-t border-line">
+                            {% if card.parchmentName %}
+                                <p class="ds-hint">
+                                    <span class="ds-label">{{ "game.skills.catalog.parchment"|trans }}</span>
+                                    {{ card.parchmentName }}
+                                    {% if card.parchmentPrice is not null %}
+                                        — <span class="ds-num ds-num--sm">{{ card.parchmentPrice }}</span>
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <p class="ds-hint">{{ "game.skills.catalog.parchment_unknown"|trans }}</p>
+                            {% endif %}
+
+                            {% if card.opened %}
+                                <a href="{{ path('app_game_domain_info', {id: card.id}) }}"
+                                   class="ds-btn ds-btn--secondary ds-btn--sm mt-2 inline-flex">
+                                    {{ "game.skills.catalog.open_tree"|trans }}
+                                </a>
+                            {% endif %}
+                        </footer>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endfor %}
+
+</div>
+{% endblock %}

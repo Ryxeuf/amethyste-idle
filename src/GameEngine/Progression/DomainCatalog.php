@@ -3,6 +3,8 @@
 namespace App\GameEngine\Progression;
 
 use App\Entity\Game\Domain;
+use App\Entity\Game\Item;
+use App\GameEngine\Item\ItemEffectEncoder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -25,6 +27,9 @@ class DomainCatalog implements ResetInterface
     /** @var array<string, Domain>|null */
     private ?array $bySlug = null;
 
+    /** @var array<string, Item>|null Parchemins indexes par slug de domaine ouvert */
+    private ?array $parchments = null;
+
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
@@ -35,6 +40,50 @@ class DomainCatalog implements ResetInterface
     public function all(): array
     {
         return array_values($this->indexed());
+    }
+
+    /**
+     * Le parchemin qui ouvre cet arbre, ou `null` si aucun ne le fait (ONB-09).
+     *
+     * Resolu par l'**effet** de l'objet, jamais par une table de correspondance
+     * parallele : un parchemin renomme, reprice ou deplace suit tout seul, et
+     * le catalogue ne peut donc pas mentir sur son prix. Un arbre sans
+     * parchemin est un arbre inatteignable — le `null` est ce que
+     * `DomainCatalogContractTest` interdit.
+     */
+    public function parchmentFor(Domain $domain): ?Item
+    {
+        return $this->parchments()[self::normalize($domain->getSlug())] ?? null;
+    }
+
+    /**
+     * @return array<string, Item>
+     */
+    private function parchments(): array
+    {
+        if ($this->parchments !== null) {
+            return $this->parchments;
+        }
+
+        $indexed = [];
+        foreach ($this->entityManager->getRepository(Item::class)->findAll() as $item) {
+            $effect = $item->getEffect();
+            if ($effect === null || !str_contains($effect, ItemEffectEncoder::ACTION_OPEN_DOMAIN)) {
+                continue;
+            }
+
+            $decoded = json_decode($effect, true);
+            if (!\is_array($decoded) || ($decoded['action'] ?? null) !== ItemEffectEncoder::ACTION_OPEN_DOMAIN) {
+                continue;
+            }
+
+            $slug = $decoded['slug'] ?? null;
+            if (\is_string($slug) && $slug !== '') {
+                $indexed[self::normalize($slug)] = $item;
+            }
+        }
+
+        return $this->parchments = $indexed;
     }
 
     public function findBySlug(string $slug): ?Domain
@@ -73,5 +122,6 @@ class DomainCatalog implements ResetInterface
     public function reset(): void
     {
         $this->bySlug = null;
+        $this->parchments = null;
     }
 }

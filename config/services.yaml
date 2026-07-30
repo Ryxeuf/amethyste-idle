@@ -100,6 +100,13 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # ONB-09 : ce que le catalogue dit de chaque arbre — deux phrases, et pas
+    # une de plus. Le fichier n'a aucun champ pour les nœuds ni les valeurs :
+    # une donnee qui n'existe pas ne fuit pas.
+    App\GameEngine\Progression\DomainCatalogDescriptions:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # DOM-04 : le seul respec payant du jeu (GAME_DOMAINS § 6). Ce qu'on paie
     # n'est pas d'avoir change d'avis sur un bonus, c'est d'avoir change
     # d'identite — le respec de points ordinaire reste doux.

@@ -10,6 +10,7 @@ use App\Entity\Game\Domain;
 use App\Enum\CombatRegister;
 use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Progression\BuildPresetManager;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\SkillRespecManager;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
@@ -30,16 +31,26 @@ class IndexController extends AbstractController
         private readonly SkillRespecManager $respecManager,
         private readonly BuildPresetManager $presetManager,
         private readonly BuildDomainResolver $buildDomainResolver,
+        private readonly DomainAccessManager $domainAccessManager,
     ) {
     }
 
     public function __invoke(): Response
     {
-        $domains = $this->playerDomainHelper->getDomains();
+        $player = $this->playerHelper->getPlayer();
+
+        // ONB-09 — l'ecran des arbres montre **les arbres ouverts**, le
+        // catalogue montre tous les autres.
+        //
+        // Il listait jusqu'ici les domaines ou le joueur avait de l'experience,
+        // ce qui produisait deux defauts opposes : un arbre tout juste ouvert
+        // n'y apparaissait pas (aucune ligne d'experience encore), et un arbre
+        // **ferme** pouvait y apparaitre — `CrossDomainSkillResolver` credite
+        // tous les domaines d'un nœud partage, y compris ceux ou l'on n'est
+        // jamais entre.
+        $domains = $player !== null ? $this->domainAccessManager->openedDomains($player) : [];
 
         $domainsModels = array_map($this->transformDomain(...), $domains);
-
-        $player = $this->playerHelper->getPlayer();
 
         // DOM-02 : l'ecran dit ce que le build exprime, et ce qu'il faudrait
         // porter pour le reste. Le savoir n'est jamais perdu — seule son
@@ -121,9 +132,12 @@ class IndexController extends AbstractController
     private function transformDomain(Domain $domain): DomainModel
     {
         $output = new PlayerDomain($domain);
+        // Un arbre ouvert n'a pas forcement de ligne d'experience : ouvrir est
+        // un acte, gagner de l'experience en est un autre. Le premier jour d'un
+        // arbre, tout est a zero — et c'est la bonne reponse, pas une erreur.
         $domainExperience = $this->playerDomainHelper->getDomainExperience($domain);
 
-        foreach ($domainExperience->getDomain()->getSkills() as $skill) {
+        foreach ($domain->getSkills() as $skill) {
             $playerSkillOutput = $this->playerSkillDataTransformer->transform($skill);
             $playerSkillOutput->acquired = $this->skillHelper->hasSkill($skill);
             $playerSkillOutput->canBeAcquired = $this->skillHelper->canAcquireSkill($skill);
@@ -131,11 +145,11 @@ class IndexController extends AbstractController
             $output->skills[] = $playerSkillOutput;
         }
 
-        $output->availableExperience = $domainExperience->getAvailableExperience();
-        $output->totalExperience = $domainExperience->getTotalExperience();
-        $output->damage = $domainExperience->getDamage();
-        $output->hit = $domainExperience->getHit();
-        $output->critical = $domainExperience->getCritical();
+        $output->availableExperience = $domainExperience?->getAvailableExperience() ?? 0;
+        $output->totalExperience = $domainExperience?->getTotalExperience() ?? 0;
+        $output->damage = $domainExperience?->getDamage() ?? 0;
+        $output->hit = $domainExperience?->getHit() ?? 0;
+        $output->critical = $domainExperience?->getCritical() ?? 0;
 
         return $output;
     }
