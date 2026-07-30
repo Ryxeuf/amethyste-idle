@@ -5,6 +5,7 @@ namespace App\Service\Skill;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\BuildPresetManager;
+use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\SkillRespecManager;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
@@ -23,6 +24,7 @@ class SkillTreePayloadBuilder
         private readonly PlayerSkillHelper $skillHelper,
         private readonly SkillRespecManager $respecManager,
         private readonly BuildPresetManager $presetManager,
+        private readonly DomainAccessManager $accessManager,
     ) {
     }
 
@@ -38,8 +40,12 @@ class SkillTreePayloadBuilder
 
         $buildStats = ['damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0, 'count' => 0];
 
+        // ONB-09 — la meme regle que l'ecran Twig, et pour la meme raison :
+        // aucun nœud d'un arbre ferme n'est expose, y compris en JSON. Un
+        // gardien pose seulement sur le gabarit laisserait la porte de derriere
+        // grande ouverte.
         $domains = [];
-        foreach ($this->playerDomainHelper->getDomains() as $domain) {
+        foreach ($this->accessManager->openedDomains($player) as $domain) {
             $domains[] = $this->buildDomain($domain, $locale, $buildStats);
         }
 

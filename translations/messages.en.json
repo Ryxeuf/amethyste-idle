@@ -583,6 +583,39 @@
           "dormant": "This accord is not open yet: it waits for elemental fusion to exist.",
           "domain_closed": "This tree is not open to you yet. Read its parchment — a merchant sells it, at a fixed price, to anyone who asks."
         }
+      },
+      "catalog": {
+        "title": "Tree catalogue",
+        "intro": "Everything that can be learned exists and is listed here. What a tree teaches in detail is only revealed by opening it.",
+        "opened": "Open",
+        "equips": "Lets you carry",
+        "parchment": "Parchment",
+        "parchment_unknown": "No known parchment for this tree.",
+        "open_tree": "View the tree",
+        "back_to_trees": "My trees",
+        "back_to_catalog": "Back to the catalogue",
+        "closed_title": "This tree is not open to you yet.",
+        "closed_hint": "Read its parchment: the tree will open, and its detail with it.",
+        "element": {
+          "fire": "Fire",
+          "water": "Water",
+          "air": "Air",
+          "earth": "Earth",
+          "metal": "Metal",
+          "beast": "Beast",
+          "light": "Light",
+          "dark": "Shadow",
+          "wood": "Wood",
+          "none": "No element"
+        },
+        "family": {
+          "spell": "Spells",
+          "melee": "Melee",
+          "ranged": "Ranged",
+          "craft": "Craft"
+        },
+        "none_open_title": "No tree is open to you yet.",
+        "none_open_hint": "A tree opens when you read its parchment. The catalogue says which ones exist and where to find them."
       }
     },
     "domains": {

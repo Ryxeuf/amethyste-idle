@@ -6,7 +6,10 @@ use App\Dto\Domain\PlayerDomain;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\DomainCatalogView;
 use App\Helper\PlayerDomainHelper;
+use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
 use App\Transformer\PlayerSkillTransformer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +26,9 @@ class DomainInfoController extends AbstractController
         private readonly PlayerDomainHelper $playerDomainHelper,
         private readonly PlayerSkillTransformer $playerSkillTransformer,
         private readonly PlayerSkillHelper $skillHelper,
+        private readonly DomainAccessManager $domainAccessManager,
+        private readonly DomainCatalogView $catalogView,
+        private readonly PlayerHelper $playerHelper,
     ) {
     }
 
@@ -32,6 +38,22 @@ class DomainInfoController extends AbstractController
 
         if (!$domain) {
             throw $this->createNotFoundException('Domaine non trouvé');
+        }
+
+        // ONB-09 — les trois etats. Cet ecran montrait **tous les nœuds de
+        // n'importe quel domaine a n'importe qui** : le detail technique etait
+        // gratuit, et le parchemin n'achetait rien. Un arbre ferme rend
+        // desormais sa carte de catalogue — ce qu'on y apprend, ce qu'il permet
+        // d'equiper, ou trouver son parchemin — et **aucun nœud**.
+        //
+        // Le retour anticipe est deliberement place avant toute lecture des
+        // competences : un jour ou l'autre, quelqu'un ajoutera une variable au
+        // gabarit, et il vaut mieux qu'elle n'ait jamais ete calculee.
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null || !$this->domainAccessManager->isOpen($player, $domain)) {
+            return $this->render('game/skills/domain_catalog_card.html.twig', [
+                'card' => $this->catalogView->card($domain, $player),
+            ]);
         }
 
         // Construire le DTO PlayerDomain avec les stats du joueur

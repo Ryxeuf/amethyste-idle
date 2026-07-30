@@ -5,9 +5,11 @@ namespace App\Tests\Unit\GameEngine\Progression;
 use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
+use App\GameEngine\Notification\NotificationService;
 use App\GameEngine\Progression\DomainAccessManager;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 /**
  * ONB-08 — l'ouverture d'un arbre, et ce qu'elle ne fait pas.
@@ -22,7 +24,60 @@ class DomainAccessManagerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->manager = new DomainAccessManager($this->createMock(EntityManagerInterface::class));
+        $this->manager = new DomainAccessManager(
+            $this->createMock(EntityManagerInterface::class),
+            $this->createMock(NotificationService::class),
+            new NullLogger(),
+        );
+    }
+
+    /**
+     * ONB-09 — l'ouverture est un moment, donc elle s'annonce.
+     *
+     * Et **une seule fois** : un parchemin relu ne rejoue pas l'annonce, sans
+     * quoi la notification cesserait de signifier « quelque chose vient de se
+     * gagner ».
+     */
+    public function testOpeningAnnouncesItselfOnlyOnce(): void
+    {
+        $notifier = $this->createMock(NotificationService::class);
+        $notifier->expects(self::once())->method('notify');
+
+        $manager = new DomainAccessManager(
+            $this->createMock(EntityManagerInterface::class),
+            $notifier,
+            new NullLogger(),
+        );
+
+        $player = new Player();
+        $domain = $this->domain(1);
+
+        $manager->open($player, $domain);
+        $manager->open($player, $domain);
+    }
+
+    /**
+     * Une annonce ratee n'annule pas l'ouverture.
+     *
+     * Le joueur a consomme son parchemin : perdre l'arbre parce que le hub
+     * temps reel est injoignable serait un vol.
+     */
+    public function testAFailedAnnouncementStillOpensTheTree(): void
+    {
+        $notifier = $this->createMock(NotificationService::class);
+        $notifier->method('notify')->willThrowException(new \RuntimeException('hub down'));
+
+        $manager = new DomainAccessManager(
+            $this->createMock(EntityManagerInterface::class),
+            $notifier,
+            new NullLogger(),
+        );
+
+        $player = new Player();
+        $domain = $this->domain(1);
+
+        self::assertTrue($manager->open($player, $domain));
+        self::assertTrue($manager->isOpen($player, $domain));
     }
 
     public function testOpeningATreeMakesItOpen(): void

@@ -6,7 +6,9 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerDomainAccess;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
+use App\GameEngine\Notification\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Ouvrir un arbre, et savoir s'il l'est (ONB-08).
@@ -30,8 +32,11 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class DomainAccessManager
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly NotificationService $notificationService,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function isOpen(Player $player, Domain $domain): bool
@@ -55,7 +60,36 @@ class DomainAccessManager
         $player->addDomainAccess($access);
         $this->entityManager->persist($access);
 
+        // ONB-09 — l'ouverture est **notifiee**. Un arbre qui apparaitrait
+        // simplement dans un menu se lirait comme un changement d'interface,
+        // alors que c'est le seul moment de la boucle *parchemin -> arbre ->
+        // geste* ou quelque chose se gagne.
+        $this->announce($player, $domain);
+
         return true;
+    }
+
+    private function announce(Player $player, Domain $domain): void
+    {
+        // Une annonce ratee ne doit jamais annuler une ouverture : le joueur a
+        // consomme son parchemin, et perdre l'arbre pour un hub injoignable
+        // serait un vol.
+        try {
+            $this->notificationService->notify(
+                $player,
+                'domain_opened',
+                'Un arbre s\'ouvre',
+                sprintf('Vous avez déchiffré la voie du %s. Ce qu\'on y apprend reste à apprendre.', $domain->getTitle()),
+                '📜',
+                '/game/skills',
+            );
+        } catch (\Throwable $e) {
+            $this->logger->warning('Ouverture de domaine non annoncee : {error}', [
+                'error' => $e->getMessage(),
+                'player' => $player->getId(),
+                'domain' => $domain->getSlug(),
+            ]);
+        }
     }
 
     /**

@@ -1,0 +1,155 @@
+# =============================================================================
+# Le catalogue des arbres (ONB-09)
+# =============================================================================
+# GAME_ONBOARDING § 6.1 : le catalogue est **public, complet, des la premiere
+# minute**. Il dit que l'arbre existe, sa case element x registre, ce qu'on y
+# apprend en une phrase, ce qu'il permet d'equiper en famille, et ou trouver son
+# parchemin.
+#
+# Ce qu'il ne dit **jamais** (§ 6.2) : la liste des nœuds, les valeurs des
+# passifs, les prerequis internes, **ni meme le premier nœud**, ni la
+# specialisation terminale. Ce fichier n'a donc aucun champ pour les accueillir,
+# et c'est deliberé : une donnee qui n'existe pas ne fuit pas.
+#
+# La case element x registre n'est **pas** ici : elle est portee par le domaine
+# lui-meme depuis DOM-01. La redeclarer ouvrirait la porte a une divergence
+# muette entre l'ecran et le moteur.
+#
+# Le parchemin n'est pas ici non plus. Il se resout par son **effet**
+# (`open_domain`), donc par le lien reel : un parchemin renomme, reprice ou
+# deplace suit tout seul, et le catalogue ne peut pas mentir sur son prix.
+#
+# Les cles sont les slugs de domaine, tels que `Domain::getSlug()` les derive du
+# titre affiche — **accents compris** (« Pêcheur » donne `pêcheur`). C'est deja
+# la convention de `weekly_commissions.yaml`. Une cle fautive ne passe pas :
+# `DomainCatalogContractTest` exige une entree par arbre livre, et rien de plus.
+# =============================================================================
+
+domains:
+    # --- Feu : ce qui consume -------------------------------------------
+    pyromancien:
+        teaches: "À déchaîner le feu à distance, et à faire payer cher un ennemi groupé."
+        equips: "Bâtons, baguettes et tissu."
+    berserker:
+        teaches: "À frapper plus fort à mesure qu'on encaisse, et à ne jamais reculer."
+        equips: "Haches, épées lourdes et cuir."
+    artificier:
+        teaches: "À lancer le feu par la mécanique plutôt que par le geste."
+        equips: "Arbalètes, bombes et cuir."
+
+    # --- Eau : ce qui use et ce qui repare -------------------------------
+    hydromancien:
+        teaches: "À plier l'eau, ralentir ce qui avance et noyer ce qui résiste."
+        equips: "Bâtons, baguettes et tissu."
+    guérisseur:
+        teaches: "À refermer les plaies des autres, en combat comme après."
+        equips: "Bâtons, grimoires et tissu."
+    marémancien:
+        teaches: "À jouer du flux et du reflux : ce qui monte protège, ce qui descend emporte."
+        equips: "Bâtons, tridents et tissu."
+
+    # --- Air : ce qui va vite -------------------------------------------
+    foudromancien:
+        teaches: "À appeler la foudre, et à frapper avant que l'autre ait fini son geste."
+        equips: "Bâtons, baguettes et tissu."
+    archer:
+        teaches: "À tenir l'ennemi à distance, et à viser ce qui compte."
+        equips: "Arcs, carquois et cuir léger."
+    vagabond:
+        teaches: "À se battre en se déplaçant, et à ne jamais être là où l'on frappe."
+        equips: "Dagues, bâtons de marche et cuir léger."
+
+    # --- Terre : ce qui tient -------------------------------------------
+    géomancien:
+        teaches: "À faire du sol une arme, et de la pierre un abri."
+        equips: "Bâtons, sceptres et tissu renforcé."
+    défenseur:
+        teaches: "À encaisser ce qui viserait un autre, et à rester debout."
+        equips: "Boucliers, masses et maille."
+    gardien:
+        teaches: "À protéger un lieu ou un groupe, et à punir qui le force."
+        equips: "Boucliers, lances et plaque."
+
+    # --- Métal : ce qui coupe -------------------------------------------
+    soldat:
+        teaches: "Le métier des armes : la garde, la parade, le coup droit."
+        equips: "Épées, haches et maille."
+    chevalier:
+        teaches: "À charger en tenant sa ligne, et à porter ce qui pèse."
+        equips: "Épées longues, boucliers et plaque."
+    ingénieur:
+        teaches: "À faire du métal un mécanisme, et du mécanisme une arme."
+        equips: "Arbalètes, tourelles et maille légère."
+
+    # --- Bête : ce qui vit ----------------------------------------------
+    chasseur:
+        teaches: "À lire une piste, à choisir son terrain et à tirer juste."
+        equips: "Arcs, pièges et cuir."
+    dompteur:
+        teaches: "À se battre avec une bête plutôt que contre elle."
+        equips: "Fouets, lances et cuir."
+    druide:
+        teaches: "À emprunter au vivant ce qu'il faut pour soigner ou pour nuire."
+        equips: "Bâtons, talismans et tissu."
+
+    # --- Lumière : ce qui révèle ----------------------------------------
+    paladin:
+        teaches: "À tenir la ligne de front sans cesser de soutenir les siens."
+        equips: "Épées, boucliers et plaque."
+    prêtre:
+        teaches: "À soigner, à relever et à repousser ce qui n'aurait pas dû revenir."
+        equips: "Masses, symboles et tissu."
+    inquisiteur:
+        teaches: "À traquer ce qui se cache, et à frapper ce qui se croyait couvert."
+        equips: "Épées, flambeaux et maille."
+
+    # --- Ombre : ce qui se tait -----------------------------------------
+    assassin:
+        teaches: "À ouvrir le combat avant que l'autre ne sache qu'il a commencé."
+        equips: "Dagues, poisons et cuir léger."
+    nécromancien:
+        teaches: "À faire servir ce qui est mort, et à payer ce que cela coûte."
+        equips: "Bâtons, grimoires et tissu."
+    sorcier:
+        teaches: "À traiter avec ce qu'on ne devrait pas nommer, pour un pouvoir qui mord."
+        equips: "Grimoires, dagues rituelles et tissu."
+
+    # --- Les cinq récoltes ----------------------------------------------
+    mineur:
+        teaches: "À lire un filon, à en tirer le minerai, et à savoir quand il s'épuise."
+        equips: "Pioches."
+    herboriste:
+        teaches: "À reconnaître une plante utile, et à la cueillir sans la perdre."
+        equips: "Serpes et sacs d'herboriste."
+    pêcheur:
+        teaches: "À lire une eau, choisir son appât et ramener ce qui s'y cache."
+        equips: "Cannes et lignes."
+    dépeceur:
+        teaches: "À tirer d'une bête abattue une peau qui vaut quelque chose."
+        equips: "Couteaux à dépecer."
+    bûcheron:
+        teaches: "À reconnaître une essence, à l'abattre proprement et à la débiter."
+        equips: "Haches de bûcheron."
+
+    # --- Les sept artisanats --------------------------------------------
+    forgeron:
+        teaches: "À travailler le métal : lames, armures lourdes, et ce qui les répare."
+        equips: "Marteaux de forge."
+    tanneur:
+        teaches: "À faire d'une peau brute un cuir, et d'un cuir une protection."
+        equips: "Couteaux de tannerie."
+    alchimiste:
+        teaches: "À tirer d'une plante un remède, et parfois son contraire."
+        equips: "Alambics et mortiers."
+    joaillier:
+        teaches: "À tailler une pierre, à sertir une monture, à révéler ce qu'un cristal contient."
+        equips: "Outils de sertissage."
+    cuisinier:
+        teaches: "À faire d'un poisson et de trois herbes un repas qui tient au corps."
+        equips: "Couteaux de cuisine et fourneaux portatifs."
+    charpentier:
+        teaches: "À faire du bois une charpente, un manche, un meuble ou un arc."
+        equips: "Rabots et scies."
+    tailleur:
+        teaches: "À couper et coudre le tissu, pour ceux qui ne portent pas le métal."
+        equips: "Aiguilles et ciseaux de tailleur."

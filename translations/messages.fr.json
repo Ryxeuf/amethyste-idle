@@ -583,6 +583,39 @@
           "dormant": "Cet accord n'est pas encore ouvert : il attend que la fusion des éléments existe.",
           "domain_closed": "Cet arbre ne vous est pas encore ouvert. Lisez son parchemin — un marchand le vend, à prix fixe, à qui le demande."
         }
+      },
+      "catalog": {
+        "title": "Catalogue des arbres",
+        "intro": "Tout ce qu'on peut apprendre existe et se lit ici. Ce qu'un arbre enseigne dans le détail ne se découvre qu'en l'ouvrant.",
+        "opened": "Ouvert",
+        "equips": "Permet de porter",
+        "parchment": "Parchemin",
+        "parchment_unknown": "Aucun parchemin connu pour cet arbre.",
+        "open_tree": "Voir l'arbre",
+        "back_to_trees": "Mes arbres",
+        "back_to_catalog": "Retour au catalogue",
+        "closed_title": "Cet arbre ne vous est pas encore ouvert.",
+        "closed_hint": "Lisez son parchemin : l'arbre s'ouvrira, et son détail avec lui.",
+        "element": {
+          "fire": "Feu",
+          "water": "Eau",
+          "air": "Air",
+          "earth": "Terre",
+          "metal": "Métal",
+          "beast": "Bête",
+          "light": "Lumière",
+          "dark": "Ombre",
+          "wood": "Bois",
+          "none": "Sans élément"
+        },
+        "family": {
+          "spell": "Sorts",
+          "melee": "Mêlée",
+          "ranged": "Distance",
+          "craft": "Métier"
+        },
+        "none_open_title": "Aucun arbre ne vous est encore ouvert.",
+        "none_open_hint": "Un arbre s'ouvre en lisant son parchemin. Le catalogue dit lesquels existent et où les trouver."
       }
     },
     "domains": {

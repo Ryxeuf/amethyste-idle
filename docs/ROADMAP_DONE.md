@@ -11,6 +11,53 @@
 
 ---
 
+## ONB-09 — le catalogue des arbres, et l'arbre ouvert (2026-07-30)
+
+> Les trois etats de GAME_ONBOARDING § 6.1.
+> [`PLAN_ONBOARDING.md`](roadmap/PLAN_ONBOARDING.md) 6/20 + ONB-20a + ONB-07a.
+
+**Le detail technique etait gratuit, donc le parchemin n'achetait rien.**
+`DomainInfoController` montrait **tous les nœuds de n'importe quel domaine a n'importe qui** :
+ONB-08 pouvait bien poser une porte, il suffisait de regarder par la fenetre. Un arbre ferme
+rend desormais sa **carte de catalogue** — ce qu'on y apprend, ce qu'il permet d'equiper, son
+parchemin et son prix — et aucun nœud.
+
+**Le catalogue est complet, public, et identique pour tout le monde.** Il ne depend ni du
+peuple, ni de la progression, ni de ce qui est deja ouvert : le seul effet du personnage
+courant est un marqueur « deja ouvert », informatif et jamais filtrant. Un catalogue qui se
+retrecirait ferait exactement ce que la decision A8 ecarte — orienter.
+
+**Ce qu'il ne dit pas est tenu par la forme, pas par la discipline.** `DomainCatalogCard` n'a
+**aucune propriete** pour un nœud, une valeur ou un prerequis, et le loader YAML **refuse** un
+champ inconnu au lieu de l'ignorer. Ignorer laisserait la donnee s'accumuler dans le fichier
+jusqu'au jour ou quelqu'un l'afficherait, en toute bonne foi.
+
+**Le parchemin se resout par son effet**, jamais par une table de correspondance parallele :
+un parchemin renomme, reprice ou deplace suit tout seul, et le catalogue ne peut pas mentir sur
+son prix.
+
+**Aucun compte total n'est affiche**, et c'est deliberé. *Le catalogue omet, il ne ment pas* :
+un « 36 arbres » grave dans l'ecran deviendrait faux le jour ou un arbre retrouve (DOM-10)
+apparaitrait hors liste.
+
+**Deux defauts trouves au passage, hors enonce.**
+
+L'ecran des arbres listait les domaines ou le joueur avait de l'**experience**. Deux defauts
+opposes en decoulaient : un arbre tout juste ouvert n'y apparaissait pas — aucune ligne
+d'experience encore — et un arbre **ferme** pouvait y apparaitre, parce que
+`CrossDomainSkillResolver` credite tous les domaines d'un nœud partage, y compris ceux ou l'on
+n'est jamais entre. Twig **et** le payload JSON listent desormais les arbres ouverts : un
+gardien pose sur le seul gabarit aurait laisse la porte de derriere grande ouverte.
+
+L'element **bois**, livre par ZON-34 avec le bucheron, n'avait pas de pastille dans le systeme
+de design. Invisible tant qu'aucun ecran ne rangeait les domaines par element.
+
+**Ce qui reste** : le catalogue est ecrit en francais dans `config/game/domain_catalog.yaml`,
+comme le reste du contenu de jeu. Sa traduction suit le meme chemin que celle des zones et des
+quetes, elle n'a pas d'avance a prendre ici.
+
+---
+
 ## ONB-08 — le parchemin ouvre un arbre (2026-07-30)
 
 > Le **pivot technique** du plan d'onboarding. Applique **A12** et precise

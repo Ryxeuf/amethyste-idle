@@ -90,6 +90,11 @@
   --color-element-metal-light: #cbd5e1;
   --color-element-beast: #3f6212;
   --color-element-beast-light: #a3e635;
+  /* ZON-34 a livre l'element bois avec le bucheron ; il n'avait pas de
+     pastille, ce qui ne se voyait nulle part tant qu'aucun ecran ne rangeait
+     les domaines par element. Le catalogue (ONB-09) le fait. */
+  --color-element-wood: #713f12;
+  --color-element-wood-light: #d9a066;
 
   /* --- 02. Typographie -------------------------------------------------- */
   --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
@@ -910,6 +915,10 @@
 
   .ds-elem-beast {
     background: radial-gradient(circle at 35% 30%, var(--color-element-beast-light), var(--color-element-beast));
+  }
+
+  .ds-elem-wood {
+    background: radial-gradient(circle at 35% 30%, var(--color-element-wood-light), var(--color-element-wood));
   }
 
   .ds-elem-none {
