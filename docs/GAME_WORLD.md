@@ -122,9 +122,23 @@ du personnage**. Il en découle une contrainte que rien ne doit contredire :
 | **Accorder** | Apprendre à s'en servir — le nœud d'arbre (`materia.unlock`) | **Gratuit et précoce.** Les nœuds d'entrée d'un domaine sont à 0 point |
 | **Éveiller** | Créer une matéria **neuve** à partir d'améthyste *Parfaite* | **Rare et tardif.** Service de grande cité, matéria de haut palier |
 
-Le jeu livré respecte déjà cette règle : 69 matéria tombent des créatures à 4-10 %, et l'arbre
-de Pyromancie ouvre **deux matéria de feu à 0 point requis**. Ce document ne l'invente pas —
-il la **fige**, pour qu'on ne la casse pas en la resserrant plus tard.
+Ce document n'invente pas cette règle — il la **fige**, pour qu'on ne la casse pas en la
+resserrant plus tard.
+
+> **Correction du 2026-07-31 (audit des données).** La rédaction d'origine affirmait ici que
+> « le jeu livré respecte déjà cette règle : 69 matéria tombent des créatures à 4-10 % ».
+> **C'est faux, et ça l'a toujours été.** Le monde livre **9 matéria distinctes** en butin
+> (31 lignes de loot sur 400) ; le 69 était le nombre de matéria *déclarées comme objets*,
+> confondu avec le nombre de matéria *lootables*. Sur les 200 matéria que les arbres
+> promettent, **10 sont obtenables**, et **20 arbres de combat sur 24 démarrent sans aucun
+> sort**. La règle ci-dessus reste actée ; c'est le constat qu'elle serait déjà tenue qui est
+> retiré. La reprise est cadrée par [GAME_MATERIA.md](GAME_MATERIA.md) et déclinée en jalons
+> **MAT-01→08** ([roadmap/PLAN_MATERIA.md](roadmap/PLAN_MATERIA.md)).
+>
+> Ce qui reste vrai dans la phrase d'origine : l'arbre de Pyromancie ouvre bien **deux matéria
+> de feu à 0 point requis** — et c'est le cas des **24 arbres de combat**, qui portent tous
+> exactement deux nœuds `unlock` gratuits. La structure du jour 1 est en place ; ce sont les
+> 48 matéria correspondantes qui manquent.
 
 **Où porte la rareté, alors ?** Sur trois choses, jamais sur le sort de base :
 
