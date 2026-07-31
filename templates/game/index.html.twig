@@ -246,6 +246,10 @@
                 </div>
                 <div class="game-card-body space-y-3">
                     {% if domainExperiences|length > 0 %}
+                        {# RET-10, dette 1 : l'XP disponible ne se compte plus deux #}
+                        {# fois. La ligne d'attente `talent_xp` la porte — elle est #}
+                        {# actionnable et disparait une fois depensee ; ce bloc-ci   #}
+                        {# ne garde que ses jauges (GAME_DASHBOARD § 7).             #}
                         {% for domainExp in domainExperiences %}
                             {% set totalXp = domainExp.totalExperience %}
                             {% set availableXp = domainExp.availableExperience %}
@@ -258,11 +262,6 @@
                                 <div class="ds-meter">
                                     <div class="ds-meter__fill ds-meter__fill--xp" style="width: {{ usedPct }}%"></div>
                                 </div>
-                                {% if availableXp > 0 %}
-                                    <p class="ds-num ds-num--sm ds-num--gain text-left mt-1">
-                                        {{ 'game.home.domains.available_xp'|trans({'%xp%': availableXp}) }}
-                                    </p>
-                                {% endif %}
                             </div>
                         {% endfor %}
                     {% else %}

@@ -468,7 +468,6 @@
       },
       "domains": {
         "title": "Progress",
-        "available_xp": "%xp% XP available",
         "empty": "No domain opened yet",
         "empty_hint": "Fighting, gathering, crafting: every action feeds a domain.",
         "view_all": "Skills"

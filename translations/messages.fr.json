@@ -468,7 +468,6 @@
       },
       "domains": {
         "title": "Progression",
-        "available_xp": "%xp% XP disponibles",
         "empty": "Aucun domaine ouvert",
         "empty_hint": "Combattre, récolter, fabriquer : chaque action nourrit un domaine.",
         "view_all": "Compétences"
