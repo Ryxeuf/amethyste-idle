@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\GameEngine\Player;
 
 use App\Entity\App\Player;
+use App\Entity\App\PlayerHouse;
 use App\Entity\Game\Quest;
 use App\GameEngine\Crafting\GuildCraftOrderManager;
 use App\GameEngine\Guild\GuildManager;
@@ -22,6 +23,7 @@ use App\Repository\PlayerJournalEntryRepository;
 use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
 use App\Repository\SettlementWeeklyWorkRepository;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Modele de lecture du tableau de bord : reprise, attentes, recap.
@@ -86,6 +88,11 @@ final class PlayerHubDigest
         private readonly SeasonManager $seasonManager,
         private readonly WeeklyChallengeReader $challengeReader,
         private readonly GuildCraftOrderManager $guildOrderManager,
+        // RET-10 : le hub date ce qu'il annonce (une echeance de loyer, une
+        // semaine). Le nom de mois vit dans le catalogue, pas dans `intl` — un
+        // format localise n'existait nulle part, et le poser en donnee plutot
+        // qu'en extension le rend testable sans extension PHP.
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -161,9 +168,14 @@ final class PlayerHubDigest
 
         $house = $this->houseRepository->findForOwner($player);
         if (null !== $house && $house->isInArrears($now)) {
+            // RET-10, dette 3 : un sceau rouge ne dit ni combien ni depuis
+            // quand. Les deux existent sur `PlayerHouse` depuis HOU-04 et
+            // n'etaient simplement jamais lus — un joueur ne devrait pas avoir
+            // a ouvrir sa demeure pour savoir ce qu'il doit.
             $items[] = new HubPendingItem(
                 'house_rent',
                 'app_game_house',
+                ['%gils%' => PlayerHouse::RENT_AMOUNT] + $this->dayMonthParams($house->getRentDueAt()),
                 tone: HubPendingItem::TONE_LOSS,
             );
         }
@@ -465,8 +477,15 @@ final class PlayerHubDigest
         }
 
         // Samedi (6) et dimanche (7) : la semaine se referme. Jamais un compte a
-        // rebours en heures — la semaine n'est pas un timer (§ 3).
-        return new HubWeek($rows, $weekKey, (int) $now->format('N') >= 6);
+        // rebours en heures — la semaine n'est pas un timer (§ 3). Le lundi qui
+        // date l'en-tete se demande a `WeekKey` : c'est le seul point du projet
+        // qui sait ou commence une semaine.
+        return new HubWeek(
+            $rows,
+            $weekKey,
+            (int) $now->format('N') >= 6,
+            $this->dayMonthParams(WeekKey::mondayOf($now)),
+        );
     }
 
     /**
@@ -483,5 +502,27 @@ final class PlayerHubDigest
     private static function countParams(int $count): array
     {
         return ['%count%' => $count, '%plural%' => $count > 1 ? 's' : ''];
+    }
+
+    /**
+     * Un jour et un nom de mois, prets a etre interpoles.
+     *
+     * **Le nom de mois vit dans le catalogue**, pas dans `IntlDateFormatter` :
+     * le projet ne declare pas `ext-intl` dans ses dependances, et un ecran de
+     * jeu ne doit pas dependre d'une extension que rien n'exige. Le catalogue,
+     * lui, est deja la et deja verifie en parite FR/EN.
+     *
+     * Les deux valeurs restent **separees** parce que l'ordre change avec la
+     * langue — « 27 juillet », « July 27 ». C'est le message traduit qui les
+     * remet dans le bon ordre, ce qui est precisement son role.
+     *
+     * @return array<string, int|string>
+     */
+    private function dayMonthParams(\DateTimeInterface $date): array
+    {
+        return [
+            '%day%' => (int) $date->format('j'),
+            '%month%' => $this->translator->trans('game.date.month.' . (int) $date->format('n')),
+        ];
     }
 }

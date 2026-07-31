@@ -416,8 +416,8 @@
         },
         "house_rent": {
           "icon": "🏠",
-          "title": "Loyer en retard",
-          "hint": "Votre demeure dort jusqu'au paiement — rien n'est perdu."
+          "title": "Loyer de %gils% gils en retard",
+          "hint": "Échu le %day% %month% — votre demeure dort jusqu'au paiement, rien n'est perdu."
         },
         "expedition_ready": {
           "icon": "🧭",
@@ -480,6 +480,7 @@
       },
       "week": {
         "title": "La semaine",
+        "title_dated": "Semaine du %day% %month%",
         "closing": "Se referme demain soir",
         "commission": "Commission : %current%/%target%, à livrer à %zone%",
         "commission_ready": "Commission prête — livrable à %zone%",
@@ -1892,6 +1893,22 @@
         "title": "Les guildes",
         "body": "Une guilde partage un trésor, des défis hebdomadaires et de l'influence sur les régions. On y va pour ce qu'on ne peut pas faire seul, jamais pour aller plus vite.",
         "cost": "Rejoindre ou quitter ne coûte aucune énergie."
+      }
+    },
+    "date": {
+      "month": {
+        "1": "janvier",
+        "2": "février",
+        "3": "mars",
+        "4": "avril",
+        "5": "mai",
+        "6": "juin",
+        "7": "juillet",
+        "8": "août",
+        "9": "septembre",
+        "10": "octobre",
+        "11": "novembre",
+        "12": "décembre"
       }
     }
   },

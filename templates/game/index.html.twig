@@ -117,7 +117,10 @@
                                 </span>
                                 <span class="ds-row__body">
                                     <span class="ds-row__name block truncate">{{ ('game.home.pending.' ~ item.key ~ '.title')|trans(item.params) }}</span>
-                                    <span class="ds-row__meta block">{{ ('game.home.pending.' ~ item.key ~ '.hint')|trans }}</span>
+                                    {# Les parametres passent aussi a l'indice : le loyer y date #}
+                                    {# son echeance (RET-10, dette 3). Une cle qui n'en attend    #}
+                                    {# aucun les ignore.                                          #}
+                                    <span class="ds-row__meta block">{{ ('game.home.pending.' ~ item.key ~ '.hint')|trans(item.params) }}</span>
                                 </span>
                                 <span class="ds-seal {{ item.tone == 'gain' ? 'ds-seal--gain' : (item.tone == 'loss' ? 'ds-seal--loss' : '') }}">
                                     {{ ('game.home.pending.tone.' ~ item.tone)|trans }}
@@ -192,7 +195,15 @@
             {% if not week.isEmpty or weekRecap %}
                 <div class="game-card">
                     <div class="game-card-header flex items-center justify-between">
-                        <h2 class="ds-name">{{ 'game.home.week.title'|trans }}</h2>
+                        {# RET-10 : l'en-tete situe la semaine par sa date de debut.  #}
+                        {# Une date situe, un compte a rebours presserait (§ 3).      #}
+                        <h2 class="ds-name">
+                            {% if week.startParams is not empty %}
+                                {{ 'game.home.week.title_dated'|trans(week.startParams) }}
+                            {% else %}
+                                {{ 'game.home.week.title'|trans }}
+                            {% endif %}
+                        </h2>
                         {% if week.closesTomorrow %}
                             <span class="ds-hint">{{ 'game.home.week.closing'|trans }}</span>
                         {% endif %}

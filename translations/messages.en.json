@@ -416,8 +416,8 @@
         },
         "house_rent": {
           "icon": "🏠",
-          "title": "Rent overdue",
-          "hint": "Your home sleeps until it is paid — nothing is lost."
+          "title": "Rent of %gils% gils overdue",
+          "hint": "Due %month% %day% — your home sleeps until it is paid; nothing is lost."
         },
         "expedition_ready": {
           "icon": "🧭",
@@ -480,6 +480,7 @@
       },
       "week": {
         "title": "The week",
+        "title_dated": "Week of %month% %day%",
         "closing": "Closes tomorrow evening",
         "commission": "Commission: %current%/%target%, to deliver at %zone%",
         "commission_ready": "Commission ready — deliverable at %zone%",
@@ -1892,6 +1893,22 @@
         "title": "Guilds",
         "body": "A guild shares a treasury, weekly challenges and influence over regions. You join for what you cannot do alone, never to go faster.",
         "cost": "Joining or leaving costs no energy."
+      }
+    },
+    "date": {
+      "month": {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
       }
     }
   },

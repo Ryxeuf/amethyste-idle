@@ -36,6 +36,7 @@ use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
 use App\Repository\SettlementWeeklyWorkRepository;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Le hub — modele de lecture du tableau de bord.
@@ -170,6 +171,7 @@ class PlayerHubDigestTest extends TestCase
 
         $house = $this->createMock(PlayerHouse::class);
         $house->method('isInArrears')->willReturn(true);
+        $house->method('getRentDueAt')->willReturn($this->now()->modify('-2 days'));
 
         $digest = $this->digestWith([
             'house' => $house,
@@ -184,6 +186,47 @@ class PlayerHubDigestTest extends TestCase
             ['house_rent', 'expedition_ready', 'quests_ready', 'talent_xp', 'messages_unread'],
             $keys,
         );
+    }
+
+    /**
+     * RET-10, dette 3 : le loyer dit **combien** et **depuis quand**.
+     *
+     * Un sceau rouge ne dit ni l'un ni l'autre, et les deux dorment sur
+     * `PlayerHouse` depuis HOU-04. Le jour et le mois restent separes parce que
+     * leur ordre change avec la langue : c'est le message traduit qui les remet
+     * dans l'ordre, pas le PHP.
+     */
+    public function testTheRentLineCarriesItsAmountAndItsDueDate(): void
+    {
+        $player = $this->player();
+
+        $house = $this->createMock(PlayerHouse::class);
+        $house->method('isInArrears')->willReturn(true);
+        $house->method('getRentDueAt')->willReturn(new \DateTimeImmutable('2026-07-25 08:00:00'));
+
+        $items = $this->digestWith(['house' => $house])->pending($player, $this->now());
+
+        self::assertSame('house_rent', $items[0]->key);
+        self::assertSame(PlayerHouse::RENT_AMOUNT, $items[0]->params['%gils%']);
+        self::assertSame(25, $items[0]->params['%day%']);
+        self::assertSame('game.date.month.7', $items[0]->params['%month%']);
+    }
+
+    /**
+     * RET-10 : l'en-tete de la semaine porte sa date de debut.
+     *
+     * Le lundi se demande a `WeekKey`, pas au jour de l'appel : un joueur qui
+     * ouvre le hub un jeudi doit lire la meme semaine que celui qui l'ouvre le
+     * lundi.
+     */
+    public function testTheWeekHeaderIsDatedOnItsOwnMonday(): void
+    {
+        $thursday = new \DateTimeImmutable('2026-07-30 09:00:00');
+
+        $week = $this->digest()->week($this->player(), $thursday);
+
+        self::assertSame(27, $week->startParams['%day%']);
+        self::assertSame('game.date.month.7', $week->startParams['%month%']);
     }
 
     /**
@@ -458,6 +501,11 @@ class PlayerHubDigestTest extends TestCase
             $questHelper->method('getPlayerQuestProgress')->willReturn(0);
         }
 
+        // Rend la cle : un test qui lit un nom de mois traduit lirait sinon une
+        // chaine vide, et ne verrait pas la difference avec une absence.
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id): string => $id);
+
         return new PlayerHubDigest(
             $expeditionRepository,
             $craftJobRepository,
@@ -478,6 +526,10 @@ class PlayerHubDigestTest extends TestCase
             $overrides['seasonManager'] ?? $this->createMock(SeasonManager::class),
             $overrides['challengeReader'] ?? $this->createMock(WeeklyChallengeReader::class),
             $overrides['guildOrderManager'] ?? $this->createMock(GuildCraftOrderManager::class),
+            // RET-10 — le traducteur, en queue lui aussi : il ne sert qu'a
+            // nommer un mois, et le rendre positionnel ailleurs aurait decale
+            // les quinze arguments precedents.
+            $translator,
         );
     }
 
