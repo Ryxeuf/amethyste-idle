@@ -142,15 +142,46 @@ class HawthornValesTest extends TestCase
      * les Vallons sont l'une des **deux** sources du bois commun, celle du
      * bocage, et c'est ce qui empeche le T0 de la ligne du bois d'etre un
      * goulot. ZON-40 y ajoute l'affleurement d'amethyste, qui instancie la
-     * signature de la zone — la seule des cinq a n'ouvrir aucune recette
-     * d'entree, et la seule a ne pas porter de palier.
+     * signature de la zone — la seule des six a n'ouvrir aucune recette
+     * d'entree, et la seule a ne pas porter de palier. Le cuivre est arrive en
+     * dernier : la troisieme source promise par GAME_ZONES § 3, que la
+     * livraison de la zone avait laissee de cote.
      */
     public function testTheDeclaredHarvestsAreThere(): void
     {
         $items = array_column($this->vales()['gather'], 'item');
         sort($items);
 
-        self::assertSame(['fish-perch', 'ore-amethyst-crystal', 'plant-flax', 'plant-wheat', 'wood-beech'], $items);
+        self::assertSame(
+            ['fish-perch', 'ore-amethyst-crystal', 'ore-copper', 'plant-flax', 'plant-wheat', 'wood-beech'],
+            $items,
+        );
+    }
+
+    /**
+     * Le premier metal se trouve dans la premiere zone.
+     *
+     * Le cuivre ouvre toutes les chaines d'artisanat, et le monde n'en avait
+     * que deux sources : les Mines profondes — une zone hostile de palier haut
+     * — et les Dunes d'Ambre, a l'autre bout de la route du sud. Un debutant
+     * devait donc voyager pour la matiere par laquelle tout commence.
+     *
+     * La loi ne dit pas « les Vallons produisent du cuivre » mais **« la zone
+     * la plus proche du hub en produit »** : si une zone plus proche apparait
+     * un jour, c'est elle qui devra porter le premier metal, et ce test le
+     * dira. C'est la meme borne que `testTheValesAreTheClosestZoneToTheHub`,
+     * lue depuis la ressource au lieu du graphe.
+     */
+    public function testTheFirstMetalIsFoundInTheFirstZone(): void
+    {
+        $items = array_column($this->vales()['gather'], 'item');
+
+        self::assertContains(
+            'ore-copper',
+            $items,
+            'La zone la plus proche du hub ne donne plus le premier metal : le debutant doit voyager pour la '
+            . 'matiere par laquelle toutes les chaines d\'artisanat commencent.',
+        );
     }
 
     /**

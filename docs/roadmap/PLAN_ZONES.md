@@ -285,8 +285,12 @@ manque ; il relève de la narration, pas de ce plan.
 - **Les 12 bandeaux de zone eux-mêmes** : prompts écrits
   ([../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md)), câblage spécifié (ZON-41), images
   à générer et à déposer dans `public/images/zones/`.
-- **La 3e source de cuivre promise aux Vallons** (GAME_ZONES §3 : « la troisième viendra
-  avec ZON-30 ») n'a jamais été posée — ZON-30 est livré sans elle.
+- ~~**La 3e source de cuivre promise aux Vallons**~~ — **posée le 2026-07-31**. Le filon de
+  cuivre des labours, profil T0 : le monde n'avait que les Mines (zone hostile de palier haut)
+  et les Dunes (l'autre bout de la route du sud) pour le métal par lequel toutes les chaînes
+  d'artisanat commencent. La loi qui le tient ne nomme pas les Vallons mais **la zone la plus
+  proche du hub** — si une zone plus proche apparaît, c'est elle qui devra porter le premier
+  métal.
 
 ---
 

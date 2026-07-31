@@ -136,6 +136,10 @@ désire à chaque horizon.
     est la fibre du tanneur et du textile ; aucune autre zone n'en produira.
   - Perches du gué *(item à créer : `fish-perch`)* — T1, la pêche d'apprentissage entre
     la truite (Forêt) et la carpe (Marais).
+  - Filon de cuivre des labours *(ajouté après coup)* — T0. La **troisième source** promise
+    par le §3 : le métal le moins profond, dans la strate la plus jeune. Il tient la même
+    logique que l'affleurement d'améthyste — un champ retourné remonte ce qui est près de
+    la surface.
   - **Gibier de plaine** : pas un filon — une faune dense et dépeçable (sangliers,
     cerfs *(monstres à créer)*, loups existants) qui fait des Vallons la source du
     `leather-raw` à taux plein. Le dépeceur commence ici.
@@ -321,9 +325,12 @@ Franche** (GAME_SEASONS §2).
 > sans source (extensions), et `OreSourceReferenceTest` verrouille la loi — tout minerai
 > exigé par une recette est obtenable, sauf réserve d'extension explicitement listée.
 >
-> Une correction au passage : la table annonçait « cuivre 3 sources ». Le monde livré en
-> a **deux** (Mines, Dunes) ; la troisième viendra avec les Vallons d'Aubépine (ZON-30).
-> La loi testée exige donc « au moins deux » pour une matière de base, pas exactement trois.
+> Une correction au passage : la table annonçait « cuivre 3 sources ». Le monde livré n'en
+> a longtemps eu que **deux** (Mines, Dunes) — ZON-30 a livré les Vallons sans la troisième.
+> **Posée le 2026-07-31** : le cuivre des labours, profil T0, ce que la charrue remonte dans
+> la strate la plus jeune du monde. La loi testée continue d'exiger « au moins deux » pour une
+> matière de base, pas exactement trois — mais le premier métal se trouve désormais dans la
+> première zone, et un test le tient.
 
 L'audit (BALANCE §21) a montré six minerais de haut palier sans filon (portés par des
 `ObjectLayer` hérités) et l'étain à source unique. Voici la carte actée — c'est l'entrée
