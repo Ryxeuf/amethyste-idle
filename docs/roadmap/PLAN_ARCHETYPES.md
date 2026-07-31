@@ -4,9 +4,10 @@
 > préfixes.
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
-> 2026-07-31 ; **§9 bis**, **§9 ter** et **§9 quater** en déroulent trois exemples complets
-> — un soldat du jour 3 au mois 3, un guérisseur seul puis en donjon, un archer sur une
-> journée de jeu — qui ont produit **dix** des corrections listées ci-dessous) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
+> 2026-07-31 ; **§9 bis** à **§9 quinquies** en déroulent **quatre** exemples complets — un
+> soldat du jour 3 au mois 3, un guérisseur seul puis en donjon, un archer sur une journée
+> de jeu, un hydromancien mesuré en tours volés — qui ont produit **treize** des corrections
+> listées ci-dessous, dont **aucune** ne portait sur un pourcentage) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
 > comme matéria, l'intention et la portée du geste, les marques élémentaires, le
 > vocabulaire fermé des leviers et de leurs conditions d'équipement, le budget de
 > puissance avec la fourche et le pacte, la loi du dépôt, les accointances, le gabarit et
@@ -30,7 +31,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 28 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 30 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -66,6 +67,9 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Les **palettes** en configuration (`config/game/domain_roles.yaml`) : **cinq leviers**
       par fonction dont un **principal exclusif** (`power`/`grip`/`mending`/`guard`), plus la
       **palette d'intentions** (§5.1) ; la règle des 80/20 exprimée en données, pas en code
+- [ ] Plafonds des principaux à **20** (`power`, `mending`, `grip`), `guard` à **15**
+      (correction du §9 quinquies : à 18, le capstone consommant 14 pb, un arbre de contrôle
+      ne pouvait acheter son levier principal nulle part ailleurs qu'à son sommet)
 - [ ] Aucun affichage joueur : la fonction est une contrainte d'auteur, pas une classe
 - [ ] Tests : aucun triplet (élément, registre, fonction) en double ; tout domaine de
       combat a une fonction ; toute palette a cinq leviers ; deux palettes ne partagent
@@ -187,7 +191,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 28 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 30 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -231,6 +235,11 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
       alliés — régénération, absorption, amélioration — et elle court **que le lanceur soit
       connecté ou non**
+- [ ] **L'asymétrie du donjon semi-synchrone**, à écrire noir sur blanc (correction du
+      §9 quinquies) : un effet posé sur les **alliés** se multiplie par leur nombre (×8,8 à
+      quatre), un effet posé sur l'**ennemi** ne se multiplie pas (×0,9) — un seul joueur
+      agit par tour. Entretien et encaisse gagnent au groupe ; assaut et contrôle n'y
+      gagnent rien. Ne pas équilibrer le contrôle comme un soutien
 - [ ] **Toute `protection` porte une durée**, quelle que soit sa portée (correction du
       §9 bis) : une garde qui ne couvre que le tour où elle est jouée punit l'encaisse de
       se défendre — il perd en dégâts exactement ce qu'il gagne en survie
@@ -277,6 +286,10 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > Sans les marques, aucune des trois n'a d'objet.
 - [ ] Une marque par élément — Brûlure, Trempé, Déséquilibre, Alourdi, Entaille,
       Traqué, Révélé, Aveuglé — déclarées comme `StatusEffect` et rattachées à `Element`
+- [ ] **Aucune entrave à un tour** (correction du §9 quinquies) : durée ≥ 2 tours, ou marque
+      portée par un geste de dégât. Démonstration : en duel, échanger un de ses tours contre
+      un tour adverse laisse les dégâts subis **rigoureusement identiques** (101 dans les
+      quatre cas mesurés) — une entrave d'un tour est un nœud mort
 - [ ] **Côté monstre aussi** (correction du §9 ter) : mesuré, **21 monstres sur 65** ont un
       sort et **9 de ces sorts** appliquent un statut. `ward` figure dans deux palettes sur
       quatre et l'accord de dissipation du Guérisseur n'a rien à dissiper — une marque qui

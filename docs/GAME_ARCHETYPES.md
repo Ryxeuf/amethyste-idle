@@ -346,7 +346,7 @@ instruire.
 | `dodge` | chance d'éviter entièrement | binaire, **avant** tout calcul de dégâts | **+0,35 pt** | 12 pb |
 | `life` | PV maximum | multiplicatif sur les PV de base | **+1,5 %** | 20 pb |
 | `recovery` | PV rendus en fin de tour | additif, hors soin | **+0,25 % des PV max** | 12 pb |
-| `grip` | durée **et** intensité des statuts appliqués | sur `StatusEffect` | **+1,2 %** | 18 pb |
+| `grip` | durée **et** intensité des statuts appliqués | sur `StatusEffect` | **+1,2 %** | 20 pb |
 | `ward` | résistance à l'application d'un statut subi | sur le jet d'application | **+1,0 %** | 15 pb |
 | `tempo` | initiative et ordre du tour | sur `speed` | **+1,0 %** | 12 pb |
 
@@ -370,6 +370,12 @@ dont la valeur marginale *croît* avec l'investissement s'achète plus cher :
   plafond est bas — c'est le levier qui casse un jeu quand il ne l'est pas.
 - `thrift` **agrandit le budget de tous les autres gestes** : son effet se compose
   avec tout ce que le joueur fera de la ressource économisée. 0,6, plafond 15.
+
+> **Les leviers principaux plafonnent tous à 20** — `power`, `mending`, `grip` —
+> **sauf `guard`, à 15**, dont l'efficacité est hyperbolique. *Correction issue du
+> §9 quinquies : `grip` était à 18, et comme le capstone d'un arbre en consomme 14,
+> un arbre de contrôle ne pouvait acheter son propre levier principal nulle part
+> ailleurs qu'à son sommet.*
 
 > **La règle qui rend tout ça vérifiable** : *un levier a une place et une seule
 > dans la formule de combat, et cette place est écrite ici.* Deux leviers qui
@@ -551,10 +557,21 @@ plus que n'importe quel chiffre :
 4. **Un des deux accords d'entrée applique la marque de l'élément** (§1.1) — sans
    quoi le capstone est hors de portée du joueur du jour 1.
 
-> **En PvE, « contrôle » n'est pas « soutien ».** Un tour que l'adversaire ne joue
-> pas est un tour de dégâts évité : le contrôle est une fonction **offensive**,
-> mesurée en tours volés. C'est important à écrire, sinon les arbres de contrôle
-> se font écrire comme des arbres d'assaut faibles.
+> **Ce que le contrôle est vraiment** *(rectifié au §9 quinquies, où la première
+> rédaction s'est révélée fausse)*. On lisait ici qu'« un tour que l'adversaire ne
+> joue pas est un tour de dégâts évité, donc le contrôle est offensif ». **En duel,
+> c'est arithmétiquement nul** : le combat s'allonge exactement de ce qu'on a volé,
+> et les dégâts subis ne bougent pas d'un point. Deux règles en découlent, et elles
+> valent pour les sept arbres de contrôle de la grille :
+>
+> 1. **Une entrave n'est jamais un tour perdu** : soit elle vole **plus d'un tour**
+>    (durée ≥ 2), soit elle **accompagne un geste de dégât**. C'est ce qui fait de
+>    `grip` — la durée — la **condition d'existence** de la fonction, et pas un
+>    bonus de confort.
+> 2. **Le contrôle est défensif en duel, et il ne se multiplie pas en groupe**
+>    (§7 bis) — mais il est **la seule fonction dont la valeur ne change pas** selon
+>    le contexte. C'est sa compensation, et elle vaut mieux qu'un multiplicateur
+>    dans un jeu à 1-2 joueurs simultanés.
 
 ---
 
@@ -875,11 +892,21 @@ qu'elles tombent en trois minutes ou en trois jours.
   un rôle collectif sans exiger le moindre système d'aggro. Une rencontre à PV
   partagés ne peut pas être « prise en charge » ; elle peut être **amortie**.
 - **Contrôle** — l'entrave posée sur la rencontre vaut pour tous les tours
-  suivants, donc pour les tours des autres. C'est la fonction dont le rendement
-  collectif est le plus élevé, et il est entièrement asynchrone.
+  suivants, donc pour les tours des autres. **Mais elle ne se multiplie pas par la
+  taille du groupe**, et c'est mesuré (§9 quinquies) : un dépôt sur les alliés rend
+  ×8,8 à quatre, une marque sur l'ennemi ×0,9. Le contrôle gagne au groupe la même
+  chose qu'en solo — ni plus, ni moins.
 - **Assaut** — inchangé, et c'est le point : il est **suffisant seul**. Aucune
   fonction n'a besoin d'un groupe pour exister ; le groupe multiplie les trois
   autres.
+
+> **L'asymétrie du donjon semi-synchrone, et elle est structurelle** *(mesurée au
+> §9 quinquies)*. **Un effet posé sur les alliés se multiplie par leur nombre ; un
+> effet posé sur l'ennemi ne se multiplie pas** — il n'y a qu'un flux d'actions à
+> améliorer, et un seul joueur le joue à la fois. Donc **l'entretien et l'encaisse
+> gagnent mécaniquement au groupe, l'assaut et le contrôle n'y gagnent rien**. Ce
+> n'est pas un défaut à corriger : c'est une propriété du modèle, et la nier
+> reviendrait à équilibrer le contrôle comme un soutien qu'il n'est pas.
 
 > **Le garde-fou qui va avec** : un dépôt ne rend jamais un joueur *nécessaire*.
 > Un groupe sans entretien met plus de tours et perd plus de PV — il ne se heurte
@@ -1657,6 +1684,137 @@ d'inventaire.
 
 ---
 
+## 9 quinquies. Le quatrième exemple — l'Hydromancien, et l'unité du contrôle
+
+Les trois premiers exercices ont mesuré des tours, des PM, des gils. Le contrôle
+se mesure en **tours volés** — une unité que le document affirmait depuis le §5
+sans l'avoir jamais posée sur une feuille. C'est le seul exemple qui ait **infirmé
+une affirmation du document** au lieu de la préciser.
+
+L'arbre n'existait pas : il est écrit ici en appliquant la procédure du §10.1, ce
+qui la met à l'épreuve au passage.
+
+### 9 quinquies.1 L'arbre, au gabarit
+
+**Hydromancien** — eau × sorts × **Contrôle**. Marque : **Trempé**. Teinte :
+`power` — il doit quand même tuer.
+
+| Palier | Coût | Nœud | Ce qu'il donne | pb |
+|---|---:|---|---|---:|
+| Entrée | 0 | **Accord : Jet glacé** — `dégât`, `une cible` | le geste, **et il applique Trempé** : la marque ne coûte jamais un tour (§9 quinquies.3) | — |
+| Entrée | 0 | **Accord : Remous** — `entrave`, `une cible`, **2 tours** | le plan B, et la condition du capstone | — |
+| 1 | 10 | Lecture du courant | `hit` **+1,5 pt** | 3 |
+| 1 | 10 | Devancer | `tempo` **+3 %** | 3 |
+| 1 | 10 | **Accord : Gel** — `entrave`, `une cible`, 3 tours | l'entrave qui compte | — |
+| 1 | 10 | *Port* : canal de sort, échelon 2 | — | — |
+| 2 | 25 | Économie du geste | `thrift` **−3,6 %** | 6 |
+| 2 | 25 | Poigne froide | `grip` **+7,2 %** | 6 |
+| 2 | 25 | **Accord : Nappe** — `entrave`, `plusieurs cibles` | — | — |
+| 2 | 25 | *Port* : canal de sort, échelon 3 | — | — |
+| 3 | 50 | **Fourche — le Reflux** · Litanie basse | `thrift` **−5,4 %** | 9 |
+| 3 | 50 | **Fourche — le Reflux** · Prendre le devant | `tempo` **+9 %** | 9 |
+| 3 | 50 | **Fourche — le Reflux** · **Accord : Prison de glace** — `entrave`, longue | l'entrave qui vole quatre tours | — |
+| 3 | 50 | **Fourche — la Vague** · Pointe d'eau | `pierce` **+6,3 pt** | 9 |
+| 3 | 50 | **Fourche — la Vague** · Force du flot | `power` **+9 %** *(teinte)* | 9 |
+| 3 | 50 | **Fourche — la Vague** · **Accord : Lame d'eau** — `dégât`, amplifié contre une cible entravée | l'entrave devient des dégâts | — |
+| **Capstone** | 100 | **Emprise** | `grip` **+23,5 %** *quand la cible subit un de vos statuts* (14 pb × **1,4** — condition quasi permanente) | 14 |
+| *Dormant* | *150* | *Accord d'hybride (eau)* | *réservé* | — |
+
+**Vérification.** 50 pb par branche · palette 50 *(Reflux)* ou 41 *(Vague)* ✔ ·
+teinte `power` 9 ≤ 10 ✔ · `thrift` 15 ≤ 15 ✔ · `tempo` 12 ≤ 12 ✔ · `grip` **20 ≤ 20**
+✔ *(voir correction 13)* · branches sans levier commun ✔.
+**Intentions** : 3 `entrave` ≥ 2 ✔ · 1 `dégât` ✔ · un accord d'entrée applique
+**Trempé** ✔.
+**Test du voisin** : Guérisseur *(entretien)* et Marémancien *(assaut)* partagent la
+case eau × sorts et **aucun levier principal** avec lui ✔.
+
+### 9 quinquies.2 Le résultat qui infirme le document
+
+Le §5 affirmait : *« un tour que l'adversaire ne joue pas est un tour de dégâts
+évité : le contrôle est une fonction offensive, mesurée en tours volés. »*
+**C'est faux, et l'arithmétique est sans appel.** Face à l'élite (180 PV,
+frappe 16), l'hydromancien inflige 24,2 par tour et subit 13,6 :
+
+| Entraves posées (1 tour volé chacune) | Durée du combat | **Dégâts subis** |
+|---:|---:|---:|
+| 0 | 7,5 tours | **101** |
+| 1 | 8,5 tours | **101** |
+| 2 | 9,5 tours | **101** |
+| 3 | 10,5 tours | **101** |
+
+> **En duel, échanger un de ses tours contre un tour adverse est rigoureusement
+> nul.** Le combat s'allonge d'exactement ce qu'on a volé. Ce n'est pas une
+> question de calibrage : c'est une identité arithmétique, vraie pour n'importe
+> quelle valeur de dégâts.
+
+La sortie tient en un mot : **la durée**.
+
+| Durée de l'entrave | Dégâts subis | Économisé |
+|---:|---:|---:|
+| 1 tour | 101 | **0** |
+| 2 tours | 88 | 14 |
+| 3 tours | 74 | 27 |
+| 4 tours | 61 | **41** |
+
+**Correction 11 — une entrave n'est jamais un tour perdu.** Soit elle **vole plus
+d'un tour** (durée ≥ 2), soit elle **accompagne un geste de dégât** — comme le Jet
+glacé qui applique Trempé sans rien coûter. Une entrave d'un tour posée par un
+geste dédié est un nœud mort, et c'est exactement ce qu'on aurait écrit sans faire
+le calcul.
+
+C'est aussi ce qui fait de `grip` — la durée — **la condition d'existence de la
+fonction**, et non un bonus de confort. Le capstone *Emprise* n'ajoute pas de la
+puissance : il transforme une entrave de 3 tours en une entrave de 3,7.
+
+### 9 quinquies.3 L'asymétrie du donjon, que personne n'avait vue
+
+Le §7 bis dit que le contrôle est « la fonction dont le rendement collectif est le
+plus élevé ». Mesuré, dans un donjon à quatre où **un seul joueur agit par tour** :
+
+| Ce qu'on pose | Sur qui | Ce que ça rend | En tours d'attaque |
+|---|---|---:|---:|
+| **Un dépôt de soin** (8 PV/tour, 6 tours) | les **alliés** | 8 × 6 × **4 corps** = 192 PV | **×8,8** |
+| **Une marque offensive** (+15 %, 6 tours) | l'**ennemi** | 6 actions × 22 × 15 % = 20 dégâts | **×0,9** |
+
+> **Un effet posé sur les alliés se multiplie par leur nombre. Un effet posé sur
+> l'ennemi ne se multiplie pas** — parce qu'il n'y a qu'un flux d'actions à
+> améliorer, et qu'un seul joueur le joue à la fois.
+
+**Correction 12 — l'asymétrie est structurelle, et il faut l'écrire.**
+L'**entretien** et l'**encaisse** (effets sur les alliés) gagnent mécaniquement au
+groupe ; l'**assaut** et le **contrôle** (effets sur l'ennemi) n'y gagnent rien. Ce
+n'est pas un défaut à corriger — c'est une propriété du donjon semi-synchrone, et
+la nier reviendrait à équilibrer le contrôle comme un soutien qu'il n'est pas.
+
+**Sa compensation, et c'est une qualité** : le contrôle est **la seule fonction
+dont la valeur ne change pas entre le solo et le groupe**. Les trois autres jouent
+à moitié quand le contexte ne leur convient pas ; celui-ci joue pareil partout. Un
+joueur qui alterne les deux n'a rien à réapprendre — ce qui, dans un jeu à 1-2
+joueurs simultanés, vaut mieux qu'un multiplicateur.
+
+**Correction 13 — le plafond de `grip` passe de 18 à 20.** À 18, le capstone
+(14 pb) ne laissait que 4 points : un arbre de contrôle ne pouvait acheter son
+**levier principal** nulle part ailleurs qu'à son sommet. Les principaux
+s'alignent donc à **20** (`power`, `mending`, `grip`), sauf `guard` qui reste à
+**15** parce que son efficacité est hyperbolique (§4.1).
+
+### 9 quinquies.4 Ce que les quatre exemples ont produit
+
+| Exemple | Ce qu'il mesurait | Ce qu'il a trouvé |
+|---|---|---|
+| **Soldat** (§9 bis) | des tours | la fourche était cosmétique · la défense punissait · un multiplicateur mal compté |
+| **Guérisseur** (§9 ter) | des PM | l'ancre était à moitié aveugle · la durée gonflait la valeur · les marques manquaient d'un côté |
+| **Archer** (§9 quater) | des gils | la flèche ordinaire éteignait l'arbre · la munition n'achetait rien · un levier à 12 gils/jour |
+| **Hydromancien** (§9 quinquies) | des tours volés | **une entrave d'un tour est nulle** · le groupe ne multiplie que ce qui porte sur les alliés · un plafond mal aligné |
+
+**Treize corrections en quatre exercices, et pas une seule n'a porté sur un
+pourcentage.** Toutes ont porté sur des **gestes**, des **durées**, des
+**ressources** ou des **conditions** — c'est-à-dire sur ce que le §0 appelait le
+couple *(arbre, matéria)*. Le budget de puissance n'a jamais été le problème : il
+est ce qui empêche d'en faire un.
+
+---
+
 ## 10. Les 24 domaines de combat dans la grille
 
 Fonction proposée pour chacun. La règle qui la contraint : **aucun triplet
@@ -1847,9 +2005,13 @@ Ce qui doit casser la CI si on le viole :
 26. **Une meilleure munition rend une prime fixe et plafonnée** (§2) — payer au-delà
     du palier ne rend jamais plus fort, et le coût quotidien des munitions reste sous
     les seuils du §9 quater.
-27. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+27. **Aucune entrave ne coûte un tour pour en voler un** (§5, §9 quinquies) — durée
+    ≥ 2 tours, ou marque portée par un geste de dégât. En duel, l'échange à un pour
+    un est arithmétiquement nul.
+28. **Les leviers principaux plafonnent à 20**, sauf `guard` à 15 (§4.1).
+29. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-28. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+30. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
