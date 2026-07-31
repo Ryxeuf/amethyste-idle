@@ -715,7 +715,7 @@ nombre, mais sur un ratio** — et le ratio de référence est le **nombre de to
 | Adversaire | Durée cible d'un combat | Lecture |
 |---|---:|---|
 | Faune commune de son palier | **3 à 5 tours** | Le tout-venant ; on doit pouvoir en enchaîner |
-| Élite de son palier | **6 à 10 tours** | Un vrai échange ; le build se voit |
+| Élite de son palier | **6 à 10 tours** | **Une rencontre de groupe** — mortelle pour un joueur seul, quel que soit son archétype (§9 octies) |
 | Boss de palier / donjon | **12 à 20 tours** | Là où l'entretien et l'encaisse existent |
 
 D'où la seule formule d'équilibrage dont on ait besoin pour un geste :
@@ -2038,6 +2038,109 @@ Rempart se multiplie par quatre.
 
 ---
 
+## 9 octies. Les dégâts subis — et ce qu'une élite doit être
+
+### 9 octies.1 La réponse directe
+
+Dégâts subis par rencontre, en **pourcentage de sa propre barre** — c'est la seule
+lecture comparable, les six builds n'ayant pas les mêmes points de vie.
+
+| Build | Commun *(100 PV, frappe 9)* | Élite *(180 PV, frappe 16)* |
+|---|---:|---:|
+| Guérisseur — le Ressac | **0 %** *(il regagne)* | 29 % |
+| Hydromancien — la Vague | 16 % | 74 % |
+| Soldat — la Ligne mobile | 18 % | 63 % |
+| Soldat — le Mur | 23 % | 78 % |
+| Archer — le Guet | 26 % | 68 % |
+| Pyromancien — l'Éclat | 26 % | 79 % |
+
+**Deux choses se lisent d'un coup.** Sur le tout-venant, l'écart est faible (16 à
+26 %) : la mitigation du tank compense sa lenteur, la vitesse de l'assaut compense
+sa fragilité — c'est équilibré, et ce n'est pas un hasard, c'est la même
+arithmétique vue au §9 septies. Sur l'élite, **tout le monde survit** — le pire
+finit à 21 % de sa barre. **C'est ça, le vrai défaut du modèle.**
+
+### 9 octies.2 Décision 20 — une élite n'est pas un palier solo
+
+> **Une élite n'est pas un commun plus gros. C'est une rencontre de groupe, et un
+> joueur seul de puissance équivalente ne doit pas en venir à bout — quel que soit
+> son archétype.**
+
+La calibration qui le tient : **frappe 26 au lieu de 16**, à points de vie
+inchangés.
+
+| Build | Tours | Dégâts subis | Issue |
+|---|---:|---:|---|
+| Guérisseur — le Ressac | 14 | 122 | **102 % de sa barre — mort** |
+| Soldat — la Ligne mobile | 10 | 134 | **102 % — mort** |
+| Archer — le Guet | 6 | 133 | **111 % — mort** |
+| Hydromancien — la Vague | 11 | 144 | **120 % — mort** |
+| Soldat — le Mur | 14 | 187 | **127 % — mort** |
+| Pyromancien — l'Éclat | 7 | 155 | **129 % — mort** |
+
+**L'écart va de 102 à 129 %** : c'est uniformément létal, et aucun archétype ne
+s'en sort par une astuce. Le « quelle que soit l'archétype » est tenu — y compris
+pour le guérisseur, qui peut bien allonger le combat en soignant, mais cesse alors
+de tuer.
+
+### 9 octies.3 Pourquoi c'est mortel seul et confortable à quatre
+
+Ce n'est pas une décision arbitraire : **c'est l'asymétrie du §9 quinquies qui le
+produit**, et c'est ce qui rend la décision cohérente avec tout le reste.
+
+| À quatre, sur une rencontre de 800 PV | |
+|---|---:|
+| Durée | 36 tours |
+| Dégâts distribués au total | 800 |
+| **Par joueur** | **200** |
+| Ce qu'un dépôt de soin maintenu rend **à chacun** | **290** |
+
+> **Les dégâts ne se divisent pas par la taille du groupe — les dépôts, si.** Un
+> joueur seul encaisse tout ; à quatre, chacun encaisse le quart *et* reçoit
+> l'intégralité du soin déposé. C'est la même mécanique qui donne leur rôle à
+> l'entretien et à l'encaisse (§7 bis), et c'est elle qui fait qu'une élite
+> impossible seul devient une rencontre normale à plusieurs. **Aucune règle
+> spéciale n'est nécessaire.**
+
+### 9 octies.4 Ce que ça change pour la journée solo
+
+Si l'élite sort de la boucle solo, la journée est faite de **communs seuls** :
+
+| Build | PV/jour | PM/jour | Attente PV | Attente PM | **Total** |
+|---|---:|---:|---:|---:|---:|
+| Soldat — la Ligne mobile | 368 | — | 74 mn | — | **74 mn** |
+| Archer — le Guet | 496 | — | 99 mn | — | **99 mn** |
+| Soldat — le Mur | 544 | — | 109 mn | — | **109 mn** |
+| Hydromancien — la Vague | 304 | 700 | 61 mn | 70 mn | **131 mn** |
+| Guérisseur — le Ressac | 0 | 1 344 | — | 134 mn | **134 mn** |
+| Pyromancien — l'Éclat | 496 | 640 | 99 mn | 64 mn | **163 mn** |
+
+**Écart de ×2,2 entre le meilleur et le pire.** C'est encore trop — la cible
+raisonnable est **moins de ×1,5**, et c'est le chiffre que la simulation d'ARC-17
+doit tenir. Deux points à corriger :
+
+- **Le pyromancien paie deux fois** — fragile *et* dépensier. C'est le seul cas où
+  la fragilité de l'assaut n'est pas compensée par sa vitesse, parce qu'il paie
+  aussi le pool. Son coût en PM doit descendre, ou ses PV monter.
+- **Le guerrier de mêlée reste le plus économe du tout-venant**, et c'est
+  acceptable : c'est le seul qui ne paie **aucune** ressource. Ce qu'il ne peut pas
+  faire — l'élite, le boss à fenêtre, le dépôt de groupe — est ailleurs.
+
+### 9 octies.5 Ce que ça impose au contenu
+
+Deux conséquences à porter hors de ce document :
+
+- **[GAME_BESTIARY.md](GAME_BESTIARY.md)** — le gabarit `tier × rank` doit produire
+  un rang **Elite** qui **tue un joueur seul de son palier**, pas un commun aux
+  statistiques gonflées. Le rapport mesuré : *une élite frappe ~2,9 fois plus fort
+  qu'un commun du même palier* (26 contre 9), pour ~1,8 fois ses points de vie.
+- **[GAME_DUNGEONS.md](GAME_DUNGEONS.md)** — l'élite est l'étape **normale** d'un
+  donjon (trois étapes : commun → élite → boss) et c'est là qu'elle vit. En zone,
+  elle reste une rencontre exceptionnelle **dont on peut fuir** : un mur qu'on ne
+  peut ni franchir ni contourner n'est pas du contenu, c'est un panneau.
+
+---
+
 ## 10. Les 24 domaines de combat dans la grille
 
 Fonction proposée pour chacun. La règle qui la contraint : **aucun triplet
@@ -2248,9 +2351,16 @@ Ce qui doit casser la CI si on le viole :
 33. **Toute fourche oppose deux contextes** (§9 septies.3) — chaque arbre porte une
     branche jouable **seul** et une branche qui sert le **groupe**. Une fonction
     dont aucune branche n'est jouable seule est une fonction fermée à 95 % du jeu.
-34. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+34. **Une élite tue un joueur seul de son palier** (§9 octies) — quel que soit son
+    archétype, et sans qu'aucun ne s'en sorte par une astuce. Mesuré : 102 à 129 %
+    de la barre de chacun. C'est ce qui distingue un rang **Elite** d'un commun aux
+    statistiques gonflées.
+35. **L'écart d'attente quotidienne entre le meilleur et le pire build reste sous
+    ×1,5** (§9 octies.4) — mesuré à ×2,2 aujourd'hui, c'est la cible de calibrage
+    d'ARC-17.
+36. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-35. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+37. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---

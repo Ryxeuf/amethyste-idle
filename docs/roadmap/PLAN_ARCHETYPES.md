@@ -30,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 35 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 37 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -211,7 +211,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 35 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 37 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -390,6 +390,18 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **La matrice contexte × fonction** (§9 septies.3) : aucune case vide, aucune fonction
       dominante dans les deux colonnes. Et l'exigence qui en découle — **toute fourche
       oppose deux contextes**, une branche jouable seul, une branche qui sert le groupe
+- [ ] **L'élite n'est pas un palier solo** (§9 octies) : elle **tue un joueur seul de son
+      palier, quel que soit son archétype**. Calibration mesurée — frappe ~2,9× celle d'un
+      commun du même palier, à points de vie ~1,8× : les six builds y laissent 102 à 129 %
+      de leur barre. À quatre elle devient normale **sans règle spéciale**, parce que les
+      dégâts ne se divisent pas par la taille du groupe mais que les dépôts, si
+- [ ] **Cible de calibrage** : moins de **×1,5** d'écart d'attente quotidienne entre le
+      meilleur et le pire build. Mesuré aujourd'hui : ×2,2, le pyromancien payant deux fois
+      (fragile *et* dépensier)
+- [ ] **Conséquences à porter** : dans **GAME_BESTIARY** (le gabarit `tier × rank` doit
+      produire un rang Elite qui tue un solo, pas un commun gonflé) et dans **GAME_DUNGEONS**
+      (l'élite est l'étape normale d'un donjon ; en zone elle reste une rencontre dont **on
+      peut fuir** — un mur qu'on ne peut ni franchir ni contourner n'est pas du contenu)
 - [ ] Tests : la simulation de journée en CI ; aucun build hors de la fourchette d'attente ;
       chaque arbre a une branche solo et une branche de groupe
 
