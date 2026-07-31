@@ -43,6 +43,13 @@ class HomeSettlementTest extends TestCase
         $allowed = [
             'src/Entity/App/Player.php',                              // il le porte
             'src/GameEngine/Progression/HomeSettlementResolver.php',  // il le constate
+            // RET-09 : il l'**affiche**. Le recap du lundi lit le foyer pour
+            // savoir de quelle ville raconter la chronique, et rien d'autre :
+            // aucune branche du service ne depend de sa valeur, un joueur sans
+            // foyer voit simplement le recap sans ligne de chronique. La
+            // question de cette liste — *est-ce que je decide de ce que le
+            // joueur peut faire ?* — se repond ici par non.
+            'src/GameEngine/Retention/WeeklyRecapService.php',
         ];
 
         $readers = [];

@@ -64,6 +64,14 @@ continue se reintroduirait « parce que c'est standard ». Le chemin inverse de 
 (`WeekKey::mondayOfKey`) vit dans `WeekKey` pour la meme raison que l'aller : le premier
 appelant qui l'aurait recalcule sur place aurait recree la duplication que ce fichier supprime.
 
+**Une loi transverse amendee, en la nommant** : `getHomeZone()` n'est lisible que dans une
+liste blanche, tenue par deux tests (`HomeSettlementTest`, `OnboardingPlanContractTest`) —
+le foyer d'attache ne doit jamais devenir une autorisation deguisee. Le recap le lit pour
+savoir de quelle ville raconter la chronique. Le message du test prevoit exactement ce cas
+(« si la lecture est un affichage, ajoutez le fichier a la liste avec sa raison ») : le
+service y a donc ete inscrit **avec sa justification**, plutot que contourne en passant par
+un resolveur — une indirection aurait fait taire le test sans repondre a sa question.
+
 **Ecart assume avec le cadrage** : le § 4 place le bloc en tete de *colonne principale* le
 lundi. Il est reste dans la colonne laterale, ou RET-08 l'avait mis — deplacer un panneau une
 fois par semaine couterait au repere plus que ne rapporterait la mise en avant. Le recap s'ouvre
