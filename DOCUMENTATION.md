@@ -366,6 +366,7 @@ zones:
         safe: false                  # true = aucune rencontre hostile
         enabled: true                # optionnel (défaut true)
         source_map: 'Nom de Map'     # legacy TMX (optionnel, résolu par nom)
+        illustration: zones/<slug>.webp  # bandeau de zone (ZON-41), sous public/images/ — optionnel
         explore:                     # table de rencontres / loot (optionnel → défauts d'ExploreService)
             weights: { mob: 50, chest: 10, harvest: 10, pnj: 10, nothing: 20 }
             chest_gils_min: 5
@@ -379,6 +380,8 @@ zones:
 connections:
     - { from: <slug>, to: <slug>, travel_seconds: 300, bidirectional: true, requires_discovery: false, enabled: true }
 ```
+
+**`illustration` (ZON-41)** — la forme est **close et unique** : `zones/<slug>.webp`, où `<slug>` est celui de la zone. Toute autre valeur casse l'import, y compris `zones/autre-zone.webp` : un champ qui part dans un attribut `src` ne doit pas pouvoir désigner autre chose qu'un bandeau, et une image ne doit pas pouvoir se retrouver sur la mauvaise zone. Le YAML **écrase** la valeur saisie dans `/admin/zone` — celle-ci est un aperçu, remis à plat au prochain import ; c'est le point du jalon, la donnée ne doit pas différer d'un environnement à l'autre. Un chemin déclaré dont le fichier manque sous `public/images/` produit un **avertissement** d'import, jamais une erreur : les douze bandeaux arrivent un par un.
 
 Correspondance avec les cinq axes déclaratifs de ZON-11 : **rencontres** = `explore.weights` (le pool de monstres reste porté par les `Mob` placés dans la zone, ZON-04) ; **loot** = `explore.chest_gils_*` ; **ressources** = `gather` (→ `Zone::getGatherResources()`) ; **actions** = explorer/chasser/récolter, dérivées de `safe` et de la présence de filons (énergie d'action ZON-07) ; **connexions** = `connections`.
 

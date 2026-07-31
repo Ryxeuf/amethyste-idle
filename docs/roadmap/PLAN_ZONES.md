@@ -30,7 +30,7 @@ d'origine :
 | ZON-38 ✅ | La récolte redevient observable (fix) | S | ∅ |
 | ZON-39 ✅ | La loi de nommage rejoint les libellés | M | ∅ (donnée pure) |
 | ZON-40 ✅ | Les signatures cessent d'être inertes | M | tranché : option (a), affleurements posés |
-| **ZON-41** | **Les illustrations de zone entrent dans la donnée** | **S** | ∅ pour le câblage ; les images suivent |
+| ZON-41 ✅ | Les illustrations de zone entrent dans la donnée (câblage) | S | ∅ — **les images restent à produire** |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -187,7 +187,22 @@ ZON-33 en continu
 > intitulé et son objet — le spot `spot-amethystite-xs` de l'ancien système de carte — alors
 > que l'améthyste affleure désormais sans gate. L'arbre du mineur relève de PLAN_DOMAINS.
 
-### ZON-41 — Les illustrations de zone entrent dans la donnée (S | ★★ | MOYENNE)
+### ZON-41 — Les illustrations de zone entrent dans la donnée ✅ (S | ★★ | MOYENNE)
+> **Câblage livré le 2026-07-31** (sous-phases a, b, c, e). Détail dans
+> [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> **Restent d, f, g** — et elles attendent toutes la même chose : les images. `d` (les 12 clés
+> dans le YAML) et `f` (les fichiers sous `public/images/zones/`) se font ensemble, une zone à
+> la fois ; `g` (la loi « toute zone placée sur la carte porte une illustration ») se pose **en
+> dernier**, comme le plan le prévoyait — écrite aujourd'hui elle casserait la CI dès le
+> premier bandeau livré.
+>
+> **Une simplification en chemin** : la validation annoncée en deux temps (une expression
+> rationnelle de forme, puis la correspondance au slug) s'est réduite à **une seule égalité**.
+> Il n'existe qu'une valeur légale par zone — `zones/<slug>.webp` — donc la comparer suffit, et
+> elle rejette du même coup le chemin absolu, le `..`, l'extension libre et le bandeau d'une
+> autre zone. Une règle qu'on ne peut pas satisfaire à moitié.
+
 
 > Le pendant technique de [../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md), qui livre
 > les prompts des 12 bandeaux. **Ce jalon ne produit aucune image** : il rend le champ
@@ -283,8 +298,9 @@ manque ; il relève de la narration, pas de ce plan.
   chaînes de quête restent dans les fixtures ») : les migrer est un chantier de narration, pas
   de donnée de zone. `source_map` reste donc en place pour eux seuls.
 - **Les 12 bandeaux de zone eux-mêmes** : prompts écrits
-  ([../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md)), câblage spécifié (ZON-41), images
-  à générer et à déposer dans `public/images/zones/`.
+  ([../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md)), **câblage livré** (ZON-41 a/b/c/e),
+  images à générer et à déposer dans `public/images/zones/` — puis la clé `illustration:` de
+  la zone, et la loi `g` quand les douze sont là.
 - ~~**La 3e source de cuivre promise aux Vallons**~~ — **posée le 2026-07-31**. Le filon de
   cuivre des labours, profil T0 : le monde n'avait que les Mines (zone hostile de palier haut)
   et les Dunes (l'autre bout de la route du sud) pour le métal par lequel toutes les chaînes

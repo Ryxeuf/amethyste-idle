@@ -117,11 +117,54 @@ class ZoneDefinitionLoader
             'map_y' => isset($definition['map_y']) ? (int) $definition['map_y'] : null,
             // Contour cliquable sur la carte illustree (meme espace 0-100).
             'map_shape' => $this->normalizeMapShape($slug, $definition['map_shape'] ?? null, $source),
+            // Bandeau de la zone (ZON-41), sous `public/images/`.
+            'illustration' => $this->normalizeIllustration($slug, $definition['illustration'] ?? null, $source),
             'explore' => $this->normalizeExplore($slug, $definition['explore'] ?? null, $source),
             'gather' => $this->normalizeGather($slug, $definition['gather'] ?? null, $source),
             'mobs' => $this->normalizeMobs($slug, $definition['mobs'] ?? null, $source),
             'pnjs' => $this->normalizePnjs($slug, $definition['pnjs'] ?? null, $source),
         ];
+    }
+
+    /**
+     * Bandeau de la zone, sous `public/images/` (ZON-41).
+     *
+     * Le champ existait sur l'entite, etait editable en administration et etait
+     * **rendu** par l'ecran de zone — mais aucun chemin ne partait de la donnee.
+     * Le defaut n'etait donc pas « le champ est vide » : c'est qu'une valeur
+     * saisie a la main disparaissait au prochain rechargement des fixtures, et
+     * n'existait dans aucun autre environnement. Un champ volatil.
+     *
+     * Trois regles, calquees sur `normalizeMapShape()` — *un chemin malforme
+     * doit casser l'import, pas rendre une balise `<img>` morte* :
+     *
+     * 1. l'absence est valide, et reste la norme tant que l'image n'existe pas ;
+     * 2. la forme est close (`zones/<nom>.webp`) : ni chemin absolu, ni `..`, ni
+     *    extension libre — un champ qui part dans un attribut `src` ne doit pas
+     *    pouvoir designer autre chose qu'un bandeau ;
+     * 3. le nom de fichier **est** le slug de la zone. C'est la loi de nommage
+     *    du document de prompts, tenue par le code plutot que par la discipline :
+     *    une image ne peut pas se retrouver sur la mauvaise zone.
+     *
+     * Ce qui n'est **pas** verifie ici : que le fichier existe. Le loader ne
+     * touche pas au disque, et les douze bandeaux arriveront un par un —
+     * l'import le signale en avertissement (`ZoneImporter`), il ne le refuse pas.
+     */
+    private function normalizeIllustration(string $slug, mixed $illustration, string $source): ?string
+    {
+        if (null === $illustration) {
+            return null;
+        }
+        if (!\is_string($illustration)) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid "illustration" in "%s": expected a string.', $slug, $source));
+        }
+
+        $expected = 'zones/' . $slug . '.webp';
+        if ($illustration !== $expected) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" declares the illustration "%s" in "%s": expected exactly "%s".', $slug, $illustration, $source, $expected));
+        }
+
+        return $illustration;
     }
 
     /**

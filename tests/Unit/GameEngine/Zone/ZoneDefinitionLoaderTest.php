@@ -164,6 +164,77 @@ class ZoneDefinitionLoaderTest extends TestCase
         $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'map_shape' => '10,10 140,20 30,30']]]);
     }
 
+    /**
+     * Le bandeau d'une zone, quand il est declare, l'est sous une seule forme.
+     */
+    public function testIllustrationIsNormalized(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'foret-des-murmures' => ['name' => 'Foret', 'illustration' => 'zones/foret-des-murmures.webp'],
+            ],
+        ]);
+
+        self::assertSame('zones/foret-des-murmures.webp', $result['zones'][0]['illustration']);
+    }
+
+    /**
+     * L'absence de bandeau est valide, et reste la norme.
+     *
+     * Les douze images arrivent une par une : exiger la cle des maintenant
+     * rendrait le monde inimportable jusqu'a la derniere.
+     */
+    public function testAZoneWithoutIllustrationHasNone(): void
+    {
+        $result = $this->loader->normalize(['zones' => ['a' => ['name' => 'A']]]);
+
+        self::assertNull($result['zones'][0]['illustration']);
+    }
+
+    /**
+     * Un chemin qui remonte l'arborescence est refuse.
+     *
+     * La valeur part dans un attribut `src` : elle ne doit pas pouvoir designer
+     * autre chose qu'un bandeau.
+     */
+    public function testIllustrationEscapingTheFolderRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'illustration' => '../secret.png']]]);
+    }
+
+    /**
+     * Un chemin absolu est refuse : la racine est implicite, pas negociable.
+     */
+    public function testAbsoluteIllustrationRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'illustration' => '/images/zones/a.webp']]]);
+    }
+
+    /**
+     * Une extension libre est refusee : le format des bandeaux est arrete.
+     */
+    public function testIllustrationWithAnotherExtensionRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'illustration' => 'zones/a.png']]]);
+    }
+
+    /**
+     * Le bandeau d'une **autre** zone est refuse.
+     *
+     * C'est le rejet qui compte le plus, et le seul qu'une validation de forme
+     * ne verrait pas : le chemin est parfaitement bien ecrit, il designe
+     * simplement la mauvaise zone. La loi de nommage est tenue par le code
+     * plutot que par la discipline.
+     */
+    public function testIllustrationOfAnotherZoneRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->loader->normalize(['zones' => ['a' => ['name' => 'A', 'illustration' => 'zones/autre-zone.webp']]]);
+    }
+
     public function testEmptyZonesRejected(): void
     {
         $this->expectException(ZoneDefinitionException::class);

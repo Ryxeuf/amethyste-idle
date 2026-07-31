@@ -667,8 +667,15 @@
                     {% if description %}
                         <p class="ds-body mt-2">{{ description }}</p>
                     {% endif %}
+                    {# ZON-41 — le bandeau est purement decoratif : le nom de la zone
+                       est deja en titre deux lignes au-dessus, et un `alt` qui le
+                       repete le fait annoncer deux fois par un lecteur d'ecran.
+                       Meme traitement que la carte du monde. Les dimensions
+                       explicites evitent que l'image pousse la page en cours de
+                       chargement. #}
                     {% if zone.illustrationPath %}
-                        <img src="{{ asset('images/' ~ zone.illustrationPath) }}" alt="{{ zone.localizedName(app.request.locale) }}"
+                        <img src="{{ asset('images/' ~ zone.illustrationPath) }}" alt="" aria-hidden="true"
+                             width="1024" height="384" loading="lazy" decoding="async"
                              class="mt-3 rounded-panel border border-line max-h-48 w-full object-cover">
                     {% endif %}
                 </div>

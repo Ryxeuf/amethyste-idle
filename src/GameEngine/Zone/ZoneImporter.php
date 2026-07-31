@@ -23,8 +23,16 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class ZoneImporter
 {
+    /**
+     * Racine publique servie statiquement, pour verifier qu'un bandeau declare
+     * existe bel et bien (ZON-41).
+     *
+     * Injectee plutot que deduite : un service qui devine sa propre racine se
+     * trompe le jour ou on le lance depuis un autre repertoire.
+     */
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly string $publicDir = '',
     ) {
     }
 
@@ -103,6 +111,22 @@ class ZoneImporter
         $zone->setMapX(isset($data['map_x']) ? (int) $data['map_x'] : null);
         $zone->setMapY(isset($data['map_y']) ? (int) $data['map_y'] : null);
         $zone->setMapShape(isset($data['map_shape']) ? (string) $data['map_shape'] : null);
+
+        // ZON-41 : le YAML est la source de verite, et il **ecrase**. Une valeur
+        // saisie en administration est un apercu, remis a plat au prochain
+        // import — l'alternative (« ne pas ecraser si la cle est absente »)
+        // reconduirait le defaut que ce jalon repare : une donnee qui differe
+        // d'un environnement a l'autre sans que rien ne le dise.
+        $illustration = isset($data['illustration']) ? (string) $data['illustration'] : null;
+        $zone->setIllustrationPath($illustration);
+
+        // Un bandeau annonce mais absent du disque se voit — sans casser
+        // l'import. Les douze images arrivent une par une, et un import qui
+        // tomberait parce qu'une zone n'est pas encore peinte serait une
+        // regression pour tout le monde.
+        if (null !== $illustration && '' !== $this->publicDir && !is_file($this->publicDir . '/images/' . $illustration)) {
+            $report->addWarning(sprintf('Zone "%s": illustration "%s" declared but missing from disk.', $slug, $illustration));
+        }
 
         /** @var array<string, mixed>|null $explore */
         $explore = \is_array($data['explore'] ?? null) ? $data['explore'] : null;
