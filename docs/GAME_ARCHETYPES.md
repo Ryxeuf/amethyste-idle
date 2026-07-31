@@ -130,6 +130,12 @@ décorative :
 4. **La marque dit à quoi sert un élément**, et c'est ce que le catalogue public
    (GAME_ONBOARDING §6) peut enfin afficher : *le feu use, le métal punit qui
    joue, les ténèbres font rater*. Un joueur choisit son élément pour une raison.
+5. **Les monstres les portent aussi** *(correction issue du §9 ter)*. Mesuré :
+   **21 monstres sur 65 possèdent un sort**, et **9 de ces sorts appliquent un
+   statut**. Or `ward` — la résistance aux statuts subis — figure dans **deux
+   palettes sur quatre**, et l'accord *Dissipation* du Guérisseur ne sert à rien
+   s'il n'y a rien à dissiper. Une marque qui n'existe que dans un sens est un
+   levier mort pour la moitié des fonctions.
 
 > **Le lien avec la roue des oppositions** (GAME_WORLD §2.2) : chaque marque punit
 > ce que son opposé fait le mieux. L'air (déséquilibre) mord sur la terre, qui
@@ -691,6 +697,29 @@ que si des combats durent** — 3 tours ne laissent la place à aucun soin. La d
 cible des élites et des boss n'est donc pas un chiffre de confort : c'est la
 **condition d'existence de deux fonctions sur quatre**.
 
+#### La seconde ancre : le coût d'une rencontre, rapporté à la journée
+
+*(Correction issue du §9 ter.)* La durée en tours ne suffit pas. Mesuré : un
+Soldat et un Guérisseur tiennent **onze tours tous les deux** et sortent avec une
+barre comparable — mais le premier n'a **rien dépensé** et le second a vidé
+**~108 PM sur 120**. Sur un combat ils sont équivalents ; sur les ~16 combats
+qu'autorise une journée d'énergie (§6.2), ils n'ont rien à voir.
+
+> **Un archétype ne se juge pas sur un combat, il se juge sur la journée que la
+> barre d'énergie autorise.** Second ratio de référence : **le coût d'une rencontre
+> en ressource du registre**, rapporté au budget quotidien.
+
+| Registre | Ce que la seconde ancre mesure |
+|---|---|
+| **Sorts** | les PM consommés par rencontre, contre le pool et sa régénération hors combat |
+| **Mêlée** | rien à mesurer — le temps de reprise se paie **dans** le combat, jamais après |
+| **Distance** | les munitions consommées par rencontre, **contre les gils du jour** |
+
+C'est cette ancre qui donne leur sens aux leviers d'économie (`thrift`, `wind`) :
+ils n'agrandissent pas un combat, ils agrandissent une **journée**. Et c'est elle
+qui rend le registre mêlée structurellement différent des deux autres — il est le
+seul dont la ressource ne se reporte pas d'un combat au suivant.
+
 ### 6.5 Décision 14 — Le pacte : un malus rend du budget
 
 Un archétype mémorable n'est pas seulement bon à quelque chose : il est **mauvais
@@ -802,6 +831,23 @@ Trois conséquences, et elles suffisent à faire exister quatre rôles en groupe
 « mes tours ».** C'est le seul compteur que le moteur possède déjà et que
 l'asynchronie ne dérègle pas : un dépôt de 6 tours dure 6 actions du groupe,
 qu'elles tombent en trois minutes ou en trois jours.
+
+> **La durée étale la valeur, elle ne l'augmente pas** *(correction issue du
+> §9 ter)*. La valeur totale d'un dépôt est fixée par le **palier de la matéria** ;
+> la durée décide seulement de son étalement. Sans cette règle, allonger un dépôt
+> est le levier le moins cher du jeu : mesuré, un dépôt de 10 tours sur quatre
+> alliés vaut **14,7 tours d'attaque**, et un groupe sans entretien cesse d'être
+> « plus lent » pour devenir non viable — exactement ce que le garde-fou ci-dessous
+> interdit. Une durée longue n'achète pas de la puissance, elle achète de la
+> **robustesse à l'absence** : c'est ce dont un donjon semi-synchrone a besoin, et
+> c'est déjà bien assez.
+
+> **Le dépôt multiplie par la taille du groupe, et c'est sa raison d'être.** Mesuré :
+> un tour déposé vaut **2,2 tours d'attaque en solo** et **8,8 à quatre**. L'entretien
+> et l'encaisse sont donc modestes seuls et décisifs en groupe **sans jouer un autre
+> jeu** — même geste, autre portée. C'est la meilleure justification qu'on ait de la
+> loi du dépôt, et elle impose son garde-fou : *la valeur par cible reste modeste* —
+> c'est la multiplication qui fait la valeur, jamais le chiffre affiché.
 
 ### 7 bis.3 Ce que ça change pour les quatre fonctions
 
@@ -1377,6 +1423,120 @@ paie au tarif d'une condition de build (×1,4).*
 
 ---
 
+## 9 ter. Le second exemple — le Guérisseur, et ce qu'il casse
+
+Le §9 bis a modélisé un archétype qui paie en **temps de reprise**. Le Guérisseur
+paie en **PM** — et c'est justement ce que le premier exercice n'avait pas eu
+besoin de modéliser. Mêmes repères T2.
+
+### 9 ter.1 Le combat seul — un curseur, pas une contrainte
+
+Guérisseur branche *le Ressac*, mois 3, face à une élite (180 PV, frappe 16). Son
+geste offensif vaut 25 et **ne progresse jamais** : l'entretien n'a aucun levier de
+dégâts. Il choisit, tour par tour, entre frapper et déposer.
+
+| Tours de Rosée déposés | Durée du combat | PV restants |
+|---:|---:|---:|
+| 0 | **9 tours** | 31 / 120 |
+| 1 | **10 tours** | 54 / 120 |
+| 2 | **11 tours** | 77 / 120 |
+
+**C'est le profil « rebond » en trois lignes** : chaque tour qu'il ne passe pas à
+frapper lui rend plus que ce qu'il coûte. Il ne subit pas la durée du combat, **il
+la choisit** — et c'est le seul archétype des quatre dont le joueur règle
+lui-même le curseur risque/temps, à chaque tour.
+
+### 9 ter.2 La convergence avec le Soldat — le problème
+
+| | Soldat *(le Mur)* | Guérisseur *(le Ressac, 2 dépôts)* |
+|---|---:|---:|
+| Durée | 11 tours | 11 tours |
+| PV restants | 68 / 147 *(46 %)* | 77 / 120 *(64 %)* |
+| Tours dépensés à se protéger | 3 | 2 |
+| **Ressource consommée** | **aucune** | **~108 PM sur un pool de 120** |
+
+**Sur un combat, les deux archétypes convergent.** Même durée, survie comparable —
+et le « plafond de dégâts bas » promis à l'entretien ne vaut en réalité que −25 %
+face à un assaut. Si l'on s'arrêtait là, le guérisseur serait le meilleur
+solitaire du jeu : aussi endurant qu'un tank, presque aussi rapide, et pilier en
+donjon par-dessus le marché.
+
+**La dernière ligne est la réponse, et je ne l'avais pas modélisée.** Le soldat
+sort du combat prêt à recommencer ; le guérisseur sort avec un pool vide. À
+~16 combats par jour (§6.2), ce n'est pas le combat qui les sépare — **c'est la
+journée**.
+
+### 9 ter.3 Les PM, ou la vraie différence entre deux arbres de sorts
+
+Pool 120, régénération +6/tour, coûts de la grille GAME_MATERIA §2.3 :
+
+| Qui | Son geste | Combien de tours avant la panne |
+|---|---|---:|
+| Pyromancien qui enchaîne ses **Nova** (m3, 20 PM) | le pic | **8 tours** |
+| Pyromancien retombé sur sa **Boule de feu** (m1, 10 PM) | le fond | 28 tours |
+| Guérisseur, `thrift` du palier 1 | — | 35 tours |
+| Guérisseur **branche la Marée** (`thrift` −7,2 %) | — | **au-delà de 40** |
+
+> **Voilà ce qui sépare deux arbres de sorts, et ce n'est aucun des pourcentages
+> de puissance.** Le pyromancien tombe en panne au tour 8 — exactement le « pic
+> puis la panne » que le §2 lui promettait, mais que rien dans le document ne
+> mesurait. Le guérisseur ne tombe jamais en panne **dans un combat** ; il tombe en
+> panne **dans une journée**. Ce sont deux économies différentes, et `thrift` et
+> `wind` sont dans la palette de l'entretien parce que c'est lui qui tient sur la
+> longueur, pas sur l'instant.
+
+### 9 ter.4 Le donjon à quatre — ce que vaut un tour déposé
+
+Un tour d'attaque vaut 22 dégâts. Un tour déposé vaut :
+
+| Dépôt | Portée | Valeur rendue | En tours d'attaque |
+|---|---|---:|---:|
+| **Marée** (8 PV/tour, 6 tours) | seul | 48 PV | **2,2** |
+| **Marée** (8 PV/tour, 6 tours) | à quatre | 192 PV | **8,8** |
+| **Grande Marée** (8 PV/tour, 10 tours) | à quatre | 320 PV | **14,7** |
+
+**La propriété qu'on cherchait sans l'avoir écrite : le dépôt multiplie par la
+taille du groupe.** Le guérisseur est modeste seul (2,2) et décisif à quatre
+(8,8) — sans qu'aucune règle n'impose sa présence, et sans qu'il joue un autre
+jeu. C'est la meilleure justification qu'on ait trouvée à la loi du dépôt.
+
+**Mais la troisième ligne est un défaut.** Grande Marée vaut **14,7 tours
+d'attaque** : à ce prix, un groupe sans guérisseur cesse d'être « plus lent » pour
+devenir « non viable » — ce que le garde-fou du §7 bis interdit explicitement.
+D'où la correction 5 ci-dessous.
+
+### 9 ter.5 Ce que l'exercice a révélé — quatre corrections
+
+**Correction 4 — l'ancre d'échelle a besoin d'une seconde moitié.** Le §6.4 ancre
+l'équilibrage sur la **durée d'un combat en tours**. C'est insuffisant : deux
+archétypes peuvent tenir onze tours de la même façon et n'avoir rien à voir à
+l'échelle de la journée. La seconde ancre : **le coût d'une rencontre en ressource,
+rapporté au budget du jour** — un archétype ne se juge pas sur un combat, il se
+juge sur les ~16 que la barre d'énergie autorise. Appliqué en §6.4.
+
+**Correction 5 — la durée d'un dépôt étale sa valeur, elle ne l'augmente pas.**
+Sans cette règle, allonger un dépôt est le levier le moins cher du jeu, et Grande
+Marée vaut quatorze tours d'attaque. **La valeur totale d'un dépôt est fixée par le
+palier de la matéria ; la durée décide seulement de son étalement.** Une durée
+longue n'achète pas de la puissance — elle achète de la **robustesse à
+l'absence**, qui est précisément ce dont un donjon semi-synchrone a besoin.
+Appliqué en §7 bis.
+
+**Correction 6 — les marques doivent se porter des deux côtés.** Mesuré :
+**21 monstres sur 65 possèdent un sort**, et **9 de ces sorts appliquent un
+statut**. Or `ward` (résistance aux statuts) figure dans **deux palettes sur
+quatre**, et l'accord Dissipation du Guérisseur ne sert à rien s'il n'y a rien à
+dissiper. ARC-13 doit poser les huit marques **pour les monstres aussi**, sinon
+deux fonctions portent un levier mort. Appliqué en §1.1.
+
+**Constat B (sans correction) — l'entretien est le seul dont le joueur règle le
+curseur.** Les trois autres archétypes subissent la durée du combat ; celui-ci la
+choisit, tour par tour, en arbitrant entre frapper et déposer. C'est une qualité de
+jeu qu'aucun budget ne produit, et elle vient entièrement de la structure de ses
+**accords** — une fois de plus, pas de ses pourcentages.
+
+---
+
 ## 10. Les 24 domaines de combat dans la grille
 
 Fonction proposée pour chacun. La règle qui la contraint : **aucun triplet
@@ -1552,12 +1712,18 @@ Ce qui doit casser la CI si on le viole :
 21. **Le pacte est unique et borné** — au plus un par arbre, au plus 10 pb de
     malus, malus **hors de la palette** de la fonction, nœud **feuille**, jamais au
     palier 1, et les plafonds par levier tiennent malgré lui.
-22. **Toute condition vient du vocabulaire fermé** (§4.3) — douze entrées, six de
+22. **La durée d'un dépôt étale sa valeur, elle ne l'augmente pas** (§7 bis) — la
+    valeur totale est fixée par le palier de la matéria ; une durée longue achète de
+    la robustesse à l'absence, jamais de la puissance.
+23. **Les marques se portent des deux côtés** (§1.1) — un monstre de chaque élément
+    peut appliquer la sienne, sans quoi `ward` et les accords de dissipation sont des
+    leviers morts pour deux fonctions sur quatre.
+24. **Toute condition vient du vocabulaire fermé** (§4.3) — douze entrées, six de
     build et six de combat. Aucune condition portée sur une pièce nommée, une
     rareté ou l'élément de la cible ; aucun malus conditionné à l'équipement.
-23. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+25. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-24. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+26. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---

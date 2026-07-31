@@ -4,8 +4,9 @@
 > préfixes.
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
-> 2026-07-31 ; **§9 bis** en déroule un exemple complet, du jour 3 au mois 3, qui a produit
-> trois des corrections listées ci-dessous) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
+> 2026-07-31 ; **§9 bis** et **§9 ter** en déroulent deux exemples complets — un soldat du
+> jour 3 au mois 3, un guérisseur seul puis en donjon — qui ont produit **six** des
+> corrections listées ci-dessous) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
 > comme matéria, l'intention et la portée du geste, les marques élémentaires, le
 > vocabulaire fermé des leviers et de leurs conditions d'équipement, le budget de
 > puissance avec la fourche et le pacte, la loi du dépôt, les accointances, le gabarit et
@@ -29,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 24 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 26 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -120,6 +121,14 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > dire.
 - [ ] Fixer la **durée cible en tours** (commun 3-5, élite 6-10, boss 12-20) et en dériver
       les valeurs, plutôt que l'inverse
+- [ ] **La seconde ancre** (correction du §9 ter) : le **coût d'une rencontre en ressource,
+      rapporté au budget du jour**. Mesuré, un Soldat et un Guérisseur tiennent onze tours
+      tous les deux et sortent avec une barre comparable — mais l'un n'a rien dépensé et
+      l'autre a vidé 108 PM sur 120. Sur les ~16 combats d'une journée, ils n'ont rien à
+      voir. C'est cette ancre qui donne leur sens à `thrift` et `wind` : ils agrandissent
+      une **journée**, pas un combat
+- [ ] Calibrer en consequence la **régénération des PM hors combat** — chantier deja ouvert
+      en BALANCE §24.2, et qui n'avait pas d'archetype a servir
 - [ ] Règle unique : *un geste de palier n retire ~25 % des PV d'un adversaire commun de
       palier n*
 - [ ] Recalibrage conjoint des PV de monstre (croise **BES-01**, le gabarit `tier × rank`)
@@ -163,7 +172,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 24 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 26 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -212,6 +221,10 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       se défendre — il perd en dégâts exactement ce qu'il gagne en survie
 - [ ] **La durée se compte en tours de la rencontre**, jamais en temps réel ni en tours du
       lanceur : c'est le seul compteur que l'asynchronie ne dérègle pas
+- [ ] **La durée étale la valeur, elle ne l'augmente pas** (correction du §9 ter) : la
+      valeur totale d'un dépôt est fixée par le palier de la matéria. Mesuré, un dépôt de
+      10 tours sur quatre alliés vaut **14,7 tours d'attaque** — à ce prix, un groupe sans
+      entretien devient non viable, ce que le garde-fou interdit
 - [ ] Le même geste en `scope: soi` doit rester jouable en solo — un archétype, pas deux
 - [ ] Le garde-fou : **aucun rôle n'est nécessaire**. Un groupe sans entretien met plus de
       tours et perd plus de PV ; il ne rencontre pas un mur. Exiger un rôle, c'est exiger
@@ -249,6 +262,11 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > Sans les marques, aucune des trois n'a d'objet.
 - [ ] Une marque par élément — Brûlure, Trempé, Déséquilibre, Alourdi, Entaille,
       Traqué, Révélé, Aveuglé — déclarées comme `StatusEffect` et rattachées à `Element`
+- [ ] **Côté monstre aussi** (correction du §9 ter) : mesuré, **21 monstres sur 65** ont un
+      sort et **9 de ces sorts** appliquent un statut. `ward` figure dans deux palettes sur
+      quatre et l'accord de dissipation du Guérisseur n'a rien à dissiper — une marque qui
+      n'existe que dans un sens est un levier mort pour la moitié des fonctions. Croise
+      **BES-01** (l'élément des monstres, prérequis de MAT-01)
 - [ ] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
       capstone atteignable au jour 1
 - [ ] La marque **se rafraîchit, elle ne se cumule pas** avec elle-même ; deux marques
