@@ -5,8 +5,9 @@
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
 > 2026-07-31) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
-> comme matéria, l'intention et la portée du geste, le vocabulaire fermé des leviers et
-> leurs conditions d'équipement, le budget de puissance, la loi du dépôt, le gabarit et
+> comme matéria, l'intention et la portée du geste, les marques élémentaires, le
+> vocabulaire fermé des leviers et de leurs conditions d'équipement, le budget de
+> puissance avec la fourche et le pacte, la loi du dépôt, les accointances, le gabarit et
 > les six tests.
 >
 > **Ce plan ne réécrit pas la doctrine des arbres** — GAME_DOMAINS reste la loi
@@ -15,7 +16,7 @@
 
 ## Vue d'ensemble
 
-**12 jalons** (**ARC-01** à **ARC-12**) en 3 pistes.
+**16 jalons** (**ARC-01** à **ARC-16**) en 3 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -27,16 +28,26 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 16 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 22 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
+| ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
+| ARC-14 | La fourche : une branche exclusive par arbre de combat | S | ← ARC-07 |
+| ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
+| ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 
 ```
-Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 ; ARC-02 → ARC-04 ; ARC-02 → ARC-11
+Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → ARC-15
+                        ARC-02 → ARC-04 ; ARC-02 → ARC-11 → ARC-13
 Piste B — L'échelle   : ARC-05 ‖ ARC-06 ‖ ARC-10
-Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-09 ‖
+Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-07 → ARC-14 ; ARC-09 ‖
 ```
+
+**Le noyau minimal.** Si le chantier doit être livré par morceaux, ARC-01, 02, 03 et
+11 sont le socle : sans eux, ni les archétypes d'arme ni les fonctions n'existent.
+ARC-13 (les marques) est le premier des jalons de **nuance**, et il est **exigé par
+ARC-07** : les capstones d'assaut se déclenchent sur une marque qui doit exister.
 
 **Quand.** ARC-02 se livre **avec** le chantier matéria (PLAN_MATERIA) : c'est la même
 migration d'objet, et la scinder ferait deux passes sur les mêmes fixtures. ARC-05 croise
@@ -151,7 +162,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 16 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 22 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -160,7 +171,13 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Intentions : palette tenue, un `dégât` et un non-`dégât` par arbre, un geste de
       portée collective pour l'entretien et l'encaisse
 - [ ] Dépôt : aucun geste de portée `le groupe` instantané ; durée en tours de rencontre
-- [ ] Conditions : les cinq garde-fous du §4.3 ; aucun plafond global de points
+- [ ] Conditions : les cinq garde-fous du §4.3, et le **vocabulaire fermé** (12 entrées) ;
+      aucun plafond global de points
+- [ ] Marques : une par élément, appliquée par un accord d'entrée de chaque arbre
+- [ ] Fourche : deux branches sans levier commun, chacune tenant les 50 pb
+- [ ] Pacte : unique, borné, feuille, hors palette, jamais au palier 1
+- [ ] Accointances : aucune ne rend un point de budget, un levier ou une statistique
+- [ ] Exclusivité : chaque arbre ouvre au moins un accord que nul autre n'ouvre
 - [ ] Règle 9 étendue au chemin des techniques ; aucun passif plat restant
 
 ### ARC-10 — Le plafond global de points (S | ★★ | MOYENNE)
@@ -216,6 +233,63 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       d'interface, pas un choix de build
 - [ ] Croise **OBJ** : les familles d'arme et lignes d'armure doivent être lisibles depuis
       l'objet (`EquipmentPortCatalog` les déclare déjà par famille)
+
+### ARC-13 — Les huit marques élémentaires (M | ★★★ | HAUTE)
+> GAME_ARCHETYPES §1.1. **Trois pièces déjà écrites du système en dépendent** : le
+> capstone d'assaut (« contre une cible qui porte votre marque »), le levier `grip`
+> (« les statuts appliqués ») et la palette de contrôle (deux accords d'`entrave`).
+> Sans les marques, aucune des trois n'a d'objet.
+- [ ] Une marque par élément — Brûlure, Trempé, Déséquilibre, Alourdi, Entaille,
+      Traqué, Révélé, Aveuglé — déclarées comme `StatusEffect` et rattachées à `Element`
+- [ ] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
+      capstone atteignable au jour 1
+- [ ] La marque **se rafraîchit, elle ne se cumule pas** avec elle-même ; deux marques
+      différentes coexistent sans règle spéciale
+- [ ] Les 15 statuts livrés se rangent : ceux qui deviennent des marques, ceux qui restent
+      des effets ordinaires (poison, régénération, bouclier…)
+- [ ] Le **catalogue public** (GAME_ONBOARDING §6) peut enfin dire à quoi sert un élément —
+      sans jamais donner de valeur
+- [ ] Tests : une marque et une seule par élément ; tout arbre de combat a un accord
+      d'entrée qui applique la sienne ; aucune marque ne se cumule avec elle-même
+
+### ARC-14 — La fourche (S | ★★★ | HAUTE)
+> GAME_ARCHETYPES §6.1 bis. **Deux pyromanciens finis étaient identiques.** Le mécanisme
+> existe déjà et n'a jamais servi au combat : `actions.specialization.branch`, le motif de
+> refus `other_branch` et le respec de branche payant sont livrés (DOM-04, DOM-06).
+- [ ] Palier 3 : **deux branches de deux passifs**, une seule apprenable — l'arbre écrit
+      60 pb, le personnage en porte 50
+- [ ] Les quatre arbres patrons ont leur fourche (§9.1→9.4) : Braise/Éclat,
+      Ressac/Marée, Mur/Ligne mobile, Guet/Volée
+- [ ] Étendre `craft_branches.yaml` (ou son équivalent combat) aux 24 arbres — le loader
+      refuse déjà un arbre à moins de deux branches
+- [ ] UI : les deux branches **comparables avant le choix**, et le prix du respec affiché
+      au moment de choisir (§8 bis)
+- [ ] Tests : deux branches par arbre ; **aucun levier commun** entre elles ; chaque
+      branche tient les 50 pb, la palette et les plafonds ; exclusivité et respec payant
+
+### ARC-15 — Le pacte (S | ★★ | MOYENNE)
+> GAME_ARCHETYPES §6.5. La seule mécanique du document qui rende un personnage
+> **mesurablement plus faible** quelque part — sans elle, tous les builds sont des
+> additions.
+- [ ] Un nœud peut porter un **malus** ; sa valeur au taux de change s'ajoute au budget du
+      nœud. Un arbre porte jusqu'à 60 pb de bonus et 10 pb de malus, somme inchangée
+- [ ] Les **six règles** verrouillées par test : un seul pacte par arbre ; jamais au
+      palier 1 ; malus **hors palette** ; permanent, inconditionnel, une seule stat ; nœud
+      **feuille** (aucun nœud ne l'exige) ; plafonds par levier toujours tenus
+- [ ] UI : le malus affiché **avant** l'apprentissage, et le net après (§8 bis)
+- [ ] Tests : les six règles ; et qu'aucun pacte ne permette de dépasser un plafond de levier
+
+### ARC-16 — Les accointances (M | ★★ | MOYENNE)
+> GAME_ARCHETYPES §9.7. **Constat : les synergies livrées sont une fuite de budget.**
+> `DomainSynergy` donne des statistiques plates (`damage +10`, `heal +15`) ajoutées dans
+> `CombatSkillResolver` **hors** des 50 pb, hors des plafonds, hors des palettes.
+- [ ] Refonte : une accointance ne donne **jamais** de puissance — quatre formes légales
+      seulement (élargir ce qui satisfait une condition, ce qui exprime un domaine, ce
+      qu'un emplacement accepte ; réduire un coût d'accès)
+- [ ] Migration des synergies livrées vers ces formes, ou suppression
+- [ ] Une accointance par paire, effet unique, **jamais nécessaire**
+- [ ] Tests : aucune accointance ne rend un point de budget, un levier ou une statistique ;
+      aucune recette, aucun palier, aucun contenu n'en dépend
 
 ---
 

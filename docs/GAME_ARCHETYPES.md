@@ -43,12 +43,15 @@ borne : rien, dans le modèle actuel, ne dit en quoi ils ne sont pas le même ar
 peint trois fois.
 
 Ce document ajoute donc le minimum pour que des archétypes existent : **un
-troisième axe** (§1), **une ressource par registre** (§2), **deux étiquettes sur
-le geste** — ce qu'il fait, qui il touche (§3.1) —, **un vocabulaire de leviers**
-et leurs **conditions d'équipement** (§4), **un budget de puissance** (§6), la
-**loi du dépôt** qui rend le jeu de groupe asynchrone possible (§7 bis) et un
-**protocole de conception** (§8). Puis il l'éprouve sur quatre arbres écrits en
-entier (§9), trois mélanges (§9.6), et range les 24 domaines dans la grille (§10).
+troisième axe** (§1) et **une marque par élément** (§1.1), **une ressource par
+registre** (§2) avec ce que chaque famille d'arme et d'armure apporte (§2.2),
+**deux étiquettes sur le geste** — ce qu'il fait, qui il touche (§3.1) —, **un
+vocabulaire de leviers** et leurs **conditions d'équipement** (§4), **un budget de
+puissance** (§6) avec **la fourche** (§6.1 bis) et **le pacte** (§6.5), la **loi du
+dépôt** qui rend le jeu de groupe asynchrone possible (§7 bis), un **protocole de
+conception** (§8) et ce que **l'écran doit dire** (§8 bis). Puis il l'éprouve sur
+quatre arbres écrits en entier (§9), trois mélanges (§9.6), les **accointances**
+(§9.7), et range les 24 domaines dans la grille (§10).
 
 ### 0.1 Trois constats mesurés, qui commandent les décisions
 
@@ -88,6 +91,52 @@ s'affiche nulle part comme un titre, et un joueur mène autant d'arbres qu'il ve
 (doctrine des trois couches, GAME_DOMAINS §1). C'est une **contrainte d'auteur**,
 lisible par le joueur seulement dans ce que l'arbre lui donne.
 
+### 1.1 Décision 10 — Chaque élément a sa marque
+
+L'élément est aujourd'hui une **couleur sans verbe** : il décide de quelles
+résistances on souffre, et rien d'autre. Or trois pièces du système le supposent
+déjà : le capstone d'assaut se déclenche « contre une cible qui porte la marque de
+votre élément » (§7), le levier `grip` amplifie « les statuts appliqués » (§4), et
+la palette de contrôle exige deux accords d'`entrave` (§5.1). **Aucun de ces trois
+n'a d'objet tant que les marques n'existent pas.**
+
+Une marque par élément. Une seule, canonique, portée par le geste et amplifiée par
+`grip` :
+
+| Élément | Marque | Ce qu'elle fait | Ce qu'elle punit |
+|---|---|---|---|
+| **Feu** | **Brûlure** | dégâts à chaque tour | ce qui a beaucoup de PV |
+| **Eau** | **Trempé** | perd de l'initiative, subit plus de dégâts d'air | ce qui frappe souvent |
+| **Air** | **Déséquilibre** | rate plus souvent | ce qui mise sur un gros coup |
+| **Terre** | **Alourdi** | temps de reprise allongé | les rotations de techniques |
+| **Métal** | **Entaille** | dégâts qui **augmentent quand la cible agit** | ce qui joue vite |
+| **Bête** | **Traqué** | subit plus de critiques | ce qui encaisse en absorbant |
+| **Lumière** | **Révélé** | perd ses résistances élémentaires | ce qui se protège par l'élément |
+| **Ténèbres** | **Aveuglé** | ses gestes ratent leur cible | ce qui frappe fort et rarement |
+
+**Quatre règles**, qui sont ce qui rend la marque utilisable plutôt que
+décorative :
+
+1. **Un des deux accords d'entrée de chaque arbre l'applique.** Sans ça, le
+   capstone est inatteignable pour qui n'a que le kit du jour 1 — le garde-fou du
+   §7, appliqué à la lettre.
+2. **La marque ne se cumule pas avec elle-même** : elle se **rafraîchit**. Sinon
+   l'archétype optimal est « appliquer la même marque huit fois », ce qui n'est pas
+   un jeu.
+3. **Deux marques différentes coexistent.** C'est le rendement du mélange : un
+   pyromancien accompagné d'un archer laisse une cible qui brûle *et* qui
+   trébuche. Aucune règle spéciale — elles s'additionnent parce qu'elles sont
+   distinctes.
+4. **La marque dit à quoi sert un élément**, et c'est ce que le catalogue public
+   (GAME_ONBOARDING §6) peut enfin afficher : *le feu use, le métal punit qui
+   joue, les ténèbres font rater*. Un joueur choisit son élément pour une raison.
+
+> **Le lien avec la roue des oppositions** (GAME_WORLD §2.2) : chaque marque punit
+> ce que son opposé fait le mieux. L'air (déséquilibre) mord sur la terre, qui
+> mise sur le gros coup ; l'eau (trempé) mord sur le feu, qui multiplie les
+> gestes. La roue cesse d'être une table de résistances pour devenir un
+> **contre-jeu**.
+
 ---
 
 ## 2. Décision 2 — Chaque registre a sa ressource
@@ -124,6 +173,60 @@ agir.
 > guerrier est un mage qui tape, et l'archer un mage qui vise. La règle 10 rend
 > la matéria souveraine ; c'est la **ressource** qui rend les registres
 > différents, pas le nom du geste.
+
+### 2.1 Décision 11 — La munition porte l'élément
+
+Où vit l'élément d'un geste ? La réponse diffère par registre, et c'est une
+troisième différence structurelle — gratuite, puisqu'elle découle de §2 :
+
+| Registre | Ce qui porte l'élément | Ce que ça coûte de changer |
+|---|---|---|
+| **Sorts** | la **matéria** sertie | un passage par l'écran de build, hors combat |
+| **Mêlée** | l'**arme** (et la technique sertie) | changer d'arme — donc de famille, donc de passifs conditionnels |
+| **Distance** | la **munition** | **acheter un autre carquois** |
+
+> **L'archer est le seul qui *achète* son élément.** Il ne le porte pas, il le
+> consomme. C'est ce qui fait de son registre le plus **souple** des trois — il
+> change de contre-jeu entre deux combats sans rien réapprendre — et le plus
+> **cher** : sa souplesse a un prix en gils, à chaque flèche.
+
+Ce que ça règle d'un coup : la double borne sur le registre distance (une flèche
+de feu qualifie un geste de feu, donc les passifs de l'arbre de feu), la demande
+économique du charpentier et de l'alchimiste, et la raison pour laquelle un archer
+voyage avec plusieurs carquois. Garde-fou inchangé : **la flèche ordinaire est
+neutre, au plancher T1 PNJ, et n'est jamais épuisable au point de bloquer.**
+
+### 2.2 Décision 12 — Chaque famille apporte quelque chose de nommé
+
+« +10 % de dégâts avec une dague » ne veut rien dire tant qu'une dague n'est pas
+autre chose qu'une épée plus petite. Chaque famille porte donc **un trait**, et
+c'est lui que les passifs conditionnels viennent creuser :
+
+| Famille | Son trait | Qui la veut |
+|---|---|---|
+| **Dague** | critique élevé, dégâts de base bas | l'assaut qui multiplie les gestes |
+| **Épée** | l'équilibre — rien d'excellent, rien de mauvais | tout le monde, et personne en particulier |
+| **Hache** | gros dégâts, précision basse | l'assaut qui accepte de rater |
+| **Masse** | perce l'armure, lente | l'encaisse qui doit quand même tuer |
+| **Bâton / baguette** | canalise : plus d'emplacements de sort, frappe mal | les sorts |
+| **Arc** | cadence, portée | la distance |
+| **Arbalète** | un gros coup, un long temps de reprise | la distance qui prépare |
+| **Bouclier** *(main gauche)* | `guard`, et il occupe la main | l'encaisse, et quiconque renonce à une seconde arme |
+
+Et trois lignes d'armure, trois profils défensifs **qui ne se remplacent pas** :
+
+| Ligne | Ce qu'elle donne | Sa façon de survivre |
+|---|---|---|
+| **Tissu** | emplacements de **sort**, PM | elle ne survit pas — elle finit le combat avant |
+| **Cuir** | `dodge`, `tempo`, emplacements mixtes | **éviter** : volatil, rapide, joue plus de tours |
+| **Plaque** | `guard`, `life`, emplacements de **technique** | **absorber** : fiable, lent, ne surprend jamais |
+
+> **C'est ici que `dodge` et `guard` cessent d'être deux dosages de la même
+> chose.** Le cuir évite entièrement ou pas du tout ; la plaque réduit toujours un
+> peu. Sur dix coups, les deux perdent autant de PV — mais le porteur de cuir a
+> connu deux tours gratuits et un tour catastrophique, et celui de plaque dix tours
+> identiques. **Le même total, deux jeux différents** : c'est la définition d'une
+> nuance réussie.
 
 ---
 
@@ -286,6 +389,50 @@ familles de conditions, et un multiplicateur d'effet par famille :
 > combat. Les plafonds du §4 restent exprimés **en points de budget** — ils ne
 > bougent pas d'un pouce.
 
+#### Le vocabulaire fermé des conditions
+
+Comme les leviers, les conditions sont un **ensemble fermé** — sinon chaque auteur
+en invente une, et plus rien n'est comparable ni testable. **Six de build, six de
+combat, et rien d'autre :**
+
+| De build (×1,4) | De combat (×2,0) |
+|---|---|
+| une **famille d'arme** en main (dague, hache, arc…) | la cible porte **votre marque** (§1.1) |
+| une **ligne d'armure** portée (tissu / cuir / plaque) | la cible porte **une marque quelconque** |
+| un **bouclier** équipé | vous avez **encaissé** au tour précédent |
+| la **main gauche libre** (à deux mains, ou rien) | la cible est **sous 40 %** de ses PV |
+| **deux armes** portées | **vous** êtes sous 40 % de vos PV |
+| un **emplacement de matéria** d'un type donné | le **premier tour** de la rencontre |
+
+Trois refus qui vont avec, et qui comptent autant que la liste :
+
+- **Jamais une pièce nommée ni une rareté** — sinon le butin devient un prérequis
+  de build, et la chance un axe de progression.
+- **Jamais une condition d'élément de la cible** (« +X % contre les créatures
+  d'eau ») : ce serait un second système de résistances, en double de celui qui
+  existe.
+- **Jamais un malus conditionné à l'équipement** (« −10 % en plaque ») — c'est
+  l'interdit de port réintroduit par la bande. Une condition **récompense**, elle
+  ne punit jamais. Le seul malus légitime est celui du pacte (§6.5) : assumé,
+  permanent et lisible.
+
+#### La condition en escalier plutôt qu'en interrupteur
+
+Une condition binaire crée une falaise : quatre pièces de cuir sur cinq ne valent
+rien. Une condition de **ligne d'armure** ou de **nombre de pièces** se lit donc en
+**escalier** — l'effet est proportionnel à ce qu'on porte :
+
+> « +4,2 % de vitesse en cuir » se lit **+0,84 % par pièce de cuir portée**, cinq
+> pièces donnant le plein effet.
+
+Ce qui change : un joueur qui panache trois pièces de cuir et deux de plaque
+touche **60 % des deux** bonus au lieu de zéro des deux. Le mélange devient un
+curseur, pas un pari — et le budget est inchangé, puisqu'on paie l'effet **plein**.
+
+Les conditions de **combat** et les conditions **binaires par nature** (bouclier,
+main gauche libre, famille d'arme) restent des interrupteurs : on ne porte pas 40 %
+d'un bouclier.
+
 **Cinq garde-fous**, sans lesquels la mécanique devient un péage déguisé :
 
 1. **Jamais de condition au palier 1.** Le joueur de la première semaine n'a pas
@@ -366,6 +513,13 @@ plus que n'importe quel chiffre :
    (§7 bis).
 2. **Tout arbre ouvre au moins un accord qui n'est pas un `dégât`.** C'est le
    plan B du test du jour 1 (§8.4) : le tour où frapper n'est pas la réponse.
+3. **Tout arbre ouvre au moins un accord que nul autre n'ouvre.** C'est la réponse
+   mécanique à *« pourquoi mener ce domaine plutôt qu'un autre ? »* — un geste
+   qu'on ne verra nulle part ailleurs. Le modèle le prévoit déjà : une matéria
+   ouverte par plusieurs arbres n'appartient à aucun (`domain: null`,
+   GAME_MATERIA §2.1) ; celle-ci en a un.
+4. **Un des deux accords d'entrée applique la marque de l'élément** (§1.1) — sans
+   quoi le capstone est hors de portée du joueur du jour 1.
 
 > **En PvE, « contrôle » n'est pas « soutien ».** Un tour que l'adversaire ne joue
 > pas est un tour de dégâts évité : le contrôle est une fonction **offensive**,
@@ -383,23 +537,57 @@ et **fixé** :
 
 | Palier | Coût | Nœuds | Composition |
 |---|---:|---:|---|
-| **Entrée** | 0 pt | 2 | **2 accords** — les matéria du jour 1 (invariant GAME_MATERIA §3 : exactement 2 accords gratuits par arbre) |
-| **Palier 1** | 10 pts | 4 | 2 passifs (3 pb chacun) · 1 accord · 1 échelon de port (échelon 2 de sa famille d'arme ou d'armure) |
+| **Entrée** | 0 pt | 2 | **2 accords** — les matéria du jour 1 (invariant GAME_MATERIA §3 : exactement 2 accords gratuits par arbre), dont **un qui applique la marque** (§1.1) |
+| **Palier 1** | 10 pts | 4 | 2 passifs (3 pb chacun, **jamais conditionnels**) · 1 accord · 1 échelon de port (échelon 2 de sa famille d'arme ou d'armure) |
 | **Palier 2** | 25 pts | 4 | 2 passifs (6 pb) · 1 accord · 1 échelon de port (échelon 3) |
-| **Palier 3** | 50 pts | 3 | 2 passifs (9 pb) · 1 accord |
+| **Palier 3** | 50 pts | 5 | **la fourche** — 2 branches de 2 passifs (9 pb), **on n'en apprend qu'une** (§6.1 bis) · 1 accord |
 | **Capstone** | 100 pts | 1 | 1 passif **conditionnel** signature (14 pb) — §7 |
 | *Hybride* | *150 pts* | *1* | *l'accord dormant de DOM-07, hors budget tant que la fusion n'ouvre pas* |
 
-**Totaux** : **5 accords** (dont les 2 gratuits d'entrée) · **7 passifs** (6 + le
-capstone) · **2 accès de port** · **1 dormant** = 15 nœuds, et **390 points** pour
-un arbre complet hors dormant (`4×10 + 4×25 + 3×50 + 100`).
+**Totaux** : **5 accords** (dont les 2 gratuits d'entrée) · **9 passifs écrits, 7
+apprenables** (6 + le capstone) · **2 accès de port** · **1 dormant** = **17 nœuds
+écrits, 15 apprenables**, et **390 points** pour un arbre complet hors dormant
+(`4×10 + 4×25 + 3×50 + 100`).
+
+> **Amendement au gabarit de GAME_DOMAINS §5.1**, qui dit « ~15 nœuds ». Il en
+> reste 15 **pour un personnage** ; l'arbre en **écrit** deux de plus, qui sont les
+> deux moitiés d'un choix. Le nombre que le canon fixait — ce qu'un joueur
+> apprend — n'a pas bougé.
+
+### 6.1 bis — Décision 13 : la fourche
+
+> **Un arbre propose 60 points de budget ; un personnage en porte 50.**
+
+Au palier 3, l'arbre offre **deux branches de deux passifs**, et n'en laisse
+apprendre qu'une. C'est le **renoncement à l'intérieur de l'arbre** — exactement ce
+que DOM-04 et DOM-06 ont livré pour l'artisanat, jusqu'au motif de refus
+(`other_branch`) et au respec de branche payant. Rien à inventer : le mécanisme
+existe, il n'a jamais servi au combat.
+
+**Ce que ça règle**, et qui manquait : jusqu'ici, **deux pyromanciens finis étaient
+identiques**. L'archétype distinguait les arbres entre eux, rien ne distinguait
+deux joueurs du même arbre. Les conditions d'équipement (§4.3) faisaient une part
+du travail ; la fourche fait le reste, et à un endroit que le joueur choisit
+délibérément plutôt que par sa tenue.
+
+**Quatre règles :**
+
+1. **Les deux branches tiennent la même fonction, autrement.** Jamais « la bonne et
+   la mauvaise », jamais « l'offensive et la défensive » — la fonction ne change
+   pas, sa **façon** change.
+2. **Elles ne partagent aucun levier.** Deux branches qui se recouvrent sont un
+   choix de façade.
+3. **La teinte peut n'exister que dans une branche** (§5). C'est même le meilleur
+   usage qu'on puisse en faire : *la teinte devient un choix, pas une fatalité*.
+4. **Le respec de branche se paie**, comme en artisanat ; le respec de points
+   ordinaire reste doux. On change d'avis, mais pas tous les matins.
 
 > **L'échelon 1 de port ne figure pas dans l'arbre**, et c'est voulu : il est
 > gratuit, partagé entre tous les arbres qui enseignent la famille (ONB-20b). Ce
 > que l'arbre enseigne, ce sont les échelons **suivants** — *on ne se sert pas
 > d'un arc à poulie sans maîtriser l'arc*.
 
-### 6.2 L'échelle de coût, et le calendrier qu'elle vise
+### 6.2 Décision 5 — L'échelle de coût, et le calendrier qu'elle vise
 
 L'échelle **0 / 10 / 25 / 50 / 100** n'est pas choisie pour sa beauté : elle est
 dérivée d'un calendrier, qui est la vraie décision de design.
@@ -431,7 +619,7 @@ arbre en tapant des rats.** La progression pousse vers le contenu de son palier,
 jamais vers le farm du contenu trivial — et elle se recalibre en un seul endroit
 (BALANCE) sans toucher un seul nœud.
 
-### 6.3 Le budget de puissance
+### 6.3 Décision 6 — Le budget de puissance
 
 > **Un arbre complet vaut 50 points de budget (pb), et pas un de plus.**
 
@@ -486,6 +674,46 @@ Corollaire pour les fonctions : **un archétype d'entretien ou d'encaisse n'exis
 que si des combats durent** — 3 tours ne laissent la place à aucun soin. La durée
 cible des élites et des boss n'est donc pas un chiffre de confort : c'est la
 **condition d'existence de deux fonctions sur quatre**.
+
+### 6.5 Décision 14 — Le pacte : un malus rend du budget
+
+Un archétype mémorable n'est pas seulement bon à quelque chose : il est **mauvais
+à autre chose, et il l'a choisi**. Le budget permet de l'écrire proprement.
+
+> **Un nœud peut prendre un malus. Sa valeur, au taux de change du levier, s'ajoute
+> au budget du nœud.** Un arbre porte alors jusqu'à **60 pb de bonus et 10 pb de
+> malus** — la somme reste 50. *Le pacte ne change pas ce qu'un arbre pèse, il
+> change sa forme.*
+
+Exemple : un nœud de palier 3 vaut 9 pb. Avec un pacte de 10 pb de malus, il en
+dépense 19 :
+
+> **« Sang qui bout »** — `power` **+19 %**, `life` **−15 %**. Permanent.
+
+**Six règles**, et elles sont serrées parce que c'est la mécanique la plus facile à
+dégénérer du document :
+
+1. **Un seul pacte par arbre**, et jamais au palier 1. C'est une signature, pas un
+   outil.
+2. **Le malus est hors de la palette de la fonction.** L'assaut paie en survie,
+   l'encaisse paie en dégâts. Un assaut qui paierait en `pierce` échangerait de la
+   monnaie contre elle-même.
+3. **Le malus est permanent, inconditionnel et tient en une ligne.** Jamais « −X %
+   si vous portez Y » — ce serait l'interdit de port réintroduit par la bande
+   (§4.3). Jamais deux stats. Jamais un effet caché.
+4. **Le nœud de pacte est une feuille** : aucun autre nœud ne l'exige. Un arbre où
+   le pacte est sur le chemin du capstone n'offre pas un choix, il pose un péage.
+5. **Les plafonds par levier tiennent toujours.** Le pacte contourne le budget de
+   l'arbre, jamais le plafond d'un levier — sinon il devient la porte de sortie de
+   tout l'équilibrage.
+6. **Le malus est visible avant d'apprendre**, et le respec de points ordinaire
+   suffit à revenir en arrière. On assume un choix, on ne se fait pas piéger.
+
+> **Pourquoi c'est plus qu'un gadget** : le pacte est la seule mécanique du
+> document qui rende un personnage **mesurablement plus faible** quelque part. Sans
+> lui, tous les builds sont des additions et le mot « spécialisation » ne désigne
+> qu'un ordre d'achat. Avec lui, un berserker à −15 % de PV est un pari, une
+> anecdote de partie, et une raison d'avoir un guérisseur dans le groupe.
 
 ---
 
@@ -607,6 +835,31 @@ automatisables (§12).
 
 ---
 
+## 8 bis. Ce que l'écran doit dire
+
+Un système de nuances qui ne se lit pas est un système de hasard. Cinq exigences
+d'interface, qui sont des **décisions de design** et pas du confort :
+
+1. **Ce qui s'exprime, et ce qu'il faudrait porter.** L'écran des arbres marque
+   déjà « Exprimé / Non exprimé » et dit quoi porter (DOM-02, livré). Les
+   conditions d'équipement étendent la même exigence au **nœud** : un passif
+   inactif dit *pourquoi*.
+2. **Un nœud conditionnel affiche ses deux valeurs** — nue et remplie — et sa
+   condition en toutes lettres. Un chiffre qui change quand on change de gants,
+   sans que rien ne l'explique, est la pire chose qu'on puisse livrer.
+3. **La fourche se compare avant de se choisir** : les deux branches côte à côte,
+   et le **prix du respec** affiché au moment du choix, pas après.
+4. **Le pacte montre son malus avant l'apprentissage**, et le net après. On assume
+   un choix ; on ne se fait pas piéger par une ligne de description.
+5. **La cible affiche les marques qu'elle porte.** Sans ça, le capstone d'assaut
+   est un bonus invisible — et un bonus invisible n'existe pas.
+
+> **La règle qui les résume** : *un bonus silencieusement inactif est un bug
+> d'interface, pas un choix de build.* Le joueur a le droit de se tromper ; il n'a
+> pas à deviner.
+
+---
+
 ## 9. Les quatre arbres étudiés
 
 Quatre arbres écrits en entier, **un par fonction** et couvrant les trois
@@ -634,20 +887,30 @@ leur conversion suit la grille du §4.
 | 1 | 10 | Points faibles | `critical` **+1,5 pt** | 3 |
 | 1 | 10 | **Accord : Mur de feu** — `entrave`, `plusieurs cibles` | le geste de temporisation : il ne tue pas, il retient | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | bâtons et baguettes de palier 2 | — |
-| 2 | 25 | Fonte des écailles | `pierce` **+4,2 pt** | 6 |
-| 2 | 25 | Chaleur sèche | `critical` **+4,2 pt** *si la ligne tissu est portée* (×1,4) | 6 |
+| 2 | 25 | Cœur de braise | `critical_power` **+9 %** | 6 |
+| 2 | 25 | Chaleur sèche | `critical` **+4,2 pt** *en tissu* (×1,4, **en escalier** : +0,84 pt par pièce) | 6 |
 | 2 | 25 | **Accord : Pluie de flammes** — `dégât`, `plusieurs cibles` | le geste multi-cible | — |
 | 2 | 25 | *Port* : canal de sort, échelon 3 | bâtons et baguettes de palier 3 | — |
-| 3 | 50 | Cœur de braise | `critical_power` **+13,5 %** | 9 |
-| 3 | 50 | Braise durable | `grip` **+10,8 %** *(teinte)* | 9 |
+| 3 | 50 | **Fourche — la Braise** · Braise durable | `grip` **+10,8 %** *(teinte)* | 9 |
+| 3 | 50 | **Fourche — la Braise** · Souffle de forge | `critical_power` **+13,5 %** | 9 |
+| 3 | 50 | **Fourche — l'Éclat** · Fonte des écailles | `pierce` **+6,3 pt** | 9 |
+| 3 | 50 | **Fourche — l'Éclat** · Départ de feu | `tempo` **+9 %** | 9 |
 | 3 | 50 | **Accord : Nova de feu** — `dégât`, `plusieurs cibles` | le geste de pointe | — |
 | **Capstone** | 100 | **Foyer entretenu** | `power` **+28 %** *contre une cible qui brûle* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (feu)* | *réservé — DOM-07* | — |
 
-**Vérification.** 50 pb pile · palette (assaut) 41 ≥ 40 ✔ · hors palette 9 ≤ 10 sur
-un seul levier ✔ · `power` 17 ≤ 20 ✔ · `critical` 9 ≤ 12 ✔ · condition du capstone
-atteignable **au tour 2 avec le seul kit d'entrée** (Flammèche brûle) ✔.
-**Intentions** : 4 `dégât` ≥ 3 ✔ · 1 accord non-`dégât` (Mur de feu) ✔.
+**La fourche.** *La Braise* tient le feu qui **dure** — des brûlures plus tenaces,
+et un critique qui fait mal quand il tombe. *L'Éclat* tient le feu qui **passe** —
+il ronge la résistance et frappe le premier. Même fonction, deux façons ; et c'est
+dans la Braise seule que vit la teinte `grip`.
+
+**Vérification.** 50 pb pile **par branche** · palette (assaut) 41 ou 50 ≥ 40 ✔ ·
+hors palette ≤ 9 sur un seul levier ✔ · `power` 17 ≤ 20 ✔ · `critical` 9 ≤ 12 ✔ ·
+`critical_power` 15 ≤ 15 ✔ (branche Braise) · branches sans levier commun ✔ ·
+condition du capstone atteignable **au tour 2 avec le seul kit d'entrée**
+(Flammèche applique la marque) ✔.
+**Intentions** : 4 `dégât` ≥ 3 ✔ · 1 accord non-`dégât` (Mur de feu) ✔ · un accord
+d'entrée applique la **Brûlure** ✔.
 
 **Test de l'arbre nu** : dégâts, critique, perce-résistance, brûlure durable. On
 lit un assaut élémentaire sans avoir vu un seul accord. ✔
@@ -685,24 +948,34 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
 | Entrée | 0 | **Accord : Rosée** — `soin`, `soi ou un allié`, **sur la durée** | le geste : il **dépose** des PV sur N tours au lieu d'en rendre au tour | — |
-| Entrée | 0 | **Accord : Jet d'eau** — `dégât`, `une cible` | le geste offensif modeste : **sans lui, un combat ne finit jamais** (§5.1) | — |
+| Entrée | 0 | **Accord : Jet d'eau** — `dégât`, `une cible` | le geste offensif modeste : **sans lui, un combat ne finit jamais** (§5.1). Il applique **Trempé** — la marque, donc la condition du capstone | — |
 | 1 | 10 | Main sûre | `mending` **+3 %** | 3 |
 | 1 | 10 | Geste économe | `thrift` **−1,8 %** | 3 |
 | 1 | 10 | **Accord : Écaille d'eau** — `protection`, `soi ou un allié` | une absorption déposée : elle tient jusqu'à consommation | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | — | — |
-| 2 | 25 | Sourdre | `recovery` **+1,5 % des PV max par tour** | 6 |
 | 2 | 25 | Seconde respiration | `wind` **+0,6 PM/tour** | 6 |
+| 2 | 25 | Sang-froid | `ward` **+6 %** | 6 |
 | 2 | 25 | **Accord : Dissipation** — `protection`, `un allié` | retirer un statut — la réponse aux poisons et aux entraves | — |
 | 2 | 25 | *Port* : canal de sort, échelon 3 | — | — |
-| 3 | 50 | Sang-froid | `ward` **+9 %** | 9 |
-| 3 | 50 | Écume | `guard` **−7,6 %** *si un bouclier ou un focus occupe la main gauche* (×1,4) — *teinte* | 9 |
+| 3 | 50 | **Fourche — le Ressac** · Sourdre | `recovery` **+2,25 % des PV max par tour** | 9 |
+| 3 | 50 | **Fourche — le Ressac** · Écume | `guard` **−7,6 %** *si un bouclier ou un focus occupe la main gauche* (×1,4) — *teinte* | 9 |
+| 3 | 50 | **Fourche — la Marée** · Litanie | `thrift` **−5,4 %** | 9 |
+| 3 | 50 | **Fourche — la Marée** · Eaux calmes | `ward` **+9 %** | 9 |
 | 3 | 50 | **Accord : Marée** — `soin`, **`le groupe`**, 6 tours | **le dépôt** : posé à son tour, il court sur les tours des autres. En solo, il s'applique à lui seul | — |
 | **Capstone** | 100 | **Ressac** | `mending` **+28 %** *sur une cible sous 40 % de ses PV* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (eau)* | *réservé* | — |
 
-**Vérification.** 50 pb · palette 41 ✔ · teinte `guard` 9 ≤ 10 ✔ · `mending` 17 ≤ 20 ✔ ·
-`recovery` 6 ≤ 12 ✔ · condition du capstone atteignable seul (soi-même sous 40 %) ✔.
-**Intentions** : 3 `soin`/`protection` dont **un de portée `le groupe`** ✔ · 1 `dégât` ✔.
+**La fourche.** *Le Ressac* tient **seul** — il se régénère et amortit, c'est le
+soigneur qui n'a besoin de personne. *La Marée* tient **le groupe** — elle dépose
+plus souvent (`thrift`) et ne se laisse pas interrompre (`ward`). La teinte `guard`
+n'existe que dans le Ressac : le soigneur de donjon n'a pas de main gauche à donner
+à un bouclier.
+
+**Vérification.** 50 pb **par branche** · palette 41 ou 50 ≥ 40 ✔ · teinte `guard`
+9 ≤ 10 ✔ · `mending` 17 ≤ 20 ✔ · `recovery` 9 ≤ 12 ✔ · `ward` 15 ≤ 15 ✔ (branche
+Marée) · `thrift` 12 ≤ 15 ✔ · branches sans levier commun ✔.
+**Intentions** : 3 `soin`/`protection` dont **un de portée `le groupe`** ✔ ·
+1 `dégât` ✔ · un accord d'entrée applique **Trempé** ✔.
 
 **Test du voisin** : Hydromancien (eau × sorts × contrôle) et Marémancien (eau ×
 sorts × assaut) partagent la case et **aucun levier principal** avec lui. ✔
@@ -726,7 +999,7 @@ sorts × assaut) partagent la case et **aucun levier principal** avec lui. ✔
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Frappe appuyée** *(technique)* — `dégât`, `une cible` | le geste — sans temps de reprise |  — |
+| Entrée | 0 | **Accord : Frappe appuyée** *(technique)* — `dégât`, `une cible` | le geste — sans temps de reprise, et il laisse l'**Entaille** |  — |
 | Entrée | 0 | **Accord : Garde haute** *(technique)* — `protection`, `soi` | le tour défensif, reprise 2 — le plan B, et la mise en place du capstone | — |
 | 1 | 10 | Œil du drill | `hit` **+1,5 pt** | 3 |
 | 1 | 10 | Discipline | `ward` **+3 %** | 3 |
@@ -736,16 +1009,25 @@ sorts × assaut) partagent la case et **aucun levier principal** avec lui. ✔
 | 2 | 25 | Garde travaillée | `hit` **+4,2 pt** *si un bouclier est équipé* (×1,4) | 6 |
 | 2 | 25 | **Accord : Mur de boucliers** *(technique)* — `protection`, **`le groupe`**, 4 tours | **le dépôt de l'encaisseur** : une absorption sur chaque allié. Une rencontre à PV partagés ne se « prend » pas — elle s'amortit (§7 bis) | — |
 | 2 | 25 | *Port* : plaque, échelon 3 | l'armure lourde de palier 3 | — |
-| 3 | 50 | Carcasse | `life` **+13,5 %** | 9 |
-| 3 | 50 | Bras d'acier | `power` **+9 %** *(teinte)* | 9 |
+| 3 | 50 | **Fourche — le Mur** · Carcasse | `life` **+13,5 %** | 9 |
+| 3 | 50 | **Fourche — le Mur** · Pied ferme | `ward` **+9 %** | 9 |
+| 3 | 50 | **Fourche — la Ligne mobile** · Jeu de jambes | `dodge` **+3,15 pt** | 9 |
+| 3 | 50 | **Fourche — la Ligne mobile** · Bras d'acier | `power` **+9 %** *(teinte)* | 9 |
 | 3 | 50 | **Accord : Charge d'acier** *(technique)* — `dégât`, `une cible` | le gros geste, reprise 4 | — |
 | **Capstone** | 100 | **Tenir la ligne** | `guard` **−16,8 %** *au tour qui suit un coup encaissé* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (métal)* | *réservé* | — |
 
-**Vérification.** 50 pb · palette 41 ✔ · teinte `power` 9 ≤ 10 ✔ · `life` 15 ≤ 20 ✔ ·
-`hit` 9 ≤ 10 ✔ · `guard` 14 ≤ 15 ✔ · condition atteignable au tour 2 (il suffit
-d'être frappé — et il le sera) ✔.
-**Intentions** : 2 `protection` dont **une de portée `le groupe`** ✔ · 3 `dégât` ✔.
+**La fourche, et c'est la plus parlante des quatre.** *Le Mur* encaisse — PV et
+sang-froid, la plaque. *La Ligne mobile* évite — esquive et riposte, le cuir. **Le
+tank en cuir n'est plus un mélange exotique : il est écrit dans l'arbre du
+Soldat**, et le mélanger au Vagabond ne fait que le pousser plus loin (§9.6).
+
+**Vérification.** 50 pb **par branche** · palette 41 ou 50 ≥ 40 ✔ · teinte `power`
+9 ≤ 10 ✔ · `life` 15 ≤ 20 ✔ · `hit` 9 ≤ 10 ✔ · `ward` 12 ≤ 15 ✔ · `dodge` 9 ≤ 12 ✔ ·
+`guard` 14 ≤ 15 ✔ · branches sans levier commun ✔ · condition atteignable au tour 2
+(il suffit d'être frappé — et il le sera) ✔.
+**Intentions** : 2 `protection` dont **une de portée `le groupe`** ✔ · 3 `dégât` ✔ ·
+un accord d'entrée applique l'**Entaille** ✔.
 
 **Ce que le capstone dit de l'archétype** : le Soldat est le seul dont la
 condition ne se *provoque* pas — elle lui arrive. C'est la traduction exacte de sa
@@ -766,25 +1048,34 @@ fonction : il ne décide pas du combat, il refuse de le perdre.
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
 | Entrée | 0 | **Accord : Tir tendu** *(technique)* — `dégât`, `une cible` | le geste — une munition ordinaire | — |
-| Entrée | 0 | **Accord : Tir entravant** *(technique)* — `entrave`, `une cible` | ralentit la cible — le plan B, et la condition du capstone | — |
+| Entrée | 0 | **Accord : Tir entravant** *(technique)* — `entrave`, `une cible` | applique le **Déséquilibre** — le plan B, et la condition du capstone | — |
 | 1 | 10 | Souffle court | `critical` **+1,5 pt** | 3 |
 | 1 | 10 | Bras d'arc | `power` **+3 %** | 3 |
 | 1 | 10 | **Accord : Volée** *(technique)* — `dégât`, `plusieurs cibles` | deux munitions | — |
 | 1 | 10 | *Port* : arc, échelon 2 | l'arc de palier 2 | — |
 | 2 | 25 | Lecture du vent | `critical` **+4,2 pt** *si aucun bouclier n'est porté* (×1,4) | 6 |
-| 2 | 25 | Pointe affûtée | `pierce` **+4,2 pt** | 6 |
+| 2 | 25 | Encoche haute | `critical_power` **+9 %** | 6 |
 | 2 | 25 | **Accord : Flèche de fracture** *(technique)* — `dégât`, `une cible` | ouvre la garde — dégâts sur la durée | — |
 | 2 | 25 | *Port* : arc, échelon 3 | l'arc à poulie de palier 3 | — |
-| 3 | 50 | Œil du faucon | `critical_power` **+13,5 %** | 9 |
-| 3 | 50 | Trait récupéré | `wind` **+13,5 % de récupération de munition** *(teinte)* | 9 |
+| 3 | 50 | **Fourche — le Guet** · Œil du faucon | `critical_power` **+13,5 %** | 9 |
+| 3 | 50 | **Fourche — le Guet** · Avantage du guet | `tempo` **+9 %** | 9 |
+| 3 | 50 | **Fourche — la Volée** · Pointe affûtée | `pierce` **+6,3 pt** | 9 |
+| 3 | 50 | **Fourche — la Volée** · Trait récupéré | `wind` **+13,5 % de récupération de munition** *(teinte)* | 9 |
 | 3 | 50 | **Accord : Tir du faucon** *(technique)* — `dégât`, `une cible` | le geste de pointe, reprise 3 | — |
 | **Capstone** | 100 | **Trait dans le vent** | `power` **+28 %** *contre une cible ralentie ou entravée* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (air)* | *réservé* | — |
 
-**Vérification.** 50 pb · palette 41 ✔ · teinte `wind` 9 ≤ 10 ✔ · `power` 17 ≤ 20 ✔ ·
-`critical` 9 ≤ 12 ✔ · condition atteignable au tour 2 (Tir entravant, accord
-d'entrée) ✔.
-**Intentions** : 4 `dégât` ≥ 3 ✔ · 1 accord non-`dégât` (Tir entravant) ✔.
+**La fourche.** *Le Guet* prépare — un gros coup, et le droit de le tirer en
+premier. *La Volée* entretient la cadence — elle perce et elle **coûte moins**, ce
+qui pour ce registre veut dire quelque chose de très concret : moins de flèches
+achetées. La teinte `wind` n'est que dans la Volée.
+
+**Vérification.** 50 pb **par branche** · palette 41 ou 50 ≥ 40 ✔ · teinte `wind`
+9 ≤ 10 ✔ · `power` 17 ≤ 20 ✔ · `critical` 9 ≤ 12 ✔ · `critical_power` 15 ≤ 15 ✔
+(branche Guet) · branches sans levier commun ✔ · condition atteignable au tour 2
+(Tir entravant, accord d'entrée) ✔.
+**Intentions** : 4 `dégât` ≥ 3 ✔ · 1 accord non-`dégât` (Tir entravant) ✔ · un
+accord d'entrée applique le **Déséquilibre** ✔.
 
 > **Pourquoi l'Archer n'est pas un Pyromancien avec un arc**, alors qu'ils
 > partagent la fonction : sa ressource est **matérielle** (il dépend d'un artisan
@@ -805,6 +1096,8 @@ d'entrée) ✔.
 | **Coût hors combat** | potions de PM | rien *(sa force)* | réparation d'armure | munitions *(un artisan)* |
 | **Ce qu'il dépose en donjon** | rien — il frappe | une régénération de groupe | une absorption de groupe | une entrave qui vaut pour tous les tours suivants |
 | **Ce qu'il récompense de porter** | la ligne tissu | un focus en main gauche | un bouclier | pas de bouclier — les deux mains à l'arc |
+| **Sa marque** | Brûlure | Trempé | Entaille | Déséquilibre |
+| **Sa fourche** | la Braise *(durer)* / l'Éclat *(passer)* | le Ressac *(tenir seul)* / la Marée *(tenir le groupe)* | le Mur *(encaisser)* / la Ligne mobile *(éviter)* | le Guet *(préparer)* / la Volée *(cadencer)* |
 
 **La lecture d'ensemble**, et c'est elle qui valide le modèle : **aucune ligne de
 ce tableau n'est un chiffre.** Quatre archétypes se distinguent par leur rapport
@@ -818,8 +1111,9 @@ envie de panacher ?** Rappel du cadre — un domaine ne s'exprime que si le buil
 porte une source (DOM-02), et une arme plus trois emplacements font mécaniquement
 deux à trois domaines actifs.
 
-**1. Le tank en cuir** — Soldat *(métal × mêlée × encaisse)* + Vagabond *(air ×
-mêlée × contrôle)*. Porté : **cuir, bouclier, épée**.
+**1. Le tank en cuir** — Soldat *(métal × mêlée × encaisse)*, **branche la Ligne
+mobile** (§9.3) + Vagabond *(air × mêlée × contrôle)*. Porté : **cuir, bouclier,
+épée**.
 Il garde du Soldat tout ce qui n'exige pas la plaque — `life`, le capstone
 « Tenir la ligne », et « Garde travaillée » que **son bouclier** valide. Il prend
 du Vagabond l'`dodge` et le `tempo` conditionnés au **cuir**. Il perd les nœuds du
@@ -845,11 +1139,49 @@ la même régénération sur lui-même, et le même arc.
 loi du dépôt (§7 bis) qui le rend jouable, pas une mécanique de groupe en plus.
 
 > **Ce qui donne envie de mener un domaine**, et qui se vérifie sur les trois
-> mélanges : (1) une **promesse** qu'aucun autre ne tient ; (2) des passifs
-> conditionnés qui récompensent une **tenue reconnaissable** — on voit un
-> archétype à ce qu'il porte, avant même qu'il agisse ; (3) un **capstone** dont la
-> condition raconte sa façon de jouer. Un arbre qui n'a que le troisième est un
-> arbre qu'on prend « en passant ».
+> mélanges : (1) une **promesse** qu'aucun autre ne tient ; (2) un **accord
+> exclusif** — un geste qu'on ne verra nulle part ailleurs (§5.1) ; (3) des passifs
+> conditionnés qui récompensent une **tenue reconnaissable** — on voit un archétype
+> à ce qu'il porte, avant même qu'il agisse ; (4) une **fourche** qui fait que deux
+> praticiens du même arbre ne se ressemblent pas ; (5) un **capstone** dont la
+> condition raconte sa façon de jouer. Un arbre qui n'a que le dernier est un arbre
+> qu'on prend « en passant ».
+
+### 9.7 Décision 15 — Les accointances : récompenser le mélange sans le rendre obligatoire
+
+Le jeu porte déjà des **synergies inter-domaines** (`SynergyCalculator`,
+`DomainSynergy` — actives quand deux arbres dépassent un seuil d'XP commun). Elles
+donnent aujourd'hui des **statistiques plates** : « Forge ardente » (pyromancie +
+soldat) rend `damage +10`, « Purification » `heal +15`.
+
+**C'est une fuite de budget, et elle est franche** : ces bonus s'ajoutent dans
+`CombatSkillResolver` **hors de tout arbre**, donc hors des 50 pb, hors des
+plafonds par levier, hors des palettes. Un système qui compte soigneusement 50
+points et laisse une porte de service à +10 ne compte rien.
+
+> **Décision : une accointance ne donne jamais de puissance. Elle donne de la
+> souplesse.**
+
+Quatre formes légales, et rien d'autre :
+
+| Forme | Exemple |
+|---|---|
+| **Élargir ce qui satisfait une condition** | **Soldat + Vagabond — « Pied sûr »** : les passifs conditionnés « en cuir » sont aussi satisfaits par la maille |
+| **Élargir ce qui exprime un domaine** (DOM-02) | **Pyromancien + Artificier — « Poudre »** : une munition de feu compte comme source du domaine de pyromancie — le pyromancien s'exprime en tirant |
+| **Élargir ce qu'un emplacement accepte** | **Guérisseur + Prêtre — « Liturgie »** : un emplacement de sort accepte une matéria de l'élément voisin |
+| **Réduire un coût d'accès** | **Archer + Charpentier — « Fût droit »** : l'échelon 3 de port de l'arc coûte un palier de moins |
+
+**Trois règles.** (1) **Une accointance par paire**, et son effet est unique — pas
+une liste qui s'allonge. (2) **Jamais nécessaire** : aucun build, aucune recette,
+aucun contenu n'en dépend. (3) **Elle ne rapporte aucun point de budget ni aucun
+levier** — c'est l'invariant qui la distingue d'un bonus déguisé, et il est
+testable en une ligne.
+
+> **Ce que ça change dans la sensation** : une synergie qui donne +10 dégâts pousse
+> à monter deux arbres pour être plus fort. Une accointance qui lève une condition
+> pousse à monter deux arbres pour **jouer autrement** — porter ce qu'on ne pouvait
+> pas porter, sertir ce qu'on ne pouvait pas sertir. C'est la même invitation au
+> mélange, sans la course à la puissance.
 
 ---
 
@@ -904,7 +1236,7 @@ tombent des grilles.
 
 ---
 
-## 11. Ce que ça coûte, et les deux arbitrages ouverts
+## 11. Ce que ça coûte, et ce qui a été tranché
 
 ### 11.1 Les dettes de moteur, par ordre de blocage
 
@@ -916,10 +1248,19 @@ tombent des grilles.
 | 4 | **Les ressources par registre** : consommation de munition, reprise sur technique (§2) | Les trois registres restent la même chose repeinte | M |
 | 5 | **L'ancre d'échelle** : recalibrer PV de monstres et valeurs de gestes sur la durée en tours (§6.4) | Les pourcentages s'appliquent à des nombres qui n'ont pas de sens entre eux | **L** |
 | 6 | **L'échelle de coût** 0/10/25/50/100 sur les 24 arbres, et le gain de points indexé au palier (§6.2) | Un arbre coûte toujours 465 points pour un plafond de 500 | M |
+| 7 | **Les huit marques** (§1.1) | Le capstone d'assaut, le levier `grip` et la palette de contrôle n'ont **aucun objet** | M |
+| 8 | **La fourche** (§6.1 bis) — extension au combat d'un mécanisme livré (`other_branch`) | Deux praticiens du même arbre restent identiques | S |
+| 9 | **Le pacte** (§6.5) et les **accointances** (§9.7) | Aucun build n'est faible quelque part ; et les synergies continuent de fuir hors budget | S + M |
 
 **L'ordre est contraint** : 2 avant 3 (la palette borne le levier), 1 avant 4,
-5 avant toute passe de valeurs. 3 et 5 sont les deux gros morceaux, et ils sont
+**7 avant tout capstone d'assaut**, 8 après les quatre arbres patrons, et 5 avant
+toute passe de valeurs. 3 et 5 sont les deux gros morceaux, et ils sont
 indépendants l'un de l'autre.
+
+> **Le noyau minimal**, si le chantier doit se livrer par morceaux : les lignes 1,
+> 2, 3 et les intentions (§3.1). Sans elles, ni les archétypes d'arme ni les
+> fonctions n'existent. Les nuances (7, 8, 9) sont ce qui fait qu'on **rejoue** un
+> archétype ; le socle est ce qui fait qu'il **existe**.
 
 ### 11.2 Le plafond global de 500 points — **tranché le 2026-07-31 : supprimé**
 
@@ -1003,6 +1344,22 @@ Ce qui doit casser la CI si on le viole :
     un nœud de domaine de combat.
 16. **Aucun plafond global de points** — le refus `global_cap` n'existe plus
     (§11.2). Un test qui le rétablirait doit échouer.
+17. **Une marque par élément, et une seule** (§1.1) — et un des deux accords
+    d'entrée de chaque arbre l'applique, sans quoi son capstone est hors de portée
+    du joueur du jour 1.
+18. **La fourche est un vrai choix** — deux branches, deux passifs chacune,
+    **aucun levier commun**, exclusives entre elles, et le respec de branche se
+    paie (mécanisme `other_branch`, livré par DOM-06).
+19. **Le pacte est unique et borné** — au plus un par arbre, au plus 10 pb de
+    malus, malus **hors de la palette** de la fonction, nœud **feuille**, jamais au
+    palier 1, et les plafonds par levier tiennent malgré lui.
+20. **Toute condition vient du vocabulaire fermé** (§4.3) — douze entrées, six de
+    build et six de combat. Aucune condition portée sur une pièce nommée, une
+    rareté ou l'élément de la cible ; aucun malus conditionné à l'équipement.
+21. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+    levier, ni statistique. Quatre formes légales, et rien d'autre.
+22. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+    n'ouvre (§5.1).
 
 ---
 
