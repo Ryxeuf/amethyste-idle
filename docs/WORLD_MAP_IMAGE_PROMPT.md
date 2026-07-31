@@ -5,6 +5,9 @@
 > (`map_x` / `map_y`, en % de 0 à 100, origine en **haut à gauche**) ; l'identité de chaque
 > zone vient de [GAME_ZONES.md](GAME_ZONES.md) §2.
 
+> Pour les illustrations **zone par zone** (le bandeau de `/game/zone`), voir
+> [ZONE_IMAGE_PROMPTS.md](ZONE_IMAGE_PROMPTS.md).
+
 ## 1. Contraintes techniques
 
 Le gabarit d'affichage (`templates/game/zone/world_map.html.twig`) impose :
