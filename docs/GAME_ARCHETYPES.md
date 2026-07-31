@@ -162,18 +162,27 @@ agir.
 > comme un autre. Ce qui est neuf, c'est de **les répartir** — un registre, une
 > ressource — au lieu de faire payer les trois avec la même monnaie.
 
-**Trois garde-fous sur les munitions**, sans quoi la décision devient une taxe :
+**Cinq garde-fous sur les munitions**, sans quoi la décision devient une taxe.
+Les trois premiers étaient posés ; les deux derniers viennent du §9 quater, qui a
+mesuré ce que l'archer paie réellement :
 
 1. **La flèche de base est au plancher T1 PNJ** (GAME_PRINCIPLES) : toujours
-   disponible, à prix fixe, en lot. On ne peut pas être « bloqué faute de
-   flèches » — au pire on tire moins bien.
-2. **Seules les munitions élémentaires et de haut palier se consomment
-   vraiment** : ce sont elles qui portent l'élément du registre distance, donc la
-   double borne. La flèche ordinaire est neutre et bon marché.
+   disponible, à prix fixe, en lot — et **pleinement jouable**, passifs d'arbre
+   compris (§2.1).
+2. **La munition élémentaire change l'élément du geste**, elle ne le donne pas.
+   C'est un achat de **souplesse**, jamais un droit d'entrée.
 3. **Un levier de l'arbre les récupère** (`wind` appliqué au registre distance :
-   une chance de récupérer la munition tirée, §4 note 1). L'archer chevronné
-   dépense moins que le débutant — c'est *exactement* la forme que doit prendre la
-   maîtrise.
+   une chance de récupérer la munition tirée, §4 note 1).
+4. **Une meilleure munition rend de la puissance** — une prime **fixe et
+   plafonnée**, indexée sur le palier. Mesuré au §9 quater : sans elle, l'archer
+   paie 90 à 230 gils par jour pour **+1,8 %** de dégâts face à un pyromancien qui
+   ne paie rien. Payer au-delà du palier ne rend jamais plus fort : c'est un choix
+   d'allocation, pas un axe de progression.
+5. **Le carquois a une capacité, et le prix se calibre sur le revenu du jour.**
+   La capacité fait que `wind` rend des **tirs** plutôt que douze gils par jour, et
+   elle ne mord **que sur les longues rencontres**. Le prix reste sous ~10 % du
+   revenu quotidien pour l'ordinaire, ~25 % un jour où l'archer choisit
+   l'élémentaire — au-delà, l'archétype devient un métier qu'on n'a pas choisi.
 
 > **Pourquoi ne pas laisser tout le monde payer en PM ?** Parce qu'alors le
 > guerrier est un mage qui tape, et l'archer un mage qui vise. La règle 10 rend
@@ -185,16 +194,23 @@ agir.
 Où vit l'élément d'un geste ? La réponse diffère par registre, et c'est une
 troisième différence structurelle — gratuite, puisqu'elle découle de §2 :
 
-| Registre | Ce qui porte l'élément | Ce que ça coûte de changer |
+| Registre | Ce qui porte l'élément | Ce que ça coûte d'en changer |
 |---|---|---|
 | **Sorts** | la **matéria** sertie | un passage par l'écran de build, hors combat |
-| **Mêlée** | l'**arme** (et la technique sertie) | changer d'arme — donc de famille, donc de passifs conditionnels |
-| **Distance** | la **munition** | **acheter un autre carquois** |
+| **Mêlée** | la **technique** sertie | idem, plus l'arme qui va avec |
+| **Distance** | la **technique** sertie — et la **munition la remplace** | **acheter un autre carquois**, et en changer entre deux combats |
 
-> **L'archer est le seul qui *achète* son élément.** Il ne le porte pas, il le
-> consomme. C'est ce qui fait de son registre le plus **souple** des trois — il
-> change de contre-jeu entre deux combats sans rien réapprendre — et le plus
-> **cher** : sa souplesse a un prix en gils, à chaque flèche.
+> **Corrigé au §9 quater, et c'est important.** Une première rédaction faisait
+> porter l'élément **par la munition seule**. Conséquence non vue : une flèche
+> ordinaire — neutre, celle du plancher T1 PNJ — produisait une action **sans
+> élément**, donc hors de la case du domaine, donc **sans aucun passif de l'arbre**.
+> Le filet de sécurité éteignait l'archétype. L'élément vient donc de la matéria,
+> comme partout ; la munition ne fait que le **remplacer**.
+
+> **L'archer est le seul qui *achète* sa souplesse.** Il ne paie pas sa puissance —
+> son archétype tourne à la flèche ordinaire — il paie le droit de **changer de
+> contre-jeu** entre deux combats, ce qu'aucun autre registre ne peut faire sans
+> refaire son build.
 
 Ce que ça règle d'un coup : la double borne sur le registre distance (une flèche
 de feu qualifie un geste de feu, donc les passifs de l'arbre de feu), la demande
@@ -1537,6 +1553,110 @@ jeu qu'aucun budget ne produit, et elle vient entièrement de la structure de se
 
 ---
 
+## 9 quater. Le troisième exemple — l'Archer, ou ce qu'un archétype coûte en gils
+
+Les deux premiers exercices ont mesuré des tours et des PM. Celui-ci mesure la
+seule chose que ni le Soldat ni le Guérisseur ne pouvaient tester : **ce qu'un
+archétype coûte en monnaie**. C'est le troisième registre, et il paie en
+munitions.
+
+**Il n'a rien appris sur le combat. Il a tout appris sur la journée** — et il a
+trouvé un défaut structurel que les deux autres ne pouvaient pas révéler.
+
+### 9 quater.1 Le défaut : la flèche ordinaire éteint l'arbre
+
+Le §2.1 dit que **la munition porte l'élément**. La double borne (§2 de
+GAME_DOMAINS) dit qu'un passif ne s'applique que sur la case *élément × registre*
+de son domaine. Mettez les deux ensemble :
+
+> Un archer qui tire une **flèche ordinaire** — neutre, celle du plancher T1 PNJ —
+> produit une action **sans élément**. Aucun passif de son arbre ne s'y applique.
+> **Le filet de sécurité désactive l'archétype qu'il était censé protéger.**
+
+C'est le genre de défaut qu'on ne voit qu'en déroulant. **Correction 7 : la matéria
+porte l'élément, la munition le *remplace*.** Le Tir tendu est un geste d'air parce
+que sa matéria est d'air — comme pour les deux autres registres. Une flèche
+élémentaire **substitue** son élément à celui du geste.
+
+Ce que ça change dans la formule du §2.1, et c'est mieux ainsi : **l'archer
+n'achète pas sa puissance, il achète sa souplesse.** Il garde son archétype
+gratuitement, et paie quand il veut *changer de contre-jeu* — tirer du feu sur une
+créature de glace le temps d'un combat. C'est exactement la promesse du registre,
+et elle ne tenait pas.
+
+### 9 quater.2 Ce qu'il paie, et ce qu'il achète
+
+16 combats par jour (14 communs à 5 tours, 2 élites à 10) = **90 tirs**.
+
+| Ce qu'il tire | Coût quotidien |
+|---|---:|
+| Tout en flèche ordinaire (1 gil) | **90 gils** |
+| Idem, avec `wind` +13,5 % | 78 gils |
+| Élémentaire sur les élites (8 gils) | **230 gils** |
+| Idem, avec `wind` | 199 gils |
+
+Et ce que ça lui achète, comparé au pyromancien qui ne paie rien :
+
+| | Par tour | Sur la marque |
+|---|---:|---:|
+| **Archer** *(le Guet)* | 23,6 | 30,1 |
+| **Pyromancien** *(l'Éclat)* | 23,2 | 29,5 |
+| **Écart** | **+1,8 %** | +2,0 % |
+
+> **90 à 230 gils par jour pour +1,8 %.** Un coffre d'exploration rend 2 à 12 gils
+> (BALANCE §10) : l'archer travaillerait une journée entière pour ses flèches. Le
+> registre le plus cher du jeu était aussi celui qui n'achetait rien.
+
+**Correction 8 — une meilleure munition rend de la puissance.** La munition n'est
+pas une taxe, c'est un **investissement** : le geste de distance porte une prime
+indexée sur le palier de sa munition. Deux garde-fous, sans lesquels on ouvre une
+porte que le jeu refuse ailleurs : la prime est **fixe et plafonnée** — payer plus
+cher au-delà du palier ne rend pas plus fort —, et la flèche ordinaire reste
+**pleinement jouable** (correction 7). Ce n'est pas un axe de progression, c'est un
+**choix d'allocation** : le seul endroit du jeu où le combat et l'économie se
+touchent, ce qui est une qualité tant que ça reste borné.
+
+**Correction 9 — le prix se calibre contre le revenu du jour, jamais contre la
+valeur du geste.** Règle : la munition **ordinaire** ne dépasse pas ~10 % du revenu
+quotidien ; l'**élémentaire** peut monter à ~25 % **un jour où l'archer la
+choisit**. Au-delà, l'archétype cesse d'être un style de jeu pour devenir un
+métier — et un métier qu'on n'a pas choisi.
+
+### 9 quater.3 `wind`, ou un levier qui ne vaut rien
+
+La teinte de la branche *la Volée* coûte **9 points de budget** — 18 % de tout ce
+qu'un arbre peut donner. Ce qu'elle rend :
+
+| Ce qu'on mesure | Valeur |
+|---|---:|
+| 13,5 % de récupération sur 90 tirs à 1 gil | **12 gils par jour** |
+| Le même budget en `critical_power` | +13,5 % de dégâts critiques |
+
+**Douze gils.** Le levier économique du registre économique est économiquement
+négligeable — parce que la munition n'a qu'un **prix**, et jamais de **rareté**.
+
+**Correction 10 — le carquois a une capacité.** Ce qu'on porte est borné ; la
+récupération rend alors non pas des gils, mais **des tirs quand ils manquent** :
+13,5 % d'un carquois de 20 valent **2,7 tirs de plus par rencontre**. Et la
+contrainte est réglée pour **ne mordre que sur les longues rencontres** — un boss,
+un donjon —, jamais sur le tout-venant, où elle ne serait que de la gestion
+d'inventaire.
+
+### 9 quater.4 Ce que les trois exemples disent ensemble
+
+| Registre | Sa ressource | Où elle mord | Ce que l'exercice a corrigé |
+|---|---|---|---|
+| **Sorts** | PM | dans le combat *(pic tour 8)* **et** dans la journée | la seconde ancre (§6.4) |
+| **Mêlée** | temps de reprise | dans le combat seulement — rien ne se reporte | la protection déposée (§7 bis) |
+| **Distance** | munitions | **dans la journée, en gils** | l'élément, la prime, le carquois |
+
+> **Les trois archétypes se distinguent par leur rapport à la ressource, et c'est
+> cette ligne-là qui porte l'identité — pas les pourcentages.** Le soldat n'a rien
+> dépensé, le guérisseur a vidé son pool, l'archer a vidé sa bourse. Ils ont tenu le
+> même nombre de tours.
+
+---
+
 ## 10. Les 24 domaines de combat dans la grille
 
 Fonction proposée pour chacun. La règle qui la contraint : **aucun triplet
@@ -1721,9 +1841,15 @@ Ce qui doit casser la CI si on le viole :
 24. **Toute condition vient du vocabulaire fermé** (§4.3) — douze entrées, six de
     build et six de combat. Aucune condition portée sur une pièce nommée, une
     rareté ou l'élément de la cible ; aucun malus conditionné à l'équipement.
-25. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+25. **La flèche ordinaire est pleinement jouable** (§2.1) — l'élément vient de la
+    matéria, la munition ne fait que le remplacer. Un archer au plancher T1 exprime
+    son arbre en entier.
+26. **Une meilleure munition rend une prime fixe et plafonnée** (§2) — payer au-delà
+    du palier ne rend jamais plus fort, et le coût quotidien des munitions reste sous
+    les seuils du §9 quater.
+27. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-26. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+28. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---

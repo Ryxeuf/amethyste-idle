@@ -4,9 +4,9 @@
 > préfixes.
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
-> 2026-07-31 ; **§9 bis** et **§9 ter** en déroulent deux exemples complets — un soldat du
-> jour 3 au mois 3, un guérisseur seul puis en donjon — qui ont produit **six** des
-> corrections listées ci-dessous) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
+> 2026-07-31 ; **§9 bis**, **§9 ter** et **§9 quater** en déroulent trois exemples complets
+> — un soldat du jour 3 au mois 3, un guérisseur seul puis en donjon, un archer sur une
+> journée de jeu — qui ont produit **dix** des corrections listées ci-dessous) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
 > comme matéria, l'intention et la portée du geste, les marques élémentaires, le
 > vocabulaire fermé des leviers et de leurs conditions d'équipement, le budget de
 > puissance avec la fourche et le pacte, la loi du dépôt, les accointances, le gabarit et
@@ -30,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 26 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 28 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -104,9 +104,24 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 
 ### ARC-04 — Les ressources par registre (M | ★★ | HAUTE)
 > GAME_ARCHETYPES §2. Trois registres qui coûtent la même chose ne sont qu'un registre.
-- [ ] **Munitions** : consommation par geste de registre distance, avec les trois
-      garde-fous — flèche de base au **plancher T1 PNJ**, seules les munitions
-      élémentaires et hautes se consomment vraiment, récupération par le levier `wind`
+- [ ] **Munitions** : consommation par geste de registre distance, avec les **cinq**
+      garde-fous du §2 — flèche de base au **plancher T1 PNJ** et **pleinement jouable**,
+      la munition élémentaire **remplace** l'élément du geste sans le donner, récupération
+      par `wind`, **prime fixe et plafonnée** pour une meilleure munition, et **capacité de
+      carquois** avec un prix calibré sur le revenu du jour
+- [ ] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater).
+      Une première rédaction le faisait porter par la munition seule : une flèche ordinaire
+      produisait alors une action **sans élément**, donc hors de la case du domaine, donc
+      **sans aucun passif d'arbre**. Le filet de sécurité éteignait l'archétype
+- [ ] **La prime de munition** : mesuré, sans elle l'archer paie **90 à 230 gils par jour**
+      pour **+1,8 %** de dégâts face à un pyromancien qui ne paie rien. Prime fixe, indexée
+      sur le palier, jamais cumulative — un choix d'allocation, pas un axe de progression
+- [ ] **La capacité de carquois** : sans elle, `wind` — **18 % du budget d'un arbre** — rend
+      **12 gils par jour**. Avec elle, 13,5 % d'un carquois de 20 valent 2,7 tirs de plus
+      par rencontre, et la contrainte ne mord que sur les **longues** rencontres
+- [ ] **Le prix se calibre contre le revenu quotidien**, jamais contre la valeur du geste :
+      ~10 % du revenu du jour pour l'ordinaire, ~25 % un jour où l'archer choisit
+      l'élémentaire. Repère actuel : un coffre d'exploration rend 2 à 12 gils (BALANCE §10)
 - [ ] **Temps de reprise** : `Spell::cooldown` (déjà au modèle, sans consommateur) branché
       sur les techniques de mêlée
 - [ ] Les PM restent la ressource des sorts, inchangés
@@ -172,7 +187,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 26 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 28 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
