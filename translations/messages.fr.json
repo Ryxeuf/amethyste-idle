@@ -419,6 +419,11 @@
           "title": "Loyer de %gils% gils en retard",
           "hint": "Échu le %day% %month% — votre demeure dort jusqu'au paiement, rien n'est perdu."
         },
+        "enchantment_expired": {
+          "icon": "🔮",
+          "title": "%count% enchantement%plural% expiré%plural%",
+          "hint": "Votre équipement a perdu son bonus — l'atelier peut le renouveler."
+        },
         "expedition_ready": {
           "icon": "🧭",
           "title": "Une expédition est rentrée",

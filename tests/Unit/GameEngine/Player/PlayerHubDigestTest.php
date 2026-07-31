@@ -28,6 +28,7 @@ use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Retention\WeeklyAttendanceService;
 use App\Repository\CraftJobRepository;
 use App\Repository\CraftOrderRepository;
+use App\Repository\EnchantmentRepository;
 use App\Repository\GardenPlotRepository;
 use App\Repository\PlayerExpeditionRepository;
 use App\Repository\PlayerHouseRepository;
@@ -186,6 +187,41 @@ class PlayerHubDigestTest extends TestCase
             ['house_rent', 'expedition_ready', 'quests_ready', 'talent_xp', 'messages_unread'],
             $keys,
         );
+    }
+
+    /**
+     * RET-10, dette 4 : un enchantement expire est une attente.
+     *
+     * Il ne se voyait que sur l'ecran d'artisanat, ou l'on ne va pas verifier.
+     * La regle d'admission reste celle du `CraftJob` : la ligne n'entre que
+     * quand le joueur peut agir — et pour un enchantement, ce moment est
+     * l'expiration, puisque tant qu'il court la piece ne peut pas etre
+     * re-enchantee.
+     */
+    public function testAnExpiredEnchantmentIsAWaitingItem(): void
+    {
+        $items = $this->digestWith(['expiredEnchantments' => 2])
+            ->pending($this->player(), $this->now());
+
+        $keys = array_map(static fn (HubPendingItem $item): string => $item->key, $items);
+
+        self::assertContains('enchantment_expired', $keys);
+        self::assertSame(2, $items[0]->params['%count%']);
+        self::assertSame(HubPendingItem::TONE_LOSS, $items[0]->tone);
+    }
+
+    /**
+     * Aucun enchantement expire, aucune ligne : le hub ne parle pas de ce qui
+     * n'attend rien.
+     */
+    public function testARunningEnchantmentIsNotAWaitingItem(): void
+    {
+        $keys = array_map(
+            static fn (HubPendingItem $item): string => $item->key,
+            $this->digest()->pending($this->player(), $this->now()),
+        );
+
+        self::assertNotContains('enchantment_expired', $keys);
     }
 
     /**
@@ -492,6 +528,9 @@ class PlayerHubDigestTest extends TestCase
         $gardenPlotRepository = $this->createMock(GardenPlotRepository::class);
         $gardenPlotRepository->method('findForHouse')->willReturn($overrides['plots'] ?? []);
 
+        $enchantmentRepository = $this->createMock(EnchantmentRepository::class);
+        $enchantmentRepository->method('countExpiredOnWornGear')->willReturn($overrides['expiredEnchantments'] ?? 0);
+
         $journalRepository = $this->createMock(PlayerJournalEntryRepository::class);
         $journalRepository->method('findByPlayer')->willReturn($overrides['journal'] ?? []);
 
@@ -530,6 +569,7 @@ class PlayerHubDigestTest extends TestCase
             // nommer un mois, et le rendre positionnel ailleurs aurait decale
             // les quinze arguments precedents.
             $translator,
+            $enchantmentRepository,
         );
     }
 

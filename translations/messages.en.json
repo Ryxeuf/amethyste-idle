@@ -419,6 +419,11 @@
           "title": "Rent of %gils% gils overdue",
           "hint": "Due %month% %day% — your home sleeps until it is paid; nothing is lost."
         },
+        "enchantment_expired": {
+          "icon": "🔮",
+          "title": "%count% enchantment%plural% expired",
+          "hint": "Your gear has lost its bonus — the workshop can renew it."
+        },
         "expedition_ready": {
           "icon": "🧭",
           "title": "An expedition is back",
