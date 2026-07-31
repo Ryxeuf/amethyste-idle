@@ -4,7 +4,8 @@
 > préfixes.
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
-> 2026-07-31) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
+> 2026-07-31 ; **§9 bis** en déroule un exemple complet, du jour 3 au mois 3, qui a produit
+> trois des corrections listées ci-dessous) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
 > comme matéria, l'intention et la portée du geste, les marques élémentaires, le
 > vocabulaire fermé des leviers et de leurs conditions d'équipement, le budget de
 > puissance avec la fourche et le pacte, la loi du dépôt, les accointances, le gabarit et
@@ -28,7 +29,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 22 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 24 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -162,7 +163,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 22 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 24 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -206,6 +207,9 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
       alliés — régénération, absorption, amélioration — et elle court **que le lanceur soit
       connecté ou non**
+- [ ] **Toute `protection` porte une durée**, quelle que soit sa portée (correction du
+      §9 bis) : une garde qui ne couvre que le tour où elle est jouée punit l'encaisse de
+      se défendre — il perd en dégâts exactement ce qu'il gagne en survie
 - [ ] **La durée se compte en tours de la rencontre**, jamais en temps réel ni en tours du
       lanceur : c'est le seul compteur que l'asynchronie ne dérègle pas
 - [ ] Le même geste en `scope: soi` doit rester jouable en solo — un archétype, pas deux
@@ -224,6 +228,10 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **Multiplicateurs d'effet** : ×1,0 sans condition, **×1,4** condition de build,
       **×2,0** condition de combat. Le budget compte l'effet **moyen**, pas l'effet affiché ;
       les plafonds restent exprimés en points de budget et ne bougent pas
+- [ ] **Le multiplicateur suit la fréquence mesurée, pas la famille** (correction du
+      §9 bis) : une condition de combat vraie plus des deux tiers du temps se paie ×1,4.
+      « Vous avez encaissé au tour précédent » est vraie dès le tour 2 pour qui se bat au
+      contact — c'est le simulateur d'ARC-05 qui la mesure, pas l'auteur qui l'estime
 - [ ] Les **cinq garde-fous** verrouillés par test : aucune condition au palier 1 ; au moins
       2 des 7 passifs sans condition ; condition satisfaisable par ce que l'arbre débloque ;
       condition portée sur une **famille**, jamais sur une pièce nommée ni sur une rareté ;
@@ -256,16 +264,23 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > GAME_ARCHETYPES §6.1 bis. **Deux pyromanciens finis étaient identiques.** Le mécanisme
 > existe déjà et n'a jamais servi au combat : `actions.specialization.branch`, le motif de
 > refus `other_branch` et le respec de branche payant sont livrés (DOM-04, DOM-06).
-- [ ] Palier 3 : **deux branches de deux passifs**, une seule apprenable — l'arbre écrit
-      60 pb, le personnage en porte 50
+- [ ] Palier 3 : **deux branches de deux passifs et d'un accord**, une seule apprenable —
+      l'arbre écrit 18 nœuds et 60 pb, le personnage en apprend 15 et en porte 50
+- [ ] **Chaque branche ouvre son geste**, et c'est ce qui décide si la fourche est un choix
+      ou une décoration : mesuré au §9 bis, deux branches qui ne diffèrent que par leurs
+      passifs produisent **le même combat, au tour près** (11 tours contre 11). Avec un
+      accord par branche, elles se séparent de deux tours et de deux façons de jouer
+- [ ] Une fourche peut opposer **deux contextes** (seul / en groupe), pas seulement deux
+      dosages — c'est la forme la plus forte trouvée (§9.3), et elle n'oblige personne
 - [ ] Les quatre arbres patrons ont leur fourche (§9.1→9.4) : Braise/Éclat,
       Ressac/Marée, Mur/Ligne mobile, Guet/Volée
 - [ ] Étendre `craft_branches.yaml` (ou son équivalent combat) aux 24 arbres — le loader
       refuse déjà un arbre à moins de deux branches
 - [ ] UI : les deux branches **comparables avant le choix**, et le prix du respec affiché
       au moment de choisir (§8 bis)
-- [ ] Tests : deux branches par arbre ; **aucun levier commun** entre elles ; chaque
-      branche tient les 50 pb, la palette et les plafonds ; exclusivité et respec payant
+- [ ] Tests : deux branches par arbre ; **aucun levier commun** entre elles ; **un accord
+      par branche** ; chaque branche tient les 50 pb, la palette et les plafonds ;
+      exclusivité et respec payant
 
 ### ARC-15 — Le pacte (S | ★★ | MOYENNE)
 > GAME_ARCHETYPES §6.5. La seule mécanique du document qui rende un personnage

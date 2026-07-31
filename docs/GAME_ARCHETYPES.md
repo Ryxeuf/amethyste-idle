@@ -382,6 +382,14 @@ familles de conditions, et un multiplicateur d'effet par famille :
 | **De build** — vraie ou fausse avant le combat, stable jusqu'à la fin | une **dague** en main · la ligne **cuir** portée · un **bouclier** équipé · la main gauche **libre** · deux armes | **×1,4** |
 | **De combat** — elle se joue, et elle peut manquer | la cible **brûle** · vous avez **encaissé** au tour précédent · la cible est **sous 40 %** de ses PV | **×2,0** |
 
+> **Le multiplicateur suit la fréquence réelle, pas la famille** *(correction issue
+> du §9 bis)*. « Vous avez encaissé au tour précédent » est vraie **dès le tour 2 et
+> jusqu'à la fin** pour qui se bat au contact : la payer ×2,0 comme une condition
+> qui peut manquer est une erreur de comptage. **Une condition de combat vraie plus
+> des deux tiers du temps se paie au tarif d'une condition de build (×1,4)** — et
+> c'est le simulateur d'ARC-05 qui mesure cette fréquence, pas l'auteur qui
+> l'estime.
+
 > **Le budget compte ce qu'un passif rapporte *en moyenne*, pas ce qu'il
 > affiche.** Une condition ne rend pas un nœud plus fort : elle échange de la
 > **constance** contre de l'**amplitude**. Un nœud de 6 pb donne +6 % s'il est
@@ -540,14 +548,14 @@ et **fixé** :
 | **Entrée** | 0 pt | 2 | **2 accords** — les matéria du jour 1 (invariant GAME_MATERIA §3 : exactement 2 accords gratuits par arbre), dont **un qui applique la marque** (§1.1) |
 | **Palier 1** | 10 pts | 4 | 2 passifs (3 pb chacun, **jamais conditionnels**) · 1 accord · 1 échelon de port (échelon 2 de sa famille d'arme ou d'armure) |
 | **Palier 2** | 25 pts | 4 | 2 passifs (6 pb) · 1 accord · 1 échelon de port (échelon 3) |
-| **Palier 3** | 50 pts | 5 | **la fourche** — 2 branches de 2 passifs (9 pb), **on n'en apprend qu'une** (§6.1 bis) · 1 accord |
+| **Palier 3** | 50 pts | 6 | **la fourche** — 2 branches de 2 passifs (9 pb) **et d'un accord chacune**, on n'en apprend qu'une (§6.1 bis) |
 | **Capstone** | 100 pts | 1 | 1 passif **conditionnel** signature (14 pb) — §7 |
 | *Hybride* | *150 pts* | *1* | *l'accord dormant de DOM-07, hors budget tant que la fusion n'ouvre pas* |
 
-**Totaux** : **5 accords** (dont les 2 gratuits d'entrée) · **9 passifs écrits, 7
-apprenables** (6 + le capstone) · **2 accès de port** · **1 dormant** = **17 nœuds
-écrits, 15 apprenables**, et **390 points** pour un arbre complet hors dormant
-(`4×10 + 4×25 + 3×50 + 100`).
+**Totaux** : **6 accords écrits, 5 apprenables** (dont les 2 gratuits d'entrée) ·
+**9 passifs écrits, 7 apprenables** (6 + le capstone) · **2 accès de port** ·
+**1 dormant** = **18 nœuds écrits, 15 apprenables**, et **390 points** pour un arbre
+complet hors dormant (`4×10 + 4×25 + 3×50 + 100`).
 
 > **Amendement au gabarit de GAME_DOMAINS §5.1**, qui dit « ~15 nœuds ». Il en
 > reste 15 **pour un personnage** ; l'arbre en **écrit** deux de plus, qui sont les
@@ -581,6 +589,14 @@ délibérément plutôt que par sa tenue.
    usage qu'on puisse en faire : *la teinte devient un choix, pas une fatalité*.
 4. **Le respec de branche se paie**, comme en artisanat ; le respec de points
    ordinaire reste doux. On change d'avis, mais pas tous les matins.
+5. **Chaque branche ouvre son accord** — et c'est la règle qui décide si la fourche
+   est un choix ou une décoration. *Constat mesuré au §9 bis : deux branches qui ne
+   diffèrent que par leurs passifs produisent le même combat, au tour près.* Ce sont
+   les **gestes** qui séparent deux façons de jouer, jamais les pourcentages.
+6. **Une fourche peut opposer deux contextes**, pas seulement deux dosages : le
+   Soldat choisit entre *celui qu'on veut en donjon* et *celui qui se débrouille
+   seul* (§9.3). C'est la forme la plus forte qu'on ait trouvée — et elle n'oblige
+   personne, puisqu'aucun contenu n'exige un rôle (§7 bis).
 
 > **L'échelon 1 de port ne figure pas dans l'arbre**, et c'est voulu : il est
 > gratuit, partagé entre tous les arbres qui enseignent la famille (ONB-20b). Ce
@@ -766,6 +782,14 @@ l'archétype d'entretien en groupe.
 > durée sur les alliés, et cette durée agit **que son lanceur soit connecté ou
 > non**.
 
+> **Extension (correction issue du §9 bis) — la loi vaut pour toute `protection`,
+> quelle que soit sa portée.** Une garde qui coûte un tour entier pour couvrir *ce*
+> tour punit l'archétype d'encaisse de se défendre : il perd en dégâts exactement ce
+> qu'il gagne en survie, et son tour défensif est toujours un mauvais calcul. Une
+> protection **pose une absorption qui dure** — un tour payé, trois tours couverts.
+> Ce qui était une règle de jeu de groupe devient une règle d'**intention**, et
+> l'archétype d'encaisse redevient jouable seul.
+
 Trois conséquences, et elles suffisent à faire exister quatre rôles en groupe :
 
 | Ce qu'on dépose | Exemple | Ce que ça règle |
@@ -895,11 +919,14 @@ leur conversion suit la grille du §4.
 | 3 | 50 | **Fourche — la Braise** · Souffle de forge | `critical_power` **+13,5 %** | 9 |
 | 3 | 50 | **Fourche — l'Éclat** · Fonte des écailles | `pierce` **+6,3 pt** | 9 |
 | 3 | 50 | **Fourche — l'Éclat** · Départ de feu | `tempo` **+9 %** | 9 |
-| 3 | 50 | **Accord : Nova de feu** — `dégât`, `plusieurs cibles` | le geste de pointe | — |
+| 3 | 50 | **Fourche — la Braise** · **Accord : Brasier** — `dégât`, `plusieurs cibles`, **sur la durée** | il ne frappe pas, il **reste** — et `grip` l'allonge | — |
+| 3 | 50 | **Fourche — l'Éclat** · **Accord : Nova de feu** — `dégât`, `plusieurs cibles` | le geste de pointe, tout de suite | — |
 | **Capstone** | 100 | **Foyer entretenu** | `power` **+28 %** *contre une cible qui brûle* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (feu)* | *réservé — DOM-07* | — |
 
-**La fourche.** *La Braise* tient le feu qui **dure** — des brûlures plus tenaces,
+**La fourche.** Chaque branche ouvre **son geste** (§6.1 bis, règle 5) : le Brasier
+qui reste sur le terrain, ou la Nova qui tombe tout de suite. *La Braise* tient le
+feu qui **dure** — des brûlures plus tenaces,
 et un critique qui fait mal quand il tombe. *L'Éclat* tient le feu qui **passe** —
 il ronge la résistance et frappe le premier. Même fonction, deux façons ; et c'est
 dans la Braise seule que vit la teinte `grip`.
@@ -951,21 +978,24 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 | Entrée | 0 | **Accord : Jet d'eau** — `dégât`, `une cible` | le geste offensif modeste : **sans lui, un combat ne finit jamais** (§5.1). Il applique **Trempé** — la marque, donc la condition du capstone | — |
 | 1 | 10 | Main sûre | `mending` **+3 %** | 3 |
 | 1 | 10 | Geste économe | `thrift` **−1,8 %** | 3 |
-| 1 | 10 | **Accord : Écaille d'eau** — `protection`, `soi ou un allié` | une absorption déposée : elle tient jusqu'à consommation | — |
+| 1 | 10 | **Accord : Dissipation** — `protection`, `un allié` | retirer un statut — la réponse aux poisons et aux entraves | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | — | — |
 | 2 | 25 | Seconde respiration | `wind` **+0,6 PM/tour** | 6 |
 | 2 | 25 | Sang-froid | `ward` **+6 %** | 6 |
-| 2 | 25 | **Accord : Dissipation** — `protection`, `un allié` | retirer un statut — la réponse aux poisons et aux entraves | — |
+| 2 | 25 | **Accord : Marée** — `soin`, **`le groupe`**, dépôt 6 tours | **le dépôt**, et il est au palier 2 : les deux branches l'ont, donc le soigneur sert son groupe quel que soit son choix | — |
 | 2 | 25 | *Port* : canal de sort, échelon 3 | — | — |
 | 3 | 50 | **Fourche — le Ressac** · Sourdre | `recovery` **+2,25 % des PV max par tour** | 9 |
 | 3 | 50 | **Fourche — le Ressac** · Écume | `guard` **−7,6 %** *si un bouclier ou un focus occupe la main gauche* (×1,4) — *teinte* | 9 |
 | 3 | 50 | **Fourche — la Marée** · Litanie | `thrift` **−5,4 %** | 9 |
 | 3 | 50 | **Fourche — la Marée** · Eaux calmes | `ward` **+9 %** | 9 |
-| 3 | 50 | **Accord : Marée** — `soin`, **`le groupe`**, 6 tours | **le dépôt** : posé à son tour, il court sur les tours des autres. En solo, il s'applique à lui seul | — |
+| 3 | 50 | **Fourche — le Ressac** · **Accord : Écaille profonde** — `protection`, `soi`, longue | l'absorption qui le rend increvable **seul** | — |
+| 3 | 50 | **Fourche — la Marée** · **Accord : Grande Marée** — `soin`, **`le groupe`**, dépôt 10 tours | le dépôt qui couvre une rencontre entière | — |
 | **Capstone** | 100 | **Ressac** | `mending` **+28 %** *sur une cible sous 40 % de ses PV* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (eau)* | *réservé* | — |
 
-**La fourche.** *Le Ressac* tient **seul** — il se régénère et amortit, c'est le
+**La fourche.** La Marée — le dépôt de groupe — est au **palier 2**, donc les deux
+branches l'ont : un guérisseur sert son groupe quel que soit son choix. La fourche
+décide seulement *jusqu'où*. *Le Ressac* tient **seul** — il se régénère et amortit, c'est le
 soigneur qui n'a besoin de personne. *La Marée* tient **le groupe** — elle dépose
 plus souvent (`thrift`) et ne se laisse pas interrompre (`ward`). La teinte `guard`
 n'existe que dans le Ressac : le soigneur de donjon n'a pas de main gauche à donner
@@ -1000,7 +1030,7 @@ sorts × assaut) partagent la case et **aucun levier principal** avec lui. ✔
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
 | Entrée | 0 | **Accord : Frappe appuyée** *(technique)* — `dégât`, `une cible` | le geste — sans temps de reprise, et il laisse l'**Entaille** |  — |
-| Entrée | 0 | **Accord : Garde haute** *(technique)* — `protection`, `soi` | le tour défensif, reprise 2 — le plan B, et la mise en place du capstone | — |
+| Entrée | 0 | **Accord : Garde haute** *(technique)* — `protection`, `soi`, **dépôt 3 tours** | un tour payé, trois tours couverts (§7 bis) — le plan B, et la mise en place du capstone | — |
 | 1 | 10 | Œil du drill | `hit` **+1,5 pt** | 3 |
 | 1 | 10 | Discipline | `ward` **+3 %** | 3 |
 | 1 | 10 | **Accord : Estoc brisant** *(technique)* — `dégât`, `une cible` | le geste qui perce l'armure | — |
@@ -1013,14 +1043,18 @@ sorts × assaut) partagent la case et **aucun levier principal** avec lui. ✔
 | 3 | 50 | **Fourche — le Mur** · Pied ferme | `ward` **+9 %** | 9 |
 | 3 | 50 | **Fourche — la Ligne mobile** · Jeu de jambes | `dodge` **+3,15 pt** | 9 |
 | 3 | 50 | **Fourche — la Ligne mobile** · Bras d'acier | `power` **+9 %** *(teinte)* | 9 |
-| 3 | 50 | **Accord : Charge d'acier** *(technique)* — `dégât`, `une cible` | le gros geste, reprise 4 | — |
-| **Capstone** | 100 | **Tenir la ligne** | `guard` **−16,8 %** *au tour qui suit un coup encaissé* (14 pb × 2) | 14 |
+| 3 | 50 | **Fourche — le Mur** · **Accord : Rempart** *(technique)* — `protection`, **`le groupe`**, dépôt long | ce qu'on vient chercher en donjon | — |
+| 3 | 50 | **Fourche — la Ligne mobile** · **Accord : Charge d'acier** *(technique)* — `dégât`, `une cible` | 60 dégâts, reprise 4 — de quoi finir un combat seul | — |
+| **Capstone** | 100 | **Tenir la ligne** | `guard` **−11,8 %** *au tour qui suit un coup encaissé* (14 pb × **1,4** — la condition est vraie presque tous les tours, §4.3) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (métal)* | *réservé* | — |
 
-**La fourche, et c'est la plus parlante des quatre.** *Le Mur* encaisse — PV et
-sang-froid, la plaque. *La Ligne mobile* évite — esquive et riposte, le cuir. **Le
-tank en cuir n'est plus un mélange exotique : il est écrit dans l'arbre du
-Soldat**, et le mélanger au Vagabond ne fait que le pousser plus loin (§9.6).
+**La fourche, et c'est la plus parlante des quatre.** *Le Mur* encaisse et donne —
+PV, sang-froid, et le Rempart qu'on vient chercher en donjon. *La Ligne mobile*
+évite et finit — esquive, riposte, et une Charge qui règle un combat seul. **Ce
+n'est pas offensif contre défensif : c'est en groupe contre seul**, et les deux
+tiennent la fonction *encaisse*. Le tank en cuir n'est plus un mélange exotique — il
+est écrit dans l'arbre du Soldat, et le mélanger au Vagabond ne fait que le pousser
+plus loin (§9.6). Chiffré tour par tour en **§9 bis.4**.
 
 **Vérification.** 50 pb **par branche** · palette 41 ou 50 ≥ 40 ✔ · teinte `power`
 9 ≤ 10 ✔ · `life` 15 ≤ 20 ✔ · `hit` 9 ≤ 10 ✔ · `ward` 12 ≤ 15 ✔ · `dodge` 9 ≤ 12 ✔ ·
@@ -1061,11 +1095,13 @@ fonction : il ne décide pas du combat, il refuse de le perdre.
 | 3 | 50 | **Fourche — le Guet** · Avantage du guet | `tempo` **+9 %** | 9 |
 | 3 | 50 | **Fourche — la Volée** · Pointe affûtée | `pierce` **+6,3 pt** | 9 |
 | 3 | 50 | **Fourche — la Volée** · Trait récupéré | `wind` **+13,5 % de récupération de munition** *(teinte)* | 9 |
-| 3 | 50 | **Accord : Tir du faucon** *(technique)* — `dégât`, `une cible` | le geste de pointe, reprise 3 | — |
+| 3 | 50 | **Fourche — le Guet** · **Accord : Tir du faucon** *(technique)* — `dégât`, `une cible` | le gros coup préparé, reprise 3 | — |
+| 3 | 50 | **Fourche — la Volée** · **Accord : Grêle** *(technique)* — `dégât`, `plusieurs cibles` | quatre munitions, et `wind` en récupère la moitié | — |
 | **Capstone** | 100 | **Trait dans le vent** | `power` **+28 %** *contre une cible ralentie ou entravée* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (air)* | *réservé* | — |
 
-**La fourche.** *Le Guet* prépare — un gros coup, et le droit de le tirer en
+**La fourche.** Chaque branche ouvre son geste : le Tir du faucon qu'on prépare, ou
+la Grêle qu'on paie en munitions. *Le Guet* prépare — un gros coup, et le droit de le tirer en
 premier. *La Volée* entretient la cadence — elle perce et elle **coûte moins**, ce
 qui pour ce registre veut dire quelque chose de très concret : moins de flèches
 achetées. La teinte `wind` n'est que dans la Volée.
@@ -1182,6 +1218,162 @@ testable en une ligne.
 > pousse à monter deux arbres pour **jouer autrement** — porter ce qu'on ne pouvait
 > pas porter, sertir ce qu'on ne pouvait pas sertir. C'est la même invitation au
 > mélange, sans la course à la puissance.
+
+---
+
+## 9 bis. Un exemple complet — Roshen, soldat, du jour 3 au mois 3
+
+Tout ce qui précède est une grammaire. Voici une phrase. **Cet exercice n'est pas
+une illustration : il a produit trois corrections au document**, listées en §9 bis.6
+— c'est pour ça qu'il est ici.
+
+> **Les valeurs sont illustratives.** Elles respectent l'ancre du §6.4 (un geste de
+> palier *n* retire ~25 % des PV d'un adversaire commun de palier *n*) mais les
+> nombres réels viennent d'**ARC-05**. Ce qui compte ici, ce sont les **écarts**,
+> pas les unités. Repères T2 : joueur 120 PV · commun 100 PV, frappe 9 · élite
+> 180 PV, frappe 16 · précision de base 85 %, critique 5 % à ×1,5.
+
+### 9 bis.1 Jour 3 — deux accords et rien d'autre
+
+Roshen a lu le parchemin du Soldat. Il n'a **dépensé aucun point** : il a les deux
+accords gratuits, une épée de bois et une tunique de lin.
+
+| Ce qu'il a | D'où ça vient |
+|---|---|
+| **Frappe appuyée** — 25 dégâts, aucune reprise, laisse l'**Entaille** | accord d'entrée, 0 pt |
+| **Garde haute** — absorbe la moitié du coup, reprise 2 | accord d'entrée, 0 pt |
+| L'attaque de base de son épée | gratuite, règle 10 — et elle ne lit aucun passif |
+
+**Son premier vrai combat**, contre un commun T2 (100 PV) :
+
+| Tour | Ce qu'il fait | État |
+|---|---|---|
+| 1-2 | Frappe appuyée ×2 | la cible à 56 PV, elle porte l'Entaille |
+| 3 | Garde haute — il a vu venir le gros coup | il encaisse 4 au lieu de 9 |
+| 4-5 | Frappe appuyée ×2 | la cible tombe |
+
+**5 tours, il sort à 82/120 PV.** Dans la fourchette « commun : 3 à 5 tours » du
+§6.4 — au plafond, parce qu'il a dépensé un tour à se garder. C'est déjà l'archétype
+en entier : *il ne tue pas vite, il ne meurt pas.*
+
+### 9 bis.2 Semaine 4 — la première condition s'allume
+
+Roshen a 40 points dans le domaine (palier 1 tombé en semaine 1, palier 2 en cours),
+et il vient de faire forger un **bouclier**.
+
+| Ce qui change | Effet | Pourquoi |
+|---|---|---|
+| « Œil du drill » | `hit` **+1,5 pt** | palier 1, sans condition (§4.3, garde-fou 1) |
+| « Garde travaillée » | `hit` **+4,2 pt** | palier 2, **conditionné au bouclier** (×1,4) |
+| Précision totale | 85 % → **90,7 %** | |
+
+**Ce que ça vaut, concrètement** : sur un combat de onze tours, c'est **un coup de
+plus qui touche**. Ce n'est pas spectaculaire, et c'est normal — un levier de
+pourcentage ne fait pas une sensation (§9 bis.6, constat A). Ce qui fait la
+sensation, ce jour-là, c'est l'écran : *« Garde travaillée — inactive : exige un
+bouclier »*, lu la semaine d'avant. Roshen a forgé le bouclier **pour cette
+ligne-là**.
+
+### 9 bis.3 Mois 2 — la fourche, telle qu'il la voit
+
+Palier 3. L'écran lui présente deux branches côte à côte, et le prix du respec
+(§8 bis, exigence 3) :
+
+| | **le Mur** | **la Ligne mobile** |
+|---|---|---|
+| Passif | `life` **+13,5 %** | `dodge` **+3,15 pt** |
+| Passif | `ward` **+9 %** | `power` **+9 %** |
+| **Accord** | **Rempart** — `protection`, `le groupe`, dépôt long | **Charge d'acier** — `dégât`, 60, reprise 4 |
+| Ce qu'il devient | celui qu'on veut **dans un donjon** | celui qui **se débrouille seul** |
+| Ce qu'il perd | il ne tuera jamais vite | il n'a rien à donner aux autres |
+
+**Ce n'est pas « offensif contre défensif »** — les deux tiennent la fonction
+*encaisse*. C'est **seul contre en groupe**, et c'est une opposition que le
+document n'avait pas prévue : elle est sortie de l'arithmétique (§9 bis.6,
+constat B).
+
+Roshen joue surtout seul, avec une guilde le week-end. Il prend **la Ligne
+mobile**, et note que le respec coûte 2 500 gils s'il se trompe.
+
+### 9 bis.4 Mois 3 — l'arbre fini, face à une élite
+
+Arbre complet, capstone « Tenir la ligne » acquis. Le même adversaire (élite T2,
+180 PV, frappe 16), affronté par les deux branches :
+
+| | **le Mur** | **la Ligne mobile** |
+|---|---|---|
+| PV | 147 *(+22,5 %)* | 131 *(+9 %)* |
+| Dégâts par frappe | 25 | 27 *(+9 %)* |
+| Précision | 90,7 % | 90,7 % |
+| Réduction | `guard` **−11,8 %** au tour qui suit un coup encaissé | idem, plus **3,15 %** d'esquive |
+| **Durée du combat** | **11 tours** | **9 tours** |
+| **PV restants** | **68 / 147** | **78 / 131** |
+
+Et le déroulé de la Ligne mobile, tour par tour :
+
+| Tour | Action | Ce qui se passe |
+|---|---|---|
+| 1 | **Garde haute** | l'absorption est **posée pour 3 tours** — elle ne se rejoue pas à chaque coup |
+| 2-4 | Frappe appuyée ×3 | l'Entaille court ; le capstone s'allume dès le tour 2 (il a été frappé) |
+| 5 | **Charge d'acier** | 60 dégâts — l'élite est à moitié |
+| 6 | Garde haute | la couverture repart |
+| 7-8 | Frappe appuyée ×2 | |
+| 9 | **Charge d'acier** | l'élite tombe |
+
+**Ce que l'écart dit** : 2 tours et 10 PV séparent les deux branches. Ce n'est pas
+un écart de puissance — c'est un écart de **forme**. Le Mur passe onze tours à ne
+presque rien risquer ; la Ligne mobile en passe neuf à alterner un gros geste et
+une garde. Les deux sont des soldats.
+
+### 9 bis.5 Le samedi — le donjon, et la déconnexion
+
+Roshen entre à quatre dans un donjon T2. C'est son ami Terel qui a pris **le Mur**.
+
+| | Ce qui se passe |
+|---|---|
+| Tour 1 (Terel) | Il pose **Rempart** — une absorption sur **les quatre**, pour 6 tours de rencontre |
+| Tour 2-3 | Deux autres jouent, l'absorption les couvre |
+| **Terel se déconnecte** | Son tour suivant est résolu tout seul : une attaque de base (`GroupDungeonCombatService`) |
+| Tours 4-6 | **Rempart court toujours.** Il avait été *déposé*, pas *joué en réaction* |
+| Tour 7 | L'absorption expire ; Terel n'est pas revenu |
+
+**C'est toute la loi du dépôt** (§7 bis) en une scène : la contribution de Terel a
+survécu à son absence. Dans un donjon dont les tours s'étalent sur des heures,
+c'est la seule forme de jeu de groupe qui tienne — et c'est pour ça que le Mur est
+la branche « donjon » sans qu'aucune règle n'oblige personne à la prendre. Un
+groupe sans Mur met plus de tours et perd plus de PV ; il ne rencontre pas un mur.
+
+### 9 bis.6 Ce que l'exercice a révélé — trois corrections
+
+**Constat A — un levier de pourcentage ne se sent pas.** +9 % de dégâts font passer
+une frappe de 25 à 27 : sur un combat de onze tours, **cela ne retire pas un seul
+tour**. Ce qui se sent, ce sont les gestes (une Charge à 60), les états binaires
+(l'esquive, la marque) et les durées (un dépôt de 3 tours).
+
+> **Ce constat ne casse rien : il confirme la thèse du §0, et il la chiffre.**
+> *L'archétype est dans le couple (arbre, matéria), pas dans l'arbre.* Les 50 points
+> de budget **qualifient** un geste ; ils ne le remplacent pas. Un auteur qui
+> chercherait l'identité d'un arbre dans ses pourcentages perdra son temps — et le
+> budget serré est ce qui l'empêche d'essayer.
+
+**Correction 1 — la fourche porte aussi un accord.** *Avant* correction, les deux
+branches du Soldat tuaient l'élite en **11 tours toutes les deux**, et se
+séparaient de 13 PV : le choix était cosmétique. En donnant à chaque branche **son
+geste**, elles se séparent de 2 tours et de deux façons de jouer. Appliqué en
+§6.1 bis, et aux quatre arbres du §9.
+
+**Correction 2 — toute protection se dépose, pas seulement celles du groupe.**
+Garde haute coûtait un tour entier pour couvrir un tour : un archétype d'encaisse
+était **puni de se défendre**. Elle pose désormais une absorption de 3 tours — un
+tour payé, trois tours couverts. La loi du dépôt (§7 bis) cesse d'être une règle de
+groupe pour devenir une règle d'`intent : protection`.
+
+**Correction 3 — le multiplicateur suit la fréquence réelle, pas la famille.** La
+condition du capstone du Soldat — « vous avez encaissé au tour précédent » — est
+vraie **dès le tour 2 et jusqu'à la fin** pour quelqu'un qui se bat au contact. La
+payer ×2,0 comme une condition qui peut manquer était une erreur de comptage.
+Appliqué en §4.3 : *une condition de combat vraie plus des deux tiers du temps se
+paie au tarif d'une condition de build (×1,4).*
 
 ---
 
@@ -1347,18 +1539,25 @@ Ce qui doit casser la CI si on le viole :
 17. **Une marque par élément, et une seule** (§1.1) — et un des deux accords
     d'entrée de chaque arbre l'applique, sans quoi son capstone est hors de portée
     du joueur du jour 1.
-18. **La fourche est un vrai choix** — deux branches, deux passifs chacune,
-    **aucun levier commun**, exclusives entre elles, et le respec de branche se
-    paie (mécanisme `other_branch`, livré par DOM-06).
-19. **Le pacte est unique et borné** — au plus un par arbre, au plus 10 pb de
+18. **La fourche est un vrai choix** — deux branches, deux passifs **et un accord**
+    chacune, **aucun levier commun**, exclusives entre elles, et le respec de branche
+    se paie (mécanisme `other_branch`, livré par DOM-06). Une branche sans accord
+    échoue le test : *deux branches qui ne diffèrent que par leurs passifs produisent
+    le même combat* (§9 bis).
+19. **Toute `protection` porte une durée**, quelle que soit sa portée (§7 bis) — une
+    garde qui ne couvre que le tour où elle est jouée punit l'encaisse de se défendre.
+20. **Le multiplicateur de condition suit la fréquence mesurée** — une condition de
+    combat vraie plus des deux tiers du temps se paie ×1,4, pas ×2,0 (§4.3). Le
+    simulateur d'ARC-05 la mesure ; l'auteur ne l'estime pas.
+21. **Le pacte est unique et borné** — au plus un par arbre, au plus 10 pb de
     malus, malus **hors de la palette** de la fonction, nœud **feuille**, jamais au
     palier 1, et les plafonds par levier tiennent malgré lui.
-20. **Toute condition vient du vocabulaire fermé** (§4.3) — douze entrées, six de
+22. **Toute condition vient du vocabulaire fermé** (§4.3) — douze entrées, six de
     build et six de combat. Aucune condition portée sur une pièce nommée, une
     rareté ou l'élément de la cible ; aucun malus conditionné à l'équipement.
-21. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+23. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-22. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+24. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
