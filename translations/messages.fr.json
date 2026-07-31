@@ -378,6 +378,12 @@
       "intelligence": "Intelligence"
     },
     "home": {
+      "empty": {
+        "pending": "Rien ne vous attend — la suite se joue dans la zone.",
+        "recap": "Rien à raconter encore — une première sortie et le journal se remplit.",
+        "domains": "Aucun domaine ouvert — combattre, récolter ou fabriquer en ouvre un.",
+        "quests": "Aucune quête en cours — les PNJ des zones sûres en confient."
+      },
       "player": {
         "life": "Vie",
         "energy": "Énergie",
@@ -406,9 +412,6 @@
       },
       "pending": {
         "title": "Ce qui vous attend",
-        "empty": "Rien ne vous attend",
-        "empty_hint": "Tout est réglé. Ce qui arrive ensuite arrive dans la zone.",
-        "empty_action": "Rejoindre la zone",
         "tone": {
           "gain": "À récupérer",
           "loss": "En retard",
@@ -416,8 +419,13 @@
         },
         "house_rent": {
           "icon": "🏠",
-          "title": "Loyer en retard",
-          "hint": "Votre demeure dort jusqu'au paiement — rien n'est perdu."
+          "title": "Loyer de %gils% gils en retard",
+          "hint": "Échu le %day% %month% — votre demeure dort jusqu'au paiement, rien n'est perdu."
+        },
+        "enchantment_expired": {
+          "icon": "🔮",
+          "title": "%count% enchantement%plural% expiré%plural%",
+          "hint": "Votre équipement a perdu son bonus — l'atelier peut le renouveler."
         },
         "expedition_ready": {
           "icon": "🧭",
@@ -462,25 +470,19 @@
       },
       "recap": {
         "title": "Depuis hier",
-        "view_all": "Journal",
-        "empty": "Rien à raconter",
-        "empty_hint": "Vos hauts faits s'écriront ici dès la première sortie."
+        "view_all": "Journal"
       },
       "domains": {
         "title": "Progression",
-        "available_xp": "%xp% XP disponibles",
-        "empty": "Aucun domaine ouvert",
-        "empty_hint": "Combattre, récolter, fabriquer : chaque action nourrit un domaine.",
         "view_all": "Compétences"
       },
       "quests": {
         "title": "Quêtes en cours",
-        "empty": "Aucune quête en cours",
-        "empty_hint": "Les PNJ des zones sûres en confient.",
         "view_all_short": "Journal de quêtes"
       },
       "week": {
         "title": "La semaine",
+        "title_dated": "Semaine du %day% %month%",
         "closing": "Se referme demain soir",
         "commission": "Commission : %current%/%target%, à livrer à %zone%",
         "commission_ready": "Commission prête — livrable à %zone%",
@@ -1893,6 +1895,22 @@
         "title": "Les guildes",
         "body": "Une guilde partage un trésor, des défis hebdomadaires et de l'influence sur les régions. On y va pour ce qu'on ne peut pas faire seul, jamais pour aller plus vite.",
         "cost": "Rejoindre ou quitter ne coûte aucune énergie."
+      }
+    },
+    "date": {
+      "month": {
+        "1": "janvier",
+        "2": "février",
+        "3": "mars",
+        "4": "avril",
+        "5": "mai",
+        "6": "juin",
+        "7": "juillet",
+        "8": "août",
+        "9": "septembre",
+        "10": "octobre",
+        "11": "novembre",
+        "12": "décembre"
       }
     }
   },

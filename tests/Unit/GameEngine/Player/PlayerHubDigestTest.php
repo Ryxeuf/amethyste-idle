@@ -28,6 +28,7 @@ use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Retention\WeeklyAttendanceService;
 use App\Repository\CraftJobRepository;
 use App\Repository\CraftOrderRepository;
+use App\Repository\EnchantmentRepository;
 use App\Repository\GardenPlotRepository;
 use App\Repository\PlayerExpeditionRepository;
 use App\Repository\PlayerHouseRepository;
@@ -36,6 +37,7 @@ use App\Repository\PlayerWeeklyCommissionRepository;
 use App\Repository\PrivateMessageRepository;
 use App\Repository\SettlementWeeklyWorkRepository;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Le hub — modele de lecture du tableau de bord.
@@ -170,6 +172,7 @@ class PlayerHubDigestTest extends TestCase
 
         $house = $this->createMock(PlayerHouse::class);
         $house->method('isInArrears')->willReturn(true);
+        $house->method('getRentDueAt')->willReturn($this->now()->modify('-2 days'));
 
         $digest = $this->digestWith([
             'house' => $house,
@@ -184,6 +187,82 @@ class PlayerHubDigestTest extends TestCase
             ['house_rent', 'expedition_ready', 'quests_ready', 'talent_xp', 'messages_unread'],
             $keys,
         );
+    }
+
+    /**
+     * RET-10, dette 4 : un enchantement expire est une attente.
+     *
+     * Il ne se voyait que sur l'ecran d'artisanat, ou l'on ne va pas verifier.
+     * La regle d'admission reste celle du `CraftJob` : la ligne n'entre que
+     * quand le joueur peut agir — et pour un enchantement, ce moment est
+     * l'expiration, puisque tant qu'il court la piece ne peut pas etre
+     * re-enchantee.
+     */
+    public function testAnExpiredEnchantmentIsAWaitingItem(): void
+    {
+        $items = $this->digestWith(['expiredEnchantments' => 2])
+            ->pending($this->player(), $this->now());
+
+        $keys = array_map(static fn (HubPendingItem $item): string => $item->key, $items);
+
+        self::assertContains('enchantment_expired', $keys);
+        self::assertSame(2, $items[0]->params['%count%']);
+        self::assertSame(HubPendingItem::TONE_LOSS, $items[0]->tone);
+    }
+
+    /**
+     * Aucun enchantement expire, aucune ligne : le hub ne parle pas de ce qui
+     * n'attend rien.
+     */
+    public function testARunningEnchantmentIsNotAWaitingItem(): void
+    {
+        $keys = array_map(
+            static fn (HubPendingItem $item): string => $item->key,
+            $this->digest()->pending($this->player(), $this->now()),
+        );
+
+        self::assertNotContains('enchantment_expired', $keys);
+    }
+
+    /**
+     * RET-10, dette 3 : le loyer dit **combien** et **depuis quand**.
+     *
+     * Un sceau rouge ne dit ni l'un ni l'autre, et les deux dorment sur
+     * `PlayerHouse` depuis HOU-04. Le jour et le mois restent separes parce que
+     * leur ordre change avec la langue : c'est le message traduit qui les remet
+     * dans l'ordre, pas le PHP.
+     */
+    public function testTheRentLineCarriesItsAmountAndItsDueDate(): void
+    {
+        $player = $this->player();
+
+        $house = $this->createMock(PlayerHouse::class);
+        $house->method('isInArrears')->willReturn(true);
+        $house->method('getRentDueAt')->willReturn(new \DateTimeImmutable('2026-07-25 08:00:00'));
+
+        $items = $this->digestWith(['house' => $house])->pending($player, $this->now());
+
+        self::assertSame('house_rent', $items[0]->key);
+        self::assertSame(PlayerHouse::RENT_AMOUNT, $items[0]->params['%gils%']);
+        self::assertSame(25, $items[0]->params['%day%']);
+        self::assertSame('game.date.month.7', $items[0]->params['%month%']);
+    }
+
+    /**
+     * RET-10 : l'en-tete de la semaine porte sa date de debut.
+     *
+     * Le lundi se demande a `WeekKey`, pas au jour de l'appel : un joueur qui
+     * ouvre le hub un jeudi doit lire la meme semaine que celui qui l'ouvre le
+     * lundi.
+     */
+    public function testTheWeekHeaderIsDatedOnItsOwnMonday(): void
+    {
+        $thursday = new \DateTimeImmutable('2026-07-30 09:00:00');
+
+        $week = $this->digest()->week($this->player(), $thursday);
+
+        self::assertSame(27, $week->startParams['%day%']);
+        self::assertSame('game.date.month.7', $week->startParams['%month%']);
     }
 
     /**
@@ -449,6 +528,9 @@ class PlayerHubDigestTest extends TestCase
         $gardenPlotRepository = $this->createMock(GardenPlotRepository::class);
         $gardenPlotRepository->method('findForHouse')->willReturn($overrides['plots'] ?? []);
 
+        $enchantmentRepository = $this->createMock(EnchantmentRepository::class);
+        $enchantmentRepository->method('countExpiredOnWornGear')->willReturn($overrides['expiredEnchantments'] ?? 0);
+
         $journalRepository = $this->createMock(PlayerJournalEntryRepository::class);
         $journalRepository->method('findByPlayer')->willReturn($overrides['journal'] ?? []);
 
@@ -457,6 +539,11 @@ class PlayerHubDigestTest extends TestCase
             $questHelper->method('isPlayerQuestCompleted')->willReturn($overrides['questsCompleted'] ?? false);
             $questHelper->method('getPlayerQuestProgress')->willReturn(0);
         }
+
+        // Rend la cle : un test qui lit un nom de mois traduit lirait sinon une
+        // chaine vide, et ne verrait pas la difference avec une absence.
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id): string => $id);
 
         return new PlayerHubDigest(
             $expeditionRepository,
@@ -478,6 +565,11 @@ class PlayerHubDigestTest extends TestCase
             $overrides['seasonManager'] ?? $this->createMock(SeasonManager::class),
             $overrides['challengeReader'] ?? $this->createMock(WeeklyChallengeReader::class),
             $overrides['guildOrderManager'] ?? $this->createMock(GuildCraftOrderManager::class),
+            // RET-10 — le traducteur, en queue lui aussi : il ne sert qu'a
+            // nommer un mois, et le rendre positionnel ailleurs aurait decale
+            // les quinze arguments precedents.
+            $translator,
+            $enchantmentRepository,
         );
     }
 

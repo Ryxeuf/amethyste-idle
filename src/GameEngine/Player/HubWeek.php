@@ -19,6 +19,11 @@ namespace App\GameEngine\Player;
  *
  * Les lignes absentes ne laissent pas de vide : sans guilde, les deux lignes de
  * guilde n'existent pas — pas d'etat vide qui culpabilise (§ 3).
+ *
+ * **Le repere de semaine est date, jamais chronometre** (RET-10) : « Semaine du
+ * 27 juillet », et a partir du samedi « se referme demain soir ». Le § 3
+ * l'exige dans les deux sens — une date situe, un compte a rebours presse, et
+ * la semaine n'est pas un timer.
  */
 final readonly class HubWeek
 {
@@ -34,14 +39,16 @@ final readonly class HubWeek
     public array $rows;
 
     /**
-     * @param list<HubWeekRow> $rows           dans l'ordre canonique du § 3
-     * @param string           $weekKey        semaine ISO courante (`2026-W31`), pour le repere d'en-tete
-     * @param bool             $closesTomorrow vrai a partir du samedi : « se referme demain soir »
+     * @param list<HubWeekRow>          $rows           dans l'ordre canonique du § 3
+     * @param string                    $weekKey        semaine ISO courante (`2026-W31`), pour le repere d'en-tete
+     * @param bool                      $closesTomorrow vrai a partir du samedi : « se referme demain soir »
+     * @param array<string, int|string> $startParams    jour et mois du lundi (`%day%`, `%month%`) ; vide = en-tete non datee
      */
     public function __construct(
         array $rows,
         public string $weekKey = '',
         public bool $closesTomorrow = false,
+        public array $startParams = [],
     ) {
         // Tronque plutot que de lever : un ecran de jeu ne doit pas tomber
         // parce qu'un systeme de plus s'est declare. La ligne perdue est la

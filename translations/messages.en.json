@@ -378,6 +378,12 @@
       "intelligence": "Intelligence"
     },
     "home": {
+      "empty": {
+        "pending": "Nothing is waiting for you — what comes next happens in the zone.",
+        "recap": "Nothing to tell yet — one outing and the journal fills up.",
+        "domains": "No domain opened yet — fighting, gathering or crafting opens one.",
+        "quests": "No quest under way — NPCs in safe zones hand them out."
+      },
       "player": {
         "life": "Health",
         "energy": "Energy",
@@ -406,9 +412,6 @@
       },
       "pending": {
         "title": "Waiting for you",
-        "empty": "Nothing is waiting",
-        "empty_hint": "All settled. Whatever happens next happens in the zone.",
-        "empty_action": "Go to the zone",
         "tone": {
           "gain": "To collect",
           "loss": "Overdue",
@@ -416,8 +419,13 @@
         },
         "house_rent": {
           "icon": "🏠",
-          "title": "Rent overdue",
-          "hint": "Your home sleeps until it is paid — nothing is lost."
+          "title": "Rent of %gils% gils overdue",
+          "hint": "Due %month% %day% — your home sleeps until it is paid; nothing is lost."
+        },
+        "enchantment_expired": {
+          "icon": "🔮",
+          "title": "%count% enchantment%plural% expired",
+          "hint": "Your gear has lost its bonus — the workshop can renew it."
         },
         "expedition_ready": {
           "icon": "🧭",
@@ -462,25 +470,19 @@
       },
       "recap": {
         "title": "Since yesterday",
-        "view_all": "Journal",
-        "empty": "Nothing to tell",
-        "empty_hint": "Your deeds will be written here from the first outing."
+        "view_all": "Journal"
       },
       "domains": {
         "title": "Progress",
-        "available_xp": "%xp% XP available",
-        "empty": "No domain opened yet",
-        "empty_hint": "Fighting, gathering, crafting: every action feeds a domain.",
         "view_all": "Skills"
       },
       "quests": {
         "title": "Active quests",
-        "empty": "No quest in progress",
-        "empty_hint": "NPCs in safe zones hand them out.",
         "view_all_short": "Quest journal"
       },
       "week": {
         "title": "The week",
+        "title_dated": "Week of %month% %day%",
         "closing": "Closes tomorrow evening",
         "commission": "Commission: %current%/%target%, to deliver at %zone%",
         "commission_ready": "Commission ready — deliverable at %zone%",
@@ -1893,6 +1895,22 @@
         "title": "Guilds",
         "body": "A guild shares a treasury, weekly challenges and influence over regions. You join for what you cannot do alone, never to go faster.",
         "cost": "Joining or leaving costs no energy."
+      }
+    },
+    "date": {
+      "month": {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
       }
     }
   },
