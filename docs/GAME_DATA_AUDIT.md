@@ -453,23 +453,65 @@ Une seule materia est distribuee par quete : `materia_soin`.
 
 ## 9. Donjons
 
-**4 donjons.**
+**4 donjons**, deux modeles incompatibles, et aucun des deux ne tient.
 
-| slug | zone | joueurs | acces |
-|---|---|---|---|
-| `racines-de-la-foret` | hors graphe | 1 | XP ≥ 500 (`minLevel 5 x 100`) |
-| `nexus-de-la-convergence` | hors graphe | 1 | XP ≥ 2500 + les 4 fragments |
-| `galeries-envahies` | foret-des-murmures | groupe | — |
-| `forges-noyees` | mines-profondes | groupe | — |
+| slug | zone | joueurs | modele | etat |
+|---|---|---|---|---|
+| `racines-de-la-foret` | hors graphe | 1 | carte (legacy) | **injouable** |
+| `nexus-de-la-convergence` | hors graphe | 1 | carte (legacy) | **injouable, et sans aucun monstre** |
+| `galeries-envahies` | foret-des-murmures | 4 | zone (PBBG) | jouable, contenu placeholder |
+| `forges-noyees` | mines-profondes | 5 | zone (PBBG) | jouable, contenu placeholder |
 
-Deux donjons de groupe pour douze zones. Les deux donjons solo sont
-**hors graphe de zones** : ils ne sont accessibles que depuis `/game/dungeon`,
-alors que l'ecran de zone ne propose que ceux dont `maxPlayers > 1`.
+### 9.1 — Les deux donjons solo sont injouables
 
-`Dungeon::minLevel` est un reliquat de nommage : il ne designe pas un niveau
-(il n'y en a pas, cf. CLAUDE.md #6) mais un seuil d'XP total, via
-`minLevel * 100` calcule en trois endroits distincts (`DungeonManager` x2,
-`ZoneController`).
+Ils reposent sur la mecanique de carte navigable **supprimee par ZON-21**. Entrer
+teleporte le joueur sur une `Map` aux coordonnees `1.1`, mais il n'y a plus de
+deplacement sur carte et `Player::currentZone` reste celle d'origine. La chaine
+est rompue en trois endroits :
+
+- Les 4 mobs de `map_dungeon_racines` n'ont **aucune zone** (aucune zone ne les
+  declare en `source_map`), et `ExploreService::resolveMob` cherche
+  `findAvailableInZone()`. Ils sont **introuvables**.
+- L'ecran `dungeon/show.html.twig` n'offre qu'un bouton « entrer » et un lien
+  retour. **Aucune action une fois dedans.**
+- `DungeonCompletionListener` attend la mort d'un boss **sur la carte du
+  donjon** — un combat qu'aucun chemin ne cree.
+
+**`nexus-de-la-convergence` n'a aucun monstre du tout.** C'est la fin de l'arc
+narratif, elle exige les 4 fragments de quete, et elle est vide.
+
+### 9.2 — Les deux donjons de groupe fonctionnent, mais sont vides
+
+Le cadre est sain (modele PBBG, ZON-20) : **recompense decroissante plutot qu'un
+lockout dur**, entree gratuite en energie, boucle semi-synchrone avec ordre de
+tour et echeance. Le contenu, lui, est un placeholder :
+
+- **La rencontre n'est pas un monstre** : un sac de PV abstrait,
+  `encounterHp = hpParMembre x nombreDeMembres`. Aucun `Monster`, aucun element,
+  aucune IA.
+- **Le degat d'un joueur est son `hit`** — `damage = max(1, $player->getHit())`.
+  Ni arme, ni sort, ni materia, ni equipement n'entrent dans le calcul.
+- **La rencontre ne riposte jamais.** Aucun degat aux joueurs, aucun statut
+  d'echec : **un donjon de groupe ne peut pas etre perdu.**
+- **`currentStep` existe et n'est jamais avance** — le champ est la, la
+  progression par etapes n'a jamais ete ecrite.
+- **La recompense est en gils uniquement**, quand `lootPreview` promet
+  « Equipement tier 2, Materia commune, Composants d'artisanat ».
+
+### 9.3 — Couverture et nommage
+
+4 donjons pour 12 zones, et les deux de groupe sont rattaches aux **deux zones
+qui portent deja tout le contenu** (Foret, Mines). `racines-de-la-foret` fait
+doublon avec `galeries-envahies` : les deux se passent « sous les racines de la
+foret ».
+
+`Dungeon::minLevel` est un faux nom : ce n'est pas un niveau — il n'y en a pas
+(regle 6) — mais un seuil d'XP, via `minLevel x 100` recalcule a **trois endroits
+distincts** (`DungeonManager` x2, `ZoneController`).
+
+Arbitrage acte dans [GAME_DUNGEONS.md](GAME_DUNGEONS.md) : un seul modele (le
+donjon de zone), trois etapes puisant dans la faune du palier, une riposte et un
+echec possibles, un butin indexe sur le palier, et un donjon par palier T1-T4.
 
 ---
 
@@ -494,4 +536,6 @@ alors que l'ecran de zone ne propose que ceux dont `maxPlayers > 1`.
 | 15 | Recettes : 11 sur 115 au-dela du niveau 5, dont 8 retirees par OBJ-02 | moyen | *suivi ouvert — re-remplir le haut de chaine* |
 | 16 | Trois echelles de monstre dont aucune ne dit la difficulte ; `HitChanceCalculator` mort | fort | [GAME_BESTIARY](GAME_BESTIARY.md) §2 — BES-01/05 |
 | 17 | La Crete de Ventombre : zone T3/T4 peuplee de monstres de niveaux 3-5 | moyen | [GAME_BESTIARY](GAME_BESTIARY.md) §1.3 — BES-04 |
-| 18 | 2 donjons de groupe pour 12 zones ; 2 donjons solo hors graphe | a arbitrer | *a instruire — revue des donjons* |
+| 18 | 2 donjons solo **injouables** (modele carte post-ZON-21) ; le Nexus, fin de l'arc narratif, n'a aucun monstre | **bloquant narratif** | [GAME_DUNGEONS](GAME_DUNGEONS.md) §1.1 — DON-01 |
+| 19 | Donjons de groupe : rencontre abstraite, pas de riposte, pas d'echec, `currentStep` inerte, butin en gils seuls | fort | [GAME_DUNGEONS](GAME_DUNGEONS.md) §1.2 — DON-02/03/04 |
+| 20 | 4 donjons pour 12 zones, concentres sur Foret et Mines ; `lootPreview` ment | moyen | [GAME_DUNGEONS](GAME_DUNGEONS.md) §4 — DON-04/05 |
