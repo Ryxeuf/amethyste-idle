@@ -32,10 +32,15 @@ Conséquences opposables :
   visé : 80–200 Ko par bandeau.
 - **Chemin de fichier** : `public/images/zones/<slug>.webp`, et
   `illustrationPath = zones/<slug>.webp`.
-- **Le champ n'est pas encore importé depuis le YAML** : `app:zone:import` ne lit pas
-  `illustrationPath`. Il se renseigne pour l'instant via `/admin/zone` (formulaire
-  `ZoneType`). Le jour où l'on voudra le versionner, ce sera une clé de plus dans
-  `config/game/zones/world_1.yaml`.
+- **Le champ n'est pas encore importé depuis le YAML** : ni `ZoneDefinitionLoader` ni
+  `ZoneImporter` ne connaissent la clé. Il ne se renseigne aujourd'hui qu'à la main dans
+  `/admin/zone`, et **cette saisie est perdue au prochain `doctrine:fixtures:load`**, qui
+  réimporte les zones depuis `world_1.yaml`. Déposer les images ne suffira donc pas : le
+  câblage est spécifié par le jalon **ZON-41**
+  ([roadmap/PLAN_ZONES.md](roadmap/PLAN_ZONES.md)) — clé `illustration` dans le YAML,
+  validée au chargement (`zones/<slug>.webp`, le nom de fichier *est* le slug), avec
+  avertissement non fatal quand le fichier manque. **À faire avant la première image**, ou
+  au moins avant la deuxième.
 
 ### Format à demander au générateur
 

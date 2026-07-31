@@ -13,8 +13,9 @@
 
 **Plan d'origine complet : 7 jalons** (**ZON-30** à **ZON-36**, **7/7 ✅ au 2026-07-29**),
 plus **deux fixes livrés en chemin** (ZON-37, ZON-38 ✅), **deux jalons ouverts par l'audit
-du 2026-07-29** (ZON-39, ZON-40) et trois chantiers **référencés** qui vivent dans leurs
-plans d'origine :
+du 2026-07-29** (ZON-39, ZON-40), **un jalon ouvert le 2026-07-31** (ZON-41, le câblage des
+illustrations de zone) et trois chantiers **référencés** qui vivent dans leurs plans
+d'origine :
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -29,6 +30,7 @@ plans d'origine :
 | ZON-38 ✅ | La récolte redevient observable (fix) | S | ∅ |
 | ZON-39 ✅ | La loi de nommage rejoint les libellés | M | ∅ (donnée pure) |
 | ZON-40 ✅ | Les signatures cessent d'être inertes | M | tranché : option (a), affleurements posés |
+| **ZON-41** | **Les illustrations de zone entrent dans la donnée** | **S** | ∅ pour le câblage ; les images suivent |
 
 **Référencés, à exécuter dans leurs plans** :
 - **ECO-24b** (PLAN_PLAYER_ECONOMY) — pose les filons de haut palier **selon la carte des
@@ -185,12 +187,97 @@ ZON-33 en continu
 > intitulé et son objet — le spot `spot-amethystite-xs` de l'ancien système de carte — alors
 > que l'améthyste affleure désormais sans gate. L'arbre du mineur relève de PLAN_DOMAINS.
 
+### ZON-41 — Les illustrations de zone entrent dans la donnée (S | ★★ | MOYENNE)
+
+> Le pendant technique de [../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md), qui livre
+> les prompts des 12 bandeaux. **Ce jalon ne produit aucune image** : il rend le champ
+> renseignable *par la donnée*, pour que les images puissent arriver une par une sans code.
+
+**Le constat, et pourquoi ce n'est pas qu'un manque.** `Zone::illustrationPath`
+(`src/Entity/App/Zone.php:54`) existe, est éditable dans `ZoneType` et est rendu par
+`templates/game/zone/index.html.twig:670` — mais `ZoneDefinitionLoader::normalizeZone()`
+ignore la clé et `ZoneImporter::upsertZone()` ne la pose jamais. Les 12 zones sont donc à
+`null`, et le seul chemin de remplissage est la saisie à la main dans `/admin/zone`. Or
+`ZoneGraphFixtures` réimporte depuis le YAML : **une valeur saisie en admin est perdue au
+prochain `doctrine:fixtures:load`**, et n'existe dans aucun autre environnement. Le défaut
+n'est pas « le champ est vide », c'est « le champ est volatil ».
+
+**Sous-phases** (ordre d'exécution ; a→c sont un seul commit, d et g sont séparés) :
+
+**a. Le loader lit et valide la clé.** Dans `ZoneDefinitionLoader::normalizeZone()`, ajouter
+`'illustration' => $this->normalizeIllustration($slug, $definition['illustration'] ?? null, $source)`.
+Règles, calquées sur `normalizeMapShape()` — *un chemin malformé doit casser l'import, pas
+rendre une balise `<img>` morte* :
+
+- `null` (clé absente) est valide et reste la norme tant que l'image n'existe pas ;
+- sinon : chaîne correspondant à `#^zones/[a-z0-9-]+\.webp$#` — ni chemin absolu, ni `..`,
+  ni extension libre ;
+- le nom de fichier **doit être le slug de la zone** (`zones/<slug>.webp`) : la
+  correspondance est vérifiée au chargement. C'est la loi de nommage du §1 du document de
+  prompts, tenue par le code plutôt que par la discipline.
+
+**b. L'importer applique.** Dans `ZoneImporter::upsertZone()`, `$zone->setIllustrationPath()`
+posé **inconditionnellement**, exactement comme `setMapX()` / `setMapShape()` juste
+au-dessus. *Décision à assumer* : le YAML devient la source de vérité et **écrase** la
+valeur saisie en admin. L'alternative (« ne pas écraser si la clé est absente ») est
+rejetée — elle reconduirait le défaut actuel, une donnée qui diffère d'un environnement à
+l'autre sans que rien ne le dise. Conséquence à écrire dans le `help` du champ de
+`ZoneType` : c'est un **aperçu**, remis à plat au prochain `app:zone:import`.
+
+**c. Le fichier manquant est signalé, jamais fatal.** Si `public/images/<chemin>` n'existe
+pas sur le disque, l'import ajoute un **avertissement** au `ZoneImportReport` et continue.
+Les 12 images arriveront une par une : un import qui casse parce qu'un bandeau n'est pas
+encore peint serait une régression pour tout le monde. Mais un chemin mort doit se voir en
+console et en CI.
+
+**d. Les clés posées dans `world_1.yaml`**, au fil des livraisons d'images (12 lignes, une
+par zone), + le format documenté aux deux endroits qui le décrivent déjà : le bloc
+« Rappel des clés » en tête de `config/game/zones/world_1.yaml` et la section
+« Configuration déclarative de zone (ZON-11) » de `DOCUMENTATION.md`.
+
+**e. Deux corrections du rendu**, pendant qu'on y est (`index.html.twig:670`) :
+
+- l'`alt` porte aujourd'hui le nom de la zone, **déjà écrit en `<h3>` deux lignes au-dessus**
+  — un lecteur d'écran l'annonce donc deux fois. L'image est décorative : `alt=""` +
+  `aria-hidden="true"`, comme le fait déjà `world_map.html.twig:39` ;
+- `loading="lazy"`, `decoding="async"` et `width`/`height` explicites, pour que le bandeau
+  ne pousse pas la page en cours de chargement.
+
+**f. Les assets.** `public/images/zones/*.webp`, versionnés dans git comme
+`public/images/flags/`. **Pas** dans `assets/` : le template les référence par
+`asset('images/…')`, servi statiquement — ces fichiers ne passent pas par AssetMapper, et
+les y mettre les ferait recompiler pour rien.
+
+**g. La loi, une fois les 12 images livrées** (`ZoneLawsTest`, style ZON-33) : *toute zone
+placée sur la carte du monde (`map_x` non nul) porte une illustration*. À poser **en
+dernier** — écrite aujourd'hui, elle casserait la CI dès la première zone livrée, et
+laisserait le chantier moitié fait sans que rien ne le dise si on l'oublie.
+
+**Critères d'acceptance** :
+
+1. `docker compose exec php php bin/console app:zone:import --dry-run` valide un
+   `world_1.yaml` avec et sans la clé, et **échoue** sur `illustration: ../secret.png`,
+   `illustration: /images/zones/x.webp` et `illustration: zones/autre-zone.webp` ;
+2. après `doctrine:fixtures:load`, la valeur en base est celle du YAML — la reproductibilité
+   entre environnements est le point du jalon ;
+3. `ZoneDefinitionLoaderTest` couvre les quatre rejets ci-dessus + le cas nul ;
+4. `ZoneImporterTest` vérifie l'écrasement d'une valeur préexistante et la remise à `null`
+   quand la clé disparaît ;
+5. une zone sans illustration s'affiche exactement comme aujourd'hui (pas de trou, pas de
+   cadre vide).
+
+**Ce que le jalon ne fait pas** : produire les images (c'est
+[../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md)), ni ajouter une illustration ailleurs
+que sur l'écran de zone. `CodexEntry::illustrationPath` porte le même nom et le même
+manque ; il relève de la narration, pas de ce plan.
+
 ### Restes de données (ex-ZON-26b + promesses ouvertes)
 
 - **Marais Brumeux** et **Crête de Ventombre** : seules zones encore sans blocs
   `mobs:`/`pnjs:` déclaratifs (dépendent de leur TMX) — transférés du Sprint 13 (ZON-26b).
-- **Illustrations de zone** : `Zone::illustrationPath` existe mais n'est ni lu par le
-  loader ni renseigné par les YAML.
+- **Les 12 bandeaux de zone eux-mêmes** : prompts écrits
+  ([../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md)), câblage spécifié (ZON-41), images
+  à générer et à déposer dans `public/images/zones/`.
 - **La 3e source de cuivre promise aux Vallons** (GAME_ZONES §3 : « la troisième viendra
   avec ZON-30 ») n'a jamais été posée — ZON-30 est livré sans elle.
 
