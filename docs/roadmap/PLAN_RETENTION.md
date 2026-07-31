@@ -34,14 +34,14 @@ briques, cadrée par [../GAME_DASHBOARD.md](../GAME_DASHBOARD.md).
 | RET-07 ✅ | Tests du plan | — | ✅ **livré (2026-07-28)** |
 | RET-08 ✅ | Le bloc « La semaine » sur le hub | Solo+Guilde | RET-01→06 ✅ ; cadrage GAME_DASHBOARD §3/§5 |
 | RET-09 ✅ | Le lundi — récap de la semaine close | Solo | RET-08 ✅ |
-| RET-10 | Les dettes d'écran du hub | — | ‖ RET-08 |
+| RET-10 ✅ | Les dettes d'écran du hub | — | ‖ RET-08 ✅ |
 
 ```
 Vague 1 (indépendant)   : RET-01 → RET-02 → RET-03
 Vague 2 (après FOY)     : RET-04 ✅, RET-05 ✅
 Vague 3 (après pureté)  : RET-06
 Transverse              : RET-07 ✅
-Vague 4 (UI, cadrée)    : RET-08 ✅ → RET-09 ✅, RET-10 ‖
+Vague 4 (UI, cadrée)    : RET-08 ✅ → RET-09 ✅, RET-10 ✅ ‖
 ```
 
 **Pourquoi cet ordre.** Le critère de priorisation de la colonne
@@ -180,12 +180,18 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 **Restent à faire, hors de ce jalon :**
 
 - [ ] **Le choix de récompense de commission depuis le hub** — la seule action que le
-      cadrage autorise (§5). Elle suppose un POST dans un écran conçu en lecture seule :
-      à traiter avec RET-10, qui reprend les actions du hub, plutôt qu'en exception isolée
-- [ ] **Le libellé de semaine daté** (« Semaine du 27 juillet ») — `HubWeek::weekKey`
-      porte la donnée (`2026-W31`), le rendu s'arrête au « se referme demain soir » de
-      samedi. Il manque un formatage de date localisé, qui n'existe nulle part dans le
-      catalogue aujourd'hui
+      cadrage autorise (§5). Elle suppose un POST dans un écran conçu en lecture seule.
+      **Non traité par RET-10** : la dette est réelle mais c'est une décision de
+      conception, pas une reprise d'écran, et elle ne passe pas par `HubWeekRow` (qui n'a
+      délibérément ni action ni méthode HTTP) mais par `HubResume` — l'action primaire,
+      qui porte déjà une route et un `actionable`. La livrer demande un formulaire POST
+      avec jeton dans le gabarit du hub, donc un premier geste sortant sur cet écran.
+      À trancher explicitement avant d'écrire
+- [x] **Le libellé de semaine daté** (« Semaine du 27 juillet ») — **livré avec RET-10**.
+      Le formatage localisé qui manquait vit désormais dans le catalogue
+      (`game.date.month.1..12`) plutôt que dans `IntlDateFormatter` : le projet ne déclare
+      pas `ext-intl` dans ses dépendances. Jour et mois restent deux paramètres séparés —
+      leur ordre change avec la langue, et c'est le message traduit qui les remet en ordre
 
 ### RET-09 — Le lundi : le récap de la semaine close ✅ (M | ★★★ | HAUTE)
 > **Livré le 2026-07-31.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
@@ -213,15 +219,23 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
 > avant. Le récap s'ouvre donc en tête du **même** bloc, ce que le § 4 demande par
 > ailleurs (« un état du même bloc »).
 
-### RET-10 — Les dettes d'écran du hub (S | ★★ | MOYENNE)
-
-- [ ] L'XP disponible n'est plus comptée deux fois : la ligne d'attente `talent_xp`
-      gagne (actionnable), le bloc domaines ne garde que ses jauges
-- [ ] L'état vide replié de la maquette 5D : une ligne qui se déplie au premier contenu,
-      remplace les 4 `ds-empty` pleins ; clés `hub.empty.*` créées
-- [ ] La ligne `house_rent` porte l'échéance et le montant (déjà sur `PlayerHouse`)
-- [ ] L'enchantement rejoint les attentes (il a un `remainingSeconds`, même règle
-      d'admission que `CraftJob`)
+### RET-10 — Les dettes d'écran du hub ✅ (M | ★★ | MOYENNE)
+> **Livré le 2026-07-31.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> Les quatre dettes du §7 sont soldées, plus le libellé de semaine daté laissé ouvert
+> par RET-08. Deux d'entre elles se tiennent désormais **par test de forme**
+> (`HubScreenDebtsTest`) parce qu'elles vivent dans le gabarit et le catalogue, où rien
+> ne les protégeait : un `ds-empty` recopié depuis un autre écran ou une mention d'XP
+> « remise pour la lisibilité » les rouvrirait sans que personne ne le voie.
+>
+> **Une contrainte a dicté une implémentation** : la borne de coût du digest (« neuf
+> lectures indexées ») interdisait de réutiliser le parcours d'inventaire
+> d'`EnchantmentManager`, qui interroge la base une fois par pièce portée. D'où une
+> requête d'agrégat neuve — tenable sur le premier écran de chaque connexion.
+>
+> **Le choix de commission depuis le hub n'en fait pas partie** : il n'est pas dans la
+> liste du jalon, et c'est une décision de conception (§5) qui mérite d'être prise
+> explicitement — voir ci-dessus.
 
 ---
 
