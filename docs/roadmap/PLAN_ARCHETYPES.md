@@ -5,7 +5,8 @@
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
 > 2026-07-31) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
-> comme matéria, le vocabulaire fermé des leviers, le budget de puissance, le gabarit et
+> comme matéria, l'intention et la portée du geste, le vocabulaire fermé des leviers et
+> leurs conditions d'équipement, le budget de puissance, la loi du dépôt, le gabarit et
 > les six tests.
 >
 > **Ce plan ne réécrit pas la doctrine des arbres** — GAME_DOMAINS reste la loi
@@ -14,7 +15,7 @@
 
 ## Vue d'ensemble
 
-**10 jalons** (**ARC-01** à **ARC-10**) en 3 pistes.
+**12 jalons** (**ARC-01** à **ARC-12**) en 3 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -26,11 +27,13 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 10 invariants) | S | ‖ |
-| ARC-10 | Le plafond global de points — trancher et solder | S | ∅ |
+| ARC-09 | Tests du plan (les 16 invariants) | S | ‖ |
+| ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
+| ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
+| ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 
 ```
-Piste A — Le modèle   : ARC-01 → ARC-03 ; ARC-02 → ARC-04
+Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 ; ARC-02 → ARC-04 ; ARC-02 → ARC-11
 Piste B — L'échelle   : ARC-05 ‖ ARC-06 ‖ ARC-10
 Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-09 ‖
 ```
@@ -47,11 +50,13 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > le modèle, ne dit en quoi ils diffèrent.
 - [ ] `DomainRole` (assaut / contrôle / entretien / encaisse) + `Domain::role`, avec
       migration ; les 24 domaines de combat rangés selon la grille du §10
-- [ ] Les **palettes** en configuration (`config/game/domain_roles.yaml`) : quatre leviers
-      autorisés par fonction, la règle des 80/20 exprimée en données et non en code
+- [ ] Les **palettes** en configuration (`config/game/domain_roles.yaml`) : **cinq leviers**
+      par fonction dont un **principal exclusif** (`power`/`grip`/`mending`/`guard`), plus la
+      **palette d'intentions** (§5.1) ; la règle des 80/20 exprimée en données, pas en code
 - [ ] Aucun affichage joueur : la fonction est une contrainte d'auteur, pas une classe
 - [ ] Tests : aucun triplet (élément, registre, fonction) en double ; tout domaine de
-      combat a une fonction ; toute palette a exactement quatre leviers
+      combat a une fonction ; toute palette a cinq leviers ; deux palettes ne partagent
+      jamais un levier principal, ni plus de deux secondaires
 
 ### ARC-02 — Le registre du geste, et les matéria de technique (M | ★★★ | CRITIQUE)
 > GAME_ARCHETYPES §3. **Le prérequis dont deux archétypes sur quatre dépendent** : sans
@@ -69,16 +74,18 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       registre (invariant 7)
 
 ### ARC-03 — Les leviers (L | ★★★ | CRITIQUE)
-> GAME_ARCHETYPES §4. Le refactor central : cinq entiers plats → treize leviers en
+> GAME_ARCHETYPES §4. Le refactor central : cinq entiers plats → **quinze** leviers en
 > pourcentage, avec taux de change et plafonds.
-- [ ] `CombatLever` (13 valeurs) + `Skill::levers` : une liste `(levier, points de budget)`
-      remplaçant `damage`/`heal`/`hit`/`critical`/`life`
+- [ ] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
+      `(levier, points de budget, condition ?)` remplaçant `damage`/`heal`/`hit`/`critical`/`life`
 - [ ] **Une place et une seule par levier dans la formule** — `DamageCalculator`,
       `CriticalCalculator`, `HitChanceCalculator`, `StatusEffectManager` consomment chacun
       les leviers qui les concernent, et le taux de change vit dans **un seul** convertisseur
 - [ ] `thrift` et `wind` se convertissent selon la **ressource du registre** (§4, note 1)
-- [ ] `life` reste hors de la double borne (décision DOM-01, inchangée), en pourcentage
-      des PV de base
+- [ ] `life` et `recovery` restent hors de la double borne (décision DOM-01, inchangée),
+      en pourcentage des PV de base
+- [ ] **`dodge` avant tout calcul, `guard` après résistance** : deux places distinctes dans
+      la formule — c'est ce qui distingue le cuir de la plaque autrement que par un chiffre
 - [ ] Tests : plafond par levier ; somme = 50 pb par arbre ; règle des 80/20 ; aucun passif
       plat sur un nœud de domaine de combat
 
@@ -144,22 +151,71 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 10 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 16 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
 - [ ] Capstone : unique, conditionnel, 14 pb, condition atteignable au tour 2
 - [ ] Registre : tout arbre ouvre au moins un geste de son registre
+- [ ] Intentions : palette tenue, un `dégât` et un non-`dégât` par arbre, un geste de
+      portée collective pour l'entretien et l'encaisse
+- [ ] Dépôt : aucun geste de portée `le groupe` instantané ; durée en tours de rencontre
+- [ ] Conditions : les cinq garde-fous du §4.3 ; aucun plafond global de points
 - [ ] Règle 9 étendue au chemin des techniques ; aucun passif plat restant
 
 ### ARC-10 — Le plafond global de points (S | ★★ | MOYENNE)
 > GAME_ARCHETYPES §11.2. `MAX_TOTAL_SKILL_POINTS = 500` contredit « le savoir n'est jamais
 > borné » (GAME_DOMAINS §1) — et un seul arbre en consomme 465.
-- [ ] **Trancher** : supprimer le plafond (recommandé) ou l'acter comme couche « être »
-- [ ] Si suppression : retirer le motif de refus `global_cap`, ses traductions et son test,
-      et **écrire dans GAME_DOMAINS §1 pourquoi** — sinon il reviendra
-- [ ] Vérifier que les trois bornes réelles suffisent : énergie (rythme), build (expression,
-      DOM-02), spécialisation et patronage (identité)
+> **Tranché le 2026-07-31 : le plafond est supprimé.**
+- [ ] Retirer `MAX_TOTAL_SKILL_POINTS`, le motif de refus `global_cap`, ses traductions
+      FR/EN et le test qui l'exerce
+- [ ] **Écrire dans GAME_DOMAINS §1 pourquoi** — sinon il reviendra : les trois bornes
+      réelles sont l'énergie (rythme), le build (expression, DOM-02) et la spécialisation
+      ou le patronage (identité). Un plafond de points ne borne que le temps de jeu, la
+      seule chose que ce jeu a décidé de ne jamais punir
+- [ ] Test : aucun refus d'acquisition ne dépend d'un total de points tous domaines
+      confondus
+
+### ARC-11 — L'intention, la portée, et la loi du dépôt (M | ★★★ | HAUTE)
+> GAME_ARCHETYPES §3.1 et §7 bis. **Ce jalon décide si le donjon de groupe a un sens.**
+> Le combat de groupe est semi-synchrone (`GroupDungeonCombatService` : un joueur actif à
+> la fois, 45 s par tour, tour d'un absent résolu tout seul) — un soin **réactif** y est
+> une mécanique morte.
+- [ ] `SpellIntent` (dégât / soin / protection / amélioration / entrave) et `SpellScope`
+      (soi / un allié / le groupe / une cible / plusieurs cibles) sur `Spell`, hérités par
+      la matéria
+- [ ] Les leviers visent par **intention** : `mending` ne touche que `soin`, `grip` que
+      l'`entrave`. Une fois sur le geste, jamais quinze fois dans quinze formules
+- [ ] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
+      alliés — régénération, absorption, amélioration — et elle court **que le lanceur soit
+      connecté ou non**
+- [ ] **La durée se compte en tours de la rencontre**, jamais en temps réel ni en tours du
+      lanceur : c'est le seul compteur que l'asynchronie ne dérègle pas
+- [ ] Le même geste en `scope: soi` doit rester jouable en solo — un archétype, pas deux
+- [ ] Le garde-fou : **aucun rôle n'est nécessaire**. Un groupe sans entretien met plus de
+      tours et perd plus de PV ; il ne rencontre pas un mur. Exiger un rôle, c'est exiger
+      une présence
+- [ ] Tests : aucun geste `le groupe` instantané ; palette d'intentions tenue par arbre ;
+      tout arbre ouvre au moins un `dégât` et au moins un non-`dégât`
+
+### ARC-12 — Les passifs conditionnels d'équipement (M | ★★★ | HAUTE)
+> GAME_ARCHETYPES §4.3. C'est ce qui fait que **l'équipement est le build** au lieu d'être
+> un total — la promesse de GAME_DOMAINS §3, qui n'avait jamais eu de quoi la tenir.
+- [ ] `SkillCondition` sur un nœud passif : famille d'arme, ligne d'armure, bouclier porté,
+      main gauche libre, deux armes — plus les conditions de combat déjà utilisées par les
+      capstones
+- [ ] **Multiplicateurs d'effet** : ×1,0 sans condition, **×1,4** condition de build,
+      **×2,0** condition de combat. Le budget compte l'effet **moyen**, pas l'effet affiché ;
+      les plafonds restent exprimés en points de budget et ne bougent pas
+- [ ] Les **cinq garde-fous** verrouillés par test : aucune condition au palier 1 ; au moins
+      2 des 7 passifs sans condition ; condition satisfaisable par ce que l'arbre débloque ;
+      condition portée sur une **famille**, jamais sur une pièce nommée ni sur une rareté ;
+      une condition ne ferme rien — elle récompense
+- [ ] **UI** : l'écran des arbres dit ce qu'un nœud rapporterait *si la condition était
+      remplie*, et ce qu'il faudrait porter. Un bonus silencieusement inactif est un bug
+      d'interface, pas un choix de build
+- [ ] Croise **OBJ** : les familles d'arme et lignes d'armure doivent être lisibles depuis
+      l'objet (`EquipmentPortCatalog` les déclare déjà par famille)
 
 ---
 
@@ -173,3 +229,6 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 | Le vocabulaire de 13 leviers **enfle** au fil du contenu | L'ensemble est **fermé** : un levier neuf est une décision de moteur, instruite ici, jamais un ajout de fixture |
 | Les munitions sont perçues comme une **taxe** sur l'archer | Trois garde-fous testés (§2) : plancher T1 PNJ, seules les munitions élémentaires se consomment, récupération par levier. Et l'archer a en échange le meilleur rendement par tour |
 | La **fonction** se relit comme un retour des classes | Elle n'est jamais affichée, ne ferme aucun arbre et ne conditionne aucun port. C'est une contrainte d'auteur — le joueur n'en voit que la conséquence |
+| Les **passifs conditionnels** se relisent comme des interdits de port | Une condition ne ferme rien : le mage en plaque existe toujours, il n'a pas le bonus. L'UI d'ARC-12 dit ce qu'on gagnerait à porter autre chose — jamais ce qui est refusé |
+| Les **dépôts de groupe** rendent un rôle **obligatoire** en donjon | Garde-fou testé (ARC-11) : un groupe sans entretien met plus de tours et perd plus de PV, il ne rencontre pas un mur. Aucune rencontre ne suppose une composition |
+| La **suppression du plafond** ouvre la porte au personnage qui a tout appris | C'est le contrat des trois couches, et les conditions d'équipement le resserrent : on ne porte pas à la fois la plaque, le cuir, le bouclier, la dague et l'arc |

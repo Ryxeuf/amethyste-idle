@@ -37,6 +37,17 @@ layout visuel, pas de la génération de contenu.
 | **Faire** (l'instant) | On n'exprime qu'une partie de ce qu'on sait | le **build** en combat ; l'atelier et le temps en artisanat |
 | **Être** (l'identité) | Certains choix se paient d'un renoncement | la **spécialisation** d'artisanat, le **patronage** de faction, la tension doctrinale |
 
+> **Amendement (2026-07-31, [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) §11.2) — le plafond
+> global de points est supprimé.** `PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS = 500` était
+> un verrou de savoir, c'est-à-dire exactement ce que cette section interdit — et il était
+> serré au point qu'un seul arbre (465 points) le consommait presque entièrement, rendant
+> impossible le « deux à quatre domaines » de GAME_PROGRESSION §1. Les trois borneurs du
+> tableau ci-dessus suffisent, et ils sont les bons : l'**énergie** borne le rythme, le
+> **build** borne l'expression (DOM-02), la **spécialisation** et le **patronage** bornent
+> l'identité. Un plafond de points ne bornait que le **temps de jeu** — la seule chose que
+> ce jeu a décidé de ne jamais punir (GAME_PROGRESSION §5). C'est consigné ici pour qu'on
+> ne le réintroduise pas par commodité. Jalon : **ARC-10**.
+
 Formule canonique : **« on peut virtuellement savoir tout faire, mais on ne fait qu'une
 seule chose à la fois. »** Les seules exclusions du jeu sont sociales et réversibles à
 coût (spécialisation, patronage) — jamais des verrous de savoir. Interdire un arbre

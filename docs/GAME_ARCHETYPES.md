@@ -42,11 +42,13 @@ couleur de leurs matéria, pas par leur façon de jouer. Trois arbres d'eau × s
 borne : rien, dans le modèle actuel, ne dit en quoi ils ne sont pas le même arbre
 peint trois fois.
 
-Ce document ajoute donc le minimum pour que des archétypes existent :
-**un troisième axe** (§1), **une ressource par registre** (§2), **un vocabulaire
-de leviers** (§4), **un budget de puissance** (§6) et **un protocole de
-conception** (§8). Puis il l'éprouve sur quatre arbres écrits en entier (§9) et
-range les 24 domaines de combat dans la grille (§10).
+Ce document ajoute donc le minimum pour que des archétypes existent : **un
+troisième axe** (§1), **une ressource par registre** (§2), **deux étiquettes sur
+le geste** — ce qu'il fait, qui il touche (§3.1) —, **un vocabulaire de leviers**
+et leurs **conditions d'équipement** (§4), **un budget de puissance** (§6), la
+**loi du dépôt** qui rend le jeu de groupe asynchrone possible (§7 bis) et un
+**protocole de conception** (§8). Puis il l'éprouve sur quatre arbres écrits en
+entier (§9), trois mélanges (§9.6), et range les 24 domaines dans la grille (§10).
 
 ### 0.1 Trois constats mesurés, qui commandent les décisions
 
@@ -159,15 +161,51 @@ Ce que la décision débloque, et qui attend depuis deux jalons :
 > pièce. Un guerrier qui ne sertit rien n'a que son attaque de base — c'est la
 > règle 10, appliquée à la lettre pour la première fois hors des sorts.
 
+### 3.1 Décision 8 — Le geste porte deux étiquettes de plus
+
+Le registre dit **comment** on agit. Il ne dit ni **ce qu'on fait**, ni **à qui**.
+Deux étiquettes s'ajoutent, et elles ne sont pas cosmétiques : sans elles, ni les
+leviers ni les palettes ne peuvent viser juste.
+
+| Étiquette | Valeurs | Ce qu'elle décide |
+|---|---|---|
+| **`intent`** — ce que le geste fait | `dégât` · `soin` · `protection` · `amélioration` · `entrave` | **quels leviers le qualifient** (`mending` ne touche que le soin, `grip` que l'entrave) et **quelle fonction a le droit de l'ouvrir** (§5.1) |
+| **`scope`** — qui il touche | `soi` · `un allié` · `le groupe` · `une cible` · `plusieurs cibles` | le jeu de groupe (§7 bis), et la lecture d'écran — un geste dit ce qu'il vise avant d'être lancé |
+
+**Trois choses deviennent possibles, dont une qui manquait au document.**
+
+1. **Les leviers visent juste.** Avec 15 leviers (§4), il faut dire à quoi chacun
+   s'applique. `intent` le dit, une fois, sur le geste — pas quinze fois dans
+   quinze formules.
+2. **La boucle « arbre × matéria » se ferme.** Ce document affirme depuis §0 que
+   l'archétype vit dans le couple (arbre, matéria) — mais rien n'imposait *quelles*
+   matéria un arbre ouvre. Une **palette d'intentions** par fonction (§5.1) le
+   fait, et devient testable : un arbre d'entretien qui n'ouvrirait que des gestes
+   de dégât échoue.
+3. **Le groupe existe.** `scope: le groupe` est ce sur quoi repose toute la
+   section §7 bis.
+
+> **`intent` n'est pas `register`, et ne se déduit pas de lui.** Une protection
+> peut être un sort (bouclier d'eau), une technique de mêlée (garde haute) ou une
+> pièce d'équipement. Un dégât peut être les trois. Croiser les deux étiquettes
+> est précisément ce qui donne 3 × 5 façons de faire une chose plutôt que 3.
+
 ---
 
 ## 4. Décision 4 — Le vocabulaire fermé des leviers
 
-Les cinq statistiques plates sont remplacées par **treize leviers en
+Les cinq statistiques plates sont remplacées par **quinze leviers en
 pourcentage**. L'ensemble est **fermé** : ajouter un levier est une décision de
 moteur (une place dans une formule), jamais une décision de contenu. Un arbre qui
-« aurait besoin » d'un quatorzième levier est un arbre mal conçu — ou une
-extension à instruire.
+« aurait besoin » d'un seizième levier est un arbre mal conçu — ou une extension à
+instruire.
+
+> **Le critère d'admission d'un levier**, puisqu'il faut qu'il en existe un :
+> *un levier occupe une place dans la formule qu'aucun autre n'occupe.* `dodge`
+> (éviter entièrement, avant tout calcul) et `guard` (réduire, après résistance)
+> ne sont pas deux dosages de la même chose : l'un est binaire et volatil, l'autre
+> continu et fiable. C'est ce qui les rend tous deux nécessaires — et c'est ce qui
+> distingue une armure de cuir d'une armure de plaque autrement que par un chiffre.
 
 | Levier | Effet | Position dans la formule | 1 point de budget vaut | Plafond / arbre |
 |---|---|---|---:|---:|
@@ -180,7 +218,9 @@ extension à instruire.
 | `thrift` | coût du geste en sa ressource (§2) | multiplicatif sur le coût | **−0,6 %** | 15 pb |
 | `wind` | ressource rendue par tour | additif par tour | **+0,1 PM/tour** ¹ | 12 pb |
 | `guard` | dégâts subis | multiplicatif, **après** résistance | **−0,6 %** | 15 pb |
+| `dodge` | chance d'éviter entièrement | binaire, **avant** tout calcul de dégâts | **+0,35 pt** | 12 pb |
 | `life` | PV maximum | multiplicatif sur les PV de base | **+1,5 %** | 20 pb |
+| `recovery` | PV rendus en fin de tour | additif, hors soin | **+0,25 % des PV max** | 12 pb |
 | `grip` | durée **et** intensité des statuts appliqués | sur `StatusEffect` | **+1,2 %** | 18 pb |
 | `ward` | résistance à l'application d'un statut subi | sur le jet d'application | **+1,0 %** | 15 pb |
 | `tempo` | initiative et ordre du tour | sur `speed` | **+1,0 %** | 12 pb |
@@ -220,6 +260,63 @@ dont la valeur marginale *croît* avec l'investissement s'achète plus cher :
   points de vie ne sont pas un geste, et les borner ferait varier la barre de vie
   d'un tour à l'autre selon le geste choisi. Il devient simplement un pourcentage
   des PV de base.
+- `recovery` **suit `life`** hors de la double borne, pour la même raison : une
+  régénération qui s'allumerait selon le sort du tour serait illisible.
+
+### 4.3 Décision 9 — Les passifs conditionnels d'équipement
+
+Un passif toujours vrai ne fait pas un build : il fait un total. Un passif
+**conditionné à ce qu'on porte** transforme l'équipement en décision — et c'est
+exactement ce que GAME_DOMAINS §3 promet (« l'équipement **est** le build »,
+« l'auto-limitation est émergente ») sans avoir jamais eu de quoi le tenir.
+
+Un nœud passif s'écrit donc `(levier, points de budget, condition ?)`. Trois
+familles de conditions, et un multiplicateur d'effet par famille :
+
+| Famille de condition | Exemples | Multiplicateur d'effet |
+|---|---|---|
+| **Aucune** | — | **×1,0** |
+| **De build** — vraie ou fausse avant le combat, stable jusqu'à la fin | une **dague** en main · la ligne **cuir** portée · un **bouclier** équipé · la main gauche **libre** · deux armes | **×1,4** |
+| **De combat** — elle se joue, et elle peut manquer | la cible **brûle** · vous avez **encaissé** au tour précédent · la cible est **sous 40 %** de ses PV | **×2,0** |
+
+> **Le budget compte ce qu'un passif rapporte *en moyenne*, pas ce qu'il
+> affiche.** Une condition ne rend pas un nœud plus fort : elle échange de la
+> **constance** contre de l'**amplitude**. Un nœud de 6 pb donne +6 % s'il est
+> toujours vrai, **+8,4 %** s'il exige une pièce, **+12 %** s'il exige un état de
+> combat. Les plafonds du §4 restent exprimés **en points de budget** — ils ne
+> bougent pas d'un pouce.
+
+**Cinq garde-fous**, sans lesquels la mécanique devient un péage déguisé :
+
+1. **Jamais de condition au palier 1.** Le joueur de la première semaine n'a pas
+   encore l'équipement ; un arbre dont l'entrée est conditionnée est un arbre
+   fermé.
+2. **Au moins 2 passifs sur 7 sans condition.** Un personnage mal équipé garde un
+   arbre qui fait quelque chose.
+3. **La condition doit être satisfaisable par ce que l'arbre débloque lui-même** —
+   son échelon de port, ou un statut posé par un de ses deux accords d'entrée.
+   Même garde-fou que pour le capstone (§7).
+4. **La condition porte sur une famille, jamais sur une pièce ni sur une rareté.**
+   « +10 % à la dague » est légitime ; « +10 % avec l'Épée du Fanal » ferait du
+   butin un prérequis de build, et de la chance un axe de progression.
+5. **Une condition ne ferme rien.** Le mage en plaque existe toujours (garde-fou 1
+   de GAME_DOMAINS §3) — il n'a simplement pas le bonus. On ne lit jamais un
+   interdit : on lit **ce qu'on gagnerait à porter autre chose**.
+
+#### Ce que le budget accepte, et ce qu'il refuse
+
+Les trois exemples qui ont motivé cette décision, chiffrés contre la grille — le
+budget fait ici exactement son travail :
+
+| Idée | Coût réel | Verdict |
+|---|---|---|
+| « **+10 % de dégâts avec une dague** » | 10 / 1,0 / 1,4 = **7,1 pb** | ✅ **Abordable** — un nœud de palier 3 (9 pb) le paie et rend même +12,6 % |
+| « **−15 % de dégâts subis avec un bouclier** » | 15 / 0,6 / 1,4 = **17,9 pb** | ❌ **Au-dessus du plafond de `guard` (15 pb)** — et ce serait plus du tiers du budget d'un arbre. À ramener à **−8 %** (9 pb), ou à conditionner au combat |
+| « **+2 % de vitesse en armure de cuir** » | 2 / 1,0 / 1,4 = **1,4 pb** | ⚠️ **Trop petit pour un nœud** : le plus modeste vaut 3 pb. À monter à **+4,2 %**, sinon le joueur ne sentira jamais l'avoir appris |
+
+C'est la vertu qu'on attend d'un budget : il ne dit pas « non », il dit
+**combien** — et il attrape aussi bien le nœud trop fort que le nœud trop petit
+pour valoir un clic.
 
 ---
 
@@ -228,19 +325,47 @@ dont la valeur marginale *croît* avec l'investissement s'achète plus cher :
 Une fonction, c'est **une promesse au joueur, un coût structurel, et quatre
 leviers**. La palette est la partie normative : elle borne l'auteur.
 
-| Fonction | La promesse | Le coût structurel | Palette (leviers autorisés) |
+| Fonction | La promesse | Le coût structurel | Palette de leviers (le **principal** en gras) |
 |---|---|---|---|
-| **Assaut** | *Je finis le combat avant qu'il ne devienne un problème.* | La fragilité et la ressource : un assaut raté est un combat perdu | `power`, `critical`, `critical_power`, `pierce` |
-| **Contrôle** | *Je décide de qui joue, et quand.* | La mise en place : ses premiers tours ne tuent pas | `grip`, `tempo`, `thrift`, `hit` |
-| **Entretien** | *Je ne perds pas le combat que les autres perdent au tour 8.* | La lenteur : ses combats sont plus longs | `mending`, `wind`, `thrift`, `ward` |
-| **Encaisse** | *Rien ne me casse, rien ne me rate.* | Le plafond : il ne fera jamais le gros chiffre | `guard`, `life`, `ward`, `hit` |
+| **Assaut** | *Je finis le combat avant qu'il ne devienne un problème.* | La fragilité et la ressource : un assaut raté est un combat perdu | **`power`**, `critical`, `critical_power`, `pierce`, `tempo` |
+| **Contrôle** | *Je décide de qui joue, et quand.* | La mise en place : ses premiers tours ne tuent pas | **`grip`**, `hit`, `thrift`, `tempo`, `pierce` |
+| **Entretien** | *Je ne perds pas le combat que les autres perdent au tour 8.* | La lenteur : ses combats sont plus longs | **`mending`**, `recovery`, `wind`, `thrift`, `ward` |
+| **Encaisse** | *Rien ne me casse, rien ne me rate.* | Le plafond : il ne fera jamais le gros chiffre | **`guard`**, `dodge`, `life`, `ward`, `hit` |
 
-**La règle des 80/20.** Sur les 50 points de budget d'un arbre (§6.3) :
-**au moins 40 dans sa palette**, **au plus 10 hors palette**, et **sur un seul
-levier étranger**. Ce levier étranger est la **teinte** de l'arbre — ce qui fait
-que deux arbres de même fonction ne se confondent pas (le Pyromancien est un
-assaut teinté `grip` — la brûlure ; l'Archer un assaut teinté `wind` — la flèche
-récupérée).
+**Deux règles tiennent la grille.**
+
+- **Le levier principal est exclusif** : `power`, `grip`, `mending` et `guard`
+  n'apparaissent que dans **une** palette. Deux palettes peuvent partager jusqu'à
+  deux leviers secondaires — pas leur cœur.
+- **La règle des 80/20.** Sur les 50 points de budget d'un arbre (§6.3) : **au
+  moins 40 dans sa palette**, **au plus 10 hors palette**, et **sur un seul levier
+  étranger**. Ce levier étranger est la **teinte** — ce qui fait que deux arbres de
+  même fonction ne se confondent pas (le Pyromancien est un assaut teinté `grip` —
+  la brûlure ; l'Archer un assaut teinté `wind` — la flèche récupérée). Une teinte
+  peut viser le principal d'une autre fonction : à 10 pb maximum, elle n'en
+  attrape jamais l'identité.
+
+### 5.1 La seconde moitié de la palette : les intentions
+
+Une palette de leviers borne les **passifs**. Elle ne dit rien des **accords** — et
+c'est le trou que la décision 8 (§3.1) permet de fermer. Chaque fonction borne
+aussi les **intentions** des matéria que son arbre ouvre :
+
+| Fonction | Sur ses 5 accords |
+|---|---|
+| **Assaut** | ≥ 3 `dégât` |
+| **Contrôle** | ≥ 2 `entrave`, ≥ 1 `dégât` |
+| **Entretien** | ≥ 2 `soin` ou `protection`, dont **≥ 1 de portée `le groupe`** |
+| **Encaisse** | ≥ 2 `protection`, dont **≥ 1 de portée `un allié` ou `le groupe`** |
+
+**Et deux règles valables pour les 24 arbres**, qui décident de la jouabilité bien
+plus que n'importe quel chiffre :
+
+1. **Tout arbre ouvre au moins un accord de `dégât`.** Sans lui, un combat ne
+   finit jamais — et l'archétype est injouable seul, c'est-à-dire 95 % du temps
+   (§7 bis).
+2. **Tout arbre ouvre au moins un accord qui n'est pas un `dégât`.** C'est le
+   plan B du test du jour 1 (§8.4) : le tour où frapper n'est pas la réponse.
 
 > **En PvE, « contrôle » n'est pas « soutien ».** Un tour que l'adversaire ne joue
 > pas est un tour de dégâts évité : le contrôle est une fonction **offensive**,
@@ -323,11 +448,13 @@ Deux plafonds se cumulent : celui de l'arbre (50 pb) et celui de **chaque levier
 (colonne de droite du §4). Un arbre ne peut donc pas mettre ses 50 points dans
 `power` : le plafond du levier est à 20.
 
-**Ce que ça donne, concrètement** — l'arbre du Pyromancien fini (§9.1) : **+17 %**
-de dégâts (dont 14 conditionnels), **+4,5 points** de critique, **+13,5 %** de
-dégâts critiques, **+4,2 points** de perce-résistance et des brûlures **+10,8 %**
-plus tenaces. Un joueur qui a *fini* son arbre frappe environ **1,3 fois plus
-fort** que celui qui vient de l'ouvrir — dans sa case, et à équipement égal.
+**Ce que ça donne, concrètement** — l'arbre du Pyromancien fini (§9.1) : **+3 %**
+de dégâts en toutes circonstances et **+28 %** contre une cible qui brûle, **+4,2
+points** de critique en robe de tissu, **+13,5 %** de dégâts critiques, **+4,2
+points** de perce-résistance, et des brûlures **+10,8 %** plus tenaces. Un joueur
+qui a *fini* son arbre frappe environ **1,3 fois plus fort** que celui qui vient
+de l'ouvrir, **quand sa condition est remplie** — dans sa case, et à équipement
+égal.
 
 > **Pourquoi 50 et pas 100 ?** Parce que la progression du personnage ne passe pas
 > par l'arbre : elle passe par le **support** (les emplacements de matéria, les
@@ -382,9 +509,73 @@ jamais. Mais un capstone actif est interdit (règle 9). La sortie est la
 **Trois garde-fous.** (1) La condition doit être **atteignable au tour 2** avec le
 seul kit d'entrée de l'arbre — sinon le capstone est un piège pour qui n'a pas
 l'équipement. (2) Elle ne demande **jamais un second personnage** : le jeu est
-asynchrone (GAME_PROGRESSION §1). (3) Le capstone **ne fait pas plus de 14 pb**,
-même conditionné — un conditionnel qui vaudrait le double « parce qu'il ne
-s'applique pas toujours » est la porte d'entrée classique des builds dégénérés.
+asynchrone (GAME_PROGRESSION §1). (3) Le capstone **coûte 14 pb, pas un de plus** :
+sa condition de combat lui donne déjà ×2 d'amplitude (§4.3), soit **+28 %** au
+lieu de +14. Lui accorder en plus un budget majoré « parce qu'il ne s'applique pas
+toujours » est la porte d'entrée classique des builds dégénérés.
+
+---
+
+## 7 bis. Le jeu de groupe asynchrone — la loi du dépôt
+
+### 7 bis.1 Ce que le donjon de groupe est réellement
+
+Mesuré dans `GroupDungeonCombatService` : un donjon de groupe est **tour par tour,
+un seul joueur actif à la fois**, contre une rencontre à **PV partagés**. Un délai
+par tour (45 s par défaut) borne l'attente, et au-delà **le tour d'un absent est
+résolu tout seul** — par une attaque de base, résolue paresseusement au prochain
+chargement d'écran. Aucune présence simultanée n'est requise, et c'est la
+condition même du jeu (1 à 2 joueurs simultanés à 50 quotidiens).
+
+**Ce que ce modèle interdit** : le soin réactif. « Un allié tombe à 20 %, je le
+soigne » suppose que je sois là quand ça arrive. Dans un donjon dont les tours
+peuvent s'étaler sur des heures, c'est une mécanique morte — et avec elle, tout
+l'archétype d'entretien en groupe.
+
+### 7 bis.2 La loi
+
+> **Un geste qui touche le groupe ne réagit pas : il se dépose.** Il pose une
+> durée sur les alliés, et cette durée agit **que son lanceur soit connecté ou
+> non**.
+
+Trois conséquences, et elles suffisent à faire exister quatre rôles en groupe :
+
+| Ce qu'on dépose | Exemple | Ce que ça règle |
+|---|---|---|
+| **Une régénération de groupe** | à mon tour, tous les alliés récupèrent des PV pendant N tours de rencontre | Le soigneur agit **en avance** sur des dégâts qu'il ne verra pas tomber |
+| **Un bouclier / une absorption** | un montant absorbé sur chaque allié, jusqu'à consommation ou expiration | L'encaisse **protège autrui** sans avoir à être ciblé — il n'existe pas d'aggro dans une rencontre à PV partagés |
+| **Une amélioration** | +X % à un levier pour le groupe pendant N tours | Le contrôle et l'entretien pèsent sur les tours des autres, sans les jouer |
+
+**La durée se compte en tours de la rencontre — jamais en temps réel, jamais en
+« mes tours ».** C'est le seul compteur que le moteur possède déjà et que
+l'asynchronie ne dérègle pas : un dépôt de 6 tours dure 6 actions du groupe,
+qu'elles tombent en trois minutes ou en trois jours.
+
+### 7 bis.3 Ce que ça change pour les quatre fonctions
+
+- **Entretien** — sa contribution de groupe **survit à sa déconnexion**. C'est le
+  renversement complet du problème : le soigneur absent laisse quelque chose
+  derrière lui, là où un absent ordinaire ne laisse qu'une attaque de base par
+  défaut. *Le soin en donjon n'est plus une réaction, c'est une provision.*
+- **Encaisse** — sa protection se déporte (`scope: le groupe`), ce qui lui donne
+  un rôle collectif sans exiger le moindre système d'aggro. Une rencontre à PV
+  partagés ne peut pas être « prise en charge » ; elle peut être **amortie**.
+- **Contrôle** — l'entrave posée sur la rencontre vaut pour tous les tours
+  suivants, donc pour les tours des autres. C'est la fonction dont le rendement
+  collectif est le plus élevé, et il est entièrement asynchrone.
+- **Assaut** — inchangé, et c'est le point : il est **suffisant seul**. Aucune
+  fonction n'a besoin d'un groupe pour exister ; le groupe multiplie les trois
+  autres.
+
+> **Le garde-fou qui va avec** : un dépôt ne rend jamais un joueur *nécessaire*.
+> Un groupe sans entretien met plus de tours et perd plus de PV — il ne se heurte
+> pas à un mur. Exiger un rôle, c'est exiger une présence, et exiger une présence
+> dans un jeu à 1-2 joueurs simultanés, c'est fermer le contenu.
+
+> **Et l'effet de bord qu'on garde** : ces gestes déposés fonctionnent **aussi en
+> solo**, en `scope: soi`. Le soigneur solo ne joue pas un autre jeu que le
+> soigneur de donjon — il joue les mêmes gestes sur une seule cible. C'est la
+> condition pour que l'archétype ne soit pas deux archétypes.
 
 ---
 
@@ -437,25 +628,26 @@ leur conversion suit la grille du §4.
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Boule de feu** | le geste — dégâts francs, 5 PM | — |
-| Entrée | 0 | **Accord : Flammèche** | le geste économe (3 PM) qui **applique la brûlure** — le plan B quand le pool est vide, et la mise en place du capstone | — |
+| Entrée | 0 | **Accord : Boule de feu** — `dégât`, `une cible` | le geste — dégâts francs, 5 PM | — |
+| Entrée | 0 | **Accord : Flammèche** — `dégât`, `une cible` | le geste économe (3 PM) qui **applique la brûlure** — le plan B quand le pool est vide, et la mise en place du capstone | — |
 | 1 | 10 | Souffle d'attisage | `power` **+3 %** | 3 |
 | 1 | 10 | Points faibles | `critical` **+1,5 pt** | 3 |
-| 1 | 10 | **Accord : Mur de feu** | le geste de zone / de temporisation | — |
+| 1 | 10 | **Accord : Mur de feu** — `entrave`, `plusieurs cibles` | le geste de temporisation : il ne tue pas, il retient | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | bâtons et baguettes de palier 2 | — |
 | 2 | 25 | Fonte des écailles | `pierce` **+4,2 pt** | 6 |
-| 2 | 25 | Lecture de la flamme | `critical` **+3 pt** | 6 |
-| 2 | 25 | **Accord : Pluie de flammes** | le geste multi-cible | — |
+| 2 | 25 | Chaleur sèche | `critical` **+4,2 pt** *si la ligne tissu est portée* (×1,4) | 6 |
+| 2 | 25 | **Accord : Pluie de flammes** — `dégât`, `plusieurs cibles` | le geste multi-cible | — |
 | 2 | 25 | *Port* : canal de sort, échelon 3 | bâtons et baguettes de palier 3 | — |
 | 3 | 50 | Cœur de braise | `critical_power` **+13,5 %** | 9 |
 | 3 | 50 | Braise durable | `grip` **+10,8 %** *(teinte)* | 9 |
-| 3 | 50 | **Accord : Nova de feu** | le geste de pointe | — |
-| **Capstone** | 100 | **Foyer entretenu** | `power` **+14 %** *contre une cible qui brûle* | 14 |
+| 3 | 50 | **Accord : Nova de feu** — `dégât`, `plusieurs cibles` | le geste de pointe | — |
+| **Capstone** | 100 | **Foyer entretenu** | `power` **+28 %** *contre une cible qui brûle* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (feu)* | *réservé — DOM-07* | — |
 
 **Vérification.** 50 pb pile · palette (assaut) 41 ≥ 40 ✔ · hors palette 9 ≤ 10 sur
 un seul levier ✔ · `power` 17 ≤ 20 ✔ · `critical` 9 ≤ 12 ✔ · condition du capstone
 atteignable **au tour 2 avec le seul kit d'entrée** (Flammèche brûle) ✔.
+**Intentions** : 4 `dégât` ≥ 3 ✔ · 1 accord non-`dégât` (Mur de feu) ✔.
 
 **Test de l'arbre nu** : dégâts, critique, perce-résistance, brûlure durable. On
 lit un assaut élémentaire sans avoir vu un seul accord. ✔
@@ -470,13 +662,17 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 | **Sa faiblesse** | L'adversaire qui frappe plus vite qu'il ne rend, et les combats de 3 tours où le soin n'a pas le temps d'exister |
 | **Teinte** | `guard` — l'eau qui amortit |
 
-> **L'arbitrage qui décide de cet archétype : le soin sur soi est le cœur, le soin
-> d'autrui est un bonus de contexte.** Le jeu est asynchrone — 1 à 2 joueurs
-> simultanés à 50 quotidiens (GAME_WORLD §13.4). Un soigneur conçu pour soigner les
-> autres est un archétype **injouable 95 % du temps**. Ici, l'entretien est d'abord
-> une façon de gagner *seul* : ne jamais tomber, ne jamais consommer de potion, et
-> ressortir d'un combat de vingt tours avec la même barre qu'en entrant. Le donjon
-> de groupe le multiplie, il ne le fonde pas.
+> **L'arbitrage qui décide de cet archétype : il ne soigne pas, il provisionne.**
+> Le jeu est asynchrone — 1 à 2 joueurs simultanés à 50 quotidiens (GAME_WORLD
+> §13.4), et un donjon de groupe se joue un tour à la fois, sur des heures. Un
+> soigneur **réactif** y serait injouable : il n'est pas là quand l'allié tombe.
+> Tous ses gestes collectifs sont donc des **dépôts** (§7 bis) — une régénération,
+> un bouclier, une amélioration posés à son tour, qui courent sur les tours des
+> autres, **connecté ou non**. En solo, ce sont exactement les mêmes gestes en
+> `scope: soi` : ne jamais tomber, ne jamais boire de potion, et ressortir d'un
+> combat de vingt tours avec la même barre qu'en entrant.
+>
+> Ce n'est pas deux archétypes : c'est le même, avec une portée différente.
 
 > **Et il a une vertu de PBBG que les trois autres n'ont pas** : l'énergie d'action
 > se paie **par combat, jamais par tour** (GAME_PROGRESSION §1). Un archétype qui
@@ -488,27 +684,28 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Soin** | le geste — rendre des PV |  — |
-| Entrée | 0 | **Accord : Jet d'eau** | le geste offensif modeste : **sans lui, un combat ne finit jamais** | — |
+| Entrée | 0 | **Accord : Rosée** — `soin`, `soi ou un allié`, **sur la durée** | le geste : il **dépose** des PV sur N tours au lieu d'en rendre au tour | — |
+| Entrée | 0 | **Accord : Jet d'eau** — `dégât`, `une cible` | le geste offensif modeste : **sans lui, un combat ne finit jamais** (§5.1) | — |
 | 1 | 10 | Main sûre | `mending` **+3 %** | 3 |
 | 1 | 10 | Geste économe | `thrift` **−1,8 %** | 3 |
-| 1 | 10 | **Accord : Rosée** *(régénération)* | le soin sur la durée — moins de PM par PV rendu | — |
+| 1 | 10 | **Accord : Écaille d'eau** — `protection`, `soi ou un allié` | une absorption déposée : elle tient jusqu'à consommation | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | — | — |
-| 2 | 25 | Souffle retenu | `thrift` **−3,6 %** | 6 |
+| 2 | 25 | Sourdre | `recovery` **+1,5 % des PV max par tour** | 6 |
 | 2 | 25 | Seconde respiration | `wind` **+0,6 PM/tour** | 6 |
-| 2 | 25 | **Accord : Dissipation** | retirer un statut — la réponse aux poisons et aux entraves | — |
+| 2 | 25 | **Accord : Dissipation** — `protection`, `un allié` | retirer un statut — la réponse aux poisons et aux entraves | — |
 | 2 | 25 | *Port* : canal de sort, échelon 3 | — | — |
 | 3 | 50 | Sang-froid | `ward` **+9 %** | 9 |
-| 3 | 50 | Écume | `guard` **−5,4 %** *(teinte)* | 9 |
-| 3 | 50 | **Accord : Marée** | le soin de zone (solo : un gros soin ; en groupe : le pilier) | — |
-| **Capstone** | 100 | **Ressac** | `mending` **+14 %** *sur une cible sous 40 % de ses PV* | 14 |
+| 3 | 50 | Écume | `guard` **−7,6 %** *si un bouclier ou un focus occupe la main gauche* (×1,4) — *teinte* | 9 |
+| 3 | 50 | **Accord : Marée** — `soin`, **`le groupe`**, 6 tours | **le dépôt** : posé à son tour, il court sur les tours des autres. En solo, il s'applique à lui seul | — |
+| **Capstone** | 100 | **Ressac** | `mending` **+28 %** *sur une cible sous 40 % de ses PV* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (eau)* | *réservé* | — |
 
 **Vérification.** 50 pb · palette 41 ✔ · teinte `guard` 9 ≤ 10 ✔ · `mending` 17 ≤ 20 ✔ ·
-`thrift` 9 ≤ 15 ✔ · condition du capstone atteignable seul (soi-même sous 40 %) ✔.
+`recovery` 6 ≤ 12 ✔ · condition du capstone atteignable seul (soi-même sous 40 %) ✔.
+**Intentions** : 3 `soin`/`protection` dont **un de portée `le groupe`** ✔ · 1 `dégât` ✔.
 
 **Test du voisin** : Hydromancien (eau × sorts × contrôle) et Marémancien (eau ×
-sorts × assaut) partagent la case et **aucun levier de palette** avec lui. ✔
+sorts × assaut) partagent la case et **aucun levier principal** avec lui. ✔
 
 ### 9.3 Le Soldat — métal × mêlée × **Encaisse** — *« la Ligne »*
 
@@ -529,25 +726,26 @@ sorts × assaut) partagent la case et **aucun levier de palette** avec lui. ✔
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Frappe appuyée** *(technique)* | le geste — sans temps de reprise |  — |
-| Entrée | 0 | **Accord : Garde haute** *(technique)* | le tour défensif, reprise 2 — le plan B, et la mise en place du capstone | — |
+| Entrée | 0 | **Accord : Frappe appuyée** *(technique)* — `dégât`, `une cible` | le geste — sans temps de reprise |  — |
+| Entrée | 0 | **Accord : Garde haute** *(technique)* — `protection`, `soi` | le tour défensif, reprise 2 — le plan B, et la mise en place du capstone | — |
 | 1 | 10 | Œil du drill | `hit` **+1,5 pt** | 3 |
 | 1 | 10 | Discipline | `ward` **+3 %** | 3 |
-| 1 | 10 | **Accord : Estoc brisant** *(technique)* | le geste qui perce l'armure | — |
+| 1 | 10 | **Accord : Estoc brisant** *(technique)* — `dégât`, `une cible` | le geste qui perce l'armure | — |
 | 1 | 10 | *Port* : plaque, échelon 2 | l'armure lourde de palier 2 | — |
 | 2 | 25 | Endurance de marche | `life` **+9 %** | 6 |
-| 2 | 25 | Garde travaillée | `hit` **+3 pt** | 6 |
-| 2 | 25 | **Accord : Coup de bouclier** *(technique)* | étourdissement bref, reprise 3 | — |
+| 2 | 25 | Garde travaillée | `hit` **+4,2 pt** *si un bouclier est équipé* (×1,4) | 6 |
+| 2 | 25 | **Accord : Mur de boucliers** *(technique)* — `protection`, **`le groupe`**, 4 tours | **le dépôt de l'encaisseur** : une absorption sur chaque allié. Une rencontre à PV partagés ne se « prend » pas — elle s'amortit (§7 bis) | — |
 | 2 | 25 | *Port* : plaque, échelon 3 | l'armure lourde de palier 3 | — |
 | 3 | 50 | Carcasse | `life` **+13,5 %** | 9 |
 | 3 | 50 | Bras d'acier | `power` **+9 %** *(teinte)* | 9 |
-| 3 | 50 | **Accord : Charge d'acier** *(technique)* | le gros geste, reprise 4 | — |
-| **Capstone** | 100 | **Tenir la ligne** | `guard` **−8,4 %** *au tour qui suit un coup encaissé* | 14 |
+| 3 | 50 | **Accord : Charge d'acier** *(technique)* — `dégât`, `une cible` | le gros geste, reprise 4 | — |
+| **Capstone** | 100 | **Tenir la ligne** | `guard` **−16,8 %** *au tour qui suit un coup encaissé* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (métal)* | *réservé* | — |
 
 **Vérification.** 50 pb · palette 41 ✔ · teinte `power` 9 ≤ 10 ✔ · `life` 15 ≤ 20 ✔ ·
 `hit` 9 ≤ 10 ✔ · `guard` 14 ≤ 15 ✔ · condition atteignable au tour 2 (il suffit
 d'être frappé — et il le sera) ✔.
+**Intentions** : 2 `protection` dont **une de portée `le groupe`** ✔ · 3 `dégât` ✔.
 
 **Ce que le capstone dit de l'archétype** : le Soldat est le seul dont la
 condition ne se *provoque* pas — elle lui arrive. C'est la traduction exacte de sa
@@ -567,25 +765,26 @@ fonction : il ne décide pas du combat, il refuse de le perdre.
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Tir tendu** *(technique)* | le geste — une munition ordinaire | — |
-| Entrée | 0 | **Accord : Tir entravant** *(technique)* | ralentit la cible — le plan B, et la condition du capstone | — |
+| Entrée | 0 | **Accord : Tir tendu** *(technique)* — `dégât`, `une cible` | le geste — une munition ordinaire | — |
+| Entrée | 0 | **Accord : Tir entravant** *(technique)* — `entrave`, `une cible` | ralentit la cible — le plan B, et la condition du capstone | — |
 | 1 | 10 | Souffle court | `critical` **+1,5 pt** | 3 |
 | 1 | 10 | Bras d'arc | `power` **+3 %** | 3 |
-| 1 | 10 | **Accord : Volée** *(technique)* | multi-cible, deux munitions | — |
+| 1 | 10 | **Accord : Volée** *(technique)* — `dégât`, `plusieurs cibles` | deux munitions | — |
 | 1 | 10 | *Port* : arc, échelon 2 | l'arc de palier 2 | — |
-| 2 | 25 | Lecture du vent | `critical` **+3 pt** | 6 |
+| 2 | 25 | Lecture du vent | `critical` **+4,2 pt** *si aucun bouclier n'est porté* (×1,4) | 6 |
 | 2 | 25 | Pointe affûtée | `pierce` **+4,2 pt** | 6 |
-| 2 | 25 | **Accord : Flèche de fracture** *(technique)* | ouvre la garde — dégâts sur la durée | — |
+| 2 | 25 | **Accord : Flèche de fracture** *(technique)* — `dégât`, `une cible` | ouvre la garde — dégâts sur la durée | — |
 | 2 | 25 | *Port* : arc, échelon 3 | l'arc à poulie de palier 3 | — |
 | 3 | 50 | Œil du faucon | `critical_power` **+13,5 %** | 9 |
 | 3 | 50 | Trait récupéré | `wind` **+13,5 % de récupération de munition** *(teinte)* | 9 |
-| 3 | 50 | **Accord : Tir du faucon** *(technique)* | le geste de pointe, reprise 3 | — |
-| **Capstone** | 100 | **Trait dans le vent** | `power` **+14 %** *contre une cible ralentie ou entravée* | 14 |
+| 3 | 50 | **Accord : Tir du faucon** *(technique)* — `dégât`, `une cible` | le geste de pointe, reprise 3 | — |
+| **Capstone** | 100 | **Trait dans le vent** | `power` **+28 %** *contre une cible ralentie ou entravée* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (air)* | *réservé* | — |
 
 **Vérification.** 50 pb · palette 41 ✔ · teinte `wind` 9 ≤ 10 ✔ · `power` 17 ≤ 20 ✔ ·
 `critical` 9 ≤ 12 ✔ · condition atteignable au tour 2 (Tir entravant, accord
 d'entrée) ✔.
+**Intentions** : 4 `dégât` ≥ 3 ✔ · 1 accord non-`dégât` (Tir entravant) ✔.
 
 > **Pourquoi l'Archer n'est pas un Pyromancien avec un arc**, alors qu'ils
 > partagent la fonction : sa ressource est **matérielle** (il dépend d'un artisan
@@ -604,11 +803,53 @@ d'entrée) ✔.
 | **Gagne contre** | ce qui meurt vite | ce qui use | ce qui frappe fort | ce qu'on peut tenir à distance |
 | **Perd contre** | ce qui dure | ce qui tue vite | ce qui ignore l'armure | ce qui colle et encaisse |
 | **Coût hors combat** | potions de PM | rien *(sa force)* | réparation d'armure | munitions *(un artisan)* |
+| **Ce qu'il dépose en donjon** | rien — il frappe | une régénération de groupe | une absorption de groupe | une entrave qui vaut pour tous les tours suivants |
+| **Ce qu'il récompense de porter** | la ligne tissu | un focus en main gauche | un bouclier | pas de bouclier — les deux mains à l'arc |
 
 **La lecture d'ensemble**, et c'est elle qui valide le modèle : **aucune ligne de
 ce tableau n'est un chiffre.** Quatre archétypes se distinguent par leur rapport
-au temps et à la matière, pas par leur puissance — laquelle est identique (50 pb)
-et bornée par la même grille.
+au temps, à la matière et à ce qu'ils portent — pas par leur puissance, laquelle
+est identique (50 pb) et bornée par la même grille.
+
+### 9.6 Trois mélanges que ces règles rendent possibles
+
+C'est le test réel des passifs conditionnels (§4.3) : **est-ce qu'ils donnent
+envie de panacher ?** Rappel du cadre — un domaine ne s'exprime que si le build en
+porte une source (DOM-02), et une arme plus trois emplacements font mécaniquement
+deux à trois domaines actifs.
+
+**1. Le tank en cuir** — Soldat *(métal × mêlée × encaisse)* + Vagabond *(air ×
+mêlée × contrôle)*. Porté : **cuir, bouclier, épée**.
+Il garde du Soldat tout ce qui n'exige pas la plaque — `life`, le capstone
+« Tenir la ligne », et « Garde travaillée » que **son bouclier** valide. Il prend
+du Vagabond l'`dodge` et le `tempo` conditionnés au **cuir**. Il perd les nœuds du
+Soldat conditionnés à la plaque.
+*Résultat* : un encaisseur **par l'évitement** plutôt que par l'absorption — plus
+volatil, plus rapide, et il joue plus de tours. Personne ne lui a interdit la
+plaque : il a simplement trouvé mieux ailleurs.
+
+**2. Le duelliste à deux dagues** — Assassin *(ténèbres × mêlée × assaut)* +
+Vagabond. Porté : **cuir, dague, dague**.
+Il cumule les conditions « une dague en main » et « main gauche armée », et
+renonce à tout ce qui exige un bouclier — donc à `guard`. Il encaisse par
+l'esquive ou pas du tout.
+*Résultat* : le build le plus tranchant du jeu, et le plus fragile. C'est un choix
+lisible, pas un piège : les nœuds qu'il n'exprime pas **disent** ce qu'il faudrait
+porter.
+
+**3. Le soutien de donjon** — Guérisseur *(entretien)* + Archer *(assaut ×
+distance)*. Porté : **cuir, arc, focus en main gauche**.
+En donjon : il dépose la Marée à son tour, entrave la rencontre, et tire. En solo :
+la même régénération sur lui-même, et le même arc.
+*Résultat* : le rôle collectif existe **sans exiger la simultanéité** — c'est la
+loi du dépôt (§7 bis) qui le rend jouable, pas une mécanique de groupe en plus.
+
+> **Ce qui donne envie de mener un domaine**, et qui se vérifie sur les trois
+> mélanges : (1) une **promesse** qu'aucun autre ne tient ; (2) des passifs
+> conditionnés qui récompensent une **tenue reconnaissable** — on voit un
+> archétype à ce qu'il porte, avant même qu'il agisse ; (3) un **capstone** dont la
+> condition raconte sa façon de jouer. Un arbre qui n'a que le troisième est un
+> arbre qu'on prend « en passant ».
 
 ---
 
@@ -680,14 +921,14 @@ tombent des grilles.
 5 avant toute passe de valeurs. 3 et 5 sont les deux gros morceaux, et ils sont
 indépendants l'un de l'autre.
 
-### 11.2 Arbitrage A — le plafond global de 500 points
+### 11.2 Le plafond global de 500 points — **tranché le 2026-07-31 : supprimé**
 
 `PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS = 500` **contredit la doctrine des
 trois couches** : « le savoir n'est jamais borné » (GAME_DOMAINS §1). Un plafond
 global de points est exactement un verrou de savoir — et il est serré au point
 qu'un seul arbre (465 points) le consomme presque entièrement.
 
-> **Recommandation : le supprimer.** Les bornes réelles sont déjà là et suffisent :
+> **Décision : le supprimer.** Les bornes réelles sont déjà là et suffisent :
 > l'**énergie** borne le rythme (couche « savoir »), le **build** borne
 > l'expression — un domaine ne s'exprime que si l'équipement en porte une source,
 > DOM-02 (couche « faire »), et la **spécialisation / le patronage** bornent
@@ -698,6 +939,11 @@ qu'un seul arbre (465 points) le consomme presque entièrement.
 Conséquence assumée : un vétéran de deux ans aura appris beaucoup d'arbres. Il
 n'en **exprimera** toujours que deux ou trois à la fois, parce qu'il ne porte
 qu'une arme et trois emplacements. C'est précisément le contrat des trois couches.
+
+> **Et les passifs conditionnels (§4.3) resserrent encore cette borne sans rien
+> interdire** : un joueur qui a tout appris ne peut pas porter à la fois la
+> plaque, le cuir, le bouclier, la dague et l'arc. Plus il apprend, plus ce qu'il
+> **choisit de porter** décide de ce qu'il est. Le plafond n'a plus rien à borner.
 
 ### 11.3 Arbitrage B — que devient l'équilibrage déjà livré ?
 
@@ -735,13 +981,28 @@ Ce qui doit casser la CI si on le viole :
 7. **Chaque arbre ouvre au moins un geste de son registre** — un arbre de mêlée
    qui n'ouvre que des sorts est un archétype vide (le défaut que la décision 1
    répare).
-8. **La condition du capstone est atteignable avec les seuls accords d'entrée** —
-   vérifiable en données : l'un des deux accords d'entrée pose le statut ou l'état
-   que le capstone exige.
-9. **Aucun nœud n'accorde d'action** (règle 9) — déjà couvert par
-   `DomainPlanContractTest`, à étendre aux matéria de technique.
-10. **Aucun passif de combat n'est plat** — plus aucun `damage`/`heal` entier sur
+8. **Chaque arbre ouvre au moins un accord de `dégât`, et au moins un accord qui
+   n'en est pas un** — la jouabilité en solo, et le plan B (§5.1).
+9. **La palette d'intentions est tenue** — un arbre d'entretien ou d'encaisse
+   ouvre au moins un geste de portée `le groupe` ou `un allié` ; un arbre d'assaut
+   au moins 3 gestes de `dégât` ; un arbre de contrôle au moins 2 `entrave`.
+10. **Tout geste de portée `le groupe` porte une durée** — aucun soin, aucune
+    protection, aucune amélioration collective n'est instantanée. C'est la loi du
+    dépôt (§7 bis), et c'est elle qui rend le jeu de groupe asynchrone possible.
+11. **La durée d'un dépôt se compte en tours de la rencontre** — jamais en temps
+    réel, jamais en tours de son lanceur.
+12. **Les conditions sont légales** — aucune au palier 1, au moins 2 des 7 passifs
+    sans condition, condition satisfaisable par ce que l'arbre débloque lui-même,
+    et jamais portée sur une pièce nommée ni sur une rareté (§4.3).
+13. **La condition du capstone est atteignable avec les seuls accords d'entrée** —
+    vérifiable en données : l'un des deux accords d'entrée pose le statut ou l'état
+    que le capstone exige.
+14. **Aucun nœud n'accorde d'action** (règle 9) — déjà couvert par
+    `DomainPlanContractTest`, à étendre aux matéria de technique.
+15. **Aucun passif de combat n'est plat** — plus aucun `damage`/`heal` entier sur
     un nœud de domaine de combat.
+16. **Aucun plafond global de points** — le refus `global_cap` n'existe plus
+    (§11.2). Un test qui le rétablirait doit échouer.
 
 ---
 
