@@ -345,12 +345,59 @@ n'a pas de matiere apres le premier acte.
 la capacite raciale de l'Orc — « lire l'element d'un monstre des la premiere
 rencontre » (`GAME_ONBOARDING`) — n'a rien a lire.
 
-### 6.3 — Placement
+### 6.2 bis — Trois echelles, et aucune ne dit la difficulte
+
+| Echelle | Sert a | Ne sert **pas** a |
+|---|---|---|
+| `level` (1-40, avec trous) | XP de materia, reputation, quetes de guilde, affichage | la difficulte |
+| `difficulty` (1-5) | le gate de butin (`MonsterItem::minDifficulty`) | la difficulte ressentie |
+| `isBoss` (bool, 10 monstres) | multiplicateur d'XP, `bossPhases` | un rang — il manque « elite » |
+| `life`/`hit`/`speed`/sorts/IA | **la difficulte reelle** | — |
+
+**Le joueur n'a pas de niveau** (regle 6) : une echelle de 1 a 40 cote monstre ne
+se compare a rien. C'est un vestige d'un jeu a niveaux.
+
+> **Faux positif ecarte.** `HitChanceCalculator` porte une formule
+> `spell.hit + (spell.level - target.level) x 2` qui rendrait un monstre de
+> niveau 30+ presque intouchable (15 a 35 % de touche). Verification faite :
+> **elle n'est appelee nulle part**. Le calcul reel est
+> `FightCalculator::hasAttackHit()`, ou le niveau du monstre n'entre pas. Ce
+> n'est donc **pas** un bug d'equilibrage — c'est du code mort, et un piege pour
+> qui lit le code. Supprime par BES-05.
+
+Arbitrage acte dans [GAME_BESTIARY.md](GAME_BESTIARY.md) §2 : deux axes
+orthogonaux — `tier` (T0-T4, **repris de la zone**, que `GAME_ZONES` §2 declare
+deja) et `rank` (`Common`/`Elite`/`Boss`, qui absorbe `difficulty` et `isBoss`).
+
+### 6.3 — Placement, et la faille du milieu
 
 43 monstres places via `zones/world_1.yaml`, 45 via `MobFixtures`.
 **5 ne sont places nulle part** : `ancient_wyrm`, `convergence_guardian`,
-`the_first_silence`, plus les 2 mannequins (normal : dresses a la volee par
-`TrainingFightLauncher`).
+`the_first_silence` (boss narratifs reserves), plus les 2 mannequins (normal :
+dresses a la volee par `TrainingFightLauncher`).
+
+**Le monde se coupe en deux :**
+
+| Bloc | Zones | Niveaux | Vie |
+|---|---|---|---|
+| Depart | Vallons, Foret, Dunes, Mines | 1-24 | 11-250 |
+| Fin | Mer de Sel, Cite ensevelie, Pas-de-Givre, Glacier | 26-38 | 950-3200 |
+
+Un saut de vie de **x4** d'un bloc a l'autre, sans palier intermediaire. Le seul
+pont est le Marais (1-20) — et il n'existe **que par le mecanisme legacy**.
+
+**17 especes ne sont placees que par `MobFixtures`** : dragon, minotaure, griffon,
+troll, hydre des marais (niv 20), wyverne (niv 10), naga (niv 13), archidruide
+corrompu (niv 16)… c'est-a-dire **precisement le milieu de gamme qui manque au
+graphe declaratif**. Trois zones (Marais, Crete, Quartier des Jardins) n'ont
+aucun bloc `mobs:` et en dependent entierement.
+
+> **La faille du milieu est un probleme de repartition, pas de contenu.** Les
+> especes existent ; elles sont seulement invisibles au graphe.
+
+**La richesse ne suit pas le danger** : la **Crete de Ventombre** est une zone T3
+a sommet T4 (cobalt, mithril — le metal le plus rare du monde de base) peuplee de
+monstres de niveaux 3 a 5, les plus faibles du jeu.
 
 ### 6.4 — Butin
 
@@ -360,18 +407,34 @@ rencontre » (`GAME_ONBOARDING`) — n'a rien a lire.
 
 ## 7. PNJ
 
-| source | n |
-|---|---|
-| `VillageHubPnjFixtures` (Fanal, avec dialogues + quetes) | 7 |
-| `zones/world_1.yaml` (figures de fond, `pnjs:`) | 12 |
-| `PnjFixtures` + fixtures de zone (Foret / Mines / Marais / Montagne) | ~93 entrees de configuration |
+> **Correction du 2026-07-31.** La rédaction d'origine annonçait « cinq zones »
+> puis en listait sept, et comptait `PnjFixtures` comme une source de PNJ. En
+> réalité `PnjFixtures` ne **crée** aucun PNJ : il **configure les boutiques** de
+> PNJ définis ailleurs. Chiffres corrigés ci-dessous.
+
+**33 PNJ** au total.
+
+| source | n | portee |
+|---|---:|---|
+| Fixtures PHP nommees (Fanal 7, Foret 3, Mines 4, Marais 3, Crete 4) | 21 | dialogues + chaines de quete |
+| `zones/world_1.yaml` — bloc `pnjs:` (Fanal 3, Foret 2, Mines 2, Dunes 2, Vallons 3) | 12 | figures de fond, une replique, parfois un etal |
+
+Le YAML ne sait pas decrire un arbre de dialogue : la coexistence des deux
+sources est **documentee et assumee** en tete de `world_1.yaml`.
 
 Boutiques : **38 objets distincts** vendus. Le plancher T1 PNJ
 (`GAME_PRINCIPLES`) n'est tenu que sur une poignee de lignes.
 
-Cinq zones sur douze n'ont **aucun PNJ declare** : `marais-brumeux`,
-`crete-de-ventombre`, `quartier-des-jardins`, `mer-de-sel`, `cite-ensevelie`,
-`pas-de-givre`, `glacier-du-silence`.
+**Cinq zones sur douze n'ont aucun PNJ** : `quartier-des-jardins`, `mer-de-sel`,
+`cite-ensevelie`, `pas-de-givre`, `glacier-du-silence` — soit tout le bloc de
+fin, plus une zone sure entierement vide (ni filon, ni mob, ni PNJ).
+
+**Dette de couplage** : `PnjFixtures` configure les boutiques **par index
+numerique** (`0 =>`, `1 =>`, `4 =>`, `7 =>`) sur une liste de PNJ definie
+ailleurs. Inserer un PNJ decale silencieusement toutes les boutiques suivantes.
+
+Sujet **reporte a la revue des zones** ([PLAN_ZONES.md](roadmap/PLAN_ZONES.md)) :
+ce qu'un PNJ doit dire depend de ce que sa zone doit raconter.
 
 ---
 
@@ -420,13 +483,15 @@ alors que l'ecran de zone ne propose que ceux dont `maxPlayers > 1`.
 | 4 | Taxonomie `Item::type` : 12 valeurs pour 5 constantes — l'onglet Materiaux montre 34 matieres sur 91 | fort | [GAME_ITEMS](GAME_ITEMS.md) §2 — OBJ-01 |
 | 5 | Grille d'equipement : aucun element n'a de progression t2 → t3 | fort | [GAME_ITEMS](GAME_ITEMS.md) §3 — OBJ-03 |
 | 6 | `materiaSlotType` sur 9 pieces sur 178 ; emplacements non progressifs | fort | [GAME_ITEMS](GAME_ITEMS.md) §3.3-3.4 — OBJ-04 |
-| 7 | Courbe de monstres : 42/65 aux niveaux 1-5, rien entre 5 et 10 | fort | *a instruire — revue des monstres* |
+| 7 | Le monde se coupe en deux (depart 1-24, fin 26-38, saut de vie x4) ; 17 especes du milieu invisibles au graphe | fort | [GAME_BESTIARY](GAME_BESTIARY.md) §1.1-1.2 — BES-03/04 |
 | 8 | `fixtures/domain.yaml`, `skill/`, `spell/`, `monster/` morts mais lisibles | fort | [GAME_ITEMS](GAME_ITEMS.md) — OBJ-02 |
 | 9 | Outils : acier/mithril sans source, 5 types sur 9 sans fonction, 3 metiers sans outil | moyen | [GAME_ITEMS](GAME_ITEMS.md) §4 — OBJ-05/06 |
 | 10 | `mushroom` (16 tables de butin) sans debouche ; doublons legacy | moyen | [GAME_ITEMS](GAME_ITEMS.md) §5.1-5.2 — OBJ-02/07 |
 | 11 | 8 recettes hors perimetre (Extension 1/2) livrees dans la base | moyen | [GAME_ITEMS](GAME_ITEMS.md) §5.3 — OBJ-02 |
 | 12 | Filons : 44 % d'herboristerie, 9 % de bucheronnage | moyen | [GAME_ITEMS](GAME_ITEMS.md) §5.4 — OBJ-07 |
-| 13 | 7 zones sur 12 sans PNJ ; `quartier-des-jardins` sans aucun contenu | moyen | *a instruire — revue des PNJ* |
-| 14 | Deux mecanismes de peuplement de zone (`zones.yaml` vs `MobFixtures`) | moyen | *a instruire — revue des monstres* |
+| 13 | 5 zones sur 12 sans PNJ ; `quartier-des-jardins` sans aucun contenu ; boutiques couplees par index | moyen | *reporte a [PLAN_ZONES](roadmap/PLAN_ZONES.md)* |
+| 14 | Deux mecanismes de peuplement de zone (`zones.yaml` vs `MobFixtures`) | moyen | [GAME_BESTIARY](GAME_BESTIARY.md) §4 — BES-03 |
 | 15 | Recettes : 11 sur 115 au-dela du niveau 5, dont 8 retirees par OBJ-02 | moyen | *suivi ouvert — re-remplir le haut de chaine* |
-| 16 | 2 donjons de groupe pour 12 zones ; 2 donjons solo hors graphe | a arbitrer | *a instruire — revue des donjons* |
+| 16 | Trois echelles de monstre dont aucune ne dit la difficulte ; `HitChanceCalculator` mort | fort | [GAME_BESTIARY](GAME_BESTIARY.md) §2 — BES-01/05 |
+| 17 | La Crete de Ventombre : zone T3/T4 peuplee de monstres de niveaux 3-5 | moyen | [GAME_BESTIARY](GAME_BESTIARY.md) §1.3 — BES-04 |
+| 18 | 2 donjons de groupe pour 12 zones ; 2 donjons solo hors graphe | a arbitrer | *a instruire — revue des donjons* |
