@@ -155,34 +155,34 @@ agir.
 |---|---|---|---|
 | **Sorts** | **PM** — un pool plafonné (`Player.energy`), régénéré au tour | **Le pic, puis la panne.** Fort tant que le pool tient, muet ensuite | Le combat court et cher. Le levier qui compte est l'économie (`thrift`, `wind`) |
 | **Mêlée** | **Le tour** — un temps de reprise par technique (`Spell::cooldown`, déjà au modèle) ; **le vrai coût est en PV**, puisqu'on reste au contact | **Le plateau.** Toujours disponible, jamais spectaculaire | Le combat long, et une rotation de gestes plutôt qu'un pool. Le levier qui compte est la survie (`guard`, `life`) |
-| **Distance** | **Munitions** — un objet consommable, acheté ou fabriqué | **La cadence, tant qu'on a de quoi.** | Le seul registre au coût **économique** : l'archer dépend d'un artisan (charpentier — « flèches en lot », DOM-06). C'est de l'interdépendance d'acte III **gratuite** (GAME_PROGRESSION §6c) |
+| **Distance** | **Le carquois** — il se vide pendant la rencontre et **se ramasse après** | **La cadence décroissante** — le combat long épuise le carquois | Une ressource **intra-rencontre**, comme les PM, mais qui ne se régénère pas au tour : elle borne les **longues** rencontres. Le carquois lui-même est une **pièce d'équipement durable** (charpentier, DOM-06) |
+
+> **Corrigé au §9 septies : les munitions ne sont plus un consommable payant.**
+> Une première rédaction les faisait acheter à l'unité — l'archer payait alors 90 à
+> 230 gils par jour quand aucun autre archétype ne payait un gil. **Aucun archétype
+> ne doit porter un coût récurrent en monnaie que les autres n'ont pas.** Le carquois
+> devient un bien durable qu'on possède en plusieurs exemplaires (un par élément),
+> exactement comme un mage possède plusieurs matéria.
 
 > **Aucune de ces trois ressources n'est neuve** : le pool de PM est vivant, le
 > `cooldown` existe sur `Spell` sans consommateur, et les munitions sont un objet
 > comme un autre. Ce qui est neuf, c'est de **les répartir** — un registre, une
 > ressource — au lieu de faire payer les trois avec la même monnaie.
 
-**Cinq garde-fous sur les munitions**, sans quoi la décision devient une taxe.
-Les trois premiers étaient posés ; les deux derniers viennent du §9 quater, qui a
-mesuré ce que l'archer paie réellement :
+**Quatre garde-fous sur le carquois** *(réécrits au §9 septies — les cinq
+précédents supposaient un consommable payant, ce qu'il n'est plus)* :
 
-1. **La flèche de base est au plancher T1 PNJ** (GAME_PRINCIPLES) : toujours
-   disponible, à prix fixe, en lot — et **pleinement jouable**, passifs d'arbre
-   compris (§2.1).
-2. **La munition élémentaire change l'élément du geste**, elle ne le donne pas.
-   C'est un achat de **souplesse**, jamais un droit d'entrée.
-3. **Un levier de l'arbre les récupère** (`wind` appliqué au registre distance :
-   une chance de récupérer la munition tirée, §4 note 1).
-4. **Une meilleure munition rend de la puissance** — une prime **fixe et
-   plafonnée**, indexée sur le palier. Mesuré au §9 quater : sans elle, l'archer
-   paie 90 à 230 gils par jour pour **+1,8 %** de dégâts face à un pyromancien qui
-   ne paie rien. Payer au-delà du palier ne rend jamais plus fort : c'est un choix
-   d'allocation, pas un axe de progression.
-5. **Le carquois a une capacité, et le prix se calibre sur le revenu du jour.**
-   La capacité fait que `wind` rend des **tirs** plutôt que douze gils par jour, et
-   elle ne mord **que sur les longues rencontres**. Le prix reste sous ~10 % du
-   revenu quotidien pour l'ordinaire, ~25 % un jour où l'archer choisit
-   l'élémentaire — au-delà, l'archétype devient un métier qu'on n'a pas choisi.
+1. **Le carquois de base est au plancher T1 PNJ** (GAME_PRINCIPLES), et il est
+   **pleinement jouable**, passifs d'arbre compris (§2.1). L'élément vient de la
+   matéria ; le carquois élémentaire ne fait que le **remplacer**.
+2. **Il ne se consomme pas, il se vide.** Sa capacité borne la **durée** d'une
+   rencontre, jamais la journée : entre deux combats, on ramasse ses flèches.
+3. **Un levier de l'arbre l'étend** — `wind` appliqué au registre distance rend des
+   **tirs quand ils manquent** (§4 note 1), ce qui ne compte que dans les longues
+   rencontres. C'est exactement la forme que doit prendre la maîtrise.
+4. **Posséder plusieurs carquois est un investissement, jamais un péage.** On en
+   achète un par élément, une fois, comme on achète une matéria — et l'archer qui
+   n'en a qu'un joue son archétype en entier.
 
 > **Pourquoi ne pas laisser tout le monde payer en PM ?** Parce qu'alors le
 > guerrier est un mage qui tape, et l'archer un mage qui vise. La règle 10 rend
@@ -198,7 +198,7 @@ troisième différence structurelle — gratuite, puisqu'elle découle de §2 :
 |---|---|---|
 | **Sorts** | la **matéria** sertie | un passage par l'écran de build, hors combat |
 | **Mêlée** | la **technique** sertie | idem, plus l'arme qui va avec |
-| **Distance** | la **technique** sertie — et la **munition la remplace** | **acheter un autre carquois**, et en changer entre deux combats |
+| **Distance** | la **technique** sertie — et le **carquois équipé la remplace** | **changer de carquois** entre deux combats — un bien durable qu'on possède en plusieurs exemplaires |
 
 > **Corrigé au §9 quater, et c'est important.** Une première rédaction faisait
 > porter l'élément **par la munition seule**. Conséquence non vue : une flèche
@@ -1634,8 +1634,14 @@ Et ce que ça lui achète, comparé au pyromancien qui ne paie rien :
 > (BALANCE §10) : l'archer travaillerait une journée entière pour ses flèches. Le
 > registre le plus cher du jeu était aussi celui qui n'achetait rien.
 
-**Correction 8 — une meilleure munition rend de la puissance.** La munition n'est
-pas une taxe, c'est un **investissement** : le geste de distance porte une prime
+> **Corrections 8 et 9, annulées au §9 septies.** Elles cherchaient à *compenser*
+> le coût ; l'arbitrage rendu a été de le **supprimer**. Le problème était le coût
+> lui-même, pas son absence de contrepartie — aucun archétype ne doit porter une
+> dépense récurrente que les autres n'ont pas. Ce qui suit reste consigné parce que
+> la mesure, elle, tient : elle est ce qui a motivé la suppression.
+
+**Correction 8 *(annulée)* — une meilleure munition rend de la puissance.** La
+munition n'est pas une taxe, c'est un **investissement** : le geste de distance porte une prime
 indexée sur le palier de sa munition. Deux garde-fous, sans lesquels on ouvre une
 porte que le jeu refuse ailleurs : la prime est **fixe et plafonnée** — payer plus
 cher au-delà du palier ne rend pas plus fort —, et la flèche ordinaire reste
@@ -1643,8 +1649,8 @@ cher au-delà du palier ne rend pas plus fort —, et la flèche ordinaire reste
 **choix d'allocation** : le seul endroit du jeu où le combat et l'économie se
 touchent, ce qui est une qualité tant que ça reste borné.
 
-**Correction 9 — le prix se calibre contre le revenu du jour, jamais contre la
-valeur du geste.** Règle : la munition **ordinaire** ne dépasse pas ~10 % du revenu
+**Correction 9 *(annulée)* — le prix se calibre contre le revenu du jour, jamais
+contre la valeur du geste.** Règle : la munition **ordinaire** ne dépasse pas ~10 % du revenu
 quotidien ; l'**élémentaire** peut monter à ~25 % **un jour où l'archer la
 choisit**. Au-delà, l'archétype cesse d'être un style de jeu pour devenir un
 métier — et un métier qu'on n'a pas choisi.
@@ -1675,7 +1681,7 @@ d'inventaire.
 |---|---|---|---|
 | **Sorts** | PM | dans le combat *(pic tour 8)* **et** dans la journée | la seconde ancre (§6.4) |
 | **Mêlée** | temps de reprise | dans le combat seulement — rien ne se reporte | la protection déposée (§7 bis) |
-| **Distance** | munitions | **dans la journée, en gils** | l'élément, la prime, le carquois |
+| **Distance** | le carquois | **dans la rencontre** *(corrigé §9 septies)* | l'élément, et la suppression du coût en gils |
 
 > **Les trois archétypes se distinguent par leur rapport à la ressource, et c'est
 > cette ligne-là qui porte l'identité — pas les pourcentages.** Le soldat n'a rien
@@ -1922,6 +1928,116 @@ dans tous les cas.
 
 ---
 
+## 9 septies. La journée renverse le classement
+
+Le §9 sexies concluait que **le guerrier domine**. Ce n'était pas faux — c'était
+mesuré à la mauvaise échelle. Simulé sur une **journée** (14 communs + 2 élites,
+correction 14 appliquée) :
+
+| Build | Tours (commun / élite) | PV perdus sur la journée |
+|---|---|---:|
+| **Guérisseur — le Ressac** | 9 / 14 | **70** |
+| Hydromancien — la Vague | 7 / 11 | 445 |
+| Soldat — la Ligne mobile | 5 / 10 | 494 |
+| Archer — le Guet | 4 / 6 | 592 |
+| Pyromancien — l'Éclat | 4 / 7 | 619 |
+| **Soldat — le Mur** | 8 / 14 | **710** |
+
+> **Le classement s'inverse.** Sur *un* combat, le guerrier dominait. Sur *une
+> journée*, c'est le **guérisseur** — il ne perd rien, donc il ne s'arrête jamais —
+> et le tank pur devient le **pire des six**, parce qu'il est lent et que la lenteur
+> se paie en coups reçus.
+
+Et l'assaut, lui, cesse d'être mauvais : **la vitesse est de la survie**. L'archer
+encaisse 82 sur une élite là où le Mur en encaisse 115, simplement parce que son
+combat dure six tours au lieu de quatorze. Ce que le §9 sexies n'avait pas vu en
+mesurant un seul échange.
+
+### 9 septies.1 Correction 17 — les munitions cessent d'être un consommable
+
+**Aucun archétype ne doit payer un coût récurrent en gils que les autres n'ont
+pas.** C'est une asymétrie que rien ne justifie : les trois registres paient une
+ressource *dans* la rencontre, un seul payait *après*.
+
+| Ce qui change | Avant | Après |
+|---|---|---|
+| **Le carquois** | des flèches achetées à l'unité | une **pièce d'équipement durable**, craftée par le charpentier, comme une arme |
+| **Les flèches** | consommées, rachetées, 90 à 230 gils/jour | elles **se vident pendant la rencontre et se ramassent après** |
+| **La ressource du registre** | économique — en gils | **intra-rencontre**, comme les PM |
+| **L'élément** | acheté au carquois | **porté par le carquois équipé** — on en possède plusieurs, comme un mage possède plusieurs matéria |
+| **Le levier `wind`** | 12 gils par jour | des **tirs quand ils manquent**, dans les longues rencontres |
+
+Ce qui survit intact : la **souplesse** de l'archer (changer de carquois entre deux
+combats, ce qu'aucun autre registre ne peut faire sans refaire son build), le
+**débouché du charpentier** (il fabrique des carquois, un bien durable, au lieu
+d'un consommable), et le **profil de cadence décroissante** — le carquois se vide,
+et c'est ce qui borne les longues rencontres.
+
+Ce qui disparaît : la prime de munition (correction 8), devenue sans objet, et
+l'obligation de la chiffrer (correction 15). **Le problème était le coût, pas sa
+compensation.**
+
+### 9 septies.2 Correction 18 — les PM régénèrent comme les PV
+
+Une fois le gil retiré, il reste une asymétrie plus grave : **le guérisseur ne paie
+rien**. 70 PV perdus sur une journée, contre 494 à 710 pour les autres — il
+enchaîne les combats jusqu'à épuiser son énergie d'action pendant que les autres
+attendent leur régénération.
+
+Sauf qu'il paie — en **PM**, et que ce compteur n'a **aucun curseur** : la
+régénération de l'énergie de combat hors combat n'a jamais été calibrée
+(BALANCE §24.2, ouvert). Tant qu'elle est gratuite, l'entretien joue trois fois
+plus de contenu que tout le monde.
+
+**Converti dans la seule monnaie commune — du temps** (PV à 12 s/point, livré ;
+PM à ~6 s/point, à calibrer) :
+
+| Build | Attente PV | Attente PM | **Total** |
+|---|---:|---:|---:|
+| Soldat — la Ligne mobile | 99 mn | — | **99 mn** |
+| Archer — le Guet | 118 mn | — | **118 mn** |
+| Soldat — le Mur | 142 mn | — | **142 mn** |
+| Guérisseur — le Ressac | 14 mn | 144 mn | **158 mn** |
+| Hydromancien — la Vague | 89 mn | 90 mn | **179 mn** |
+| Pyromancien — l'Éclat | 124 mn | 160 mn | **284 mn** |
+
+> **Six builds entre 99 et 179 minutes** — sauf le pyromancien, qui paie deux fois
+> (fragile *et* dépensier) et reste à recalibrer. **Sans le curseur PM, le
+> guérisseur paie 14 minutes.** C'est le curseur qui décide de tout l'équilibre
+> solo, et il n'existe pas.
+
+**La symétrie à tenir** : *les PV paient les coups reçus, les PM paient les gestes
+faits ; les deux se rechargent en temps réel, et c'est ce temps qui est la vraie
+monnaie du jeu.* Le registre mêlée ne paie ni l'un ni l'autre — il paie en **tours
+de combat**, immédiatement, ce qui est la troisième forme de la même chose.
+
+### 9 septies.3 La matrice — chaque build doit avoir son contexte
+
+| Fonction | En solo | En donjon d'équipe |
+|---|---|---|
+| **Assaut** | ✅ la vitesse réduit les coups reçus, et les **rencontres à fenêtre** (§9 sexies.4) sont son terrain exclusif | ✅ il abrège l'exposition de **tout** le groupe |
+| **Contrôle** | ✅ l'entrave réduit les coups reçus | ✅ **identique** — la seule fonction dont la valeur ne change pas (§9 quinquies) |
+| **Entretien** | ✅ il ne perd rien, et paie en PM | ✅✅ le dépôt se multiplie par le groupe (×8,8 à quatre) |
+| **Encaisse** | ⚠️ **la branche défensive est la pire en solo** (710 PV/jour) | ✅✅ l'absorption déposée se multiplie par le groupe |
+
+**Correction 19 — une fourche oppose deux contextes, pas deux dosages.** La case
+en garde-fou ci-dessus n'est pas un défaut : *le Mur* est un archétype de donjon,
+et il est mauvais seul. Ce qui serait un défaut, c'est qu'un joueur d'encaisse
+n'ait **que** cette branche. La fourche est précisément le mécanisme qui
+l'empêche :
+
+> **Tout arbre porte une branche jouable seul et une branche qui sert le groupe.**
+> Le Soldat le fait déjà — *la Ligne mobile* (494 PV/jour, la meilleure des non-
+> soigneurs) et *le Mur* (l'absorption de groupe). C'est ce que les 24 arbres
+> doivent tenir, et c'est testable.
+
+Ce qui répond aux deux exigences posées : **un guerrier offensif est viable en
+solo** — c'est la Ligne mobile, et c'est le meilleur build non-soigneur de la
+table — et **un défenseur est utile en donjon d'équipe** — c'est le Mur, dont le
+Rempart se multiplie par quatre.
+
+---
+
 ## 10. Les 24 domaines de combat dans la grille
 
 Fonction proposée pour chacun. La règle qui la contraint : **aucun triplet
@@ -2123,11 +2239,18 @@ Ce qui doit casser la CI si on le viole :
     produire.
 30. **Le palier des accords suit la fonction** (§9 sexies) — l'assaut ouvre ses
     gestes de dégât au palier plein, les trois autres fonctions un palier en dessous.
-31. **Aucune ressource n'est payée sans contrepartie** — une prime chiffrée contre
-    l'écart mesuré, ou pas de coût du tout.
-32. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+31. **Aucun archétype ne paie un coût récurrent en gils** (§9 septies) — les trois
+    registres paient une ressource **dans** la rencontre. Le carquois est une pièce
+    d'équipement durable, pas un consommable.
+32. **Les PM se régénèrent hors combat**, à un rythme calibré contre celui des PV
+    (§9 septies.2) — sans ce curseur, l'entretien joue trois fois plus de contenu
+    que les autres pour la même énergie d'action.
+33. **Toute fourche oppose deux contextes** (§9 septies.3) — chaque arbre porte une
+    branche jouable **seul** et une branche qui sert le **groupe**. Une fonction
+    dont aucune branche n'est jouable seule est une fonction fermée à 95 % du jeu.
+34. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-33. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+35. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---

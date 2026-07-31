@@ -4,10 +4,9 @@
 > préfixes.
 
 > Décline [../GAME_ARCHETYPES.md](../GAME_ARCHETYPES.md) (proposition instruite du
-> 2026-07-31 ; **§9 bis** à **§9 quinquies** en déroulent **quatre** exemples complets — un
-> soldat du jour 3 au mois 3, un guérisseur seul puis en donjon, un archer sur une journée
-> de jeu, un hydromancien mesuré en tours volés — qui ont produit **treize** des corrections
-> listées ci-dessous, dont **aucune** ne portait sur un pourcentage) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
+> 2026-07-31 ; **§9 bis** à **§9 septies** en déroulent **quatre** exemples complets, une
+> **comparaison croisée** et une **simulation de journée** — qui ont produit **dix-neuf** des
+> corrections listées ci-dessous, dont **aucune** ne portait sur un pourcentage) : les trois axes d'un domaine, la ressource par registre, le geste d'arme
 > comme matéria, l'intention et la portée du geste, les marques élémentaires, le
 > vocabulaire fermé des leviers et de leurs conditions d'équipement, le budget de
 > puissance avec la fourche et le pacte, la loi du dépôt, les accointances, le gabarit et
@@ -19,7 +18,7 @@
 
 ## Vue d'ensemble
 
-**16 jalons** (**ARC-01** à **ARC-16**) en 3 pistes.
+**17 jalons** (**ARC-01** à **ARC-17**) en 3 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -31,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 33 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 35 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -39,11 +38,12 @@
 | ARC-14 | La fourche : une branche exclusive par arbre de combat | S | ← ARC-07 |
 | ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
+| ARC-17 | L'équilibre solo : la simulation de journée, et les deux curseurs qui la tiennent | M | ← ARC-05, ARC-07 |
 
 ```
 Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → ARC-15
                         ARC-02 → ARC-04 ; ARC-02 → ARC-11 → ARC-13
-Piste B — L'échelle   : ARC-05 ‖ ARC-06 ‖ ARC-10
+Piste B — L'échelle   : ARC-05 → ARC-17 ; ARC-06 ‖ ARC-10
 Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-07 → ARC-14 ; ARC-09 ‖
 ```
 
@@ -108,11 +108,17 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 
 ### ARC-04 — Les ressources par registre (M | ★★ | HAUTE)
 > GAME_ARCHETYPES §2. Trois registres qui coûtent la même chose ne sont qu'un registre.
-- [ ] **Munitions** : consommation par geste de registre distance, avec les **cinq**
-      garde-fous du §2 — flèche de base au **plancher T1 PNJ** et **pleinement jouable**,
-      la munition élémentaire **remplace** l'élément du geste sans le donner, récupération
-      par `wind`, **prime fixe et plafonnée** pour une meilleure munition, et **capacité de
-      carquois** avec un prix calibré sur le revenu du jour
+- [ ] **Le carquois, pas les munitions** (arbitrage rendu au §9 septies) : **aucun coût
+      récurrent en gils**. Le carquois est une **pièce d'équipement durable** (charpentier),
+      possédée en plusieurs exemplaires — un par élément —, exactement comme un mage possède
+      plusieurs matéria. Il **se vide dans la rencontre et se ramasse après** : la ressource
+      du registre distance devient **intra-rencontre**, comme les PM
+- [ ] **La régénération des PM hors combat** — le curseur qui décide de tout l'équilibre
+      solo, et qui n'existe pas (BALANCE §24.2, ouvert depuis 2026-07-29). Mesuré : sans
+      lui le guérisseur paie **14 minutes** d'attente par jour quand les autres en paient
+      99 à 142 ; avec un curseur calibré (~6 s/point contre 12 s/PV), les six builds se
+      tiennent entre **99 et 179 minutes**. Symétrie à tenir : *les PV paient les coups
+      reçus, les PM paient les gestes faits, et les deux se rechargent en temps réel*
 - [ ] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater).
       Une première rédaction le faisait porter par la munition seule : une flèche ordinaire
       produisait alors une action **sans élément**, donc hors de la case du domaine, donc
@@ -205,7 +211,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 33 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 35 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -366,6 +372,27 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : aucune accointance ne rend un point de budget, un levier ou une statistique ;
       aucune recette, aucun palier, aucun contenu n'en dépend
 
+### ARC-17 — L'équilibre solo (M | ★★★ | HAUTE)
+> GAME_ARCHETYPES §9 sexies et §9 septies. **Mesuré : les arbres ne sont pas équilibrés, et
+> le classement dépend de l'échelle.** Sur un combat, le guerrier domine ; sur une journée,
+> c'est le guérisseur (70 PV perdus contre 494 à 710), et le tank pur devient le pire des
+> six. Aucun exercice individuel ne pouvait le voir.
+- [ ] **La simulation de journée** comme test permanent : 14 communs + 2 élites, les six
+      builds sur la même ligne, en **PV perdus** et en **ressource dépensée**. C'est la
+      forme de test qui attrape une régression d'équilibrage — pas une durée isolée
+- [ ] **La monnaie commune est le temps** : PV à 12 s/point (livré, BALANCE §9), PM à
+      calibrer (~6 s/point). Cible : les six builds entre **99 et 179 minutes** d'attente
+      quotidienne. Sans le curseur PM, le guérisseur en paie **14**
+- [ ] **Donner une valeur à la vitesse** — arbitrage rendu : les **rencontres à fenêtre**
+      (§9 sexies.4). Un boss se termine en 12-20 tours ou pas du tout ; mesuré, l'archer et
+      le pyromancien tiennent la fenêtre (15 tours), le soldat (25) et le guérisseur (29)
+      non. **Conséquence à porter dans GAME_DUNGEONS et GAME_BESTIARY**
+- [ ] **La matrice contexte × fonction** (§9 septies.3) : aucune case vide, aucune fonction
+      dominante dans les deux colonnes. Et l'exigence qui en découle — **toute fourche
+      oppose deux contextes**, une branche jouable seul, une branche qui sert le groupe
+- [ ] Tests : la simulation de journée en CI ; aucun build hors de la fourchette d'attente ;
+      chaque arbre a une branche solo et une branche de groupe
+
 ---
 
 ## Risques
@@ -380,4 +407,6 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 | La **fonction** se relit comme un retour des classes | Elle n'est jamais affichée, ne ferme aucun arbre et ne conditionne aucun port. C'est une contrainte d'auteur — le joueur n'en voit que la conséquence |
 | Les **passifs conditionnels** se relisent comme des interdits de port | Une condition ne ferme rien : le mage en plaque existe toujours, il n'a pas le bonus. L'UI d'ARC-12 dit ce qu'on gagnerait à porter autre chose — jamais ce qui est refusé |
 | Les **dépôts de groupe** rendent un rôle **obligatoire** en donjon | Garde-fou testé (ARC-11) : un groupe sans entretien met plus de tours et perd plus de PV, il ne rencontre pas un mur. Aucune rencontre ne suppose une composition |
+| **L'entretien casse l'équilibre solo** s'il ne paie rien | Le curseur de régénération des PM (ARC-17) est ce qui le borne. Sans lui, mesuré : 14 minutes d'attente par jour contre 99 à 142 pour les autres — il joue trois fois plus de contenu pour la même énergie d'action |
+| **L'assaut n'a pas de raison d'exister** tant que la vitesse ne vaut rien | Les rencontres à fenêtre (ARC-17). Une chasse coûte 5 points d'énergie quel que soit le nombre de tours : sans contenu à fenêtre, tuer vite ne rapporte rien |
 | La **suppression du plafond** ouvre la porte au personnage qui a tout appris | C'est le contrat des trois couches, et les conditions d'équipement le resserrent : on ne porte pas à la fois la plaque, le cuir, le bouclier, la dague et l'arc |
