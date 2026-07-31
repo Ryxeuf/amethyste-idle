@@ -140,6 +140,47 @@ Recouvrements a trancher : `weapon` vs `gear` · `herb` vs `plant` ·
 `crafted` (qui decrit une **provenance**, pas une nature) · `food`/`potion` vs
 `stuff`.
 
+**Ce n'est pas une question de proprete — c'est un bug visible.** Le code porte
+**5 constantes** (`Item::TYPE_STUFF`, `TYPE_GEAR_PIECE`, `TYPE_MATERIA`,
+`TYPE_RESOURCE`, `TYPE_TOOL`) et les predicats correspondants. Huit des douze
+valeurs de donnees ne correspondent a aucune constante. `MaterialsController` et
+`InventoryPayloadBuilder` filtrent sur `isResource()` : les **24 plantes**
+(`plant`) et les **28 intermediaires de craft** (`crafted` — lingots, planches,
+tissus, gemmes taillees) n'etant pas typees `resource`, l'onglet **Materiaux de
+l'inventaire n'affiche que 34 matieres sur 91**.
+
+Arbitrage acte dans [GAME_ITEMS.md](GAME_ITEMS.md) §2 : **les donnees s'alignent
+sur les 5 constantes**, jamais l'inverse. La famille fine reste portee par le
+prefixe de slug, deja clé d'`affinities.yaml` et de `purity.yaml`.
+
+### 4.1 bis — L'equipement : une grille qui ne boucle pas
+
+Sur les 178 pieces d'equipement, 56 forment une grille elementaire :
+
+| palier | elements couverts | pieces |
+|---|---|---:|
+| t1 | aucun (hors grille) | 5 |
+| t2 | air, terre, feu, eau | 28 |
+| t3 | bete, ombre, lumiere, metal | 28 |
+
+**Aucun element n'a de progression t2 → t3.** Un pyromancien plafonne au t2 ; un
+paladin n'a pas de t2. Les deux moities de la grille ne se rejoignent jamais.
+
+Deux defauts s'y ajoutent, sur le levier de build lui-meme :
+
+- **`materiaSlotType` n'est renseigne que sur 9 pieces sur 178.** Le defaut de
+  l'entite etant `MateriaSlotType::Free`, **169 pieces acceptent tout** : le
+  levier de DOM-03 (« la piece decide de ce que ses emplacements acceptent »),
+  pourtant livre, est inerte sur 95 % du vestiaire. `materiaSlotConfig` n'est
+  renseigne nulle part.
+- **Les emplacements ne progressent pas** : t1 = 1, t2 = 1, t3 = 1 a 2. La
+  promesse de `GAME_WORLD` §2.1 — « l'equipement de haut niveau offre **plus
+  d'emplacements** » — n'est pas tenue : passer de t1 a t2 ne donne rien.
+
+Arbitrage acte dans [GAME_ITEMS.md](GAME_ITEMS.md) §3 : la piece perd son
+element, les emplacements progressent (1/2/3) et leur type se derive de la
+famille d'equipement.
+
 ### 4.2 — 109 objets sans aucune source
 
 | type | n | exemples |
@@ -150,10 +191,26 @@ Recouvrements a trancher : `weapon` vs `gear` · `herb` vs `plant` ·
 | stuff | 5 | `fishing_rod`, `magic_crystal`, `leather_skin_1/2`, parchemins de domaine orphelins |
 | food / herb / weapon / quest | 9 | `food_apple`, `food_bread`, `food_cheese`, `herb_lavender`, `herb_mint`, `bow`, `dagger`, `staff`, 2 objets de quete |
 
-Les **outils** sont le cas le plus structurant : toute une echelle
-bronze → fer → acier → mithril existe pour 9 familles d'outils, et **aucune**
-n'est fabricable, achetable ni trouvable. Le joueur ne peut pas progresser en
-outillage de recolte.
+> **Correction du 2026-07-31.** La rédaction d'origine disait ici qu'**aucun**
+> outil n'était fabricable, achetable ni trouvable, et en tirait que le joueur ne
+> pouvait pas progresser en outillage. **C'est faux.** Les 9 outils en **bronze
+> et en fer sont achetables en boutique**, et ce sont les seuls que le craft
+> exige (`CRAFT_TOOL_TYPES`) : **rien n'est bloqué côté artisanat**. Le décompte
+> de 21 ci-dessus porte sur les paliers **acier et mithril**, qui eux n'ont
+> effectivement aucune source.
+
+Les **outils** posent trois écarts, aucun bloquant :
+
+- **Acier et mithril sans source** (18 objets) — l'outillage s'arrête au fer.
+- **5 types sur 9 sans fonction** — `GatherService` n'exige aucun outil : pioche,
+  faucille, canne à pêche, couteau de dépeçage et hache (20 objets) sont
+  décoratifs. Seuls marteau, kit de tannage, mortier et burin sont requis.
+- **3 métiers sur 7 sans outil** — `CRAFT_TOOL_TYPES` ne couvre que forgeron,
+  tanneur, alchimiste et joaillier.
+
+Un **système d'outils complet existe** par ailleurs (`toolType`, `toolTier`,
+`durability`, usure au craft, emplacements débloqués par l'arbre) : il n'est pas
+à construire, il est à brancher. Cadré par [GAME_ITEMS.md](GAME_ITEMS.md) §4.
 
 `ore_adamantite`, `ore_starmetal`, `ore_voidium` : minerais de haut palier
 declares, sans filon. Coherent avec la carte des minerais de `GAME_ZONES.md`
@@ -202,6 +259,46 @@ la peche et le bucheronnage 22 % a eux deux.
 Repartition par niveau requis : 18 (n1), 23 (n2), 20 (n3), 15 (n4), 13 (n5),
 8 (n6), 7 (n7), 4 (n8), 1 (n9), 6 (n10). La courbe s'effondre apres le
 niveau 5 : les trois derniers paliers portent 11 recettes sur 115.
+
+**107 des 115 recettes sont fabricables** (analyse de fermeture depuis les
+sources du monde : filons, butin, boutiques, quetes, puis recettes en cascade).
+**La chaine de production tient** — c'est la couche la plus saine apres les
+arbres de domaine.
+
+Les **8 infabricables** butent toutes sur la meme racine : `ore-adamantite` et
+`ore-starmetal` n'ont aucun filon.
+
+| metier | recette | niveau | manque |
+|---|---|---:|---|
+| forgeron | `recipe_adamantite_ingot` | 6 | `ore_adamantite` |
+| forgeron | `recipe_orichalcum_ingot` | 8 | `ore_starmetal`, lingot d'adamantite |
+| forgeron | `recipe_masterwork_blade` | 10 | les trois ci-dessus |
+| joaillier | `recipe_prismatic_gem` | 8 | `ore_starmetal` |
+| joaillier | `recipe_legendary_ring` | 10 | gemme prismatique, lingot d'orichalque |
+| joaillier | `recipe_legendary_amulet` | 10 | idem |
+| joaillier | `recipe_masterwork_starforged_ring` | 10 | idem + `ore_starmetal` |
+| alchimiste | `recipe_masterwork_grand_elixir` | 10 | gemme prismatique |
+
+**Ce n'est pas un oubli** : `GAME_ZONES` §3 reserve explicitement
+`ore-adamantite` et `ore-starmetal` a l'**Extension 1**, et `ore-voidium` (qu'aucune
+recette n'utilise) a l'**Extension 2**. Ce sont des recettes **hors perimetre
+livrees dans le jeu de base**. Arbitrage acte dans [GAME_ITEMS.md](GAME_ITEMS.md)
+§5.3 : elles sont retirees vers la reserve d'extension, et le haut de la chaine
+est a re-remplir dans le perimetre de la base.
+
+### 5.2 bis — Matieres sans debouche
+
+Sur **73 matieres premieres** (filon ou butin), **15 n'ont aucun debouche de
+craft** — dont **11 sont des consommables finis** (potions, pain, biere, ragout,
+viande grillee, parchemins, antidote) qui n'ont pas vocation a etre des
+ingredients. Les cas reels :
+
+| matiere | probleme |
+|---|---|
+| `mushroom` | tombe de **16 tables de butin** — le loot le plus frequent du jeu — et **aucune recette ne le consomme**. Le cuisinier a 8 recettes et ne cuisine pas le champignon |
+| `wood-log` | doublon legacy de la ligne du bois (`wood-beech`, `wood-peat`, `wood-petrified`, `wood-whisperoak`), qui est celle que le charpentier consomme |
+| `pickaxe` | doublon legacy de `pickaxe_bronze`, sans palier |
+| `leather-armor` | equipement fini — legitime |
 
 ### 5.3 — Repartition par zone
 
@@ -315,18 +412,21 @@ alors que l'ecran de zone ne propose que ceux dont `maxPlayers > 1`.
 
 ## 10. Recapitulatif des ecarts
 
-| # | Ecart | Portee |
-|---|---|---|
-| 1 | 139 nœuds d'arbre sur 200 debloquent une materia inexistante | **bloquant** |
-| 2 | 58 materia sur 68 sans aucune source ; 10 sorts jouables pour 24 arbres | **bloquant** |
-| 3 | 21 outils de recolte (4 paliers x 9 familles) sans source | fort |
-| 4 | Courbe de monstres : 42/65 aux niveaux 1-5, rien entre 5 et 10 | fort |
-| 5 | Aucun monstre ne porte d'element (capacite orque inerte) | fort |
-| 6 | `fixtures/domain.yaml`, `skill/`, `spell/`, `monster/` morts mais lisibles | fort |
-| 7 | Taxonomie `Item::type` : 12 valeurs qui se recouvrent | moyen |
-| 8 | 7 zones sur 12 sans PNJ ; `quartier-des-jardins` sans aucun contenu | moyen |
-| 9 | Deux mecanismes de peuplement de zone (`zones.yaml` vs `MobFixtures`) | moyen |
-| 10 | Doublons d'objets (`herb_*`, `leather_skin_*`, `food_bread`) | moyen |
-| 11 | Filons : 44 % d'herboristerie, 9 % de bucheronnage | moyen |
-| 12 | Recettes : 11 sur 115 au-dela du niveau 5 | moyen |
-| 13 | 2 donjons de groupe pour 12 zones ; 2 donjons solo hors graphe | a arbitrer |
+| # | Ecart | Portee | Cadre par |
+|---|---|---|---|
+| 1 | 139 nœuds d'arbre sur 200 debloquent une materia inexistante | **bloquant** | [GAME_MATERIA](GAME_MATERIA.md) §3.1 — MAT-03 |
+| 2 | 58 materia sur 68 sans aucune source ; 10 sorts jouables pour 24 arbres | **bloquant** | [GAME_MATERIA](GAME_MATERIA.md) §4 — MAT-04/05/06 |
+| 3 | Aucun monstre ne porte d'element (capacite orque inerte) | fort | [GAME_MATERIA](GAME_MATERIA.md) §4.2 — MAT-01 |
+| 4 | Taxonomie `Item::type` : 12 valeurs pour 5 constantes — l'onglet Materiaux montre 34 matieres sur 91 | fort | [GAME_ITEMS](GAME_ITEMS.md) §2 — OBJ-01 |
+| 5 | Grille d'equipement : aucun element n'a de progression t2 → t3 | fort | [GAME_ITEMS](GAME_ITEMS.md) §3 — OBJ-03 |
+| 6 | `materiaSlotType` sur 9 pieces sur 178 ; emplacements non progressifs | fort | [GAME_ITEMS](GAME_ITEMS.md) §3.3-3.4 — OBJ-04 |
+| 7 | Courbe de monstres : 42/65 aux niveaux 1-5, rien entre 5 et 10 | fort | *a instruire — revue des monstres* |
+| 8 | `fixtures/domain.yaml`, `skill/`, `spell/`, `monster/` morts mais lisibles | fort | [GAME_ITEMS](GAME_ITEMS.md) — OBJ-02 |
+| 9 | Outils : acier/mithril sans source, 5 types sur 9 sans fonction, 3 metiers sans outil | moyen | [GAME_ITEMS](GAME_ITEMS.md) §4 — OBJ-05/06 |
+| 10 | `mushroom` (16 tables de butin) sans debouche ; doublons legacy | moyen | [GAME_ITEMS](GAME_ITEMS.md) §5.1-5.2 — OBJ-02/07 |
+| 11 | 8 recettes hors perimetre (Extension 1/2) livrees dans la base | moyen | [GAME_ITEMS](GAME_ITEMS.md) §5.3 — OBJ-02 |
+| 12 | Filons : 44 % d'herboristerie, 9 % de bucheronnage | moyen | [GAME_ITEMS](GAME_ITEMS.md) §5.4 — OBJ-07 |
+| 13 | 7 zones sur 12 sans PNJ ; `quartier-des-jardins` sans aucun contenu | moyen | *a instruire — revue des PNJ* |
+| 14 | Deux mecanismes de peuplement de zone (`zones.yaml` vs `MobFixtures`) | moyen | *a instruire — revue des monstres* |
+| 15 | Recettes : 11 sur 115 au-dela du niveau 5, dont 8 retirees par OBJ-02 | moyen | *suivi ouvert — re-remplir le haut de chaine* |
+| 16 | 2 donjons de groupe pour 12 zones ; 2 donjons solo hors graphe | a arbitrer | *a instruire — revue des donjons* |
