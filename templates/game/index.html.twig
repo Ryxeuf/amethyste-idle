@@ -184,7 +184,12 @@
             {# semaine » tout seul dans son coin : l'assiduite en est desormais   #}
             {# la cinquieme ligne, avec l'energie de son palier — calculee depuis #}
             {# RET-04 et jamais affichee jusqu'ici.                               #}
-            {% if not week.isEmpty %}
+            {# Le lundi (RET-09) est un ETAT de ce meme bloc, jamais un ecran ni  #}
+            {# une modale : a la premiere visite apres la rotation, le bloc      #}
+            {# s'ouvre sur ce qui s'est depose avant de dire ce qui s'ouvre. Le  #}
+            {# rendu vaut consommation — des la visite suivante, le recap n'est  #}
+            {# plus la (GAME_DASHBOARD § 4).                                     #}
+            {% if not week.isEmpty or weekRecap %}
                 <div class="game-card">
                     <div class="game-card-header flex items-center justify-between">
                         <h2 class="ds-name">{{ 'game.home.week.title'|trans }}</h2>
@@ -193,6 +198,25 @@
                         {% endif %}
                     </div>
                     <div class="game-card-body space-y-1.5">
+                        {% if weekRecap %}
+                            <div class="space-y-1.5" data-testid="week-recap">
+                                <p class="ds-eyebrow">{{ 'game.home.week.recap.title'|trans }}</p>
+                                {% for line in weekRecap.lines %}
+                                    <p class="ds-banner{{ line.tone == 'gain' ? ' ds-banner--gain' : '' }}">
+                                        {{ ('game.home.week.recap.' ~ line.key)|trans(line.params) }}
+                                    </p>
+                                {% endfor %}
+                                {% if weekRecap.chronicle %}
+                                    <div class="ds-row" data-testid="week-recap-chronicle">
+                                        <span class="ds-row__body">
+                                            <span class="ds-row__name block truncate">{{ weekRecap.chronicle.getLocalizedTitle(app.request.locale) }}</span>
+                                            <span class="ds-hint block">{{ weekRecap.chronicle.getLocalizedDescription(app.request.locale) }}</span>
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                <p class="ds-hint">{{ 'game.home.week.recap.opens'|trans }}</p>
+                            </div>
+                        {% endif %}
                         {% for row in week.rows %}
                             <a href="{{ path(row.route, row.routeParams) }}" class="ds-row" data-testid="week-row">
                                 <span class="ds-row__body">

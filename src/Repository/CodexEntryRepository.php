@@ -80,4 +80,36 @@ class CodexEntryRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Le fait de monde le plus recent dont le slug se termine ainsi.
+     *
+     * Le suffixe est fabrique par celui qui ecrit les faits — jamais recopie
+     * ici. Le depot ne connait donc aucune convention de nommage : il sait
+     * seulement filtrer sur une fin de slug, et la convention reste au seul
+     * endroit qui la produit.
+     *
+     * Les jokers SQL sont echappes : un slug de zone contient des tirets, mais
+     * le suffixe, lui, porte des `_` qui filtreraient n'importe quel caractere.
+     * L'echappement se fait a l'antislash, caractere d'echappement par defaut
+     * de `LIKE` sous PostgreSQL — le seul moteur du projet.
+     */
+    public function findLatestWorldFactBySlugSuffix(string $suffix): ?CodexEntry
+    {
+        $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $suffix);
+
+        /** @var CodexEntry|null $entry */
+        $entry = $this->createQueryBuilder('c')
+            ->andWhere('c.category = :category')
+            ->andWhere('c.slug LIKE :suffix')
+            ->setParameter('category', CodexEntry::CATEGORY_WORLD_FACT)
+            ->setParameter('suffix', '%' . $escaped)
+            ->orderBy('c.createdAt', 'DESC')
+            ->addOrderBy('c.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $entry;
+    }
 }

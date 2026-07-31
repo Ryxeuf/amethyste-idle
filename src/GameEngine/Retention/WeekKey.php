@@ -45,4 +45,28 @@ final class WeekKey
     {
         return $now->modify('monday this week')->setTime(0, 0, 0);
     }
+
+    /**
+     * Lundi 00h00 de la semaine **nommee par une clef deja ecrite**.
+     *
+     * Le chemin inverse de `of()`, et il vit ici pour la meme raison : une clef
+     * stockee (celle de la derniere visite du hub, RET-09) doit pouvoir se
+     * relire en dates sans que le format se recopie ailleurs. Sans cette
+     * methode, le premier appelant qui a besoin des bornes d'une semaine
+     * passee reintroduit la formule — et deux formules finissent par ne plus
+     * dire la meme semaine.
+     *
+     * Rend `null` sur une clef illisible plutot que de lever : une colonne de
+     * base vieille d'un an ne doit pas faire tomber un ecran de jeu.
+     */
+    public static function mondayOfKey(string $weekKey): ?\DateTimeImmutable
+    {
+        if (1 !== preg_match('/^(\d{4})-W(\d{2})$/', $weekKey, $matches)) {
+            return null;
+        }
+
+        return (new \DateTimeImmutable())
+            ->setISODate((int) $matches[1], (int) $matches[2])
+            ->setTime(0, 0, 0);
+    }
 }

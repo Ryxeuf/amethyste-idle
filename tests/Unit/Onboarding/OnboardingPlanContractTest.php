@@ -145,6 +145,10 @@ class OnboardingPlanContractTest extends TestCase
         self::assertSame([
             'src/Entity/App/Player.php',
             'src/GameEngine/Progression/HomeSettlementResolver.php',
+            // RET-09 : lecture d'affichage, pas d'autorisation — le recap du
+            // lundi s'en sert pour choisir la chronique a montrer. Sans foyer,
+            // la ligne de chronique n'existe pas ; rien d'autre ne change.
+            'src/GameEngine/Retention/WeeklyRecapService.php',
         ], $homeReaders, 'Le foyer d\'attache est lu ailleurs que la ou il est constate : il deviendrait une autorisation.');
 
         self::assertSame([], $capabilityWriters, 'Une capacite de peuple touche une quantite : elle doit changer ce qu\'on sait, jamais ce qu\'on produit.');

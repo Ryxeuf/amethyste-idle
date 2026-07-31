@@ -24,6 +24,26 @@ class SettlementWeeklyWorkContributionRepository extends ServiceEntityRepository
     }
 
     /**
+     * Ce qu'un joueur a depose sur les chantiers d'une semaine donnee.
+     *
+     * Tous foyers confondus : le recap du lundi (RET-09) raconte ce que le
+     * joueur a fait, pas ou il l'a fait. Un joueur qui a aide deux villes a
+     * aide deux villes — les separer transformerait un merci en tableau.
+     */
+    public function sumUnitsForWeek(Player $player, string $weekKey): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COALESCE(SUM(c.units), 0)')
+            ->join('c.work', 'w')
+            ->where('c.player = :player')
+            ->andWhere('w.weekKey = :week')
+            ->setParameter('player', $player)
+            ->setParameter('week', $weekKey)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Les plus gros contributeurs, pour la mention publique.
      *
      * Bornee : nommer tout le monde ne nomme personne, et une liste de quarante

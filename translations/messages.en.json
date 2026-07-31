@@ -488,7 +488,16 @@
         "guild_order": "Guild order: %count% in progress",
         "settlement_work": "%zone% worksite — %percent%%%",
         "settlement_work_done": "%zone% worksite: complete",
-        "attendance": "%days% more day%plural% for %gils% gils and %energy% energy"
+        "attendance": "%days% more day%plural% for %gils% gils and %energy% energy",
+        "recap": {
+          "title": "Last week",
+          "opens": "And here is the one opening.",
+          "attendance": "%days% active days: %gils% gils and %energy% energy paid out.",
+          "commission_delivered": "Commission delivered.",
+          "commission_gone": "The commission moved on without you; another one opens.",
+          "guild_challenges": "%count% guild challenge%plural% carried through.",
+          "settlement_work": "%count% unit%plural% carried to the works."
+        }
       }
     },
     "footer": {
