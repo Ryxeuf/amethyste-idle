@@ -160,6 +160,11 @@ services:
             - '@limiter.login_local'
             - '%kernel.secret%'
 
+    # WIK-02 — le wiki joueur lit `docs/wiki/`, versionne avec le code.
+    App\GameEngine\Wiki\WikiLibrary:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # ZON-41 — l'import verifie qu'un bandeau declare existe sur le disque, et
     # le signale sans casser. La racine publique est injectee plutot que
     # devinee : un service qui deduit son propre chemin se trompe le jour ou on

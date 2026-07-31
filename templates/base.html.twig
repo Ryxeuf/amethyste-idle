@@ -33,6 +33,9 @@
                         <div class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
                                 <a href="{{ path('app_home') }}" class="ds-nav-link">{{ 'base.nav.home'|trans }}</a>
+                                {# WIK-03 — les regles se lisent avant de jouer : l'entree est
+                                   publique, et hors du bloc `app.user`. #}
+                                <a href="{{ path('app_wiki_index') }}" class="ds-nav-link">{{ 'wiki.link'|trans }}</a>
                                 {% if app.user %}
                                 <a href="{{ path('app_game') }}" class="ds-nav-link">{{ 'base.nav.game_area'|trans }}</a>
                                 {% endif %}
@@ -92,6 +95,7 @@
             <div class="mobile-menu hidden md:hidden">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <a href="{{ path('app_home') }}" class="ds-nav-link">{{ 'base.nav.home'|trans }}</a>
+                    <a href="{{ path('app_wiki_index') }}" class="ds-nav-link">{{ 'wiki.link'|trans }}</a>
                     {% if app.user %}
                     <a href="{{ path('app_game') }}" class="ds-nav-link">{{ 'base.nav.game_area'|trans }}</a>
                     {% endif %}
