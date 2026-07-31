@@ -27,6 +27,16 @@
 #                                   frontiere commune, l'illustration ayant fondu les deux
 #                                   biomes l'un dans l'autre. Retracer un contour = editer
 #                                   cette ligne, rien d'autre.
+#     illustration                  bandeau de la zone (ZON-41), sous `public/images/`.
+#                                   Forme close et unique : `zones/<slug>.webp`, ou <slug> est
+#                                   celui de la zone. Toute autre valeur casse l'import — un
+#                                   champ qui part dans un attribut `src` ne doit pas pouvoir
+#                                   designer autre chose qu'un bandeau, et une image ne doit
+#                                   pas pouvoir se retrouver sur la mauvaise zone.
+#                                   Absent = pas de bandeau, et c'est la norme tant que
+#                                   l'image n'existe pas. Un chemin declare dont le fichier
+#                                   manque sur le disque produit un AVERTISSEMENT d'import,
+#                                   jamais une erreur : les douze bandeaux arrivent un par un.
 #     enabled                       (optionnel, defaut true)
 #     source_map                    nom de la Map TMX d'origine (legacy, optionnel)
 #     explore:                      table de rencontres / loot (optionnel -> defauts service)

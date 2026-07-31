@@ -141,6 +141,57 @@ class ZoneImporterTest extends TestCase
         self::assertSame(300, $existingConnection->getTravelSeconds());
     }
 
+    /**
+     * Le YAML ecrase l'illustration saisie en administration.
+     *
+     * C'est le point du jalon (ZON-41), et c'est une decision assumee : sans
+     * cet ecrasement, la valeur differerait d'un environnement a l'autre sans
+     * que rien ne le dise — exactement le defaut que le jalon repare. Le champ
+     * de l'ecran d'administration est un apercu, et son intitule le dit.
+     */
+    public function testTheYamlOverwritesAnIllustrationSetByHand(): void
+    {
+        $existing = (new Zone())->setSlug('foret');
+        $existing->setCreatedAt(new \DateTime('2026-01-01'));
+        $existing->setUpdatedAt(new \DateTime('2026-01-01'));
+        $existing->setIllustrationPath('zones/saisie-a-la-main.webp');
+
+        $this->zoneRepository->method('findOneBy')->willReturn($existing);
+        $this->mapRepository->method('findOneBy')->willReturn(null);
+
+        $data = $this->zoneData('foret', 'Forêt', 'wilderness', false);
+        $data['illustration'] = 'zones/foret.webp';
+
+        $this->importer->import(['zones' => [$data], 'connections' => []]);
+
+        self::assertSame('zones/foret.webp', $existing->getIllustrationPath());
+    }
+
+    /**
+     * La cle qui disparait remet le champ a nul.
+     *
+     * Le pendant du test precedent, et il n'est pas redondant : un import qui
+     * n'ecrase que les valeurs presentes laisserait derriere lui le bandeau
+     * d'une zone qu'on a justement voulu depeindre.
+     */
+    public function testRemovingTheKeyClearsTheIllustration(): void
+    {
+        $existing = (new Zone())->setSlug('foret');
+        $existing->setCreatedAt(new \DateTime('2026-01-01'));
+        $existing->setUpdatedAt(new \DateTime('2026-01-01'));
+        $existing->setIllustrationPath('zones/foret.webp');
+
+        $this->zoneRepository->method('findOneBy')->willReturn($existing);
+        $this->mapRepository->method('findOneBy')->willReturn(null);
+
+        $this->importer->import([
+            'zones' => [$this->zoneData('foret', 'Forêt', 'wilderness', false)],
+            'connections' => [],
+        ]);
+
+        self::assertNull($existing->getIllustrationPath());
+    }
+
     public function testDryRunPersistsNothing(): void
     {
         $this->zoneRepository->method('findOneBy')->willReturn(null);
@@ -261,6 +312,7 @@ class ZoneImporterTest extends TestCase
             'gather' => null,
             'mobs' => null,
             'pnjs' => null,
+            'illustration' => null,
         ];
     }
 }

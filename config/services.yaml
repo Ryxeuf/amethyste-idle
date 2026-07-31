@@ -160,6 +160,14 @@ services:
             - '@limiter.login_local'
             - '%kernel.secret%'
 
+    # ZON-41 — l'import verifie qu'un bandeau declare existe sur le disque, et
+    # le signale sans casser. La racine publique est injectee plutot que
+    # devinee : un service qui deduit son propre chemin se trompe le jour ou on
+    # le lance depuis un autre repertoire.
+    App\GameEngine\Zone\ZoneImporter:
+        arguments:
+            $publicDir: '%kernel.project_dir%/public'
+
     App\EventListener\LocaleListener:
         arguments:
             $defaultLocale: '%default_locale%'

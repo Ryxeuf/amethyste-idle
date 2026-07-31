@@ -74,7 +74,10 @@ class ZoneType extends AbstractType
             ->add('illustrationPath', TextType::class, [
                 'label' => 'Illustration',
                 'required' => false,
-                'help' => 'Chemin relatif dans public/images/ (ex: zones/foret.png).',
+                // ZON-41 : le YAML est la source de verite et ecrase ce champ au
+                // prochain `app:zone:import`. Le dire ici evite qu'on saisisse une
+                // valeur en croyant la poser durablement.
+                'help' => 'Apercu seulement : `zones/<slug>.webp`, remis a plat au prochain app:zone:import. La valeur durable se declare dans config/game/zones/world_1.yaml.',
             ])
             ->add('mapX', IntegerType::class, [
                 'label' => 'Position X sur la carte du monde (%)',
