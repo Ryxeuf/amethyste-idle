@@ -18,7 +18,7 @@
 
 ## Vue d'ensemble
 
-**17 jalons** (**ARC-01** à **ARC-17**) en 3 pistes.
+**18 jalons** (**ARC-01** à **ARC-18**) en 3 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -30,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 37 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 39 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -39,12 +39,14 @@
 | ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 | ARC-17 | L'équilibre solo : la simulation de journée, et les deux curseurs qui la tiennent | M | ← ARC-05, ARC-07 |
+| ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | **L** | ← ARC-11 |
 
 ```
 Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → ARC-15
                         ARC-02 → ARC-04 ; ARC-02 → ARC-11 → ARC-13
 Piste B — L'échelle   : ARC-05 → ARC-17 ; ARC-06 ‖ ARC-10
 Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-07 → ARC-14 ; ARC-09 ‖
+Piste D — Les formes  : ARC-11 → ARC-18 (a livrer par forme, jamais en bloc)
 ```
 
 **Le noyau minimal.** Si le chantier doit être livré par morceaux, ARC-01, 02, 03 et
@@ -211,7 +213,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 37 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 39 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -404,6 +406,40 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       peut fuir** — un mur qu'on ne peut ni franchir ni contourner n'est pas du contenu)
 - [ ] Tests : la simulation de journée en CI ; aucun build hors de la fourchette d'attente ;
       chaque arbre a une branche solo et une branche de groupe
+
+### ARC-18 — Les formes de geste (L | ★★★ | MOYENNE)
+> GAME_ARCHETYPES §13. Le vocabulaire d'intentions dit ce qu'un geste **fait** ; il ne dit
+> rien de sa **forme**. C'est là que vivent les archétypes des autres MMO — un chasseur et
+> un nécromancien ne diffèrent pas par leurs statistiques, mais parce qu'un **familier joue
+> à leur place**. Huit formes retenues, **chacune réparant un défaut mesuré** (§13.2).
+>
+> **À livrer une forme à la fois**, jamais en bloc : chacune est un mécanisme de combat
+> indépendant, et l'ordre ci-dessous va du moins cher au plus cher.
+- [ ] **La riposte** (S) — être frappé rend des dégâts. Un point d'accroche à l'encaissement.
+      Répare : le tank ne tue pas (14 tours contre 6). Ne s'applique jamais aux dégâts évités
+- [ ] **La posture** (S) — un dépôt `scope: soi`, sans durée, **exclusif**. Répare : aucun
+      choix à l'échelle d'une rencontre. En changer coûte le tour
+- [ ] **La conversion** (S) — échanger des PV contre des PM. Répare : le pyromancien paie
+      deux fois. **Taux de change défavorable**, sinon convertir est toujours correct
+- [ ] **Le transfert** (M) — une part des dégâts des alliés revient sur soi. Répare :
+      l'aggro est impossible sur une rencontre à PV partagés. Borné en pourcentage **et** en
+      durée. Ally-side, donc il se multiplie (§9 quinquies)
+- [ ] **La charge** (M) — `generates` / `consumes` sur `Spell`, un compteur par rencontre.
+      Répare : la mêlée n'a aucune raison d'aimer les longs combats. **Meurt avec la
+      rencontre**
+- [ ] **Le différé** (M) — une file d'effets résolus en **tours de rencontre**. Répare :
+      l'asynchronie n'est jamais un avantage. Seule forme qui l'exploite au lieu de la subir
+- [ ] **L'ouverture** (M) — un geste posé depuis l'écran de zone, appliqué à la rencontre
+      suivante. Répare : `tempo` n'a aucun effet modélisé. Coûte de l'**énergie d'action**,
+      jamais un tour
+- [ ] **Le familier** (L) — un second acteur dans la boucle de tour. Répare : le tour d'un
+      absent ne produit qu'une attaque de base. **Le plus cher et le plus aligné sur le
+      modèle** — c'est l'arbitrage à rendre en premier. Le familier **déplace** la puissance,
+      il ne la double pas
+- [ ] Les **sept refus** du §13.3 verrouillés par test là où c'est possible : aucune table de
+      menace, aucun rôle nécessaire, aucun geste sans lecture `scope: soi`, aucun changement
+      d'arme en combat, aucune ressource persistant entre deux rencontres, aucun tour
+      supplémentaire, aucune montée en puissance entre les combats
 
 ---
 

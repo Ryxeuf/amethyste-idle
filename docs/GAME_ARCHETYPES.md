@@ -2358,14 +2358,153 @@ Ce qui doit casser la CI si on le viole :
 35. **L'écart d'attente quotidienne entre le meilleur et le pire build reste sous
     ×1,5** (§9 octies.4) — mesuré à ×2,2 aujourd'hui, c'est la cible de calibrage
     d'ARC-17.
-36. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+36. **Toute forme de geste vient du vocabulaire fermé** (§13.1) — huit formes, et
+    chacune répare un défaut mesuré. Une neuvième est une décision de moteur,
+    instruite, jamais un ajout de fixture.
+37. **Aucune ressource ne persiste entre deux rencontres** (§13.3) — charges,
+    postures et différés meurent avec la rencontre ; seuls les PV, les PM et le
+    carquois se reportent, et ils se rechargent en **temps réel**.
+38. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-37. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+39. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
 
-## 13. Ce que ce document ne décide pas
+## 13. Les formes de geste — ce que les autres jeux savent faire
+
+Quatre exercices, vingt corrections, **aucune sur un pourcentage**. Toutes ont
+porté sur des gestes, des durées, des ressources ou des conditions. Il reste donc
+un angle mort, et c'est le dernier :
+
+> Le vocabulaire d'intentions (§3.1) dit ce qu'un geste **fait** — dégât, soin,
+> protection, amélioration, entrave. Il ne dit rien de sa **forme**. Or c'est
+> exactement là que vivent les archétypes des autres MMO : un chasseur et un
+> nécromancien ne diffèrent pas par leurs statistiques, ils diffèrent parce qu'un
+> **familier joue à leur place**.
+
+**Le critère d'admission**, le même que pour les leviers (§4) : *une forme occupe
+une place qu'aucune autre n'occupe, et elle répare un défaut mesuré.* Les huit
+retenues le font ; ce qui n'est pas dans la liste est de la saveur, pas de la
+mécanique.
+
+**Aucune ne demande une cinquième fonction.** La grille assaut / contrôle /
+entretien / encaisse tient — ce qui manquait n'était pas un rôle, c'était un
+vocabulaire du côté de la **matéria**. Ce qui est, mot pour mot, la thèse du §0.
+
+### 13.1 Les huit formes
+
+**1. Le familier** — *un acteur qui joue à votre place.*
+Chasseur (WoW), Nécromancien (EverQuest), Osamodas (Wakfu), Invocateur (FFXI).
+**Ce qu'il répare ici** : le donjon semi-synchrone résout le tour d'un absent par
+une **attaque de base** (`GroupDungeonCombatService`). Un joueur déconnecté ne
+laisse rien derrière lui. Le familier fait de l'absence une contribution — c'est
+**le dépôt qui agit**, et c'est la forme la plus alignée sur notre modèle.
+*Porté par* : bête × sorts (Druide), ténèbres × sorts (Nécromancien), métal ×
+distance (Ingénieur — la tourelle). *Coût moteur* : un second acteur dans la
+boucle de tour — **le plus cher des huit**. *Garde-fou* : le familier ne double pas
+la puissance, il la **déplace** — ce que l'arbre met dans le familier sort des
+gestes du joueur.
+
+**2. La charge** — *une ressource qui se construit dans la rencontre.*
+Points de combo (Roublard), chi (Moine), rage, puissance sacrée.
+**Ce qu'elle répare** : la mêlée n'a qu'un temps de reprise, donc une rotation sans
+récompense. Surtout, la charge **paie les longs combats** — précisément là où on
+veut que la mêlée brille (l'élite, le boss — §9 octies), et là où elle est
+aujourd'hui la plus mauvaise.
+*Coût* : deux champs sur `Spell` (`generates` / `consumes`) et un compteur par
+rencontre. *Garde-fou* : **la charge meurt avec la rencontre.** Une ressource qui
+persiste entre les combats double la comptabilité de la journée (§9 septies) et
+transforme le jeu en gestion de stock.
+
+**3. Le transfert** — *une part des dégâts des alliés vous revient.*
+Main de sacrifice, vigilance, l'interposition (Paladin WoW, GW).
+**Ce qu'il répare** : **notre modèle ne peut pas avoir d'aggro.** La rencontre
+frappe le joueur actif ; il n'y a personne à provoquer, donc le tank perd son
+geste identitaire. Le transfert le lui rend — et comme il porte sur les **alliés**,
+il se multiplie par la taille du groupe (§9 quinquies).
+*Porté par* : encaisse, branche de groupe (le Mur). *Garde-fou* : borné en
+pourcentage **et** en durée — sinon le tank meurt pour les autres, ce qui est un
+beau geste et un mauvais jeu.
+
+**4. La riposte** — *être frappé est une action.*
+Épines (Diablo, EQ), représailles, le samouraï à contre-attaque.
+**Ce qu'elle répare** : **le tank ne tue pas** — le Mur met 14 tours là où l'archer
+en met 6 (§9 sexies). La riposte lui donne des dégâts **sans lui donner de la
+vitesse**, donc sans effacer son coût structurel.
+*Coût* : presque nul — un point d'accroche au moment d'encaisser. *Garde-fou* :
+elle ne s'applique **jamais aux dégâts évités** (esquive, absorption), sinon
+l'encaisse optimale consiste à se faire toucher exprès.
+
+**5. L'ouverture** — *le combat commence avant le combat.*
+Pièges du rôdeur (EQ, GW), ouverture furtive (Roublard), tir de préparation.
+**Ce qu'elle répare** : `tempo` — l'initiative — **n'a aucun effet modélisé**
+(§9 sexies). C'est un levier décoratif dans deux palettes. Une ouverture le rend
+concret : un geste posé **depuis l'écran de zone**, qui s'applique à la rencontre
+suivante. Le premier tour est joué avant que l'ennemi n'existe.
+*Porté par* : assaut × distance (Archer), contrôle (Hydromancien), ténèbres ×
+mêlée (Assassin). *Garde-fou* : elle coûte de l'**énergie d'action**, jamais un
+tour — c'est ce qui l'empêche d'être systématique, et ça la met en concurrence
+avec un combat de plus.
+
+**6. La conversion** — *échanger une ressource contre une autre.*
+Connexion vitale (Démoniste), magie de sang (PoE), le drain.
+**Ce qu'elle répare** : la **facture quotidienne** est notre monnaie d'équilibrage
+(§9 septies), et le pyromancien paie deux fois — fragile *et* dépensier
+(§9 octies). La conversion lui rend un choix : payer en PV ce qu'il ne peut plus
+payer en PM.
+*Garde-fou* : **le taux de change est défavorable.** On perd à convertir, sinon
+convertir est toujours correct et ce n'est plus une décision.
+
+**7. La posture** — *un choix durable qu'on remplace.*
+Postures du guerrier, chants du barde (FFXI), auras, mantras.
+**Ce qu'elle répare** : la fourche est un choix **permanent** (respec payant) ; la
+posture est le même choix à l'échelle de **la rencontre**. Elle donne une décision
+par combat sans ajouter une action à jouer chaque tour — ce que la règle 9 rend
+précieux.
+*Forme technique* : un dépôt `scope: soi`, **sans durée**, exclusif. *Garde-fou* :
+**une seule active**, et en changer coûte le tour. Sinon c'est un bouton gratuit.
+
+**8. Le différé** — *un geste qui frappe plus tard.*
+Bombes à retardement (Wakfu), sceaux à déclenchement, DoT à explosion.
+**Ce qu'il répare** : c'est **la seule forme qui exploite l'asynchronie au lieu de
+la subir.** Dans un donjon dont les tours s'étalent sur des heures, un geste qui se
+résout deux tours plus tard se résout **pendant le tour de quelqu'un d'autre** — le
+joueur absent continue d'agir. C'est le cousin offensif du dépôt : là où le dépôt
+étale un effet sur les alliés, le différé étale une **action** sur la rencontre.
+*Garde-fou* : il se résout **en tours de rencontre**, jamais en temps réel — même
+compteur que les dépôts (§7 bis).
+
+### 13.2 Chaque forme répond à un défaut mesuré
+
+C'est ce qui distingue cette liste d'un catalogue d'idées :
+
+| Forme | Le défaut qu'elle répare | Où il a été mesuré |
+|---|---|---|
+| Le familier | le tour d'un absent ne produit qu'une attaque de base | §7 bis.1 |
+| La charge | la mêlée n'a aucune raison d'aimer les longs combats | §9 octies |
+| Le transfert | l'aggro est impossible, le tank perd son geste de groupe | §9 quinquies |
+| La riposte | le tank ne tue pas (14 tours contre 6) | §9 sexies.1 |
+| L'ouverture | `tempo` n'a aucun effet modélisé | §9 sexies.2 |
+| La conversion | le pyromancien paie deux fois | §9 octies.4 |
+| La posture | aucun choix à l'échelle d'une rencontre | §6.1 bis |
+| Le différé | l'asynchronie n'est jamais un avantage, seulement une contrainte | §7 bis |
+
+### 13.3 Ce qu'on refuse, et pourquoi
+
+| Mécanique | D'où elle vient | Pourquoi non |
+|---|---|---|
+| **La table de menace (aggro)** | WoW, FFXIV, la trinité classique | Impossible sur une rencontre à PV partagés qui frappe le joueur **actif** : il n'y a personne à provoquer. Remplacée par le **transfert** (forme 3) |
+| **La trinité obligatoire** | tous les MMO à raids | Aucun rôle n'est nécessaire (§7 bis). Un groupe sans soigneur met plus de tours ; il ne rencontre pas un mur. C'est déjà un refus acté (GAME_INSPIRATIONS §5) |
+| **Les effets qui n'existent qu'en groupe** | Parangon (GW1), Chanteur (Aion) | Morts 95 % du temps à 1-2 joueurs simultanés. Tout geste collectif doit avoir une lecture en `scope: soi` |
+| **Le changement d'arme en combat** | GW2, ESO | Contredit DOM-02 — le build se change **hors** combat, et c'est ce qui rend la borne matérielle honnête |
+| **La ressource qui persiste entre les rencontres** | âmes du Démoniste, charges accumulées | Double la comptabilité de la journée (§9 septies) et transforme le combat en gestion de stock |
+| **Le tour supplémentaire** | Final Fantasy Tactics, extra turns | Dans un modèle semi-synchrone à un joueur actif, un tour de plus est un tour **volé aux autres** |
+| **La montée en puissance entre les combats** (stacks qui montent sur la journée) | Diablo, ARPG | Récompense le temps passé, la seule chose que ce jeu a décidé de ne jamais récompenser (GAME_PROGRESSION §5) |
+
+---
+
+## 14. Ce que ce document ne décide pas
 
 - **Les valeurs absolues** — PV des monstres, dégâts des gestes, coûts en PM.
   Elles se dérivent de l'ancre d'échelle (§6.4) et vivent dans
@@ -2378,6 +2517,10 @@ Ce qui doit casser la CI si on le viole :
 - **La fusion et les domaines hybrides** — réserve d'extension (GAME_WORLD §2.2) ;
   le nœud dormant reste posé et hors budget.
 - **La forme visuelle de l'arbre** — design d'écran, pas design de système.
+- **Quelles formes de geste (§13) sont livrées, et dans quel ordre** — le
+  vocabulaire est arrêté, la priorisation est un sujet de plan (ARC-18). Le
+  **familier** est le plus cher des huit et le plus aligné sur le modèle : c'est
+  l'arbitrage à rendre en premier.
 - **Le nombre d'arbres qu'un joueur mènera réellement** : c'est une conséquence de
   l'énergie et du build, pas une règle à écrire.
 - **La valeur de la vitesse de combat** (§9 sexies.4) — l'arbitrage est posé et
