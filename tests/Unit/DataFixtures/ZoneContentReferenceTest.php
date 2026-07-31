@@ -88,6 +88,46 @@ class ZoneContentReferenceTest extends TestCase
         }
     }
 
+    /**
+     * Une zone hostile declare sa faune — elle ne l'herite plus d'une carte.
+     *
+     * C'est ce que ZON-26b ferme. Jusqu'ici, `Mob.zone` pouvait etre **derive**
+     * de `Mob.map` via `Zone::sourceMap` : une zone sans `mobs:` n'etait donc
+     * pas forcement vide, elle etait *illisible*. Le Marais et la Crete ont
+     * vecu ainsi jusqu'au bout, seules zones du monde dont la population ne se
+     * lisait nulle part — il fallait ouvrir une fixture PHP et suivre un nom de
+     * carte pour savoir ce qui y vivait.
+     *
+     * La loi porte sur `safe: false` et non sur le type : c'est **l'hostilite**
+     * qui promet des rencontres. Une cite sans faune n'est pas un oubli ; une
+     * zone ou l'on peut mourir et qui ne declare rien, si.
+     */
+    public function testEveryHostileZoneDeclaresItsOwnWildlife(): void
+    {
+        $barren = [];
+        $hostile = 0;
+
+        foreach ($this->world()['zones'] as $zone) {
+            if (($zone['safe'] ?? false) !== false) {
+                continue;
+            }
+
+            ++$hostile;
+            if ([] === ($zone['mobs'] ?? [])) {
+                $barren[] = (string) $zone['slug'];
+            }
+        }
+
+        $this->assertGreaterThan(0, $hostile, 'Aucune zone hostile lue : le test ne verifie rien.');
+        $this->assertSame(
+            [],
+            $barren,
+            'Ces zones hostiles ne declarent aucune faune. Une zone vide et une zone dont la population se '
+            . 'derive en silence d\'une carte TMX se ressemblent trait pour trait — et c\'est la seconde qui '
+            . 'coute des heures a diagnostiquer.',
+        );
+    }
+
     public function testEveryGatherResourcePointsToARealItem(): void
     {
         $known = $this->knownItems();

@@ -434,6 +434,33 @@ zones:
                 chest_gils_min: 10
                 chest_gils_max: 45
                 mob_slugs: [will_o_wisp, creeping_shadow, specter]
+        mobs:
+            # ZON-26b — le Marais cesse de tenir sa population de sa carte TMX.
+            # Les seize individus places a la main sur `map_5` deviennent une
+            # declaration : meme faune, meme repartition jour/nuit, mais lisible
+            # et modifiable sans toucher a une fixture PHP.
+            #
+            # La progression de la zone se lit dans l'ordre : la lisiere donne du
+            # zombie et de l'araignee, les chemins de l'ochu et de l'undine, les
+            # eaux profondes la naga et l'archidruide corrompu.
+            - { monster: zombie, count: 1 }
+            - { monster: spider, count: 2 }
+            - { monster: venom_snake, count: 1 }
+            - { monster: ochu, count: 2 }
+            - { monster: mushroom_golem, count: 1 }
+            - { monster: undine, count: 1 }
+            - { monster: naga, count: 1 }
+            - { monster: corrupted_archdruid, count: 1 }
+            # Le boss de zone vit dans la population comme partout ailleurs
+            # (la Foret declare son gardien de la meme facon).
+            - { monster: swamp_hydra, count: 1 }
+            # La nuit du Marais : les trois especes du pool nocturne y vivent,
+            # plus le fantome et la banshee qui ne s'y reservent pas.
+            - { monster: ghost, count: 1, nocturnal: true }
+            - { monster: specter, count: 1, nocturnal: true }
+            - { monster: banshee, count: 1, nocturnal: true }
+            - { monster: will_o_wisp, count: 1, nocturnal: true }
+            - { monster: creeping_shadow, count: 1, nocturnal: true }
         gather:
             - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
             - { slug: valeriane-des-tourbieres, item: plant-valerian, profession: herbalism, capacity: 60, respawn_seconds: 32400, yield_min: 1, yield_max: 3 }
@@ -490,6 +517,25 @@ zones:
                 chest_gils_min: 25
                 chest_gils_max: 80
                 mob_slugs: [gargoyle, wyvern, griffin]
+        mobs:
+            # ZON-26b — la Crete cesse de tenir sa population de sa carte TMX.
+            # Les neuf individus de `map_6` deviennent une declaration, dans le
+            # meme ordre de rudesse : la base donne du griffon et de la gargouille,
+            # les sentiers de l'elementaire de feu, le sommet le minotaure, le
+            # troll, et le dragon ancestral.
+            - { monster: griffin, count: 2 }
+            - { monster: gargoyle, count: 2 }
+            - { monster: fire_elemental, count: 2 }
+            - { monster: minotaur, count: 1 }
+            - { monster: troll, count: 1 }
+            - { monster: dragon, count: 1 }
+            # La wyverne arrive avec la declaration, et repare une promesse que
+            # personne ne pouvait voir : depuis ZON-17, la nuit de la Crete lui
+            # est reservee (`mob_slugs`) alors qu'aucun individu n'y vivait — les
+            # deux seules wyvernes du monde etaient posees sur la carte de test.
+            # Une nuit qui reserve une espece absente ressemble simplement au
+            # jour. Le vent de la crete est d'ailleurs son element.
+            - { monster: wyvern, count: 2 }
         gather:
             - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }
             - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 32, respawn_seconds: 28800, yield_min: 1, yield_max: 2 }

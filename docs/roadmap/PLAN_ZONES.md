@@ -273,8 +273,15 @@ manque ; il relève de la narration, pas de ce plan.
 
 ### Restes de données (ex-ZON-26b + promesses ouvertes)
 
-- **Marais Brumeux** et **Crête de Ventombre** : seules zones encore sans blocs
-  `mobs:`/`pnjs:` déclaratifs (dépendent de leur TMX) — transférés du Sprint 13 (ZON-26b).
+- ~~**Marais Brumeux** et **Crête de Ventombre** : seules zones encore sans blocs
+  `mobs:`/`pnjs:` déclaratifs~~ — **faune livrée le 2026-07-31**. Les 25 individus posés à la
+  main sur `map_5`/`map_6` sont devenus une déclaration ; plus aucune créature du monde
+  n'atteint sa zone par la dérivation `Mob.map` → `Zone::sourceMap`, et une loi le tient
+  (`testEveryHostileZoneDeclaresItsOwnWildlife`). **Reste ouvert** : les `pnjs:`. Les cinq
+  habitants de chaque zone portent des arbres de dialogue reliés aux quêtes d'Acte II, et le
+  format déclaratif s'interdit explicitement de les décrire (« les arbres de dialogue et les
+  chaînes de quête restent dans les fixtures ») : les migrer est un chantier de narration, pas
+  de donnée de zone. `source_map` reste donc en place pour eux seuls.
 - **Les 12 bandeaux de zone eux-mêmes** : prompts écrits
   ([../ZONE_IMAGE_PROMPTS.md](../ZONE_IMAGE_PROMPTS.md)), câblage spécifié (ZON-41), images
   à générer et à déposer dans `public/images/zones/`.
