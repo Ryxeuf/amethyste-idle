@@ -1,0 +1,104 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tunnel d'entrée - Admin{% endblock %}
+{% block page_title %}Tunnel d'entrée{% endblock %}
+
+{#
+   ONB-19b — les sept indicateurs du tunnel (GAME_ONBOARDING §9).
+
+   Écran de constat, en lecture pure : aucun bouton, aucune tâche déclenchée.
+   Chaque indicateur se dérive d'un état déjà en base — rien n'a été instrumenté
+   pour cet écran, ce qui est la garantie que la mesure ne dérive pas de ce
+   qu'elle mesure.
+#}
+{# Un taux sur zéro observation n'existe pas : le DTO rend `null`, l'écran rend
+   un tiret. Un 0 % le jour de l'ouverture ferait paniquer pour rien. #}
+{% macro share(pct) %}
+    {%- if pct is null -%}
+        <span class="text-gray-600">—</span>
+    {%- else -%}
+        <span class="font-mono">{{ pct }} %</span>
+    {%- endif -%}
+{% endmacro %}
+
+{% macro distribution(title, counts, note) %}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-gray-200 mb-1">{{ title }}</h2>
+        <p class="text-xs text-gray-500 mb-4">{{ note }}</p>
+        {% if counts|length > 0 %}
+            {% set total = counts|reduce((carry, n) => carry + n, 0) %}
+            <table class="w-full text-sm text-left">
+                <tbody>
+                    {% for label, count in counts %}
+                        <tr class="border-t border-gray-800">
+                            <td class="py-2 text-gray-300">{{ label }}</td>
+                            <td class="py-2 text-right font-mono text-gray-100">{{ count }}</td>
+                            <td class="py-2 text-right w-16 font-mono text-gray-500">
+                                {{ total > 0 ? (count / total * 100)|round : 0 }} %
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-sm text-gray-600">Rien à mesurer pour l'instant.</p>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% block body %}
+    {# 1 à 3 — la traversée : compte → personnage → acte I #}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Comptes créés</p>
+            <p class="text-2xl font-bold text-gray-100 mt-1 font-mono">{{ funnel.accounts }}</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Avec un personnage</p>
+            <p class="text-2xl font-bold text-gray-100 mt-1 font-mono">{{ funnel.accountsWithCharacter }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ _self.share(funnel.characterShare) }} des comptes</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Abandons dans le tunnel</p>
+            <p class="text-2xl font-bold text-amber-400 mt-1 font-mono">{{ funnel.abandonedInTunnel }}</p>
+            <p class="text-xs text-gray-500 mt-1">Compte créé, aucun personnage</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Acte I terminé</p>
+            <p class="text-2xl font-bold text-gray-100 mt-1 font-mono">{{ funnel.actOneCompleted }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ _self.share(funnel.actOneShare) }} des personnages</p>
+        </div>
+    </div>
+
+    {# 6 et 7 — la vérification et le retour #}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">E-mail vérifié à J+7</p>
+            <p class="text-2xl font-bold text-gray-100 mt-1">{{ _self.share(funnel.verifiedShare) }}</p>
+            <p class="text-xs text-amber-500/80 mt-1">
+                Dispositif non branché (ONB-02/04) : cet indicateur reste à 0 % tant que
+                la vérification d'e-mail n'existe pas.
+            </p>
+        </div>
+        {% for days, count in funnel.stillActive %}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+                <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Encore actif à J+{{ days }}</p>
+                <p class="text-2xl font-bold text-gray-100 mt-1 font-mono">{{ count }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ _self.share(funnel.stillActiveShare(days)) }} des personnages</p>
+            </div>
+        {% endfor %}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Tutoriel refusé</p>
+            <p class="text-2xl font-bold text-gray-100 mt-1 font-mono">{{ funnel.onboardingSkipped }}</p>
+            <p class="text-xs text-gray-500 mt-1">Refus explicite, jamais un abandon</p>
+        </div>
+    </div>
+
+    {# 4 et 5 — les répartitions, toutes dérivées des bornes de DOM-01 #}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {{ _self.distribution('Peuples', funnel.races, "L'indicateur d'équilibre d'ONB-07 : un peuple qui s'effondre ou qui écrase dit que sa capacité passive n'est pas au bon prix.") }}
+        {{ _self.distribution('Métiers', funnel.crafts, "L'indicateur de santé de D11 : arbres ouverts sans registre de combat, donc de récolte ou d'artisanat.") }}
+        {{ _self.distribution('Armes', funnel.weapons, 'Registre de combat des arbres ouverts — mêlée, distance, sorts.') }}
+        {{ _self.distribution('Éléments', funnel.elements, "Élément des arbres ouverts. Un élément jamais choisi est un élément dont l'entrée coûte trop cher.") }}
+    </div>
+{% endblock %}
