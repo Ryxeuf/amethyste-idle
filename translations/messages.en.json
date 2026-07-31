@@ -378,6 +378,12 @@
       "intelligence": "Intelligence"
     },
     "home": {
+      "empty": {
+        "pending": "Nothing is waiting for you — what comes next happens in the zone.",
+        "recap": "Nothing to tell yet — one outing and the journal fills up.",
+        "domains": "No domain opened yet — fighting, gathering or crafting opens one.",
+        "quests": "No quest under way — NPCs in safe zones hand them out."
+      },
       "player": {
         "life": "Health",
         "energy": "Energy",
@@ -406,9 +412,6 @@
       },
       "pending": {
         "title": "Waiting for you",
-        "empty": "Nothing is waiting",
-        "empty_hint": "All settled. Whatever happens next happens in the zone.",
-        "empty_action": "Go to the zone",
         "tone": {
           "gain": "To collect",
           "loss": "Overdue",
@@ -467,20 +470,14 @@
       },
       "recap": {
         "title": "Since yesterday",
-        "view_all": "Journal",
-        "empty": "Nothing to tell",
-        "empty_hint": "Your deeds will be written here from the first outing."
+        "view_all": "Journal"
       },
       "domains": {
         "title": "Progress",
-        "empty": "No domain opened yet",
-        "empty_hint": "Fighting, gathering, crafting: every action feeds a domain.",
         "view_all": "Skills"
       },
       "quests": {
         "title": "Active quests",
-        "empty": "No quest in progress",
-        "empty_hint": "NPCs in safe zones hand them out.",
         "view_all_short": "Quest journal"
       },
       "week": {

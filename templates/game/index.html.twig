@@ -2,6 +2,19 @@
 
 {% block title %}{{ 'game.title'|trans }}{% endblock %}
 
+{% macro folded(key, route) %}
+    {# RET-10, dette 2 : un bloc vide se replie sur UNE ligne, qui dit quoi
+       faire et mene la ou le contenu naitra. La maquette 5D l'avait tranche ;
+       le hub gardait quatre encarts pleins qui parlaient de ce qui n'existe
+       pas encore, et un compte neuf n'y lisait que des absences. #}
+    <a href="{{ path(route) }}" class="ds-row ds-row--empty" data-testid="hub-folded">
+        <span class="ds-row__body">
+            <span class="ds-row__name block">{{ ('game.home.empty.' ~ key)|trans }}</span>
+        </span>
+    </a>
+{% endmacro %}
+
+
 {% block game_content %}
     {{ include('components/_coach_mark.html.twig', {coachMark: coach_mark('hub')}) }}
 {#
@@ -128,13 +141,7 @@
                             </a>
                         {% endfor %}
                     {% else %}
-                        <div class="ds-empty">
-                            <p class="ds-empty__title">{{ 'game.home.pending.empty'|trans }}</p>
-                            <p class="ds-empty__hint">{{ 'game.home.pending.empty_hint'|trans }}</p>
-                            <a href="{{ path('app_game_zone') }}" class="ds-btn ds-btn--secondary ds-btn--sm">
-                                {{ 'game.home.pending.empty_action'|trans }}
-                            </a>
-                        </div>
+                        {{ _self.folded('pending', 'app_game_zone') }}
                     {% endif %}
                 </div>
             </div>
@@ -149,10 +156,7 @@
                 </div>
                 <div class="game-card-body">
                     {% if recap.isEmpty %}
-                        <div class="ds-empty">
-                            <p class="ds-empty__title">{{ 'game.home.recap.empty'|trans }}</p>
-                            <p class="ds-empty__hint">{{ 'game.home.recap.empty_hint'|trans }}</p>
-                        </div>
+                        {{ _self.folded('recap', 'app_game_zone') }}
                     {% else %}
                         <div class="flex flex-wrap gap-2 mb-3">
                             {% for type, count in recap.counts %}
@@ -276,10 +280,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div class="ds-empty">
-                            <p class="ds-empty__title">{{ 'game.home.domains.empty'|trans }}</p>
-                            <p class="ds-empty__hint">{{ 'game.home.domains.empty_hint'|trans }}</p>
-                        </div>
+                        {{ _self.folded('domains', 'app_game_skills') }}
                     {% endif %}
                 </div>
             </div>
@@ -306,10 +307,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div class="ds-empty">
-                            <p class="ds-empty__title">{{ 'game.home.quests.empty'|trans }}</p>
-                            <p class="ds-empty__hint">{{ 'game.home.quests.empty_hint'|trans }}</p>
-                        </div>
+                        {{ _self.folded('quests', 'app_game_quests') }}
                     {% endif %}
                 </div>
             </div>

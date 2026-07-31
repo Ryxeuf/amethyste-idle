@@ -378,6 +378,12 @@
       "intelligence": "Intelligence"
     },
     "home": {
+      "empty": {
+        "pending": "Rien ne vous attend — la suite se joue dans la zone.",
+        "recap": "Rien à raconter encore — une première sortie et le journal se remplit.",
+        "domains": "Aucun domaine ouvert — combattre, récolter ou fabriquer en ouvre un.",
+        "quests": "Aucune quête en cours — les PNJ des zones sûres en confient."
+      },
       "player": {
         "life": "Vie",
         "energy": "Énergie",
@@ -406,9 +412,6 @@
       },
       "pending": {
         "title": "Ce qui vous attend",
-        "empty": "Rien ne vous attend",
-        "empty_hint": "Tout est réglé. Ce qui arrive ensuite arrive dans la zone.",
-        "empty_action": "Rejoindre la zone",
         "tone": {
           "gain": "À récupérer",
           "loss": "En retard",
@@ -467,20 +470,14 @@
       },
       "recap": {
         "title": "Depuis hier",
-        "view_all": "Journal",
-        "empty": "Rien à raconter",
-        "empty_hint": "Vos hauts faits s'écriront ici dès la première sortie."
+        "view_all": "Journal"
       },
       "domains": {
         "title": "Progression",
-        "empty": "Aucun domaine ouvert",
-        "empty_hint": "Combattre, récolter, fabriquer : chaque action nourrit un domaine.",
         "view_all": "Compétences"
       },
       "quests": {
         "title": "Quêtes en cours",
-        "empty": "Aucune quête en cours",
-        "empty_hint": "Les PNJ des zones sûres en confient.",
         "view_all_short": "Journal de quêtes"
       },
       "week": {
