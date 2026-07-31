@@ -46,7 +46,7 @@
 | ONB-17 ✅ | Le coach par écran, les dix encarts (ferme D10) | M | ★★ |
 | ONB-18 ✅ | Écrans d'entrée au design system | S | ★★ |
 | ONB-19a ✅ | `OnboardingPlanContractTest` — les invariants du plan | S | ★★ |
-| ONB-19b | Les sept indicateurs du tunnel + exposition admin | M | ★★ |
+| ONB-19b ✅ | Les sept indicateurs du tunnel + exposition admin | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
 | ONB-20b-a ✅ | Le port des **armes** par nœuds d'entree (echelon 1) | M | ★★★ |
 | ONB-20b-b | Le port des **armures et outils** (echelles restantes) | M | ★★ |
@@ -531,15 +531,33 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       catalogue n'expose aucun nœud d'arbre fermé (09) ; aucun contenu gaté par la race ni par
       le foyer (07, 13) ; un seul état d'onboarding (14) ; aucune décision de build dans le
       tunnel (05) ; le coach n'explique jamais un système fermé (17)
-- [ ] **ONB-19b** — sept indicateurs : inscriptions → personnages ; **pas d'abandon dans le tunnel** ;
-      personnages → acte I terminé ; **répartition des armes, éléments et métiers choisis** ;
-      **répartition des peuples** ; % vérifiés à J+7 ; **retour à J+1 et J+7**
-- [ ] La répartition des métiers est l'indicateur de santé de **D11** ; celle des peuples,
+- [x] **ONB-19b livré le 2026-07-31** — sept indicateurs : inscriptions → personnages ;
+      abandon dans le tunnel ; personnages → acte I terminé ; répartition des armes, éléments
+      et métiers choisis ; répartition des peuples ; % vérifiés à J+7 ; retour à J+1 et J+7
+- [x] La répartition des métiers est l'indicateur de santé de **D11** ; celle des peuples,
       l'indicateur d'équilibre de **ONB-07**
-- [ ] Exposition dans l'admin (une section de l'existant)
-> ⚠️ L'invariant « un seul point de décision pour la porte » (**04**) n'est pas asservi : la
-> vérification d'e-mail n'existe pas — ONB-02/04 sont bloqués faute de `symfony/mailer`. Il
-> rejoindra le test avec eux.
+- [x] Exposition dans l'admin : `/admin/onboarding`, sous « Joueurs »
+> **Aucun indicateur ne mesure une intention** : chacun se dérive d'un état déjà en base — un
+> compte sans personnage *est* un abandon, un foyer réclamé *est* un acte I terminé, un arbre
+> ouvert *est* un choix fait. Rien n'a été instrumenté pour ce jalon, ce qui garantit que la
+> mesure ne dérive pas de ce qu'elle mesure.
+>
+> **Les trois répartitions sortent d'une seule table.** `PlayerDomainAccess` porte les arbres
+> ouverts et `Domain` porte déjà les deux bornes de DOM-01 : le registre nomme l'arme, son
+> absence nomme le métier (*« un `null` sur `Domain::register` dit hors combat, jamais
+> registre inconnu »*). Ajouter un élément ou un registre étend la mesure le jour même.
+>
+> **Un écart de mesure, nommé** : `Player::lastActivityAt` ne garde que la *dernière*
+> activité, pas un historique. L'écran ne dit donc pas « revenu le lendemain » mais **« encore
+> actif à J+1 »**, ce qui est exactement ce que la donnée sait. Un indicateur qui promet plus
+> que sa donnée est pire que pas d'indicateur.
+>
+> ⚠️ **Le % vérifiés à J+7 restera à 0 %** tant qu'ONB-02/04 ne sont pas livrés : rien
+> n'écrit `emailVerifiedAt`. L'écran le dit en toutes lettres, et un test tient l'accord
+> **dans les deux sens** — le jour où un chemin de code renseignera la colonne, il tombera et
+> l'avertissement devra partir. Une note qui survit à sa raison d'être est un mensonge de plus.
+> L'invariant « un seul point de décision pour la porte » (**04**) rejoindra
+> `OnboardingPlanContractTest` avec eux.
 
 ### ONB-20 — Mains nues, et le port de l'équipement par nœuds d'entrée (L | ★★★ | HAUTE)
 > Ferme **D13** et rend applicables **A18** et **A19**. Deux choses à la fois, indissociables :
