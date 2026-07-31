@@ -57,6 +57,12 @@ class RetentionPlanContractTest extends TestCase
             $this->root() . '/src/GameEngine/Guild',
             $this->root() . '/src/GameEngine/Settlement',
             $this->root() . '/src/GameEngine/Economy',
+            // RET-09 : le hub est devenu une surface hebdomadaire a part
+            // entiere (le bloc « La semaine », puis le recap du lundi). Les
+            // deux interdits de ce plan y valent donc autant qu'ailleurs — et
+            // c'est precisement l'ecran ou une serie continue se
+            // reintroduirait « parce que c'est standard ».
+            $this->root() . '/src/GameEngine/Player',
             $this->root() . '/src/Entity/App',
             $this->root() . '/src/Command',
         ];
@@ -178,6 +184,30 @@ class RetentionPlanContractTest extends TestCase
         self::assertSame(WeekKey::of($monday), WeekKey::of($sunday));
         self::assertNotSame(WeekKey::of($sunday), WeekKey::of($nextMonday));
         self::assertSame($monday->format('c'), WeekKey::mondayOf($sunday)->format('c'));
+    }
+
+    /**
+     * Une clef deja ecrite se relit en dates, et sans seconde formule.
+     *
+     * Le recap du lundi (RET-09) part d'une clef **stockee** — la semaine de
+     * derniere visite — et a besoin de ses bornes. Le chemin inverse vit dans
+     * `WeekKey` pour la meme raison que l'aller : le premier appelant qui
+     * l'aurait recalcule sur place aurait recree la duplication que ce fichier
+     * supprime.
+     */
+    public function testAWrittenWeekKeyReadsBackToItsOwnMonday(): void
+    {
+        $monday = new \DateTimeImmutable('2026-07-27 00:00:00');
+
+        self::assertSame(
+            $monday->format('c'),
+            WeekKey::mondayOfKey(WeekKey::of($monday))?->format('c'),
+        );
+        self::assertSame(
+            $monday->format('c'),
+            WeekKey::mondayOfKey(WeekKey::of(new \DateTimeImmutable('2026-08-02 23:59:59')))?->format('c'),
+        );
+        self::assertNull(WeekKey::mondayOfKey('pas-une-semaine'));
     }
 
     // =====================================================================

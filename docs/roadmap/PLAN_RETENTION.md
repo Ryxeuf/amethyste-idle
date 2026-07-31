@@ -33,7 +33,7 @@ briques, cadrée par [../GAME_DASHBOARD.md](../GAME_DASHBOARD.md).
 | RET-06 ✅ | L'Affleurement de la semaine | Solo | ✅ **livré (2026-07-28)** |
 | RET-07 ✅ | Tests du plan | — | ✅ **livré (2026-07-28)** |
 | RET-08 ✅ | Le bloc « La semaine » sur le hub | Solo+Guilde | RET-01→06 ✅ ; cadrage GAME_DASHBOARD §3/§5 |
-| RET-09 | Le lundi — récap de la semaine close | Solo | RET-08 |
+| RET-09 ✅ | Le lundi — récap de la semaine close | Solo | RET-08 ✅ |
 | RET-10 | Les dettes d'écran du hub | — | ‖ RET-08 |
 
 ```
@@ -41,7 +41,7 @@ Vague 1 (indépendant)   : RET-01 → RET-02 → RET-03
 Vague 2 (après FOY)     : RET-04 ✅, RET-05 ✅
 Vague 3 (après pureté)  : RET-06
 Transverse              : RET-07 ✅
-Vague 4 (UI, cadrée)    : RET-08 → RET-09, RET-10 ‖
+Vague 4 (UI, cadrée)    : RET-08 ✅ → RET-09 ✅, RET-10 ‖
 ```
 
 **Pourquoi cet ordre.** Le critère de priorisation de la colonne
@@ -187,20 +187,31 @@ coûte une ligne de cron ; RET-02 et RET-03 créent le rendez-vous hebdomadaire 
       samedi. Il manque un formatage de date localisé, qui n'existe nulle part dans le
       catalogue aujourd'hui
 
-### RET-09 — Le lundi : le récap de la semaine close (S | ★★★ | HAUTE)
-
-- [ ] Détection **sans cron ni table neuve** : `weekKey` de dernière visite stockée sur
-      le joueur, comparée à la semaine courante — le lundi est un **état** du bloc, pas
-      un écran ni une modale
-- [ ] À la première visite de la semaine : récap de la semaine close en tête du bloc —
-      palier d'assiduité atteint (et ce qu'il a payé), commission livrée ou « repartie
-      sans vous » (constat, jamais reproche), défis réussis, contribution au chantier
-- [ ] **Une ligne de chronique** : le fait de monde le plus récent concernant la zone
-      d'attache — première surface joueur de la chronique des foyers (aujourd'hui
-      lisible uniquement via le Codex)
-- [ ] Dès la visite suivante : le bloc redevient compact, à sa place normale
-- [ ] Invariant hérité de RET-04, testé : le récap ne mentionne **jamais** une série ni
-      un manque (vocabulaire de la série interdit, comme dans les moteurs)
+### RET-09 — Le lundi : le récap de la semaine close ✅ (M | ★★★ | HAUTE)
+> **Livré le 2026-07-31.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+>
+> L'essentiel : une colonne (`player.hub_week_key`), aucune table, aucun cron. La
+> rotation se **constate à la lecture** — la sixième horloge hebdomadaire n'a pas été
+> créée, ce qui est la forme la plus forte du contrat RET-07.
+>
+> **Où marquer la semaine comme vue** était le seul point délicat, et il n'a que deux
+> mauvaises réponses : marquer sur un geste du joueur fait du récap une modale à
+> congédier ; ne pas marquer du tout le fait revenir à chaque rafraîchissement. La
+> réponse tenue : **lire, c'est consommer** — le même appel construit le récap et
+> déplace la marque, dans la même requête.
+>
+> Deux règles tenues par la forme : `HubWeekRecapLine` **n'a pas de route** (la semaine
+> close n'a pas d'écran où aller, à la différence de `HubWeekRow`), et son vocabulaire de
+> ton se limite à *neutre* et *gain* — il n'existe pas de constante pour le manque, donc
+> pas moyen d'en teindre une ligne sans ajouter le mot au type. `RetentionPlanContractTest`
+> étend au passage ses deux interdits à `src/GameEngine/Player`, devenu une surface
+> hebdomadaire à part entière.
+>
+> **Écart assumé** : le cadrage (§4) place le bloc en tête de *colonne principale* le
+> lundi. Il est resté dans la colonne latérale, où RET-08 l'avait mis — déplacer un
+> panneau une fois par semaine coûterait au repère plus que ne rapporterait la mise en
+> avant. Le récap s'ouvre donc en tête du **même** bloc, ce que le § 4 demande par
+> ailleurs (« un état du même bloc »).
 
 ### RET-10 — Les dettes d'écran du hub (S | ★★ | MOYENNE)
 

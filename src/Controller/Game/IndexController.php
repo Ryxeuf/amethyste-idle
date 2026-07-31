@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\GameEngine\Player\PlayerHubDigest;
+use App\GameEngine\Retention\WeeklyRecapService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\LifeRegenManager;
@@ -37,6 +38,10 @@ class IndexController extends AbstractController
         private readonly ActionEnergyManager $actionEnergyManager,
         private readonly LifeRegenManager $lifeRegenManager,
         private readonly ExpeditionService $expeditionService,
+        // En dernier : une dependance nouvelle s'ajoute en queue, jamais au
+        // milieu — un service insere entre deux autres decalerait sans un mot
+        // toute construction positionnelle.
+        private readonly WeeklyRecapService $weeklyRecap,
     ) {
     }
 
@@ -67,6 +72,11 @@ class IndexController extends AbstractController
             // RET-08 : l'assiduite n'est plus un encart a elle seule — elle est
             // la cinquieme ligne du bloc « La semaine ».
             'week' => $this->hubDigest->week($player),
+            // RET-09 : le lundi. L'appel **consomme** la semaine close — c'est
+            // le rendu qui la marque comme vue, et la visite suivante rend le
+            // bloc compact. Il vient apres `week()` par lisibilite seulement :
+            // les deux lectures sont independantes.
+            'weekRecap' => $this->weeklyRecap->consume($player),
             'domainExperiences' => $player->getDomainExperiences(),
             'quests' => $this->hubDigest->quests($player),
             'energy' => [

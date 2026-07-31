@@ -488,7 +488,16 @@
         "guild_order": "Commande de guilde : %count% en cours",
         "settlement_work": "Chantier de %zone% — %percent%%%",
         "settlement_work_done": "Chantier de %zone% : achevé",
-        "attendance": "Encore %days% jour%plural% pour %gils% gils et %energy% énergie"
+        "attendance": "Encore %days% jour%plural% pour %gils% gils et %energy% énergie",
+        "recap": {
+          "title": "La semaine passée",
+          "opens": "Et voici celle qui s'ouvre.",
+          "attendance": "%days% jours actifs : %gils% gils et %energy% énergie déposés.",
+          "commission_delivered": "Commission livrée.",
+          "commission_gone": "La commission est repartie sans vous ; une autre s'ouvre.",
+          "guild_challenges": "%count% défi%plural% de guilde mené%plural% à bien.",
+          "settlement_work": "%count% unité%plural% portée%plural% aux chantiers."
+        }
       }
     },
     "footer": {

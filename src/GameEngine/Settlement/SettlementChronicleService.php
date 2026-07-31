@@ -4,8 +4,11 @@ namespace App\GameEngine\Settlement;
 
 use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Settlement;
+use App\Entity\App\Zone;
+use App\Entity\Game\CodexEntry;
 use App\Enum\SettlementRank;
 use App\GameEngine\Codex\WorldFactService;
+use App\Repository\CodexEntryRepository;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,6 +41,10 @@ class SettlementChronicleService
         private readonly SettlementDefinitionLoader $loader,
         private readonly WorldFactService $worldFactService,
         private readonly EntityManagerInterface $entityManager,
+        // En dernier : une dependance nouvelle s'ajoute en queue, jamais au
+        // milieu — un service insere entre deux autres decalerait sans un mot
+        // toute construction positionnelle dans les tests.
+        private readonly CodexEntryRepository $codexEntryRepository,
     ) {
     }
 
@@ -97,6 +104,28 @@ class SettlementChronicleService
         return $judged->isAtLeast($floor);
     }
 
+    /**
+     * Le dernier fait de monde qui concerne une zone, s'il y en a un.
+     *
+     * **La lecture vit a cote de l'ecriture**, et c'est tout l'interet : le
+     * suffixe de slug n'est ecrit qu'ici, si bien qu'un changement de
+     * convention emporte le meme jour ce qui l'ecrit et ce qui le relit. Le
+     * recap du lundi (RET-09) est le premier appelant — la chronique n'etait
+     * jusqu'ici lisible que par le Codex.
+     */
+    public function latestFor(Zone $zone): ?CodexEntry
+    {
+        return $this->codexEntryRepository->findLatestWorldFactBySlugSuffix(self::slugSuffixFor($zone->getSlug()));
+    }
+
+    /**
+     * La fin de slug d'un fait de foyer : ce qui identifie la zone, sans l'arc.
+     */
+    private static function slugSuffixFor(string $zoneSlug): string
+    {
+        return '_' . $zoneSlug . '_foyer';
+    }
+
     private function record(InfluenceSeason $season, Settlement $settlement, SettlementRank $before, SettlementRank $after): void
     {
         $zone = $settlement->getZone();
@@ -107,7 +136,7 @@ class SettlementChronicleService
             // Idempotent par slug (convention NAR-07) : rejouer la cloture met a
             // jour le fait, elle n'en empile pas un second. Le slug porte l'arc
             // et la zone — une maree, un foyer, un fait.
-            sprintf('%s_%s_foyer', $season->getStoryArc(), $zone->getSlug()),
+            $season->getStoryArc() . self::slugSuffixFor($zone->getSlug()),
             sprintf('%s — %s', $season->getName(), $zone->getName()),
             $this->narrate($zone->getName(), $before, $after, $rose, $guildName),
             $guildName,

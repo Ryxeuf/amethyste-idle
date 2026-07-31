@@ -10,6 +10,7 @@ use App\Enum\SettlementRank;
 use App\GameEngine\Codex\WorldFactService;
 use App\GameEngine\Settlement\SettlementChronicleService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
+use App\Repository\CodexEntryRepository;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -255,6 +256,7 @@ class SettlementChronicleServiceTest extends TestCase
             $loader,
             $worldFacts,
             $this->createMock(EntityManagerInterface::class),
+            $this->createMock(CodexEntryRepository::class),
         );
     }
 }

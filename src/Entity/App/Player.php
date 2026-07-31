@@ -229,6 +229,21 @@ class Player implements CharacterInterface
     private ?\DateTimeImmutable $lastActivityAt = null;
 
     /**
+     * Semaine dont le tableau de bord a deja ete vu (RET-09).
+     *
+     * Le lundi est un **etat**, pas un evenement : la rotation se constate a la
+     * lecture, en comparant cette clef a celle de la semaine courante. Aucune
+     * tache planifiee ne la touche — c'est ce qui evite une sixieme horloge
+     * hebdomadaire (contrat RET-07).
+     *
+     * `null` vaut « jamais vu » et non « semaine ratee » : un personnage neuf
+     * est simplement inscrit sur la semaine courante, sans recap. Raconter une
+     * semaine qu'on n'a pas jouee serait un mensonge du premier jour.
+     */
+    #[ORM\Column(name: 'hub_week_key', type: 'string', length: 8, nullable: true)]
+    private ?string $hubWeekKey = null;
+
+    /**
      * Cumul de l'energie d'action depensee depuis la creation (FOY-17).
      *
      * C'est la matiere premiere du dimensionnement du monde : la somme sur tous
@@ -579,6 +594,16 @@ class Player implements CharacterInterface
         $this->homeZoneClaimedAt = new \DateTimeImmutable();
 
         return true;
+    }
+
+    public function getHubWeekKey(): ?string
+    {
+        return $this->hubWeekKey;
+    }
+
+    public function setHubWeekKey(?string $hubWeekKey): void
+    {
+        $this->hubWeekKey = $hubWeekKey;
     }
 
     public function getCurrentZone(): ?Zone
