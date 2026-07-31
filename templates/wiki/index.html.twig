@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title ? title ~ ' — ' ~ 'wiki.title'|trans : 'wiki.title'|trans }}{% endblock %}
+
+{#
+   WIK-02 — le wiki joueur, public.
+
+   Habillage Parchemin : aucune couleur n'est redéclarée ici. Les quelques
+   règles ci-dessous ne font que raccorder la sortie du parseur markdown
+   (classes `roadmap-*`, partagées avec l'écran de roadmap) aux jetons du
+   système de design — c'est un pont vers du HTML généré, pas une seconde
+   palette.
+#}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .wiki-prose .roadmap-h1,
+        .wiki-prose .roadmap-h2,
+        .wiki-prose .roadmap-h3,
+        .wiki-prose .roadmap-h4 { font-family: var(--font-display); color: var(--color-ink); font-weight: 700; }
+        .wiki-prose .roadmap-h1 { font-size: 1.75rem; margin: 0 0 1rem; }
+        .wiki-prose .roadmap-h2 { font-size: 1.35rem; margin: 2rem 0 .5rem; padding-bottom: .35rem; border-bottom: 1px solid var(--color-line); }
+        .wiki-prose .roadmap-h3 { font-size: 1.1rem; margin: 1.5rem 0 .35rem; }
+        .wiki-prose .roadmap-h4 { font-size: 1rem; margin: 1.25rem 0 .25rem; }
+        .wiki-prose p,
+        .wiki-prose li { color: var(--color-ink-2); line-height: 1.65; }
+        .wiki-prose ul,
+        .wiki-prose ol { margin: .5rem 0 .75rem 1.25rem; }
+        .wiki-prose li { margin: .2rem 0; }
+        .wiki-prose .roadmap-link { color: var(--color-brand); text-decoration: underline; text-underline-offset: 2px; }
+        .wiki-prose .roadmap-blockquote { border-left: 3px solid var(--color-brand); padding: .5rem .9rem; margin: .75rem 0; color: var(--color-ink-2); }
+        .wiki-prose .roadmap-inline-code,
+        .wiki-prose code { font-family: var(--font-mono); font-size: .9em; }
+        .wiki-prose table { width: 100%; border-collapse: collapse; margin: .75rem 0; }
+        .wiki-prose th,
+        .wiki-prose td { border: 1px solid var(--color-line); padding: .4rem .6rem; text-align: left; color: var(--color-ink-2); }
+        .wiki-prose th { font-weight: 600; color: var(--color-ink); }
+        .wiki-prose hr { border: 0; border-top: 1px solid var(--color-line); margin: 1.5rem 0; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+        <p class="ds-eyebrow">{{ 'wiki.eyebrow'|trans }}</p>
+        <h1 class="ds-title">{{ 'wiki.title'|trans }}</h1>
+        <p class="ds-hint mt-1">{{ 'wiki.tagline'|trans }}</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        {# ===== SOMMAIRE — constaté depuis les dossiers, jamais recopié ===== #}
+        <nav class="lg:col-span-1" aria-label="{{ 'wiki.nav_label'|trans }}">
+            <div class="game-card lg:sticky lg:top-6">
+                <div class="game-card-body space-y-4">
+                    <a href="{{ path('app_wiki_index') }}"
+                       class="ds-name block{{ current is null ? ' text-brand' : '' }}">{{ 'wiki.summary'|trans }}</a>
+
+                    {% for section in sections %}
+                        <div>
+                            <p class="ds-label mb-1">{{ section.title }}</p>
+                            <ul class="space-y-0.5">
+                                {% for page in section.pages %}
+                                    <li>
+                                        <a href="{{ path('app_wiki_page', {section: section.slug, page: page.slug}) }}"
+                                           class="ds-hint block truncate hover:underline{{ current and current.slug == page.slug and current.section == section.slug ? ' text-brand' : '' }}">
+                                            {{ page.title }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </nav>
+
+        {# ===== LA PAGE ===== #}
+        <article class="lg:col-span-3">
+            <div class="game-card">
+                <div class="game-card-body wiki-prose" data-testid="wiki-content">
+                    {{ content|raw }}
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+{% endblock %}

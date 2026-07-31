@@ -1937,5 +1937,13 @@
         "title": "Icon editor"
       }
     }
+  },
+  "wiki": {
+    "eyebrow": "Amethyst",
+    "title": "Rules & lore",
+    "tagline": "How the world works — not where its secrets are.",
+    "summary": "Contents",
+    "nav_label": "Wiki contents",
+    "link": "Rules & lore"
   }
 }

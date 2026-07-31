@@ -22,8 +22,8 @@ Le wiki décrit le jeu tel qu'il est, pas la roadmap.
 | Jalon | Titre | Taille | Statut |
 |---|---|---|---|
 | WIK-01 | Le contenu — 7 chapitres, ~20 pages sous `docs/wiki/` | L | ✅ livré le 2026-07-29 |
-| WIK-02 | Le contrôleur public `/wiki` | M | à faire |
-| WIK-03 | L'accès depuis le site et le jeu + le contrat d'entretien | S | à faire |
+| WIK-02 ✅ | Le contrôleur public `/wiki` | M | **livré le 2026-07-31** |
+| WIK-03 ◐ | L'accès depuis le site + le contrat d'entretien | S | **entrée publique et contrat livrés** ; liens contextuels au fil des écrans |
 
 ### WIK-01 — Le contenu ✅ (L)
 > Livré le 2026-07-29. Les 7 chapitres : Commencer (le monde, créer son personnage,
@@ -33,24 +33,36 @@ Le wiki décrit le jeu tel qu'il est, pas la roadmap.
 > semaine), Combattre (combat, éléments, donjons/boss/bestiaire), Les règles d'or.
 > Sommaire dans `docs/wiki/README.md`.
 
-### WIK-02 — Le contrôleur public `/wiki` (M | ★★★)
-- [ ] Contrôleur sur le pattern de `RoadmapController` (lecture des fichiers markdown de
-      `docs/wiki/`, rendu HTML, cache) — exposé sur le **site public** (amethyste.best),
-      pas seulement en jeu
-- [ ] Sommaire latéral généré depuis la structure des dossiers (`01-commencer/` …
-      `07-regles-dor/`), page d'accueil = `README.md`
-- [ ] Habillage Parchemin : composants `.ds-*`, aucune couleur redéclarée
-- [ ] Les liens croisés relatifs entre pages (`../01-commencer/energie.md`) sont réécrits
-      en routes `/wiki/...`
-- [ ] Test : chaque fichier de `docs/wiki/` est atteignable par une route ; un lien
-      interne cassé fait rougir la CI
+### WIK-02 — Le contrôleur public `/wiki` ✅ (M | ★★★)
+> **Livré le 2026-07-31.** Détail dans [../ROADMAP_DONE.md](../ROADMAP_DONE.md).
+- [x] Contrôleur public, réutilisant le `MarkdownParser` de l'écran de roadmap
+- [x] Sommaire **constaté** depuis les dossiers, jamais recopié — une page déposée dans un
+      chapitre existant y apparaît toute seule
+- [x] Habillage Parchemin : `.ds-*` et jetons du système de design, aucune couleur redéclarée
+- [x] Liens relatifs réécrits en routes `/wiki/...` — **y compris les liens entre voisins de
+      chapitre** (`energie.md` sans dossier), qui sont la moitié des 80 liens du wiki
+- [x] Tests : chaque fichier atteignable, aucun lien mort, et une adresse inventée ne trouve
+      rien — les deux segments d'URL sont des **clefs d'index**, jamais des morceaux de chemin
 
-### WIK-03 — L'accès et le contrat d'entretien (S | ★★)
-- [ ] Entrée « Règles & savoir » dans la navigation du site public et un lien discret
-      depuis le jeu (menu ou pied de page)
+> **Écart au cadrage, assumé** : pas de cache. Le jalon en prévoyait un « sur le pattern de
+> `RoadmapController` » — qui n'en a pas non plus. Vingt-cinq fichiers lus au vol par une page
+> consultée rarement ne justifient pas un invalidateur de plus à tenir juste.
+
+
+### WIK-03 — L'accès et le contrat d'entretien ◐ (S | ★★)
+> **Livré le 2026-07-31** : l'entrée publique et la moitié vérifiable du contrat.
+> **Restent les liens contextuels**, à poser au fil des reprises d'écrans.
+- [x] Entrée « Règles & savoir » dans la navigation du site public, **hors du bloc
+      `app.user`** : les règles se lisent avant de jouer, et un wiki derrière
+      l'authentification ne sert qu'à ceux qui n'en ont déjà plus besoin
 - [ ] Liens contextuels : l'écran de zone renvoie à la page zones-et-voyage, l'inventaire
       à materia, l'écran de craft à artisanats (progressif, au fil des reprises d'écrans)
-- [ ] **Contrat d'entretien** : quand un plan annexe livre un système visible joueur, la
-      campagne de livraison met à jour la page wiki concernée (ajouter cette ligne aux
-      critères d'acceptance des plans actifs au fur et à mesure)
-- [ ] Revue périmètre : vérifier qu'aucune page ne mentionne un système non livré
+- [x] **Contrat d'entretien**, dans sa moitié vérifiable : un test refuse que le wiki nomme
+      un système acté mais non livré (caravanes, Répertoire des gestes). La liste est courte
+      et chaque entrée se justifie par un jalon ouvert ; **le jour où l'un est livré, son
+      entrée quitte la liste dans le même changement** — c'est ce qui rend la mise à jour du
+      wiki visible au moment de la livraison plutôt que six mois plus tard
+- [x] Revue périmètre : faite. Rien à corriger — et une fausse alerte instructive,
+      l'Affleurement. Le wiki en **explique la règle** (et dit que le savoir des prospecteurs
+      se monnaye) sans jamais dire où il est cette semaine : c'est exactement ce que
+      GAME_DASHBOARD §6 demande. L'interdit porte sur l'**annonce**, pas sur l'existence

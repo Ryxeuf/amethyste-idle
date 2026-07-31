@@ -1937,5 +1937,13 @@
         "title": "Éditeur d'icônes"
       }
     }
+  },
+  "wiki": {
+    "eyebrow": "Améthyste",
+    "title": "Règles & savoir",
+    "tagline": "Comment le monde fonctionne — pas où sont ses secrets.",
+    "summary": "Sommaire",
+    "nav_label": "Sommaire du wiki",
+    "link": "Règles & savoir"
   }
 }
