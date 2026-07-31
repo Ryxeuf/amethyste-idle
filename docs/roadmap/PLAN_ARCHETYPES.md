@@ -31,7 +31,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 30 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 33 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -155,6 +155,20 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : un **simulateur de combat** en test — la durée moyenne par palier, pas un
       tableau de valeurs relu à la main. C'est la seule forme de test qui attrape une
       régression d'équilibrage
+- [ ] **Il doit produire la table croisée du §9 sexies**, pas des durées isolées : c'est
+      la comparaison des six builds qui a revele le desequilibre, aucun exercice individuel
+      ne pouvait le voir
+- [ ] **L'ancre de fonction** (§9 sexies.3) : a arbre complet et equipement egal, les quatre
+      fonctions enchainent le meme nombre de rencontres par jour et en sortent dans un etat
+      comparable. Ce qui diffère, c'est **comment on paie**
+- [ ] **Le palier des accords suit la fonction** : assaut au palier plein, controle /
+      entretien / encaisse un palier en dessous (~ −25 %). Mesuré : ramène l'ecart de
+      « 9 tours contre 11 » à « 7 tours contre 11-14 », sans qu'aucun levier ne bouge
+- [ ] **Trancher la valeur de la vitesse** (§9 sexies.4) — une chasse coute 5 points
+      d'energie quel que soit le nombre de tours, donc tuer vite ne rapporte **rien** en
+      solo. Option recommandee : les **rencontres à fenêtre** (un boss se termine en 12-20
+      tours ou pas du tout). Consequence a porter dans GAME_DUNGEONS et GAME_BESTIARY : un
+      boss doit avoir assez de PV pour qu'un archetype lent n'en vienne pas a bout
 - [ ] Consigner le résultat dans [../BALANCE.md](../BALANCE.md) (§4 est aujourd'hui
       aspirationnel : les fixtures ne le suivent pas)
 
@@ -191,7 +205,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 30 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 33 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**

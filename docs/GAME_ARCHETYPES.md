@@ -1815,6 +1815,113 @@ est ce qui empêche d'en faire un.
 
 ---
 
+## 9 sexies. La comparaison croisée — **non, ce n'est pas équilibré**
+
+Les quatre exercices précédents ont chacun mesuré **un** archétype. Aucun n'a mis
+les six builds sur la même ligne. C'est cette table-là qui manquait, et elle est
+sans appel.
+
+### 9 sexies.1 Les six builds contre la même élite
+
+Élite T2 (180 PV, frappe 16). Arbres complets, équipement **non modélisé** — c'est
+la contribution des arbres seuls.
+
+| Build | Durée | PV restants | Ressource | Gils/jour |
+|---|---:|---:|---|---:|
+| **Soldat — la Ligne mobile** | **9 tours** | **78** | — | **0** |
+| Soldat — le Mur | 11 | 68 | — | 0 |
+| Guérisseur — le Ressac | 11 | 76 | 108 PM | 0 |
+| Hydromancien — la Vague | 9 | 38 | ~90 PM | 0 |
+| Archer — le Guet | 7 | 38 | — | **230** |
+| Pyromancien — l'Éclat | 8 | 11 | 160 PM *(panne t8)* | 0 |
+
+> **Le guerrier domine, et il domine sur les deux tableaux à la fois** : il tue
+> aussi vite que l'hydromancien, survit mieux que tout le monde, et **ne paie
+> rien**. L'archer gagne deux tours et les paie 230 gils par jour. Le pyromancien
+> gagne un tour, finit à 11 PV et tombe en panne de PM avant la fin.
+
+### 9 sexies.2 Trois causes, mesurées
+
+**Cause 1 — les leviers de survie rendent 2,5 fois les leviers de dégâts, à budget
+strictement égal.**
+
+| 50 points de budget dépensés en… | Ce que ça rend |
+|---|---:|
+| **Assaut** (+17 % de dégâts) | le combat passe de 8,3 à 7,1 tours → **16 points de valeur** |
+| **Encaisse** (+22,5 % de PV, −11,8 % de dégâts subis) | +27 PV et 13 dégâts évités → **40 points de valeur** |
+
+Le budget est le même, le rendement ne l'est pas. Aucune palette n'a jamais été
+comparée à une autre — **c'est le trou de méthode du document**.
+
+**Cause 2 — une ressource payée n'est jamais compensée.** L'archer paie
+230 gils/jour, le pyromancien tombe en panne au tour 8 ; ni l'un ni l'autre
+n'obtient un avantage proportionné. La correction 8 (§9 quater) posait une prime de
+munition sans la chiffrer — **elle n'a donc encore rien corrigé**.
+
+**Cause 3, et c'est la vraie — dans ce jeu, la vitesse n'a pas de valeur.**
+
+> Une chasse coûte **5 points d'énergie, quel que soit le nombre de tours**
+> (GAME_PROGRESSION §1). Tuer en 7 tours au lieu de 14 ne permet donc **pas un
+> combat de plus** dans la journée.
+
+La promesse de l'assaut — *« je finis le combat avant qu'il ne devienne un
+problème »* — **n'a aucun débouché économique en solo**. Les deux seules choses qui
+valent quelque chose dans une journée de PBBG sont les **PV restants** (moins de
+régénération, moins de potions) et la **ressource dépensée**. L'assaut ne gagne ni
+l'un ni l'autre. Le déséquilibre n'est pas dans les chiffres des arbres : il est
+dans ce que le jeu récompense.
+
+### 9 sexies.3 Ce qui corrige, et ce qui reste à trancher
+
+**Correction 14 — le palier des accords suit la fonction.** L'assaut ouvre ses
+gestes de dégât au **palier plein** ; contrôle, entretien et encaisse les ouvrent
+**un palier en dessous** (≈ −25 %). Une fois de plus, la différence passe par les
+**gestes**, pas par les pourcentages. Mesuré :
+
+| | Aujourd'hui | Avec la correction |
+|---|---|---|
+| Soldat — la Ligne mobile | 9 tours, 78 PV | **11 tours, 55 PV** |
+| Guérisseur — le Ressac | 11 tours, 76 PV | **14 tours, 47 PV** |
+| Archer — le Guet | 7 tours, 38 PV | 7 tours, 38 PV |
+| Pyromancien — l'Éclat | 8 tours, 11 PV | 8 tours, 11 PV |
+
+L'écart devient lisible — 7 tours contre 11 à 14 — sans qu'aucun levier ne bouge.
+
+**Correction 15 — la prime de munition se chiffre, ou le coût disparaît.** Une
+ressource qui coûte sans rendre est un impôt sur un archétype. Soit la prime vaut
+au moins l'écart mesuré (230 gils/jour), soit les munitions cessent d'être
+payantes. **Il n'y a pas de troisième option**, et la laisser en suspens revient à
+choisir la première par défaut.
+
+**Correction 16 — l'ancre de fonction, l'invariant qui manquait.**
+
+> **À arbre complet et équipement égal, les quatre fonctions doivent enchaîner le
+> même nombre de rencontres de leur palier par jour, et en sortir dans un état
+> comparable.** Ce qui diffère, c'est **comment on paie** : le soldat en tours, le
+> guérisseur en PM, l'archer en gils, le pyromancien en fragilité.
+
+C'est le seul invariant qui ne se vérifie pas sur un archétype isolé — il exige la
+table du §9 sexies.1. **Le simulateur d'ARC-05 doit la produire, pas des durées
+individuelles.**
+
+### 9 sexies.4 L'arbitrage qui reste — donner une valeur à la vitesse
+
+La cause 3 dépasse les arbres : c'est une décision de conception du jeu.
+
+| Option | Ce que ça implique | Verdict |
+|---|---|---|
+| **A. Les rencontres à fenêtre** — un boss se termine en 12-20 tours ou pas du tout | Mesuré : contre un boss de 400 PV, l'archer et le pyromancien tiennent la fenêtre (15 tours) ; le soldat (25) et le guérisseur (29) **ne la tiennent pas**. La vitesse décide enfin de quelque chose | ✅ **Recommandé** — c'est du contenu, pas du moteur, et ça donne un débouché propre à l'assaut |
+| **B. Indexer le coût d'énergie sur la durée** | Un combat long coûterait plus cher. Cohérent, mais ça contredit « l'énergie se paie par geste » (GAME_PROGRESSION §1) et ça punirait l'entretien deux fois | ❌ |
+| **C. Assumer que l'assaut est un archétype de groupe** | Faux : §9 quinquies a montré qu'un effet sur l'ennemi ne se multiplie pas par la taille du groupe | ❌ |
+
+**Recommandation : l'option A**, et elle a une conséquence à écrire dans
+`GAME_DUNGEONS` et `GAME_BESTIARY` — **un boss doit avoir assez de points de vie
+pour qu'un archétype lent n'en vienne pas à bout**. Sans contenu à fenêtre,
+l'assaut n'a pas de raison d'exister, et le guerrier restera le meilleur choix
+dans tous les cas.
+
+---
+
 ## 10. Les 24 domaines de combat dans la grille
 
 Fonction proposée pour chacun. La règle qui la contraint : **aucun triplet
@@ -2009,9 +2116,18 @@ Ce qui doit casser la CI si on le viole :
     ≥ 2 tours, ou marque portée par un geste de dégât. En duel, l'échange à un pour
     un est arithmétiquement nul.
 28. **Les leviers principaux plafonnent à 20**, sauf `guard` à 15 (§4.1).
-29. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+29. **L'ancre de fonction** (§9 sexies) — à arbre complet et équipement égal, les
+    quatre fonctions enchaînent le **même nombre de rencontres par jour** et en
+    sortent dans un état comparable. Seul invariant qui ne se vérifie pas sur un
+    archétype isolé : il exige la **table croisée**, que le simulateur d'ARC-05 doit
+    produire.
+30. **Le palier des accords suit la fonction** (§9 sexies) — l'assaut ouvre ses
+    gestes de dégât au palier plein, les trois autres fonctions un palier en dessous.
+31. **Aucune ressource n'est payée sans contrepartie** — une prime chiffrée contre
+    l'écart mesuré, ou pas de coût du tout.
+32. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-30. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+33. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
@@ -2031,3 +2147,7 @@ Ce qui doit casser la CI si on le viole :
 - **La forme visuelle de l'arbre** — design d'écran, pas design de système.
 - **Le nombre d'arbres qu'un joueur mènera réellement** : c'est une conséquence de
   l'énergie et du build, pas une règle à écrire.
+- **La valeur de la vitesse de combat** (§9 sexies.4) — l'arbitrage est posé et
+  documenté, la décision revient au jeu, pas aux arbres. Tant qu'il n'est pas rendu,
+  **l'assaut n'a pas de raison d'exister** et le guerrier reste le meilleur choix
+  dans tous les cas de figure.
