@@ -824,6 +824,19 @@ zones:
             # Foret) et ne doit jamais etre un goulot : c'est le T0 de sa ligne,
             # au meme titre que le cuivre pour le metal.
             - { slug: hetraie-des-vallons, item: wood-beech, profession: woodcutting, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
+            # La troisieme source de cuivre, promise par GAME_ZONES § 3 et jamais
+            # posee : ZON-30 a livre les Vallons sans elle. Le monde n'en avait
+            # que deux — les Mines profondes et les Dunes d'Ambre —, c'est-a-dire
+            # une zone hostile de palier haut et l'autre bout de la route du sud.
+            # Le premier metal de toutes les chaines d'artisanat n'etait donc
+            # accessible qu'apres un vrai voyage.
+            #
+            # Ici, il tient a la loi du temps de la zone : les Vallons sont la
+            # strate la plus jeune du monde, celle que la charrue retourne. Ce
+            # que le champ remonte, c'est l'affleurement d'amethyste (ZON-40) et
+            # le cuivre — le metal le moins profond. Profil T0, comme le ble et
+            # le hetre : la zone-ecole ne fabrique pas de goulot.
+            - { slug: filon-de-cuivre-des-labours, item: ore-copper, profession: mining, capacity: 72, respawn_seconds: 25200, yield_min: 1, yield_max: 3 }
         mobs:
             # Toute la faune est depecable, et c'est le point : le depeceur
             # commence ici. Les effectifs disent la densite du bocage — le
