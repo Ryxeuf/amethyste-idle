@@ -200,10 +200,10 @@ final class WikiLibrary
     private function directories(): array
     {
         $directories = array_filter((array) glob($this->root() . '/*'), 'is_dir');
+        // `sort` reindexe : le tableau est deja une liste au retour.
         sort($directories);
 
-        /** @var list<string> $directories */
-        return array_values($directories);
+        return $directories;
     }
 
     /**
@@ -214,8 +214,7 @@ final class WikiLibrary
         $files = (array) glob($directory . '/*.md');
         sort($files);
 
-        /** @var list<string> $files */
-        return array_values($files);
+        return $files;
     }
 
     /**

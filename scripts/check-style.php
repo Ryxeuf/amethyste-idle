@@ -142,6 +142,7 @@ function inspect(string $source): array
         checkOrderedImports($tokens),
         checkPhpdoc($tokens),
         checkBlankLineAfterPhpdoc($tokens),
+        checkVarDocBeforeReturn($tokens),
         checkBlankLines($lines),
     );
 }
@@ -542,6 +543,55 @@ function checkBlankLineAfterPhpdoc(array $tokens): array
                 'line' => $token[2],
                 'message' => 'un phpdoc ne peut pas etre suivi d\'une ligne vide (un bloc d\'en-tete de fichier s\'ecrit `/*`, pas `/**`).',
             ];
+        }
+    }
+
+    return $violations;
+}
+
+/**
+ * phpdoc_to_comment : un `@var` qui ne documente aucune declaration s'ecrit `/*`.
+ *
+ * Un phpdoc documente **quelque chose** — une propriete, une assignation. Pose
+ * devant un `return`, il ne documente rien du tout : php-cs-fixer le degrade
+ * alors en commentaire ordinaire.
+ *
+ * La dixieme regle de ce garde, et la troisieme apprise en cassant la CI. Le
+ * controle est volontairement etroit — il ne regarde que le cas `return`, celui
+ * qui s'est presente — parce que ce fichier vaut par son absence de faux
+ * positifs, pas par son exhaustivite.
+ *
+ * @param list<array{0: int, 1: string, 2: int}|string> $tokens
+ *
+ * @return list<array{rule: string, line: int, message: string}>
+ */
+function checkVarDocBeforeReturn(array $tokens): array
+{
+    $violations = [];
+    $count = \count($tokens);
+
+    for ($i = 0; $i < $count; ++$i) {
+        $token = $tokens[$i];
+
+        if (!\is_array($token) || T_DOC_COMMENT !== $token[0] || !str_contains($token[1], '@var')) {
+            continue;
+        }
+
+        for ($j = $i + 1; $j < $count; ++$j) {
+            $next = $tokens[$j];
+            if (\is_array($next) && \in_array($next[0], [T_WHITESPACE, T_COMMENT], true)) {
+                continue;
+            }
+
+            if (\is_array($next) && T_RETURN === $next[0]) {
+                $violations[] = [
+                    'rule' => 'phpdoc_to_comment',
+                    'line' => $token[2],
+                    'message' => 'un `@var` pose devant un `return` ne documente rien : il s\'ecrit `/*`, pas `/**`.',
+                ];
+            }
+
+            break;
         }
     }
 
