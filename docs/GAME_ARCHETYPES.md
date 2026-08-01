@@ -250,6 +250,37 @@ Et trois lignes d'armure, trois profils défensifs **qui ne se remplacent pas** 
 > identiques. **Le même total, deux jeux différents** : c'est la définition d'une
 > nuance réussie.
 
+#### Combien exactement — la fourchette utile *(mesurée)*
+
+**L'arbre ne peut pas créer l'écart** : `life` plafonne à 20 pb (+30 %) et `guard`
+à 15 pb (−9 %). Par l'arbre seul, un tank a **×1,39** les points de vie effectifs
+d'un porteur de tissu — ce qui n'est pas un écart, c'est une nuance. **C'est
+délibéré : l'arbre qualifie, l'armure décide.** Mais encore faut-il dire de
+combien.
+
+| Mitigation de la plaque | PV effectifs du tank | Écart / tissu | Dégâts subis en solo *(élite)* |
+|---:|---:|---:|---|
+| 0 % *(arbre seul)* | 167 | ×1,39 | tank 168 / archer 82 |
+| 28 % *(minimum pour l'aggro, §13.4)* | 231 | ×1,93 | tank 121 / archer 82 |
+| **40 %** | **278** | **×2,31** | tank 101 / archer 82 |
+| 50 % | 333 | ×2,78 | tank 84 / archer 82 — *à l'équilibre* |
+| 60 % | 417 | ×3,47 | tank 67 / archer 82 — **le solo casse** |
+
+**La borne haute est à ~50 %**, et elle sort d'un calcul et non d'un avis : c'est
+le point où la mitigation du tank annule exactement sa lenteur (14 tours contre 6).
+Au-delà, il encaisse moins que l'archer **tout en survivant mieux**, et redevient
+le meilleur choix partout — le défaut du §9 sexies, réintroduit par l'équipement.
+
+> **Recommandation : plaque ~40 %, cuir ~20 %, tissu 0 %.** L'écart de points de
+> vie effectifs devient **×2,3 / ×1,6 / ×1** — franc, lisible au premier coup
+> d'œil, et il laisse l'archer meilleur en dégâts subis (82 contre 101). C'est un
+> chiffre de [GAME_ITEMS.md](GAME_ITEMS.md), pas un chiffre d'arbre.
+
+> **Ce qui autorise une mitigation aussi forte, c'est la lenteur.** Le tank met
+> deux fois plus de tours à finir un combat ; chaque tour est un coup encaissé de
+> plus. La plaque ne le rend pas invulnérable — elle lui rembourse le temps qu'il
+> perd.
+
 ---
 
 ## 3. Décision 1 — Le geste d'arme est une matéria
@@ -908,6 +939,66 @@ qu'elles tombent en trois minutes ou en trois jours.
 > n'est pas un défaut à corriger : c'est une propriété du modèle, et la nier
 > reviendrait à équilibrer le contrôle comme un soutien qu'il n'est pas.
 
+### 7 bis.2 bis Le direct et le dépôt — deux outils, jamais une interdiction
+
+**La loi du dépôt n'interdit pas le soin direct.** Elle dit qu'un geste **qui
+touche le groupe** se dépose, parce qu'on ne peut pas réagir pour quatre personnes
+dont on ne voit pas les tours. Le soin direct, lui, reste parfaitement jouable —
+et il est même le geste d'entrée naturel de l'entretien.
+
+**Ce qui les sépare n'est pas la portée, c'est le moment.**
+
+| | Soin direct | Dépôt |
+|---|---|---|
+| Ce que ça rend | 40 PV **à l'instant choisi** | 8 PV/tour × 6 tours = 48, **étalés** |
+| En solo | l'**urgence** — le seul qui sauve quelqu'un à 20 PV | 48 PV, mais trop tard si on tombe au tour 2 |
+| À quatre | 40 PV à **un** allié | **192** — il touche les quatre corps, chaque tour |
+| Quand on est absent | rien | il court |
+
+> **Le direct est l'urgence, le dépôt est la provision.** Un guérisseur solo joue
+> surtout le premier, un guérisseur de donjon surtout le second — et c'est
+> exactement ce que la fourche *le Ressac / la Marée* (§9.2) sépare.
+
+**La règle fine, et elle vaut pour tout le reste** *(précision du §9 quinquies)* :
+
+> **Ce qui agit sur un état se multiplie par le nombre d'alliés. Ce qui agit sur
+> une action ne se multiplie pas.**
+
+Parce qu'un seul joueur agit par tour. Un soin, une absorption, une résistance
+touchent **quatre corps** à chaque tour → ×4. Une amélioration de dégâts ne touche
+que **l'action du tour** → ×1, qu'on soit un ou quatre.
+
+#### Ce que ça décide pour les améliorations *(le « barde »)*
+
+| Ce qu'on dépose, 6 tours | Valeur à quatre | En tours d'attaque |
+|---|---:|---:|
+| Un soin *(état, 4 corps)* | 192 PV | **×8,7** |
+| Une amélioration de dégâts *(action, 1/tour)* | 20 dégâts | **×0,9** |
+
+Un archétype de barde **n'est donc pas un archétype de groupe** dans notre
+modèle : son amélioration vaut la même chose seul et à quatre. C'est le même
+constat que pour le contrôle (§9 quinquies), et la même compensation — **sa valeur
+ne dépend pas du contexte.**
+
+**Le curseur qui en découle**, et il est simple :
+
+> **Un tour passé à améliorer doit valoir au plus un tour passé à frapper.**
+> Une amélioration de +X % pendant N tours rend N × X % d'un tour. Donc
+> **N × X ≤ 100**.
+
+| Durée du dépôt | Ampleur maximale |
+|---:|---:|
+| 6 tours | **+16,7 %** |
+| 8 tours | **+12,5 %** |
+| 10 tours | **+10 %** |
+
+Au-delà, améliorer bat frapper — et l'archétype optimal devient « ne jamais
+attaquer ». C'est le garde-fou le moins cher du document : une multiplication.
+
+> **Un barde qui veut compter en groupe doit donc améliorer un *état*, pas une
+> *action*** : +PV maximum, une absorption, une résistance. Ceux-là se multiplient
+> par quatre. C'est ce qui le rapproche de l'entretien plutôt que du contrôle.
+
 > **Le garde-fou qui va avec** : un dépôt ne rend jamais un joueur *nécessaire*.
 > Un groupe sans entretien met plus de tours et perd plus de PV — il ne se heurte
 > pas à un mur. Exiger un rôle, c'est exiger une présence, et exiger une présence
@@ -1051,7 +1142,9 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 > `scope: soi` : ne jamais tomber, ne jamais boire de potion, et ressortir d'un
 > combat de vingt tours avec la même barre qu'en entrant.
 >
-> Ce n'est pas deux archétypes : c'est le même, avec une portée différente.
+> Ce n'est pas deux archétypes : c'est le même, avec une portée différente. **Et il
+> garde un soin direct** — le geste d'urgence, celui qui sauve quelqu'un à 20 PV
+> quand aucune provision ne le ferait à temps (§7 bis.2 bis).
 
 > **Et il a une vertu de PBBG que les trois autres n'ont pas** : l'énergie d'action
 > se paie **par combat, jamais par tour** (GAME_PROGRESSION §1). Un archétype qui
@@ -1063,11 +1156,11 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Rosée** — `soin`, `soi ou un allié`, **sur la durée** | le geste : il **dépose** des PV sur N tours au lieu d'en rendre au tour | — |
+| Entrée | 0 | **Accord : Soin** — `soin`, `soi ou un allié`, **direct** | le geste d'**urgence** : tout, tout de suite, au moment choisi (§7 bis.2 bis) | — |
 | Entrée | 0 | **Accord : Jet d'eau** — `dégât`, `une cible` | le geste offensif modeste : **sans lui, un combat ne finit jamais** (§5.1). Il applique **Trempé** — la marque, donc la condition du capstone | — |
 | 1 | 10 | Main sûre | `mending` **+3 %** | 3 |
 | 1 | 10 | Geste économe | `thrift` **−1,8 %** | 3 |
-| 1 | 10 | **Accord : Dissipation** — `protection`, `un allié` | retirer un statut — la réponse aux poisons et aux entraves | — |
+| 1 | 10 | **Accord : Rosée** — `soin`, `soi ou un allié`, **déposée** | la **provision** personnelle : moins par tour, mais elle court quand on ne joue pas | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | — | — |
 | 2 | 25 | Seconde respiration | `wind` **+0,6 PM/tour** | 6 |
 | 2 | 25 | Sang-froid | `ward` **+6 %** | 6 |
@@ -1077,7 +1170,7 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 | 3 | 50 | **Fourche — le Ressac** · Écume | `guard` **−7,6 %** *si un bouclier ou un focus occupe la main gauche* (×1,4) — *teinte* | 9 |
 | 3 | 50 | **Fourche — la Marée** · Litanie | `thrift` **−5,4 %** | 9 |
 | 3 | 50 | **Fourche — la Marée** · Eaux calmes | `ward` **+9 %** | 9 |
-| 3 | 50 | **Fourche — le Ressac** · **Accord : Écaille profonde** — `protection`, `soi`, longue | l'absorption qui le rend increvable **seul** | — |
+| 3 | 50 | **Fourche — le Ressac** · **Accord : Dissipation** — `protection`, `soi ou un allié` | retirer un statut : la réponse **solitaire** aux poisons et aux entraves | — |
 | 3 | 50 | **Fourche — la Marée** · **Accord : Grande Marée** — `soin`, **`le groupe`**, dépôt 10 tours | le dépôt qui couvre une rencontre entière | — |
 | **Capstone** | 100 | **Ressac** | `mending` **+28 %** *sur une cible sous 40 % de ses PV* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (eau)* | *réservé* | — |
@@ -2373,9 +2466,15 @@ Ce qui doit casser la CI si on le viole :
 40. **Une rencontre de groupe se calibre sur le pool de PV du groupe**, jamais sur
     un multiple du nombre de joueurs (§13.4) — sinon sa difficulté ne dépend pas de
     la composition, et elle exige donc la meilleure.
-41. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+41. **Le soin direct n'est jamais interdit** (§7 bis.2 bis) — seule la portée `le
+    groupe` impose le dépôt. Tout arbre d'entretien ouvre un soin direct au palier
+    d'entrée : c'est le geste d'urgence, et le dépôt ne le remplace pas.
+42. **Une amélioration déposée respecte `N × X ≤ 100`** (§7 bis.2 bis) — durée en
+    tours × ampleur en pourcentage. Au-delà, améliorer bat frapper et l'archétype
+    optimal devient « ne jamais attaquer ».
+43. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-42. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+44. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
@@ -2725,9 +2824,10 @@ que le §7 bis interdit. Il doit descendre à ~120.
   vocabulaire est arrêté, la priorisation est un sujet de plan (ARC-18). Les deux
   arbitrages qui bloquaient sont rendus : le **familier** est un dépôt (§13.3),
   l'**aggro** entre bornée (§13.4).
-- **La mitigation des lignes d'armure** — l'aggro exige que la plaque porte ~−30 %,
-  et ce chiffre appartient à [GAME_ITEMS.md](GAME_ITEMS.md), pas au budget d'arbre.
-  Tant qu'il n'est pas posé, l'aggro tue le tank au lieu de sauver le groupe.
+- **La mitigation des lignes d'armure** — la **fourchette** est mesurée (§2.2 :
+  30 % minimum pour que l'aggro passe, 50 % maximum avant que le solo ne casse,
+  cible ~40 %), mais le chiffre retenu appartient à
+  [GAME_ITEMS.md](GAME_ITEMS.md), pas au budget d'arbre.
 - **Le nombre d'arbres qu'un joueur mènera réellement** : c'est une conséquence de
   l'énergie et du build, pas une règle à écrire.
 - **La valeur de la vitesse de combat** (§9 sexies.4) — l'arbitrage est posé et

@@ -30,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 42 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 44 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -214,7 +214,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 42 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 44 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -472,7 +472,12 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       tomber. *Le tank ne protège pas, il assure* — pendant exact du guérisseur qui provisionne
 - [ ] **La table de menace reste refusée** : aucun score cumulé, aucune course au sommet,
       aucune perte d'aggro à gérer. Un geste, une part, une durée
-- [ ] **Prérequis dans GAME_ITEMS — la plaque doit porter ~−30 %.** Mesuré : l'écart tank /
+- [ ] **Prérequis dans GAME_ITEMS — la fourchette de mitigation est mesurée (§2.2)** :
+      **30 % minimum** pour que l'aggro passe, **50 % maximum** avant que le solo ne casse
+      (c'est le point où la mitigation annule exactement la lenteur du tank : 14 tours
+      contre 6), **cible ~40 %** → écart de PV effectifs ×2,3 / ×1,6 / ×1 entre plaque,
+      cuir et tissu. Ce qui autorise une mitigation aussi forte, c'est la lenteur : la
+      plaque ne rend pas invulnérable, elle rembourse le temps qu'on perd Mesuré : l'écart tank /
       tissu **par l'arbre seul** est de ×1,39 ; encaisser la part de quatre en demanderait
       ×4, soit **47 des 50 points de budget rien qu'en `guard`** — impossible, et le plafond
       du levier est à 15. **La mitigation d'un tank vient de son armure, pas de son arbre.**
