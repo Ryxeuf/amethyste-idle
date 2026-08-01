@@ -457,7 +457,19 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       fonctionne : c'est ce qui préserve « aucun rôle n'est nécessaire » (§7 bis)
 - [ ] **Un geste de menace déplace au plus la moitié** de la riposte vers celui qui le pose,
       pour une durée. C'est la forme **transfert** (ARC-18), qui cesse d'être un
-      contournement pour devenir le mécanisme lui-même
+      contournement pour devenir le mécanisme lui-même. **C'est un dépôt** : il court même
+      quand son lanceur est déconnecté (§7 bis) — sans quoi il ne servirait à rien dans un
+      donjon dont les tours s'étalent sur des heures
+- [ ] **La borne de 50 % n'est pas un choix de confort** : mesuré, au-delà le tank meurt quoi
+      qu'il fasse, même en plaque (70 % → 165 encaissés sur 147 PV). En dessous de 30 %, le
+      porteur de tissu reste au bord. L'intervalle utile est étroit et 50 % en est le centre
+- [ ] **Il ne se maintient pas en permanence** : deux poses passent (tank 132/147), trois le
+      tuent (149/147). Le tank **choisit ses fenêtres** — du jeu apparu tout seul, sans temps
+      de reprise à inventer
+- [ ] **Le calibrer comme une assurance, pas comme une mitigation** : le groupe n'économise
+      que 15 % de dégâts, mais le porteur de tissu passe de **120 sur 120 (mort)** à **76 sur
+      120 (vivant)**. Sa valeur est nulle quand tout va bien et totale quand quelqu'un allait
+      tomber. *Le tank ne protège pas, il assure* — pendant exact du guérisseur qui provisionne
 - [ ] **La table de menace reste refusée** : aucun score cumulé, aucune course au sommet,
       aucune perte d'aggro à gérer. Un geste, une part, une durée
 - [ ] **Prérequis dans GAME_ITEMS — la plaque doit porter ~−30 %.** Mesuré : l'écart tank /
@@ -471,7 +483,9 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **Corriger `zone.dungeon.encounter_hp_per_member`** — le curseur livré (200) est
       calibré pour une rencontre **sans riposte**. Avec une riposte, 800 PV pour quatre font
       36 tours et 800 dégâts, contre un pool de groupe de 518 : **le soigneur devient
-      obligatoire**, ce que le §7 bis interdit. À ~**120**. Règle qui le remplace : *une
+      obligatoire**, ce que le §7 bis interdit. À ~**110** — 120 laisse le porteur de tissu
+      exactement à zéro (118 encaissés sur 120 PV), ce qui n'est pas une difficulté mais un
+      fil du rasoir. Règle qui le remplace : *une
       rencontre de groupe se calibre sur le **pool de PV du groupe**, jamais sur un multiple
       du nombre de joueurs* — un multiple linéaire produit une difficulté qui ne dépend pas
       de la composition, et qui exige donc la meilleure

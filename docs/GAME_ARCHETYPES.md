@@ -2590,6 +2590,70 @@ Rencontre de groupe calibrée (480 PV, 22 tours, 480 dégâts au total) :
 | **Aggro bornée à 50 %** *(212)* | **mort** | **survit** *(144 sur 147)* |
 | **Aggro totale** *(423)* | mort | mort |
 
+#### Comment ça se joue, concrètement
+
+Le transfert n'est **ni une statistique, ni un score** : c'est un **geste**, donc
+une matéria, donc soumis aux mêmes règles que tout le reste. Et parce qu'il touche
+les alliés, c'est un **dépôt** (§7 bis) — il se pose, il dure, et il agit même si
+son lanceur est déconnecté.
+
+> **Cri de ralliement** — `protection`, `le groupe`, 8 tours de rencontre.
+> *Pendant sa durée, la moitié des dégâts qui frapperaient un allié vous
+> reviennent.*
+
+| Tour | Ce qui se passe |
+|---|---|
+| 1 | Terel *(le Mur)* pose le Cri. Il n'attaque pas — c'est son coût |
+| 2 | Mira lance sa Nova. La rencontre riposte : 22. **Elle en prend 11, Terel 11** — dont il ne ressent que 7, grâce à sa plaque |
+| 3-5 | Idem pour les deux autres |
+| **6** | **Terel se déconnecte.** Son tour se résout en attaque de base |
+| 6-9 | **Le Cri court toujours.** Les alliés restent couverts — c'est la loi du dépôt |
+| 10 | Il expire. Chacun reprend ses propres ripostes |
+
+#### Pourquoi la moitié, et pas plus
+
+Mesuré sur la rencontre calibrée (480 dégâts, 22 tours, 4 joueurs) — le tank a
+147 PV et −36 % de mitigation *(arbre + plaque)*, le porteur de tissu 120 PV et
+rien :
+
+| Part déplacée | Poses | Tank *(147 PV)* | Tissu *(120 PV)* |
+|---:|---:|---|---|
+| 30 % | 2 | 98 ✔ | 94 ✔ *(au bord)* |
+| **50 %** | **1** | 104 ✔ | 98 ✔ |
+| **50 %** | **2** | **132 ✔** | **76 ✔** |
+| 50 % | 3 | **149 ✘ — il meurt** | 60 ✔ |
+| 70 % | 2 | 165 ✘ | 59 ✔ |
+| 100 % | 2 | 215 ✘ | 33 ✔ |
+
+**Trois choses se lisent dans ce tableau.**
+
+1. **Au-delà de la moitié, le tank meurt** — quoi qu'il fasse, et même en plaque.
+   La borne n'est pas un choix de confort, c'est le point où l'arithmétique
+   s'arrête.
+2. **Il ne peut pas le maintenir en permanence** : trois poses le tuent. Il
+   **choisit ses fenêtres** — et c'est du jeu, apparu tout seul, sans qu'on ait à
+   inventer un temps de reprise.
+3. **En dessous de 30 %, le porteur de tissu reste au bord.** L'intervalle utile
+   est étroit, et 50 % est son centre.
+
+#### Ce que ça change vraiment — c'est une assurance, pas une mitigation
+
+| | Sans transfert | Avec *(50 %, 2 poses)* |
+|---|---:|---:|
+| Tank | 76 sur 147 | 132 sur 147 |
+| Porteur de tissu | **120 sur 120 — mort** | **76 sur 120 — vivant** |
+| Total encaissé par le groupe | 436 | 372 |
+
+**Le groupe n'économise que 15 % de dégâts. Ce qu'il gagne, c'est que personne ne
+tombe.** Le transfert ne se calibre donc pas comme un outil de réduction — il se
+calibre comme une **assurance** : sa valeur est nulle quand tout va bien, et
+totale quand quelqu'un allait mourir.
+
+> **Le tank ne protège pas : il assure.** Exactement le pendant du guérisseur, qui
+> *ne soigne pas mais provisionne* (§9 ter). Les deux fonctions de groupe posent à
+> l'avance ce qu'elles ne pourront pas donner au moment voulu — parce que dans un
+> donjon semi-synchrone, **le moment voulu arrive quand on n'est pas là.**
+
 **Décision : l'aggro entre, bornée, et sous la forme du transfert.**
 
 1. **Par défaut, chacun encaisse la riposte de ses propres actions.** Un groupe
@@ -2617,7 +2681,8 @@ En calibrant la rencontre de groupe, une **incohérence livrée** apparaît :
 |---:|---:|---:|---:|---|
 | **200** *(valeur livrée)* | 800 | 36 tours | 800 | **wipe sans soigneur** |
 | 150 | 600 | 27 tours | 600 | wipe sans soigneur |
-| **120** | 480 | 22 tours | 480 | **tenable sans soigneur** |
+| 120 | 480 | 22 tours | 480 | tenable, mais **au fil du rasoir** (118 encaissés sur 120 PV) |
+| **110** | 440 | 20 tours | 434 | **tenable avec une marge** (109 sur 120) |
 
 **Le curseur livré est calibré pour une rencontre sans riposte** — c'est-à-dire
 pour le donjon actuel, où rien ne peut être perdu (GAME_DUNGEONS). Le jour où
