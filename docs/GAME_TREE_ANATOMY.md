@@ -267,8 +267,8 @@ le paiement de son intermittence.
 
 > **Le prérequis du capstone est l'accord de branche, jamais ses passifs.** Ce
 > n'est pas un détail de plomberie : c'est ce qui rend les quatre passifs de
-> fourche **feuilles**, donc ce qui rend le pacte possible (§5). Voir l'écart
-> n° 3 du §10.
+> fourche **feuilles**, donc ce qui rend le pacte possible (§5). *Tranché le
+> 2026-08-01 — c'est désormais la règle 3 du §6.6 du canon.*
 
 ### 4.6 L'accord dormant — 150 points, hors budget
 
@@ -313,6 +313,10 @@ Le §6.5 du canon permet à un arbre de prendre **un** pacte : un malus permanen
 qui rend du budget. L'Assassin est le candidat naturel — un assaut qui paie en
 survie est sa fiction même. L'exercice montre que **ce n'est pas un nœud qu'on
 ajoute : c'est un arbre qu'on réorganise.**
+
+> *Ce calcul est ce qui a produit les décisions du §6.5 du canon (tranchées le
+> 2026-08-01) : le pacte **remplace** un passif de fourche, il vit dans une seule
+> branche, et sa version majeure force le capstone à changer de levier.*
 
 Le pacte visé, écrit à la lettre des six règles :
 
@@ -475,35 +479,192 @@ inapprenable), et la conversion des 16 nœuds existants vers les 18 du gabarit.
 
 ---
 
-## 10. Ce que l'exercice a trouvé — six écarts, pour arbitrage
+## 9 bis. Les six matéria de l'arbre — ce qu'il faut créer
 
-Aucun n'est corrigé ici : ce document applique le canon, il ne le modifie pas. Les
-trois premiers sont des trous de règle, les trois derniers des écarts mesurés
-entre le canon et le code.
+Un arbre ne contient aucun geste : il contient six **accords**, c'est-à-dire six
+droits d'utiliser six matéria. Ces matéria sont l'autre moitié de l'archétype
+(« l'archétype vit dans le couple *(arbre, matéria)* »), et aucune n'existe
+aujourd'hui sous la forme dont l'Assassin a besoin — non parce que les gestes
+manquent, mais parce qu'ils sont tous déclarés **sorts**.
 
-1. **Le gabarit n'a aucune place pour le pacte.** §6.1 écrit 18 nœuds et les
-   nomme tous ; §6.5 autorise un pacte sans dire où il se pose. *Proposition : le
-   pacte est une **variante d'un passif de fourche**, jamais un nœud
-   supplémentaire — sinon l'arbre à pacte a un nœud de plus que les autres.*
+**Le constat, gestes en main** : sur les six, **quatre sont déjà écrits** et n'ont
+qu'à changer de registre — leurs descriptions livrées sont déjà des gestes de lame
+(« surgit de l'ombre », « un coup visant les organes vitaux ») —, et **deux
+n'existent pas** : la posture et le geste de zone au contact. Aucun sort de
+ténèbres livré n'est une `protection`, et aucun n'est un vrai multi-cible
+(`death-nova` s'appelle « nova » et frappe **une** cible — `aoeTargets` vaut 1 par
+défaut).
 
-2. **Le pacte est arithmétiquement plus contraint que le canon ne le laisse
-   croire.** 19 pb sur un seul levier ne tiennent que sous un plafond de 20 —
-   c'est-à-dire `power`, `mending`, `grip` ou `life`, soit **le levier principal
-   de trois fonctions sur quatre**. Or le capstone (14 pb) vise le même levier.
-   Prendre un pacte force donc à changer de capstone, puis de palier 2 : **c'est
-   un arbre différent, pas une option** (§5). *À écrire dans le canon, avec le
-   calcul.*
+> **Ratio à généraliser aux sept autres arbres de mêlée** : ~2 gestes neufs sur 6.
+> Le chantier des matéria de technique n'est pas un chantier de dérivation pure,
+> contrairement à celui des sorts (GAME_MATERIA §1.3) — mais il n'est pas non plus
+> un chantier de création : **les deux tiers sont un changement de champ**.
 
-3. **Les prérequis internes ne sont pas libres.** Pour que « le nœud de pacte est
-   une feuille » (règle 4) soit tenable, le capstone doit exiger **l'accord** de
-   branche et non ses passifs. Le canon ne dit rien des prérequis internes ; cet
-   exercice montre qu'ils sont contraints par au moins une autre règle.
+### 9 bis.1 La dérivation, appliquée
 
-4. **Le capstone n'est achetable que sur 8 leviers sur 15.** Un plafond < 14 pb
-   l'interdit mécaniquement : exit `critical`, `hit`, `pierce`, `wind`, `dodge`,
-   `recovery`, `tempo`. Les quatre conditions canoniques du §7 tombent donc juste
-   — mais par coïncidence, pas par règle écrite. *À énoncer : le capstone d'une
-   fonction ne peut viser qu'un levier de plafond ≥ 14.*
+Rien n'est écrit à la main : chaque matéria se dérive de son geste (grille de
+GAME_MATERIA §2.1), et le palier de **distribution** suit le nœud, pas le niveau
+du geste (§3.1).
+
+| # | Rôle dans le combat | Geste | Niv. | Slug matéria | Rareté *(dérivée)* | Prix | Reprise | État |
+|---|---|---|---:|---|---|---:|---:|---|
+| 1 | **Le geste** — ouverture | Embuscade (`ambush`) | 2 | `m2-ambush` | Rare | 180 | 1 | à **reclasser** |
+| 2 | **Le plan B** — et la marque | Toucher nécrotique (`necrotic-touch`) | 1 | `m1-necrotic-touch` | Uncommon | 130 | 0 | à **reclasser** + statut |
+| 3 | **La réponse** — posture | Voile d'ombre (`shadow-veil`) | 2 | `m2-shadow-veil` | Rare | 180 | 3 | à **créer** |
+| 4 | **La zone** | Moulinet d'ombre (`shadow-whirl`) | 3 | `m3-shadow-whirl` | Epic | 280 | 2 | à **créer** |
+| 5 | **Branche l'Ombre** — rouvrir | Danse des ombres (`shadow-dance`) | 5 | `m5-shadow-dance` | Legendary | 380 | 4 | à **reclasser** |
+| 6 | **Branche la Lame** — la pointe | Coup mortel (`deadly-strike`) | 4 | `m4-deadly-strike` | Legendary | 320 | 3 | à **reclasser** |
+
+Les deux premières sont ouvertes à **0 point** : elles sont donc au **plancher de
+distribution** quelle que soit leur rareté (§3.1), achetables chez un PNJ au prix
+de la grille. Les quatre autres suivent les canaux normaux — butin d'une créature
+de ténèbres pour les paliers 2-3, coffre et donjon pour les 4-5.
+
+### 9 bis.2 La grille de reprise — ce que la mêlée paie à la place des PM
+
+GAME_MATERIA §2.3 donne un `energy_cost` par palier. C'est la grille des **sorts**.
+Une technique ne coûte pas de PM : elle coûte **le tour**, et le canon a déjà dit
+où ça vit (`Spell::cooldown`, au modèle, sans consommateur). Il manque la grille.
+
+| Palier | m1 | m2 | m3 | m4 | m5 |
+|---|---:|---:|---:|---:|---:|
+| **Sorts** — PM | 10 | 15 | 20 | 25 | 30 |
+| **Mêlée** — reprise (tours) | **0** | **1** | **2** | **3** | **4** |
+
+> **Le contrôle est déjà dans les données** : `shadow-dance`, unique geste livré à
+> porter une reprise, porte `cooldown: 4` — exactement ce que la grille prescrit
+> pour un niveau 5. La grille ne s'invente pas, elle se lit.
+
+Ce que ça produit au combat, et qui est le vrai visage du registre mêlée : un
+assassin fini a **six gestes dont deux sont disponibles à chaque tour** (le
+Toucher nécrotique et l'Embuscade), et quatre qui reviennent par cycles. Il ne
+tombe jamais en panne — il joue une **rotation**, là où le pyromancien joue un
+pic puis se tait. C'est la différence structurelle du §2, obtenue sans une seule
+règle supplémentaire.
+
+### 9 bis.3 Les six matéria, en détail
+
+**1 · Matéria : Embuscade** — `m2-ambush` · ténèbres · technique mêlée ·
+`dégât` / `une cible` · **forme : ouverture**
+
+> Livré : dégâts 3, précision 95, critique **20**. Reprise 1.
+> À changer : `register: melee` ; le bonus d'ouverture (le geste frappe beaucoup
+> plus fort s'il est le premier de la rencontre) est la **condition de combat**
+> « le premier tour de la rencontre », qui est déjà au vocabulaire fermé (§4.3).
+
+C'est la promesse de l'arbre en un objet. Son critique de base à 20 % est ce que
+les passifs `critical` et `critical_power` viennent multiplier : **la matéria
+donne l'amplitude, l'arbre donne la fréquence.** Un assassin qui la sertit sans
+avoir monté son arbre la joue déjà ; l'arbre la rend fiable.
+
+**2 · Matéria : Toucher nécrotique** — `m1-necrotic-touch` · ténèbres ·
+technique mêlée · `dégât` / `une cible` · applique **Aveuglé**
+
+> Livré : dégâts 2, précision **100**, aucune reprise, aucun statut.
+> À changer : `register: melee` et `statusEffectSlug: blind` — **le statut est à
+> créer** (`StatusEffectFixtures` n'a ni Aveuglé ni aucune des huit marques).
+
+C'est le nœud de voûte de tout l'arbre, et il est gratuit : sans lui le capstone
+ne se déclenche jamais, `grip` n'a rien à allonger, et le joueur du jour 1 n'a pas
+de geste sûr (précision 100). **Si une seule chose devait être créée pour que
+l'Assassin existe, c'est le statut Aveuglé** — pas une matéria.
+
+**3 · Matéria : Voile d'ombre** — `m2-shadow-veil` · ténèbres · technique mêlée ·
+`protection` / `soi` · **forme : posture** · **à créer**
+
+> À écrire : aucun dégât, reprise 3, dépose **2 tours** d'esquive accrue sur son
+> lanceur. Portée `soi`, donc pas de dépôt de groupe — mais **une durée**, parce
+> que toute `protection` en porte une (invariant 19).
+
+Le seul accord non-`dégât` de l'arbre, et il est obligatoire : c'est le plan B du
+test du jour 1. C'est aussi ce qui donne un sens à la branche l'Ombre — un
+assassin qui a `dodge` + le Voile a un vrai tour de survie, celui qu'un assaut n'a
+jamais.
+
+**4 · Matéria : Moulinet d'ombre** — `m3-shadow-whirl` · ténèbres ·
+technique mêlée · `dégât` / `plusieurs cibles` · **à créer**
+
+> À écrire : dégâts modérés, `aoeTargets: 3`, reprise 2, précision basse (75) —
+> le geste large est le geste imprécis, c'est le trait de sa famille.
+
+`death-nova` aurait pu servir, mais c'est un sort d'explosion, et il ne frappe
+qu'une cible dans les données. Un assassin qui fait le tour de trois adversaires
+avec deux dagues est un geste, pas une déflagration. **Coût : un geste neuf, et
+c'est le seul qui soit vraiment neuf** — le Voile ayant des dizaines d'équivalents
+à copier ailleurs.
+
+**5 · Matéria : Danse des ombres** — `m5-shadow-dance` · ténèbres ·
+technique mêlée · `dégât` / `plusieurs cibles` · **forme : ouverture**
+
+> Livré : dégâts 8, précision 85, critique 20, **`cooldown: 4`**.
+> À changer : `register: melee`, et l'effet qui la distingue — **elle rouvre** :
+> après elle, la condition « premier tour de la rencontre » redevient vraie une
+> fois.
+
+**C'est l'accord que nul autre arbre n'ouvre** (invariant du §5.1), et il n'est
+accessible qu'à la branche l'Ombre. C'est aussi ce qui rend cette branche
+cohérente de bout en bout : elle survit plus longtemps *pour* pouvoir se payer un
+second premier tour.
+
+**6 · Matéria : Coup mortel** — `m4-deadly-strike` · ténèbres · technique mêlée ·
+`dégât` / `une cible`
+
+> Livré : dégâts 6, précision 80, critique **25**, reprise 3.
+> À changer : `register: melee`.
+
+L'accord de la branche la Lame. Le plus gros critique du catalogue de ténèbres,
+sur l'arbre qui achète `critical_power` deux fois : c'est le couple *(arbre,
+matéria)* dans sa forme la plus littérale — la branche et le geste ne valent
+rien l'un sans l'autre.
+
+### 9 bis.4 Ce que ces six matéria supposent, et qui n'existe pas
+
+| Ce qu'il faut | Portée | Sans quoi |
+|---|---|---|
+| **`Spell::register`** + `intent` + `scope` | 3 champs, tous les gestes | Les six matéria sont des sorts : l'arbre ne qualifie aucune de ses propres actions |
+| **Le statut `blind` (Aveuglé)** | 1 statut, plus les 7 autres marques | Le capstone ne se déclenche jamais |
+| **La grille de reprise** (§9 bis.2) | 1 table dans GAME_MATERIA | La mêlée paie en PM, donc c'est un mage |
+| **`Spell::cooldown` consommé en combat** | moteur | La reprise est décorative, la rotation n'existe pas |
+| **2 gestes à écrire** (`shadow-veil`, `shadow-whirl`) | contenu | L'arbre n'a ni plan B ni geste de zone — deux invariants échouent |
+| **L'élément sur les monstres** | 65 monstres | Aucune des 4 matéria non gratuites n'a de source de butin |
+
+---
+
+## 10. Ce que l'exercice a trouvé — sept écarts
+
+**Les quatre premiers sont tranchés** (2026-08-01) et portés dans
+[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md). Les deux suivants sont des écarts entre
+le canon et le code, à corriger **dans le code**. Le septième est un trou de
+grille dans GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
+
+1. **Le gabarit n'avait aucune place pour le pacte.** §6.1 écrit 18 nœuds et les
+   nomme tous ; §6.5 autorisait un pacte sans dire où il se pose.
+   → **Tranché** (§6.5, *Où il se pose*) : **le pacte est une variante d'un passif
+   de fourche, jamais un nœud de plus** ; il vit au palier 3, dans une seule
+   branche. Gain non prévu : la fourche gagne son opposition la plus lisible —
+   *la voie sûre et la voie qui parie*.
+
+2. **Le pacte était arithmétiquement plus contraint que le canon ne le disait.**
+   19 pb sur un seul levier ne tiennent que sous un plafond de 20 — `power`,
+   `mending`, `grip`, `life` — c'est-à-dire le levier principal de trois fonctions
+   sur quatre, celui-là même que vise le capstone.
+   → **Tranché** (§6.5, règle 7 + grille) : la contrainte est **assumée et
+   écrite** — *un arbre à pacte est un autre arbre* —, avec la table de ce qui
+   reste possible par fonction, et un **pacte mineur à 5 pb de malus** (nœud de
+   14 pb) pour qui ne veut pas réorganiser son arbre.
+
+3. **Les prérequis internes n'étaient pas spécifiés, et ils ne sont pas libres.**
+   → **Tranché** (§6.6, *la loi des prérequis internes*, six règles) : au plus un
+   parent par nœud, pris au palier précédent ; **le capstone exige l'accord de
+   branche, jamais ses passifs** ; aucun prérequis ne traverse la fourche. Gain
+   non prévu : le chemin vers le sommet devient lisible — **les cinq accords, et
+   rien d'autre**, soit 185 des 390 points.
+
+4. **Le capstone n'est achetable que sur 8 leviers sur 15.**
+   → **Tranché** (§7.1) : *le capstone vise un levier de plafond ≥ 14 pb*. Sept
+   leviers sont exclus d'office, et la table par fonction donne le capstone
+   canonique **et** son second, qui est celui de l'arbre à pacte. Les quatre
+   conditions canoniques du §7 cessent d'être une coïncidence.
 
 5. **Les échelons de port portent des statistiques, et ils sont partagés.**
    Mesuré : `assassin_weapon_t2` donne `critical +1`, `t3` donne `critical +2` —
@@ -526,6 +687,15 @@ entre le canon et le code.
 6. **L'accord dormant coûte 200 points en base, 150 au canon.** Sans effet
    aujourd'hui (le nœud n'est pas apprenable), à aligner avant que la fusion
    n'ouvre.
+
+7. **La grille par palier de GAME_MATERIA §2.3 ne connaît que les PM.** Elle
+   donne un `energy_cost` de 10 à 30 selon le palier — ce qui est la grille des
+   **sorts**. Une matéria de technique ne coûte pas de PM : elle coûte une
+   **reprise** (§2 du canon : « le registre mêlée est le seul dont la ressource
+   ne se reporte pas d'un combat au suivant »). Sans seconde ligne, une matéria de
+   mêlée dérivée par la grille facturera des PM à un guerrier. *Proposition :
+   la grille du §9 bis.2 — reprise 0/1/2/3/4 par palier, qui tombe exactement sur
+   le `cooldown: 4` du seul geste livré qui en porte un.*
 
 ---
 
