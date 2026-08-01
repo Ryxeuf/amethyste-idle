@@ -2902,9 +2902,13 @@ que le §7 bis interdit. Il doit descendre à ~120.
 - **Les valeurs absolues** — PV des monstres, dégâts des gestes, coûts en PM.
   Elles se dérivent de l'ancre d'échelle (§6.4) et vivent dans
   [BALANCE.md](BALANCE.md).
-- **Les arbres de métier** (5 récoltes, 7 artisanats). Le gabarit de GAME_DOMAINS
-  §5.2/§5.3 tient ; l'équivalent des fonctions et des leviers pour la récolte et
-  l'artisanat est un second chantier, à instruire après celui-ci.
+- **Les arbres de métier** (5 récoltes, 7 artisanats) — **chantier instruit
+  depuis** : [GAME_TRADES.md](GAME_TRADES.md) (2026-08-01). Il a trouvé le même
+  défaut sous une autre forme (175 nœuds sur 190 sont des portes, un seul levier,
+  et il fait deux choses à la fois) et **la même conclusion** : ce n'est pas le
+  levier qui distingue deux branches, c'est l'accord. Il change en revanche le
+  borneur — en métier, un arbre trop fort déséquilibre le **serveur**, pas un
+  joueur.
 - **Le nom et le contenu des matéria de technique** — c'est du contenu, dérivé
   comme le reste (GAME_MATERIA §2.1).
 - **La fusion et les domaines hybrides** — réserve d'extension (GAME_WORLD §2.2) ;
