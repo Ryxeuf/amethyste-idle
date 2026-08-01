@@ -30,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 44 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 45 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -214,7 +214,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 44 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 45 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -396,6 +396,9 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 - [ ] **Builds de référence générés, jamais écrits à la main** : un par fonction × registre,
       arbre complet, équipement et matéria du palier. Écrits en dur, ils se périmeraient au
       premier changement de fixture — et c'est exactement ce qu'on cherche à détecter
+- [ ] **Y compris un invocateur**, et joué **dans les deux modes — présent et absent**.
+      C'est le premier build dont la puissance dépend de **la façon de jouer** et non de ce
+      qu'on porte : aucune table statique ne peut le mesurer (§13.3, correction 21)
 - [ ] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
       **journée** (14 communs + 2 tentatives) · un **donjon à quatre**, joué dans les quatre
       compositions (avec/sans tank × avec/sans soigneur)
@@ -454,9 +457,24 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       absent** — et la fiction entière ; on perd le ciblage, on économise un acteur, une IA
       et une cible. Mesuré : +2 % sur un commun, **+9 % sur une élite**, rendement ×2,4 le
       tour investi — il ne sert que sur les longues rencontres, comme *la charge*
+- [ ] **Sa valeur totale est fixée à ~1 tour d'attaque par invocation** (correction 21).
+      La première calibration — 40 % du geste sur 6 tours, soit ×2,4 le tour investi —
+      **était cassée en groupe** : le familier agit sur les tours de **la rencontre** quand
+      son invocateur n'a que **les siens**, soit un taux de change de 4 pour 1. Mesuré,
+      l'invocateur contribuait **+87 %** avec quatre invocations, et plus il invoquait plus
+      il gagnait
+- [ ] **Règle générale à verrouiller** : *un dépôt **offensif** ne dépasse jamais un tour
+      d'attaque par tour investi ; un dépôt **défensif** peut valoir davantage, parce que la
+      barre de vie de sa cible l'écrête toute seule.* C'est ce qui autorise ×8,8 pour un soin
+      de groupe et interdit ×2,4 pour des dégâts
+- [ ] Résultat visé : **à l'équilibre quand le joueur est présent** (solo comme en groupe),
+      **+56 % sur six tours d'absence** — le familier ne vaut rien quand on joue et tout
+      quand on ne joue pas. Le geste devient une décision : *je pose mon familier avant de
+      fermer l'onglet*
 - [ ] Garde-fous du familier : meurt avec la rencontre · un seul à la fois · les passifs de
-      l'arbre qualifient ses gestes (la double borne s'applique) · il déplace la puissance,
-      il ne la double pas
+      l'arbre qualifient ses gestes (la double borne s'applique) · il ne mitige rien, ne
+      protège personne, n'encaisse pas — **un invocateur en tissu reste aussi fragile qu'un
+      mage**
 - [ ] Les **sept refus** du §13.3 verrouillés par test là où c'est possible : aucune table de
       menace, aucun rôle nécessaire, aucun geste sans lecture `scope: soi`, aucun changement
       d'arme en combat, aucune ressource persistant entre deux rencontres, aucun tour

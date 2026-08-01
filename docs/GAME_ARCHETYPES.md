@@ -84,6 +84,7 @@ vraies données, et lesquels tomberont.
 | Une rencontre de groupe se calibre sur le **pool du groupe** | règle de conception |
 | Le **direct est l'urgence**, le **dépôt la provision** | découle de l'asynchronie |
 | **Une élite tue un joueur seul** | décision de conception |
+| Un dépôt **offensif** ≤ 1 tour par tour investi, un dépôt **défensif** peut valoir plus | le soin est écrêté par la barre de vie, le dégât par rien |
 | L'identité est dans les **gestes**, pas dans les pourcentages | constat de quatre exercices, tous concordants |
 
 | Ce qui sera recalculé | Ce dont ça dépend |
@@ -2513,9 +2514,13 @@ Ce qui doit casser la CI si on le viole :
 42. **Une amélioration déposée respecte `N × X ≤ 100`** (§7 bis.2 bis) — durée en
     tours × ampleur en pourcentage. Au-delà, améliorer bat frapper et l'archétype
     optimal devient « ne jamais attaquer ».
-43. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+43. **Un dépôt offensif ne dépasse jamais un tour d'attaque par tour investi**
+    (§13.3, correction 21) — un dépôt de soin peut valoir davantage, parce que la
+    barre de vie de sa cible l'écrête toute seule ; un dépôt de dégâts n'est borné
+    par rien et devient dominant.
+44. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-44. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+45. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
@@ -2661,18 +2666,62 @@ acteur.**
 | **Ce qu'on perd** | il ne peut pas être ciblé, ni tué, ni encaisser à la place de quelqu'un |
 | **Ce qu'on économise** | aucun second acteur dans la boucle de tour, aucune IA, aucune cible supplémentaire. **Le coût passe de L à M** |
 
-**Ce qu'il vaut, mesuré** — familier à 40 % du geste de son invocateur, 6 tours,
-posé en un tour :
+**Ce qu'il vaut** — voir la correction 21 ci-dessous : la première calibration
+(40 % du geste sur 6 tours, soit ×2,4 le tour investi) **était cassée en groupe**.
+La valeur retenue est **un tour d'attaque par invocation**, étalé sur la durée.
 
-| | Sans familier | Avec | Gain |
-|---|---:|---:|---:|
-| Commun (100 PV) | 6,1 tours | 6 tours | **+2 %** |
-| Élite (180 PV) | 11,0 tours | 10 tours | **+9 %** |
+#### Correction 21 — le familier était cassé en groupe, et pas où on l'attend
 
-Rendement du tour investi : **×2,4** — le profil exact d'un dépôt. Et le même
-enseignement que pour *la charge* : **le familier ne sert pas sur le tout-venant**,
-il sert dans les longues rencontres. Deux formes qui poussent au même endroit, ce
-qui est cohérent : elles récompensent toutes deux la durée.
+*(Trouvé le 2026-08-01, en cherchant si un invocateur en tissu devenait trop
+puissant.)* Le danger n'est pas la fragilité du tissu — le familier ne mitige pas,
+ne protège personne et n'encaisse rien : **un invocateur en tissu reste exactement
+aussi fragile qu'un mage.** Le danger est ailleurs.
+
+> **Le familier agit sur les tours de la *rencontre*, alors que son invocateur n'a
+> que ses *propres* tours.** En groupe, le taux de change lui est favorable
+> **4 pour 1**.
+
+Mesuré, avec la calibration initiale (40 % du geste, 6 tours — soit **2,4 tours
+d'attaque rendus pour 1 tour investi**) :
+
+| Contexte | Contribution de l'invocateur |
+|---|---:|
+| Solo, combat de 6 tours | **+23 %** |
+| Groupe, 1 invocation | +25 % |
+| Groupe, 2 invocations | **+51 %** |
+| Groupe, 4 invocations | **+87 %** |
+
+Et le pire : **plus il invoque, plus il gagne.** Un geste qui rend 2,4 tours pour
+un tour dépensé doit être joué à la place de tout le reste.
+
+**La cause, et elle éclaire une asymétrie qu'on avait acceptée sans la nommer :**
+
+> **Un dépôt de soin est borné par les dégâts qu'on subit ; un dépôt de dégâts
+> n'est borné par rien.** C'est pour cela qu'un soin déposé peut valoir ×8,8 en
+> groupe (§9 ter) sans casser quoi que ce soit — sa valeur réelle est écrêtée par
+> les barres de vie — alors qu'un dégât déposé à ×2,4 est immédiatement dominant.
+
+**La correction était déjà écrite, elle n'avait pas été appliquée** : *la durée
+étale la valeur, elle ne l'augmente pas* (correction 5, §7 bis). Un familier rend
+une **valeur totale fixée** — environ **un tour d'attaque** — étalée sur sa durée.
+
+| | Sans familier | Avec |
+|---|---:|---:|
+| Solo, présent | 6,0 | 6,0 — **à l'équilibre** |
+| Groupe, présent | 5,5 | 5,5 — **à l'équilibre** |
+| **6 tours d'absence** | **1,8** *(des attaques de base)* | **2,8 — +56 %** |
+
+> **Le familier ne vaut rien quand vous jouez. Il vaut tout quand vous ne jouez
+> pas.** C'est exactement ce qu'il était censé réparer (§13.2), et la calibration
+> le dit enfin. Le geste devient une **décision de joueur** — *je pose mon familier
+> avant de fermer l'onglet* —, ce qui est la meilleure chose qu'on puisse offrir
+> dans un jeu dont les tours s'étalent sur des heures.
+
+**La règle générale qui en sort**, et elle vaut pour toute forme à venir :
+
+> **Un dépôt offensif ne dépasse jamais un tour d'attaque par tour investi.** Un
+> dépôt défensif peut valoir davantage, parce que la barre de vie de sa cible
+> l'écrête toute seule.
 
 > **Quatre garde-fous.** (1) Il **meurt avec la rencontre** — jamais de familier
 > permanent, ce serait une ressource qui persiste (§13.3). (2) **Un seul à la
