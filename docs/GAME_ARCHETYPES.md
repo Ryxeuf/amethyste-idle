@@ -64,6 +64,46 @@ cadrent l'ampleur.
 | **Les archétypes d'arme n'ont rien à qualifier** | L'attaque de base vaut `3 + variance` et **ne lit aucun passif d'arbre** (DOM-01, assumé) ; **aucune matéria de technique n'existe** (DOM-03, un test l'interdit même) | Un arbre de mêlée ou de distance est aujourd'hui **vide de sens** : ses passifs ne s'appliquent à rien. D'où la décision 1 (§3) |
 | **Un arbre coûte presque toute une vie de personnage** | L'arbre de Pyromancie coûte **465 points** ; le plafond global est de **500** (`MAX_TOTAL_SKILL_POINTS`) | Un joueur ne peut pas mener « deux à quatre domaines » (GAME_PROGRESSION §1). L'échelle de coût et le plafond sont à reprendre ensemble (§6.2, §11.2) |
 
+### 0.2 Le statut des chiffres de ce document
+
+**Aucun nombre écrit ici n'est une valeur de jeu.** Tous sont des **repères**,
+calculés à la main sur une échelle illustrative qui respecte l'ancre du §6.4
+(joueur 120 PV · commun 100 PV, frappe 9 · élite 180 PV, frappe 26 · précision
+85 %). Ils servent à **comparer**, jamais à paramétrer.
+
+Ce qui compte, c'est de savoir **lesquels survivront** à une recalibration sur les
+vraies données, et lesquels tomberont.
+
+| Ce qui tient, quelles que soient les valeurs | Pourquoi |
+|---|---|
+| Une entrave d'un tour est **nulle en duel** | identité arithmétique, vraie pour n'importe quel chiffre |
+| Ce qui agit sur un **état** se multiplie par les alliés, sur une **action** non | découle de « un seul joueur agit par tour » |
+| Une amélioration respecte **N × X ≤ 100** | un rapport, pas une mesure |
+| **La durée étale la valeur**, elle ne l'augmente pas | règle de conception |
+| Le budget compte l'**effet moyen** (×1,4 / ×2,0) | définition du budget |
+| Une rencontre de groupe se calibre sur le **pool du groupe** | règle de conception |
+| Le **direct est l'urgence**, le **dépôt la provision** | découle de l'asynchronie |
+| **Une élite tue un joueur seul** | décision de conception |
+| Un dépôt **offensif** ≤ 1 tour par tour investi, un dépôt **défensif** peut valoir plus | le soin est écrêté par la barre de vie, le dégât par rien |
+| L'identité est dans les **gestes**, pas dans les pourcentages | constat de quatre exercices, tous concordants |
+
+| Ce qui sera recalculé | Ce dont ça dépend |
+|---|---|
+| Tous les points de vie et tous les dégâts | les vrais monstres — **BES-01** (`tier × rank`) |
+| **Plaque 40 % / cuir 20 % / tissu 0 %** | les vraies pièces — **OBJ**, GAME_ITEMS |
+| La borne d'aggro à **50 %** | de la mitigation finalement retenue |
+| `encounter_hp_per_member` ≈ **110** | du pool réel d'un groupe de quatre |
+| Les **taux de change** des quinze leviers (§4) | de l'échelle réelle des gestes |
+| Les **minutes d'attente** quotidiennes | des deux curseurs de régénération (PV, PM) |
+| Une élite frappe **~2,9×** un commun | du gabarit `tier × rank` |
+
+> **Et une conséquence de méthode, qui est la plus importante de cette
+> section : on ne recalibrera pas à la main.** Quatre exercices manuels ont produit
+> vingt corrections — à cette échelle c'est tenable, au-delà ce ne l'est plus. La
+> suite passe par un **simulateur qui lit les vraies données et rejoue les mêmes
+> scénarios** (ARC-17). Les tableaux de ce document sont sa **spécification** : ce
+> qu'il doit savoir produire, et les seuils qu'il doit tenir.
+
 ---
 
 ## 1. Décision 3 — Les trois axes d'un domaine
@@ -249,6 +289,39 @@ Et trois lignes d'armure, trois profils défensifs **qui ne se remplacent pas** 
 > connu deux tours gratuits et un tour catastrophique, et celui de plaque dix tours
 > identiques. **Le même total, deux jeux différents** : c'est la définition d'une
 > nuance réussie.
+
+#### Combien exactement — la fourchette utile *(mesurée)*
+
+**L'arbre ne peut pas créer l'écart** : `life` plafonne à 20 pb (+30 %) et `guard`
+à 15 pb (−9 %). Par l'arbre seul, un tank a **×1,39** les points de vie effectifs
+d'un porteur de tissu — ce qui n'est pas un écart, c'est une nuance. **C'est
+délibéré : l'arbre qualifie, l'armure décide.** Mais encore faut-il dire de
+combien.
+
+| Mitigation de la plaque | PV effectifs du tank | Écart / tissu | Dégâts subis en solo *(élite)* |
+|---:|---:|---:|---|
+| 0 % *(arbre seul)* | 167 | ×1,39 | tank 168 / archer 82 |
+| 28 % *(minimum pour l'aggro, §13.4)* | 231 | ×1,93 | tank 121 / archer 82 |
+| **40 %** | **278** | **×2,31** | tank 101 / archer 82 |
+| 50 % | 333 | ×2,78 | tank 84 / archer 82 — *à l'équilibre* |
+| 60 % | 417 | ×3,47 | tank 67 / archer 82 — **le solo casse** |
+
+**La borne haute est à ~50 %**, et elle sort d'un calcul et non d'un avis : c'est
+le point où la mitigation du tank annule exactement sa lenteur (14 tours contre 6).
+Au-delà, il encaisse moins que l'archer **tout en survivant mieux**, et redevient
+le meilleur choix partout — le défaut du §9 sexies, réintroduit par l'équipement.
+
+> **Acté le 2026-08-01 : plaque 40 %, cuir 20 %, tissu 0 %.** L'écart de points de
+> vie effectifs devient **×2,3 / ×1,6 / ×1** — franc, lisible au premier coup
+> d'œil, et il laisse l'archer meilleur en dégâts subis (82 contre 101). Le chiffre
+> vit dans [GAME_ITEMS.md](GAME_ITEMS.md), pas dans le budget d'arbre ; **il est
+> provisoire au même titre que tous les nombres de ce document (§0.2)** et sera
+> re-dérivé des vraies pièces par le simulateur.
+
+> **Ce qui autorise une mitigation aussi forte, c'est la lenteur.** Le tank met
+> deux fois plus de tours à finir un combat ; chaque tour est un coup encaissé de
+> plus. La plaque ne le rend pas invulnérable — elle lui rembourse le temps qu'il
+> perd.
 
 ---
 
@@ -908,6 +981,66 @@ qu'elles tombent en trois minutes ou en trois jours.
 > n'est pas un défaut à corriger : c'est une propriété du modèle, et la nier
 > reviendrait à équilibrer le contrôle comme un soutien qu'il n'est pas.
 
+### 7 bis.2 bis Le direct et le dépôt — deux outils, jamais une interdiction
+
+**La loi du dépôt n'interdit pas le soin direct.** Elle dit qu'un geste **qui
+touche le groupe** se dépose, parce qu'on ne peut pas réagir pour quatre personnes
+dont on ne voit pas les tours. Le soin direct, lui, reste parfaitement jouable —
+et il est même le geste d'entrée naturel de l'entretien.
+
+**Ce qui les sépare n'est pas la portée, c'est le moment.**
+
+| | Soin direct | Dépôt |
+|---|---|---|
+| Ce que ça rend | 40 PV **à l'instant choisi** | 8 PV/tour × 6 tours = 48, **étalés** |
+| En solo | l'**urgence** — le seul qui sauve quelqu'un à 20 PV | 48 PV, mais trop tard si on tombe au tour 2 |
+| À quatre | 40 PV à **un** allié | **192** — il touche les quatre corps, chaque tour |
+| Quand on est absent | rien | il court |
+
+> **Le direct est l'urgence, le dépôt est la provision.** Un guérisseur solo joue
+> surtout le premier, un guérisseur de donjon surtout le second — et c'est
+> exactement ce que la fourche *le Ressac / la Marée* (§9.2) sépare.
+
+**La règle fine, et elle vaut pour tout le reste** *(précision du §9 quinquies)* :
+
+> **Ce qui agit sur un état se multiplie par le nombre d'alliés. Ce qui agit sur
+> une action ne se multiplie pas.**
+
+Parce qu'un seul joueur agit par tour. Un soin, une absorption, une résistance
+touchent **quatre corps** à chaque tour → ×4. Une amélioration de dégâts ne touche
+que **l'action du tour** → ×1, qu'on soit un ou quatre.
+
+#### Ce que ça décide pour les améliorations *(le « barde »)*
+
+| Ce qu'on dépose, 6 tours | Valeur à quatre | En tours d'attaque |
+|---|---:|---:|
+| Un soin *(état, 4 corps)* | 192 PV | **×8,7** |
+| Une amélioration de dégâts *(action, 1/tour)* | 20 dégâts | **×0,9** |
+
+Un archétype de barde **n'est donc pas un archétype de groupe** dans notre
+modèle : son amélioration vaut la même chose seul et à quatre. C'est le même
+constat que pour le contrôle (§9 quinquies), et la même compensation — **sa valeur
+ne dépend pas du contexte.**
+
+**Le curseur qui en découle**, et il est simple :
+
+> **Un tour passé à améliorer doit valoir au plus un tour passé à frapper.**
+> Une amélioration de +X % pendant N tours rend N × X % d'un tour. Donc
+> **N × X ≤ 100**.
+
+| Durée du dépôt | Ampleur maximale |
+|---:|---:|
+| 6 tours | **+16,7 %** |
+| 8 tours | **+12,5 %** |
+| 10 tours | **+10 %** |
+
+Au-delà, améliorer bat frapper — et l'archétype optimal devient « ne jamais
+attaquer ». C'est le garde-fou le moins cher du document : une multiplication.
+
+> **Un barde qui veut compter en groupe doit donc améliorer un *état*, pas une
+> *action*** : +PV maximum, une absorption, une résistance. Ceux-là se multiplient
+> par quatre. C'est ce qui le rapproche de l'entretien plutôt que du contrôle.
+
 > **Le garde-fou qui va avec** : un dépôt ne rend jamais un joueur *nécessaire*.
 > Un groupe sans entretien met plus de tours et perd plus de PV — il ne se heurte
 > pas à un mur. Exiger un rôle, c'est exiger une présence, et exiger une présence
@@ -1051,7 +1184,9 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 > `scope: soi` : ne jamais tomber, ne jamais boire de potion, et ressortir d'un
 > combat de vingt tours avec la même barre qu'en entrant.
 >
-> Ce n'est pas deux archétypes : c'est le même, avec une portée différente.
+> Ce n'est pas deux archétypes : c'est le même, avec une portée différente. **Et il
+> garde un soin direct** — le geste d'urgence, celui qui sauve quelqu'un à 20 PV
+> quand aucune provision ne le ferait à temps (§7 bis.2 bis).
 
 > **Et il a une vertu de PBBG que les trois autres n'ont pas** : l'énergie d'action
 > se paie **par combat, jamais par tour** (GAME_PROGRESSION §1). Un archétype qui
@@ -1063,11 +1198,11 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 
 | Palier | Coût | Nœud | Ce qu'il donne | pb |
 |---|---:|---|---|---:|
-| Entrée | 0 | **Accord : Rosée** — `soin`, `soi ou un allié`, **sur la durée** | le geste : il **dépose** des PV sur N tours au lieu d'en rendre au tour | — |
+| Entrée | 0 | **Accord : Soin** — `soin`, `soi ou un allié`, **direct** | le geste d'**urgence** : tout, tout de suite, au moment choisi (§7 bis.2 bis) | — |
 | Entrée | 0 | **Accord : Jet d'eau** — `dégât`, `une cible` | le geste offensif modeste : **sans lui, un combat ne finit jamais** (§5.1). Il applique **Trempé** — la marque, donc la condition du capstone | — |
 | 1 | 10 | Main sûre | `mending` **+3 %** | 3 |
 | 1 | 10 | Geste économe | `thrift` **−1,8 %** | 3 |
-| 1 | 10 | **Accord : Dissipation** — `protection`, `un allié` | retirer un statut — la réponse aux poisons et aux entraves | — |
+| 1 | 10 | **Accord : Rosée** — `soin`, `soi ou un allié`, **déposée** | la **provision** personnelle : moins par tour, mais elle court quand on ne joue pas | — |
 | 1 | 10 | *Port* : canal de sort, échelon 2 | — | — |
 | 2 | 25 | Seconde respiration | `wind` **+0,6 PM/tour** | 6 |
 | 2 | 25 | Sang-froid | `ward` **+6 %** | 6 |
@@ -1077,7 +1212,7 @@ lit un assaut élémentaire sans avoir vu un seul accord. ✔
 | 3 | 50 | **Fourche — le Ressac** · Écume | `guard` **−7,6 %** *si un bouclier ou un focus occupe la main gauche* (×1,4) — *teinte* | 9 |
 | 3 | 50 | **Fourche — la Marée** · Litanie | `thrift` **−5,4 %** | 9 |
 | 3 | 50 | **Fourche — la Marée** · Eaux calmes | `ward` **+9 %** | 9 |
-| 3 | 50 | **Fourche — le Ressac** · **Accord : Écaille profonde** — `protection`, `soi`, longue | l'absorption qui le rend increvable **seul** | — |
+| 3 | 50 | **Fourche — le Ressac** · **Accord : Dissipation** — `protection`, `soi ou un allié` | retirer un statut : la réponse **solitaire** aux poisons et aux entraves | — |
 | 3 | 50 | **Fourche — la Marée** · **Accord : Grande Marée** — `soin`, **`le groupe`**, dépôt 10 tours | le dépôt qui couvre une rencontre entière | — |
 | **Capstone** | 100 | **Ressac** | `mending` **+28 %** *sur une cible sous 40 % de ses PV* (14 pb × 2) | 14 |
 | *Dormant* | *150* | *Accord d'hybride (eau)* | *réservé* | — |
@@ -2364,9 +2499,28 @@ Ce qui doit casser la CI si on le viole :
 37. **Aucune ressource ne persiste entre deux rencontres** (§13.3) — charges,
     postures et différés meurent avec la rencontre ; seuls les PV, les PM et le
     carquois se reportent, et ils se rechargent en **temps réel**.
-38. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+38. **Le familier est un dépôt, jamais un acteur** (§13.3) — il ne peut être ni
+    ciblé, ni tué ; il meurt avec la rencontre, un seul à la fois, et les passifs de
+    son arbre qualifient ses gestes (la double borne s'applique).
+39. **L'aggro est bornée à la moitié de la riposte** (§13.4) — par défaut chacun
+    encaisse la sienne. Aucun score cumulé, aucune perte d'aggro : un geste, une
+    part, une durée.
+40. **Une rencontre de groupe se calibre sur le pool de PV du groupe**, jamais sur
+    un multiple du nombre de joueurs (§13.4) — sinon sa difficulté ne dépend pas de
+    la composition, et elle exige donc la meilleure.
+41. **Le soin direct n'est jamais interdit** (§7 bis.2 bis) — seule la portée `le
+    groupe` impose le dépôt. Tout arbre d'entretien ouvre un soin direct au palier
+    d'entrée : c'est le geste d'urgence, et le dépôt ne le remplace pas.
+42. **Une amélioration déposée respecte `N × X ≤ 100`** (§7 bis.2 bis) — durée en
+    tours × ampleur en pourcentage. Au-delà, améliorer bat frapper et l'archétype
+    optimal devient « ne jamais attaquer ».
+43. **Un dépôt offensif ne dépasse jamais un tour d'attaque par tour investi**
+    (§13.3, correction 21) — un dépôt de soin peut valoir davantage, parce que la
+    barre de vie de sa cible l'écrête toute seule ; un dépôt de dégâts n'est borné
+    par rien et devient dominant.
+44. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-39. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+45. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
@@ -2401,10 +2555,9 @@ une **attaque de base** (`GroupDungeonCombatService`). Un joueur déconnecté ne
 laisse rien derrière lui. Le familier fait de l'absence une contribution — c'est
 **le dépôt qui agit**, et c'est la forme la plus alignée sur notre modèle.
 *Porté par* : bête × sorts (Druide), ténèbres × sorts (Nécromancien), métal ×
-distance (Ingénieur — la tourelle). *Coût moteur* : un second acteur dans la
-boucle de tour — **le plus cher des huit**. *Garde-fou* : le familier ne double pas
-la puissance, il la **déplace** — ce que l'arbre met dans le familier sort des
-gestes du joueur.
+distance (Ingénieur — la tourelle). *Coût moteur* : **M** — arbitré au §13.3, il est
+un **dépôt offensif**, pas un acteur : aucune IA, aucune cible supplémentaire.
+*Garde-fou* : il ne double pas la puissance, il la **déplace**.
 
 **2. La charge** — *une ressource qui se construit dans la rencontre.*
 Points de combo (Roublard), chi (Moine), rage, puissance sacrée.
@@ -2482,6 +2635,7 @@ C'est ce qui distingue cette liste d'un catalogue d'idées :
 | Forme | Le défaut qu'elle répare | Où il a été mesuré |
 |---|---|---|
 | Le familier | le tour d'un absent ne produit qu'une attaque de base | §7 bis.1 |
+| *(le familier, suite)* | et il ne sert **que** sur les longues rencontres : +2 % sur un commun, +9 % sur une élite | §13.3 |
 | La charge | la mêlée n'a aucune raison d'aimer les longs combats | §9 octies |
 | Le transfert | l'aggro est impossible, le tank perd son geste de groupe | §9 quinquies |
 | La riposte | le tank ne tue pas (14 tours contre 6) | §9 sexies.1 |
@@ -2490,11 +2644,250 @@ C'est ce qui distingue cette liste d'un catalogue d'idées :
 | La posture | aucun choix à l'échelle d'une rencontre | §6.1 bis |
 | Le différé | l'asynchronie n'est jamais un avantage, seulement une contrainte | §7 bis |
 
-### 13.3 Ce qu'on refuse, et pourquoi
+### 13.3 Arbitrage — le familier *(rendu le 2026-08-01)*
+
+Le §13.1 posait le familier comme « un acteur qui joue à votre place », et le
+classait **L** — le plus cher des huit. L'arbitrage porte sur un point unique :
+**est-ce un acteur, ou un dépôt ?**
+
+**Le test.** Retirez le ciblage — l'ennemi ne peut pas s'en prendre au familier.
+Que reste-t-il ? Une chose qui inflige des dégâts à chaque tour de la rencontre,
+pendant une durée, posée en un tour. C'est **exactement un dépôt** (§7 bis), et le
+critère d'admission du §13.1 exige qu'une forme occupe une place qu'aucune autre
+n'occupe.
+
+**Décision : le familier est retenu, mais comme dépôt offensif. Ce n'est pas un
+acteur.**
+
+| | |
+|---|---|
+| **Ce qu'on garde** | il **agit sur les tours où son invocateur est absent** — sa raison d'être, et le seul défaut qu'il devait réparer |
+| **Ce qu'on garde aussi** | la fiction entière : une créature invoquée, nommée, qui frappe. Le joueur ne lit pas « dépôt » |
+| **Ce qu'on perd** | il ne peut pas être ciblé, ni tué, ni encaisser à la place de quelqu'un |
+| **Ce qu'on économise** | aucun second acteur dans la boucle de tour, aucune IA, aucune cible supplémentaire. **Le coût passe de L à M** |
+
+**Ce qu'il vaut** — voir la correction 21 ci-dessous : la première calibration
+(40 % du geste sur 6 tours, soit ×2,4 le tour investi) **était cassée en groupe**.
+La valeur retenue est **un tour d'attaque par invocation**, étalé sur la durée.
+
+#### Correction 21 — le familier était cassé en groupe, et pas où on l'attend
+
+*(Trouvé le 2026-08-01, en cherchant si un invocateur en tissu devenait trop
+puissant.)* Le danger n'est pas la fragilité du tissu — le familier ne mitige pas,
+ne protège personne et n'encaisse rien : **un invocateur en tissu reste exactement
+aussi fragile qu'un mage.** Le danger est ailleurs.
+
+> **Le familier agit sur les tours de la *rencontre*, alors que son invocateur n'a
+> que ses *propres* tours.** En groupe, le taux de change lui est favorable
+> **4 pour 1**.
+
+Mesuré, avec la calibration initiale (40 % du geste, 6 tours — soit **2,4 tours
+d'attaque rendus pour 1 tour investi**) :
+
+| Contexte | Contribution de l'invocateur |
+|---|---:|
+| Solo, combat de 6 tours | **+23 %** |
+| Groupe, 1 invocation | +25 % |
+| Groupe, 2 invocations | **+51 %** |
+| Groupe, 4 invocations | **+87 %** |
+
+Et le pire : **plus il invoque, plus il gagne.** Un geste qui rend 2,4 tours pour
+un tour dépensé doit être joué à la place de tout le reste.
+
+**La cause, et elle éclaire une asymétrie qu'on avait acceptée sans la nommer :**
+
+> **Un dépôt de soin est borné par les dégâts qu'on subit ; un dépôt de dégâts
+> n'est borné par rien.** C'est pour cela qu'un soin déposé peut valoir ×8,8 en
+> groupe (§9 ter) sans casser quoi que ce soit — sa valeur réelle est écrêtée par
+> les barres de vie — alors qu'un dégât déposé à ×2,4 est immédiatement dominant.
+
+**La correction était déjà écrite, elle n'avait pas été appliquée** : *la durée
+étale la valeur, elle ne l'augmente pas* (correction 5, §7 bis). Un familier rend
+une **valeur totale fixée** — environ **un tour d'attaque** — étalée sur sa durée.
+
+| | Sans familier | Avec |
+|---|---:|---:|
+| Solo, présent | 6,0 | 6,0 — **à l'équilibre** |
+| Groupe, présent | 5,5 | 5,5 — **à l'équilibre** |
+| **6 tours d'absence** | **1,8** *(des attaques de base)* | **2,8 — +56 %** |
+
+> **Le familier ne vaut rien quand vous jouez. Il vaut tout quand vous ne jouez
+> pas.** C'est exactement ce qu'il était censé réparer (§13.2), et la calibration
+> le dit enfin. Le geste devient une **décision de joueur** — *je pose mon familier
+> avant de fermer l'onglet* —, ce qui est la meilleure chose qu'on puisse offrir
+> dans un jeu dont les tours s'étalent sur des heures.
+
+**La règle générale qui en sort**, et elle vaut pour toute forme à venir :
+
+> **Un dépôt offensif ne dépasse jamais un tour d'attaque par tour investi.** Un
+> dépôt défensif peut valoir davantage, parce que la barre de vie de sa cible
+> l'écrête toute seule.
+
+> **Quatre garde-fous.** (1) Il **meurt avec la rencontre** — jamais de familier
+> permanent, ce serait une ressource qui persiste (§13.3). (2) **Un seul à la
+> fois**, comme la posture. (3) **Les passifs de l'arbre qualifient ses gestes** :
+> c'est un prolongement de l'invocateur, donc la double borne s'applique — il ne
+> contourne pas la case élément × registre. (4) **Il déplace la puissance, il ne la
+> double pas** : son coût en ressource est celui d'un geste de son palier, et son
+> action vaut une fraction de celle du joueur.
+
+### 13.4 Arbitrage — l'aggro *(rendu le 2026-08-01)*
+
+Le §13.3 la refusait : *« impossible sur une rencontre à PV partagés qui frappe le
+joueur actif — il n'y a personne à provoquer. »* Le refus est **rouvert**, parce
+qu'il reposait sur le modèle **actuel** du donjon, et que **DON-02/03 le change** :
+la rencontre abstraite devient de vrais monstres, avec une **riposte**. Dès qu'une
+riposte existe, la question « qui la prend ? » se pose, et c'est toute l'aggro.
+
+#### Ce que l'aggro change vraiment
+
+**Elle ne réduit rien. Elle déplace.** Le total des dégâts d'une rencontre est
+fixé par sa durée ; l'aggro décide seulement de **qui** les encaisse. Son intérêt
+est donc entier : les concentrer sur celui qui est équipé pour les recevoir.
+
+| | Sans aggro | Avec aggro |
+|---|---|---|
+| Qui encaisse | chacun la riposte de **ses propres** actions | le joueur **le plus menaçant** |
+| Ce que ça donne au tank | rien — il ne protège personne | **enfin un rôle**, et un rôle actif |
+| Ce que ça donne aux fragiles | ils paient plein tarif | ils survivent parce que quelqu'un paie à leur place |
+
+#### Le mur : notre échelle défensive n'est pas calibrée pour ça
+
+| Build | PV effectifs *(arbre seul)* |
+|---|---:|
+| Soldat — le Mur *(plaque)* | 167 |
+| Soldat — la Ligne mobile | 149 |
+| Guérisseur *(tissu)* | 130 |
+| Pyromancien *(tissu)* | 120 |
+
+**L'écart tank / tissu est de ×1,39.** Pour qu'un tank encaisse la part de quatre
+joueurs, il lui faudrait **×4**. Le budget d'arbre ne peut pas le financer : il
+faudrait **47 points de budget rien qu'en `guard`**, sur les 50 que vaut un arbre
+entier, et le plafond du levier est à 15.
+
+> **La mitigation d'un tank ne peut pas venir de son arbre. Elle doit venir de son
+> armure.** C'est cohérent avec le canon — *l'équipement est le build*
+> (GAME_DOMAINS §3) — et ça déplace le sujet vers `GAME_ITEMS`, où il a sa place.
+
+#### Ce qui passe, chiffré
+
+Rencontre de groupe calibrée (480 PV, 22 tours, 480 dégâts au total) :
+
+| | Arbre seul | Arbre + plaque à −28 % |
+|---|---|---|
+| **Sans aggro** *(part égale, 106)* | survit | survit |
+| **Aggro bornée à 50 %** *(212)* | **mort** | **survit** *(144 sur 147)* |
+| **Aggro totale** *(423)* | mort | mort |
+
+#### Comment ça se joue, concrètement
+
+Le transfert n'est **ni une statistique, ni un score** : c'est un **geste**, donc
+une matéria, donc soumis aux mêmes règles que tout le reste. Et parce qu'il touche
+les alliés, c'est un **dépôt** (§7 bis) — il se pose, il dure, et il agit même si
+son lanceur est déconnecté.
+
+> **Cri de ralliement** — `protection`, `le groupe`, 8 tours de rencontre.
+> *Pendant sa durée, la moitié des dégâts qui frapperaient un allié vous
+> reviennent.*
+
+| Tour | Ce qui se passe |
+|---|---|
+| 1 | Terel *(le Mur)* pose le Cri. Il n'attaque pas — c'est son coût |
+| 2 | Mira lance sa Nova. La rencontre riposte : 22. **Elle en prend 11, Terel 11** — dont il ne ressent que 7, grâce à sa plaque |
+| 3-5 | Idem pour les deux autres |
+| **6** | **Terel se déconnecte.** Son tour se résout en attaque de base |
+| 6-9 | **Le Cri court toujours.** Les alliés restent couverts — c'est la loi du dépôt |
+| 10 | Il expire. Chacun reprend ses propres ripostes |
+
+#### Pourquoi la moitié, et pas plus
+
+Mesuré sur la rencontre calibrée (480 dégâts, 22 tours, 4 joueurs) — le tank a
+147 PV et −36 % de mitigation *(arbre + plaque)*, le porteur de tissu 120 PV et
+rien :
+
+| Part déplacée | Poses | Tank *(147 PV)* | Tissu *(120 PV)* |
+|---:|---:|---|---|
+| 30 % | 2 | 98 ✔ | 94 ✔ *(au bord)* |
+| **50 %** | **1** | 104 ✔ | 98 ✔ |
+| **50 %** | **2** | **132 ✔** | **76 ✔** |
+| 50 % | 3 | **149 ✘ — il meurt** | 60 ✔ |
+| 70 % | 2 | 165 ✘ | 59 ✔ |
+| 100 % | 2 | 215 ✘ | 33 ✔ |
+
+**Trois choses se lisent dans ce tableau.**
+
+1. **Au-delà de la moitié, le tank meurt** — quoi qu'il fasse, et même en plaque.
+   La borne n'est pas un choix de confort, c'est le point où l'arithmétique
+   s'arrête.
+2. **Il ne peut pas le maintenir en permanence** : trois poses le tuent. Il
+   **choisit ses fenêtres** — et c'est du jeu, apparu tout seul, sans qu'on ait à
+   inventer un temps de reprise.
+3. **En dessous de 30 %, le porteur de tissu reste au bord.** L'intervalle utile
+   est étroit, et 50 % est son centre.
+
+#### Ce que ça change vraiment — c'est une assurance, pas une mitigation
+
+| | Sans transfert | Avec *(50 %, 2 poses)* |
+|---|---:|---:|
+| Tank | 76 sur 147 | 132 sur 147 |
+| Porteur de tissu | **120 sur 120 — mort** | **76 sur 120 — vivant** |
+| Total encaissé par le groupe | 436 | 372 |
+
+**Le groupe n'économise que 15 % de dégâts. Ce qu'il gagne, c'est que personne ne
+tombe.** Le transfert ne se calibre donc pas comme un outil de réduction — il se
+calibre comme une **assurance** : sa valeur est nulle quand tout va bien, et
+totale quand quelqu'un allait mourir.
+
+> **Le tank ne protège pas : il assure.** Exactement le pendant du guérisseur, qui
+> *ne soigne pas mais provisionne* (§9 ter). Les deux fonctions de groupe posent à
+> l'avance ce qu'elles ne pourront pas donner au moment voulu — parce que dans un
+> donjon semi-synchrone, **le moment voulu arrive quand on n'est pas là.**
+
+**Décision : l'aggro entre, bornée, et sous la forme du transfert.**
+
+1. **Par défaut, chacun encaisse la riposte de ses propres actions.** Un groupe
+   sans tank fonctionne — c'est ce qui préserve « aucun rôle n'est nécessaire »
+   (§7 bis).
+2. **Un geste de menace déplace au plus la moitié** de la riposte vers celui qui le
+   pose, pour une durée. C'est la forme 3 (**le transfert**), qui cesse d'être un
+   contournement pour devenir le mécanisme lui-même.
+3. **La table de menace reste refusée** : pas de score cumulé, pas de course au
+   sommet, pas de « perte d'aggro » à gérer. Un geste, une part, une durée — les
+   trois choses que notre modèle sait déjà faire.
+4. **Elle exige que la plaque porte ~−30 %.** Sans ce chiffre, l'aggro tue le tank
+   au lieu de sauver le groupe. **C'est le prérequis, et il est dans GAME_ITEMS.**
+
+> **Et ça ne casse pas l'équilibre solo**, ce qui n'allait pas de soi : une plaque
+> à −28 % ferait du tank le meilleur solitaire… si sa lenteur ne le rattrapait pas.
+> Il met 14 tours là où l'archer en met 6 — 14 × 0,72 = 10 tours-de-dégâts contre 6
+> pour l'archer. L'écart reste à l'avantage de l'assaut. **La vitesse paie encore.**
+
+#### Le défaut que l'exercice a trouvé au passage
+
+En calibrant la rencontre de groupe, une **incohérence livrée** apparaît :
+
+| `zone.dungeon.encounter_hp_per_member` | PV | Durée | Dégâts | Groupe de 4 *(pool 518 PV)* |
+|---:|---:|---:|---:|---|
+| **200** *(valeur livrée)* | 800 | 36 tours | 800 | **wipe sans soigneur** |
+| 150 | 600 | 27 tours | 600 | wipe sans soigneur |
+| 120 | 480 | 22 tours | 480 | tenable, mais **au fil du rasoir** (118 encaissés sur 120 PV) |
+| **110** | 440 | 20 tours | 434 | **tenable avec une marge** (109 sur 120) |
+
+**Le curseur livré est calibré pour une rencontre sans riposte** — c'est-à-dire
+pour le donjon actuel, où rien ne peut être perdu (GAME_DUNGEONS). Le jour où
+DON-03 branche la riposte, **200 PV par membre rend le soigneur obligatoire**, ce
+que le §7 bis interdit. Il doit descendre à ~120.
+
+> **La règle qui le remplace** : *une rencontre de groupe se calibre sur le **pool
+> de points de vie du groupe**, jamais sur un multiple du nombre de joueurs.* Un
+> multiple linéaire produit mécaniquement une rencontre dont la difficulté ne
+> dépend pas de la composition — et donc qui exige la meilleure.
+
+### 13.5 Ce qu'on refuse, et pourquoi
 
 | Mécanique | D'où elle vient | Pourquoi non |
 |---|---|---|
-| **La table de menace (aggro)** | WoW, FFXIV, la trinité classique | Impossible sur une rencontre à PV partagés qui frappe le joueur **actif** : il n'y a personne à provoquer. Remplacée par le **transfert** (forme 3) |
+| **La table de menace (aggro)** | WoW, FFXIV, la trinité classique | **Le score cumulé** reste refusé : pas de course au sommet, pas de perte d'aggro à gérer. Mais **l'aggro elle-même entre**, bornée et sous la forme du **transfert** — arbitrage rendu au §13.4, une fois la riposte livrée (DON-03) |
 | **La trinité obligatoire** | tous les MMO à raids | Aucun rôle n'est nécessaire (§7 bis). Un groupe sans soigneur met plus de tours ; il ne rencontre pas un mur. C'est déjà un refus acté (GAME_INSPIRATIONS §5) |
 | **Les effets qui n'existent qu'en groupe** | Parangon (GW1), Chanteur (Aion) | Morts 95 % du temps à 1-2 joueurs simultanés. Tout geste collectif doit avoir une lecture en `scope: soi` |
 | **Le changement d'arme en combat** | GW2, ESO | Contredit DOM-02 — le build se change **hors** combat, et c'est ce qui rend la borne matérielle honnête |
@@ -2509,18 +2902,26 @@ C'est ce qui distingue cette liste d'un catalogue d'idées :
 - **Les valeurs absolues** — PV des monstres, dégâts des gestes, coûts en PM.
   Elles se dérivent de l'ancre d'échelle (§6.4) et vivent dans
   [BALANCE.md](BALANCE.md).
-- **Les arbres de métier** (5 récoltes, 7 artisanats). Le gabarit de GAME_DOMAINS
-  §5.2/§5.3 tient ; l'équivalent des fonctions et des leviers pour la récolte et
-  l'artisanat est un second chantier, à instruire après celui-ci.
+- **Les arbres de métier** (5 récoltes, 7 artisanats) — **chantier instruit
+  depuis** : [GAME_TRADES.md](GAME_TRADES.md) (2026-08-01). Il a trouvé le même
+  défaut sous une autre forme (175 nœuds sur 190 sont des portes, un seul levier,
+  et il fait deux choses à la fois) et **la même conclusion** : ce n'est pas le
+  levier qui distingue deux branches, c'est l'accord. Il change en revanche le
+  borneur — en métier, un arbre trop fort déséquilibre le **serveur**, pas un
+  joueur.
 - **Le nom et le contenu des matéria de technique** — c'est du contenu, dérivé
   comme le reste (GAME_MATERIA §2.1).
 - **La fusion et les domaines hybrides** — réserve d'extension (GAME_WORLD §2.2) ;
   le nœud dormant reste posé et hors budget.
 - **La forme visuelle de l'arbre** — design d'écran, pas design de système.
 - **Quelles formes de geste (§13) sont livrées, et dans quel ordre** — le
-  vocabulaire est arrêté, la priorisation est un sujet de plan (ARC-18). Le
-  **familier** est le plus cher des huit et le plus aligné sur le modèle : c'est
-  l'arbitrage à rendre en premier.
+  vocabulaire est arrêté, la priorisation est un sujet de plan (ARC-18). Les deux
+  arbitrages qui bloquaient sont rendus : le **familier** est un dépôt (§13.3),
+  l'**aggro** entre bornée (§13.4).
+- **La mitigation des lignes d'armure** — la **fourchette** est mesurée (§2.2 :
+  30 % minimum pour que l'aggro passe, 50 % maximum avant que le solo ne casse,
+  cible ~40 %), mais le chiffre retenu appartient à
+  [GAME_ITEMS.md](GAME_ITEMS.md), pas au budget d'arbre.
 - **Le nombre d'arbres qu'un joueur mènera réellement** : c'est une conséquence de
   l'énergie et du build, pas une règle à écrire.
 - **La valeur de la vitesse de combat** (§9 sexies.4) — l'arbitrage est posé et
