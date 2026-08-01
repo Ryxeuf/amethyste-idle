@@ -18,7 +18,7 @@
 
 ## Vue d'ensemble
 
-**18 jalons** (**ARC-01** à **ARC-18**) en 3 pistes.
+**19 jalons** (**ARC-01** à **ARC-19**) en 4 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -30,7 +30,7 @@
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
-| ARC-09 | Tests du plan (les 39 invariants) | S | ‖ |
+| ARC-09 | Tests du plan (les 42 invariants) | S | ‖ |
 | ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
@@ -39,14 +39,15 @@
 | ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 | ARC-17 | L'équilibre solo : la simulation de journée, et les deux curseurs qui la tiennent | M | ← ARC-05, ARC-07 |
-| ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | **L** | ← ARC-11 |
+| ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | M | ← ARC-11 |
+| ARC-19 | L'aggro bornée, et ce qu'elle exige de l'armure | M | ← DON-03, OBJ |
 
 ```
 Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → ARC-15
                         ARC-02 → ARC-04 ; ARC-02 → ARC-11 → ARC-13
 Piste B — L'échelle   : ARC-05 → ARC-17 ; ARC-06 ‖ ARC-10
 Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-07 → ARC-14 ; ARC-09 ‖
-Piste D — Les formes  : ARC-11 → ARC-18 (a livrer par forme, jamais en bloc)
+Piste D — Les formes  : ARC-11 → ARC-18 (a livrer par forme, jamais en bloc) ; ARC-19 ← DON-03
 ```
 
 **Le noyau minimal.** Si le chantier doit être livré par morceaux, ARC-01, 02, 03 et
@@ -213,7 +214,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (GAME_PROGRESSION §6b)
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
-> ‖ au fil des jalons. Les 39 invariants de GAME_ARCHETYPES §12.
+> ‖ au fil des jalons. Les 42 invariants de GAME_ARCHETYPES §12.
 - [ ] Budget (50 pb), plafonds par levier, règle des 80/20
 - [ ] Grille : une fonction par domaine, aucun triplet en double
 - [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
@@ -432,14 +433,50 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **L'ouverture** (M) — un geste posé depuis l'écran de zone, appliqué à la rencontre
       suivante. Répare : `tempo` n'a aucun effet modélisé. Coûte de l'**énergie d'action**,
       jamais un tour
-- [ ] **Le familier** (L) — un second acteur dans la boucle de tour. Répare : le tour d'un
-      absent ne produit qu'une attaque de base. **Le plus cher et le plus aligné sur le
-      modèle** — c'est l'arbitrage à rendre en premier. Le familier **déplace** la puissance,
+- [ ] **Le familier** (M) — **arbitrage rendu (§13.3) : c'est un dépôt offensif, pas un
+      acteur.** Retirez le ciblage et il ne reste qu'une chose qui frappe à chaque tour
+      pendant une durée : le critère d'admission du §13.1 impose donc de le traiter comme
+      tel. On garde ce qui comptait — **il agit sur les tours où son invocateur est
+      absent** — et la fiction entière ; on perd le ciblage, on économise un acteur, une IA
+      et une cible. Mesuré : +2 % sur un commun, **+9 % sur une élite**, rendement ×2,4 le
+      tour investi — il ne sert que sur les longues rencontres, comme *la charge*
+- [ ] Garde-fous du familier : meurt avec la rencontre · un seul à la fois · les passifs de
+      l'arbre qualifient ses gestes (la double borne s'applique) · il déplace la puissance,
       il ne la double pas
 - [ ] Les **sept refus** du §13.3 verrouillés par test là où c'est possible : aucune table de
       menace, aucun rôle nécessaire, aucun geste sans lecture `scope: soi`, aucun changement
       d'arme en combat, aucune ressource persistant entre deux rencontres, aucun tour
       supplémentaire, aucune montée en puissance entre les combats
+
+### ARC-19 — L'aggro bornée (M | ★★★ | MOYENNE)
+> GAME_ARCHETYPES §13.4. **Le refus du §13.3 est rouvert** : il reposait sur le modèle
+> actuel du donjon (rencontre abstraite à PV partagés, aucune riposte). **DON-02/03 le
+> change** — de vrais monstres, une vraie riposte —, et dès qu'une riposte existe, la
+> question « qui la prend ? » se pose.
+- [ ] **Par défaut, chacun encaisse la riposte de ses propres actions.** Un groupe sans tank
+      fonctionne : c'est ce qui préserve « aucun rôle n'est nécessaire » (§7 bis)
+- [ ] **Un geste de menace déplace au plus la moitié** de la riposte vers celui qui le pose,
+      pour une durée. C'est la forme **transfert** (ARC-18), qui cesse d'être un
+      contournement pour devenir le mécanisme lui-même
+- [ ] **La table de menace reste refusée** : aucun score cumulé, aucune course au sommet,
+      aucune perte d'aggro à gérer. Un geste, une part, une durée
+- [ ] **Prérequis dans GAME_ITEMS — la plaque doit porter ~−30 %.** Mesuré : l'écart tank /
+      tissu **par l'arbre seul** est de ×1,39 ; encaisser la part de quatre en demanderait
+      ×4, soit **47 des 50 points de budget rien qu'en `guard`** — impossible, et le plafond
+      du levier est à 15. **La mitigation d'un tank vient de son armure, pas de son arbre.**
+      Avec la plaque à −28 %, l'aggro bornée à 50 % passe (144 encaissés sur 147 PV)
+- [ ] **Vérifier que ça ne casse pas le solo** : une plaque à −28 % ferait du tank le
+      meilleur solitaire si sa lenteur ne le rattrapait pas. Mesuré : 14 tours × 0,72 = 10
+      tours-de-dégâts contre 6 pour l'archer — l'écart reste à l'avantage de l'assaut
+- [ ] **Corriger `zone.dungeon.encounter_hp_per_member`** — le curseur livré (200) est
+      calibré pour une rencontre **sans riposte**. Avec une riposte, 800 PV pour quatre font
+      36 tours et 800 dégâts, contre un pool de groupe de 518 : **le soigneur devient
+      obligatoire**, ce que le §7 bis interdit. À ~**120**. Règle qui le remplace : *une
+      rencontre de groupe se calibre sur le **pool de PV du groupe**, jamais sur un multiple
+      du nombre de joueurs* — un multiple linéaire produit une difficulté qui ne dépend pas
+      de la composition, et qui exige donc la meilleure
+- [ ] Tests : un groupe sans tank et sans soigneur vient à bout d'une élite de son palier ;
+      aucun score de menace cumulé ; la part déplacée ne dépasse jamais 50 %
 
 ---
 
@@ -455,6 +492,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 | La **fonction** se relit comme un retour des classes | Elle n'est jamais affichée, ne ferme aucun arbre et ne conditionne aucun port. C'est une contrainte d'auteur — le joueur n'en voit que la conséquence |
 | Les **passifs conditionnels** se relisent comme des interdits de port | Une condition ne ferme rien : le mage en plaque existe toujours, il n'a pas le bonus. L'UI d'ARC-12 dit ce qu'on gagnerait à porter autre chose — jamais ce qui est refusé |
 | Les **dépôts de groupe** rendent un rôle **obligatoire** en donjon | Garde-fou testé (ARC-11) : un groupe sans entretien met plus de tours et perd plus de PV, il ne rencontre pas un mur. Aucune rencontre ne suppose une composition |
+| **L'aggro rend un rôle obligatoire** | Elle est **bornée à 50 %** et portée par un **geste**, jamais par une table : sans tank, chacun encaisse la sienne et le groupe passe. Un test l'exige (ARC-19) |
 | **L'entretien casse l'équilibre solo** s'il ne paie rien | Le curseur de régénération des PM (ARC-17) est ce qui le borne. Sans lui, mesuré : 14 minutes d'attente par jour contre 99 à 142 pour les autres — il joue trois fois plus de contenu pour la même énergie d'action |
 | **L'assaut n'a pas de raison d'exister** tant que la vitesse ne vaut rien | Les rencontres à fenêtre (ARC-17). Une chasse coûte 5 points d'énergie quel que soit le nombre de tours : sans contenu à fenêtre, tuer vite ne rapporte rien |
 | La **suppression du plafond** ouvre la porte au personnage qui a tout appris | C'est le contrat des trois couches, et les conditions d'équipement le resserrent : on ne porte pas à la fois la plaque, le cuir, le bouclier, la dague et l'arc |

@@ -2364,9 +2364,18 @@ Ce qui doit casser la CI si on le viole :
 37. **Aucune ressource ne persiste entre deux rencontres** (§13.3) — charges,
     postures et différés meurent avec la rencontre ; seuls les PV, les PM et le
     carquois se reportent, et ils se rechargent en **temps réel**.
-38. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
+38. **Le familier est un dépôt, jamais un acteur** (§13.3) — il ne peut être ni
+    ciblé, ni tué ; il meurt avec la rencontre, un seul à la fois, et les passifs de
+    son arbre qualifient ses gestes (la double borne s'applique).
+39. **L'aggro est bornée à la moitié de la riposte** (§13.4) — par défaut chacun
+    encaisse la sienne. Aucun score cumulé, aucune perte d'aggro : un geste, une
+    part, une durée.
+40. **Une rencontre de groupe se calibre sur le pool de PV du groupe**, jamais sur
+    un multiple du nombre de joueurs (§13.4) — sinon sa difficulté ne dépend pas de
+    la composition, et elle exige donc la meilleure.
+41. **Aucune accointance ne donne de puissance** (§9.7) — ni point de budget, ni
     levier, ni statistique. Quatre formes légales, et rien d'autre.
-39. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
+42. **Chaque arbre ouvre un accord exclusif** — une matéria qu'aucun autre arbre
     n'ouvre (§5.1).
 
 ---
@@ -2401,10 +2410,9 @@ une **attaque de base** (`GroupDungeonCombatService`). Un joueur déconnecté ne
 laisse rien derrière lui. Le familier fait de l'absence une contribution — c'est
 **le dépôt qui agit**, et c'est la forme la plus alignée sur notre modèle.
 *Porté par* : bête × sorts (Druide), ténèbres × sorts (Nécromancien), métal ×
-distance (Ingénieur — la tourelle). *Coût moteur* : un second acteur dans la
-boucle de tour — **le plus cher des huit**. *Garde-fou* : le familier ne double pas
-la puissance, il la **déplace** — ce que l'arbre met dans le familier sort des
-gestes du joueur.
+distance (Ingénieur — la tourelle). *Coût moteur* : **M** — arbitré au §13.3, il est
+un **dépôt offensif**, pas un acteur : aucune IA, aucune cible supplémentaire.
+*Garde-fou* : il ne double pas la puissance, il la **déplace**.
 
 **2. La charge** — *une ressource qui se construit dans la rencontre.*
 Points de combo (Roublard), chi (Moine), rage, puissance sacrée.
@@ -2482,6 +2490,7 @@ C'est ce qui distingue cette liste d'un catalogue d'idées :
 | Forme | Le défaut qu'elle répare | Où il a été mesuré |
 |---|---|---|
 | Le familier | le tour d'un absent ne produit qu'une attaque de base | §7 bis.1 |
+| *(le familier, suite)* | et il ne sert **que** sur les longues rencontres : +2 % sur un commun, +9 % sur une élite | §13.3 |
 | La charge | la mêlée n'a aucune raison d'aimer les longs combats | §9 octies |
 | Le transfert | l'aggro est impossible, le tank perd son geste de groupe | §9 quinquies |
 | La riposte | le tank ne tue pas (14 tours contre 6) | §9 sexies.1 |
@@ -2490,11 +2499,141 @@ C'est ce qui distingue cette liste d'un catalogue d'idées :
 | La posture | aucun choix à l'échelle d'une rencontre | §6.1 bis |
 | Le différé | l'asynchronie n'est jamais un avantage, seulement une contrainte | §7 bis |
 
-### 13.3 Ce qu'on refuse, et pourquoi
+### 13.3 Arbitrage — le familier *(rendu le 2026-08-01)*
+
+Le §13.1 posait le familier comme « un acteur qui joue à votre place », et le
+classait **L** — le plus cher des huit. L'arbitrage porte sur un point unique :
+**est-ce un acteur, ou un dépôt ?**
+
+**Le test.** Retirez le ciblage — l'ennemi ne peut pas s'en prendre au familier.
+Que reste-t-il ? Une chose qui inflige des dégâts à chaque tour de la rencontre,
+pendant une durée, posée en un tour. C'est **exactement un dépôt** (§7 bis), et le
+critère d'admission du §13.1 exige qu'une forme occupe une place qu'aucune autre
+n'occupe.
+
+**Décision : le familier est retenu, mais comme dépôt offensif. Ce n'est pas un
+acteur.**
+
+| | |
+|---|---|
+| **Ce qu'on garde** | il **agit sur les tours où son invocateur est absent** — sa raison d'être, et le seul défaut qu'il devait réparer |
+| **Ce qu'on garde aussi** | la fiction entière : une créature invoquée, nommée, qui frappe. Le joueur ne lit pas « dépôt » |
+| **Ce qu'on perd** | il ne peut pas être ciblé, ni tué, ni encaisser à la place de quelqu'un |
+| **Ce qu'on économise** | aucun second acteur dans la boucle de tour, aucune IA, aucune cible supplémentaire. **Le coût passe de L à M** |
+
+**Ce qu'il vaut, mesuré** — familier à 40 % du geste de son invocateur, 6 tours,
+posé en un tour :
+
+| | Sans familier | Avec | Gain |
+|---|---:|---:|---:|
+| Commun (100 PV) | 6,1 tours | 6 tours | **+2 %** |
+| Élite (180 PV) | 11,0 tours | 10 tours | **+9 %** |
+
+Rendement du tour investi : **×2,4** — le profil exact d'un dépôt. Et le même
+enseignement que pour *la charge* : **le familier ne sert pas sur le tout-venant**,
+il sert dans les longues rencontres. Deux formes qui poussent au même endroit, ce
+qui est cohérent : elles récompensent toutes deux la durée.
+
+> **Quatre garde-fous.** (1) Il **meurt avec la rencontre** — jamais de familier
+> permanent, ce serait une ressource qui persiste (§13.3). (2) **Un seul à la
+> fois**, comme la posture. (3) **Les passifs de l'arbre qualifient ses gestes** :
+> c'est un prolongement de l'invocateur, donc la double borne s'applique — il ne
+> contourne pas la case élément × registre. (4) **Il déplace la puissance, il ne la
+> double pas** : son coût en ressource est celui d'un geste de son palier, et son
+> action vaut une fraction de celle du joueur.
+
+### 13.4 Arbitrage — l'aggro *(rendu le 2026-08-01)*
+
+Le §13.3 la refusait : *« impossible sur une rencontre à PV partagés qui frappe le
+joueur actif — il n'y a personne à provoquer. »* Le refus est **rouvert**, parce
+qu'il reposait sur le modèle **actuel** du donjon, et que **DON-02/03 le change** :
+la rencontre abstraite devient de vrais monstres, avec une **riposte**. Dès qu'une
+riposte existe, la question « qui la prend ? » se pose, et c'est toute l'aggro.
+
+#### Ce que l'aggro change vraiment
+
+**Elle ne réduit rien. Elle déplace.** Le total des dégâts d'une rencontre est
+fixé par sa durée ; l'aggro décide seulement de **qui** les encaisse. Son intérêt
+est donc entier : les concentrer sur celui qui est équipé pour les recevoir.
+
+| | Sans aggro | Avec aggro |
+|---|---|---|
+| Qui encaisse | chacun la riposte de **ses propres** actions | le joueur **le plus menaçant** |
+| Ce que ça donne au tank | rien — il ne protège personne | **enfin un rôle**, et un rôle actif |
+| Ce que ça donne aux fragiles | ils paient plein tarif | ils survivent parce que quelqu'un paie à leur place |
+
+#### Le mur : notre échelle défensive n'est pas calibrée pour ça
+
+| Build | PV effectifs *(arbre seul)* |
+|---|---:|
+| Soldat — le Mur *(plaque)* | 167 |
+| Soldat — la Ligne mobile | 149 |
+| Guérisseur *(tissu)* | 130 |
+| Pyromancien *(tissu)* | 120 |
+
+**L'écart tank / tissu est de ×1,39.** Pour qu'un tank encaisse la part de quatre
+joueurs, il lui faudrait **×4**. Le budget d'arbre ne peut pas le financer : il
+faudrait **47 points de budget rien qu'en `guard`**, sur les 50 que vaut un arbre
+entier, et le plafond du levier est à 15.
+
+> **La mitigation d'un tank ne peut pas venir de son arbre. Elle doit venir de son
+> armure.** C'est cohérent avec le canon — *l'équipement est le build*
+> (GAME_DOMAINS §3) — et ça déplace le sujet vers `GAME_ITEMS`, où il a sa place.
+
+#### Ce qui passe, chiffré
+
+Rencontre de groupe calibrée (480 PV, 22 tours, 480 dégâts au total) :
+
+| | Arbre seul | Arbre + plaque à −28 % |
+|---|---|---|
+| **Sans aggro** *(part égale, 106)* | survit | survit |
+| **Aggro bornée à 50 %** *(212)* | **mort** | **survit** *(144 sur 147)* |
+| **Aggro totale** *(423)* | mort | mort |
+
+**Décision : l'aggro entre, bornée, et sous la forme du transfert.**
+
+1. **Par défaut, chacun encaisse la riposte de ses propres actions.** Un groupe
+   sans tank fonctionne — c'est ce qui préserve « aucun rôle n'est nécessaire »
+   (§7 bis).
+2. **Un geste de menace déplace au plus la moitié** de la riposte vers celui qui le
+   pose, pour une durée. C'est la forme 3 (**le transfert**), qui cesse d'être un
+   contournement pour devenir le mécanisme lui-même.
+3. **La table de menace reste refusée** : pas de score cumulé, pas de course au
+   sommet, pas de « perte d'aggro » à gérer. Un geste, une part, une durée — les
+   trois choses que notre modèle sait déjà faire.
+4. **Elle exige que la plaque porte ~−30 %.** Sans ce chiffre, l'aggro tue le tank
+   au lieu de sauver le groupe. **C'est le prérequis, et il est dans GAME_ITEMS.**
+
+> **Et ça ne casse pas l'équilibre solo**, ce qui n'allait pas de soi : une plaque
+> à −28 % ferait du tank le meilleur solitaire… si sa lenteur ne le rattrapait pas.
+> Il met 14 tours là où l'archer en met 6 — 14 × 0,72 = 10 tours-de-dégâts contre 6
+> pour l'archer. L'écart reste à l'avantage de l'assaut. **La vitesse paie encore.**
+
+#### Le défaut que l'exercice a trouvé au passage
+
+En calibrant la rencontre de groupe, une **incohérence livrée** apparaît :
+
+| `zone.dungeon.encounter_hp_per_member` | PV | Durée | Dégâts | Groupe de 4 *(pool 518 PV)* |
+|---:|---:|---:|---:|---|
+| **200** *(valeur livrée)* | 800 | 36 tours | 800 | **wipe sans soigneur** |
+| 150 | 600 | 27 tours | 600 | wipe sans soigneur |
+| **120** | 480 | 22 tours | 480 | **tenable sans soigneur** |
+
+**Le curseur livré est calibré pour une rencontre sans riposte** — c'est-à-dire
+pour le donjon actuel, où rien ne peut être perdu (GAME_DUNGEONS). Le jour où
+DON-03 branche la riposte, **200 PV par membre rend le soigneur obligatoire**, ce
+que le §7 bis interdit. Il doit descendre à ~120.
+
+> **La règle qui le remplace** : *une rencontre de groupe se calibre sur le **pool
+> de points de vie du groupe**, jamais sur un multiple du nombre de joueurs.* Un
+> multiple linéaire produit mécaniquement une rencontre dont la difficulté ne
+> dépend pas de la composition — et donc qui exige la meilleure.
+
+### 13.5 Ce qu'on refuse, et pourquoi
 
 | Mécanique | D'où elle vient | Pourquoi non |
 |---|---|---|
-| **La table de menace (aggro)** | WoW, FFXIV, la trinité classique | Impossible sur une rencontre à PV partagés qui frappe le joueur **actif** : il n'y a personne à provoquer. Remplacée par le **transfert** (forme 3) |
+| **La table de menace (aggro)** | WoW, FFXIV, la trinité classique | **Le score cumulé** reste refusé : pas de course au sommet, pas de perte d'aggro à gérer. Mais **l'aggro elle-même entre**, bornée et sous la forme du **transfert** — arbitrage rendu au §13.4, une fois la riposte livrée (DON-03) |
 | **La trinité obligatoire** | tous les MMO à raids | Aucun rôle n'est nécessaire (§7 bis). Un groupe sans soigneur met plus de tours ; il ne rencontre pas un mur. C'est déjà un refus acté (GAME_INSPIRATIONS §5) |
 | **Les effets qui n'existent qu'en groupe** | Parangon (GW1), Chanteur (Aion) | Morts 95 % du temps à 1-2 joueurs simultanés. Tout geste collectif doit avoir une lecture en `scope: soi` |
 | **Le changement d'arme en combat** | GW2, ESO | Contredit DOM-02 — le build se change **hors** combat, et c'est ce qui rend la borne matérielle honnête |
@@ -2518,9 +2657,12 @@ C'est ce qui distingue cette liste d'un catalogue d'idées :
   le nœud dormant reste posé et hors budget.
 - **La forme visuelle de l'arbre** — design d'écran, pas design de système.
 - **Quelles formes de geste (§13) sont livrées, et dans quel ordre** — le
-  vocabulaire est arrêté, la priorisation est un sujet de plan (ARC-18). Le
-  **familier** est le plus cher des huit et le plus aligné sur le modèle : c'est
-  l'arbitrage à rendre en premier.
+  vocabulaire est arrêté, la priorisation est un sujet de plan (ARC-18). Les deux
+  arbitrages qui bloquaient sont rendus : le **familier** est un dépôt (§13.3),
+  l'**aggro** entre bornée (§13.4).
+- **La mitigation des lignes d'armure** — l'aggro exige que la plaque porte ~−30 %,
+  et ce chiffre appartient à [GAME_ITEMS.md](GAME_ITEMS.md), pas au budget d'arbre.
+  Tant qu'il n'est pas posé, l'aggro tue le tank au lieu de sauver le groupe.
 - **Le nombre d'arbres qu'un joueur mènera réellement** : c'est une conséquence de
   l'énergie et du build, pas une règle à écrire.
 - **La valeur de la vitesse de combat** (§9 sexies.4) — l'arbitrage est posé et
