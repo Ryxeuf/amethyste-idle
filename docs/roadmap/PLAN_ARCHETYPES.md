@@ -38,7 +38,7 @@
 | ARC-14 | La fourche : une branche exclusive par arbre de combat | S | ← ARC-07 |
 | ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
-| ARC-17 | L'équilibre solo : la simulation de journée, et les deux curseurs qui la tiennent | M | ← ARC-05, ARC-07 |
+| ARC-17 | **Le simulateur d'équilibrage** (`app:balance:simulate`) — l'outil qui remplace les repères calculés à la main | M | ← ARC-05, ARC-07 |
 | ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | M | ← ARC-11 |
 | ARC-19 | L'aggro bornée, et ce qu'elle exige de l'armure | M | ← DON-03, OBJ |
 
@@ -375,38 +375,52 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : aucune accointance ne rend un point de budget, un levier ou une statistique ;
       aucune recette, aucun palier, aucun contenu n'en dépend
 
-### ARC-17 — L'équilibre solo (M | ★★★ | HAUTE)
-> GAME_ARCHETYPES §9 sexies et §9 septies. **Mesuré : les arbres ne sont pas équilibrés, et
-> le classement dépend de l'échelle.** Sur un combat, le guerrier domine ; sur une journée,
-> c'est le guérisseur (70 PV perdus contre 494 à 710), et le tank pur devient le pire des
-> six. Aucun exercice individuel ne pouvait le voir.
-- [ ] **La simulation de journée** comme test permanent : 14 communs + 2 élites, les six
-      builds sur la même ligne, en **PV perdus** et en **ressource dépensée**. C'est la
-      forme de test qui attrape une régression d'équilibrage — pas une durée isolée
-- [ ] **La monnaie commune est le temps** : PV à 12 s/point (livré, BALANCE §9), PM à
-      calibrer (~6 s/point). Cible : les six builds entre **99 et 179 minutes** d'attente
-      quotidienne. Sans le curseur PM, le guérisseur en paie **14**
-- [ ] **Donner une valeur à la vitesse** — arbitrage rendu : les **rencontres à fenêtre**
-      (§9 sexies.4). Un boss se termine en 12-20 tours ou pas du tout ; mesuré, l'archer et
-      le pyromancien tiennent la fenêtre (15 tours), le soldat (25) et le guérisseur (29)
-      non. **Conséquence à porter dans GAME_DUNGEONS et GAME_BESTIARY**
-- [ ] **La matrice contexte × fonction** (§9 septies.3) : aucune case vide, aucune fonction
-      dominante dans les deux colonnes. Et l'exigence qui en découle — **toute fourche
-      oppose deux contextes**, une branche jouable seul, une branche qui sert le groupe
-- [ ] **L'élite n'est pas un palier solo** (§9 octies) : elle **tue un joueur seul de son
-      palier, quel que soit son archétype**. Calibration mesurée — frappe ~2,9× celle d'un
-      commun du même palier, à points de vie ~1,8× : les six builds y laissent 102 à 129 %
-      de leur barre. À quatre elle devient normale **sans règle spéciale**, parce que les
-      dégâts ne se divisent pas par la taille du groupe mais que les dépôts, si
-- [ ] **Cible de calibrage** : moins de **×1,5** d'écart d'attente quotidienne entre le
-      meilleur et le pire build. Mesuré aujourd'hui : ×2,2, le pyromancien payant deux fois
-      (fragile *et* dépensier)
-- [ ] **Conséquences à porter** : dans **GAME_BESTIARY** (le gabarit `tier × rank` doit
-      produire un rang Elite qui tue un solo, pas un commun gonflé) et dans **GAME_DUNGEONS**
-      (l'élite est l'étape normale d'un donjon ; en zone elle reste une rencontre dont **on
-      peut fuir** — un mur qu'on ne peut ni franchir ni contourner n'est pas du contenu)
-- [ ] Tests : la simulation de journée en CI ; aucun build hors de la fourchette d'attente ;
-      chaque arbre a une branche solo et une branche de groupe
+### ARC-17 — Le simulateur d'équilibrage (M | ★★★ | HAUTE)
+> GAME_ARCHETYPES §0.2, §9 sexies et §9 septies. **Mesuré : les arbres ne sont pas
+> équilibrés, et le classement dépend de l'échelle.** Sur un combat le guerrier domine ;
+> sur une journée c'est le guérisseur (70 PV perdus contre 494 à 710), et le tank pur
+> devient le pire des six. Aucun exercice individuel ne pouvait le voir.
+>
+> **Le livrable n'est pas un tableau, c'est un outil.** Quatre exercices manuels ont produit
+> vingt corrections ; à cette échelle c'est tenable, au-delà ce ne l'est plus. Tous les
+> nombres de GAME_ARCHETYPES sont des **repères calculés à la main sur une échelle
+> illustrative** (§0.2) — le simulateur les remplace par des mesures sur les vraies données.
+
+**`app:balance:simulate`** — la sœur **dynamique** de `app:balance:report` (qui, lui, est
+statique : il compte et détecte des anomalies, il ne joue pas de combat).
+
+- [ ] **Entrées : les vraies données, jamais des constantes.** `Monster` (`tier`/`rank`
+      après BES-01), `Item` (lignes d'armure et leur mitigation, armes, carquois),
+      `Spell`/matéria (registre, intention, portée, coût, durée), `Skill` (leviers,
+      conditions), `Domain` (élément × registre × fonction)
+- [ ] **Builds de référence générés, jamais écrits à la main** : un par fonction × registre,
+      arbre complet, équipement et matéria du palier. Écrits en dur, ils se périmeraient au
+      premier changement de fixture — et c'est exactement ce qu'on cherche à détecter
+- [ ] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
+      **journée** (14 communs + 2 tentatives) · un **donjon à quatre**, joué dans les quatre
+      compositions (avec/sans tank × avec/sans soigneur)
+- [ ] **Sorties** : la **table croisée** du §9 sexies (durée, PV restants, ressource
+      dépensée, attente convertie en minutes) · l'**ancre de fonction** (écart entre le
+      meilleur et le pire) · la **mortalité solo des élites** · la **matrice contexte ×
+      fonction** du §9 septies.3
+- [ ] **Déterministe** — graine fixée. Une CI qui clignote ne sert à rien, et un
+      équilibrage qu'on ne peut pas reproduire n'est pas un équilibrage
+- [ ] **Seuils tenus en CI** :
+  - [ ] écart d'attente quotidienne entre le meilleur et le pire build **< ×1,5**
+  - [ ] **une élite tue un joueur seul**, quel que soit son archétype (102-129 % de sa barre)
+  - [ ] **un groupe sans tank ni soigneur vient à bout d'une élite de son palier** — sinon un
+        rôle est devenu nécessaire, ce que le §7 bis interdit
+  - [ ] aucun build hors des fourchettes de durée du §6.4 (commun 3-5, élite 6-10, boss 12-20)
+  - [ ] aucune fonction dominante dans les **deux** colonnes de la matrice
+- [ ] **Rapport archivé et daté** dans [../BALANCE.md](../BALANCE.md), pour comparer d'une
+      passe à l'autre — c'est la trace qui rend une régression lisible
+- [ ] **Les deux curseurs que le simulateur doit fixer** : la **régénération des PM** hors
+      combat (~6 s/point, à confronter aux 12 s/PV livrés) et
+      `zone.dungeon.encounter_hp_per_member` (200 → ~110). Ce sont eux qui décident de
+      l'équilibre solo et de l'équilibre de groupe respectivement
+- [ ] **Ce que le simulateur ne décide pas** : les règles (§0.2, colonne de gauche). Elles
+      tiennent quelles que soient les valeurs, et une mesure qui les contredirait signalerait
+      un bug de simulation avant un défaut de conception
 
 ### ARC-18 — Les formes de geste (L | ★★★ | MOYENNE)
 > GAME_ARCHETYPES §13. Le vocabulaire d'intentions dit ce qu'un geste **fait** ; il ne dit

@@ -64,6 +64,45 @@ cadrent l'ampleur.
 | **Les archétypes d'arme n'ont rien à qualifier** | L'attaque de base vaut `3 + variance` et **ne lit aucun passif d'arbre** (DOM-01, assumé) ; **aucune matéria de technique n'existe** (DOM-03, un test l'interdit même) | Un arbre de mêlée ou de distance est aujourd'hui **vide de sens** : ses passifs ne s'appliquent à rien. D'où la décision 1 (§3) |
 | **Un arbre coûte presque toute une vie de personnage** | L'arbre de Pyromancie coûte **465 points** ; le plafond global est de **500** (`MAX_TOTAL_SKILL_POINTS`) | Un joueur ne peut pas mener « deux à quatre domaines » (GAME_PROGRESSION §1). L'échelle de coût et le plafond sont à reprendre ensemble (§6.2, §11.2) |
 
+### 0.2 Le statut des chiffres de ce document
+
+**Aucun nombre écrit ici n'est une valeur de jeu.** Tous sont des **repères**,
+calculés à la main sur une échelle illustrative qui respecte l'ancre du §6.4
+(joueur 120 PV · commun 100 PV, frappe 9 · élite 180 PV, frappe 26 · précision
+85 %). Ils servent à **comparer**, jamais à paramétrer.
+
+Ce qui compte, c'est de savoir **lesquels survivront** à une recalibration sur les
+vraies données, et lesquels tomberont.
+
+| Ce qui tient, quelles que soient les valeurs | Pourquoi |
+|---|---|
+| Une entrave d'un tour est **nulle en duel** | identité arithmétique, vraie pour n'importe quel chiffre |
+| Ce qui agit sur un **état** se multiplie par les alliés, sur une **action** non | découle de « un seul joueur agit par tour » |
+| Une amélioration respecte **N × X ≤ 100** | un rapport, pas une mesure |
+| **La durée étale la valeur**, elle ne l'augmente pas | règle de conception |
+| Le budget compte l'**effet moyen** (×1,4 / ×2,0) | définition du budget |
+| Une rencontre de groupe se calibre sur le **pool du groupe** | règle de conception |
+| Le **direct est l'urgence**, le **dépôt la provision** | découle de l'asynchronie |
+| **Une élite tue un joueur seul** | décision de conception |
+| L'identité est dans les **gestes**, pas dans les pourcentages | constat de quatre exercices, tous concordants |
+
+| Ce qui sera recalculé | Ce dont ça dépend |
+|---|---|
+| Tous les points de vie et tous les dégâts | les vrais monstres — **BES-01** (`tier × rank`) |
+| **Plaque 40 % / cuir 20 % / tissu 0 %** | les vraies pièces — **OBJ**, GAME_ITEMS |
+| La borne d'aggro à **50 %** | de la mitigation finalement retenue |
+| `encounter_hp_per_member` ≈ **110** | du pool réel d'un groupe de quatre |
+| Les **taux de change** des quinze leviers (§4) | de l'échelle réelle des gestes |
+| Les **minutes d'attente** quotidiennes | des deux curseurs de régénération (PV, PM) |
+| Une élite frappe **~2,9×** un commun | du gabarit `tier × rank` |
+
+> **Et une conséquence de méthode, qui est la plus importante de cette
+> section : on ne recalibrera pas à la main.** Quatre exercices manuels ont produit
+> vingt corrections — à cette échelle c'est tenable, au-delà ce ne l'est plus. La
+> suite passe par un **simulateur qui lit les vraies données et rejoue les mêmes
+> scénarios** (ARC-17). Les tableaux de ce document sont sa **spécification** : ce
+> qu'il doit savoir produire, et les seuils qu'il doit tenir.
+
 ---
 
 ## 1. Décision 3 — Les trois axes d'un domaine
@@ -271,10 +310,12 @@ le point où la mitigation du tank annule exactement sa lenteur (14 tours contre
 Au-delà, il encaisse moins que l'archer **tout en survivant mieux**, et redevient
 le meilleur choix partout — le défaut du §9 sexies, réintroduit par l'équipement.
 
-> **Recommandation : plaque ~40 %, cuir ~20 %, tissu 0 %.** L'écart de points de
+> **Acté le 2026-08-01 : plaque 40 %, cuir 20 %, tissu 0 %.** L'écart de points de
 > vie effectifs devient **×2,3 / ×1,6 / ×1** — franc, lisible au premier coup
-> d'œil, et il laisse l'archer meilleur en dégâts subis (82 contre 101). C'est un
-> chiffre de [GAME_ITEMS.md](GAME_ITEMS.md), pas un chiffre d'arbre.
+> d'œil, et il laisse l'archer meilleur en dégâts subis (82 contre 101). Le chiffre
+> vit dans [GAME_ITEMS.md](GAME_ITEMS.md), pas dans le budget d'arbre ; **il est
+> provisoire au même titre que tous les nombres de ce document (§0.2)** et sera
+> re-dérivé des vraies pièces par le simulateur.
 
 > **Ce qui autorise une mitigation aussi forte, c'est la lenteur.** Le tank met
 > deux fois plus de tours à finir un combat ; chaque tour est un coup encaissé de
