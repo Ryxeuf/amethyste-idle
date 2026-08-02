@@ -16,6 +16,11 @@
                 {# C2 : toujours le cout. Un ecran qui presente un geste sans son
                    prix apprend au joueur a le decouvrir en le payant. #}
                 <p class="ds-hint mt-1">{{ coachMark.costKey|trans }}</p>
+                {# ONB-17 : la relecture passe par l'aide — chaque ecran pointe
+                   vers sa page du wiki (WIK-02), jamais une reapparition. #}
+                <p class="ds-hint mt-1">
+                    <a href="{{ path('app_wiki_page', coachMark.helpPage) }}" class="underline">{{ 'game.coach.help_link'|trans }}</a>
+                </p>
             </div>
             <button type="button" class="ds-btn ds-btn--quiet ds-btn--sm shrink-0"
                     data-action="coach-mark#dismiss"

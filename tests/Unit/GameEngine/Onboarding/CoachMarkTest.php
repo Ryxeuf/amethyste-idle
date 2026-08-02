@@ -154,6 +154,24 @@ class CoachMarkTest extends TestCase
     }
 
     /**
+     * ONB-17b — la relecture passe par l'aide : chaque encart pointe vers une
+     * page du wiki **qui existe**. Un lien vers une page morte transformerait
+     * « relire » en 404, et personne ne le verrait avant un joueur.
+     */
+    public function testEveryMarkPointsToARealHelpPage(): void
+    {
+        $wikiDir = \dirname(__DIR__, 4) . '/docs/wiki';
+
+        foreach (CoachMark::cases() as $mark) {
+            $help = $mark->helpPage();
+            self::assertFileExists(
+                sprintf('%s/%s/%s.md', $wikiDir, $help['section'], $help['page']),
+                sprintf('L\'encart « %s » pointe vers une page d\'aide qui n\'existe pas.', $mark->value),
+            );
+        }
+    }
+
+    /**
      * C3 — l'encart se decide au rendu, jamais au temps ecoule.
      *
      * Le controle porte sur la source : un `setTimeout` dans le controleur
