@@ -193,22 +193,42 @@ class GroupDungeonServiceTest extends TestCase
     }
 
     /**
-     * Un donjon solo ne doit pas etre lancable par la voie de groupe : une party
-     * d'un seul joueur passe la limite `maxPlayers` de 1 et contournerait le
-     * cooldown et les prerequis de la voie solo.
+     * DON-01 — un seul modele : un donjon a `maxPlayers: 1` se lance seul,
+     * sans party, par la meme mecanique que les donjons de groupe. Les
+     * prerequis (XP, objets d'entree) s'appliquent a l'identique.
      */
-    public function testLaunchRejectsSoloDungeon(): void
+    public function testLaunchAcceptsASoloDungeonAlone(): void
     {
         $zone = $this->buildZone();
         $leader = $this->buildPlayer(1, $zone);
-        $party = $this->buildParty($leader, []);
+
+        $this->partyManager->method('getPlayerMembership')->willReturn(null);
+        $this->runRepository->method('findActiveForPlayer')->willReturn(null);
+        $this->entityManager->expects($this->once())->method('persist');
+
+        $run = $this->service->launch($leader, $this->buildDungeon(1, $zone));
+
+        $this->assertCount(1, $run->getMembers());
+        $this->assertSame($leader, $run->getLeader());
+    }
+
+    /**
+     * `maxPlayers` reste la seule borne de taille : une party de deux ne
+     * rentre pas dans un donjon a `maxPlayers: 1`.
+     */
+    public function testLaunchRejectsAPartyInASoloDungeon(): void
+    {
+        $zone = $this->buildZone();
+        $leader = $this->buildPlayer(1, $zone);
+        $member = $this->buildPlayer(2, $zone);
+        $party = $this->buildParty($leader, [$member]);
 
         $this->partyManager->method('getPlayerMembership')->willReturn($this->membershipFor($party));
         $this->runRepository->method('findActiveForPlayer')->willReturn(null);
 
         $this->expectException(GroupDungeonException::class);
-        $this->expectExceptionMessage('game.zone.dungeon.error.not_group');
-        $this->service->launch($leader, $this->buildDungeon(1));
+        $this->expectExceptionMessage('game.zone.dungeon.error.too_many');
+        $this->service->launch($leader, $this->buildDungeon(1, $zone));
     }
 
     public function testLaunchRejectsDungeonAttachedToAnotherZone(): void

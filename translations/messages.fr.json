@@ -1502,7 +1502,6 @@
           "not_active": "Ce donjon de groupe n'est plus actif.",
           "unknown": "Donjon introuvable.",
           "not_your_turn": "Ce n'est pas votre tour.",
-          "not_group": "Ce donjon ne se joue qu'en solo.",
           "wrong_zone": "Ce donjon ne se lance pas depuis cette zone.",
           "member_experience": "Un membre du groupe n'a pas l'experience requise pour ce donjon.",
           "member_items": "Un membre du groupe n'a pas les objets d'entree requis."

@@ -204,6 +204,19 @@ class Dungeon
         return $this->minLevel;
     }
 
+    /**
+     * Seuil d'experience requis pour entrer, en XP d'un domaine de combat.
+     *
+     * DON-01 : le calcul `minLevel x 100` vivait en trois endroits
+     * (`DungeonManager` x2, `ZoneController`) — il n'a plus qu'une maison.
+     * `minLevel` n'est pas un niveau de joueur (regle 6 : pas de niveau
+     * global), c'est le parametre de ce seuil.
+     */
+    public function getRequiredExperience(): int
+    {
+        return $this->minLevel * 100;
+    }
+
     public function setMinLevel(int $minLevel): self
     {
         $this->minLevel = $minLevel;
