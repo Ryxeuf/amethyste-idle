@@ -99,3 +99,38 @@ families:
         rung1: { reference: port_staff, slug: port-staff, title: 'Port du bâton', free: true }
         rung2: paladin_weapon_t2
         rung3: paladin_weapon_t3
+
+    # ── ONB-20b-b : les lignes d'armure et le bouclier ────────────────────
+    # Le port n'est jamais borne par l'element : chaque ligne est enseignee
+    # par plusieurs arbres d'elements distincts. L'echelon 1 (palier 1) est
+    # le nœud d'entree gratuit ; les pieces evoluees exigent les echelons
+    # suivants. Le palier 1 des pieces, lui, reste libre : le kit de depart
+    # se porte sans rien — la doctrine gate l'evolution, jamais l'arrivee.
+    cloth:
+        label: 'Tissu'
+        line: armor
+        taught_by: [pyromancy, hydromancer, healer, stormcaller, geomancer, druid, priest, necromancer, warlock]
+        rung1: { reference: port_cloth, slug: port-cloth, title: 'Port du tissu', free: true }
+        rung2: cloth_armor_t2
+        rung3: cloth_armor_t3
+    leather:
+        label: 'Cuir'
+        line: armor
+        taught_by: [assassin, wanderer, hunter, archer, tamer]
+        rung1: { reference: port_leather, slug: port-leather, title: 'Port du cuir', free: true }
+        rung2: leather_armor_t2
+        rung3: leather_armor_t3
+    plate:
+        label: 'Plaque'
+        line: armor
+        taught_by: [soldier, knight, guardian, defender, berserker, paladin, inquisitor]
+        rung1: { reference: port_plate, slug: port-plate, title: 'Port de la plaque', free: true }
+        rung2: plate_armor_t2
+        rung3: plate_armor_t3
+    shield:
+        label: 'Bouclier'
+        line: armor
+        taught_by: [knight, guardian, defender, paladin, soldier]
+        rung1: { reference: port_shield, slug: port-shield, title: 'Port du bouclier', free: true }
+        rung2: shield_armor_t2
+        rung3: shield_armor_t3

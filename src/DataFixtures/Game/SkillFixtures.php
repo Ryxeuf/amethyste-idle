@@ -153,6 +153,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getSharedSkills(),
             $this->getDormantHybridAccords(),
             $this->getWeaponPortRungs(),
+            $this->getArmorPortUpperRungs(),
         );
     }
 
@@ -182,6 +183,41 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 0,
                 'domain' => $family['taught_by'],
             ];
+        }
+
+        return $rungs;
+    }
+
+    /**
+     * Les echelons 2 et 3 des lignes d'armure, generes (ONB-20b-b).
+     *
+     * Les armes reutilisent des nœuds historiques (`*_weapon_t2/t3`) ; les
+     * armures n'en avaient aucun — aucun arbre de combat ne portait un nœud de
+     * port d'armure. Leurs echelons superieurs se generent donc depuis la
+     * declaration, aux memes points que ceux des armes (10 / 25), et
+     * `rewireWeaponPortLadders()` les cable comme les autres : domaines de la
+     * famille, chaine sur l'echelon precedent, aucune statistique.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function getArmorPortUpperRungs(): array
+    {
+        $rungs = [];
+        foreach ($this->portCatalog->families() as $family) {
+            if ('armor' !== $family['line']) {
+                continue;
+            }
+
+            foreach (['rung2' => ['tier' => 2, 'points' => 10], 'rung3' => ['tier' => 3, 'points' => 25]] as $rung => $spec) {
+                $reference = $family[$rung];
+                $rungs[$reference] = [
+                    'title' => sprintf('%s (T%d)', $family['rung1']['title'], $spec['tier']),
+                    'slug' => str_replace('_', '-', $reference),
+                    'description' => sprintf('Permet d\'equiper les pieces de %s de palier %d.', mb_strtolower($family['label']), $spec['tier']),
+                    'requiredPoints' => $spec['points'],
+                    'domain' => $family['taught_by'],
+                ];
+            }
         }
 
         return $rungs;

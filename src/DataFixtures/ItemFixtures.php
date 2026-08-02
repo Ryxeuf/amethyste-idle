@@ -2079,6 +2079,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Un bouclier d\'acier trempé qui a déjà arrêté bien des coups.',
                 'type' => 'gear',
                 'slug' => 't2-shield',
+                // ONB-20b-b : la piece evoluee exige son echelon de port.
+                'requirements' => ['shield_armor_t2'],
                 'gear_location' => Item::GEAR_LOCATION_SIDE_WEAPON,
                 'price' => 150,
                 'space' => 2,
@@ -2186,6 +2188,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Un bouclier de facture supérieure, digne des grandes expéditions.',
                 'type' => 'gear',
                 'slug' => 't3-shield',
+                // ONB-20b-b : la piece evoluee exige son echelon de port.
+                'requirements' => ['shield_armor_t3'],
                 'gear_location' => Item::GEAR_LOCATION_SIDE_WEAPON,
                 'price' => 380,
                 'space' => 2,
@@ -2413,6 +2417,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Un bouclier taillé dans le noyau cristallin d\'un golem de pierre. Presque indestructible.',
                 'type' => 'gear',
                 'slug' => 'golem-heart-shield',
+                // ONB-20b-b : la piece evoluee exige son echelon de port.
+                'requirements' => ['shield_armor_t3'],
                 'gear_location' => Item::GEAR_LOCATION_SIDE_WEAPON,
                 'price' => 500,
                 'space' => 3,
@@ -2612,6 +2618,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Un bouclier solide en fer forgé, offrant une bonne protection',
                 'type' => 'gear',
                 'slug' => 'iron-shield',
+                // ONB-20b-b : la piece evoluee exige son echelon de port.
+                'requirements' => ['shield_armor_t2'],
                 'gear_location' => Item::GEAR_LOCATION_SIDE_WEAPON,
                 'price' => 90,
                 'space' => 2,

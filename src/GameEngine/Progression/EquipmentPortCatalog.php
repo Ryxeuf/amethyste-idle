@@ -139,7 +139,7 @@ class EquipmentPortCatalog
     /**
      * @param array<array-key, mixed> $raw
      *
-     * @return array<string, array{label: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
+     * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      */
     public function normalize(array $raw, string $source = '<array>'): array
     {
@@ -179,8 +179,19 @@ class EquipmentPortCatalog
                 throw new EquipmentPortDefinitionException(sprintf('Family "%s" needs a rung2 and a rung3 in "%s".', $key, $source));
             }
 
+            // ONB-20b-b : la ligne dit d'ou viennent les echelons superieurs —
+            // les armes reutilisent des nœuds historiques, les armures n'en
+            // avaient aucun et les leurs sont generes. Une valeur inconnue est
+            // refusee : une ligne mal orthographiee produirait une echelle
+            // silencieusement sans effet.
+            $line = $family['line'] ?? 'weapon';
+            if (!\in_array($line, ['weapon', 'armor'], true)) {
+                throw new EquipmentPortDefinitionException(sprintf('Family "%s" declares an unknown line "%s" in "%s": weapon or armor.', $key, \is_scalar($line) ? (string) $line : \gettype($line), $source));
+            }
+
             $normalized[$key] = [
                 'label' => $family['label'],
+                'line' => $line,
                 'taught_by' => array_values(array_map('strval', $taughtBy)),
                 'rung1' => [
                     'reference' => $rungOne['reference'],
