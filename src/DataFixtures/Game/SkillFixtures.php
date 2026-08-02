@@ -4781,7 +4781,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 // OBJ-06 : la marmite arrive avec le premier feu — emplacement
                 // ouvert et palier d'entree livres par le nœud gratuit, comme
                 // dans les quatre arbres d'artisanat historiques.
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-bread']], ['action' => 'tool_slot.unlock', 'slot' => 'cookpot'], ['action' => 'equip.tool', 'slugs' => ['cookpot-bronze']]],
+                // OBJ-07 : la fricassee rejoint le premier feu — le champignon
+                // de butin a un debouche des le nœud gratuit.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-bread', 'recipe-mushroom-fricassee']], ['action' => 'tool_slot.unlock', 'slot' => 'cookpot'], ['action' => 'equip.tool', 'slugs' => ['cookpot-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],

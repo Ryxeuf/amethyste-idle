@@ -277,11 +277,15 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
             ],
+            // OBJ-07 : le butin le plus frequent du jeu (une vingtaine de
+            // tables) n'avait aucun debouche. Le champignon devient une
+            // matiere — il rejoint la ligne du cuisinier (la fricassee) et
+            // entre dans la base de potion de l'alchimiste.
             'mushroom' => [
                 'name' => 'Champignon',
                 'name_translations' => ['en' => 'Mushroom'],
-                'description' => 'Un champignon, mais est-il comestible ?',
-                'type' => 'stuff',
+                'description' => 'Un champignon des sous-bois — cru, il ne vaut rien ; cuisiné ou infusé, tout change.',
+                'type' => 'resource',
                 'slug' => 'mushroom',
                 'price' => 5,
                 'space' => 1,
@@ -1026,6 +1030,21 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'effect' => '{"action":"use_spell", "slug":"grilled-meat-heal"}',
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Uncommon,
+            ],
+            // OBJ-07 : le debouche du champignon cote cuisine.
+            'crafted_mushroom_fricassee' => [
+                'name' => 'Fricassée de champignons',
+                'name_translations' => ['en' => 'Mushroom Fricassee'],
+                'description' => 'Des champignons de butin sautés au thym. Le plat de celui qui rentre de chasse.',
+                'type' => 'resource',
+                'slug' => 'crafted-mushroom-fricassee',
+                // Champignons (5 x 3) + thym (12) : la marge est celle du plat grillé.
+                'price' => 40,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'grilled_meat_heal',
+                'effect' => '{"action":"use_spell", "slug":"grilled-meat-heal"}',
+                'nb_usages' => 1,
             ],
             'crafted_moonfish_plate' => [
                 'name' => 'Poisson-lune en écailles',

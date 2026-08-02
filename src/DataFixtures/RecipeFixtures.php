@@ -706,6 +706,23 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
             ],
 
             // --- Alchimie supplémentaire (alchimiste) ---
+            // OBJ-07 : le debouche du champignon cote cuisine — le butin le
+            // plus frequent du jeu cesse d'etre un poids mort d'inventaire.
+            'recipe_mushroom_fricassee' => [
+                'name' => 'Fricassée de champignons',
+                'slug' => 'recipe-mushroom-fricassee',
+                'craft' => 'cuisinier',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'mushroom', 'quantity' => 3],
+                    ['slug' => 'plant-thyme', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_mushroom_fricassee',
+                'crafting_time' => 4,
+                'xp_reward' => 10,
+                'description' => 'Saute au thym les champignons ramassés en chemin.',
+                'name_translations' => ['en' => 'Mushroom Fricassee'],
+            ],
             'recipe_potion_base' => [
                 'name' => 'Base de potion',
                 'slug' => 'recipe-potion-base',
@@ -714,6 +731,11 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'plant-mint', 'quantity' => 2],
                     ['slug' => 'plant-chamomile', 'quantity' => 1],
+                    // OBJ-07 : le champignon devient une matiere d'entree
+                    // d'alchimie — le butin le plus frequent du jeu trouve un
+                    // second debouche, sans toucher au prix de la base (33 + 5
+                    // reste sous les 45 de la loi de valeur).
+                    ['slug' => 'mushroom', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_potion_base',
                 'crafting_time' => 3,

@@ -26,7 +26,7 @@
 | OBJ-04 ✅ | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
 | OBJ-05 ✅ | L'outil de récolte | M | ∅ |
 | OBJ-06 ✅ | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
-| OBJ-07 | Les matières : le champignon et l'équilibre des lignes | S | ← OBJ-02 |
+| OBJ-07 ✅ | Les matières : le champignon et l'équilibre des lignes | S | ← OBJ-02 |
 | OBJ-08 | Tests du plan | S | ‖ |
 
 ```
@@ -96,17 +96,26 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
       un objet livré, et le hors-périmètre ne revient pas sans ses filons
       (`RecipeCraftabilityTest`)
 
-### OBJ-07 — Les matières (S | ★★ | MOYENNE)
+### OBJ-07 — Les matières (S | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
 > Prérequis : ← OBJ-02
-- [ ] **Le champignon** : `mushroom` tombe de 16 tables de butin et n'a aucun
-      débouché. Il rejoint la ligne du cuisinier et devient une matière d'entrée
-      d'alchimie
-- [ ] Vérifier les 15 matières sans débouché : les 11 consommables finis sont
-      légitimes, les autres rejoignent une ligne ou disparaissent
-- [ ] Rééquilibrer les filons — herboristerie 44 %, bûcheronnage 9 % — au regard
-      des débouchés (charpentier 10 recettes, cuisinier 8). **Cible : aucun
-      goulot, pas l'égalité.** À instruire avec `PLAN_ZONES`
-- [ ] Tests : aucune matière première sans débouché hors consommables finis
+- [x] **Le champignon** : `mushroom` tombe d'une vingtaine de tables de butin
+      sans aucun débouché. Il devient une **matière** (`resource`, migration
+      comprise), rejoint la ligne du cuisinier (la fricassée, au nœud gratuit
+      du four) et entre dans la base de potion de l'alchimiste
+- [x] Vérifier les matières sans débouché : l'audit du 2026-08-02 n'en trouve
+      plus que 9 — les 8 produits finis (plats, flèches, nécessaire, sceau)
+      sont légitimes, et `ore-orichalcum` relève de la dette déclarée
+      (`recipe-orichalcum-ingot` dans `RECIPES_TO_AUTHOR`). La Piste H et
+      OBJ-01→06 avaient résorbé le reste
+- [x] Rééquilibrer les filons — **mesure du 2026-08-02 : pas de goulot**.
+      Chaque essence a sa source (ZON-35), chaque poisson la sienne, et
+      `RecipeCraftabilityTest` tient « tout ingrédient atteignable ». La
+      répartition (herboristerie 43 %, bûcheronnage 9 %) reste inégale mais la
+      cible était « aucun goulot, pas l'égalité » — rien à corriger tant qu'une
+      ligne n'étrangle pas son métier
+- [x] Tests : aucune matière première sans débouché hors consommables finis
+      (`MaterialOutletContractTest` : toute ressource brute nourrit une
+      recette, dettes déclarées avec leur raison, le champignon nommément)
 
 ---
 
