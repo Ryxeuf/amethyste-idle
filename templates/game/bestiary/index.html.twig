@@ -98,6 +98,15 @@
                             {# Weaknesses (tier 1) #}
                             {% if readable and monster.elementalResistances is not null %}
                                 <div class="mt-2 pt-2 border-t border-gray-600">
+                                    {# MAT-01 : l'element du monstre — ce que le flair de
+                                       l'Orc lit des la premiere rencontre, et ce dont le
+                                       butin de materia derive. #}
+                                    {% if monster.element.value != 'none' %}
+                                        <div class="text-[10px] text-gray-500 mb-1">
+                                            {{ 'game.bestiary.element'|trans }} :
+                                            <span class="text-xs text-amber-300">{{ ('game.element.' ~ monster.element.value)|trans }}</span>
+                                        </div>
+                                    {% endif %}
                                     <span class="text-[10px] text-gray-500">
                                         {{ 'game.bestiary.weaknesses'|trans }}{% if readsByScent and not entry.weaknessesRevealed %} — {{ 'game.race.capability.the-scent.name'|trans }}{% endif %} :
                                     </span>

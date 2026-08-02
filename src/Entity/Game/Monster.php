@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\Element;
 use App\Enum\TrainingMode;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -69,6 +70,17 @@ class Monster
 
     #[ORM\Column(name: 'elemental_resistances', type: 'json', nullable: true)]
     private ?array $elementalResistances = null;
+
+    /**
+     * Le flux dont la creature releve (MAT-01).
+     *
+     * C'est le prerequis du butin de materia derive (un monstre lache des
+     * materia de son element) et ce que le flair de l'Orc lit des la premiere
+     * rencontre. `None` est reserve a ce qui ne releve d'aucun flux — les deux
+     * mannequins d'entrainement.
+     */
+    #[ORM\Column(name: 'element', type: 'string', length: 20, enumType: Element::class, options: ['default' => 'none'])]
+    private Element $element = Element::None;
 
     #[ORM\Column(name: 'is_boss', type: 'boolean', options: ['default' => false])]
     private bool $isBoss = false;
@@ -321,6 +333,16 @@ class Monster
     public function isBoss(): bool
     {
         return $this->isBoss;
+    }
+
+    public function getElement(): Element
+    {
+        return $this->element;
+    }
+
+    public function setElement(Element $element): void
+    {
+        $this->element = $element;
     }
 
     public function getTrainingMode(): ?TrainingMode
