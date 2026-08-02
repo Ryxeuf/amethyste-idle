@@ -40,7 +40,7 @@ tout le reste se fait en double.
 
 ## Piste A — Le modèle et le combat
 
-### DON-01 — Un seul modèle : le donjon de zone (M | ★★★ | HAUTE) — ⚙ DON-01a livré 2026-08-02 (conversion + seuil), reste DON-01b (suppression du chemin mort)
+### DON-01 — Un seul modèle : le donjon de zone (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 (en deux moitiés, règle 8)
 > Les donjons solo reposent sur la carte navigable supprimée par ZON-21 : entrer
 > téléporte en `1.1` sur une `Map`, les mobs de donjon n'ont **aucune zone** donc
 > `ExploreService` ne les trouve jamais, et l'écran n'offre aucune action.
@@ -51,14 +51,19 @@ tout le reste se fait en double.
       donjon à `maxPlayers: 1` se lance **seul, sans party**, l'écran de zone
       les propose (le filtre `maxPlayers > 1` de `findOfferedInZone` tombe), et
       la garde `not_group` disparaît avec sa clé i18n
-- [ ] **DON-01b** : supprimer `DungeonRun::originMap` / `originCoordinates`, la
-      téléportation, `DungeonCompletionListener` et l'écran `/game/dungeon`
-      séparé (+ rétrofit des succès `dungeon_clear` sur la voie de zone)
+- [x] **DON-01b** : le chemin solo mort supprimé — `DungeonRun` (entité,
+      repository, table via migration), la téléportation, l'écran
+      `/game/dungeon` (contrôleur + templates), `DungeonCompletionListener`,
+      `DungeonCompletedEvent` et la difficulté solo (`DungeonDifficulty`, avec
+      le succès Mythique devenu improgressable). `DungeonManager` aminci aux
+      deux vérifications de prérequis que la voie unique consomme. **Rétrofit** :
+      un `GroupDungeonCompletedEvent` par membre, émis à la distribution des
+      récompenses — succès `dungeon_clear` et journal suivent la voie unique
 - [x] Le calcul `× 100` centralisé : `Dungeon::getRequiredExperience()`
       remplace les trois recalculs (`DungeonManager` ×2, `ZoneController`)
-- [x] Tests : aucun donjon sans zone, seuil calculé en un seul endroit
-      (`DungeonModelTest`) ; lancement solo accepté seul, party de 2 refusée
-      dans un donjon solo (`GroupDungeonServiceTest`)
+- [x] Tests : aucun donjon sans zone, seuil calculé en un seul endroit, le
+      chemin solo mort le reste (`DungeonModelTest`) ; lancement solo accepté
+      seul, party de 2 refusée dans un donjon solo (`GroupDungeonServiceTest`)
 
 ### DON-02 — Le combat rend le build pertinent (M | ★★★ | HAUTE)
 > Aujourd'hui `damage = max(1, $player->getHit())` : ni arme, ni sort, ni

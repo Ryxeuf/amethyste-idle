@@ -5,13 +5,11 @@ namespace App\Controller\Game\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Event\Fight\FightLootedEvent;
-use App\GameEngine\Dungeon\DungeonManager;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Zone\LifeRegenManager;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
-use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,8 +26,6 @@ class FightLootProceedController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatLogArchiver $combatLogArchiver,
-        private readonly DungeonRunRepository $dungeonRunRepository,
-        private readonly DungeonManager $dungeonManager,
         private readonly InventoryHelper $inventoryHelper,
         private readonly LifeRegenManager $lifeRegenManager,
         private readonly EventDispatcherInterface $eventDispatcher,
@@ -122,12 +118,6 @@ class FightLootProceedController extends AbstractController
         $this->statusEffectManager->clearAllEffects($fight);
         $this->entityManager->remove($fight);
         $this->entityManager->flush();
-
-        // Teleport player out of dungeon if run is completed
-        $completedRun = $this->dungeonRunRepository->findLastCompletedRunForPlayer($player);
-        if ($completedRun !== null && $completedRun->getOriginMap() !== null) {
-            $this->dungeonManager->teleportPlayerBack($completedRun);
-        }
 
         return new JsonResponse(['success' => true]);
     }

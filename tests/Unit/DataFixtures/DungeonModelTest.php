@@ -69,4 +69,29 @@ class DungeonModelTest extends TestCase
         $entity = (string) file_get_contents($this->root() . '/src/Entity/Game/Dungeon.php');
         $this->assertStringContainsString('public function getRequiredExperience', $entity, 'Le seuil n\'a plus de maison.');
     }
+
+    /**
+     * DON-01b — le chemin solo mort le reste : l'entree par teleportation sur
+     * une `Map`, `DungeonRun` et ses coordonnees d'origine, l'ecran
+     * `/game/dungeon` separe. Tout donjon passe par la voie de zone.
+     */
+    public function testTheDeadSoloPathStaysDead(): void
+    {
+        $dead = [
+            'src/Controller/Game/DungeonController.php',
+            'src/Entity/App/DungeonRun.php',
+            'src/Repository/DungeonRunRepository.php',
+            'src/GameEngine/Dungeon/DungeonCompletionListener.php',
+            'src/Event/Game/DungeonCompletedEvent.php',
+            'src/Enum/DungeonDifficulty.php',
+            'templates/game/dungeon',
+        ];
+
+        foreach ($dead as $path) {
+            $this->assertFileDoesNotExist(
+                $this->root() . '/' . $path,
+                sprintf('"%s" est revenu : le chemin solo d\'avant le pivot n\'a qu\'un remplacant, le donjon de zone (DON-01).', $path),
+            );
+        }
+    }
 }

@@ -7,7 +7,7 @@ use App\Entity\App\PlayerJournalEntry;
 use App\Event\CraftEvent;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
-use App\Event\Game\DungeonCompletedEvent;
+use App\Event\Game\GroupDungeonCompletedEvent;
 use App\Event\Game\QuestCompletedEvent;
 use App\Event\Map\SpotHarvestEvent;
 use App\Helper\PlayerHelper;
@@ -32,7 +32,7 @@ class JournalListener implements EventSubscriberInterface
             QuestCompletedEvent::NAME => ['onQuestCompleted', -20],
             CraftEvent::NAME => ['onCraft', -20],
             SpotHarvestEvent::NAME => ['onSpotHarvest', -20],
-            DungeonCompletedEvent::NAME => ['onDungeonCompleted', -20],
+            GroupDungeonCompletedEvent::NAME => ['onDungeonCompleted', -20],
         ];
     }
 
@@ -122,15 +122,15 @@ class JournalListener implements EventSubscriberInterface
         );
     }
 
-    public function onDungeonCompleted(DungeonCompletedEvent $event): void
+    public function onDungeonCompleted(GroupDungeonCompletedEvent $event): void
     {
-        $dungeonRun = $event->getDungeonRun();
+        $dungeon = $event->getRun()->getDungeon();
 
         $this->addEntry(
             $event->getPlayer(),
             PlayerJournalEntry::TYPE_DUNGEON,
-            \sprintf('Donjon termine : %s', $dungeonRun->getDungeon()->getName()),
-            ['dungeon' => $dungeonRun->getDungeon()->getSlug()]
+            \sprintf('Donjon termine : %s', $dungeon->getName()),
+            ['dungeon' => $dungeon->getSlug()]
         );
     }
 

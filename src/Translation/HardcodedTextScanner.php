@@ -34,8 +34,6 @@ final class HardcodedTextScanner
         'templates/game/index.html.twig',
         'templates/game/zone/index.html.twig',
         'templates/game/zone/world_map.html.twig',
-        'templates/game/dungeon/list.html.twig',
-        'templates/game/dungeon/show.html.twig',
     ];
 
     private const EXCLUDED_PREFIXES = ['templates/admin/', 'templates/old_game/'];

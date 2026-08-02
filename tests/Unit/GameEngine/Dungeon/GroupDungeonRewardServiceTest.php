@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class GroupDungeonRewardServiceTest extends TestCase
 {
@@ -42,7 +43,7 @@ class GroupDungeonRewardServiceTest extends TestCase
         $lootEntityManager->method('getRepository')->willReturn($emptyRepository);
         $materiaLootTable = new MateriaLootTable($lootEntityManager);
 
-        $this->service = new GroupDungeonRewardService($this->entityManager, $this->clearRepository, $materiaLootTable);
+        $this->service = new GroupDungeonRewardService($this->entityManager, $this->clearRepository, $materiaLootTable, new EventDispatcher());
     }
 
     private function buildPlayer(int $id): Player
