@@ -633,9 +633,9 @@ rien l'un sans l'autre.
 ## 10. Ce que l'exercice a trouvé — sept écarts
 
 **Les quatre premiers sont tranchés** (2026-08-01) et portés dans
-[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md). Les deux suivants sont des écarts entre
-le canon et le code, à corriger **dans le code**. Le septième est un trou de
-grille dans GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
+[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md). **Le cinquième est corrigé** dans le
+code. Le sixième reste à aligner ; le septième est un trou de grille dans
+GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
 
 1. **Le gabarit n'avait aucune place pour le pacte.** §6.1 écrit 18 nœuds et les
    nomme tous ; §6.5 autorisait un pacte sans dire où il se pose.
@@ -680,9 +680,14 @@ grille dans GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
    arbres, dont neuf de sorts — un pyromancien qui apprend à tenir un bâton de
    palier 3 gagne `heal +2`, un levier qui n'est même pas dans la palette de
    l'assaut. C'est une fuite de budget de la même nature que les `DomainSynergy`
-   du §9.7. *Proposition : les échelons ne portent aucune statistique — ce que
-   `getWeaponPortRungs()` fait déjà pour l'échelon 1, et ce que le commentaire du
-   fichier annonce déjà (« zéro point de domaine, et aucune statistique »).*
+   du §9.7.
+   → **Corrigé le 2026-08-01** : les douze échelons perdent leur statistique.
+   La loi est tenue par `rewireWeaponPortLadders()` — la passe qui recâble déjà
+   le domaine et le prérequis efface désormais les cinq statistiques — plutôt
+   qu'au point de déclaration, pour qu'un échelon ajouté plus tard ne puisse pas
+   la contourner en silence. `EquipmentPortLadderTest::testNoPortRungCarriesCombatStats()`
+   la vérifie **après recâblage**. *Un échelon est une porte, jamais une
+   récompense* — ce que `getWeaponPortRungs()` faisait déjà pour l'échelon 1.
 
 6. **L'accord dormant coûte 200 points en base, 150 au canon.** Sans effet
    aujourd'hui (le nœud n'est pas apprenable), à aligner avant que la fusion
