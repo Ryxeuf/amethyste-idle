@@ -61,8 +61,14 @@ regression:
 # Grains deposes par action (BALANCE § 23.1). Aucun evenement domaine nouveau :
 # `InfluenceListener` ecoute deja exactement ces six-la, on branche un second
 # consommateur.
+#
+# Le grain est pondere par l'energie du geste (playtest papier F2, § 24.0) :
+# 1 grain par ~3 energie depensee — recolte (3 e) = 1, kill (5 e) = 1,7. Sans
+# cette ponderation, un guerrier deposait ~40 % de moins qu'un recolteur a
+# budget egal : les Bastions montaient structurellement plus lentement que les
+# Comptoirs, et l'indice `war` mondial restait chroniquement le plus bas.
 sediment:
-    mob_kill: { index: war, grains: 1 }
+    mob_kill: { index: war, grains: 1.7 }
     harvest: { index: trade, grains: 1 }
     fishing: { index: trade, grains: 1 }
     butchering: { index: trade, grains: 1 }

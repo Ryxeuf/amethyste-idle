@@ -17,6 +17,7 @@ use App\GameEngine\Settlement\SettlementGate;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\SettlementServiceDirectory;
 use App\GameEngine\Settlement\VassalageService;
+use App\GameEngine\World\WorldScaleService;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use App\Repository\SettlementWeeklyWorkContributionRepository;
@@ -39,6 +40,9 @@ class SettlementPanelBuilderTest extends TestCase
     private ?Guild $guild = null;
     private int $guildTotal = 0;
 
+    /** Facteur de monde lu par le panneau (BALANCE § 24.3) ; 1 par defaut. */
+    private float $worldScale = 1.0;
+
     protected function setUp(): void
     {
         $this->zone = new Zone();
@@ -46,6 +50,7 @@ class SettlementPanelBuilderTest extends TestCase
         $this->contribution = null;
         $this->guild = null;
         $this->guildTotal = 0;
+        $this->worldScale = 1.0;
     }
 
     /**
@@ -103,6 +108,27 @@ class SettlementPanelBuilderTest extends TestCase
         self::assertSame(25000, $panel['next']['threshold']);
         self::assertSame(8500, $panel['next']['missing']);
         self::assertSame(50, $panel['next']['progress']);
+    }
+
+    /**
+     * BALANCE § 24.3 — le seuil affiche est celui que le tick applique : les
+     * seuils calibres a W = 1, mis a l'echelle du monde. Montrer le seuil
+     * nominal promettrait une Cite moins chere que ce qu'elle coute.
+     */
+    public function testTheGaugeShowsTheWorldScaledThreshold(): void
+    {
+        $this->worldScale = 2.0;
+        // Bourg visant la Cite : a W = 2 elle coute 50 000, et 16 500 grains
+        // n'en font plus la moitie du chemin depuis le Bourg (16 000).
+        $this->settlementWith(['trade' => 16500], SettlementRank::Town);
+
+        $panel = $this->builder()->build($this->zone);
+
+        self::assertNotNull($panel);
+        self::assertNotNull($panel['next']);
+        self::assertSame(SettlementRank::City, $panel['next']['rank']);
+        self::assertSame(50000, $panel['next']['threshold']);
+        self::assertSame(33500, $panel['next']['missing']);
     }
 
     public function testAFreshRuinStartsItsGaugeAtZero(): void
@@ -304,6 +330,9 @@ class SettlementPanelBuilderTest extends TestCase
 
         $gate = new SettlementGate($settlementRepository, $loader);
 
+        $worldScale = $this->createMock(WorldScaleService::class);
+        $worldScale->method('current')->willReturnCallback(fn (): float => $this->worldScale);
+
         return new SettlementPanelBuilder(
             $settlementRepository,
             $contributionRepository,
@@ -315,6 +344,7 @@ class SettlementPanelBuilderTest extends TestCase
             $this->createMock(SettlementWeeklyWorkContributionRepository::class),
             $this->crueQuota(),
             $this->vassalage(),
+            $worldScale,
         );
     }
 
