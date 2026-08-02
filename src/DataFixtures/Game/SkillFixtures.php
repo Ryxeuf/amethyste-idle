@@ -12,6 +12,14 @@ use Doctrine\Persistence\ObjectManager;
 
 class SkillFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * Les cinq statistiques plates qu'un nœud peut porter.
+     *
+     * Nommees ici parce qu'une loi les vise en bloc : un echelon de port n'en
+     * porte aucune (voir `rewireWeaponPortLadders()`).
+     */
+    private const COMBAT_STATS = ['damage', 'heal', 'hit', 'critical', 'life'];
+
     public function __construct(
         private readonly EquipmentPortCatalog $portCatalog,
     ) {
@@ -194,6 +202,25 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
      *    echelon exige desormais **l'echelon precedent de sa famille**, ce que
      *    le canon demande (*l'arc a poulie exige l'arc*).
      *
+     * **Troisieme correction (GAME_TREE_ANATOMY § 10, ecart n° 5) — un echelon
+     * ne porte aucune statistique.** Les douze echelons livres en portaient une
+     * (`critical +1/+2` pour la dague, `damage +1/+1` pour la hache et l'epee,
+     * `life +3/+5` pour la lance, `hit +1/+2` pour l'arc, `heal +1/+1` pour le
+     * baton), et la correction 1 ci-dessus les a rendus **partages** : depuis,
+     * `CombatSkillResolver` appliquant un passif des qu'**un** des domaines du
+     * nœud occupe la case de l'action, l'echelon de la dague donnait son critique
+     * dans les quatre arbres qui l'enseignent, et celui du baton son `heal` dans
+     * **dix** arbres — dont neuf de sorts, ou soigner n'est meme pas dans la
+     * palette. Une fuite de budget hors de tout arbre, du meme genre que les
+     * `DomainSynergy`.
+     *
+     * La loi est celle que `getWeaponPortRungs()` applique deja a l'echelon 1 et
+     * que le commentaire d'`equipment_ports.yaml` annonce : **un echelon est une
+     * porte, jamais une recompense** (GAME_ARCHETYPES § 6.1 — un acces de port
+     * vaut 0 point de budget). Elle est tenue ici plutot qu'au point de
+     * declaration, pour qu'un echelon ajoute plus tard ne puisse pas la
+     * contourner en silence.
+     *
      * @param array<string, array<string, mixed>> $skills
      *
      * @return array<string, array<string, mixed>>
@@ -211,6 +238,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
                 $skills[$reference]['domain'] = $family['taught_by'];
                 $skills[$reference]['requirements'] = [$chain[$index - 1]];
+
+                foreach (self::COMBAT_STATS as $stat) {
+                    unset($skills[$reference][$stat]);
+                }
             }
         }
 
@@ -261,9 +292,14 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Accord d\'hybride',
                 'description' => 'Un accord reserve, pose et pas encore ouvert : il attend que la fusion des elements existe.',
                 'actions' => [['action' => 'materia.hybrid', 'element' => $element]],
-                // Le cout le plus haut de l'echelle : quand il ouvrira, ce sera
-                // un sommet d'arbre, pas une case a cocher en passant.
-                'requiredPoints' => 200,
+                // Au-dessus du sommet, et pas d'un cran arbitraire : le capstone
+                // vaut 100 points (echelle 0/10/25/50/100), l'accord dormant en
+                // vaut **150** — GAME_ARCHETYPES § 6.1. Il portait 200, une
+                // valeur heritee de l'echelle d'avant le gabarit, ou le rang 5
+                // culminait a 150 ; l'ecart n'avait aucun effet puisque le nœud
+                // n'est pas apprenable, mais il aurait ete lu comme une decision
+                // le jour ou la fusion ouvrira.
+                'requiredPoints' => 150,
                 'domain' => $domain,
                 'dormant' => true,
             ];
@@ -566,7 +602,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les haches de tier 2',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
                 'requirements' => ['berserk_apprenti_1'],
             ],
             'berserk_weapon_t3' => [
@@ -575,7 +610,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les haches de tier 3',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'damage' => 1,
                 'requirements' => ['berserk_weapon_t2'],
             ],
         ];
@@ -713,6 +747,28 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'artillery-barrage']],
                 'requirements' => ['artif_rang4_1', 'artif_rang4_2'],
+            ],
+
+            // Maitrise des armes (arbaletes) — GAME_TREE_ANATOMY § 13.8, ecart
+            // n° 10. La famille manquait a l'echelle alors que le catalogue
+            // public la promettait ; ces deux echelons sont recables sur elle
+            // par `rewireWeaponPortLadders()` (donc partages avec l'ingenieur et
+            // le chasseur), et ils ne portent **aucune statistique**.
+            'artificer_weapon_t2' => [
+                'title' => 'Maitrise de l\'arbalete (T2)',
+                'slug' => 'artificer-weapon-t2',
+                'description' => 'Permet d\'equiper les arbaletes de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['artif_apprenti_1'],
+            ],
+            'artificer_weapon_t3' => [
+                'title' => 'Maitrise de l\'arbalete (T3)',
+                'slug' => 'artificer-weapon-t3',
+                'description' => 'Permet d\'equiper les arbaletes de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['artificer_weapon_t2'],
             ],
         ];
     }
@@ -886,7 +942,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les epees de tier 2',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
                 'requirements' => ['soldier_apprenti_1'],
             ],
             'soldier_weapon_t3' => [
@@ -895,7 +950,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les epees de tier 3',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'damage' => 1,
                 'requirements' => ['soldier_weapon_t2'],
             ],
         ];
@@ -1051,7 +1105,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les lances de tier 2',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'life' => 3,
                 'requirements' => ['knight_apprenti_1'],
             ],
             'knight_weapon_t3' => [
@@ -1060,7 +1113,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les lances de tier 3',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'life' => 5,
                 'requirements' => ['knight_weapon_t2'],
             ],
         ];
@@ -3093,7 +3145,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les arcs de tier 2',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['archer_apprenti_1'],
             ],
             'archer_weapon_t3' => [
@@ -3102,7 +3153,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les arcs de tier 3',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['archer_weapon_t2'],
             ],
         ];
@@ -3392,7 +3442,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les batons de tier 2',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'heal' => 1,
                 'requirements' => ['paladin_apprenti_1'],
             ],
             'paladin_weapon_t3' => [
@@ -3401,7 +3450,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les batons de tier 3',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'heal' => 1,
                 'requirements' => ['paladin_weapon_t2'],
             ],
         ];
@@ -3875,7 +3923,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les dagues de tier 2',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['assassin_apprenti_1'],
             ],
             'assassin_weapon_t3' => [
@@ -3884,7 +3931,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Permet d\'equiper les dagues de tier 3',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['assassin_weapon_t2'],
             ],
         ];

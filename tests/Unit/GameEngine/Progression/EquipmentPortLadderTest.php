@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\GameEngine\Progression;
 
+use App\DataFixtures\Game\SkillFixtures;
 use App\Entity\Game\Domain;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\EquipmentPortDefinitionException;
@@ -166,6 +167,7 @@ class EquipmentPortLadderTest extends TestCase
             'axe' => 't1-axe',
             'staff' => 't1-staff',
             'bow' => 't1-bow',
+            'crossbow' => 't1-crossbow',
             'dagger' => 't1-dagger',
             'lance' => 't1-lance',
             'sword' => 'short-sword',
@@ -195,6 +197,52 @@ class EquipmentPortLadderTest extends TestCase
                 sprintf('L\'arme %s n\'exige pas l\'echelon 1 de sa famille : l\'echelle serait declaree mais inerte.', $slug),
             );
         }
+    }
+
+    /**
+     * Regle (d) — **un echelon de port ne porte aucune statistique**.
+     *
+     * GAME_TREE_ANATOMY § 10, ecart n° 5. Un echelon est une **porte** : il vaut
+     * zero point de budget (GAME_ARCHETYPES § 6.1). Les douze echelons livres en
+     * portaient pourtant une, et la regle (b) — un echelon appartient a tous les
+     * arbres qui l'enseignent — a transforme cette vieille approximation en fuite
+     * mesurable : `CombatSkillResolver` applique un passif des qu'**un** des
+     * domaines du nœud occupe la case de l'action, donc le `critical` de la
+     * dague servait les quatre arbres qui l'enseignent, et le `heal` du baton
+     * **dix** arbres, dont neuf de sorts.
+     *
+     * Le test porte sur le tableau **apres recablage**, pas sur le texte des
+     * declarations : c'est la passe qui tient la loi, et c'est elle qu'il faut
+     * verifier.
+     */
+    public function testNoPortRungCarriesCombatStats(): void
+    {
+        $catalog = $this->catalog();
+        $fixtures = new SkillFixtures($catalog);
+
+        $method = new \ReflectionMethod($fixtures, 'getSkillsData');
+        /** @var array<string, array<string, mixed>> $skills */
+        $skills = $method->invoke($fixtures);
+
+        $offenders = [];
+        foreach ($catalog->families() as $key => $family) {
+            foreach ([$family['rung1']['reference'], $family['rung2'], $family['rung3']] as $reference) {
+                self::assertArrayHasKey($reference, $skills, sprintf('L\'echelon « %s » de « %s » n\'existe pas.', $reference, $key));
+
+                foreach (['damage', 'heal', 'hit', 'critical', 'life'] as $stat) {
+                    if (isset($skills[$reference][$stat])) {
+                        $offenders[] = sprintf('%s.%s = %s', $reference, $stat, $skills[$reference][$stat]);
+                    }
+                }
+            }
+        }
+
+        self::assertSame([], $offenders, sprintf(
+            "Ces echelons de port portent une statistique : %s.\n"
+            . 'Un echelon est une porte, jamais une recompense — et comme il est partage par tous les arbres qui '
+            . "l'enseignent, sa statistique fuit dans des cases qui ne l'ont pas payee.",
+            implode(', ', $offenders),
+        ));
     }
 
     /**

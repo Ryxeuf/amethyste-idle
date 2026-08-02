@@ -115,7 +115,50 @@ est cohérente, on la fige plutôt que d'en inventer une :
 |---|---:|---:|---:|---:|---:|
 | Rareté | Uncommon | Rare | Epic | Legendary | Legendary |
 | Prix (gils) | 130 | 180 | 280 | 320 | 380 |
-| Coût en énergie | 10 | 15 | 20 | 25 | 30 |
+
+#### 2.3 bis La ressource dépend du registre — *acté le 2026-08-01*
+
+*(Écart n° 7 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §10.)* La grille
+ci-dessus ne portait qu'un `energy_cost`, c'est-à-dire **la grille des sorts**.
+Or [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) §2 a tranché que chaque registre a sa
+ressource : dériver une matéria de technique par la grille des sorts reviendrait à
+**facturer des PM à un guerrier**, ce qui efface la seule différence structurelle
+entre les trois registres.
+
+| Ce que la matéria coûte | m1 | m2 | m3 | m4 | m5 |
+|---|---:|---:|---:|---:|---:|
+| **Sorts** — PM (`energyCost`) | 10 | 15 | 20 | 25 | 30 |
+| **Mêlée** — reprise en tours (`cooldown`) | **0** | **1** | **2** | **3** | **4** |
+| **Distance** — munitions (`ammoCost`, *à créer*) | **1** | **2** | **3** | **4** | **5** |
+
+> **La ligne mêlée ne s'invente pas, elle se lit.** `shadow-dance` est le seul
+> geste livré à porter une reprise sans être un sort de zone : niveau 5,
+> `cooldown: 4` — exactement ce que la grille prescrit. La courbe existait déjà,
+> comme pour les prix.
+
+**Trois règles, et la première est celle qui fait le travail :**
+
+1. **Un geste ne facture que la ressource de son registre.** Les deux autres
+   colonnes valent zéro. C'est ce qui rend le guerrier différent du mage et non
+   « un mage qui tape », et c'est vérifiable en une requête.
+2. **Aucune exception par intention.** Une `protection` de mêlée part en reprise
+   comme un `dégât` ; une `protection` de distance consomme sa munition. Un geste
+   qui ne coûterait rien parce qu'il ne vise personne serait le seul geste gratuit
+   du jeu — et donc le seul qu'on jouerait sans réfléchir.
+3. **Un `cooldown` additionnel reste permis hors mêlée à partir du palier 3**, et
+   seulement là : c'est un **garde-fou anti-spam** sur les gestes de pointe, jamais
+   une économie. Les données livrées le font déjà (`flame-rain`, `nightmare-pulse`,
+   `void-eruption`). En mêlée, la reprise **est** la ressource : elle n'a pas de
+   doublon.
+
+> **Ce que la ligne « distance » suppose du carquois.** Avec des gestes à 1-5
+> munitions, une capacité de référence de **~20** au palier T1 donne 7 à 10 gestes,
+> soit une rencontre de 7 à 10 tours : le tout-venant (3-5 tours) et l'élite
+> (6-10) passent, **le boss (12-20) ne passe pas** sans reconstituer son carquois.
+> C'est exactement la « cadence décroissante » que GAME_ARCHETYPES §2 décrit, et
+> c'est ce que le levier `wind` vient étendre. La capacité elle-même vit dans
+> [GAME_ITEMS.md](GAME_ITEMS.md) — le carquois est une pièce durable, pas un
+> consommable.
 
 ### 2.4 Ce qu'on retire
 
@@ -240,3 +283,8 @@ Ce qui doit casser la CI si on le viole :
    `element == spell.element`, `rarity == inferRarity(slug)`.
 6. **Aucune matéria n'est consommable** — pas de `nb_usages` sur `type: materia`.
 7. **Le catalogue est complet** — 200 matéria, une par `unlock` distinct.
+8. **Chaque geste facture la ressource de son registre, et elle seule** (§2.3 bis)
+   — un geste de mêlée à `energyCost > 0`, un sort à `ammoCost > 0`, ou un geste
+   de mêlée dont la reprise ne suit pas la grille de son palier échouent le test.
+   Seule exception admise : un `cooldown` additionnel hors mêlée, à partir du
+   palier 3.

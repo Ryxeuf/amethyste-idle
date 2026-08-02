@@ -204,6 +204,36 @@ class DomainPlanContractTest extends TestCase
     }
 
     /**
+     * L'accord dormant coute **150 points**, et pas un autre nombre.
+     *
+     * GAME_ARCHETYPES § 6.1 le fixe : le capstone vaut 100 points sur l'echelle
+     * 0/10/25/50/100, l'accord reserve se pose **au-dessus du sommet**, a 150.
+     * Il en portait 200 — une valeur heritee de l'echelle d'avant le gabarit, ou
+     * le rang 5 culminait a 150 (GAME_TREE_ANATOMY § 10, ecart n° 6).
+     *
+     * L'ecart n'avait aucun effet, le nœud n'etant pas apprenable. C'est
+     * exactement ce qui le rendait dangereux : personne ne l'aurait vu avant que
+     * la fusion n'ouvre, et il aurait alors ete lu comme une decision.
+     */
+    public function testTheDormantAccordCostsWhatTheCanonSays(): void
+    {
+        self::assertSame(
+            1,
+            preg_match(
+                "/'requiredPoints' => (\d+),\s*\n\s*'domain' => \\\$domain,\s*\n\s*'dormant' => true,/",
+                $this->skills(),
+                $match,
+            ),
+            'Le nœud dormant genere a change de forme : le cout n\'est plus verifiable ici.',
+        );
+
+        self::assertSame('150', $match[1], sprintf(
+            'L\'accord dormant coute %s points, le canon en dit 150 (GAME_ARCHETYPES § 6.1).',
+            $match[1],
+        ));
+    }
+
+    /**
      * La table des accords, lue **dans le corps de la methode qui la porte**.
      *
      * Les accords sont generes plutot qu'ecrits vingt-quatre fois : chercher un

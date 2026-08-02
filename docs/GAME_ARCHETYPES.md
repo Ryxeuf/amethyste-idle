@@ -424,10 +424,30 @@ instruire.
 | `tempo` | initiative et ordre du tour | sur `speed` | **+1,0 %** | 12 pb |
 
 > ¹ **`wind` et `thrift` portent sur la ressource du registre** (§2), pas sur les
-> PM par principe. Leur taux se convertit donc : en registre **distance**, 1 point
-> de budget de `wind` vaut **+1,5 % de chance de récupérer la munition tirée** (un
-> pool de flèches ne « régénère » pas au tour) ; en **mêlée**, `thrift` réduit le
-> temps de reprise au lieu d'un coût. Un levier, une intention — trois lectures.
+> PM par principe. Leur taux se convertit donc — un levier, une intention, trois
+> lectures :
+
+| | `thrift` — *le geste coûte moins* | `wind` — *la ressource revient* |
+|---|---|---|
+| **Sorts** | −0,6 % de PM par pb | +0,1 PM/tour par pb |
+| **Distance** | −0,6 % de munition par pb | +1,5 pt de chance de récupérer la munition tirée, par pb |
+| **Mêlée** | −0,6 % de temps de reprise par pb | **+1,0 pt de chance qu'une technique ne parte pas en reprise, par pb** |
+
+> **La lecture mêlée de `wind` — tranchée le 2026-08-01** (écart n° 13 de
+> [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §14.5). Elle manquait, et c'était
+> un trou réel : `wind` figure dans la palette de l'**entretien**, dont un arbre
+> sur quatre est en mêlée (le Gardien) — un levier sur cinq lui était
+> inaccessible, et avec lui à **tout arbre de mêlée** qui aurait voulu `wind` en
+> teinte, soit huit des vingt-quatre.
+>
+> **Pourquoi cette lecture-là et pas une réduction de durée.** Parce que le
+> critère d'admission d'un levier l'impose : *un levier occupe une place
+> qu'aucun autre n'occupe*. Raccourcir la reprise est déjà ce que fait `thrift`
+> en mêlée. `wind` fait donc ce qu'il fait partout ailleurs — **rendre de la
+> ressource** — sous la seule forme que la mêlée autorise : le geste reste
+> disponible. Continu et fiable d'un côté, binaire et volatil de l'autre : c'est
+> exactement le couple `guard` / `dodge` transposé sur la ressource, et c'est ce
+> qui rend les deux nécessaires.
 
 ### 4.1 Pourquoi les taux de change diffèrent
 
@@ -601,6 +621,45 @@ leviers**. La palette est la partie normative : elle borne l'auteur.
   peut viser le principal d'une autre fonction : à 10 pb maximum, elle n'en
   attrape jamais l'identité.
 
+### 5.0 Décision 24 — La palette effective se calcule, elle ne se lit pas
+
+*(Tranché le 2026-08-01, écart n° 14 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §14.5.)*
+Une palette annonce cinq leviers. Le nombre que l'auteur peut réellement **répartir**
+est plus petit, et il se déduit : le capstone consomme 14 pb sur le levier principal
+(§7.1), et le corollaire 2 interdit à ce levier d'apparaître au palier 3. Ce qui
+reste achetable ailleurs, c'est **le plafond du principal moins 14** :
+
+| Fonction | Levier principal | Plafond | Reste après le capstone | Palette effective |
+|---|---|---:|---:|---|
+| **Assaut** | `power` | 20 | **6 pb** — un nœud de palier 2 | 5 leviers |
+| **Contrôle** | `grip` | 20 | **6 pb** | 5 leviers |
+| **Entretien** | `mending` | 20 | **6 pb** | 5 leviers |
+| **Encaisse** | `guard` | **15** | **1 pb — c'est-à-dire rien** *(le nœud le plus modeste vaut 3)* | **4 leviers** + un sommet |
+
+> **Un arbre d'encaisse achète `guard` une fois, à son sommet, ou jamais.** Sa
+> palette de répartition est `dodge` / `life` / `ward` / `hit`, et son capstone
+> lui rend **−11,76 %** de dégâts subis.
+
+**Ce n'est pas une amputation, c'est une décision déjà prise qui se voit enfin dans
+le budget.** Le canon a tranché deux choses qui se rejoignent ici : `guard` a le
+plafond le plus bas parce que son efficacité est **hyperbolique** (§4.1), et **la
+mitigation d'un tank vient de son armure, pas de son arbre** (§13.4 — plaque 40 %
+contre −11,76 %). Un tank se construit en **portant de la plaque**, pas en cochant
+des nœuds ; son arbre décide de *comment* il tient, jamais de *combien*.
+
+Trois conséquences pour l'auteur des trois arbres d'encaisse (Défenseur, Soldat,
+Paladin) :
+
+1. **Le capstone est le seul endroit du jeu où `guard` existe côté arbre.** C'est
+   donc le nœud le plus identitaire de la fonction — celui qu'on n'échange pas.
+2. **Un pacte majeur sur `guard` est impossible** (19 > 15). Un arbre d'encaisse
+   qui veut un pacte le prend sur `life` (20), et son capstone passe alors à
+   `ward` (§6.5).
+3. **La fourche d'un arbre d'encaisse oppose `dodge` à `life`** — éviter ou
+   absorber, exactement la nuance que le §2.2 donne au cuir et à la plaque. La
+   contrainte a donc produit la meilleure fourche possible pour cette fonction,
+   sans qu'on ait eu à la choisir.
+
 ### 5.1 La seconde moitié de la palette : les intentions
 
 Une palette de leviers borne les **passifs**. Elle ne dit rien des **accords** — et
@@ -673,6 +732,11 @@ complet hors dormant (`4×10 + 4×25 + 3×50 + 100`).
 > reste 15 **pour un personnage** ; l'arbre en **écrit** deux de plus, qui sont les
 > deux moitiés d'un choix. Le nombre que le canon fixait — ce qu'un joueur
 > apprend — n'a pas bougé.
+
+> **Le gabarit est complet, et il n'a pas de dix-neuvième ligne.** Le **pacte**
+> (§6.5) n'ajoute pas de nœud : il **remplace** l'un des deux passifs d'une
+> branche du palier 3. Les prérequis qui relient ces dix-huit nœuds ne sont pas
+> libres non plus — ils suivent la loi du **§6.6**.
 
 ### 6.1 bis — Décision 13 : la fourche
 
@@ -841,11 +905,41 @@ dépense 19 :
 
 > **« Sang qui bout »** — `power` **+19 %**, `life` **−15 %**. Permanent.
 
+#### Où il se pose — *tranché le 2026-08-01, écart n° 1 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md)*
+
+Le gabarit du §6.1 nomme ses dix-huit nœuds et n'en laisse aucun libre : la
+première rédaction autorisait un pacte sans dire **où**. Un dix-neuvième nœud
+était la réponse tentante, et c'est la mauvaise — un arbre à pacte aurait alors
+plus de contenu que les vingt-trois autres, et plus rien ne serait comparable.
+
+> **Le pacte est une variante d'un passif de fourche, jamais un nœud de plus.**
+> Une branche du palier 3 écrit l'un de ses deux passifs sous forme de pacte.
+> L'arbre garde 18 nœuds écrits et 15 apprenables.
+
+Trois conséquences, et la troisième est un gain :
+
+1. **Le pacte est au palier 3, exclusivement.** La règle 1 ci-dessous disait
+   « jamais au palier 1 » ; elle se resserre en « au palier 3 seulement ».
+2. **Il ne vit que dans une branche** — sinon il y en aurait deux. Prendre
+   l'autre branche, c'est renoncer au pacte.
+3. **La fourche gagne son opposition la plus lisible** : *la voie sûre et la voie
+   qui parie*. C'est la meilleure application de la règle 6 du §6.1 bis (« une
+   fourche peut opposer deux contextes »), et elle ne coûte rien à écrire.
+
+#### La grille du pacte, et pourquoi elle a deux crans
+
+Le « jusqu'à 10 pb » n'était pas outillé. Il l'est :
+
+| Cran | Malus rendu | Le nœud vaut | Leviers qui peuvent l'accueillir |
+|---|---:|---:|---|
+| **Pacte mineur** | 5 pb | **14 pb** | les 8 leviers de plafond ≥ 14 (§7) |
+| **Pacte majeur** | 10 pb | **19 pb** | les 4 leviers de plafond 20 : `power`, `mending`, `grip`, `life` |
+
 **Six règles**, et elles sont serrées parce que c'est la mécanique la plus facile à
 dégénérer du document :
 
-1. **Un seul pacte par arbre**, et jamais au palier 1. C'est une signature, pas un
-   outil.
+1. **Un seul pacte par arbre**, et **au palier 3 seulement**. C'est une signature,
+   pas un outil.
 2. **Le malus est hors de la palette de la fonction.** L'assaut paie en survie,
    l'encaisse paie en dégâts. Un assaut qui paierait en `pierce` échangerait de la
    monnaie contre elle-même.
@@ -859,12 +953,72 @@ dégénérer du document :
    tout l'équilibrage.
 6. **Le malus est visible avant d'apprendre**, et le respec de points ordinaire
    suffit à revenir en arrière. On assume un choix, on ne se fait pas piéger.
+7. **Le pacte réorganise l'arbre — c'est son vrai prix.** *(Tranché le
+   2026-08-01, écart n° 2.)* Un pacte majeur consomme **19 des 20 points de
+   plafond** de son levier ; or le capstone (14 pb) vise le **même** levier
+   principal dans trois fonctions sur quatre. Prendre un pacte majeur oblige donc
+   à donner au capstone le **second** levier éligible de sa palette (§7), ce qui
+   oblige à son tour à libérer ce levier au palier 2. **Un arbre à pacte n'est
+   pas un arbre standard plus un nœud : c'est un autre arbre**, et c'est très
+   bien ainsi — un renoncement qui ne se voit qu'à un endroit n'est pas un
+   renoncement.
+8. **Le pacte est une feuille**, et ce que ça impose aux prérequis internes est
+   écrit au §6.6 : le capstone exige l'**accord** de branche, jamais ses passifs.
+
+**Ce que la contrainte laisse ouvert**, vérifié fonction par fonction — le pacte
+reste jouable partout, mais jamais gratuitement :
+
+| Fonction | Pacte majeur possible sur | Le capstone devient alors | Le malus (hors palette) |
+|---|---|---|---|
+| **Assaut** | `power` +19 % | `critical_power` — et le palier 2 le libère | `life` −15 % |
+| **Contrôle** | `grip` +22,8 % | `thrift` | `life` ou `guard` |
+| **Entretien** | `mending` +19 % | `thrift` ou `ward` | `life` −15 % |
+| **Encaisse** | `life` +28,5 % | `guard` ou `ward` | `power` −19 % |
+
+> **Le pacte mineur (14 pb) existe pour ceux qui ne veulent pas payer ce
+> prix-là** : à 14 pb il tient sous un plafond de 15, donc il ne touche pas au
+> capstone et ne réorganise rien. Il rend moins, il coûte moins de contorsions.
 
 > **Pourquoi c'est plus qu'un gadget** : le pacte est la seule mécanique du
 > document qui rende un personnage **mesurablement plus faible** quelque part. Sans
 > lui, tous les builds sont des additions et le mot « spécialisation » ne désigne
 > qu'un ordre d'achat. Avec lui, un berserker à −15 % de PV est un pari, une
 > anecdote de partie, et une raison d'avoir un guérisseur dans le groupe.
+
+### 6.6 Décision 21 — La loi des prérequis internes
+
+*(Tranché le 2026-08-01, écart n° 3 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md).)*
+Le gabarit disait quels nœuds un arbre contient et ce qu'ils coûtent, jamais **ce
+qui mène à quoi**. On pouvait croire le sujet libre — il ne l'est pas : la règle
+« le pacte est une feuille » (§6.5) est fausse dès que le capstone exige les
+passifs du palier 3. Les prérequis sont donc une **contrainte de gabarit**, et
+ils tiennent en six lignes.
+
+1. **Les deux accords d'entrée n'exigent rien.** Le parchemin est le seul péage.
+2. **Un nœud exige au plus un nœud**, et ce nœud appartient au palier précédent.
+   Jamais deux prérequis, jamais un saut de palier : l'arbre est une poignée de
+   chaînes courtes, pas un treillis. *(Les nœuds livrés qui exigent deux parents
+   — `pyro_rang3_1`, `assassin_rang4_1`… — sont l'héritage à convertir.)*
+3. **Le capstone exige l'accord de la branche apprise**, jamais ses passifs.
+   Trois raisons, et chacune suffirait : les quatre passifs de fourche deviennent
+   des **feuilles**, donc le pacte est possible ; l'accord de branche cesse
+   d'être décoratif — il est le chemin ; et le porteur du capstone possède
+   forcément **le geste que son archétype signe**.
+4. **Aucun nœud n'exige un nœud de l'autre branche.** Sinon la fourche n'est plus
+   un renoncement, c'est un ordre d'achat.
+5. **Les échelons de port n'exigent que l'échelon précédent de leur famille** —
+   jamais un nœud d'arbre (ONB-20b, déjà tenu par `rewireWeaponPortLadders`). Un
+   soldat qui veut la dague T2 ne doit pas entrer dans l'arbre de l'assassin.
+6. **L'accord dormant n'exige rien et n'est exigé par rien.** Il est hors de la
+   chaîne comme il est hors du budget.
+
+> **Ce que la loi produit, vu de l'écran** : deux chemins lisibles du haut vers le
+> bas — l'un qui passe par les gestes (accord d'entrée → accord de palier 1 →
+> accord de palier 2 → accord de branche → **capstone**), l'autre par les
+> pourcentages (les passifs, en paires, feuilles à chaque palier). Le joueur qui
+> vise le sommet sait exactement ce qu'il doit acheter : **les cinq accords, et
+> rien d'autre** — 185 des 390 points. Les passifs sont ce qu'il ajoute avec le
+> reste, dans l'ordre qui lui plaît.
 
 ---
 
@@ -878,20 +1032,107 @@ jamais. Mais un capstone actif est interdit (règle 9). La sortie est la
 > l'archétype.** Il ne demande aucun clic ; il récompense une façon de jouer que
 > le joueur a déjà.
 
-| Fonction | La condition canonique | Exemple |
-|---|---|---|
-| **Assaut** | la cible porte déjà la marque de votre élément | *le feu qui a déjà brûlé brûle mieux* |
-| **Contrôle** | la cible subit un de vos statuts | *ce qui est entravé ne vous échappe pas* |
-| **Entretien** | le combat dure, ou la cible est sous un seuil | *le ressac revient plus fort* |
-| **Encaisse** | vous avez encaissé au tour précédent | *le coup reçu durcit la garde* |
+| Fonction | La condition canonique | Fréquence | × | Exemple |
+|---|---|---|---:|---|
+| **Assaut** | la cible porte déjà la marque de votre élément | **quasi permanente** | 1,4 | *le feu qui a déjà brûlé brûle mieux* |
+| **Contrôle** | la cible subit un de vos statuts | **quasi permanente** | 1,4 | *ce qui est entravé ne vous échappe pas* |
+| **Entretien** | le combat dure, ou la cible est sous un seuil | intermittente | 2,0 | *le ressac revient plus fort* |
+| **Encaisse** | vous avez encaissé au tour précédent | **quasi permanente** | 1,4 | *le coup reçu durcit la garde* |
 
 **Trois garde-fous.** (1) La condition doit être **atteignable au tour 2** avec le
 seul kit d'entrée de l'arbre — sinon le capstone est un piège pour qui n'a pas
 l'équipement. (2) Elle ne demande **jamais un second personnage** : le jeu est
-asynchrone (GAME_PROGRESSION §1). (3) Le capstone **coûte 14 pb, pas un de plus** :
-sa condition de combat lui donne déjà ×2 d'amplitude (§4.3), soit **+28 %** au
-lieu de +14. Lui accorder en plus un budget majoré « parce qu'il ne s'applique pas
-toujours » est la porte d'entrée classique des builds dégénérés.
+asynchrone (GAME_PROGRESSION §1). (3) Le capstone **coûte 14 pb, pas un de plus**.
+Lui accorder un budget majoré « parce qu'il ne s'applique pas toujours » est la
+porte d'entrée classique des builds dégénérés.
+
+#### Décision 23 — Le capstone n'échappe pas à la règle de fréquence
+
+*(Tranché le 2026-08-01, écart n° 11 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §13.8 —
+une contradiction de ce document avec lui-même.)* Ce paragraphe accordait ×2,0 au
+capstone « parce que sa condition de combat peut manquer ». Mais le §4.3, corrigé
+au §9 bis, dit qu'**une condition vraie plus des deux tiers du temps se paie au
+tarif d'une condition de build (×1,4)**. Or la condition canonique de l'assaut et
+du contrôle est *la marque de son propre élément*, que la règle 1 du §1.1 fait
+poser par un accord **gratuit** dès le tour 1 : elle est vraie du tour 2 à la fin
+de chaque rencontre. Celle de l'encaisse — « vous avez encaissé au tour
+précédent » — l'est tout autant, et le §4.3 le disait déjà noir sur blanc.
+
+> **Le capstone suit la même règle que les autres passifs conditionnels : son
+> multiplicateur est celui de la fréquence mesurée de sa condition, pas un tarif
+> de faveur.** Trois fonctions sur quatre voient donc leur sommet passer de
+> **+28 % à +19,6 %**.
+
+| | Ancienne lecture | Lecture actée |
+|---|---:|---:|
+| Capstone d'assaut / contrôle / encaisse | +28 % | **+19,6 %** |
+| Capstone d'entretien *(condition réellement intermittente)* | +28 % | +28 % |
+
+**La compensation ne se prend pas dans le multiplicateur, elle se prend dans la
+condition.** Un arbre qui veut l'amplitude ×2,0 doit choisir une condition
+véritablement intermittente — le vocabulaire fermé (§4.3) en offre trois : *la
+cible est sous 40 % de ses PV*, *vous êtes sous 40 % des vôtres*, *le premier tour
+de la rencontre*. C'est un choix d'archétype, pas une remise : un capstone qui ne
+s'allume qu'à la fin d'un combat récompense une façon de jouer différente de celui
+qui s'allume dès le tour 2.
+
+> **Ce que ça coûte, et pourquoi c'est le bon prix.** Un sommet à +19,6 % se sent
+> moins qu'un sommet à +28 %. Mais un capstone dont la condition est **toujours
+> vraie** n'est pas un capstone conditionnel : c'est un passif plat de 28 %, payé
+> 14 pb, c'est-à-dire exactement le « levier à double tarif » que le budget existe
+> pour interdire. Et la mesure du §9 sexies vaut ici aussi : **+9 % sur un levier
+> ne retire pas un seul tour de combat** — l'identité d'un archétype n'a jamais
+> été dans ces points-là. Les valeurs de capstone citées dans les exemples du §9
+> sont antérieures à cette décision et se recalculent avec elle (§0.2 : aucun
+> nombre de ce document n'est une valeur de jeu).
+
+### 7.1 Décision 22 — Le capstone ne vise qu'un levier de plafond ≥ 14 pb
+
+*(Tranché le 2026-08-01, écart n° 4 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md).)*
+Le capstone coûte 14 pb ; un levier dont le plafond d'arbre est inférieur ne peut
+donc pas le porter, **même dans un arbre qui n'a rien acheté d'autre**. Ce n'est
+pas une préférence d'auteur : c'est une conséquence arithmétique des plafonds du
+§4, et elle était jusqu'ici invisible. Sept leviers sur quinze sont exclus
+d'office — `critical`, `hit`, `pierce`, `wind`, `dodge`, `recovery`, `tempo`.
+
+| Fonction | Capstone canonique | Le second, pour l'arbre à pacte | Exclus de fait |
+|---|---|---|---|
+| **Assaut** | `power` (20) | `critical_power` (15) | `critical`, `pierce`, `tempo` |
+| **Contrôle** | `grip` (20) | `thrift` (15) | `hit`, `pierce`, `tempo` |
+| **Entretien** | `mending` (20) | `thrift` · `ward` (15) | `recovery`, `wind` |
+| **Encaisse** | `guard` (15) | `life` (20) · `ward` (15) | `dodge`, `hit` |
+
+**Ce que la règle explique après coup** : les quatre conditions canoniques du
+tableau précédent tombaient juste par construction, jamais par chance — chaque
+fonction n'a qu'un ou deux leviers capables de porter son sommet, et le levier
+principal en fait toujours partie. **Ce qu'elle interdit** : un capstone
+d'assaut sur le critique, un capstone d'encaisse sur l'esquive. Une signature ne
+se pose pas sur un levier volatil dont le plafond dit lui-même qu'il casse le jeu
+quand on le pousse.
+
+> **Corollaire 1, pour l'auteur** : si la condition canonique de la fonction ne
+> convient pas à l'arbre, on change la **condition**, jamais la valeur (§10.1,
+> étape 4) — et si c'est le **levier** qui ne convient pas, l'arbre a deux
+> options et pas trois. C'est peu, et c'est le prix d'un sommet comparable d'un
+> arbre à l'autre.
+
+> **Corollaire 2 — le levier du capstone n'apparaît jamais au palier 3.**
+> *(Trouvé en écrivant le Nécromancien, GAME_TREE_ANATOMY §12.7.)* Le capstone
+> consomme 14 pb ; un nœud de palier 3 en vaut 9 ; le plafond le plus haut du jeu
+> est 20. **14 + 9 = 23 est impossible**, quel que soit le levier. Le levier du
+> capstone ne peut donc apparaître qu'**une** fois ailleurs : au palier 1 (3 pb)
+> ou au palier 2 (6 pb).
+>
+> Ce que ça produit, et qui est contre-intuitif : **le levier principal d'un arbre
+> est presque absent de sa propre fourche.** Une fourche est faite des leviers
+> *secondaires* de la palette. C'est une bonne nouvelle déguisée — c'est ce qui
+> empêche une branche d'être « l'autre en plus fort », et ce qui force les deux à
+> différer par leur **nature** plutôt que par leur dosage.
+>
+> **Et la règle se généralise** : le plafond d'un levier dit à quels paliers il a
+> le droit d'exister. `hit` (10 pb) ne supporte pas deux nœuds dont l'un est au
+> palier 3 ; les leviers à 12 pb ne les supportent que dans la combinaison 3 + 9.
+> À vérifier **avant** de poser les sept passifs (§10.1, étape 3), pas après.
 
 ---
 
@@ -2403,6 +2644,13 @@ Ce qui doit casser la CI si on le viole :
 2. **Aucun levier ne déborde** — chaque levier reste sous son plafond d'arbre (§4).
 3. **La palette est tenue** — ≥ 40 pb dans la palette de la fonction, ≤ 10 pb hors
    palette, **sur un seul levier**.
+3 bis. **La palette effective est respectée** (§5.0) — le levier principal
+   n'apparaît hors du capstone que dans la limite de *son plafond moins 14*, ce qui
+   vaut **zéro** pour la fonction encaisse. Un arbre d'encaisse qui achète `guard`
+   ailleurs qu'à son sommet échoue le test.
+3 ter. **Les trois lectures de `wind` et `thrift` existent** (§4, note 1) — un
+   levier de ressource sans conversion déclarée pour le registre du domaine est un
+   levier mort, et doit casser la CI plutôt que passer inaperçu.
 4. **Chaque domaine de combat a une fonction**, et aucun triplet (élément,
    registre, fonction) n'apparaît deux fois.
 5. **Le gabarit est tenu** — 15 nœuds, échelle 0/10/25/50/100 (+ dormant),
@@ -2447,10 +2695,25 @@ Ce qui doit casser la CI si on le viole :
     garde qui ne couvre que le tour où elle est jouée punit l'encaisse de se défendre.
 20. **Le multiplicateur de condition suit la fréquence mesurée** — une condition de
     combat vraie plus des deux tiers du temps se paie ×1,4, pas ×2,0 (§4.3). Le
-    simulateur d'ARC-05 la mesure ; l'auteur ne l'estime pas.
+    simulateur d'ARC-05 la mesure ; l'auteur ne l'estime pas. **Le capstone n'y
+    échappe pas** (décision 23) : sa condition étant la marque de son propre
+    élément, posée par un accord gratuit, trois fonctions sur quatre ont un sommet
+    à ×1,4. Un capstone à ×2,0 doit porter une condition réellement intermittente.
 21. **Le pacte est unique et borné** — au plus un par arbre, au plus 10 pb de
-    malus, malus **hors de la palette** de la fonction, nœud **feuille**, jamais au
-    palier 1, et les plafonds par levier tiennent malgré lui.
+    malus, malus **hors de la palette** de la fonction, nœud **feuille**, **au
+    palier 3 seulement**, et les plafonds par levier tiennent malgré lui.
+21 bis. **Le pacte ne crée pas de nœud** (§6.5) — un arbre à pacte écrit toujours
+    18 nœuds et en laisse apprendre 15 ; le pacte **remplace** un passif de fourche,
+    dans une seule branche. Un dix-neuvième nœud échoue le test.
+21 ter. **Le capstone vise un levier de plafond ≥ 14 pb** (§7.1) — un capstone sur
+    `critical`, `hit`, `pierce`, `wind`, `dodge`, `recovery` ou `tempo` est
+    inachetable par construction et doit échouer en CI, pas en relecture. **Et son
+    levier n'apparaît jamais au palier 3** (corollaire 2) : 14 + 9 dépasse le
+    plafond le plus haut du jeu.
+21 quater. **Les prérequis internes suivent la loi du §6.6** — au plus un parent
+    par nœud, pris au palier précédent ; **le capstone exige l'accord de branche**
+    et jamais ses passifs ; aucun prérequis ne traverse la fourche ; les échelons
+    de port n'exigent que l'échelon précédent de leur famille.
 22. **La durée d'un dépôt étale sa valeur, elle ne l'augmente pas** (§7 bis) — la
     valeur totale est fixée par le palier de la matéria ; une durée longue achète de
     la robustesse à l'absence, jamais de la puissance.
