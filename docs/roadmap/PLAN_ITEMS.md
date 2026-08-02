@@ -20,7 +20,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| OBJ-01 | La taxonomie alignée sur 5 types | S | ∅ |
+| OBJ-01 ✅ | La taxonomie alignée sur 5 types | S | ∅ |
 | OBJ-02 | Le ménage : doublons et hors-périmètre | S | ← OBJ-01 |
 | OBJ-03 | La grille d'équipement neutre | M | ∅ |
 | OBJ-04 | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
@@ -43,16 +43,25 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 
 ## Piste A — La donnée
 
-### OBJ-01 — La taxonomie alignée sur 5 types (S | ★★★ | HAUTE)
+### OBJ-01 — La taxonomie alignée sur 5 types (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > Le code porte 5 constantes, les données 12 valeurs. L'onglet **Matériaux** de
 > l'inventaire filtre sur `isResource()` et n'affiche que **34 matières sur 91**.
 > Prérequis : ∅
-- [ ] Migrer les données : `crafted`/`plant`/`ore`/`herb` → `resource` (57
-      objets) ; `quest`/`food`/`potion` → `stuff` (11) ; `weapon` → `gear` (4)
-- [ ] Les objets de quête se distinguent par `BindType`, pas par un type propre
-- [ ] **Ne pas ajouter de champ `family`** : le préfixe de slug porte déjà la
-      famille fine et sert de clé à `affinities.yaml` et `purity.yaml`
-- [ ] Tests : les 5 types seulement, l'onglet Matériaux complet
+- [x] Données migrées : `crafted`/`plant`/`ore`/`herb` → `resource` (57
+      objets) ; `quest`/`food`/`potion` → `stuff` (11) ; `weapon` → `gear`
+      (4) — plus **trois matières historiquement `stuff`** que le test de
+      contrat a attrapées (`wood-log`, `leather-skin-1`, `leather-skin-2`).
+      Migration idempotente pour les bases existantes
+      (`Version20260802CItemTaxonomy`), consommateurs alignés
+      (`ResourceCatalogController`, `ResourceCatalogListener`, formulaire
+      admin qui offre enfin les 5 types)
+- [x] Les objets de quête se distinguent par `BindType` (liés à l'obtention),
+      pas par un type propre — les deux qui ne l'étaient pas le deviennent
+- [x] **Pas de champ `family`** : le préfixe de slug porte la famille fine
+      (badge du catalogue redéfini sur le préfixe, jamais sur le type)
+- [x] Tests : les 5 types seulement (PHP + YAML), l'onglet Matériaux complet
+      (toute matière d'une famille de récolte est `resource`), objets de
+      quête liés (`ItemTaxonomyTest`)
 
 ### OBJ-02 — Le ménage (S | ★★ | HAUTE)
 > Prérequis : ← OBJ-01
