@@ -31,6 +31,8 @@ class GroupDungeonRun
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_ABANDONED = 'abandoned';
+    // DON-02 : la rencontre riposte — un donjon peut desormais etre perdu.
+    public const STATUS_FAILED = 'failed';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -127,7 +129,7 @@ class GroupDungeonRun
     public function setStatus(string $status): void
     {
         $this->status = $status;
-        if (\in_array($status, [self::STATUS_COMPLETED, self::STATUS_ABANDONED], true) && null === $this->endedAt) {
+        if (\in_array($status, [self::STATUS_COMPLETED, self::STATUS_ABANDONED, self::STATUS_FAILED], true) && null === $this->endedAt) {
             $this->endedAt = new \DateTimeImmutable();
         }
     }

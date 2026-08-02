@@ -1504,7 +1504,8 @@
           "not_your_turn": "It is not your turn.",
           "wrong_zone": "This dungeon cannot be launched from this zone.",
           "member_experience": "A party member lacks the experience required for this dungeon.",
-          "member_items": "A party member lacks the required entry items."
+          "member_items": "A party member lacks the required entry items.",
+          "member_down": "This member is down — the turn goes to the survivors."
         },
         "cleared": "Encounter defeated! Group dungeon complete.",
         "turn_in": "next turn in %seconds%s",

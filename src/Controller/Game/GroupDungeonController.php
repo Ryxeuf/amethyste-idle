@@ -48,7 +48,7 @@ class GroupDungeonController extends AbstractController
         $run = $this->groupDungeonService->getActiveRunForPlayer($player);
         if (null !== $run) {
             try {
-                $this->combatService->act($player, $run);
+                $this->combatService->act($player, $run, $request->request->getString('spell') ?: null);
             } catch (GroupDungeonException $exception) {
                 $this->addFlash('error', $exception->getMessage());
             }
