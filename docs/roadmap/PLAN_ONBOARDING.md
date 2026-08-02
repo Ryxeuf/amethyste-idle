@@ -29,7 +29,7 @@
 | ONB-02 | Mailer + mot de passe oublié (ferme D2) | M | ★★★ |
 | ONB-03 ✅ | Durcissement de la connexion (ferme D3) | S | ★★★ |
 | ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
-| ONB-05 | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
+| ONB-05 ✅ | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
 | ONB-07b | Les quatre capacités branchées (1/4 livré ; **3 bloquées**, voir le jalon) | M | ★★ |
