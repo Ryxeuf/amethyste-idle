@@ -1,4 +1,4 @@
-# Anatomie d'un arbre de combat — deux arbres déroulés de bout en bout
+# Anatomie d'un arbre de combat — trois arbres déroulés de bout en bout
 
 > **Statut : exercice instruit, 2026-08-01.** Ce document ne décide rien que
 > [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) et [GAME_DOMAINS.md](GAME_DOMAINS.md)
@@ -18,12 +18,18 @@ qu'il faut écrire dans `SkillFixtures.php` pour que l'arbre existe. Celui-ci
 descend jusqu'au dernier prérequis — pour qu'on puisse répondre à la question :
 *qu'est-ce qu'un arbre peut contenir, et à quel niveau ?*
 
-**Deux arbres, et le second n'est pas une redite.** Les §0 à §11 déroulent
-l'**Assassin** (ténèbres × mêlée × assaut) et servent de méthode : les natures de
-nœud, le budget, les matéria, les invariants. Le §12 déroule le **Nécromancien**
-(ténèbres × sorts × contrôle) — *même élément, même marque, et rien en commun* —
-pour mettre à l'épreuve ce que le premier a établi. Il a trouvé ce qu'un arbre
-seul ne pouvait pas montrer.
+**Trois arbres, un par registre, et aucun n'est une redite.** Les §0 à §11
+déroulent l'**Assassin** (ténèbres × **mêlée** × assaut) et servent de méthode :
+les natures de nœud, le budget, les matéria, les invariants. Le §12 déroule le
+**Nécromancien** (ténèbres × **sorts** × contrôle) — *même élément, même marque,
+et rien en commun* — pour mettre à l'épreuve ce que le premier a établi. Le §13
+déroule l'**Artificier** (feu × **distance** × contrôle), voisin de trois arbres à
+la fois, qui pose les dernières mécaniques jamais écrites dans un arbre : le
+carquois, `wind` converti, la munition élémentaire.
+
+**Chacun a trouvé ce que les précédents ne pouvaient pas voir** : l'Assassin les
+sept premiers écarts, le Nécromancien le corollaire du capstone (n° 8), et
+l'Artificier une contradiction du canon avec lui-même (n° 11).
 
 ---
 
@@ -719,9 +725,11 @@ GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
   les rapports entre paliers, les vérifications du §7. Ce qui sera recalculé :
   tous les effets affichés. Le juge final est `app:balance:simulate` (ARC-17), pas
   la relecture d'un tableau.
-- **Les vingt-deux autres arbres.** La procédure du §10.1 du canon suffit ; cet
+- **Les vingt et un autres arbres.** La procédure du §10.1 du canon suffit ; cet
   exercice montre seulement à quoi ressemble son résultat quand on la suit
-  jusqu'au bout.
+  jusqu'au bout. Les trois registres et trois des quatre fonctions y sont passés ;
+  ce qui reste sans arbre déroulé ici, ce sont l'**entretien** et l'**encaisse**,
+  qui ont leurs patrons au canon (Guérisseur, Soldat).
 - **Le nom des gestes.** Les six accords sont désignés par leur **rôle** dans le
   combat, jamais par leur niveau de sort. Les matéria elles-mêmes sont dérivées
   (GAME_MATERIA §2.1), pas écrites ici.
@@ -924,3 +932,243 @@ arbre lisible en cinq étapes, les plafonds attrapent les erreurs avant qu'on le
 écrive, et deux arbres du même élément restent discernables **par leurs gestes
 avant leurs pourcentages** — ce que le canon affirme depuis le §9 bis et qui se
 vérifie ici pour la seconde fois.
+
+---
+
+## 13. Le troisième arbre — l'Artificier
+
+### 13.0 Pourquoi celui-là
+
+Les deux premiers arbres couvrent la mêlée et les sorts. Il reste **le registre
+distance**, et avec lui les seules mécaniques du canon qu'aucun arbre n'a encore
+posées : le **carquois** (une ressource qui se vide dans la rencontre et se
+ramasse après), le levier **`wind` converti** (récupérer la munition tirée) et la
+**munition qui remplace l'élément**.
+
+L'Artificier (feu × distance × contrôle) est choisi parce qu'il est **voisin de
+trois arbres à la fois**, ce qui rend le test du voisin enfin croisé :
+
+- du **Pyromancien** (patron du canon) par l'élément et la marque ;
+- du **Nécromancien** (§12) par la fonction ;
+- de l'**Archer** (patron du canon) par le registre.
+
+Il porte en plus une tension qu'aucun autre archétype n'a : **sa fonction allonge
+les combats, et sa ressource se vide avec leur longueur.** C'est le seul cas du
+jeu où la fonction attaque sa propre ressource — et c'est ce qui décide de tout
+son arbre.
+
+Catalogue public : *« À lancer le feu par la mécanique plutôt que par le geste. »*
+· Équipe : *« Arbalètes, bombes et cuir. »*
+
+### 13.1 L'identité
+
+| | |
+|---|---|
+| **Triplet** | feu × **distance** × **contrôle** |
+| **Promesse** | *Je prépare le terrain, et le terrain se bat pour moi.* |
+| **Coût structurel** | **Le carquois** : ce qu'il allonge, il le paie en munitions — et il n'a rien de gratuit à tirer |
+| **Profil temporel** | **Le palier décroissant** — très bon jusqu'au tour 8, puis il compte ses carreaux |
+| **Sa faiblesse** | Ce qui arrive au contact avant que le piège ne soit posé |
+| **Sa marque** | **Brûlure** — dégâts par tour, et `grip` l'allonge |
+| **Sa palette** (contrôle) | **`grip`**, `hit`, `thrift`, `tempo`, `pierce` |
+| **Sa teinte** | **`wind`** — la munition récupérée ; *le seul levier qui répare ce que sa fonction lui coûte* |
+| **Sa famille d'arme** | **arbalète** — un gros coup, une longue reprise · **elle n'existe pas** (§13.8, écart n° 10) |
+| **Sa ligne d'armure** | **cuir** — il n'encaisse pas, il n'est pas là où ça tape |
+
+### 13.2 Les dix-huit nœuds
+
+| Palier | Coût | Nœud | Nature | Effet | pb | Exige |
+|---|---:|---|---|---|---:|---|
+| Entrée | 0 | Accord : **Piège incendiaire** | accord | `dégât`·`une cible`· **applique Brûlure** · forme : différé | — | — |
+| Entrée | 0 | Accord : **Bouclier d'étincelles** | accord | `protection`·`soi`· dépôt court | — | — |
+| 1 | 10 | **Mèche calibrée** | passif | `grip` +3,6 % | 3 | Piège incendiaire |
+| 1 | 10 | **Lunette** | passif | `hit` +1,5 pt | 3 | Bouclier d'étincelles |
+| 1 | 10 | Accord : **Mur de feu** | accord | `entrave`·`plusieurs cibles` — *partagé avec le Pyromancien* | — | Piège incendiaire |
+| 1 | 10 | *Port* : arbalète, échelon 2 | port | — | 0 | échelon 1 |
+| 2 | 25 | **Ce qui couve** | passif | `grip` **+7,2 %** | 6 | Mèche calibrée |
+| 2 | 25 | **Ligne de tir** | passif | `hit` +3 pt | 6 | Lunette |
+| 2 | 25 | Accord : **Nappe de poix** | accord | `entrave`·`plusieurs cibles`· **dépôt** : le terrain reste, qui y agit brûle | — | Mur de feu |
+| 2 | 25 | *Port* : arbalète, échelon 3 | port | — | 0 | échelon 2 |
+| 3 · **Mèche courte** | 50 | **Tout de suite** | passif | `grip` +10,8 % | 9 | Ce qui couve |
+| 3 · **Mèche courte** | 50 | **Deux crans d'avance** | passif | `tempo` +9 % | 9 | Ligne de tir |
+| 3 · **Mèche courte** | 50 | Accord : **Détonateur** | accord | `dégât`·`une cible`· **consomme** la Brûlure pour un coup unique | — | Nappe de poix |
+| 3 · **Réserve** | 50 | **Rien ne se perd** | passif | `wind` **+13,5 %** de récupération de munition *(teinte)* | 9 | Ce qui couve |
+| 3 · **Réserve** | 50 | **Pointes durcies** | passif | `pierce` +6,3 pt | 9 | Ligne de tir |
+| 3 · **Réserve** | 50 | Accord : **Tir couvrant** | accord | `entrave`·`plusieurs cibles`· **dépôt long** | — | Nappe de poix |
+| **Capstone** | 100 | **Économie de guerre** | capstone | `thrift` **−16,8 %** de munition *contre une cible qui brûle* | 14 | **l'accord de branche** |
+| *Dormant* | *150* | *Accord d'hybride (feu)* | dormant | — | — | rien |
+
+**18 nœuds écrits · 15 apprenables · 390 points · 50 pb par branche.**
+
+> **Le capstone applique le corollaire 2 à la lettre** (§7.1) : `thrift` plafonne
+> à 15 pb, le capstone en consomme 14 — **il ne reste rien**. `thrift` n'apparaît
+> donc nulle part ailleurs dans l'arbre, et c'est visible à l'œil nu dans le
+> tableau. Le levier principal du sommet est absent des quinze autres nœuds.
+
+### 13.3 Le carquois — ce que le registre distance change
+
+Trois différences structurelles, et aucune n'est un chiffre :
+
+1. **La ressource se vide dans la rencontre et ne revient pas au tour.** Le mage
+   régénère, le guerrier attend sa reprise ; l'artificier compte. Sa ressource
+   borne donc la **longueur** d'une rencontre — exactement la dimension que sa
+   fonction augmente.
+2. **`wind` et `thrift` changent de sens.** En distance, `wind` est la **chance
+   de récupérer la munition tirée** (+1,5 % par pb) et `thrift` la **consommation
+   par geste**. Un levier, une intention, trois lectures.
+3. **L'élément vient de la matéria ; le carquois le remplace.** L'Artificier peut
+   donc changer de contre-jeu entre deux combats sans refaire son build — et il
+   est le seul. C'est sa souplesse, et elle s'achète une fois (un carquois par
+   élément), jamais au coup par coup : **aucun archétype ne porte un coût
+   récurrent en gils que les autres n'ont pas** (correction 17).
+
+> **La tension qui définit l'archétype.** Le contrôle *fait durer* ; le carquois
+> *se vide en durant*. Un artificier qui joue parfaitement sa fonction crée
+> précisément la situation où sa ressource manque. C'est son coût structurel — et
+> ça explique pourquoi sa teinte est `wind` plutôt qu'un levier de puissance : la
+> teinte, ici, ne l'assaisonne pas, **elle le répare**.
+
+### 13.4 La fourche — deux réponses à la même tension
+
+***La Mèche courte*** refuse la tension : elle raccourcit. Plus de durée de
+statut, plus d'initiative, et un accord qui **consomme** la Brûlure pour un coup
+immédiat. Elle joue le contrôle comme une mise à mort : *le terrain sert à finir
+plus vite, pas à durer.*
+
+***La Réserve*** l'accepte et s'équipe pour : la munition revient, les carreaux
+percent, et son accord est un **dépôt long** qui court sur les tours des autres —
+donc utile en donjon semi-synchrone, où l'on n'est pas là quand ça se joue.
+
+C'est encore une fourche qui oppose **deux contextes**, mais par un autre biais
+que le Nécromancien : celui-ci opposait le solo au groupe ; celle-ci oppose **le
+combat court au combat long**. Aucun levier commun (`grip`/`tempo` contre
+`wind`/`pierce`), un accord chacune, et la teinte n'existe que dans la Réserve.
+
+### 13.5 Les vérifications
+
+| Invariant | Mesure |
+|---|---|
+| Budget = 50 pb | Mèche courte : 3+3+6+6+9+9+14 = **50** ✔ · Réserve : idem ✔ |
+| Plafonds | `grip` 18/20 *(Mèche)* · `hit` 9/10 · `tempo` 9/12 · `wind` 9/12 · `pierce` 9/12 · `thrift` **14/15** ✔ |
+| Palette ≥ 40, hors palette ≤ 10 | Mèche : **50** en palette ✔ · Réserve : 41 en palette, **9** hors (`wind`) ✔ |
+| Levier du capstone absent du palier 3 | `thrift` : 14 au capstone, **0 ailleurs** ✔ *(corollaire 2)* |
+| Triplet unique | feu × distance × contrôle : le seul ✔ |
+| Intentions : ≥ 2 `entrave`, ≥ 1 `dégât` | **3** entraves (Mur, Nappe, Tir couvrant), **2** dégâts ✔ |
+| ≥ 1 non-`dégât` · ≥ 1 exclusif | Bouclier d'étincelles ✔ · Détonateur ✔ |
+| Accord d'entrée qui marque | Piège incendiaire applique `burn` — **déjà en base** ✔ |
+| ≥ 2 passifs sans condition | **7 sur 7** — aucun conditionnel ✔ *(voir ci-dessous)* |
+| Branches sans levier commun | {`grip`,`tempo`} ∩ {`wind`,`pierce`} = ∅ ✔ |
+| Toute `protection` porte une durée | Bouclier d'étincelles = dépôt court ✔ |
+| Échelons de port | ❌ **la famille arbalète n'existe pas** — §13.8 |
+
+> **Un arbre sans aucun passif conditionnel est légal** (le garde-fou impose un
+> minimum de deux nœuds nus, pas un maximum), mais c'est un signal : l'Artificier
+> ne donne aucune raison de porter une pièce plutôt qu'une autre. **C'est le prix
+> de sa famille d'arme manquante** — une condition doit être satisfaisable par ce
+> que l'arbre débloque lui-même, et il ne débloque rien. Le jour où l'arbalète
+> existe, deux de ses passifs devraient se conditionner à elle.
+
+### 13.6 Les six matéria
+
+| # | Rôle | Geste | Niv. | Slug | Rareté | Prix | Munitions | État |
+|---|---|---|---:|---|---|---:|---:|---|
+| 1 | l'entrée · la marque | Piège incendiaire (`fire-trap`) | 2 | `m2-fire-trap` | Rare | 180 | 2 | existe ✔ |
+| 2 | le plan B | Bouclier d'étincelles (`ember-shield`) | 2 | `m2-ember-shield` | Rare | 180 | 0 | existe ✔ |
+| 3 | l'entrave de zone | Mur de feu (`fire-wall`) | 2 | `m2-fire-wall` | Rare | 180 | 3 | existe ✔ · `domain: null` |
+| 4 | l'entrave déposée | Nappe de poix (`tar-slick`) | 3 | `m3-tar-slick` | Epic | 280 | 3 | **créer** |
+| 5 | branche Mèche courte | Détonateur (`detonator`) | 4 | `m4-detonator` | Legendary | 320 | 4 | **créer** |
+| 6 | branche Réserve | Tir couvrant (`suppressing-fire`) | 3 | `m3-suppressing-fire` | Epic | 280 | 4 | **créer** |
+
+**Trois existent, trois sont à créer** — et le ratio se lit : les gestes livrés
+sont ceux que l'arbre partage avec la tradition du feu ; ceux à écrire sont ceux
+qui font de lui un artificier plutôt qu'un mage avec une arbalète.
+
+`m2-fire-wall` porte **`domain: null`**, et c'est la règle qui s'applique, pas une
+exception : une matéria ouverte par plusieurs arbres n'appartient à aucun
+(GAME_MATERIA §2.1). Le Pyromancien et l'Artificier l'ouvrent tous les deux — l'un
+au palier 1, l'autre au palier 1 : **le même geste, deux raisons de le vouloir.**
+
+> **Ce que la colonne « Munitions » suppose** : que `Spell` porte un coût en
+> munitions comme il porte un `energyCost` et un `cooldown`. C'est la troisième
+> ligne de la grille par palier (§9 bis.2), et elle manque au même titre que la
+> reprise. Proposition symétrique : **2 / 2 / 3 / 4 / 5** par palier m1→m5.
+
+### 13.7 Le test du voisin, croisé
+
+| | Pyromancien *(feu, sorts, assaut)* | **Artificier** | Nécromancien *(ténèbres, sorts, contrôle)* | Archer *(air, distance, assaut)* |
+|---|---|---|---|---|
+| Partage avec lui | élément + marque | — | fonction | registre |
+| Levier principal | `power` | **`grip`** | `grip` | `power` |
+| Capstone | `power` | **`thrift`** | `grip` | `power` |
+| Sa ressource | PM | **munitions** | PM | munitions |
+| Ce qu'il fait de la Brûlure | la **pose et frappe dessus** | la **fait durer**, puis la **consomme** *(Mèche courte)* | *(autre marque)* | — |
+| Son tour 1 | le pic de dégâts | **un piège posé, zéro dégât** | une entrave | un tir |
+
+**Les deux voisins les plus dangereux sont traités différemment.** Face au
+**Nécromancien** — même fonction, même levier principal — la séparation ne vient
+pas des passifs mais du **capstone** (`thrift` contre `grip`) et de la ressource :
+l'un économise ce qu'il tire, l'autre allonge ce qu'il pose. Face au
+**Pyromancien** — même élément, même marque — elle vient de ce qu'ils *font* de
+la Brûlure : le Pyromancien frappe une cible qui brûle, l'Artificier la maintient
+en feu et, s'il a pris la Mèche courte, **l'éteint d'un coup pour encaisser la
+mise**. Trois arbres, une seule marque, trois verbes : *frapper dessus, la faire
+durer, la dépenser.*
+
+### 13.8 Ce que le troisième arbre a trouvé
+
+**Écart n° 10 — l'arbalète n'existe pas, et le catalogue public la promet.**
+`equipment_ports.yaml` déclare six familles (hache, épée, dague, lance, arc,
+bâton) ; `ItemFixtures` ne contient **aucun** objet `crossbow`. Or le catalogue
+public annonce à l'Artificier « Arbalètes, bombes et cuir », et le canon lui donne
+un trait propre (« un gros coup, un long temps de reprise », §2.2). Conséquences :
+l'arbre **ne peut pas porter ses deux échelons de port** (2 des 15 nœuds), et
+aucun de ses passifs ne peut être conditionné à une famille d'arme.
+
+> *Proposition* : créer la famille `crossbow`, enseignée par **artificier,
+> ingénieur et chasseur** — trois éléments différents (feu, métal, bête), ce que
+> `EquipmentPortCatalog` exige déjà pour refuser qu'une arme impose un élément.
+> Plus les objets t1/t2/t3 correspondants. C'est le même chantier que la ligne du
+> bois de ZON-34 : une famille, trois paliers, un trait.
+
+**Écart n° 11 — le capstone contredit la règle de fréquence.** Le §7 fixe le
+capstone à ×2,0 d'amplitude « parce que sa condition de combat peut manquer ».
+Mais le §4.3, corrigé au §9 bis, dit qu'**une condition de combat vraie plus des
+deux tiers du temps se paie ×1,4**. Or la condition canonique de l'assaut et du
+contrôle est *la marque de son propre élément*, posée par un accord **gratuit**
+dès le tour 1 : elle est vraie du tour 2 à la fin de la rencontre.
+
+| | Ce que le §7 accorde | Ce que la règle de fréquence donnerait |
+|---|---|---|
+| Capstone de l'Assassin | `power` +28 % | `power` **+19,6 %** |
+| Capstone du Pyromancien *(canon)* | `power` +28 % | `power` **+19,6 %** |
+| Capstone de l'Artificier | `thrift` −16,8 % | `thrift` **−11,8 %** |
+
+**Les capstones d'assaut et de contrôle sont donc surévalués de 43 %** si la règle
+de fréquence s'applique, ce qui est un écart bien plus grand que tout ce que la
+grille des leviers arbitre. Deux sorties, à trancher :
+
+- **(a) Le capstone est l'exception assumée** — ×2,0 quelle que soit la fréquence,
+  parce qu'il coûte 100 points, qu'il arrive au mois 3 et qu'il demande un tour de
+  mise en place à chaque rencontre. *Simple, mais elle troue la règle.*
+- **(b) Le capstone suit la règle comme les autres** — ×1,4 quand sa condition est
+  structurellement fréquente, et le sommet d'un arbre rend +19,6 % au lieu de
+  +28 %. *Cohérent, mais il faut alors se demander si un capstone à +19,6 % se
+  **sent** encore.*
+
+> **Recommandation** : (b), avec une compensation prise ailleurs que dans le
+> multiplicateur — par exemple un capstone dont la condition est **réellement**
+> intermittente (« la cible est sous 40 % », « le premier tour »), ce que le
+> vocabulaire fermé offre déjà. C'est le simulateur d'ARC-05 qui doit mesurer la
+> fréquence, pas l'auteur qui l'estime — et cette mesure-ci, personne ne l'a
+> faite : elle se déduit du seul fait que l'accord qui marque est gratuit.
+
+**Observation n° 12 — un archétype dont la fonction attaque sa propre ressource.**
+Le contrôle allonge les rencontres ; le carquois se vide en durant. Ce n'est pas un
+défaut à corriger — c'est ce qui donne à l'Artificier une identité qu'aucun autre
+n'a — mais ça a une conséquence sur la fourche : la branche **Mèche courte** (sans
+`wind`) est structurellement plus exposée au combat long que la **Réserve**. Les
+deux branches ne sont donc pas égales *dans tous les contenus* : l'une est
+meilleure en zone, l'autre en donjon et contre les boss. C'est acceptable — le
+canon demande que deux branches soient également bonnes, pas qu'elles le soient
+dans les mêmes rencontres — mais c'est précisément le genre d'asymétrie que le
+simulateur doit vérifier plutôt que l'auteur affirmer.
