@@ -601,7 +601,9 @@ class GatherService
             return null;
         }
 
-        $gearBit = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType] ?? null;
+        // Tout type de recolte a son bit d'emplacement : GatherToolContractTest
+        // tient l'invariant depuis les donnees, la lecture est donc directe.
+        $gearBit = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType];
         $best = null;
 
         foreach ($player->getInventories() as $inventory) {
@@ -616,7 +618,7 @@ class GatherService
                 if (null !== $playerItem->getCurrentDurability() && $playerItem->getCurrentDurability() <= 0) {
                     continue;
                 }
-                if (null !== $gearBit && ($playerItem->getGear() & $gearBit)) {
+                if ($playerItem->getGear() & $gearBit) {
                     return $playerItem;
                 }
                 if (null === $best || ($generic->getToolTier() ?? 0) > ($best->getGenericItem()->getToolTier() ?? 0)) {
