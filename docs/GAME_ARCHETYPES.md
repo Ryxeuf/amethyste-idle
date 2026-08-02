@@ -424,10 +424,30 @@ instruire.
 | `tempo` | initiative et ordre du tour | sur `speed` | **+1,0 %** | 12 pb |
 
 > ¹ **`wind` et `thrift` portent sur la ressource du registre** (§2), pas sur les
-> PM par principe. Leur taux se convertit donc : en registre **distance**, 1 point
-> de budget de `wind` vaut **+1,5 % de chance de récupérer la munition tirée** (un
-> pool de flèches ne « régénère » pas au tour) ; en **mêlée**, `thrift` réduit le
-> temps de reprise au lieu d'un coût. Un levier, une intention — trois lectures.
+> PM par principe. Leur taux se convertit donc — un levier, une intention, trois
+> lectures :
+
+| | `thrift` — *le geste coûte moins* | `wind` — *la ressource revient* |
+|---|---|---|
+| **Sorts** | −0,6 % de PM par pb | +0,1 PM/tour par pb |
+| **Distance** | −0,6 % de munition par pb | +1,5 pt de chance de récupérer la munition tirée, par pb |
+| **Mêlée** | −0,6 % de temps de reprise par pb | **+1,0 pt de chance qu'une technique ne parte pas en reprise, par pb** |
+
+> **La lecture mêlée de `wind` — tranchée le 2026-08-01** (écart n° 13 de
+> [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §14.5). Elle manquait, et c'était
+> un trou réel : `wind` figure dans la palette de l'**entretien**, dont un arbre
+> sur quatre est en mêlée (le Gardien) — un levier sur cinq lui était
+> inaccessible, et avec lui à **tout arbre de mêlée** qui aurait voulu `wind` en
+> teinte, soit huit des vingt-quatre.
+>
+> **Pourquoi cette lecture-là et pas une réduction de durée.** Parce que le
+> critère d'admission d'un levier l'impose : *un levier occupe une place
+> qu'aucun autre n'occupe*. Raccourcir la reprise est déjà ce que fait `thrift`
+> en mêlée. `wind` fait donc ce qu'il fait partout ailleurs — **rendre de la
+> ressource** — sous la seule forme que la mêlée autorise : le geste reste
+> disponible. Continu et fiable d'un côté, binaire et volatil de l'autre : c'est
+> exactement le couple `guard` / `dodge` transposé sur la ressource, et c'est ce
+> qui rend les deux nécessaires.
 
 ### 4.1 Pourquoi les taux de change diffèrent
 
@@ -600,6 +620,45 @@ leviers**. La palette est la partie normative : elle borne l'auteur.
   la brûlure ; l'Archer un assaut teinté `wind` — la flèche récupérée). Une teinte
   peut viser le principal d'une autre fonction : à 10 pb maximum, elle n'en
   attrape jamais l'identité.
+
+### 5.0 Décision 24 — La palette effective se calcule, elle ne se lit pas
+
+*(Tranché le 2026-08-01, écart n° 14 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §14.5.)*
+Une palette annonce cinq leviers. Le nombre que l'auteur peut réellement **répartir**
+est plus petit, et il se déduit : le capstone consomme 14 pb sur le levier principal
+(§7.1), et le corollaire 2 interdit à ce levier d'apparaître au palier 3. Ce qui
+reste achetable ailleurs, c'est **le plafond du principal moins 14** :
+
+| Fonction | Levier principal | Plafond | Reste après le capstone | Palette effective |
+|---|---|---:|---:|---|
+| **Assaut** | `power` | 20 | **6 pb** — un nœud de palier 2 | 5 leviers |
+| **Contrôle** | `grip` | 20 | **6 pb** | 5 leviers |
+| **Entretien** | `mending` | 20 | **6 pb** | 5 leviers |
+| **Encaisse** | `guard` | **15** | **1 pb — c'est-à-dire rien** *(le nœud le plus modeste vaut 3)* | **4 leviers** + un sommet |
+
+> **Un arbre d'encaisse achète `guard` une fois, à son sommet, ou jamais.** Sa
+> palette de répartition est `dodge` / `life` / `ward` / `hit`, et son capstone
+> lui rend **−11,76 %** de dégâts subis.
+
+**Ce n'est pas une amputation, c'est une décision déjà prise qui se voit enfin dans
+le budget.** Le canon a tranché deux choses qui se rejoignent ici : `guard` a le
+plafond le plus bas parce que son efficacité est **hyperbolique** (§4.1), et **la
+mitigation d'un tank vient de son armure, pas de son arbre** (§13.4 — plaque 40 %
+contre −11,76 %). Un tank se construit en **portant de la plaque**, pas en cochant
+des nœuds ; son arbre décide de *comment* il tient, jamais de *combien*.
+
+Trois conséquences pour l'auteur des trois arbres d'encaisse (Défenseur, Soldat,
+Paladin) :
+
+1. **Le capstone est le seul endroit du jeu où `guard` existe côté arbre.** C'est
+   donc le nœud le plus identitaire de la fonction — celui qu'on n'échange pas.
+2. **Un pacte majeur sur `guard` est impossible** (19 > 15). Un arbre d'encaisse
+   qui veut un pacte le prend sur `life` (20), et son capstone passe alors à
+   `ward` (§6.5).
+3. **La fourche d'un arbre d'encaisse oppose `dodge` à `life`** — éviter ou
+   absorber, exactement la nuance que le §2.2 donne au cuir et à la plaque. La
+   contrainte a donc produit la meilleure fourche possible pour cette fonction,
+   sans qu'on ait eu à la choisir.
 
 ### 5.1 La seconde moitié de la palette : les intentions
 
@@ -2585,6 +2644,13 @@ Ce qui doit casser la CI si on le viole :
 2. **Aucun levier ne déborde** — chaque levier reste sous son plafond d'arbre (§4).
 3. **La palette est tenue** — ≥ 40 pb dans la palette de la fonction, ≤ 10 pb hors
    palette, **sur un seul levier**.
+3 bis. **La palette effective est respectée** (§5.0) — le levier principal
+   n'apparaît hors du capstone que dans la limite de *son plafond moins 14*, ce qui
+   vaut **zéro** pour la fonction encaisse. Un arbre d'encaisse qui achète `guard`
+   ailleurs qu'à son sommet échoue le test.
+3 ter. **Les trois lectures de `wind` et `thrift` existent** (§4, note 1) — un
+   levier de ressource sans conversion déclarée pour le registre du domaine est un
+   levier mort, et doit casser la CI plutôt que passer inaperçu.
 4. **Chaque domaine de combat a une fonction**, et aucun triplet (élément,
    registre, fonction) n'apparaît deux fois.
 5. **Le gabarit est tenu** — 15 nœuds, échelle 0/10/25/50/100 (+ dormant),

@@ -646,11 +646,13 @@ rien l'un sans l'autre.
 
 ## 10. Ce que l'exercice a trouvé — sept écarts
 
-**Sept des onze sont réglés** au 2026-08-01 : les écarts **1 à 4** et **11** sont
-tranchés et portés dans [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) ; les écarts
-**5** et **10** sont corrigés dans le code. Restent : le **6** (à aligner), le
-**7** (un trou de grille dans GAME_MATERIA, ouvert par l'exercice des matéria du
-§9 bis), le **8** (porté au canon en §7.1) et l'observation **12**.
+**Onze des quatorze sont réglés** au 2026-08-01 : les écarts **1 à 4**, **8**,
+**11**, **13** et **14** sont tranchés et portés dans
+[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) ; les écarts **5** et **10** sont
+corrigés dans le code. Restent : le **6** (à aligner), le **7** (un trou de grille
+dans GAME_MATERIA, ouvert par l'exercice des matéria du §9 bis) et les
+observations **12** et **15**, qui ne demandent pas d'arbitrage mais une mesure du
+simulateur et un jalon de donjon.
 
 Les écarts 8 à 12 sont détaillés là où ils ont été trouvés — §12.7 pour le second
 arbre, §13.8 pour le troisième.
@@ -1291,6 +1293,13 @@ n'existe pleinement qu'une fois DON-02/03 livrés (une rencontre qui riposte).
 > ajusté : **la fonction dont la promesse est la durée est celle dont le sommet se
 > paie en durée.**
 
+> **Depuis l'arbitrage de l'écart n° 13, `wind` lui est ouvert** (chance qu'une
+> technique ne parte pas en reprise). L'arbre ci-dessus a été écrit avant, avec
+> quatre leviers ; il reste valide — sa branche *le Rempart* pourrait aujourd'hui
+> échanger `thrift` contre `wind` et opposer la reprise **raccourcie** à la
+> reprise **sautée**. C'est un meilleur arbre, et c'est le premier bénéfice
+> concret de la décision.
+
 **Ses quatre accords de groupe sont tous des dépôts** — c'est la loi du §7 bis,
 et pour un archétype d'entretien elle n'est pas une contrainte, c'est sa
 définition : *il ne soigne pas, il provisionne*. Son soin direct reste le
@@ -1334,20 +1343,21 @@ voisins de case*, sans qu'un seul chiffre ait eu à faire le travail.
 
 ### 14.5 Ce que la paire a trouvé
 
-**Écart n° 13 — `wind` n'a aucune lecture en registre mêlée.** La note 1 du §4
-donne deux conversions : PM pour les sorts, chance de récupérer la munition pour
-la distance. **Rien pour la mêlée** — et pour cause, la ressource de la mêlée ne
-« régénère » pas, elle s'écoule avec les tours. Or `wind` figure dans la palette
-de l'**entretien**, et le Gardien est *entretien × mêlée* : **un levier sur cinq
-lui est inaccessible**, ce qui réduit sa palette à quatre et rend la règle des
-80/20 mécaniquement plus serrée pour lui que pour le Guérisseur.
+**Écart n° 13 — `wind` n'avait aucune lecture en registre mêlée.** La note 1 du §4
+donnait deux conversions : PM pour les sorts, chance de récupérer la munition pour
+la distance. **Rien pour la mêlée** — et pour cause, sa ressource ne « régénère »
+pas, elle s'écoule avec les tours. Or `wind` figure dans la palette de
+l'**entretien**, et le Gardien est *entretien × mêlée* : un levier sur cinq lui
+était inaccessible, comme à **tout arbre de mêlée** qui aurait voulu `wind` en
+teinte — huit des vingt-quatre.
 
-> *Proposition* : en mêlée, `wind` est **la chance qu'une technique ne parte pas
-> en reprise** (le geste reste disponible au tour suivant), à ~+1,2 pt par pb. Même
-> intention que les deux autres lectures — *de la ressource rendue au tour* — et
-> même effet de jeu : ce sont les rencontres longues qui en profitent. Le cas
-> touche **les huit arbres de mêlée**, pas seulement le Gardien : tout arbre de
-> mêlée qui voudrait `wind` en teinte est aujourd'hui bloqué.
+> **Tranché le 2026-08-01** (§4, note 1) : en mêlée, `wind` est **la chance qu'une
+> technique ne parte pas en reprise**, à **+1,0 pt par pb** — le geste reste
+> disponible au tour suivant. La forme est imposée par le critère d'admission d'un
+> levier : raccourcir la reprise est déjà ce que fait `thrift` en mêlée, donc
+> `wind` fait ce qu'il fait partout ailleurs — rendre de la ressource — sous la
+> seule forme que la mêlée autorise. Continu et fiable d'un côté, binaire et
+> volatil de l'autre : **le couple `guard` / `dodge` transposé sur la ressource**.
 
 **Écart n° 14 — la fonction encaisse ne peut pas acheter son levier principal.**
 `guard` plafonne à 15 pb, le capstone en consomme 14 : il reste **1 pb**,
@@ -1358,11 +1368,18 @@ Soldat, Paladin) sont donc structurellement dans ce cas.
 Ce n'est **pas** un défaut à corriger, et c'est ce qui le rend intéressant : le
 canon a déjà tranché que la mitigation vient de l'armure (plaque 40 %, §2.2), et
 que `guard` a le plafond le plus bas parce que son efficacité est hyperbolique.
-Les deux décisions se rejoignent ici. *Ce qu'il faut en revanche écrire* : un
-arbre d'encaisse **n'a que quatre leviers utilisables** (`dodge`, `life`, `ward`,
-`hit`) plus un sommet, exactement comme le Gardien n'en a que quatre. Deux
-fonctions sur quatre jouent avec une palette réduite d'un cran, et le §5 ne le
-dit pas.
+Les deux décisions se rejoignent ici.
+
+> **Tranché le 2026-08-01** (§5.0, décision 24) : **la palette effective se
+> calcule, elle ne se lit pas** — ce qui reste achetable hors du capstone vaut *le
+> plafond du levier principal moins 14*, soit 6 pb pour trois fonctions et **zéro**
+> pour l'encaisse. Un arbre d'encaisse répartit donc quatre leviers (`dodge`,
+> `life`, `ward`, `hit`) et pose son sommet en `guard`. Trois conséquences
+> écrites au canon : ce capstone est le seul endroit du jeu où `guard` existe côté
+> arbre, un pacte majeur sur `guard` est impossible (19 > 15), et **la fourche
+> d'un arbre d'encaisse oppose naturellement `dodge` à `life`** — éviter ou
+> absorber, la nuance même du cuir et de la plaque. La contrainte a produit la
+> meilleure fourche possible pour cette fonction sans qu'on ait eu à la choisir.
 
 **Observation n° 15 — l'aggro entre dans un arbre pour la première fois.** La
 Provocation du Défenseur est le premier geste écrit qui applique la décision 13.4 :
