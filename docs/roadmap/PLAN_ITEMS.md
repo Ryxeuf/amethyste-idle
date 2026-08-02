@@ -22,7 +22,7 @@
 |------|----------|--------|-------------|
 | OBJ-01 ✅ | La taxonomie alignée sur 5 types | S | ∅ |
 | OBJ-02 ✅ | Le ménage : doublons et hors-périmètre | S | ← OBJ-01 |
-| OBJ-03 | La grille d'équipement neutre | M | ∅ |
+| OBJ-03 ✅ | La grille d'équipement neutre | M | ∅ |
 | OBJ-04 | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
 | OBJ-05 | L'outil de récolte | M | ∅ |
 | OBJ-06 | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
@@ -112,7 +112,7 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 
 ## Piste B — Le vestiaire
 
-### OBJ-03 — La grille d'équipement neutre (M | ★★★ | HAUTE) — ⚙ OBJ-03a livré 2026-08-02 (neutralité + fusion), reste OBJ-03b (compléter t1)
+### OBJ-03 — La grille d'équipement neutre (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 (en deux moitiés, règle 8)
 > t2 couvre air/terre/feu/eau, t3 couvre bête/ombre/lumière/métal : **aucun
 > élément n'a de progression t2 → t3**. Compléter la grille demanderait
 > 168 pièces — pour une variable qui n'est pas celle du build.
@@ -128,11 +128,13 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
       neutre existante (t1-t3 axe/bow/dagger/lance/staff) ; 76 lignes de butin
       remappées, les 4 sets élémentaires t3 fusionnés en un **Set de l'Élite**
       neutre
-- [ ] **OBJ-03b** : compléter le palier t1 (5 pièces + les starter_*) et le
-      test « 3 paliers complets »
+- [x] **OBJ-03b** : le palier t1 était en réalité **déjà complet** — le
+      constat du plan (« 5 pièces ») précédait le set de départ de
+      l'onboarding : `starter_*` (6 pièces) + l'épée de bois couvrent les
+      7 formes au niveau 1. Vérifié et verrouillé plutôt que re-créé
 - [x] Tests : aucune pièce d'équipement avec un élément, le vestiaire
-      élémentaire ne revient pas, la grille t2/t3 sans trou
-      (`GearNeutralityTest`)
+      élémentaire ne revient pas, la grille **3 paliers × 7 formes** sans
+      trou (`GearNeutralityTest`)
 
 ### OBJ-04 — Les emplacements typés et progressifs (M | ★★★ | HAUTE)
 > Le cœur du build. `materiaSlotType` existe, `MateriaGearSetter` le lit, et
