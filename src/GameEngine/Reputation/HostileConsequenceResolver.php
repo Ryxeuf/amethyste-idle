@@ -63,6 +63,20 @@ class HostileConsequenceResolver
     }
 
     /**
+     * FAC-04a : le plancher d'achat du cristal se ferme aux Hostiles de la
+     * Fonderie — si et seulement si la table declarative porte la consequence.
+     * C'est le crochet `buyback_floor_closed` de FAC-03 qui prend vie.
+     */
+    public function isCrystalBuybackClosed(Player $player): bool
+    {
+        if (!$this->catalog->hasConsequence('fonderie', 'buyback_floor_closed')) {
+            return false;
+        }
+
+        return $this->isHostileToward($player, 'fonderie');
+    }
+
+    /**
      * Hostile = ligne de reputation strictement negative. Une faction pas
      * encore semee, ou jamais rencontree, ne rend jamais Hostile.
      */

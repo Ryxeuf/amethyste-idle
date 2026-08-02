@@ -12,6 +12,7 @@ use App\Entity\Game\Item;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
+use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
@@ -54,6 +55,7 @@ class ShopControllerTest extends TestCase
             $this->renownDiscountProvider,
             new GameMasterPolicy(),
             $this->hostileConsequences,
+            new CrystalBuybackFloor($this->hostileConsequences),
         );
 
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -225,6 +227,87 @@ class ShopControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatusCode());
         $data = json_decode($response->getContent(), true);
         $this->assertStringContainsString('lié', $data['error']);
+    }
+
+    /**
+     * FAC-04a — le plancher d'achat du cristal : au comptoir de la Fonderie,
+     * l'amethystite rend son prix garanti (9 gils) au lieu du taux commun
+     * (30 % de 15 = 4 gils). Miroir du plancher T1, cote vente.
+     */
+    public function testSellCrystalAtTheFoundryCounterGetsTheFloor(): void
+    {
+        $player = $this->createPlayerMock(0);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->setupSellRepositories($this->createFoundryCounter(), $this->createCrystalPlayerItem());
+
+        $player->expects($this->once())->method('addGils')->with(CrystalBuybackFloor::FLOOR_PRICE);
+
+        $response = $this->controller->sell(1, $this->createSellRequest());
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * Hostile chez la Fonderie : le plancher se ferme, la vente reste. Le
+     * cristal part au taux commun — la garantie disparait, jamais le droit.
+     */
+    public function testAHostileSellerFallsBackToTheCommonRate(): void
+    {
+        $player = $this->createPlayerMock(0);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->hostileConsequences->method('isCrystalBuybackClosed')->willReturn(true);
+
+        $this->setupSellRepositories($this->createFoundryCounter(), $this->createCrystalPlayerItem());
+
+        $player->expects($this->once())->method('addGils')->with(4);
+
+        $response = $this->controller->sell(1, $this->createSellRequest());
+
+        $this->assertEquals(200, $response->getStatusCode(), 'Le plancher se ferme ; la vente, jamais.');
+    }
+
+    private function createFoundryCounter(): Pnj&MockObject
+    {
+        $pnj = $this->createPnjMock([]);
+        $pnj->method('getSlug')->willReturn('mines-comptoir-de-la-fonderie');
+
+        return $pnj;
+    }
+
+    private function createCrystalPlayerItem(): PlayerItem&MockObject
+    {
+        $item = $this->createItemMock(CrystalBuybackFloor::CRYSTAL_SLUG, 15, 'Améthystite');
+
+        $playerItem = $this->createMock(PlayerItem::class);
+        $playerItem->method('isBound')->willReturn(false);
+        $playerItem->method('getGenericItem')->willReturn($item);
+
+        return $playerItem;
+    }
+
+    private function setupSellRepositories(Pnj $pnj, PlayerItem $playerItem): void
+    {
+        $pnjRepo = $this->createMock(EntityRepository::class);
+        $pnjRepo->method('find')->willReturn($pnj);
+
+        $playerItemRepo = $this->createMock(EntityRepository::class);
+        $playerItemRepo->method('find')->willReturn($playerItem);
+
+        $this->entityManager->method('getRepository')->willReturnCallback(
+            fn (string $class) => match ($class) {
+                Pnj::class => $pnjRepo,
+                PlayerItem::class => $playerItemRepo,
+                default => $this->createMock(EntityRepository::class),
+            },
+        );
+    }
+
+    private function createSellRequest(): Request
+    {
+        return Request::create('/game/shop/1/sell', 'POST', [], [], [], [], json_encode([
+            'playerItemId' => 1,
+        ]));
     }
 
     private function createBuyRequest(string $slug, int $quantity = 1): Request

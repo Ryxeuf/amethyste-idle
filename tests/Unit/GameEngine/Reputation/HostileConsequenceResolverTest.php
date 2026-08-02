@@ -97,9 +97,9 @@ class HostileConsequenceResolverTest extends TestCase
     }
 
     /**
-     * Le crochet vers une faction pas encore semee est inerte : la Fonderie
-     * n'existe pas, donc personne n'est Hostile a la Fonderie — et le jour ou
-     * elle arrive, la consequence declaree mordra sans qu'on revienne ici.
+     * Le crochet vers une faction pas encore semee est inerte : sans la
+     * Fonderie en base, personne ne lui est Hostile — et le jour ou elle
+     * arrive, la consequence declaree mord sans qu'on revienne ici.
      */
     public function testAnUnseededFactionMakesNoOneHostile(): void
     {
@@ -108,6 +108,23 @@ class HostileConsequenceResolverTest extends TestCase
         $resolver = $this->resolver([], []);
 
         self::assertFalse($resolver->isHostileToward($player, 'fonderie'));
+        self::assertFalse($resolver->isCrystalBuybackClosed($player));
+    }
+
+    /**
+     * FAC-04a : la Fonderie est semee, le crochet buyback_floor_closed prend
+     * vie — le plancher se ferme aux Hostiles, et a eux seuls.
+     */
+    public function testTheBuybackFloorClosesOnlyForFoundryHostiles(): void
+    {
+        $fonderie = $this->faction('fonderie');
+        $hostile = new Player();
+        $neutral = new Player();
+
+        $resolver = $this->resolver([$fonderie], [$this->playerFaction($hostile, $fonderie, -200)]);
+
+        self::assertTrue($resolver->isCrystalBuybackClosed($hostile));
+        self::assertFalse($resolver->isCrystalBuybackClosed($neutral), 'Sans ligne de reputation negative, le plancher reste ouvert.');
     }
 
     // =====================================================================
@@ -153,7 +170,8 @@ class HostileConsequenceResolverTest extends TestCase
         $playerFactionRepository->method('findOneBy')->willReturnCallback(
             function (array $criteria) use ($lines): ?PlayerFaction {
                 foreach ($lines as $line) {
-                    if ($line->getFaction() === ($criteria['faction'] ?? null)) {
+                    if ($line->getFaction() === ($criteria['faction'] ?? null)
+                        && $line->getPlayer() === ($criteria['player'] ?? null)) {
                         return $line;
                     }
                 }
