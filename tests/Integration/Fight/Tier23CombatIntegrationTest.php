@@ -172,7 +172,9 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     public function testStartFightAgainstTier2Wyvern(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->findMobBySlug('wyvern', $player->getMap());
+        // BES-03 : la faune vit dans les zones du graphe, plus sur la carte
+        // de test du joueur — on cherche l'espece, pas la carte.
+        $mob = $this->findMobBySlug('wyvern');
 
         /** @var FightHandler $fightHandler */
         $fightHandler = $this->getService(FightHandler::class);
@@ -195,7 +197,9 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     public function testStartFightAgainstBossInitializesPhaseMetadata(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->findMobBySlug('alpha_wolf', $player->getMap());
+        // BES-03 : la faune vit dans les zones du graphe, plus sur la carte
+        // de test du joueur — on cherche l'espece, pas la carte.
+        $mob = $this->findMobBySlug('alpha_wolf');
 
         /** @var FightHandler $fightHandler */
         $fightHandler = $this->getService(FightHandler::class);
@@ -219,7 +223,9 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     public function testMobActionHandlerExecutesBossTurn(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->findMobBySlug('will_o_wisp', $player->getMap());
+        // BES-03 : la faune vit dans les zones du graphe, plus sur la carte
+        // de test du joueur — on cherche l'espece, pas la carte.
+        $mob = $this->findMobBySlug('will_o_wisp');
 
         /** @var FightHandler $fightHandler */
         $fightHandler = $this->getService(FightHandler::class);

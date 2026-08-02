@@ -23,7 +23,7 @@
 |------|----------|--------|-------------|
 | BES-01 ✅ | Deux axes : `tier` et `rank` | M | ← MAT-01 (même migration) |
 | BES-02 ✅ | Les stats dérivées du gabarit | M | ← BES-01 |
-| BES-03 | La bascule du peuplement dans `zones.yaml` | M | ∅ |
+| BES-03 ✅ | La bascule du peuplement dans `zones.yaml` | M | ∅ |
 | BES-04 | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
 | BES-05 | Le ménage du code mort | S | ∅ |
 | BES-06 | Tests du plan | S | ‖ |
@@ -108,21 +108,26 @@ en premier. BES-01 est le pivot et doit voyager avec MAT-01.
 
 ## Piste B — Le peuplement et le ménage
 
-### BES-03 — La bascule du peuplement dans `zones.yaml` (M | ★★★ | HAUTE)
+### BES-03 — La bascule du peuplement dans `zones.yaml` (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > 53 mobs déclarés en YAML, 116 dans `MobFixtures` (par coordonnées et carte,
 > vestige d'avant le pivot ZON-21). Doctrine ZON-11 : « ajouter du contenu =
 > ajouter de la donnée ici, pas du code ».
-> Prérequis : ∅
-- [ ] Remonter dans `zones.yaml` les **17 espèces que seul le legacy place** —
-      dragon, minotaure, griffon, troll, hydre des marais, wyverne, naga,
-      archidruide corrompu… c'est tout le milieu de gamme
-- [ ] Donner un bloc `mobs:` aux **3 zones qui n'en ont pas** — Marais et Crête ;
+- [x] Remonter dans `zones.yaml` les espèces que seul le legacy plaçait — les
+      restes ZON-26b avaient déjà déclaré le Marais et la Crête (donc le gros
+      des 17) ; restaient **goblin et taiju** (la Forêt, T1) et **loup-garou
+      et nécromancien** (la nuit du Marais, T2)
+- [x] Le Marais et la Crête avaient déjà leur bloc `mobs:` (restes ZON-26b) ;
       le Quartier des Jardins étant T0, il reste **sans faune hostile**
-- [ ] Préserver les mobs de donjon (`map_dungeon_racines`), hors graphe de zones
-- [ ] Supprimer `MobFixtures` et les coordonnées héritées ; `Zone::sourceMap`
-      n'a plus à porter la faune
-- [ ] Tests : aucun monstre placé hors `zones.yaml` (hors donjons), aucune
-      espèce perdue à la bascule
+- [x] Mobs de donjon préservés dans `DungeonMobFixtures` (les 4 des Racines
+      de la forêt), hors graphe — et une garde : cette fixture n'admet que
+      des cartes `map_dungeon_*`
+- [x] `MobFixtures` **supprimé** (91 mobs par coordonnées, dont 87 sur la
+      carte de test hors graphe) ; les tests d'intégration de combat cessent
+      de chercher leurs mobs sur la carte du joueur
+- [x] Tests : `FaunaSingleSourceTest` — le peuplement par coordonnées a
+      disparu, la fixture de donjon ne place que sur des cartes de donjon,
+      aucune espèce perdue (hors mannequins et boss narratifs réservés),
+      et aucune zone ne place une espèce inexistante
 
 ### BES-05 — Le ménage du code mort (S | ★★ | MOYENNE)
 > Prérequis : ∅
