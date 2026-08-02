@@ -1,0 +1,49 @@
+# =============================================================================
+# Action composite — PHP 8.4 + dependances Composer
+# =============================================================================
+# Les cinq jobs de la CI installaient le meme PHP, les memes extensions et les
+# memes dependances : cinq copies d'un meme bloc, qui derivaient l'une de
+# l'autre. Cette action les ramene a un seul endroit.
+# =============================================================================
+
+name: "Setup PHP + Composer"
+description: "Installe PHP, les extensions du projet et les dependances Composer (avec cache)."
+
+inputs:
+  php-version:
+    description: "Version de PHP a installer."
+    required: false
+    default: "8.4"
+  coverage:
+    description: "Pilote de couverture (none, xdebug, pcov)."
+    required: false
+    default: "none"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: intl, pdo_pgsql, apcu, zip, pcntl
+        tools: composer:v2
+        coverage: ${{ inputs.coverage }}
+
+    - name: Cache Composer
+      uses: actions/cache@v5
+      with:
+        # Le cache des archives telechargees rend `composer install` rapide meme
+        # quand `vendor/` est restaure depuis une cle partielle.
+        path: |
+          vendor
+          ~/.cache/composer
+        key: composer-${{ inputs.php-version }}-${{ hashFiles('composer.lock') }}
+        restore-keys: |
+          composer-${{ inputs.php-version }}-
+
+    - name: Install dependencies
+      shell: bash
+      run: composer install --no-interaction --no-progress --prefer-dist
+      env:
+        SYMFONY_SKIP_AUTO_SCRIPTS: 1
