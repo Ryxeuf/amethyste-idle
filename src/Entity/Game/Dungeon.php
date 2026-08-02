@@ -52,7 +52,7 @@ class Dungeon
     /**
      * Zone depuis laquelle le donjon se lance (pivot PBBG : la position d'un
      * joueur est sa zone, cf. regle #7). null = donjon hors graphe, accessible
-     * uniquement par la liste globale `/game/dungeon` (donjons solo legacy).
+     * nulle part — DON-01 a rattache tous les donjons au graphe (modele unique).
      *
      * C'est ce lien, et non `map`, qui rattache un donjon au monde : plusieurs
      * zones peuvent partager une meme `sourceMap` (le Fanal en est

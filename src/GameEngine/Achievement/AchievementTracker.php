@@ -5,13 +5,12 @@ namespace App\GameEngine\Achievement;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerAchievement;
 use App\Entity\Game\Achievement;
-use App\Enum\DungeonDifficulty;
 use App\Event\CraftEvent;
 use App\Event\Fight\CombatFleeEvent;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\Event\Game\AchievementCompletedEvent;
-use App\Event\Game\DungeonCompletedEvent;
+use App\Event\Game\GroupDungeonCompletedEvent;
 use App\Event\Game\QuestCompletedEvent;
 use App\Event\Game\TutorialCompletedEvent;
 use App\Event\GatheringEvent;
@@ -34,7 +33,7 @@ class AchievementTracker implements EventSubscriberInterface
         return [
             MobDeadEvent::NAME => 'onMobDead',
             QuestCompletedEvent::NAME => 'onQuestCompleted',
-            DungeonCompletedEvent::NAME => 'onDungeonCompleted',
+            GroupDungeonCompletedEvent::NAME => 'onDungeonCompleted',
             GatheringEvent::NAME => 'onGathering',
             CraftEvent::NAME => 'onCraft',
             PlayerDeadEvent::NAME => 'onPlayerDead',
@@ -76,15 +75,11 @@ class AchievementTracker implements EventSubscriberInterface
         $this->progressAchievements($event->getPlayer(), 'quest_complete');
     }
 
-    public function onDungeonCompleted(DungeonCompletedEvent $event): void
+    public function onDungeonCompleted(GroupDungeonCompletedEvent $event): void
     {
-        $player = $event->getPlayer();
-
-        $this->progressAchievements($player, 'dungeon_clear');
-
-        if ($event->getDungeonRun()->getDifficulty() === DungeonDifficulty::Mythic) {
-            $this->progressAchievements($player, 'dungeon_clear_mythic');
-        }
+        // DON-01b : le suivi bascule sur la voie unique du donjon de zone —
+        // la difficulte Mythique du chemin solo a disparu avec lui.
+        $this->progressAchievements($event->getPlayer(), 'dungeon_clear');
     }
 
     public function onGathering(GatheringEvent $event): void

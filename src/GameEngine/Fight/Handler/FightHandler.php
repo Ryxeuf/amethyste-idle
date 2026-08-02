@@ -10,7 +10,6 @@ use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Party\PartyManager;
-use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -26,7 +25,6 @@ class FightHandler
         private readonly LoggerInterface $logger,
         private readonly CombatLogger $combatLogger,
         private readonly EnchantmentManager $enchantmentManager,
-        private readonly DungeonRunRepository $dungeonRunRepository,
         private readonly PartyManager $partyManager,
         private readonly FightTurnResolver $turnResolver,
         private readonly MobActionHandler $mobActionHandler,
@@ -57,17 +55,6 @@ class FightHandler
             $this->enchantmentManager->cleanExpiredForPlayer($partyPlayer);
         }
 
-        // Scale mob stats for dungeon difficulty
-        $activeRun = $this->dungeonRunRepository->findActiveRun($player);
-        $difficulty = $activeRun?->getDifficulty();
-        $statMultiplier = $difficulty?->statMultiplier() ?? 1.0;
-
-        if ($difficulty !== null && $statMultiplier > 1.0) {
-            $fight->setMetadataValue('difficulty_multiplier', $statMultiplier);
-            $fight->setMetadataValue('difficulty_damage_multiplier', $difficulty->damageMultiplier());
-            $fight->setMetadataValue('difficulty_drop_multiplier', $difficulty->dropMultiplier());
-            $fight->setMetadataValue('difficulty_xp_multiplier', $difficulty->xpMultiplier());
-        }
 
         foreach ($mobs as $mob) {
             if ($statMultiplier > 1.0) {

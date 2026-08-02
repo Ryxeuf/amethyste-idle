@@ -7,9 +7,11 @@ use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\Inventory;
 use App\Entity\App\Parameter;
 use App\Entity\App\PlayerItem;
+use App\Event\Game\GroupDungeonCompletedEvent;
 use App\GameEngine\Materia\MateriaLootTable;
 use App\Repository\GroupDungeonClearRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Recompenses & lockouts des donjons de groupe (pivot PBBG, ZON-20).
@@ -44,6 +46,7 @@ class GroupDungeonRewardService
         private readonly EntityManagerInterface $entityManager,
         private readonly GroupDungeonClearRepository $clearRepository,
         private readonly MateriaLootTable $materiaLootTable,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -98,6 +101,10 @@ class GroupDungeonRewardService
             }
 
             $this->entityManager->persist(new GroupDungeonClear($player, $dungeon, $run, $gils, $now));
+
+            // DON-01b : la voie unique porte le suivi (succes, journal) que
+            // l'ancien chemin solo emettait — une fois par membre.
+            $this->eventDispatcher->dispatch(new GroupDungeonCompletedEvent($player, $run), GroupDungeonCompletedEvent::NAME);
         }
     }
 

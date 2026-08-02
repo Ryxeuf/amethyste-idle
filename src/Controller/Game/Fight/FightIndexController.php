@@ -3,7 +3,6 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Player;
-use App\GameEngine\Dungeon\DungeonManager;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
@@ -13,7 +12,6 @@ use App\GameEngine\GoldSink\GoldSinkManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\GameEngine\Zone\LifeRegenManager;
 use App\Helper\PlayerHelper;
-use App\Repository\DungeonRunRepository;
 use App\Repository\FightRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,8 +30,6 @@ class FightIndexController extends AbstractController
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly FightTurnResolver $turnResolver,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
-        private readonly DungeonRunRepository $dungeonRunRepository,
-        private readonly DungeonManager $dungeonManager,
         private readonly FightRepository $fightRepository,
         private readonly GoldSinkManager $goldSinkManager,
         private readonly LifeRegenManager $lifeRegenManager,
@@ -223,12 +219,6 @@ class FightIndexController extends AbstractController
         $this->entityManager->remove($fight);
 
         $this->entityManager->flush();
-
-        // Abandon du donjon en cas de defaite
-        $activeRun = $this->dungeonRunRepository->findActiveRun($player);
-        if ($activeRun !== null) {
-            $this->dungeonManager->abandonRun($activeRun);
-        }
 
         // Respawn du joueur si pas fait dans la boucle ci-dessus
         if ($player->isDead()) {

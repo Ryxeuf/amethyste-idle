@@ -16,7 +16,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * la source de verite de la position (regle projet #7) et le voyage la met a
  * jour directement (ZoneTravelService). Il subsiste comme **amorce** pour les
  * cas ou un joueur n'a pas encore de zone : creation de personnage
- * (PlayerFactory), sortie de donjon (DungeonManager), teleportation
+ * (PlayerFactory), teleportation
  * (GoldSinkManager), repli de l'ecran de zone, et respawn.
  *
  * Les cartes sans zone (donjons instancies, carte de test) laissent la zone
