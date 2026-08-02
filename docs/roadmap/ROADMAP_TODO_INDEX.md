@@ -49,7 +49,7 @@
 | Plan Repertoire (REP-01→06) | 0/6 | A faire (l'Autel d'eveil, apres FAC-04) |
 | **Plan Economie joueur (ECO)** | Pistes A→E, G, H completes | Reste ECO-28 (Piste F 3/4) et la Piste I ECO-32→35 (caravanes) |
 | Sprint 11 — Monde vivant | 6/6 | ✅ Termine (2026-07-26) |
-| Sprint 12 — Technique & i18n | 3 taches restantes | En cours (134 perf, 135 i18n, 136 doc admin) — **seul sprint ouvert** |
+| Sprint 12 — Technique & i18n | 3 taches restantes | En cours (134 perf, 135 i18n, 136 doc admin) — **seul sprint ouvert**, basse priorite confirmee le 2026-08-02 : la perf ne se reactive qu'a l'elargissement au-dela du playtest ferme |
 
 ---
 
@@ -59,6 +59,18 @@
 > Un agent qui reprend le projet **execute dans cet ordre**, sauf contrordre explicite.
 > Critere d'arbitrage permanent (GAME_PROGRESSION §4) : rapprocher de la semaine 3 le moment
 > ou « quelqu'un compte sur moi » vaut mieux qu'ajouter du contenu au mois 6.
+>
+> **Front acte au debrief du 2026-08-02** — ordre d'execution immediat :
+> **MET-01** (correctif economique en avance de phase) → **ONB-02 puis ONB-04**
+> (le mailer, bloquant du playtest — code d'abord, DSN ensuite) → **DON-01b→06**
+> (pont assume sur les sorts, la melee attend ARC-02) → **ouverture d'ARC**.
+> Les restes (ONB-07b, ONB-20b-b, OBJ-05→08, DOM-09/10) s'intercalent au fil de l'eau.
+>
+> **Cap de sortie (2026-08-02)** : un **playtest ferme** s'ouvre quand **ONB-02/04
+> ET DON-02/03** sont livres (compte sur, boucle de combat qui tient, Nexus jouable).
+> Le **Sprint 12 reste en basse priorite** : un cercle ferme de 10-50 joueurs tient
+> sur l'infra actuelle (verifiable avec les scenarios k6 existants) ; la perf (tache
+> 134) ne se reactive qu'au moment d'elargir au-dela du cercle ferme.
 
 | # | Chantier | Contenu | Pourquoi cet ordre |
 |---|----------|---------|--------------------|
