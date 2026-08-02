@@ -2,7 +2,6 @@
 
 namespace App\GameEngine\Progression;
 
-use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerDomainAccess;
 use App\Entity\App\PlayerItem;
@@ -10,6 +9,7 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\GameEngine\Notification\NotificationService;
+use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -40,6 +40,7 @@ class DomainAccessManager
         private readonly NotificationService $notificationService,
         private readonly LoggerInterface $logger,
         private readonly EquipmentPortCatalog $portCatalog,
+        private readonly InventoryHelper $inventoryHelper,
     ) {
     }
 
@@ -143,16 +144,9 @@ class DomainAccessManager
                 continue;
             }
 
-            $bag = $this->bagOf($player);
-            if (null === $bag) {
-                continue;
-            }
-
             $playerItem = new PlayerItem();
             $playerItem->setGenericItem($item);
             $playerItem->setNbUsages($item->getNbUsages());
-            $bag->addItem($playerItem);
-            $playerItem->setInventory($bag);
 
             // L'emplacement s'ouvre et l'outil s'y range : un outil offert
             // qu'il faudrait encore savoir equiper reconstruirait le mur que
@@ -163,7 +157,12 @@ class DomainAccessManager
                 $playerItem->setGear($gearBit);
             }
 
-            $this->entityManager->persist($playerItem);
+            // Le point de passage oblige d'ECO-01 : tout objet entre par
+            // InventoryHelper, qui ecrit dans le sac du joueur de **session**.
+            // C'est toujours le bon ici — ouvrir un arbre est le geste du
+            // porteur du parchemin, il n'existe aucun chemin ou l'on ouvre
+            // l'arbre d'autrui.
+            $this->inventoryHelper->addItem($playerItem, false);
             ++$granted;
         }
 
@@ -216,17 +215,6 @@ class DomainAccessManager
         }
 
         return false;
-    }
-
-    private function bagOf(Player $player): ?Inventory
-    {
-        foreach ($player->getInventories() as $inventory) {
-            if ($inventory->isBag()) {
-                return $inventory;
-            }
-        }
-
-        return null;
     }
 
     private function announce(Player $player, Domain $domain): void

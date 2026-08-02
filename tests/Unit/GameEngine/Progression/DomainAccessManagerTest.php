@@ -11,8 +11,10 @@ use App\Entity\Game\Skill;
 use App\GameEngine\Notification\NotificationService;
 use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\EquipmentPortCatalog;
+use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -27,6 +29,10 @@ class DomainAccessManagerTest extends TestCase
 {
     private DomainAccessManager $manager;
 
+    /** L'outil rendu par le depot du manager construit via managerWithBronzeTool(). */
+    private Item $bronze;
+    private InventoryHelper&MockObject $grantInventoryHelper;
+
     protected function setUp(): void
     {
         $this->manager = new DomainAccessManager(
@@ -34,6 +40,7 @@ class DomainAccessManagerTest extends TestCase
             $this->createMock(NotificationService::class),
             new NullLogger(),
             new EquipmentPortCatalog(\dirname(__DIR__, 4)),
+            $this->createMock(InventoryHelper::class),
         );
     }
 
@@ -54,6 +61,7 @@ class DomainAccessManagerTest extends TestCase
             $notifier,
             new NullLogger(),
             new EquipmentPortCatalog(\dirname(__DIR__, 4)),
+            $this->createMock(InventoryHelper::class),
         );
 
         $player = new Player();
@@ -86,6 +94,7 @@ class DomainAccessManagerTest extends TestCase
             $notifier,
             new NullLogger(),
             new EquipmentPortCatalog(\dirname(__DIR__, 4)),
+            $this->createMock(InventoryHelper::class),
         );
 
         $player = new Player();
@@ -237,22 +246,22 @@ class DomainAccessManagerTest extends TestCase
      */
     public function testOpeningAGatheringTreeDeliversItsBronzeTool(): void
     {
-        $manager = $this->managerWithBronzeTool($bronze);
+        $manager = $this->managerWithBronzeTool();
+
+        $granted = [];
+        $this->grantInventoryHelper->method('addItem')->willReturnCallback(function (PlayerItem $item) use (&$granted): void {
+            $granted[] = $item;
+        });
 
         $player = new Player();
-        $bag = new Inventory();
-        $player->addInventory($bag);
-
         $domain = $this->domain(1);
         $domain->addSkill($this->toolUnlockSkill($domain, 'pickaxe'));
 
         $manager->open($player, $domain);
 
-        self::assertCount(1, $bag->getItems());
-        /** @var PlayerItem $granted */
-        $granted = $bag->getItems()->first();
-        self::assertSame($bronze, $granted->getGenericItem());
-        self::assertSame(PlayerItem::TOOL_TYPE_TO_GEAR['pickaxe'], $granted->getGear(), 'L\'outil offert doit arriver equipe.');
+        self::assertCount(1, $granted);
+        self::assertSame($this->bronze, $granted[0]->getGenericItem());
+        self::assertSame(PlayerItem::TOOL_TYPE_TO_GEAR['pickaxe'], $granted[0]->getGear(), 'L\'outil offert doit arriver equipe.');
         self::assertTrue($player->hasToolSlot('pickaxe'), 'L\'emplacement d\'outil doit s\'ouvrir avec l\'octroi.');
     }
 
@@ -262,14 +271,15 @@ class DomainAccessManagerTest extends TestCase
      */
     public function testTheToolIsNotGrantedTwiceNorWhenOneIsAlreadyOwned(): void
     {
-        $manager = $this->managerWithBronzeTool($bronze);
+        $manager = $this->managerWithBronzeTool();
+        $this->grantInventoryHelper->expects(self::never())->method('addItem');
 
         $player = new Player();
         $bag = new Inventory();
         $player->addInventory($bag);
 
         $owned = new PlayerItem();
-        $owned->setGenericItem($bronze);
+        $owned->setGenericItem($this->bronze);
         $bag->addItem($owned);
         $owned->setInventory($bag);
 
@@ -287,7 +297,8 @@ class DomainAccessManagerTest extends TestCase
      */
     public function testACraftToolIsNeverGrantedAtOpening(): void
     {
-        $manager = $this->managerWithBronzeTool($bronze);
+        $manager = $this->managerWithBronzeTool();
+        $this->grantInventoryHelper->expects(self::never())->method('addItem');
 
         $player = new Player();
         $player->addInventory(new Inventory());
@@ -301,18 +312,21 @@ class DomainAccessManagerTest extends TestCase
 
     /**
      * Manager dont le depot d'objets sait rendre un outil de bronze du type
-     * demande. L'outil est expose par reference pour les assertions.
+     * demande. L'outil (`$this->bronze`) et le point d'entree d'inventaire
+     * (`$this->grantInventoryHelper`, ECO-01) sont exposes pour les assertions.
      */
-    private function managerWithBronzeTool(?Item &$bronze): DomainAccessManager
+    private function managerWithBronzeTool(): DomainAccessManager
     {
         $bronze = new Item();
         $bronze->setName('Outil de bronze');
         $bronze->setSlug('tool-bronze');
         $bronze->setType(Item::TYPE_TOOL);
+        $bronze->setToolType(Item::TOOL_TYPE_PICKAXE);
         $bronze->setToolTier(Item::TOOL_TIER_BRONZE);
+        $this->bronze = $bronze;
 
         $itemRepository = $this->createMock(EntityRepository::class);
-        $itemRepository->method('findOneBy')->willReturnCallback(function (array $criteria) use (&$bronze): ?Item {
+        $itemRepository->method('findOneBy')->willReturnCallback(function (array $criteria) use ($bronze): ?Item {
             $bronze->setToolType($criteria['toolType']);
 
             return $bronze;
@@ -323,11 +337,14 @@ class DomainAccessManagerTest extends TestCase
             [Item::class, $itemRepository],
         ]);
 
+        $this->grantInventoryHelper = $this->createMock(InventoryHelper::class);
+
         return new DomainAccessManager(
             $entityManager,
             $this->createMock(NotificationService::class),
             new NullLogger(),
             new EquipmentPortCatalog(\dirname(__DIR__, 4)),
+            $this->grantInventoryHelper,
         );
     }
 
