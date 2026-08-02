@@ -71,8 +71,16 @@ class MateriaObtainabilityTest extends AbstractIntegrationTestCase
             }
         }
 
-        // Donjons : m4 garanti, m5 en rare — le seul canal du sommet.
-        $hasDungeon = [] !== $this->em->getRepository(Dungeon::class)->findAll();
+        // Donjons : le palier suit la zone du donjon (DON-04) — T1 → m2,
+        // T2 → m3, T3 → m3-m4, T4 → m4-m5. Le canal du m5 n'existe que si un
+        // donjon T4 existe reellement (DON-05 l'a livre : le Nexus a la Cite
+        // ensevelie).
+        $dungeonPaliers = [];
+        foreach ($this->em->getRepository(Dungeon::class)->findAll() as $dungeon) {
+            foreach (MateriaLootTable::dungeonPaliers($dungeon->getZone()?->getTier() ?? 1) as $palier) {
+                $dungeonPaliers[$palier] = true;
+            }
+        }
 
         $unobtainable = [];
         foreach ($this->em->getRepository(Item::class)->findBy(['type' => Item::TYPE_MATERIA]) as $materia) {
@@ -84,7 +92,7 @@ class MateriaObtainabilityTest extends AbstractIntegrationTestCase
                 || ($palier <= 3 && isset($lootPaliers[$element->value][$palier]))
                 || (4 === $palier && isset($rareM4Elements[$element->value]))
                 || isset($chestPaliers[$palier])
-                || ($hasDungeon && \in_array($palier, [4, 5], true));
+                || isset($dungeonPaliers[$palier]);
 
             if (!$obtainable) {
                 $unobtainable[] = $materia->getSlug();

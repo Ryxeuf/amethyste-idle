@@ -120,18 +120,24 @@ tout le reste se fait en double.
 - [x] Tests : trois étapes franchies, rencontres au bon palier, aucun sac de
       PV, repli sans faune, la chute d'étape ne riposte pas
 
-### DON-04 — Le butin, et `lootPreview` qui ne ment plus (S | ★★★ | HAUTE)
+### DON-04 — Le butin, et `lootPreview` qui ne ment plus (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > `lootPreview` promet « Équipement tier 2, Matéria commune, Composants
 > d'artisanat » ; le run ne distribue que des gils.
 > Prérequis : ← DON-03 ; **converge avec MAT-06**
-- [ ] Table de butin indexée sur le palier : T1 → m2, T2 → m3, T3 → m3-m4,
-      **T4 → m4-m5** — c'est ce que `GAME_MATERIA` §4.3 attend des donjons
-- [ ] `lootPreview` **dérivé de la table réelle**, jamais un texte libre : un
-      aperçu qui ment est pire que pas d'aperçu
-- [ ] La décroissance de récompense (ZON-20) s'étend **à la table d'objets**, pas
-      seulement aux gils
-- [ ] Tests : `lootPreview` == table réelle, paliers de matéria respectés,
-      décroissance appliquée aux objets
+- [x] Table de butin indexée sur le palier : T1 → m2, T2 → m3, T3 → m3-m4,
+      **T4 → m4-m5** (`MateriaLootTable::dungeonPick(tier)`) — le donjon T4
+      reste le seul canal du m5, et l'invariant d'obtenabilité lit désormais
+      les paliers des donjons réels (d'où DON-05 avancé avant ce jalon)
+- [x] `lootPreview` **dérivé de la table réelle** : la colonne texte libre est
+      supprimée (entité, fixtures, migration), l'écran de zone dérive
+      l'aperçu de `dungeonPaliers()` — la même lecture que le tirage, donc
+      impossible à désynchroniser
+- [x] La décroissance de récompense (ZON-20) s'étend **à la table d'objets** :
+      la chance de matéria suit `decay^n` **sans plancher** (les gils gardent
+      le leur — prix de la participation, le sommet du catalogue n'en a pas)
+- [x] Tests : aperçu == table réelle (même fonction), paliers respectés par
+      palier de zone, montée en rare aux seuls T3-T4, décroissance des objets
+      sans plancher
 
 ---
 

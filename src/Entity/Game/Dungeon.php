@@ -66,8 +66,9 @@ class Dungeon
     #[ORM\Column(name: 'icon', type: 'string', length: 255, nullable: true)]
     private ?string $icon = null;
 
-    #[ORM\Column(name: 'loot_preview', type: 'json', nullable: true)]
-    private ?array $lootPreview = null;
+    // DON-04 : `lootPreview` (texte libre) a disparu — l'apercu de butin se
+    // derive de la table reelle (`MateriaLootTable::dungeonPaliers`), un
+    // apercu qui ment etant pire que pas d'apercu.
 
     #[ORM\Column(name: 'entry_requirements', type: 'json', nullable: true)]
     private ?array $entryRequirements = null;
@@ -265,18 +266,6 @@ class Dungeon
     public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
-
-        return $this;
-    }
-
-    public function getLootPreview(): ?array
-    {
-        return $this->lootPreview;
-    }
-
-    public function setLootPreview(?array $lootPreview): self
-    {
-        $this->lootPreview = $lootPreview;
 
         return $this;
     }

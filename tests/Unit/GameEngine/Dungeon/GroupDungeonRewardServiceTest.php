@@ -104,4 +104,18 @@ class GroupDungeonRewardServiceTest extends TestCase
         // 150 * 0.25 = 37.5 => arrondi a 38.
         $this->assertSame(38, $player->getGils());
     }
+
+    /**
+     * DON-04 — la decroissance s'etend a la table d'objets : la chance de
+     * materia suit decay^n **sans plancher**. Les gils gardent le leur (le
+     * prix de la participation), le sommet du catalogue n'en a pas — sans
+     * quoi le farm infini garderait un quart de chance de m5 pour toujours.
+     */
+    public function testMateriaDropChanceDecaysWithoutFloor(): void
+    {
+        $this->assertSame(100, $this->service->materiaDropChance(0));
+        $this->assertSame(50, $this->service->materiaDropChance(1));
+        $this->assertSame(25, $this->service->materiaDropChance(2));
+        $this->assertSame(0, $this->service->materiaDropChance(10), 'Pas de plancher pour les objets.');
+    }
 }

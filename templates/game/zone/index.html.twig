@@ -634,7 +634,8 @@
                                         <span class="ds-row__meta">
                                             {{ 'game.zone.dungeon.offer_group_size'|trans({'%max%': offer.maxPlayers}) }}
                                             {%- if offer.requiredExperience > 0 %} · {{ 'game.zone.dungeon.offer_required_xp'|trans({'%xp%': offer.requiredExperience}) }}{% endif %}
-                                            {%- if offer.lootPreview is not empty %} · {{ offer.lootPreview|join(' · ') }}{% endif %}
+                                            {#- DON-04 : l'apercu derive de la table reelle — materia au palier du donjon, gils decroissants. -#}
+                                            {%- if offer.lootMateria %} · {{ 'game.zone.dungeon.loot_materia'|trans({'%paliers%': offer.lootMateria}) }} · {{ 'game.zone.dungeon.loot_gils'|trans }}{% endif %}
                                         </span>
                                     </span>
                                     {# Action secondaire : « Explorer » reste la seule action primaire de l'ecran. #}

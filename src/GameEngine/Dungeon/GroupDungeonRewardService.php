@@ -72,13 +72,13 @@ class GroupDungeonRewardService
                 $player->addGils($gils);
             }
 
-            // MAT-06 : les donjons prennent m4-m5 — leur premiere raison
-            // mecanique d'exister. La materia ne tombe que sur une reussite
-            // **fraiche** (aucune dans la fenetre glissante) : la recompense
-            // decroissante protege les gils, celle-ci protege le sommet du
-            // catalogue du farm.
-            if (0 === $recentClears) {
-                $materia = $this->materiaLootTable->dungeonPick();
+            // DON-04 : la table de materia est indexee sur le palier de la
+            // zone du donjon (T1 → m2 … T4 → m4-m5, GAME_MATERIA §4.3), et la
+            // decroissance de ZON-20 s'etend aux objets — la chance de drop
+            // suit decay^n **sans plancher** : les gils gardent leur plancher
+            // (prix de la participation), le sommet du catalogue n'en a pas.
+            if ($this->materiaRoll() < $this->materiaDropChance($recentClears)) {
+                $materia = $this->materiaLootTable->dungeonPick($this->dungeonTier($run));
                 if (null !== $materia) {
                     foreach ($player->getInventories() as $inventory) {
                         if ($inventory->getType() === Inventory::TYPE_MATERIA) {
@@ -106,6 +106,36 @@ class GroupDungeonRewardService
             // l'ancien chemin solo emettait — une fois par membre.
             $this->eventDispatcher->dispatch(new GroupDungeonCompletedEvent($player, $run), GroupDungeonCompletedEvent::NAME);
         }
+    }
+
+    /**
+     * La chance (sur 100) qu'une materia tombe, selon les reussites recentes
+     * (DON-04). `decay^n` sans plancher : 100 % sur une reussite fraiche,
+     * puis 50, 25… — le plancher des gils est le prix de la participation,
+     * le sommet du catalogue n'en a pas.
+     */
+    public function materiaDropChance(int $recentClears): int
+    {
+        return (int) round(100 * ($this->getDecay() ** max(0, $recentClears)));
+    }
+
+    /**
+     * Le palier du donjon : celui de sa zone, plancher T1 (meme lecture que
+     * les rencontres de DON-03).
+     */
+    private function dungeonTier(GroupDungeonRun $run): int
+    {
+        $tier = $run->getDungeon()->getZone()?->getTier() ?? $run->getZone()?->getTier() ?? 1;
+
+        return max(1, min(4, $tier));
+    }
+
+    /**
+     * Jet 0-99 du drop de materia — surchargeable en test.
+     */
+    protected function materiaRoll(): int
+    {
+        return random_int(0, 99);
     }
 
     public function getBaseGils(): int

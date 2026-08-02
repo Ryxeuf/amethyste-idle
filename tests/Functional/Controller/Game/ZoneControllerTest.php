@@ -296,7 +296,7 @@ class ZoneControllerTest extends TestCase
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $dungeon = $this->buildGroupDungeon($zone);
-        $dungeon->setLootPreview(['Equipement tier 2']);
+        $zone->setTier(2);
 
         $this->groupDungeonService->method('findOfferedInZone')->with($zone)->willReturn([$dungeon]);
         $this->groupDungeonService->method('getLaunchBlocker')->willReturn(null);
@@ -320,6 +320,9 @@ class ZoneControllerTest extends TestCase
         // minLevel * 100 : le prerequis est de l'XP de domaine, pas un niveau
         // global (regle #6 du projet).
         $this->assertSame(300, $offers[0]['requiredExperience']);
+        // DON-04 : l'apercu derive de la table reelle — zone T2, donc m3,
+        // jamais un texte libre.
+        $this->assertSame('m3', $offers[0]['lootMateria']);
         $this->assertTrue($offers[0]['canLaunch']);
         $this->assertNull($offers[0]['blocker']);
     }

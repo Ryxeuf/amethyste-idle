@@ -39,7 +39,6 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $convergence->setZone($zoneRepository->findOneBy(['slug' => 'cite-ensevelie']));
         $convergence->setMinLevel(25);
         $convergence->setMaxPlayers(1);
-        $convergence->setLootPreview(['Equipement Amethyste', 'Titre exclusif', 'Epilogue de la trame']);
         $convergence->setEntryRequirements([
             'items' => [
                 ['slug' => 'quest-fragment-foret', 'name' => 'Fragment Sylvestre'],
@@ -80,7 +79,6 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
                 'descriptionEn' => 'Beneath the forest roots, a tunnel has collapsed and freed what slept below. Far too vast for a lone adventurer: you must descend as a group.',
                 'minLevel' => 3,
                 'maxPlayers' => 4,
-                'lootPreview' => ['Equipement tier 2', 'Materia commune', 'Composants d\'artisanat'],
             ],
             [
                 'slug' => 'forges-noyees',
@@ -91,7 +89,6 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
                 'descriptionEn' => 'The old forges of the mines were swallowed by an underground flood. The constructs that guarded them still turn, indifferent to the rising water.',
                 'minLevel' => 8,
                 'maxPlayers' => 5,
-                'lootPreview' => ['Equipement tier 3', 'Materia rare', 'Lingots de cobalt'],
             ],
             // DON-05 : le donjon du T3 — le seul a ecrire, au palier dont la
             // Crete a justement besoin (GAME_BESTIARY §1.3).
@@ -104,7 +101,6 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
                 'descriptionEn' => 'Beneath the crest, the wind rushes into an eyrie carved from the cliff itself. What nests up there never comes down — roped parties must climb to find it.',
                 'minLevel' => 14,
                 'maxPlayers' => 4,
-                'lootPreview' => ['Equipement tier 3', 'Materia rare'],
             ],
         ];
 
@@ -132,7 +128,6 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
             $dungeon->setZone($zone);
             $dungeon->setMinLevel($definition['minLevel']);
             $dungeon->setMaxPlayers($definition['maxPlayers']);
-            $dungeon->setLootPreview($definition['lootPreview']);
             $dungeon->setCreatedAt(new \DateTime());
             $dungeon->setUpdatedAt(new \DateTime());
 
