@@ -2286,9 +2286,18 @@ C'est le seul invariant qui ne se vérifie pas sur un archétype isolé — il e
 table du §9 sexies.1. **Le simulateur d'ARC-05 doit la produire, pas des durées
 individuelles.**
 
-### 9 sexies.4 L'arbitrage qui reste — donner une valeur à la vitesse
+### 9 sexies.4 L'arbitrage — donner une valeur à la vitesse — **tranché le 2026-08-02**
 
 La cause 3 dépasse les arbres : c'est une décision de conception du jeu.
+
+> **Décision (2026-08-02) : l'option A est adoptée, ciblée.** Les rencontres à
+> fenêtre existent — mais **uniquement sur les élites, les boss et les étapes de
+> donjon**, jamais sur le tout-venant. L'assaut gagne ses moments ; une fenêtre
+> sur les communs punirait tous les builds lents partout, ce qui n'est pas
+> l'objectif. Le branchement naturel est **DON-03** (les étapes de donjon
+> puisent dans la faune du palier) et le rang **Elite/Boss** de GAME_BESTIARY.
+> Conséquence maintenue : un boss doit avoir assez de PV pour qu'un archétype
+> lent n'en vienne pas à bout.
 
 | Option | Ce que ça implique | Verdict |
 |---|---|---|

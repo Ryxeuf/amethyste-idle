@@ -19,23 +19,31 @@ Les taches **todo** sont reparties par sprint dans `docs/roadmap/` :
 | [Sprint 12](roadmap/SPRINT_12.md) | Technique & i18n — 3 taches restantes (134 perf, 135 i18n, 136 doc admin) | Basse |
 
 Le Sprint 12 est le **seul sprint numerote encore ouvert**. Le travail est desormais pilote par
-les **plans annexes** (FAC, REP, ECO Piste I, FOY vague 2, NAR vague 2), dans la sequence de
-l'« Ordre de chantier » de l'[index](roadmap/ROADMAP_TODO_INDEX.md).
+les **plans annexes** (DON en cours, fin d'ONB, OBJ 5→8, ARC et MET a ouvrir, FAC, REP,
+ECO Piste I, FOY vague 2, NAR vague 2), dans la sequence de l'« Ordre de chantier » de
+l'[index](roadmap/ROADMAP_TODO_INDEX.md).
 
 L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'affichage et les statistiques.
 
 **Plans annexes :**
 - [PIVOT_PBBG.md](PIVOT_PBBG.md) — decision du pivot, equivalences carte → zones
 - [ZON_CAMPAIGN_RECAP.md](ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis (traites en Sprint 13)
-- [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md) ✅ — **7/7** (retention hebdomadaire) ; **vague 4 ouverte : RET-08→10** (le tableau du lundi, cadre par GAME_DASHBOARD.md)
+- [roadmap/PLAN_ONBOARDING.md](roadmap/PLAN_ONBOARDING.md) — **17/20 livres** (le jeu a une porte d'entree) ; restent **ONB-02/04 (mailer — dernier bloquant dur)**, ONB-07b, ONB-20b-b
+- [roadmap/PLAN_DUNGEONS.md](roadmap/PLAN_DUNGEONS.md) ⚙ — **2/6, en cours, front actuel** (DON-01 et DON-02 livres le 2026-08-02 : modele unique + le combat rend le build pertinent ; restent DON-03→06)
+- [roadmap/PLAN_MATERIA.md](roadmap/PLAN_MATERIA.md) ✅ — **8/8** (chaine competence → materia → sort reparee, invariants en CI)
+- [roadmap/PLAN_BESTIARY.md](roadmap/PLAN_BESTIARY.md) ✅ — **6/6** (tier × rank, zones.yaml source unique de la faune)
+- [roadmap/PLAN_ITEMS.md](roadmap/PLAN_ITEMS.md) ✅ — **8/8, complet le 2026-08-02** (taxonomie, menage, equipement neutre, emplacements progressifs, outils de recolte et d'artisanat, champignon, invariants en CI)
+- [roadmap/PLAN_ARCHETYPES.md](roadmap/PLAN_ARCHETYPES.md) — **0/19, a ouvrir** (les archetypes de combat ; prerequis externes livres)
+- [roadmap/PLAN_TRADES.md](roadmap/PLAN_TRADES.md) — **0/11, a ouvrir** (les arbres de metier ; MET-01 bloquant)
+- [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md) ✅ — **10/10** (retention hebdomadaire, vague 4 « tableau du lundi » comprise)
 - [roadmap/PLAN_SETTLEMENTS.md](roadmap/PLAN_SETTLEMENTS.md) ✅ — **17/17** (foyers, Crue, Paleur) ; **vague 2 ouverte : FOY-18→21** (logement)
-- [roadmap/PLAN_ZONES.md](roadmap/PLAN_ZONES.md) ✅ — **7/7** (contenu des zones) ; restent ZON-39/40 et des donnees
-- [roadmap/PLAN_DOMAINS.md](roadmap/PLAN_DOMAINS.md) ✅ — **8/8** (arbres de domaine) ; DOM-09 ouvert
+- [roadmap/PLAN_ZONES.md](roadmap/PLAN_ZONES.md) ✅ — **7/7** (contenu des zones) ; +ZON-37→41 et restes ZON-26b livres
+- [roadmap/PLAN_DOMAINS.md](roadmap/PLAN_DOMAINS.md) ✅ — **8/8** (arbres de domaine) ; DOM-09 et DOM-10 ouverts
 - [roadmap/PLAN_FACTIONS.md](roadmap/PLAN_FACTIONS.md) — **1/10, en cours** (FAC-01 livre)
 - [roadmap/PLAN_REPERTOIRE.md](roadmap/PLAN_REPERTOIRE.md) — **0/6, a faire** (l'Autel d'eveil)
-- [roadmap/PLAN_WIKI.md](roadmap/PLAN_WIKI.md) — **WIK-01 ✅** (contenu docs/wiki/, 7 chapitres) ; restent WIK-02/03 (controleur public /wiki, acces)
+- [roadmap/PLAN_WIKI.md](roadmap/PLAN_WIKI.md) ✅ — **3/3** (`/wiki` public, contrat d'entretien en CI) ; liens contextuels au fil de l'eau
 - [roadmap/PLAN_PLAYER_ECONOMY.md](roadmap/PLAN_PLAYER_ECONOMY.md) — Pistes A-E, G, H **completes** ; reste ECO-28 (Piste F 3/4) et la **Piste I ouverte** (ECO-32→35, caravanes)
-- [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) ✅ — 14/14 ; **vague 2 ouverte : NAR-15→20** (l'an 1 des marees)
+- [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) ✅ — 14/14 + NAR-20 ; **vague 2 ouverte : NAR-15→19** (l'an 1 des marees)
 - [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md) ✅ — 20/20
 - [roadmap/PLAN_TESTING.md](roadmap/PLAN_TESTING.md) ✅ — 15/15
 - [roadmap/PLAN_MAP_EDITOR.md](roadmap/PLAN_MAP_EDITOR.md) ✅ — termine, sans suite (pivot PBBG)
