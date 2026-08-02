@@ -1,4 +1,4 @@
-# Anatomie d'un arbre de combat — trois arbres déroulés de bout en bout
+# Anatomie d'un arbre de combat — cinq arbres déroulés de bout en bout
 
 > **Statut : exercice instruit, 2026-08-01.** Ce document ne décide rien que
 > [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) et [GAME_DOMAINS.md](GAME_DOMAINS.md)
@@ -18,18 +18,19 @@ qu'il faut écrire dans `SkillFixtures.php` pour que l'arbre existe. Celui-ci
 descend jusqu'au dernier prérequis — pour qu'on puisse répondre à la question :
 *qu'est-ce qu'un arbre peut contenir, et à quel niveau ?*
 
-**Trois arbres, un par registre, et aucun n'est une redite.** Les §0 à §11
-déroulent l'**Assassin** (ténèbres × **mêlée** × assaut) et servent de méthode :
-les natures de nœud, le budget, les matéria, les invariants. Le §12 déroule le
-**Nécromancien** (ténèbres × **sorts** × contrôle) — *même élément, même marque,
-et rien en commun* — pour mettre à l'épreuve ce que le premier a établi. Le §13
-déroule l'**Artificier** (feu × **distance** × contrôle), voisin de trois arbres à
-la fois, qui pose les dernières mécaniques jamais écrites dans un arbre : le
-carquois, `wind` converti, la munition élémentaire.
+**Cinq arbres : les trois registres, les quatre fonctions, et aucune redite.**
+
+| § | Arbre | Case | Ce qu'il met à l'épreuve |
+|---|---|---|---|
+| 0-11 | **Assassin** | ténèbres × **mêlée** × assaut | la méthode : natures de nœud, budget, matéria, invariants |
+| 12 | **Nécromancien** | ténèbres × **sorts** × contrôle | *même élément, même marque, rien en commun* — le test du voisin |
+| 13 | **Artificier** | feu × **distance** × contrôle | le carquois, `wind` converti, la munition élémentaire |
+| 14 | **Défenseur** + **Gardien** | terre × mêlée × **encaisse** / **entretien** | *même case, seule la fonction diffère* — l'aggro et le dépôt |
 
 **Chacun a trouvé ce que les précédents ne pouvaient pas voir** : l'Assassin les
-sept premiers écarts, le Nécromancien le corollaire du capstone (n° 8), et
-l'Artificier une contradiction du canon avec lui-même (n° 11).
+sept premiers écarts, le Nécromancien le corollaire du capstone (n° 8),
+l'Artificier une contradiction du canon avec lui-même (n° 11), et la paire de la
+terre deux palettes amputées d'un levier (n° 13 et 14).
 
 ---
 
@@ -729,11 +730,10 @@ arbre, §13.8 pour le troisième.
   les rapports entre paliers, les vérifications du §7. Ce qui sera recalculé :
   tous les effets affichés. Le juge final est `app:balance:simulate` (ARC-17), pas
   la relecture d'un tableau.
-- **Les vingt et un autres arbres.** La procédure du §10.1 du canon suffit ; cet
+- **Les dix-neuf autres arbres.** La procédure du §10.1 du canon suffit ; cet
   exercice montre seulement à quoi ressemble son résultat quand on la suit
-  jusqu'au bout. Les trois registres et trois des quatre fonctions y sont passés ;
-  ce qui reste sans arbre déroulé ici, ce sont l'**entretien** et l'**encaisse**,
-  qui ont leurs patrons au canon (Guérisseur, Soldat).
+  jusqu'au bout. **Les trois registres et les quatre fonctions y sont passés** —
+  ce qui reste est de la déclinaison, pas de la découverte.
 - **Le nom des gestes.** Les six accords sont désignés par leur **rôle** dans le
   combat, jamais par leur niveau de sort. Les matéria elles-mêmes sont dérivées
   (GAME_MATERIA §2.1), pas écrites ici.
@@ -1189,3 +1189,184 @@ meilleure en zone, l'autre en donjon et contre les boss. C'est acceptable — le
 canon demande que deux branches soient également bonnes, pas qu'elles le soient
 dans les mêmes rencontres — mais c'est précisément le genre d'asymétrie que le
 simulateur doit vérifier plutôt que l'auteur affirmer.
+
+---
+
+## 14. La paire de la terre — le Défenseur et le Gardien
+
+### 14.0 Pourquoi les deux ensemble
+
+Il restait les deux fonctions défensives — **encaisse** et **entretien**. Elles
+sont écrites ici en paire, et sur **la même case élément × registre** : terre ×
+mêlée. C'est le test du voisin dans sa forme extrême, plus dure encore que
+l'Assassin et le Nécromancien, qui différaient au moins par le registre :
+
+> **Défenseur et Gardien ont le même élément, le même registre, la même marque, la
+> même famille d'arme et la même ligne d'armure. Seule leur fonction diffère.**
+
+C'est exactement le cas que le §1 du canon invoque pour justifier le troisième
+axe (« sans lui, la seule différenciation possible est le chiffre »). Si la paire
+tient, l'axe est démontré ; si elle ne tient pas, il ne sert à rien.
+
+La paire apporte aussi trois mécaniques que les trois premiers arbres n'avaient
+pas : **l'aggro bornée** (décision 13.4), le **dépôt de protection de groupe** (la
+loi du §7 bis, jamais posée dans un arbre concret) et la confrontation directe avec
+la thèse « *la mitigation d'un tank vient de son armure, pas de son arbre* ».
+
+**Marque commune** : **Alourdi** (terre — *temps de reprise allongé, punit les
+rotations de techniques*). **Famille** : lance. **Ligne** : plaque.
+
+### 14.1 Le Défenseur — terre × mêlée × **encaisse**
+
+| | |
+|---|---|
+| **Promesse** | *Rien ne me casse, et ce qui me frappe ne frappe personne d'autre.* |
+| **Coût structurel** | Le plafond : il ne fera jamais le gros chiffre, et ses combats sont les plus longs du jeu |
+| **Profil temporel** | **Le plateau** — la même chose au tour 1 et au tour 20 |
+| **Sa faiblesse** | Ce qui l'ignore : une rencontre qui frappe les autres pendant qu'il attend |
+| **Teinte** | **`grip`** — l'Alourdi qui dure : *ce qui est lent ne le déborde pas* |
+
+| Palier | Coût | Nœud | Nature | Effet | pb |
+|---|---:|---|---|---|---:|
+| Entrée | 0 | Accord : **Parade** (`rock-armor`) | accord | `protection`·`soi`· dépôt | — |
+| Entrée | 0 | Accord : **Pic de terre** (`earth-spike`) | accord | `dégât`·`une cible`· **applique Alourdi** | — |
+| 1 | 10 | **Carrure** | passif | `life` +4,5 % | 3 |
+| 1 | 10 | **Coup d'œil** | passif | `hit` +1,5 pt | 3 |
+| 1 | 10 | Accord : **Provocation** | accord | `entrave`·`une cible`· **transfert d'aggro borné** — *à créer* | — |
+| 1 | 10 | *Port* : lance, échelon 2 | port | — | 0 |
+| 2 | 25 | **Assise** | passif | `life` +9 % | 6 |
+| 2 | 25 | **Tête froide** | passif | `ward` +6 % | 6 |
+| 2 | 25 | Accord : **Bouclier partagé** (`shared-shield`) | accord | `protection`·**`le groupe`**· dépôt | — |
+| 2 | 25 | *Port* : lance, échelon 3 | port | — | 0 |
+| 3 · **le Mur** | 50 | **Fondations** · **Inébranlable** · Accord : **Bastion** (`bastion`) | passifs + accord | `life` +13,5 % · `ward` +9 % · `protection`·`le groupe`· dépôt long | 9+9 |
+| 3 · **la Herse** | 50 | **Terrain lourd** · **Pas de côté** · Accord : **Pétrification** (`petrification`) | passifs + accord | `grip` +10,8 % *(teinte)* · `dodge` +3,15 pt · `entrave`·`une cible` | 9+9 |
+| **Capstone** | 100 | **Le coup reçu durcit la garde** | capstone | `guard` **−11,76 %** de dégâts subis *si vous avez encaissé au tour précédent* (14 × 1,4) | 14 |
+| *Dormant* | *150* | *Accord d'hybride (terre)* | dormant | — | — |
+
+> **Le fait le plus instructif de tout ce document tient dans une ligne.**
+> `guard` plafonne à **15 pb** et le capstone en consomme **14** : le Défenseur ne
+> peut acheter son propre levier principal **qu'une seule fois, à son sommet**, et
+> il en tire **−11,76 %** de dégâts subis. Sa mitigation réelle — **40 %** — vient
+> de sa plaque. Le canon l'affirmait (§13.4 : « la mitigation d'un tank vient de
+> son armure, pas de son arbre ») ; l'arbre le démontre, chiffre en main.
+
+**Ses six matéria** — quatre existent (`rock-armor`, `earth-spike`,
+`shared-shield`, `bastion`, `petrification` : **cinq**), une est à créer :
+**Provocation**. C'est le premier arbre à écrire l'**aggro**, et elle suit la
+décision 13.4 à la lettre : un geste de menace déplace **au plus la moitié** de la
+riposte d'un allié, il n'y a **aucune table de menace cumulée**, et le geste
+n'existe pleinement qu'une fois DON-02/03 livrés (une rencontre qui riposte).
+
+### 14.2 Le Gardien — terre × mêlée × **entretien**
+
+| | |
+|---|---|
+| **Promesse** | *Je ne perds pas le combat que les autres perdent au tour 8 — et je le perds encore moins quand je ne suis pas là.* |
+| **Coût structurel** | La lenteur, et un plafond de dégâts bas : il use, il ne tue pas |
+| **Profil temporel** | **Le rebond** — plus le combat dure, plus il gagne |
+| **Sa faiblesse** | Les combats de trois tours, où provisionner ne sert à rien |
+| **Teinte** | **`life`** — *il est la citerne du groupe* : ce qu'il dépose se mesure à ce qu'il peut tenir |
+
+| Palier | Coût | Nœud | Nature | Effet | pb |
+|---|---:|---|---|---|---:|
+| Entrée | 0 | Accord : **Bouclier terreux** (`earth-shield`) | accord | `protection`+`soin`·`soi`· dépôt | — |
+| Entrée | 0 | Accord : **Jet de cailloux** (`stone-throw`) | accord | `dégât`·`une cible`· **applique Alourdi** | — |
+| 1 | 10 | **Main calme** | passif | `mending` +3 % | 3 |
+| 1 | 10 | **Souffle long** | passif | `recovery` +0,75 % des PV max/tour | 3 |
+| 1 | 10 | Accord : **Racines** | accord | `soin`·`soi ou un allié`· **dépôt** — *à créer* | — |
+| 1 | 10 | *Port* : lance, échelon 2 | port | — | 0 |
+| 2 | 25 | **Geste économe** | passif | `thrift` −3,6 % *(en mêlée : la reprise)* | 6 |
+| 2 | 25 | **Sang-froid** | passif | `ward` +6 % | 6 |
+| 2 | 25 | Accord : **Bouclier magique** (`stone-skin`) | accord | `protection`·**`le groupe`**· dépôt | — |
+| 2 | 25 | *Port* : lance, échelon 3 | port | — | 0 |
+| 3 · **la Source** | 50 | **Sourdre** · **Ce qui tient** · Accord : **Sève de pierre** | passifs + accord | `recovery` +2,25 %/tour · `life` +13,5 % *(teinte)* · `soin`·`le groupe`· dépôt 8 tours — *à créer* | 9+9 |
+| 3 · **le Rempart** | 50 | **Eaux calmes** · **Longue patience** · Accord : **Rempart de pierre** (`stonewall`) | passifs + accord | `ward` +9 % · `thrift` −5,4 % · `protection`·`le groupe`· dépôt | 9+9 |
+| **Capstone** | 100 | **Ce qui dure** | capstone | `mending` **+28 %** *au-delà du 6ᵉ tour de la rencontre* (14 × **2,0**) | 14 |
+| *Dormant* | *150* | *Accord d'hybride (terre)* | dormant | — | — |
+
+> **Le Gardien est le seul des cinq arbres de ce document dont le capstone garde
+> ×2,0** (décision 23) : sa condition — *le combat dure* — est réellement
+> intermittente, elle est fausse dans toutes les rencontres de trois tours. C'est
+> la contrepartie exacte de son coût structurel, et elle tombe sans qu'on ait rien
+> ajusté : **la fonction dont la promesse est la durée est celle dont le sommet se
+> paie en durée.**
+
+**Ses quatre accords de groupe sont tous des dépôts** — c'est la loi du §7 bis,
+et pour un archétype d'entretien elle n'est pas une contrainte, c'est sa
+définition : *il ne soigne pas, il provisionne*. Son soin direct reste le
+Bouclier terreux, en portée `soi`. Deux gestes à créer (**Racines**, **Sève de
+pierre**), quatre existent.
+
+### 14.3 Les vérifications
+
+| Invariant | Défenseur | Gardien |
+|---|---|---|
+| Budget = 50 pb | Mur : 3+3+6+6+9+9+14 ✔ · Herse : ✔ | Source : ✔ · Rempart : ✔ |
+| Plafonds | `life` 18/20 · `ward` 15/15 · `guard` **14/15** · `dodge` 9/12 · `grip` 9/20 · `hit` 3/10 ✔ | `mending` 17/20 · `recovery` 12/12 · `ward` 15/15 · `thrift` 15/15 · `life` 9/20 ✔ |
+| Palette ≥ 40 / hors ≤ 10 | Mur : 50 ✔ · Herse : 41 + `grip` 9 ✔ | Rempart : 50 ✔ · Source : 41 + `life` 9 ✔ |
+| Levier du capstone hors du palier 3 | `guard` : nulle part ailleurs ✔ | `mending` : 3 pb au palier 1 ✔ |
+| Intentions | ≥ 2 `protection` dont **2** de portée `le groupe` ✔ | ≥ 2 `soin`/`protection` dont **3** de portée `le groupe` ✔ |
+| Accord d'entrée qui marque | Pic de terre → Alourdi ✔ | Jet de cailloux → Alourdi ✔ |
+| Branches sans levier commun | {`life`,`ward`} ∩ {`grip`,`dodge`} = ∅ ✔ | {`recovery`,`life`} ∩ {`ward`,`thrift`} = ∅ ✔ |
+| Toute `protection` porte une durée | Parade, Bouclier partagé, Bastion : dépôts ✔ | les quatre : dépôts ✔ |
+| Triplet unique | terre × mêlée × encaisse ✔ | terre × mêlée × entretien ✔ |
+
+**Le partage de palette est légal et mesuré** : encaisse et entretien ont
+**`ward` en commun**, et rien d'autre — la règle en autorise deux.
+
+### 14.4 Ce que la paire démontre
+
+Deux arbres, une seule case, et voici ce qu'un joueur voit :
+
+| | Défenseur | Gardien |
+|---|---|---|
+| Ce qu'il fait du coup reçu | il le **cherche** (Provocation) et le convertit en garde | il le **répare**, chez lui et chez les autres |
+| Son capstone récompense | **d'avoir été frappé** (×1,4) | **d'avoir tenu longtemps** (×2,0) |
+| Ses gestes de groupe | 2 protections déposées | 3 soins et protections déposés |
+| Ce qu'il fait d'Alourdi | le **prolonge** (`grip`, branche la Herse) | le pose et l'oublie — c'est son seul geste offensif |
+| Sa contribution en donjon | il **prend la place** d'un allié dans la riposte | il **provisionne** les tours où personne n'est là |
+| Ce qui le tue | une rencontre qui l'ignore | une rencontre trop courte |
+
+**Aucun de leurs leviers principaux n'est le même, aucune de leurs promesses n'est
+interchangeable, et pourtant ils portent la même armure et la même lance.** C'est
+la démonstration que le troisième axe cherchait : *la fonction distingue deux
+voisins de case*, sans qu'un seul chiffre ait eu à faire le travail.
+
+### 14.5 Ce que la paire a trouvé
+
+**Écart n° 13 — `wind` n'a aucune lecture en registre mêlée.** La note 1 du §4
+donne deux conversions : PM pour les sorts, chance de récupérer la munition pour
+la distance. **Rien pour la mêlée** — et pour cause, la ressource de la mêlée ne
+« régénère » pas, elle s'écoule avec les tours. Or `wind` figure dans la palette
+de l'**entretien**, et le Gardien est *entretien × mêlée* : **un levier sur cinq
+lui est inaccessible**, ce qui réduit sa palette à quatre et rend la règle des
+80/20 mécaniquement plus serrée pour lui que pour le Guérisseur.
+
+> *Proposition* : en mêlée, `wind` est **la chance qu'une technique ne parte pas
+> en reprise** (le geste reste disponible au tour suivant), à ~+1,2 pt par pb. Même
+> intention que les deux autres lectures — *de la ressource rendue au tour* — et
+> même effet de jeu : ce sont les rencontres longues qui en profitent. Le cas
+> touche **les huit arbres de mêlée**, pas seulement le Gardien : tout arbre de
+> mêlée qui voudrait `wind` en teinte est aujourd'hui bloqué.
+
+**Écart n° 14 — la fonction encaisse ne peut pas acheter son levier principal.**
+`guard` plafonne à 15 pb, le capstone en consomme 14 : il reste **1 pb**,
+c'est-à-dire rien (le nœud le plus modeste vaut 3). **Un arbre d'encaisse achète
+`guard` une fois ou jamais.** Les trois arbres d'encaisse du jeu (Défenseur,
+Soldat, Paladin) sont donc structurellement dans ce cas.
+
+Ce n'est **pas** un défaut à corriger, et c'est ce qui le rend intéressant : le
+canon a déjà tranché que la mitigation vient de l'armure (plaque 40 %, §2.2), et
+que `guard` a le plafond le plus bas parce que son efficacité est hyperbolique.
+Les deux décisions se rejoignent ici. *Ce qu'il faut en revanche écrire* : un
+arbre d'encaisse **n'a que quatre leviers utilisables** (`dodge`, `life`, `ward`,
+`hit`) plus un sommet, exactement comme le Gardien n'en a que quatre. Deux
+fonctions sur quatre jouent avec une palette réduite d'un cran, et le §5 ne le
+dit pas.
+
+**Observation n° 15 — l'aggro entre dans un arbre pour la première fois.** La
+Provocation du Défenseur est le premier geste écrit qui applique la décision 13.4 :
+déplacer **au plus la moitié** de la riposte d'un allié, sans aucune table de
+menace cumulée. Elle est inerte tant que DON-02/03 n'ont pas donné une riposte aux
+rencontres de donjon — ce qui en fait, avec les matéria de technique, la seconde
+dépendance de contenu qu'un arbre pose au moteur.
