@@ -25,7 +25,7 @@
 | OBJ-03 ✅ | La grille d'équipement neutre | M | ∅ |
 | OBJ-04 ✅ | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
 | OBJ-05 ✅ | L'outil de récolte | M | ∅ |
-| OBJ-06 | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
+| OBJ-06 ✅ | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
 | OBJ-07 | Les matières : le champignon et l'équilibre des lignes | S | ← OBJ-02 |
 | OBJ-08 | Tests du plan | S | ‖ |
 
@@ -185,15 +185,21 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
       (`GatherToolContractTest` : toute profession a un type, tout type a son
       palier 1 en fixtures et son emplacement)
 
-### OBJ-06 — Les paliers d'outil et les 3 métiers manquants (M | ★★ | MOYENNE)
+### OBJ-06 — Les paliers d'outil et les 3 métiers manquants (M | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
 > Sur 4 paliers déclarés, seuls bronze et fer sont atteignables : l'outillage
 > s'arrête au fer.
 > Prérequis : ← OBJ-05
-- [ ] Recettes de forgeron pour **acier et mithril** (9 types × 2 paliers) — un
-      débouché récurrent, puisque l'outil s'use déjà (`durability`)
-- [ ] Un outil requis pour **cuisinier, charpentier et tailleur** :
-      `CRAFT_TOOL_TYPES` n'en couvre que 4 sur 7
-- [ ] Tests : les 4 paliers atteignables, les 7 métiers pourvus
+- [x] Recettes de forgeron pour **acier et mithril** — les 12 types × 2 paliers,
+      **dérivées** (`RecipeFixtures::toolRecipesData()`) plutôt qu'énumérées ;
+      l'acier est un alliage (lingot de fer + cobalt, ECO-25), chaque outil
+      consomme un manche de charpentier (ECO-14 vaut pour l'outillage)
+- [x] Un outil requis pour **cuisinier, charpentier et tailleur** : la marmite,
+      la varlope et l'aiguille (type + bit + emplacement différés par
+      ECO-29/30/31), le nœud gratuit de chaque arbre livre l'emplacement et le
+      palier d'entrée, bronze au plancher T1 (Marcellin), fer chez Émilie
+- [x] Tests : les 4 paliers atteignables, les 7 métiers pourvus
+      (`CraftToolContractTest` : bronze/fer vendus, acier/mithril au forgeron,
+      chaque type câblé bit + emplacement + étiquette, dérivation vérifiée)
 
 ---
 

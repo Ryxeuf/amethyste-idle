@@ -246,6 +246,10 @@
         "tanning_kit": "Kit de tannage",
         "mortar": "Mortier d'alchimie",
         "chisel": "Burin de joaillier",
+        "axe": "Hache",
+        "cookpot": "Marmite de cuisine",
+        "plane": "Varlope de charpentier",
+        "needle": "Aiguille de tailleur",
         "unknown": "Outil"
       },
       "tools": {
