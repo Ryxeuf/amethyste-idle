@@ -243,7 +243,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Gargoyle'],
                 'speed' => 9,
                 'attack' => 'stone_throw',
-                                // BES-04 : la gargouille quitte les Mines pour la Crete seule —
+                // BES-04 : la gargouille quitte les Mines pour la Crete seule —
                 // le palier T3 manquait de tout-venant.
                 'tier' => 3,
                 'element' => 'earth',
@@ -466,7 +466,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Scorpion'],
                 'speed' => 7,
                 'attack' => 'venomous_bite',
-                                // BES-04 : le scorpion retourne au desert (T3) — un scorpion de
+                // BES-04 : le scorpion retourne au desert (T3) — un scorpion de
                 // foret doublonnait le tout-venant du T1.
                 'tier' => 3,
                 'element' => 'beast',
@@ -520,7 +520,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Salamander'],
                 'speed' => 10,
                 'attack' => 'fire_ball',
-                                // BES-04 : la salamandre devient une bete des Dunes (T3) — en
+                // BES-04 : la salamandre devient une bete des Dunes (T3) — en
                 // foret elle doublonnait le tout-venant du T1.
                 'tier' => 3,
                 'element' => 'fire',
@@ -866,7 +866,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 6,
                 'attack' => 'water_jet',
                 'tier' => 2,
-                                // BES-04 : l'hydre devient le boss du Marais — le palier T2
+                // BES-04 : l'hydre devient le boss du Marais — le palier T2
                 // n'avait aucun boss en zone (les Racines sont un donjon).
                 'rank' => 'boss',
                 'element' => 'water',
