@@ -13,6 +13,7 @@ class ReputationManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly FactionTensionCatalog $tensionCatalog,
+        private readonly GestureReputationCatalog $gestureCatalog,
     ) {
     }
 
@@ -28,6 +29,78 @@ class ReputationManager
         $this->entityManager->flush();
 
         return $playerFaction;
+    }
+
+    /**
+     * Un geste route par le catalogue (FAC-02).
+     *
+     * GAME_WORLD § 6.4 b : les quetes amorcent, les gestes font le regime de
+     * croisiere. Le geste ne connait pas sa faction — il porte une cle
+     * (`auction_sale`, `undead_kill`...), et le catalogue dit qui il nourrit.
+     *
+     * **Le crochet est inerte tant que la cible n'existe pas.** Une route vers
+     * une faction pas encore semee (la Fonderie avant FAC-04, les Ruelles du
+     * marche gris avant FAC-06) rend `null` sans rien ecrire : le jour ou la
+     * faction arrive, le geste nourrit — sans qu'on ait a revenir ici.
+     *
+     * `$fallbackAmount` sert aux gestes dont le montant n'est pas fixe dans la
+     * route (le kill suit le palier du monstre).
+     */
+    public function grantGestureReputation(Player $player, string $gesture, ?int $fallbackAmount = null): ?PlayerFaction
+    {
+        $route = $this->gestureCatalog->routeFor($gesture);
+        if (null === $route) {
+            return null;
+        }
+
+        $faction = $this->entityManager->getRepository(Faction::class)->findOneBy(['slug' => $route['faction']]);
+        if (null === $faction) {
+            // Crochet declare, faction pas encore semee : inerte, pas casse.
+            return null;
+        }
+
+        $amount = $route['amount'] ?? $fallbackAmount ?? 0;
+        if ($amount <= 0) {
+            return null;
+        }
+
+        return $this->grantCappedReputation($player, $faction, $amount);
+    }
+
+    /**
+     * Un gain de geste, borne par le plafond journalier de la faction.
+     *
+     * Le plafond ne refuse pas le geste — il rogne le gain a hauteur du reste
+     * disponible, puis le laisse a zero jusqu'au lendemain. Les quetes passent
+     * par `addReputation()` et ne sont jamais plafonnees : on ne refait pas
+     * une quete.
+     */
+    public function grantCappedReputation(Player $player, Faction $faction, int $amount): PlayerFaction
+    {
+        $playerFaction = $this->resolve($player, $faction);
+
+        $dayKey = $this->todayKey();
+        $granted = min($amount, max(0, $this->gestureCatalog->dailyCap() - $playerFaction->gestureGainedOn($dayKey)));
+
+        if ($granted > 0) {
+            $before = $playerFaction->getReputation();
+            $playerFaction->addReputation($granted);
+            $playerFaction->recordGestureGain($dayKey, $granted);
+
+            $this->applyTension($player, $faction, $before, $granted);
+        }
+
+        $this->entityManager->flush();
+
+        return $playerFaction;
+    }
+
+    /**
+     * La cle du jour courant — protegee pour que les tests la fixent.
+     */
+    protected function todayKey(): string
+    {
+        return (new \DateTimeImmutable('today'))->format('Y-m-d');
     }
 
     /**

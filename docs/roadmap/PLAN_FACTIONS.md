@@ -18,7 +18,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | FAC-01 ✅ | Tension par paires + patronage exclusif | M | ∅ |
-| FAC-02 | Les gestes nourrissent la réputation | S | ← FAC-01 |
+| FAC-02 ✅ | Les gestes nourrissent la réputation | S | ← FAC-01 |
 | FAC-03 | Hostile à conséquences | S | ← FAC-01 |
 | FAC-04 | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
 | FAC-05 | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
@@ -69,14 +69,25 @@ doctrinal. Le Programme du Cercle (FAC-09/Mages) gagne à suivre le Répertoire 
 Ruelles) sans qu'aucune agrégation ne l'attende : le résolveur la rend visible plutôt que de l'avaler,
 et son application viendra avec le jalon qui donnera une vitesse au personnage.
 
-### FAC-02 — Les gestes nourrissent (S | ★★ | HAUTE)
+### FAC-02 — Les gestes nourrissent (S | ★★ | HAUTE) ✅
 > §6.4 b : les quêtes amorcent, les gestes font le régime de croisière.
-> Prérequis : ← FAC-01
-- [ ] `ReputationListener` étendu aux events existants : ventes HV → Marchands,
-      morts-vivants/Effacés → Chevaliers ; crochets prêts pour fondre/lire (FAC-04) et
-      marché gris (FAC-06)
-- [ ] Plafonds journaliers par faction (`InfluenceAntiExploit` réutilisé)
-- [ ] Tests : routage geste → faction, plafond, crochet inactif sans la faction cible
+> Prérequis : ← FAC-01 — **livré le 2026-08-02**
+- [x] `ReputationListener` étendu : `AuctionSaleEvent` créé et émis aux deux points où une
+      annonce devient une transaction (achat direct, enchère finalisée) → Marchands côté
+      vendeur ; morts-vivants → Chevaliers au barème du palier (classification déclarative
+      par slug dans `config/game/factions.yaml`, le bestiaire n'ayant pas de champ famille ;
+      les Effacés attendent leur substrat d'extension) ; crochets `materia_melt`/`materia_read`
+      (FAC-04) et `grey_market_sale` (FAC-06) **routés dès maintenant**, inertes tant que la
+      cible n'est pas semée — même doctrine que la paire de tension de la Fonderie
+- [x] Plafond journalier par faction : même doctrine qu'`InfluenceAntiExploit` (un geste
+      répété nourrit, un geste fermé ne nourrit plus), mais pas son mécanisme — l'influence
+      agrège un journal, la réputation n'en a pas : un couple (clé de jour, cumul) sur
+      `player_factions` suffit, sans cron. Le gain est rogné puis laissé à zéro, jamais
+      refusé ; les quêtes restent hors plafond (on ne refait pas une quête) ; les kills
+      passent par le chemin plafonné (un kill est un geste)
+- [x] Tests : routage geste → faction, plafond (rogne, ferme, rouvre le lendemain), crochet
+      inactif sans la faction cible, tension appliquée sur le chemin plafonné, dispatch de
+      l'event de vente, chaque slug mort-vivant existe au bestiaire
 
 ### FAC-03 — Hostile à conséquences (S | ★★ | HAUTE)
 > §6.4 d. Bornes absolues : jamais la boucle cœur, jamais une agression.

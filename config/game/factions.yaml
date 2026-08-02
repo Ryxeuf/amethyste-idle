@@ -65,6 +65,68 @@ tension:
     # La valeur n'est pas ecrite : elle est **derivee** de `beyond_tier`.
     floor_mirrors_beyond_tier: true
 
+# --- Les gestes (FAC-02) -----------------------------------------------------
+# GAME_WORLD § 6.4 b : « les quetes amorcent, les gestes font le regime de
+# croisiere. » Une quete se fait une fois ; un geste se refait chaque jour, et
+# c'est lui qui dit qui vous etes. Chaque route associe un geste du jeu a la
+# faction qu'il nourrit — ajouter un geste, c'est ajouter une ligne ici.
+#
+# **Une route peut viser une faction pas encore semee** : `materia_melt` attend
+# la Fonderie (FAC-04), `grey_market_sale` attend le marche gris des Ruelles
+# (FAC-06). Le crochet est declare des maintenant et reste **inerte** — meme
+# doctrine que les paires de tension, et pour la meme raison : personne ne se
+# souvient de revenir cabler un crochet.
+#
+# `daily_cap` : le plafond de gain **par faction et par jour** sur les gestes
+# (les quetes, elles, ne sont pas plafonnees — on ne refait pas une quete).
+# Meme doctrine que le plafond journalier d'influence de guilde
+# (`InfluenceAntiExploit`) : un geste repete nourrit, un geste ferme ne
+# nourrit plus. A 200 points et 10-50 points le geste, le plafond laisse une
+# vraie journee de jeu avant de fermer.
+gestures:
+    daily_cap: 200
+    routes:
+        # La vente conclue a l'hotel des ventes : le vendeur a mis quelque
+        # chose sur le marche, et le marche l'a pris. C'est le geste marchand.
+        auction_sale:
+            faction: 'marchands'
+            amount: 10
+        # Abattre un mort-vivant : le geste de l'Ordre, qui veille sur ce que
+        # le temps a laisse derriere lui. Le montant n'est pas ecrit — il suit
+        # le palier du monstre, comme tout gain de kill.
+        undead_kill:
+            faction: 'chevaliers'
+        # Crochet FAC-04 : fondre une materia nourrit la Fonderie. Inerte tant
+        # que la faction n'est pas semee.
+        materia_melt:
+            faction: 'fonderie'
+            amount: 15
+        # Crochet FAC-04 : lire une materia nourrit le Cercle des Mages.
+        materia_read:
+            faction: 'mages'
+            amount: 15
+        # Crochet FAC-06 : une vente au receleur nourrit la Confrerie des
+        # Ruelles. Inerte tant que le marche gris n'existe pas.
+        grey_market_sale:
+            faction: 'ombres'
+            amount: 10
+
+    # Les morts-vivants du bestiaire, par slug. Le bestiaire n'a pas de champ
+    # « famille » (BES-01 a livre tier x rank, rien de plus) : la classification
+    # vit ici, declarative, la ou elle sert. Le jour ou une famille de monstre
+    # existera en donnee, cette liste se derivera au lieu de s'ecrire.
+    undead_slugs:
+        - 'zombie'
+        - 'skeleton'
+        - 'specter'
+        - 'banshee'
+        - 'ghost'
+        - 'cursed_knight'
+        - 'lesser_lich'
+        - 'necromancer'
+        - 'dune_wraith'
+        - 'hoarfrost_shade'
+
 # --- Le patronage ------------------------------------------------------------
 # GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent un
 # patronage — on porte les couleurs d'une seule faction a la fois (changeable

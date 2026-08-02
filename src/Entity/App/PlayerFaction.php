@@ -30,6 +30,20 @@ class PlayerFaction
     #[ORM\Column(name: 'reputation', type: 'integer', options: ['default' => 0])]
     private int $reputation = 0;
 
+    /**
+     * FAC-02 : le plafond journalier des gestes, materialise sur la ligne.
+     *
+     * Meme doctrine que le plafond d'influence de guilde (`InfluenceAntiExploit`),
+     * mais sans table de log : la reputation n'a pas de journal, et un couple
+     * (jour, cumul) sur la ligne suffit — le compteur repart de zero des que la
+     * cle de jour change, sans cron ni fenetre glissante.
+     */
+    #[ORM\Column(name: 'daily_gesture_gained', type: 'integer', options: ['default' => 0])]
+    private int $dailyGestureGained = 0;
+
+    #[ORM\Column(name: 'daily_gesture_key', type: 'string', length: 10, nullable: true)]
+    private ?string $dailyGestureKey = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -74,6 +88,26 @@ class PlayerFaction
     public function addReputation(int $amount): self
     {
         $this->reputation += $amount;
+
+        return $this;
+    }
+
+    /**
+     * Ce que les gestes ont deja rapporte sur cette faction pour la cle de
+     * jour donnee. Une cle differente = un autre jour = compteur a zero.
+     */
+    public function gestureGainedOn(string $dayKey): int
+    {
+        return $this->dailyGestureKey === $dayKey ? $this->dailyGestureGained : 0;
+    }
+
+    public function recordGestureGain(string $dayKey, int $amount): self
+    {
+        if ($this->dailyGestureKey !== $dayKey) {
+            $this->dailyGestureKey = $dayKey;
+            $this->dailyGestureGained = 0;
+        }
+        $this->dailyGestureGained += $amount;
 
         return $this;
     }
