@@ -38,8 +38,8 @@ class BalanceReportCombatTest extends TestCase
     public function testNoDpsVarianceAlertWhenBalanced(): void
     {
         $rows = [
-            ['monster_name' => 'Slime', 'level' => 1, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 10.0],
-            ['monster_name' => 'Goblin', 'level' => 2, 'fight_count' => 10, 'total_damage' => 600, 'dps' => 12.0],
+            ['monster_name' => 'Slime', 'tier' => 1, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 10.0],
+            ['monster_name' => 'Goblin', 'tier' => 2, 'fight_count' => 10, 'total_damage' => 600, 'dps' => 12.0],
         ];
 
         $alerts = $this->invokeDetectDpsVarianceAlerts($rows);
@@ -50,8 +50,8 @@ class BalanceReportCombatTest extends TestCase
     public function testDpsVarianceAlertWhenLargeGap(): void
     {
         $rows = [
-            ['monster_name' => 'Slime', 'level' => 1, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 10.0],
-            ['monster_name' => 'Golem', 'level' => 2, 'fight_count' => 10, 'total_damage' => 1000, 'dps' => 20.0],
+            ['monster_name' => 'Slime', 'tier' => 1, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 10.0],
+            ['monster_name' => 'Golem', 'tier' => 2, 'fight_count' => 10, 'total_damage' => 1000, 'dps' => 20.0],
         ];
 
         $alerts = $this->invokeDetectDpsVarianceAlerts($rows);
@@ -64,8 +64,8 @@ class BalanceReportCombatTest extends TestCase
     public function testDpsVarianceIgnoredWithFewFights(): void
     {
         $rows = [
-            ['monster_name' => 'Slime', 'level' => 1, 'fight_count' => 2, 'total_damage' => 500, 'dps' => 10.0],
-            ['monster_name' => 'Golem', 'level' => 2, 'fight_count' => 2, 'total_damage' => 1000, 'dps' => 20.0],
+            ['monster_name' => 'Slime', 'tier' => 1, 'fight_count' => 2, 'total_damage' => 500, 'dps' => 10.0],
+            ['monster_name' => 'Golem', 'tier' => 2, 'fight_count' => 2, 'total_damage' => 1000, 'dps' => 20.0],
         ];
 
         $alerts = $this->invokeDetectDpsVarianceAlerts($rows);
@@ -76,10 +76,10 @@ class BalanceReportCombatTest extends TestCase
     public function testDpsVarianceAggregatesMultipleMonstersPerLevel(): void
     {
         $rows = [
-            ['monster_name' => 'Slime', 'level' => 1, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 10.0],
-            ['monster_name' => 'Bat', 'level' => 1, 'fight_count' => 10, 'total_damage' => 600, 'dps' => 12.0],
+            ['monster_name' => 'Slime', 'tier' => 1, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 10.0],
+            ['monster_name' => 'Bat', 'tier' => 1, 'fight_count' => 10, 'total_damage' => 600, 'dps' => 12.0],
             // avg DPS for level 1 = 11.0, level 2 = 11.5 => no alert
-            ['monster_name' => 'Goblin', 'level' => 2, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 11.5],
+            ['monster_name' => 'Goblin', 'tier' => 2, 'fight_count' => 10, 'total_damage' => 500, 'dps' => 11.5],
         ];
 
         $alerts = $this->invokeDetectDpsVarianceAlerts($rows);
@@ -90,7 +90,7 @@ class BalanceReportCombatTest extends TestCase
     public function testNoLongFightAlertWhenShort(): void
     {
         $outcomes = [
-            ['monster_name' => 'Slime', 'level' => 1, 'victories' => 18, 'defeats' => 2, 'flees' => 0, 'avg_turns' => 5.0],
+            ['monster_name' => 'Slime', 'tier' => 1, 'victories' => 18, 'defeats' => 2, 'flees' => 0, 'avg_turns' => 5.0],
         ];
 
         $alerts = $this->invokeDetectLongFightAlerts($outcomes);
@@ -101,7 +101,7 @@ class BalanceReportCombatTest extends TestCase
     public function testLongFightAlertWhenExceedsThreshold(): void
     {
         $outcomes = [
-            ['monster_name' => 'Turtle', 'level' => 3, 'victories' => 9, 'defeats' => 1, 'flees' => 0, 'avg_turns' => 25.0],
+            ['monster_name' => 'Turtle', 'tier' => 3, 'victories' => 9, 'defeats' => 1, 'flees' => 0, 'avg_turns' => 25.0],
         ];
 
         $alerts = $this->invokeDetectLongFightAlerts($outcomes);
@@ -114,7 +114,7 @@ class BalanceReportCombatTest extends TestCase
     public function testLongFightIgnoredWithFewFights(): void
     {
         $outcomes = [
-            ['monster_name' => 'Turtle', 'level' => 3, 'victories' => 3, 'defeats' => 1, 'flees' => 0, 'avg_turns' => 25.0],
+            ['monster_name' => 'Turtle', 'tier' => 3, 'victories' => 3, 'defeats' => 1, 'flees' => 0, 'avg_turns' => 25.0],
         ];
 
         $alerts = $this->invokeDetectLongFightAlerts($outcomes);

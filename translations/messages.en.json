@@ -705,10 +705,10 @@
         "error_collect": "An error occurred while collecting the items."
       },
       "error_action": "An error occurred while performing the action.",
-      "difficulty": "Difficulty %level%/5",
       "training_dummy": {
         "spins": "%name% turns slowly on its pivot."
-      }
+      },
+      "tier": "T%tier%"
     },
     "ranking": {
       "title": "Rankings",
@@ -811,8 +811,8 @@
       "empty": "No monsters encountered yet",
       "empty_hint": "Fight monsters on the map to fill your bestiary",
       "boss": "Boss",
-      "level": "Level %level%",
-      "difficulty": "Difficulty %level%/5"
+      "element": "Element",
+      "tier": "Tier T%tier%"
     },
     "factions": {
       "title": "Factions",
@@ -1524,7 +1524,8 @@
           "chest": "You discover a chest: +%gils% gils.",
           "harvest": "You spot a promising vein. Gathering is coming soon.",
           "pnj": "You meet %pnj%, who greets you.",
-          "nothing": "You explore the surroundings without finding anything notable."
+          "nothing": "You explore the surroundings without finding anything notable.",
+          "chest_materia": "You find a chest: +%gils% gils, and a materia — %materia%!"
         },
         "error": {
           "traveling": "You cannot explore while traveling.",
@@ -1780,8 +1781,8 @@
         "heading": "Spawn monsters",
         "empty": "Join a zone to place monsters there.",
         "hint": "Ordinary monsters — same life, same level, same loot as the zone's own. %max% at most per action.",
-        "level": "lvl %level%",
-        "submit": "Place"
+        "submit": "Place",
+        "tier": "T%tier%"
       },
       "events": {
         "heading": "Zone events",
@@ -1912,6 +1913,22 @@
         "11": "November",
         "12": "December"
       }
+    },
+    "element": {
+      "none": "None",
+      "fire": "Fire",
+      "water": "Water",
+      "earth": "Earth",
+      "air": "Air",
+      "light": "Light",
+      "dark": "Dark",
+      "metal": "Metal",
+      "beast": "Beast"
+    },
+    "monster_rank": {
+      "common": "Common",
+      "elite": "Elite",
+      "boss": "Boss"
     }
   },
   "common": {

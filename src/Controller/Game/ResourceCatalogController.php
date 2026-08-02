@@ -12,7 +12,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ResourceCatalogController extends AbstractController
 {
-    private const RESOURCE_TYPES = ['herb', 'ore', 'plant', 'resource'];
+    // OBJ-01 : la taxonomie est alignee sur les 5 constantes du code — les
+    // valeurs heritees (`herb`, `ore`, `plant`...) n'existent plus en donnees.
+    private const RESOURCE_TYPES = [Item::TYPE_RESOURCE];
 
     public function __construct(
         private readonly PlayerHelper $playerHelper,

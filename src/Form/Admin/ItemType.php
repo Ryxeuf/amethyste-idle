@@ -33,6 +33,8 @@ class ItemType extends AbstractType
                     'Objet' => Item::TYPE_STUFF,
                     'Equipement' => Item::TYPE_GEAR_PIECE,
                     'Materia' => Item::TYPE_MATERIA,
+                    'Ressource' => Item::TYPE_RESOURCE,
+                    'Outil' => Item::TYPE_TOOL,
                 ],
                 'attr' => [
                     'data-admin-item-materia-slots-target' => 'typeSelect',

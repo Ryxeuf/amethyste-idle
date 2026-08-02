@@ -11,6 +11,11 @@
 #     description / description_en  texte (description_en -> descriptionTranslations.en)
 #     type                          city | wilderness | interior | dungeon
 #     safe                          true = aucune rencontre hostile
+#     tier                          palier de la zone (BES-01, GAME_ZONES §2) : 0 (sur) a 4.
+#                                   Meme vocabulaire que les profils de filon, les bandes de
+#                                   purete et les rangs de foyer. Le palier d'un monstre est
+#                                   celui de la zone qui le place (ecarts explicites : fond
+#                                   des Mines T4, sommet de la Crete T4). Defaut : 0.
 #     map_x / map_y                 position sur la carte du monde illustree (ZON-16), % 0-100 ; absent = zone hors carte
 #     map_shape                     contour cliquable sur cette meme carte : points « x,y » separes
 #                                   par des espaces, dans le MEME espace 0-100 que map_x/map_y
@@ -123,6 +128,7 @@ zones:
         description: "Le hub central du World 1. Le feu du haut de la tour n'a jamais ete laisse s'eteindre, et c'est de lui que le village tient son nom : la forge, les echoppes, les jardins du temple et les voyageurs de passage. Ici, rien ne mord."
         description_en: 'The central hub of World 1. The fire atop the tower has never been let go out, and the village takes its name from it: the forge, the shops, the temple gardens and passing travelers. Nothing bites here.'
         type: city
+        tier: 0  # palier (BES-01, GAME_ZONES §2)
         safe: true
         map_x: 50
         map_y: 55
@@ -197,6 +203,19 @@ zones:
               shop_items: [beer-pint, bread, grilled-meat]
               # Horaire a cheval sur minuit : `Pnj::isShopOpen` traite le cas
               # `opens_at > closes_at` comme une plage nocturne (20h -> 6h).
+            # MAT-04 — le plancher du jour 1. Les materia d'entree (m1) ouvertes
+            # a 0 point par les 24 arbres de combat sont achetables ici, au prix
+            # de la grille (GAME_MATERIA §2.3) : le plancher T1 PNJ etendu au
+            # build — le marche joueur peut faire mieux, jamais moins. Les
+            # quinze du plancher dont le sort est de niveau 2 se vendent chez
+            # le PNJ de la zone dont la ligne porte l'element (toutes a une
+            # liaison du Fanal).
+            - slug: village-accordeuse-lucine
+              name: "Lucine l'accordeuse"
+              name_en: 'Lucine the Attuner'
+              class_type: villager
+              greeting: "Une amethyste ou un geste est reste lisible, voila tout ce qu'est une materia. Choisis ton flux : les premieres ne sont jamais hors de portee d'une bourse de debutant."
+              shop_items: [m1-air-dash, m1-angelic-touch, m1-aqua-shield, m1-beast-bond, m1-burning-touch, m1-falcon-strike, m1-fire-ball, m1-flame, m1-frozen-touch, m1-gust, m1-haste, m1-hex, m1-liana-whip, m1-life-heal, m1-magnetic-pull, m1-natural-healing, m1-necrotic-touch, m1-precise-shot, m1-provocation, m1-punishment, m1-quicksand, m1-rock-armor, m1-sharp-blade, m1-stone-throw, m1-water-heal, m1-water-jet, m1-wind-lame, m1-wind-shield]
               opens_at: 20
               closes_at: 6
 
@@ -214,6 +233,7 @@ zones:
         description: "Arbres centenaires, clairieres et riviere aux eaux vives. On y apprend a se battre et a cueillir — et, la nuit venue, a ne pas s'attarder."
         description_en: 'Ancient trees, clearings and a river of quick water. Here one learns to fight and to forage — and, once night falls, not to linger.'
         type: wilderness
+        tier: 1
         safe: false
         map_x: 28
         map_y: 38
@@ -283,16 +303,18 @@ zones:
             # Vivier diurne — la marche de progression de la zone, du niveau 1
             # (gelee, loup, scarabee) au niveau 4 (loup alpha).
             - { monster: slime, count: 4 }
+            # BES-03 : especes que seule la carte de test placait — le graphe
+            # declaratif devient la source unique de la faune.
+            - { monster: goblin, count: 3 }
+            - { monster: taiju, count: 2 }
             - { monster: wolf, count: 4, group_tag: meute-des-murmures }
             - { monster: beetle, count: 3 }
             - { monster: spider, count: 3 }
             - { monster: venom_snake, count: 3 }
-            - { monster: scorpion, count: 2 }
             - { monster: mushroom_golem, count: 2 }
             - { monster: ochu, count: 2 }
             - { monster: undine, count: 2 }
             - { monster: sylph, count: 2 }
-            - { monster: salamander, count: 1 }
             - { monster: alpha_wolf, count: 1, group_tag: meute-des-murmures }
             # Vivier nocturne — c'est lui que `explore.night.mob_slugs` restreint.
             # Le squelette manquait : le pool nocturne le nommait sans qu'aucun
@@ -323,6 +345,9 @@ zones:
               class_type: hunter
               life: 45
               greeting: "Le jour, la foret n'est qu'une foret. Apres le crepuscule, ce qui marche entre les arbres n'a plus de souffle. Rentre."
+              # MAT-04 : la part de Terre du plancher du jour 1 — la Foret est
+              # la reference du monde, le depot sans a-coups (purity.yaml).
+              shop_items: [m2-earth-shield, m2-shared-shield]
 
     # =========================================================================
     # ZONE 3 — Mines Profondes (extraction, palier au-dessus de la foret)
@@ -337,6 +362,7 @@ zones:
         description: "Tunnels etayes, bassins noirs et filons a perte de galerie. On y descend pour le minerai ; ce qui remonte n'est pas toujours ce qu'on y a laisse."
         description_en: 'Propped tunnels, black pools and veins running the length of the gallery. One goes down for ore; what comes back up is not always what was left there.'
         type: wilderness
+        tier: 2
         safe: false
         map_x: 72
         map_y: 36
@@ -394,8 +420,10 @@ zones:
             # et deux entrees pour un meme monstre rendraient l'effectif final
             # dependant de l'ordre des flushs.
             - { monster: rusty_automaton, count: 4, group_tag: patrouille-de-la-mine }
-            - { monster: gargoyle, count: 2 }
             - { monster: crystal_golem, count: 2 }
+            # MAT-08 : la salamandre niche pres des forges — le seul porteur
+            # du m2 de feu, dans la zone de la ligne du feu.
+            - { monster: salamander, count: 2 }
             # Salles profondes.
             - { monster: abyssal_blacksmith, count: 1 }
             # Vivier nocturne. `explore.night.mob_slugs` restreint les rencontres
@@ -421,6 +449,9 @@ zones:
               name_en: 'Kolm, Lantern Bearer'
               class_type: villager
               greeting: "Je marche devant, tu marches derriere. Si ma lampe s'eteint, ne cours pas : ecoute."
+              # MAT-04 : la part de Feu et de Metal du plancher du jour 1 — la
+              # forge et la ligne du metal vivent ici.
+              shop_items: [m2-rage-flame, m2-ember-shield, m2-steel-shield]
 
     marais-brumeux:
         name: 'Marais Brumeux'
@@ -428,7 +459,19 @@ zones:
         description: 'Brume epaisse et eaux stagnantes ; des creatures corrompues rodent.'
         description_en: 'Thick mist and stagnant waters; corrupted creatures lurk.'
         type: wilderness
+        tier: 2
         safe: false
+        # MAT-04 : le premier habitant declare du Marais — la part d'Eau et
+        # d'Ombre du plancher du jour 1. L'eau stagnante et la nuit du Marais
+        # portent ces deux flux (purity.yaml : le Marais nocturne est le
+        # premier endroit ou l'on voit du Pur).
+        pnjs:
+            - slug: marais-troqueuse-ysoline
+              name: 'Ysoline, troqueuse des brumes'
+              name_en: 'Ysoline, Mist Barterer'
+              class_type: villager
+              greeting: "On ne vient pas ici par hasard. L'eau et l'ombre laissent des gestes dans la pierre — je les troque contre des gils, c'est plus simple."
+              shop_items: [m1-water-jet, m2-rising-tide, m2-soul-drain, m2-ambush]
         map_x: 32
         map_y: 74
         map_shape: '4,58 14,54 26,57 33,64 34,74 22,80 8,78'
@@ -469,6 +512,10 @@ zones:
             - { monster: ghost, count: 1, nocturnal: true }
             - { monster: specter, count: 1, nocturnal: true }
             - { monster: banshee, count: 1, nocturnal: true }
+            # BES-03 : le loup-garou et le necromancien quittent la carte de
+            # test pour la nuit du Marais, leur palier (T2).
+            - { monster: werewolf, count: 2, nocturnal: true }
+            - { monster: necromancer, count: 1, nocturnal: true }
             - { monster: will_o_wisp, count: 1, nocturnal: true }
             - { monster: creeping_shadow, count: 1, nocturnal: true }
         gather:
@@ -511,6 +558,7 @@ zones:
         description: 'Pics balayes par des vents violents ; le sommet abrite les creatures les plus rudes du World 1.'
         description_en: 'Peaks swept by violent winds; the summit shelters the toughest creatures of World 1.'
         type: wilderness
+        tier: 3
         safe: false
         map_x: 74
         map_y: 70
@@ -566,10 +614,23 @@ zones:
         description: "Le lotissement du Fanal : allees de terre battue, murets bas et parcelles a vendre. On y bruit des projets plus que des combats."
         description_en: "The Beacon's residential quarter: dirt lanes, low walls and plots for sale. Plans are hatched here more often than fights."
         type: city
+        tier: 0
         safe: true
         map_x: 42
         map_y: 46
         map_shape: '30,44 40,41 48,42 50,48 44,53 34,52 29,48'
+        # MAT-04 : la part de Lumiere du plancher du jour 1 — les jardins du
+        # temple sont a une minute du Fanal, et la lumiere s'y apprend.
+        pnjs:
+            - slug: jardins-chantre-elionor
+              name: 'Elionor, chantre du temple'
+              name_en: 'Elionor, Temple Cantor'
+              class_type: villager
+              greeting: "La lumiere n'est pas rare, elle est patiente. Ces materia attendent quelqu'un qui veuille bien s'en servir."
+              # MAT-08 : le toucher guerisseur s'ajoute au plancher — la lumiere
+              # n'a pas de gibier T1 (le feu follet garde le Marais), le temple
+              # est donc le seul canal de son premier palier hors plancher.
+              shop_items: [m1-healing-touch, m2-light-aura, m2-holy-light, m2-prayer, m2-sacred-strike, m2-smite]
         source_map: 'Le Fanal'
 
     dunes-d-ambre:
@@ -578,6 +639,7 @@ zones:
         description: "Une mer de sable ocre au sud du marais. Rien n'y pousse, tout y rampe — et la premiere zone du monde a n'avoir jamais eu de carte."
         description_en: 'A sea of ochre sand south of the marshes. Nothing grows there, everything crawls — and the first zone in the world that never had a map.'
         type: wilderness
+        tier: 3
         safe: false
         map_x: 30
         map_y: 78
@@ -666,6 +728,7 @@ zones:
         description: "Une croute blanche a perte de vue, craquelee par la chaleur. Ce qui bouge ici a appris a ne plus avoir soif."
         description_en: 'A white crust as far as the eye can see, cracked by the heat. What moves here has learned to stop being thirsty.'
         type: wilderness
+        tier: 4
         safe: false
         map_x: 24
         map_y: 88
@@ -698,6 +761,7 @@ zones:
         description: "Des toits qui affleurent le sable. On ne sait pas qui vivait la, et ce qui l'occupe aujourd'hui ne le dira pas."
         description_en: 'Rooftops breaking the surface of the sand. Nobody knows who lived here, and what occupies it today will not say.'
         type: wilderness
+        tier: 4
         safe: false
         map_x: 18
         map_y: 96
@@ -728,6 +792,7 @@ zones:
         description: "Le col au-dela de la crete. Le vent y porte des choses qui hurlent, et le froid ne laisse pas s'arreter."
         description_en: 'The pass beyond the ridge. The wind carries things that howl, and the cold does not let you stop.'
         type: wilderness
+        tier: 4
         safe: false
         map_x: 74
         map_y: 14
@@ -753,6 +818,7 @@ zones:
         description: "Rien n'y pousse, rien n'y crie. Ce qu'on entend sous la glace n'a pas de nom, et il vaut mieux ne pas s'arreter pour ecouter."
         description_en: 'Nothing grows, nothing cries out. What is heard beneath the ice has no name, and it is better not to stop and listen.'
         type: wilderness
+        tier: 4
         safe: false
         map_x: 80
         map_y: 6
@@ -798,6 +864,7 @@ zones:
         description: "Bocage et riviere a une demi-heure du Fanal. Des haies d'aubepine, des pres, des vergers, un gue. Le grenier du monde — et le premier endroit ou l'on comprend qu'il se cultive."
         description_en: 'Hedgerow and river half an hour from the Beacon. Hawthorn hedges, meadows, orchards, a ford. The granary of the world — and the first place where one understands that it is farmed.'
         type: wilderness
+        tier: 1
         safe: false
         map_x: 38
         map_y: 60
@@ -886,7 +953,9 @@ zones:
               # La tutrice naturelle de la quatrieme recolte : c'est elle qui
               # vend le couteau et achete le gibier.
               greeting: "Un cerf, ça ne s'affronte pas, ça se chasse. Reviens avec des peaux, je te dirai si tu as appris quelque chose."
-              shop_items: [healing-potion-small]
+              # MAT-04 : la part de Bete du plancher du jour 1 — le gibier des
+              # Vallons, la zone-ecole du depeceur.
+              shop_items: [healing-potion-small, m2-venomous-bite, m2-thorn-shield]
               opens_at: 6
               closes_at: 21
 

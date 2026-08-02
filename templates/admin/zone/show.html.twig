@@ -122,7 +122,7 @@
                     <tbody>
                         {% for row in population %}
                             <tr class="border-b border-gray-800/60">
-                                <td class="py-2 text-gray-200">{{ row.monster.name }} <span class="text-gray-600 text-xs">niv. {{ row.monster.level }}</span></td>
+                                <td class="py-2 text-gray-200">{{ row.monster.name }} <span class="text-gray-600 text-xs font-mono">T{{ row.monster.tier }}</span></td>
                                 <td class="py-2 text-right text-gray-300 tabular-nums">{{ row.total }}</td>
                                 <td class="py-2 text-right tabular-nums {{ row.alive == 0 ? 'text-amber-400' : 'text-gray-300' }}">{{ row.alive }}</td>
                                 <td class="py-2 text-right text-gray-400 tabular-nums">{{ row.nocturnal }}</td>
@@ -140,7 +140,7 @@
                         class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:border-purple-500">
                     <option value="">Choisir une creature</option>
                     {% for monster in monsters %}
-                        <option value="{{ monster.id }}">{{ monster.name }} (niv. {{ monster.level }})</option>
+                        <option value="{{ monster.id }}">{{ monster.name }} (T{{ monster.tier }})</option>
                     {% endfor %}
                 </select>
                 <div class="flex items-center gap-3">

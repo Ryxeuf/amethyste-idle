@@ -41,7 +41,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testSpellAppliesStatusEffectToTarget(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         // Find a spell that applies burn
@@ -86,7 +86,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testBurnTicksDamageEachTurn(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $burnEffect = $this->em->getRepository(StatusEffect::class)
@@ -133,7 +133,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testRegenerationHealsEachTurnWithCap(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $regenEffect = $this->em->getRepository(StatusEffect::class)
@@ -180,7 +180,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testFrequencyBasedPoisonTicksEveryNTurns(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $slowPoison = $this->em->getRepository(StatusEffect::class)
@@ -247,7 +247,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testBerserkStatModifiers(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $berserkEffect = $this->em->getRepository(StatusEffect::class)
@@ -284,7 +284,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testFreezeStatModifiers(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $freezeEffect = $this->em->getRepository(StatusEffect::class)
@@ -310,7 +310,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testMultipleEffectsAggregateStatModifiers(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $berserk = $this->em->getRepository(StatusEffect::class)->findOneBy(['slug' => 'berserk']);
@@ -346,7 +346,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testExpirationRemovesEffectsFromDatabase(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $poisonEffect = $this->em->getRepository(StatusEffect::class)
@@ -378,7 +378,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testClearAllEffectsOnFightEnd(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $poison = $this->em->getRepository(StatusEffect::class)->findOneBy(['slug' => 'poison']);
@@ -409,7 +409,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testBerserkBoostsDamageThroughSpellApplicator(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         // Find a damage spell without status effect (to avoid confounding effects)
@@ -486,7 +486,7 @@ class StatusEffectFullIntegrationTest extends AbstractIntegrationTestCase
     public function testBurnReducesSenderDamage(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $burnEffect = $this->em->getRepository(StatusEffect::class)

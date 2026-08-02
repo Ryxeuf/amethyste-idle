@@ -1,61 +1,119 @@
 # =============================================================================
 # CI Pipeline — Amethyste-Idle
 # =============================================================================
-# Déclenchée sur chaque push et pull request.
-# Étapes : Lint (PHP-CS-Fixer) → Analyse statique (PHPStan) → Tests (PHPUnit)
-#          → Tests E2E (Panther) → Build Docker (validation de l'image de production)
+# Declenchee sur chaque pull request vers `main`, et reutilisee par
+# `release.yml` (workflow_call) lors d'un push sur `main`.
+#
+# Etapes : Titre de PR -> Lint (PHP-CS-Fixer) -> Analyse statique (PHPStan)
+#          -> Tests (PHPUnit) -> Tests E2E (Panther)
+#          -> Build Docker (validation de l'image de production)
 # =============================================================================
 
 name: CI
 
 on:
-  push:
-    branches: [develop]
+  # Pas de declencheur `push` : un push sur `main` passe par `release.yml`,
+  # qui appelle cette CI en workflow_call. Un declencheur `push` ferait tourner
+  # la suite deux fois pour le meme commit.
   pull_request:
-    branches: [main, develop]
-  workflow_call:  # Permet à d'autres workflows de réutiliser cette CI (deploy.yml)
+    branches: [main]
+  workflow_call: # Permet a d'autres workflows de reutiliser cette CI (release.yml)
+
+# Principe du moindre privilege : aucun job de la CI n'ecrit dans le depot.
+permissions:
+  contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # On annule les executions obsoletes d'une PR, jamais celle d'une release.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   PHP_VERSION: '8.4'
   POSTGRES_DB: amethyste
   POSTGRES_USER: app
   POSTGRES_PASSWORD: test_password
+  # Une seule definition de l'environnement applicatif pour toute la CI : ces
+  # valeurs etaient recopiees dans une dizaine de blocs `env:` de step, ou
+  # elles finissaient par diverger.
+  DATABASE_URL: "postgresql://app:test_password@127.0.0.1:5432/amethyste?serverVersion=17&charset=utf8"
+  MERCURE_URL: "http://localhost/.well-known/mercure"
+  MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
+  MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
+  MESSENGER_TRANSPORT_DSN: "in-memory://"
 
 jobs:
   # ---------------------------------------------------------------------------
-  # 1. Vérification du style de code (PHP-CS-Fixer)
+  # 0. Titre de la PR — commit conventionnel
+  # ---------------------------------------------------------------------------
+  # Les PR sont fusionnees en squash : le titre de la PR DEVIENT le message du
+  # commit sur `main`, et c'est lui que Semantic Release analyse. Un titre hors
+  # convention ne produit donc ni version, ni image, ni deploiement — la PR est
+  # livree mais n'arrive jamais en production. Ce job rend la panne visible
+  # avant le merge plutot qu'apres.
+  # ---------------------------------------------------------------------------
+  pr-title:
+    name: "Titre de PR (commit conventionnel)"
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Verifier le format du titre
+        env:
+          # Passe par l'environnement, jamais par interpolation directe dans le
+          # script : un titre de PR est une donnee non fiable.
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          TYPES='feat|fix|perf|refactor|ci|docs|style|test|chore|build|revert'
+          if [[ "$PR_TITLE" =~ ^($TYPES)(\([a-zA-Z0-9_./ -]+\))?!?:[[:space:]].+ ]]; then
+            echo "Titre conforme : $PR_TITLE"
+            case "$PR_TITLE" in
+              feat*|fix*|perf*|refactor*)
+                echo "Ce type declenche une nouvelle version et un deploiement." ;;
+              *)
+                echo "Ce type ne declenche ni version ni deploiement (attendu)." ;;
+            esac
+            exit 0
+          fi
+
+          echo "::error title=Titre de PR non conventionnel::${PR_TITLE}"
+          cat <<'MSG'
+
+          Le merge est un squash : ce titre deviendra le message du commit sur
+          main, et Semantic Release ne sait lire qu'un commit conventionnel.
+
+            <type>(<portee optionnelle>): <description>
+
+          Types acceptes : feat, fix, perf, refactor, ci, docs, style, test,
+          chore, build, revert.
+
+          Seuls feat, fix, perf et refactor produisent une version et un
+          deploiement (cf. .releaserc.json et CLAUDE.md regle 14).
+
+          Exemples :
+            feat(zones): les Vallons d'Aubepine entrent dans le jeu
+            fix: la DEF cesse de se perdre au desequipement
+            docs: audit des donnees de jeu
+          MSG
+          exit 1
+
+  # ---------------------------------------------------------------------------
+  # 1. Verification du style de code (PHP-CS-Fixer)
   # ---------------------------------------------------------------------------
   lint:
     name: "Lint (PHP-CS-Fixer)"
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup PHP + Composer
+        uses: ./.github/actions/php-setup
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: intl, pdo_pgsql, apcu, zip, pcntl
-          tools: composer:v2
-          coverage: none
-
-      - name: Cache Composer
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
-        env:
-          SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Run PHP-CS-Fixer (dry-run)
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
@@ -72,53 +130,36 @@ jobs:
   phpstan:
     name: "Analyse statique (PHPStan)"
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup PHP + Composer
+        uses: ./.github/actions/php-setup
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: intl, pdo_pgsql, apcu, zip, pcntl
-          tools: composer:v2
-          coverage: none
 
-      - name: Cache Composer
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
-        env:
-          SYMFONY_SKIP_AUTO_SCRIPTS: 1
-
+      # Aucune base n'ecoute dans ce job : le warmup et l'analyse ne font que
+      # construire le container, ils n'ouvrent jamais de connexion.
       - name: Warmup Symfony cache (dev)
         run: php bin/console cache:warmup --env=dev
-        env:
-          DATABASE_URL: "postgresql://localhost/fake?serverVersion=17"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse --no-progress --error-format=github
-        env:
-          DATABASE_URL: "postgresql://localhost/fake?serverVersion=17"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
 
   # ---------------------------------------------------------------------------
-  # 3. Tests unitaires et d'intégration (PHPUnit)
+  # 3. Tests unitaires et d'integration (PHPUnit)
   # ---------------------------------------------------------------------------
   tests:
     name: "Tests (PHPUnit)"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      APP_ENV: test
+      PERF_MAX_RESPONSE_MS: "500"
 
     services:
       postgres:
@@ -128,7 +169,7 @@ jobs:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
-          --health-cmd "pg_isready -U app"
+          --health-cmd "pg_isready -U app -d amethyste"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
@@ -137,78 +178,34 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup PHP + Composer
+        uses: ./.github/actions/php-setup
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: intl, pdo_pgsql, apcu, zip, pcntl
-          tools: composer:v2
           coverage: xdebug
-
-      - name: Cache Composer
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
-        env:
-          SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Create test database
         run: php bin/console doctrine:database:create --env=test --if-not-exists
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
 
       - name: Install vendor assets (importmap)
         run: php bin/console importmap:install --env=test
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
 
       - name: Setup test schema and fixtures
         run: |
           php bin/console doctrine:schema:create --env=test
           php bin/console doctrine:fixtures:load --env=test --no-interaction
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Validate game state coherence
         run: php bin/console app:game:validate --env=test
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Run PHPUnit with coverage
         run: vendor/bin/phpunit --testdox --exclude-group e2e --testsuite Unit,Functional,Integration --coverage-clover coverage.xml --coverage-text
-        env:
-          APP_ENV: test
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
-          PERF_MAX_RESPONSE_MS: "500"
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage.xml
@@ -220,7 +217,13 @@ jobs:
   e2e:
     name: "Tests E2E (Panther)"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [tests]
+
+    env:
+      APP_ENV: test
+      PANTHER_NO_HEADLESS: 0
+      PANTHER_CHROME_ARGUMENTS: "--disable-gpu --no-sandbox --disable-dev-shm-usage"
 
     services:
       postgres:
@@ -230,7 +233,7 @@ jobs:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
-          --health-cmd "pg_isready -U app"
+          --health-cmd "pg_isready -U app -d amethyste"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 5
@@ -239,95 +242,58 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup PHP + Composer
+        uses: ./.github/actions/php-setup
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: intl, pdo_pgsql, apcu, zip, pcntl
-          tools: composer:v2
-          coverage: none
 
       - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: stable
-
-      - name: Cache Composer
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
-        env:
-          SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Install ChromeDriver
         run: vendor/bin/bdi detect drivers
 
+      # Panther demarre son propre serveur PHP : il ne herite pas des variables
+      # du job, il lit les fichiers .env du projet.
       - name: Create .env.test.local for Panther server
         run: |
-          echo 'DATABASE_URL="postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"' > .env.test.local
-          echo 'MERCURE_URL=http://localhost/.well-known/mercure' >> .env.test.local
-          echo 'MERCURE_PUBLIC_URL=http://localhost/.well-known/mercure' >> .env.test.local
-          echo 'MERCURE_JWT_SECRET=ci_test_mercure_secret_0123456789abcdef0123456789abcdef' >> .env.test.local
-          echo 'MESSENGER_TRANSPORT_DSN=in-memory://' >> .env.test.local
+          {
+            echo "DATABASE_URL=\"${DATABASE_URL}\""
+            echo "MERCURE_URL=${MERCURE_URL}"
+            echo "MERCURE_PUBLIC_URL=${MERCURE_PUBLIC_URL}"
+            echo "MERCURE_JWT_SECRET=${MERCURE_JWT_SECRET}"
+            echo "MESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN}"
+          } > .env.test.local
 
       - name: Install vendor assets (importmap)
         run: php bin/console importmap:install --env=test
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Warmup Symfony cache, build assets
         run: |
           php bin/console tailwind:build --env=test
           php bin/console cache:warmup --env=test
           php bin/console assets:install public --env=test
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Setup test database
         run: |
           php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:schema:create --env=test
           php bin/console doctrine:fixtures:load --env=test --no-interaction
-        env:
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Run E2E tests
         run: vendor/bin/phpunit --testsuite E2E --testdox
-        env:
-          APP_ENV: test
-          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-          MERCURE_URL: "http://localhost/.well-known/mercure"
-          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
-          MERCURE_JWT_SECRET: "ci_test_mercure_secret_0123456789abcdef0123456789abcdef"
-          MESSENGER_TRANSPORT_DSN: "in-memory://"
-          PANTHER_NO_HEADLESS: 0
-          PANTHER_CHROME_ARGUMENTS: "--disable-gpu --no-sandbox --disable-dev-shm-usage"
 
       - name: Upload screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: panther-screenshots
           path: var/error-screenshots/
+          if-no-files-found: ignore
 
   # ---------------------------------------------------------------------------
   # 5. Build Docker — validation de l'image de production (pas de push)
@@ -335,11 +301,12 @@ jobs:
   docker-build:
     name: "Build Docker (validation)"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [lint, phpstan, tests]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -366,3 +333,31 @@ jobs:
             test -f /app/assets/app.js \
             && echo "OK: app.js present" \
             || (echo "FAIL: app.js missing from image" && exit 1)
+
+  # ---------------------------------------------------------------------------
+  # 6. Verdict unique — cible ideale pour une regle de protection de branche
+  # ---------------------------------------------------------------------------
+  # Un seul check requis a declarer sur `main`, qui reste valide meme si la
+  # liste des jobs ci-dessus change.
+  # ---------------------------------------------------------------------------
+  ci-success:
+    name: "CI"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: always()
+    needs: [pr-title, lint, phpstan, tests, e2e, docker-build]
+
+    steps:
+      - name: Verdict
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Resultats des jobs : $RESULTS"
+          for result in $RESULTS; do
+            # `skipped` est legitime : `pr-title` ne tourne pas hors pull request.
+            if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "::error::Au moins un job de la CI a echoue ($result)."
+              exit 1
+            fi
+          done
+          echo "Tous les jobs de la CI sont passes."

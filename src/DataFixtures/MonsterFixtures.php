@@ -4,7 +4,10 @@ namespace App\DataFixtures;
 
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
+use App\Enum\MonsterRank;
 use App\Enum\TrainingMode;
+use App\GameEngine\Bestiary\MonsterStatTemplate;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -12,6 +15,16 @@ use Doctrine\Persistence\ObjectManager;
 
 class MonsterFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * MAT-01 — un monstre resiste a son propre element.
+     *
+     * C'est une regle, pas 44 valeurs a la main : quand un monstre ne declare
+     * aucune resistance sur son element, celle-ci est posee ici. Une valeur
+     * declaree explicitement dans la fixture la precise (jamais ne la
+     * contredit — un test le verifie).
+     */
+    private const OWN_ELEMENT_RESISTANCE = 0.3;
+
     public function load(ObjectManager $manager): void
     {
         $monsters = [
@@ -40,8 +53,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 0,
                 'speed' => 1,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 0,
+                'element' => 'none',
                 'trainingMode' => TrainingMode::Inert,
                 'aiPattern' => ['spell_chance' => 0],
             ],
@@ -55,20 +68,18 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 80,
                 'speed' => 5,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 0,
+                'element' => 'none',
                 'trainingMode' => TrainingMode::Capped,
                 'aiPattern' => ['spell_chance' => 0],
             ],
             'slime' => [
                 'name' => 'Gelée',
                 'name_translations' => ['en' => 'Slime'],
-                'life' => 12,
-                'hit' => 70,
                 'speed' => 3,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'water',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -76,22 +87,18 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'goblin' => [
                 'name' => 'Gobelin',
                 'name_translations' => ['en' => 'Goblin'],
-                'life' => 18,
-                'hit' => 75,
                 'speed' => 8,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'beast',
             ],
             'bat' => [
                 'name' => 'Chauve-souris',
                 'name_translations' => ['en' => 'Bat'],
-                'life' => 15,
-                'hit' => 80,
                 'speed' => 14,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 2,
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -99,12 +106,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'giant_rat' => [
                 'name' => 'Rat géant',
                 'name_translations' => ['en' => 'Giant Rat'],
-                'life' => 20,
-                'hit' => 85,
                 'speed' => 10,
                 'attack' => 'sharp_blade',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 2,
+                'element' => 'beast',
                 'spells' => ['venomous_bite'],
                 'aiPattern' => [
                     'spell_chance' => 20,
@@ -113,12 +118,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'zombie' => [
                 'name' => 'Zombie',
                 'name_translations' => ['en' => 'Zombie'],
-                'life' => 25,
-                'hit' => 80,
                 'speed' => 2,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 2,
+                'element' => 'dark',
                 'aiPattern' => [
                     'spell_chance' => 10,
                 ],
@@ -126,12 +129,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'skeleton' => [
                 'name' => 'Squelette',
                 'name_translations' => ['en' => 'Skeleton'],
-                'life' => 35,
-                'hit' => 80,
                 'speed' => 5,
                 'attack' => 'punishment',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 1,
+                'element' => 'dark',
                 'spells' => ['shadow_bolt'],
                 'aiPattern' => [
                     'spell_chance' => 25,
@@ -140,12 +141,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'spider' => [
                 'name' => 'Araignée',
                 'name_translations' => ['en' => 'Spider'],
-                'life' => 28,
-                'hit' => 85,
                 'speed' => 9,
                 'attack' => 'venomous_bite',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 1,
+                'element' => 'beast',
                 'spells' => ['poison_cloud', 'entangling_roots'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -155,12 +154,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'venom_snake' => [
                 'name' => 'Serpent venimeux',
                 'name_translations' => ['en' => 'Venomous Snake'],
-                'life' => 25,
-                'hit' => 90,
                 'speed' => 11,
                 'attack' => 'venomous_bite',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 1,
+                'element' => 'beast',
                 'spells' => ['toxic_spores'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -170,12 +167,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'taiju' => [
                 'name' => 'Taiju',
                 'name_translations' => ['en' => 'Taiju'],
-                'life' => 30,
-                'hit' => 60,
                 'speed' => 12,
                 'attack' => 'liana_whip',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 1,
+                // MAT-08 : l'arbre-garde prend le cran d'elite que la sylphe
+                // laisse en montant au T2 — la Foret garde ses trois elites.
+                'rank' => 'elite',
+                'element' => 'earth',
                 'spells' => ['natural_healing', 'thorn_burst'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -186,12 +184,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'specter' => [
                 'name' => 'Spectre',
                 'name_translations' => ['en' => 'Specter'],
-                'life' => 32,
-                'hit' => 90,
                 'speed' => 8,
                 'attack' => 'punishment',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 2,
+                'element' => 'dark',
                 'spells' => ['shadow_bolt', 'soul_drain'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -201,12 +197,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'banshee' => [
                 'name' => 'Banshee',
                 'name_translations' => ['en' => 'Banshee'],
-                'life' => 35,
-                'hit' => 90,
                 'speed' => 7,
                 'attack' => 'punishment',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 2,
+                'element' => 'dark',
                 'spells' => ['shadow_bolt', 'death_grip'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -216,12 +210,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'ochu' => [
                 'name' => 'Ochu',
                 'name_translations' => ['en' => 'Ochu'],
-                'life' => 45,
-                'hit' => 80,
                 'speed' => 15,
                 'attack' => 'liana_whip',
-                'level' => 3,
-                'difficulty' => 3,
+                'tier' => 1,
+                // BES-04 : la rencontre qui fait hesiter dans la Foret — le palier
+                // T1 n'avait aucune elite.
+                'rank' => 'elite',
+                'element' => 'beast',
                 'spells' => ['poison_cloud', 'entangling_roots'],
                 'aiPattern' => [
                     'spell_chance' => 40,
@@ -232,12 +227,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'werewolf' => [
                 'name' => 'Loup-garou',
                 'name_translations' => ['en' => 'Werewolf'],
-                'life' => 55,
-                'hit' => 80,
                 'speed' => 12,
                 'attack' => 'sharp_blade',
-                'level' => 3,
-                'difficulty' => 3,
+                'tier' => 2,
+                'element' => 'beast',
                 'spells' => ['venomous_bite'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -251,12 +244,12 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'gargoyle' => [
                 'name' => 'Gargouille',
                 'name_translations' => ['en' => 'Gargoyle'],
-                'life' => 55,
-                'hit' => 80,
                 'speed' => 9,
                 'attack' => 'stone_throw',
-                'level' => 3,
-                'difficulty' => 3,
+                // BES-04 : la gargouille quitte les Mines pour la Crete seule —
+                // le palier T3 manquait de tout-venant.
+                'tier' => 3,
+                'element' => 'earth',
                 'spells' => ['earth_spike', 'stone_spikes'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -266,12 +259,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'troll' => [
                 'name' => 'Troll',
                 'name_translations' => ['en' => 'Troll'],
-                'life' => 80,
-                'hit' => 70,
                 'speed' => 3,
                 'attack' => 'stone_throw',
-                'level' => 3,
-                'difficulty' => 3,
+                'tier' => 3,
+                // MAT-08 : le troll des cols devient le tout-venant de la
+                // Crete — la salamandre redescendue au T2 laissait le palier
+                // sous sa cible de communs.
+                'element' => 'earth',
                 'spells' => ['boulder_throw', 'earthquake'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -288,12 +282,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'fire_elemental' => [
                 'name' => 'Élémentaire de feu',
                 'name_translations' => ['en' => 'Fire Elemental'],
-                'life' => 60,
-                'hit' => 85,
                 'speed' => 10,
                 'attack' => 'fire_ball',
-                'level' => 3,
-                'difficulty' => 3,
+                'tier' => 3,
+                'element' => 'fire',
                 'spells' => ['flame_rain', 'fire_wall', 'combustion'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -304,12 +296,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'griffin' => [
                 'name' => 'Griffon',
                 'name_translations' => ['en' => 'Griffin'],
-                'life' => 65,
-                'hit' => 85,
                 'speed' => 15,
                 'attack' => 'wind_lame',
-                'level' => 4,
-                'difficulty' => 4,
+                'tier' => 3,
+                'rank' => 'elite',
+                'element' => 'air',
                 'spells' => ['cyclone', 'air_slash', 'wind_blast'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -320,12 +311,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'minotaur' => [
                 'name' => 'Minotaure',
                 'name_translations' => ['en' => 'Minotaur'],
-                'life' => 90,
-                'hit' => 75,
                 'speed' => 6,
                 'attack' => 'sword_10',
-                'level' => 4,
-                'difficulty' => 4,
+                'tier' => 3,
+                'rank' => 'elite',
+                'element' => 'beast',
                 'spells' => ['iron_fist', 'blade_dance'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -339,12 +329,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'stone_golem' => [
                 'name' => 'Golem de pierre',
                 'name_translations' => ['en' => 'Stone Golem'],
-                'life' => 120,
-                'hit' => 70,
                 'speed' => 4,
                 'attack' => 'stone_throw',
-                'level' => 4,
-                'difficulty' => 4,
+                'tier' => 2,
+                'rank' => 'elite',
+                'element' => 'earth',
                 'spells' => ['boulder_throw', 'earthquake', 'stone_spikes'],
                 'aiPattern' => [
                     'spell_chance' => 40,
@@ -361,12 +350,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'wolf' => [
                 'name' => 'Loup',
                 'name_translations' => ['en' => 'Wolf'],
-                'life' => 16,
-                'hit' => 78,
                 'speed' => 11,
                 'attack' => 'sharp_blade',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -389,12 +376,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Hedge Boar'],
                 // La rencontre type : il charge et il encaisse. C'est le premier
                 // adversaire qui ne se laisse pas simplement frapper.
-                'life' => 26,
-                'hit' => 76,
                 'speed' => 7,
                 'attack' => 'sharp_blade',
-                'level' => 2,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -405,12 +390,12 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Hawthorn Stag'],
                 // Fuyard : rapide, peu resistant. Il **se chasse**, il ne
                 // s'affronte pas — et c'est lui qui rend le cuir a taux plein.
-                'life' => 22,
-                'hit' => 70,
                 'speed' => 16,
                 'attack' => 'none_attack_1',
-                'level' => 3,
-                'difficulty' => 1,
+                'tier' => 1,
+                // BES-04 : le grand cerf de l'aubepine, l'elite des Vallons.
+                'rank' => 'elite',
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -420,12 +405,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Renarde des vergers',
                 'name_translations' => ['en' => 'Orchard Vixen'],
                 // La premiere proie du debutant : vive, fragile, sans surprise.
-                'life' => 14,
-                'hit' => 80,
                 'speed' => 13,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -436,12 +419,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Harvest Crow'],
                 // En nuee au-dessus des carres de ble. Ses plumes attendent le
                 // charpentier (ECO-30) : elles empenneront les fleches.
-                'life' => 11,
-                'hit' => 84,
                 'speed' => 15,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'air',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -462,12 +443,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Dune Ibex'],
                 // Agile et sec. Il se refugie sur les cretes de sable et n'est
                 // dangereux que si on l'y suit.
-                'life' => 30,
-                'hit' => 74,
                 'speed' => 14,
                 'attack' => 'sharp_blade',
-                'level' => 4,
-                'difficulty' => 2,
+                'tier' => 3,
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -478,12 +457,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Sand Hyena'],
                 // Charognarde : elle vient pour ce qu'on vient de tuer. Plus
                 // resistante que rapide, et elle mord fort.
-                'life' => 34,
-                'hit' => 80,
                 'speed' => 10,
                 'attack' => 'sharp_blade',
-                'level' => 5,
-                'difficulty' => 2,
+                'tier' => 3,
+                'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -492,12 +469,12 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'scorpion' => [
                 'name' => 'Scorpion',
                 'name_translations' => ['en' => 'Scorpion'],
-                'life' => 22,
-                'hit' => 82,
                 'speed' => 7,
                 'attack' => 'venomous_bite',
-                'level' => 2,
-                'difficulty' => 1,
+                // BES-04 : le scorpion retourne au desert (T3) — un scorpion de
+                // foret doublonnait le tout-venant du T1.
+                'tier' => 3,
+                'element' => 'beast',
                 'spells' => ['toxic_spores'],
                 'aiPattern' => [
                     'spell_chance' => 20,
@@ -507,12 +484,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'beetle' => [
                 'name' => 'Scarabée',
                 'name_translations' => ['en' => 'Beetle'],
-                'life' => 20,
-                'hit' => 72,
                 'speed' => 5,
                 'attack' => 'none_attack_1',
-                'level' => 1,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'earth',
                 'aiPattern' => [
                     'spell_chance' => 0,
                 ],
@@ -521,12 +496,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'mushroom_golem' => [
                 'name' => 'Golem champignon',
                 'name_translations' => ['en' => 'Mushroom Golem'],
-                'life' => 30,
-                'hit' => 75,
                 'speed' => 4,
                 'attack' => 'none_attack_1',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 1,
+                'element' => 'beast',
                 'spells' => ['toxic_spores', 'poison_cloud'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -536,12 +509,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'ghost' => [
                 'name' => 'Fantôme',
                 'name_translations' => ['en' => 'Ghost'],
-                'life' => 18,
-                'hit' => 82,
                 'speed' => 12,
                 'attack' => 'punishment',
-                'level' => 2,
-                'difficulty' => 1,
+                'tier' => 1,
+                'element' => 'dark',
                 'spells' => ['shadow_bolt'],
                 'aiPattern' => [
                     'spell_chance' => 25,
@@ -552,12 +523,15 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'salamander' => [
                 'name' => 'Salamandre',
                 'name_translations' => ['en' => 'Salamander'],
-                'life' => 40,
-                'hit' => 85,
                 'speed' => 10,
                 'attack' => 'fire_ball',
-                'level' => 3,
-                'difficulty' => 2,
+                // MAT-08 : seul porteur possible du m2 de feu — sans monstre
+                // de feu au T2, sept materia n'avaient aucun canal. La
+                // salamandre redescend d'un cran et gagne les Mines (la zone
+                // de la ligne du feu), tout en restant le petit gibier des
+                // Dunes, comme le tout-venant T1 peuple le Marais T2.
+                'tier' => 2,
+                'element' => 'fire',
                 'spells' => ['combustion', 'fire_wall'],
                 'aiPattern' => [
                     'spell_chance' => 40,
@@ -568,12 +542,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'undine' => [
                 'name' => 'Ondine',
                 'name_translations' => ['en' => 'Undine'],
-                'life' => 30,
-                'hit' => 80,
                 'speed' => 9,
                 'attack' => 'water_jet',
-                'level' => 2,
-                'difficulty' => 2,
+                'tier' => 1,
+                'element' => 'water',
                 'spells' => ['frost_bolt', 'water_heal'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -585,12 +557,15 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'sylph' => [
                 'name' => 'Sylphe',
                 'name_translations' => ['en' => 'Sylph'],
-                'life' => 35,
-                'hit' => 90,
                 'speed' => 16,
                 'attack' => 'wind_lame',
-                'level' => 4,
-                'difficulty' => 3,
+                // MAT-08 : seule porteuse possible du m2 d'air. Elite des
+                // cimes au-dessus de la zone, comme le forgeron abyssal (T4)
+                // hante les Mines (T2).
+                'tier' => 2,
+                // BES-04 : elite des cimes de la Foret.
+                'rank' => 'elite',
+                'element' => 'air',
                 'spells' => ['cyclone', 'air_slash', 'wind_blast'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -601,12 +576,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'clay_golem' => [
                 'name' => 'Golem d\'argile',
                 'name_translations' => ['en' => 'Clay Golem'],
-                'life' => 85,
-                'hit' => 70,
                 'speed' => 3,
                 'attack' => 'stone_throw',
-                'level' => 5,
-                'difficulty' => 3,
+                'tier' => 2,
+                'element' => 'earth',
                 'spells' => ['earth_spike', 'boulder_throw', 'stone_spikes'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -622,12 +595,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'rusty_automaton' => [
                 'name' => 'Automate rouillé',
                 'name_translations' => ['en' => 'Rusty Automaton'],
-                'life' => 45,
-                'hit' => 80,
                 'speed' => 7,
                 'attack' => 'iron_fist',
-                'level' => 3,
-                'difficulty' => 2,
+                'tier' => 2,
+                'element' => 'metal',
                 'spells' => ['blade_dance', 'steel_shield'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -638,13 +609,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'alpha_wolf' => [
                 'name' => 'Loup alpha',
                 'name_translations' => ['en' => 'Alpha Wolf'],
-                'life' => 150,
-                'hit' => 90,
                 'speed' => 14,
                 'attack' => 'sharp_blade',
-                'level' => 4,
-                'difficulty' => 4,
-                'isBoss' => true,
+                'tier' => 1,
+                'rank' => 'boss',
+                'element' => 'beast',
                 'spells' => ['venomous_bite', 'savage_charge', 'primordial_roar'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -689,13 +658,14 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'will_o_wisp' => [
                 'name' => 'Feu follet',
                 'name_translations' => ['en' => 'Will-o\'-the-Wisp'],
-                'life' => 120,
-                'hit' => 88,
                 'speed' => 15,
                 'attack' => 'holy_light',
-                'level' => 3,
-                'difficulty' => 3,
-                'isBoss' => true,
+                // MAT-08 : seul porteur possible du m2 de lumiere — il vit
+                // deja au Marais (T2), le palier suit enfin sa zone la plus
+                // haute.
+                'tier' => 2,
+                'rank' => 'boss',
+                'element' => 'light',
                 'spells' => ['sacred_light', 'light_aura', 'light_blessing', 'holy_nova'],
                 'aiPattern' => [
                     'spell_chance' => 55,
@@ -733,13 +703,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'creeping_shadow' => [
                 'name' => 'Ombre rampante',
                 'name_translations' => ['en' => 'Creeping Shadow'],
-                'life' => 180,
-                'hit' => 88,
                 'speed' => 8,
                 'attack' => 'shadow_bolt',
-                'level' => 5,
-                'difficulty' => 4,
-                'isBoss' => true,
+                'tier' => 1,
+                'rank' => 'boss',
+                'element' => 'dark',
                 'spells' => ['soul_drain', 'death_grip', 'dark_harvest', 'dark_ritual'],
                 'aiPattern' => [
                     'spell_chance' => 55,
@@ -785,12 +753,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'wyvern' => [
                 'name' => 'Wyverne',
                 'name_translations' => ['en' => 'Wyvern'],
-                'life' => 110,
-                'hit' => 88,
                 'speed' => 14,
                 'attack' => 'wind_lame',
-                'level' => 10,
-                'difficulty' => 4,
+                'tier' => 3,
+                'rank' => 'elite',
+                'element' => 'air',
                 'spells' => ['cyclone', 'fire_ball', 'air_slash'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -805,12 +772,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'cursed_knight' => [
                 'name' => 'Chevalier maudit',
                 'name_translations' => ['en' => 'Cursed Knight'],
-                'life' => 140,
-                'hit' => 82,
                 'speed' => 7,
                 'attack' => 'sharp_blade',
-                'level' => 12,
-                'difficulty' => 4,
+                'tier' => 2,
+                'rank' => 'elite',
+                'element' => 'dark',
                 'spells' => ['blade_dance', 'shadow_bolt', 'death_grip'],
                 'aiPattern' => [
                     'spell_chance' => 40,
@@ -825,12 +791,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'naga' => [
                 'name' => 'Naga',
                 'name_translations' => ['en' => 'Naga'],
-                'life' => 120,
-                'hit' => 90,
                 'speed' => 11,
                 'attack' => 'water_jet',
-                'level' => 13,
-                'difficulty' => 4,
+                'tier' => 2,
+                'rank' => 'elite',
+                'element' => 'water',
                 'spells' => ['frost_bolt', 'poison_cloud', 'water_heal'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -842,12 +807,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'crystal_golem' => [
                 'name' => 'Golem de cristal',
                 'name_translations' => ['en' => 'Crystal Golem'],
-                'life' => 180,
-                'hit' => 75,
                 'speed' => 4,
                 'attack' => 'stone_throw',
-                'level' => 15,
-                'difficulty' => 5,
+                'tier' => 2,
+                'rank' => 'elite',
+                'element' => 'earth',
                 'spells' => ['earthquake', 'stone_spikes', 'sacred_light', 'boulder_throw'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -864,12 +828,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'corrupted_archdruid' => [
                 'name' => 'Archidruide corrompu',
                 'name_translations' => ['en' => 'Corrupted Archdruid'],
-                'life' => 160,
-                'hit' => 82,
                 'speed' => 9,
                 'attack' => 'liana_whip',
-                'level' => 16,
-                'difficulty' => 4,
+                'tier' => 2,
+                'rank' => 'elite',
+                'element' => 'beast',
                 'spells' => ['natural_healing', 'poison_cloud', 'entangling_roots', 'dark_harvest'],
                 'aiPattern' => [
                     'role' => 'healer',
@@ -887,12 +850,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'lesser_lich' => [
                 'name' => 'Liche mineure',
                 'name_translations' => ['en' => 'Lesser Lich'],
-                'life' => 130,
-                'hit' => 85,
                 'speed' => 8,
                 'attack' => 'necrotic_touch',
-                'level' => 18,
-                'difficulty' => 5,
+                'tier' => 2,
+                'rank' => 'elite',
+                'element' => 'dark',
                 'spells' => ['shadow_bolt', 'death_grip', 'soul_drain', 'dark_ritual'],
                 'aiPattern' => [
                     'spell_chance' => 60,
@@ -915,12 +877,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'swamp_hydra' => [
                 'name' => 'Hydre des marais',
                 'name_translations' => ['en' => 'Swamp Hydra'],
-                'life' => 220,
-                'hit' => 80,
                 'speed' => 6,
                 'attack' => 'water_jet',
-                'level' => 20,
-                'difficulty' => 5,
+                'tier' => 2,
+                // BES-04 : l'hydre devient le boss du Marais — le palier T2
+                // n'avait aucun boss en zone (les Racines sont un donjon).
+                'rank' => 'boss',
+                'element' => 'water',
                 'spells' => ['tidal_wave', 'poison_cloud', 'venomous_bite', 'frost_bolt'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -937,12 +900,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'abyssal_blacksmith' => [
                 'name' => 'Forgeron abyssal',
                 'name_translations' => ['en' => 'Abyssal Blacksmith'],
-                'life' => 260,
-                'hit' => 78,
                 'speed' => 5,
                 'attack' => 'iron_fist',
-                'level' => 24,
-                'difficulty' => 5,
+                // Ecart explicite : le fond des Mines est T4 (GAME_ZONES §2),
+                // et c'est la que le forgeron abyssal rode — pas dans les galeries T2.
+                'tier' => 4,
+                'rank' => 'elite',
+                'element' => 'metal',
                 'spells' => ['blade_dance', 'fire_wall', 'steel_shield', 'shrapnel_burst'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -959,12 +923,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'necromancer' => [
                 'name' => 'Nécromancien',
                 'name_translations' => ['en' => 'Necromancer'],
-                'life' => 40,
-                'hit' => 75,
                 'speed' => 6,
                 'attack' => 'necrotic_touch',
-                'level' => 3,
-                'difficulty' => 3,
+                'tier' => 2,
+                'element' => 'dark',
                 'spells' => ['shadow_bolt', 'natural_healing'],
                 'aiPattern' => [
                     'role' => 'summoner',
@@ -985,13 +947,17 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'forest_guardian' => [
                 'name' => 'Gardien de la Forêt',
                 'name_translations' => ['en' => 'Forest Guardian'],
+                // Ecart au gabarit (BES-02) : boss de zone affronte en groupe
+                // par l'assaut (ZON-20) — 400 PV au lieu des 250 du gabarit T1.
                 'life' => 400,
                 'hit' => 82,
                 'speed' => 9,
                 'attack' => 'leaf_blade',
-                'level' => 15,
-                'difficulty' => 5,
-                'isBoss' => true,
+                // Boss de zone de la Foret (T1) — ses stats depassent le gabarit
+                // T1 Boss, ecart traite par BES-02.
+                'tier' => 1,
+                'rank' => 'boss',
+                'element' => 'beast',
                 'spells' => ['leaf_blade', 'entangling_roots', 'nature_fury', 'primordial_roar'],
                 'aiPattern' => [
                     'spell_chance' => 55,
@@ -1027,13 +993,12 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'forge_lord' => [
                 'name' => 'Seigneur de la Forge',
                 'name_translations' => ['en' => 'Forge Lord'],
-                'life' => 500,
-                'hit' => 80,
                 'speed' => 7,
                 'attack' => 'iron_fist',
-                'level' => 20,
-                'difficulty' => 5,
-                'isBoss' => true,
+                // Ecart explicite : boss du fond des Mines, T4 comme lui.
+                'tier' => 4,
+                'rank' => 'boss',
+                'element' => 'metal',
                 'spells' => ['blade_dance', 'shrapnel_burst', 'shadow_bolt', 'metal_skin', 'dark_forge_blast'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -1089,12 +1054,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'sand_stalker' => [
                 'name' => 'Rodeur des sables',
                 'name_translations' => ['en' => 'Sand Stalker'],
-                'life' => 950,
-                'hit' => 88,
                 'speed' => 22,
                 'attack' => 'sharp_blade',
-                'level' => 26,
-                'difficulty' => 4,
+                'tier' => 4,
+                'element' => 'earth',
                 'spells' => ['quicksand', 'poison_arrow'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -1104,12 +1067,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'dune_wraith' => [
                 'name' => 'Spectre des dunes',
                 'name_translations' => ['en' => 'Dune Wraith'],
-                'life' => 1100,
-                'hit' => 90,
                 'speed' => 16,
                 'attack' => 'necrotic_touch',
-                'level' => 28,
-                'difficulty' => 4,
+                'tier' => 4,
+                'element' => 'dark',
                 'spells' => ['shadow_wave', 'death_coil'],
                 'aiPattern' => [
                     'spell_chance' => 45,
@@ -1119,12 +1080,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'basilisk' => [
                 'name' => 'Basilic des ergs',
                 'name_translations' => ['en' => 'Erg Basilisk'],
-                'life' => 1400,
-                'hit' => 86,
                 'speed' => 12,
                 'attack' => 'venomous_bite',
-                'level' => 30,
-                'difficulty' => 5,
+                'tier' => 4,
+                'element' => 'earth',
                 'spells' => ['poison_cloud', 'stone_spikes'],
                 'aiPattern' => [
                     'spell_chance' => 40,
@@ -1139,12 +1098,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'salt_colossus' => [
                 'name' => 'Colosse de sel',
                 'name_translations' => ['en' => 'Salt Colossus'],
-                'life' => 1900,
-                'hit' => 80,
                 'speed' => 6,
                 'attack' => 'iron_fist',
-                'level' => 32,
-                'difficulty' => 5,
+                'tier' => 4,
+                'rank' => 'elite',
+                'element' => 'earth',
                 'spells' => ['earthquake', 'stone_wall'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -1156,12 +1114,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'frost_warg' => [
                 'name' => 'Warg des glaces',
                 'name_translations' => ['en' => 'Frost Warg'],
-                'life' => 1250,
-                'hit' => 89,
                 'speed' => 24,
                 'attack' => 'sharp_blade',
-                'level' => 30,
-                'difficulty' => 4,
+                'tier' => 4,
+                'element' => 'water',
                 'spells' => ['frost_bolt', 'ice_shard'],
                 'aiPattern' => [
                     'spell_chance' => 35,
@@ -1171,12 +1127,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'hoarfrost_shade' => [
                 'name' => 'Ombre de givre',
                 'name_translations' => ['en' => 'Hoarfrost Shade'],
-                'life' => 1500,
-                'hit' => 92,
                 'speed' => 18,
                 'attack' => 'frost_bolt',
-                'level' => 33,
-                'difficulty' => 5,
+                'tier' => 4,
+                'element' => 'water',
                 'spells' => ['frost_mist', 'glacial_prison', 'shadow_bolt'],
                 'aiPattern' => [
                     'spell_chance' => 55,
@@ -1191,12 +1145,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'permafrost_golem' => [
                 'name' => 'Golem de permafrost',
                 'name_translations' => ['en' => 'Permafrost Golem'],
-                'life' => 2400,
-                'hit' => 82,
                 'speed' => 5,
                 'attack' => 'iron_fist',
-                'level' => 35,
-                'difficulty' => 5,
+                'tier' => 4,
+                'rank' => 'elite',
+                'element' => 'water',
                 'spells' => ['ice_storm', 'stone_skin'],
                 'aiPattern' => [
                     'spell_chance' => 30,
@@ -1206,12 +1159,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'winter_harpy' => [
                 'name' => 'Harpie hivernale',
                 'name_translations' => ['en' => 'Winter Harpy'],
-                'life' => 1700,
-                'hit' => 94,
                 'speed' => 28,
                 'attack' => 'wind_lame',
-                'level' => 36,
-                'difficulty' => 5,
+                'tier' => 4,
+                'element' => 'air',
                 'spells' => ['cyclone', 'ice_lance', 'wind_scythe'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -1221,12 +1172,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'rime_drake' => [
                 'name' => 'Drakan de rime',
                 'name_translations' => ['en' => 'Rime Drake'],
-                'life' => 2800,
-                'hit' => 93,
                 'speed' => 14,
                 'attack' => 'frost_bolt',
-                'level' => 38,
-                'difficulty' => 5,
+                'tier' => 4,
+                'rank' => 'elite',
+                'element' => 'water',
                 'spells' => ['frost_maelstrom', 'ice_storm', 'glacial_prison'],
                 'aiPattern' => [
                     'spell_chance' => 60,
@@ -1248,13 +1198,15 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'the_first_silence' => [
                 'name' => 'Le Premier Silence',
                 'name_translations' => ['en' => 'The First Silence'],
+                // Ecart au gabarit (BES-02) : l'ultime rencontre de l'an 1 —
+                // 3200 PV au lieu des 2400 du gabarit T4 Boss.
                 'life' => 3200,
                 'hit' => 96,
                 'speed' => 16,
                 'attack' => 'frost_bolt',
-                'level' => 40,
-                'difficulty' => 5,
-                'isBoss' => true,
+                'tier' => 4,
+                'rank' => 'boss',
+                'element' => 'water',
                 'spells' => ['frost_maelstrom', 'glacial_prison', 'ice_storm', 'death_nova'],
                 'aiPattern' => [
                     'spell_chance' => 70,
@@ -1270,13 +1222,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'ancient_wyrm' => [
                 'name' => 'Wyrm Ancien',
                 'name_translations' => ['en' => 'Ancient Wyrm'],
-                'life' => 2000,
-                'hit' => 95,
                 'speed' => 8,
                 'attack' => 'fire_ball',
-                'level' => 30,
-                'difficulty' => 5,
-                'isBoss' => true,
+                'tier' => 4,
+                'rank' => 'boss',
+                'element' => 'fire',
                 'spells' => ['dragon_breath', 'meteor_strike', 'volcanic_eruption', 'fire_nova'],
                 'aiPattern' => [
                     'spell_chance' => 65,
@@ -1319,13 +1269,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'dragon' => [
                 'name' => 'Dragon ancestral',
                 'name_translations' => ['en' => 'Ancestral Dragon'],
-                'life' => 250,
-                'hit' => 90,
                 'speed' => 12,
                 'attack' => 'fire_ball',
-                'level' => 5,
-                'difficulty' => 5,
-                'isBoss' => true,
+                'tier' => 3,
+                'rank' => 'boss',
+                'element' => 'fire',
                 'spells' => ['dragon_breath', 'fire_nova', 'meteor_strike', 'volcanic_eruption'],
                 'aiPattern' => [
                     'spell_chance' => 60,
@@ -1368,13 +1316,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'convergence_guardian' => [
                 'name' => 'Gardien de la Convergence',
                 'name_translations' => ['en' => 'Guardian of the Convergence'],
-                'life' => 800,
-                'hit' => 90,
                 'speed' => 10,
                 'attack' => 'holy_light',
-                'level' => 30,
-                'difficulty' => 5,
-                'isBoss' => true,
+                'tier' => 4,
+                'rank' => 'boss',
+                'element' => 'light',
                 'spells' => ['convergence_pulse', 'amethyst_shatter', 'fragment_barrier', 'meteor_strike', 'shadow_bolt'],
                 'aiPattern' => [
                     'spell_chance' => 60,
@@ -1420,13 +1366,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             'ancient_root' => [
                 'name' => 'Racine Ancienne',
                 'name_translations' => ['en' => 'Ancient Root'],
-                'life' => 350,
-                'hit' => 75,
                 'speed' => 7,
                 'attack' => 'entangling_roots',
-                'level' => 10,
-                'difficulty' => 4,
-                'isBoss' => true,
+                'tier' => 2,
+                'rank' => 'boss',
+                'element' => 'earth',
                 'spells' => ['entangling_roots', 'nature_fury', 'poison_cloud', 'primordial_roar'],
                 'aiPattern' => [
                     'spell_chance' => 50,
@@ -1472,11 +1416,20 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             $monster = new Monster();
             $monster->setName($data['name']);
             $monster->setSlug($key);
-            $monster->setLife($data['life']);
-            $monster->setHit($data['hit']);
-            $monster->setSpeed($data['speed']);
-            $monster->setLevel($data['level']);
-            $monster->setDifficulty($data['difficulty'] ?? $data['level']);
+            // BES-01 : deux axes. Le palier est obligatoire (il vient de la
+            // zone, GAME_BESTIARY §2.1) ; le rang par defaut est le
+            // tout-venant.
+            $tier = (int) $data['tier'];
+            $rank = MonsterRank::from($data['rank'] ?? 'common');
+            $monster->setTier($tier);
+            $monster->setRank($rank);
+
+            // BES-02 : les stats se derivent de la case tier × rang. Une
+            // valeur declaree est un ecart explicite (commente dans le bloc) ;
+            // la vitesse reste d'abord un trait d'espece.
+            $monster->setLife($data['life'] ?? MonsterStatTemplate::lifeFor($tier, $rank));
+            $monster->setHit($data['hit'] ?? MonsterStatTemplate::hitFor($tier, $rank));
+            $monster->setSpeed($data['speed'] ?? MonsterStatTemplate::speedFor($tier, $rank));
 
             // Sort d'attaque de base
             $attackSpell = $this->getReference($data['attack'], Spell::class);
@@ -1501,9 +1454,17 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 $monster->setElementalResistances($data['elementalResistances']);
             }
 
-            // Boss
-            if (isset($data['isBoss']) && $data['isBoss']) {
-                $monster->setIsBoss(true);
+            // MAT-01 : l'element du monstre — la cle est obligatoire, un
+            // monstre sans element est une erreur de contenu. Les deux
+            // mannequins d'entrainement restent `none`.
+            $element = Element::from($data['element']);
+            $monster->setElement($element);
+            if ($element !== Element::None) {
+                $resistances = $monster->getElementalResistances() ?? [];
+                if (!\array_key_exists($element->value, $resistances)) {
+                    $resistances[$element->value] = self::OWN_ELEMENT_RESISTANCE;
+                    $monster->setElementalResistances($resistances);
+                }
             }
 
             // ONB-11 : mannequin d'entrainement. `null` = un vrai monstre.

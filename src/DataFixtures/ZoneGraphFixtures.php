@@ -40,6 +40,12 @@ class ZoneGraphFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             MapFixtures::class,
+            // BES-03 : `syncMobs` resout chaque monstre par slug et SAUTE
+            // silencieusement les inconnus (simple avertissement d'import).
+            // Sans cette dependance, l'import tournait avant MonsterFixtures
+            // et la faune declaree n'existait pas en base de test — masque
+            // jusqu'ici par les mobs de la carte de test (MobFixtures, supprime).
+            MonsterFixtures::class,
         ];
     }
 }

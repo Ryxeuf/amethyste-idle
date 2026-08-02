@@ -1351,12 +1351,6 @@ parameters:
 			path: src/Entity/Game/Monster.php
 
 		-
-			message: '#^Property App\\Entity\\Game\\Monster\:\:\$level has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/Entity/Game/Monster.php
-
-		-
 			message: '#^Property App\\Entity\\Game\\Monster\:\:\$life has no type specified\.$#'
 			identifier: missingType.property
 			count: 1

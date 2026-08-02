@@ -705,10 +705,10 @@
         "error_collect": "Une erreur est survenue lors de la récupération des objets."
       },
       "error_action": "Une erreur est survenue lors de l'action.",
-      "difficulty": "Difficulté %level%/5",
       "training_dummy": {
         "spins": "%name% tourne lentement sur lui-même."
-      }
+      },
+      "tier": "T%tier%"
     },
     "ranking": {
       "title": "Classement",
@@ -811,8 +811,8 @@
       "empty": "Aucun monstre rencontré",
       "empty_hint": "Affrontez des monstres sur la carte pour remplir votre bestiaire",
       "boss": "Boss",
-      "level": "Niveau %level%",
-      "difficulty": "Difficulté %level%/5"
+      "element": "Élément",
+      "tier": "Palier T%tier%"
     },
     "factions": {
       "title": "Factions",
@@ -1524,7 +1524,8 @@
           "chest": "Vous découvrez un coffre : +%gils% gils.",
           "harvest": "Vous repérez un filon prometteur. La récolte arrive bientôt.",
           "pnj": "Vous rencontrez %pnj%, qui vous salue.",
-          "nothing": "Vous explorez les environs sans rien trouver de notable."
+          "nothing": "Vous explorez les environs sans rien trouver de notable.",
+          "chest_materia": "Vous trouvez un coffre : +%gils% gils, et une matéria — %materia% !"
         },
         "error": {
           "traveling": "Impossible d'explorer en plein voyage.",
@@ -1780,8 +1781,8 @@
         "heading": "Faire apparaître des monstres",
         "empty": "Rejoignez une zone pour y poser des monstres.",
         "hint": "Monstres ordinaires — même vie, même niveau, même butin que ceux du vivier. %max% au maximum par geste.",
-        "level": "niv. %level%",
-        "submit": "Poser"
+        "submit": "Poser",
+        "tier": "T%tier%"
       },
       "events": {
         "heading": "Événements de la zone",
@@ -1912,6 +1913,22 @@
         "11": "novembre",
         "12": "décembre"
       }
+    },
+    "element": {
+      "none": "Aucun",
+      "fire": "Feu",
+      "water": "Eau",
+      "earth": "Terre",
+      "air": "Air",
+      "light": "Lumière",
+      "dark": "Ténèbres",
+      "metal": "Métal",
+      "beast": "Bête"
+    },
+    "monster_rank": {
+      "common": "Commun",
+      "elite": "Élite",
+      "boss": "Boss"
     }
   },
   "common": {

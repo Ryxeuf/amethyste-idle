@@ -172,7 +172,7 @@ matéria — et bientôt patronage (§6.4 de GAME_WORLD) et nourriture (ECO-29).
 | Vie `life`/`maxLife` | Player (+ `diedAt`, régén ancrée `lifeUpdatedAt`) | survie ; la régén est un régulateur du pivot |
 | Énergie d'action `actionEnergy`/240 | Player | **le budget PBBG** (~80 actions/jour) |
 | Énergie de combat `energy`/`maxEnergy` | Player | paie les sorts (les PM, de fait) |
-| Précision `hit` | Player + passifs | `HitChanceCalculator` |
+| Précision `hit` | Player + passifs | `FightCalculator::hasAttackHit()` |
 | Vitesse `speed` | Player | initiative / fuite |
 | Passifs d'arbre `damage`/`heal`/`hit`/`critical`/`life` | Skill → `CombatSkillResolver` | la seule chose qu'un nœud donne en stats |
 

@@ -116,7 +116,7 @@
                     {% for mob in fight.mobs %}
                         <li class="bg-gray-800 rounded-lg px-3 py-2">
                             <span class="text-gray-200">{{ mob.name }}</span>
-                            <span class="text-gray-500 text-xs ml-2">Niv. {{ mob.level }} — PV {{ mob.life }}/{{ mob.maxLife }}{% if mob.dead %} <span class="text-red-400">(mort)</span>{% endif %}</span>
+                            <span class="text-gray-500 text-xs ml-2">T{{ mob.tier }} — PV {{ mob.life }}/{{ mob.maxLife }}{% if mob.dead %} <span class="text-red-400">(mort)</span>{% endif %}</span>
                         </li>
                     {% endfor %}
                 </ul>

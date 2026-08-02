@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
+use App\Enum\MonsterRank;
 use App\Event\Fight\MobDeadEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Fight\WorldBossLootDistributor;
@@ -239,13 +240,13 @@ class WorldBossLootDistributorTest extends TestCase
         return $item;
     }
 
-    private function createMonsterItem(Item $item, float $probability, bool $guaranteed, ?int $minDifficulty = null): MonsterItem
+    private function createMonsterItem(Item $item, float $probability, bool $guaranteed, ?MonsterRank $minRank = null): MonsterItem
     {
         $monsterItem = new MonsterItem();
         $monsterItem->setItem($item);
         $monsterItem->setProbability($probability);
         $monsterItem->setGuaranteed($guaranteed);
-        $monsterItem->setMinDifficulty($minDifficulty);
+        $monsterItem->setMinRank($minRank);
 
         return $monsterItem;
     }
@@ -258,7 +259,7 @@ class WorldBossLootDistributorTest extends TestCase
     {
         $monster = $this->createMock(Monster::class);
         $monster->method('getMonsterItems')->willReturn($monsterItems);
-        $monster->method('getDifficulty')->willReturn(1);
+        $monster->method('getRank')->willReturn(MonsterRank::Common);
 
         $map = $this->createMock(Map::class);
         $map->method('getId')->willReturn(1);

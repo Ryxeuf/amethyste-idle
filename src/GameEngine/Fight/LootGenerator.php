@@ -6,6 +6,7 @@ use App\Entity\App\Mob;
 use App\Entity\App\PlayerItem;
 use App\Event\Fight\MobDeadEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
+use App\GameEngine\Materia\MateriaLootTable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -14,6 +15,7 @@ class LootGenerator implements EventSubscriberInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly GameEventBonusProvider $gameEventBonusProvider,
+        private readonly MateriaLootTable $materiaLootTable,
     ) {
     }
 
@@ -47,7 +49,7 @@ class LootGenerator implements EventSubscriberInterface
         $dungeonDropMultiplier = (float) ($mob->getFight()?->getMetadataValue('difficulty_drop_multiplier', 1.0) ?? 1.0);
         $dropMultiplier *= $dungeonDropMultiplier;
 
-        $monsterDifficulty = $mob->getMonster()->getDifficulty();
+        $monsterRank = $mob->getMonster()->getRank();
 
         // Determine if this is a coop fight for round-robin loot distribution
         $fight = $mob->getFight();
@@ -63,7 +65,7 @@ class LootGenerator implements EventSubscriberInterface
         $roundRobinIndex = 0;
 
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
-            if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
+            if (null !== $monsterItem->getMinRank() && !$monsterRank->atLeast($monsterItem->getMinRank())) {
                 continue;
             }
 
@@ -93,6 +95,22 @@ class LootGenerator implements EventSubscriberInterface
                 $mob->addItem($item);
                 $this->entityManager->persist($item);
             }
+        }
+
+        // MAT-05 : le butin de materia se derive de l'element et du palier du
+        // monstre — la table n'est plus ecrite a la main, et la fourchette
+        // canonique (4-10 %) profite du meme multiplicateur que le reste.
+        $materia = $this->materiaLootTable->roll($mob->getMonster(), $dropMultiplier);
+        if (null !== $materia) {
+            $item = new PlayerItem();
+            $item->setMob($mob);
+            $item->setGenericItem($materia);
+            if ($isCoopLoot) {
+                $item->setBoundToPlayerId($coopPlayerIds[$roundRobinIndex % count($coopPlayerIds)]);
+                ++$roundRobinIndex;
+            }
+            $mob->addItem($item);
+            $this->entityManager->persist($item);
         }
 
         $this->entityManager->flush();

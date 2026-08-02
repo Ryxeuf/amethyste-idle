@@ -270,7 +270,7 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 |--------|-------------|-------------|
 | **User** | Compte utilisateur | email, username, roles, password |
 | **Player** | Personnage jouable | name, life, maxLife, energy, hit (précision 0-100), speed, classType, coordinates, isMoving |
-| **Mob** | Instance de monstre | monster (template), level, coordinates, life |
+| **Mob** | Instance de monstre | monster (template), tier, coordinates, life |
 | **Fight** | Combat en cours | step, inProgress, players[], mobs[], statusEffects[] |
 | **FightStatusEffect** | Effet de statut actif | fight, targetType, targetId, type, remainingTurns, power |
 | **Inventory** | Conteneur d'objets | type (bag=1/materia=2/bank=3), size, gold |
@@ -314,7 +314,6 @@ GameEngine/
 ├── Fight/              # Système de combat
 │   ├── Calculator/     # Calculs isolés (dégâts, toucher, critique)
 │   │   ├── DamageCalculator      # Dégâts fixes et pourcentage
-│   │   ├── HitChanceCalculator   # Précision (spell.level vs target)
 │   │   └── CriticalCalculator    # Calcul de critique
 │   ├── Handler/        # Handlers d'actions (attaque, sort, objet)
 │   ├── CombatCapacityResolver   # Sorts via materia sockettées
@@ -558,7 +557,7 @@ Les boss sont des monstres spéciaux avec des mécaniques avancées :
 | `CombatCapacityResolver` | Résolution des sorts disponibles via materia sockettées + vérification skills materia |
 | `ElementalSynergyCalculator` | Calcul des bonus de synergies élémentaires (5 combos) |
 | `DamageCalculator` | Calcul de dégâts isolé (fixe et pourcentage) |
-| `HitChanceCalculator` | Calcul de précision (spell.level vs monster.level) |
+| `FightCalculator` | Jet de touche (`hasAttackHit`, le seul chemin réel — BES-05) |
 | `CriticalCalculator` | Calcul de critique |
 | `MateriaXpGranter` | Attribution d'XP aux materias serties à la mort d'un monstre |
 | `MateriaFusionManager` | Fusion de materias |

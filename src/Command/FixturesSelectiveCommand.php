@@ -27,7 +27,7 @@ class FixturesSelectiveCommand extends Command
         'spells' => ['SpellFixtures'],
         'skills' => ['Game\\SkillFixtures'],
         'domains' => ['DomainFixtures'],
-        'mobs' => ['MobFixtures'],
+        'mobs' => ['DungeonMobFixtures'],
         'pnjs' => ['PnjFixtures'],
         'quests' => ['QuestFixtures', 'PlayerQuestFixtures'],
         'maps' => ['MapFixtures', 'AreaFixtures', 'ObjectLayerFixtures'],

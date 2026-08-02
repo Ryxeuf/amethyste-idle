@@ -41,7 +41,7 @@
                             <td class="px-4 py-3 text-gray-400">{{ monster.life }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ monster.hit }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ monster.speed }}</td>
-                            <td class="px-4 py-3 text-gray-400">{{ monster.level }}</td>
+                            <td class="px-4 py-3 text-gray-400 font-mono">T{{ monster.tier }} — {{ monster.rank.label }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ monster.monsterItems|length }}</td>
                             <td class="px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-2">

@@ -9,6 +9,8 @@ use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\Enum\MonsterRank;
+use App\GameEngine\Bestiary\MonsterStatTemplate;
 use App\GameEngine\Economy\GilsSupplyService;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,6 +29,14 @@ class BalanceReportCommand extends Command
 {
     private const BASE_XP_PER_KILL = 10;
     private const BOSS_XP_MULTIPLIER = 5;
+
+    /**
+     * Miroir de MateriaXpGranter::TIER_XP_FACTOR (BES-01).
+     *
+     * @var array<int, int>
+     */
+    private const TIER_XP_FACTOR = [0 => 1, 1 => 3, 2 => 8, 3 => 18, 4 => 32];
+
     private const SELL_RATIO = 0.3;
     private const DPS_VARIANCE_THRESHOLD = 0.3;
     private const LONG_FIGHT_THRESHOLD = 20;
@@ -107,28 +117,30 @@ class BalanceReportCommand extends Command
      */
     private function reportMonsters(SymfonyStyle $io, array $monsters): array
     {
-        $io->section('Monstres — Stats par palier de niveau');
+        $io->section('Monstres — Stats par case tier x rang (BES-01)');
 
         $alerts = [];
 
-        usort($monsters, fn (Monster $a, Monster $b) => $a->getLevel() <=> $b->getLevel());
+        usort($monsters, fn (Monster $a, Monster $b) => [$a->getTier(), $a->getRank()->level()] <=> [$b->getTier(), $b->getRank()->level()]);
 
         $rows = [];
         foreach ($monsters as $monster) {
-            $level = $monster->getLevel();
-            $xp = self::BASE_XP_PER_KILL * $level;
-            if ($monster->isBoss()) {
-                $xp *= self::BOSS_XP_MULTIPLIER;
-            }
+            $tier = $monster->getTier();
+            $rank = $monster->getRank();
+            $xp = self::BASE_XP_PER_KILL * (self::TIER_XP_FACTOR[$tier] ?? 1);
+            $xp *= match ($rank) {
+                MonsterRank::Boss => self::BOSS_XP_MULTIPLIER,
+                MonsterRank::Elite => 2,
+                MonsterRank::Common => 1,
+            };
 
             $attack = $monster->getAttack();
             $attackDmg = $attack->getDamage() ?? 0;
 
             $rows[] = [
                 $monster->getName(),
-                $level,
-                $monster->isBoss() ? 'Boss' : 'Normal',
-                $monster->getDifficulty(),
+                'T' . $tier,
+                $rank->label(),
                 $monster->getLife(),
                 $attackDmg,
                 $monster->getHit(),
@@ -138,28 +150,30 @@ class BalanceReportCommand extends Command
 
             // Alertes : monstre avec 0 HP ou 0 degats d'attaque
             if ($monster->getLife() <= 0) {
-                $alerts[] = sprintf('[MONSTRE] %s (lvl %d) a 0 HP', $monster->getName(), $level);
+                $alerts[] = sprintf('[MONSTRE] %s (T%d) a 0 HP', $monster->getName(), $tier);
             }
-            if ($attackDmg <= 0) {
-                $alerts[] = sprintf('[MONSTRE] %s (lvl %d) a 0 degats d\'attaque', $monster->getName(), $level);
+            if ($attackDmg <= 0 && $monster->getTrainingMode() === null) {
+                $alerts[] = sprintf('[MONSTRE] %s (T%d) a 0 degats d\'attaque', $monster->getName(), $tier);
             }
 
-            // Alerte : HP trop faible ou trop eleve pour le niveau
-            $expectedHpMin = $level * 10;
-            $expectedHpMax = $level * 80;
-            if ($monster->isBoss()) {
-                $expectedHpMax *= 3;
-            }
-            if ($monster->getLife() < $expectedHpMin) {
-                $alerts[] = sprintf('[MONSTRE] %s (lvl %d) HP %d < seuil min %d', $monster->getName(), $level, $monster->getLife(), $expectedHpMin);
-            }
-            if ($monster->getLife() > $expectedHpMax) {
-                $alerts[] = sprintf('[MONSTRE] %s (lvl %d) HP %d > seuil max %d', $monster->getName(), $level, $monster->getLife(), $expectedHpMax);
+            // Alerte : HP hors de la fourchette du gabarit tier x rang
+            // (BES-02 : les stats se derivent du gabarit, la tolerance ne
+            // couvre plus que les ecarts explicites).
+            $gridLife = MonsterStatTemplate::LIFE[$tier][$rank->value] ?? null;
+            if ($gridLife !== null) {
+                $expectedHpMin = (int) round($gridLife * 0.5);
+                $expectedHpMax = (int) round($gridLife * 2);
+                if ($monster->getLife() < $expectedHpMin) {
+                    $alerts[] = sprintf('[MONSTRE] %s (T%d %s) HP %d < seuil min %d', $monster->getName(), $tier, $rank->label(), $monster->getLife(), $expectedHpMin);
+                }
+                if ($monster->getLife() > $expectedHpMax) {
+                    $alerts[] = sprintf('[MONSTRE] %s (T%d %s) HP %d > seuil max %d', $monster->getName(), $tier, $rank->label(), $monster->getLife(), $expectedHpMax);
+                }
             }
         }
 
         $io->table(
-            ['Nom', 'Niveau', 'Type', 'Diff.', 'HP', 'Degats', 'Hit', 'Speed', 'XP'],
+            ['Nom', 'Palier', 'Rang', 'HP', 'Degats', 'Hit', 'Speed', 'XP'],
             $rows,
         );
 
@@ -259,7 +273,7 @@ class BalanceReportCommand extends Command
                     $item->getName(),
                     $item->getRarity() ?? '-',
                     $mi->isGuaranteed() ? 'OUI' : sprintf('%.1f%%', $mi->getProbability()),
-                    $mi->getMinDifficulty() ?? '-',
+                    $mi->getMinRank()?->label() ?? '-',
                     $item->getPrice() ?? '-',
                 ];
 
@@ -271,7 +285,7 @@ class BalanceReportCommand extends Command
         }
 
         $io->table(
-            ['Monstre', 'Item', 'Rarete', 'Probabilite', 'Diff. min', 'Prix achat'],
+            ['Monstre', 'Item', 'Rarete', 'Probabilite', 'Rang min', 'Prix achat'],
             $rows,
         );
 
@@ -279,7 +293,7 @@ class BalanceReportCommand extends Command
         $monstersWithDrops = array_unique(array_map(fn (MonsterItem $mi) => $mi->getMonster()->getId(), $monsterItems));
         foreach ($monsters as $monster) {
             if (!\in_array($monster->getId(), $monstersWithDrops, true)) {
-                $alerts[] = sprintf('[DROP] %s (lvl %d) n\'a aucun drop configure', $monster->getName(), $monster->getLevel());
+                $alerts[] = sprintf('[DROP] %s (T%d) n\'a aucun drop configure', $monster->getName(), $monster->getTier());
             }
         }
 
@@ -473,7 +487,7 @@ class BalanceReportCommand extends Command
                 $winRate = $total > 0 ? ($row['victories'] / $total) * 100 : 0;
                 $monsterRows[] = [
                     $row['monster_name'],
-                    $row['level'],
+                    $row['tier'],
                     $total,
                     $row['victories'],
                     $row['defeats'],
@@ -484,16 +498,16 @@ class BalanceReportCommand extends Command
 
                 if ($winRate < 30 && $total >= 5) {
                     $alerts[] = sprintf('[COMBAT] %s (lvl %d) : taux victoire tres bas (%.1f%%, %d combats)',
-                        $row['monster_name'], $row['level'], $winRate, $total);
+                        $row['monster_name'], $row['tier'], $winRate, $total);
                 }
                 if ($winRate > 95 && $total >= 5) {
                     $alerts[] = sprintf('[COMBAT] %s (lvl %d) : taux victoire tres haut (%.1f%%, %d combats) — trop facile ?',
-                        $row['monster_name'], $row['level'], $winRate, $total);
+                        $row['monster_name'], $row['tier'], $winRate, $total);
                 }
             }
 
             $io->table(
-                ['Monstre', 'Niveau', 'Combats', 'Victoires', 'Defaites', 'Fuites', 'Win%', 'Moy. tours'],
+                ['Monstre', 'Palier', 'Combats', 'Victoires', 'Defaites', 'Fuites', 'Win%', 'Moy. tours'],
                 $monsterRows,
             );
         }
@@ -503,10 +517,10 @@ class BalanceReportCommand extends Command
         if ($playerDpsRows !== []) {
             $io->text('--- DPS moyen des joueurs par monstre (degats infliges aux mobs) ---');
             $io->table(
-                ['Monstre', 'Niveau', 'Combats', 'Degats totaux', 'Degats/tour'],
+                ['Monstre', 'Palier', 'Combats', 'Degats totaux', 'Degats/tour'],
                 array_map(fn (array $r) => [
                     $r['monster_name'],
-                    $r['level'],
+                    $r['tier'],
                     $r['fight_count'],
                     $r['total_damage'],
                     sprintf('%.1f', $r['dps']),
@@ -591,12 +605,11 @@ class BalanceReportCommand extends Command
      */
     private function queryMobDpsByTier(string $since): array
     {
-        // Get damage dealt by mobs to players, grouped by monster level tier
-        // We join fight_log (attack events from mobs) with fight_start metadata to find monster levels
+        // Get damage dealt by mobs to players, grouped by monster tier (BES-01)
         // Since there's no direct FK from fight_log to monster, we match via mob actor_name to game_monsters.name
         $sql = <<<'SQL'
             SELECT
-                gm.level,
+                gm.tier,
                 COUNT(DISTINCT fl.fight_id) as fight_count,
                 COALESCE(SUM((fl.metadata->>'damage')::int), 0) as total_damage
             FROM fight_log fl
@@ -606,8 +619,8 @@ class BalanceReportCommand extends Command
               AND fl.metadata IS NOT NULL
               AND fl.metadata->>'damage' IS NOT NULL
               AND fl.created_at >= :since
-            GROUP BY gm.level
-            ORDER BY gm.level ASC
+            GROUP BY gm.tier
+            ORDER BY gm.tier ASC
             SQL;
 
         $rows = $this->connection->executeQuery($sql, [
@@ -621,7 +634,7 @@ class BalanceReportCommand extends Command
 
         $result = [];
         foreach ($rows as $row) {
-            $level = (int) $row['level'];
+            $tier = (int) $row['tier'];
             $fightCount = (int) $row['fight_count'];
             $totalDamage = (int) $row['total_damage'];
             $dmgPerFight = $fightCount > 0 ? $totalDamage / $fightCount : 0;
@@ -630,7 +643,7 @@ class BalanceReportCommand extends Command
             $avgTurns = $avgTurnsMap > 0 ? $avgTurnsMap : 1;
             $dmgPerTurn = $fightCount > 0 ? $totalDamage / ($fightCount * $avgTurns) : 0;
 
-            $tierLabel = sprintf('Lvl %d', $level);
+            $tierLabel = sprintf('T%d', $tier);
             $result[] = [
                 $tierLabel,
                 $fightCount,
@@ -659,7 +672,7 @@ class BalanceReportCommand extends Command
     }
 
     /**
-     * @return list<array{monster_name: string, level: int, victories: int, defeats: int, flees: int, avg_turns: float}>
+     * @return list<array{monster_name: string, tier: int, victories: int, defeats: int, flees: int, avg_turns: float}>
      */
     private function queryOutcomesByMonster(string $since): array
     {
@@ -692,7 +705,7 @@ class BalanceReportCommand extends Command
             )
             SELECT
                 fm.mob_name as monster_name,
-                COALESCE(gm.level, 0) as level,
+                COALESCE(gm.tier, 0) as tier,
                 COUNT(DISTINCT CASE WHEN fo.type = :victory THEN fo.fight_id END) as victories,
                 COUNT(DISTINCT CASE WHEN fo.type = :defeat THEN fo.fight_id END) as defeats,
                 COUNT(DISTINCT CASE WHEN fo.type = :flee THEN fo.fight_id END) as flees,
@@ -702,8 +715,8 @@ class BalanceReportCommand extends Command
             LEFT JOIN fight_turns ft ON ft.fight_id = fm.fight_id
             LEFT JOIN game_monsters gm ON gm.name = fm.mob_name
             WHERE fo.type IS NOT NULL
-            GROUP BY fm.mob_name, gm.level
-            ORDER BY gm.level ASC, fm.mob_name ASC
+            GROUP BY fm.mob_name, gm.tier
+            ORDER BY gm.tier ASC, fm.mob_name ASC
             SQL;
 
         $rows = $this->connection->executeQuery($sql, [
@@ -718,7 +731,7 @@ class BalanceReportCommand extends Command
         foreach ($rows as $row) {
             $result[] = [
                 'monster_name' => $row['monster_name'],
-                'level' => (int) $row['level'],
+                'tier' => (int) $row['tier'],
                 'victories' => (int) $row['victories'],
                 'defeats' => (int) $row['defeats'],
                 'flees' => (int) $row['flees'],
@@ -790,7 +803,7 @@ class BalanceReportCommand extends Command
     }
 
     /**
-     * @return list<array{monster_name: string, level: int, fight_count: int, total_damage: int, dps: float}>
+     * @return list<array{monster_name: string, tier: int, fight_count: int, total_damage: int, dps: float}>
      */
     private function queryPlayerDpsByMonster(string $since): array
     {
@@ -826,7 +839,7 @@ class BalanceReportCommand extends Command
             )
             SELECT
                 fm.mob_name as monster_name,
-                COALESCE(gm.level, 0) as level,
+                COALESCE(gm.tier, 0) as tier,
                 COUNT(DISTINCT fm.fight_id) as fight_count,
                 COALESCE(SUM(fpd.total_damage), 0) as total_damage,
                 CASE WHEN SUM(ft.max_turn) > 0
@@ -837,8 +850,8 @@ class BalanceReportCommand extends Command
             INNER JOIN fight_player_damage fpd ON fpd.fight_id = fm.fight_id
             INNER JOIN fight_turns ft ON ft.fight_id = fm.fight_id
             LEFT JOIN game_monsters gm ON gm.name = fm.mob_name
-            GROUP BY fm.mob_name, gm.level
-            ORDER BY gm.level ASC, fm.mob_name ASC
+            GROUP BY fm.mob_name, gm.tier
+            ORDER BY gm.tier ASC, fm.mob_name ASC
             SQL;
 
         $rows = $this->connection->executeQuery($sql, [
@@ -852,7 +865,7 @@ class BalanceReportCommand extends Command
         foreach ($rows as $row) {
             $result[] = [
                 'monster_name' => $row['monster_name'],
-                'level' => (int) $row['level'],
+                'tier' => (int) $row['tier'],
                 'fight_count' => (int) $row['fight_count'],
                 'total_damage' => (int) $row['total_damage'],
                 'dps' => round((float) $row['dps'], 1),
@@ -865,7 +878,7 @@ class BalanceReportCommand extends Command
     /**
      * Detecte les ecarts de DPS joueur > 30% entre niveaux adjacents.
      *
-     * @param list<array{monster_name: string, level: int, fight_count: int, total_damage: int, dps: float}> $playerDpsRows
+     * @param list<array{monster_name: string, tier: int, fight_count: int, total_damage: int, dps: float}> $playerDpsRows
      *
      * @return string[]
      */
@@ -877,7 +890,7 @@ class BalanceReportCommand extends Command
         $dpsByLevel = [];
         foreach ($playerDpsRows as $row) {
             if ($row['dps'] > 0 && $row['fight_count'] >= 3) {
-                $dpsByLevel[$row['level']][] = $row['dps'];
+                $dpsByLevel[$row['tier']][] = $row['dps'];
             }
         }
 
@@ -914,7 +927,7 @@ class BalanceReportCommand extends Command
     /**
      * Detecte les combats trop longs (> 20 tours en moyenne) pour les monstres non-boss.
      *
-     * @param list<array{monster_name: string, level: int, victories: int, defeats: int, flees: int, avg_turns: float}> $monsterOutcomes
+     * @param list<array{monster_name: string, tier: int, victories: int, defeats: int, flees: int, avg_turns: float}> $monsterOutcomes
      *
      * @return string[]
      */
@@ -928,7 +941,7 @@ class BalanceReportCommand extends Command
                 $alerts[] = sprintf(
                     '[COMBAT] %s (lvl %d) — duree moyenne %.1f tours (seuil: %d)',
                     $row['monster_name'],
-                    $row['level'],
+                    $row['tier'],
                     $row['avg_turns'],
                     self::LONG_FIGHT_THRESHOLD,
                 );

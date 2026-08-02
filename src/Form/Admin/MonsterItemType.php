@@ -5,11 +5,12 @@ namespace App\Form\Admin;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
+use App\Enum\MonsterRank;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -40,9 +41,12 @@ class MonsterItemType extends AbstractType
                 'label' => 'Drop garanti',
                 'required' => false,
             ])
-            ->add('minDifficulty', IntegerType::class, [
-                'label' => 'Difficulte minimum',
+            ->add('minRank', EnumType::class, [
+                'class' => MonsterRank::class,
+                'choice_label' => static fn (MonsterRank $rank): string => $rank->label(),
+                'label' => 'Rang minimum',
                 'required' => false,
+                'placeholder' => '-- Tous les rangs --',
             ]);
     }
 

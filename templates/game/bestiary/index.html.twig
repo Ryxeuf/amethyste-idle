@@ -46,17 +46,15 @@
                                             <span class="px-1.5 py-0.5 bg-red-900/60 border border-red-700 text-red-300 text-[10px] rounded">{{ 'game.bestiary.boss'|trans }}</span>
                                         {% endif %}
                                     </div>
+                                    {# BES-01 : deux axes — le palier dit ou ca vit, le rang dit
+                                       ce que c'est. L'echelle 1-40 et les etoiles ont disparu. #}
                                     <div class="flex items-center gap-1.5 mt-0.5">
-                                        <p class="text-gray-400 text-xs">{{ 'game.bestiary.level'|trans({'%level%': monster.level}) }}</p>
-                                        <span class="text-[10px]" title="{{ 'game.bestiary.difficulty'|trans({'%level%': monster.difficulty}) }}">
-                                            {% for i in 1..5 %}
-                                                {% if i <= (monster.difficulty ?? 1) %}
-                                                    <span class="text-yellow-400">&#9733;</span>
-                                                {% else %}
-                                                    <span class="text-gray-600">&#9733;</span>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </span>
+                                        <p class="text-gray-400 text-xs font-mono">{{ 'game.bestiary.tier'|trans({'%tier%': monster.tier}) }}</p>
+                                        {% if monster.rank.value != 'common' %}
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] {% if monster.rank.value == 'boss' %}bg-red-900/60 border border-red-700 text-red-300{% else %}bg-amber-900/60 border border-amber-700 text-amber-300{% endif %}">
+                                                {{ ('game.monster_rank.' ~ monster.rank.value)|trans }}
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1.5 shrink-0">
@@ -98,6 +96,15 @@
                             {# Weaknesses (tier 1) #}
                             {% if readable and monster.elementalResistances is not null %}
                                 <div class="mt-2 pt-2 border-t border-gray-600">
+                                    {# MAT-01 : l'element du monstre — ce que le flair de
+                                       l'Orc lit des la premiere rencontre, et ce dont le
+                                       butin de materia derive. #}
+                                    {% if monster.element.value != 'none' %}
+                                        <div class="text-[10px] text-gray-500 mb-1">
+                                            {{ 'game.bestiary.element'|trans }} :
+                                            <span class="text-xs text-amber-300">{{ ('game.element.' ~ monster.element.value)|trans }}</span>
+                                        </div>
+                                    {% endif %}
                                     <span class="text-[10px] text-gray-500">
                                         {{ 'game.bestiary.weaknesses'|trans }}{% if readsByScent and not entry.weaknessesRevealed %} — {{ 'game.race.capability.the-scent.name'|trans }}{% endif %} :
                                     </span>

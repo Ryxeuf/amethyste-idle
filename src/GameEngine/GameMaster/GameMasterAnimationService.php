@@ -61,7 +61,7 @@ class GameMasterAnimationService
             $mob = new Mob();
             $mob->setMonster($monster);
             $mob->setZone($zone);
-            $mob->setLevel($monster->getLevel());
+            $mob->setTier($monster->getTier());
             $mob->setLife((int) $monster->getLife());
             // Champ herite de l'ere carte (regle #7) : la position de reference
             // est la zone. Non nullable en base, d'ou cette valeur neutre.

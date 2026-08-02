@@ -48,7 +48,7 @@ class TrainingFightLauncher
         $mob->setMonster($dummy);
         // `Mob::getMaxLife()` derive du monstre : il n'y a rien a poser.
         $mob->setLife($dummy->getLife());
-        $mob->setLevel($dummy->getLevel());
+        $mob->setTier($dummy->getTier());
         // Aucune zone : le mannequin n'appartient a aucun lieu. Il existe le
         // temps du combat, et disparait avec lui.
         $mob->setZone(null);
