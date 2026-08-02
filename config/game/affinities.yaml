@@ -135,13 +135,12 @@ corrections:
     plant-moonflower: water
 
     # --- Les reserves d'extension -------------------------------------------
-    # Trois minerais declares et sans filon dans le jeu de base (GAME_ZONES
-    # § 3). Ils entrent ici parce qu'ils existent en fixtures : les laisser hors
-    # table ferait croire a un oubli le jour ou l'extension les sourcera. Deux
-    # se corrigent parce que leur nom **est** leur flux ; l'adamantite garde la
-    # ligne, faute de canon qui dise autre chose.
-    ore-starmetal: light
-    ore-voidium: dark
+    # OBJ-02b : les trois minerais d'extension (adamantite, astretal, voidium)
+    # ne sont plus livres du tout — leurs definitions et leurs corrections
+    # d'affinite (astretal → light, voidium → dark) vivent a
+    # docs/EXTENSION_RESERVE.md. Le test de conformite rejette une correction
+    # qui nomme une matiere inexistante, et c'est ce qui garantit qu'elles
+    # reviendront **avec** leurs filons, jamais avant.
 
 # -----------------------------------------------------------------------------
 # Le substrat — aucune affinite, et ce n'est pas un oubli.

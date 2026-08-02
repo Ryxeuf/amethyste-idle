@@ -697,30 +697,6 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Rare,
             ],
-            'crafted_adamantite_ingot' => [
-                'name' => 'Lingot d\'adamantite',
-                'name_translations' => ['en' => 'Adamantite Ingot'],
-                'description' => 'Lingot d\'adamantite d\'une dureté inégalée',
-                'type' => 'resource',
-                'slug' => 'crafted-adamantite-ingot',
-                'price' => 1650,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'rarity' => ItemRarity::Epic,
-            ],
-            'crafted_orichalcum_ingot' => [
-                'name' => 'Lingot d\'orichalque',
-                'name_translations' => ['en' => 'Orichalcum Ingot'],
-                'description' => 'Lingot d\'orichalque mythique aux reflets rouge doré',
-                'type' => 'resource',
-                'slug' => 'crafted-orichalcum-ingot',
-                'price' => 3400,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'rarity' => ItemRarity::Epic,
-            ],
             'crafted_gold_ingot' => [
                 'name' => 'Lingot d\'or',
                 'name_translations' => ['en' => 'Gold Ingot'],
@@ -831,18 +807,6 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Epic,
-            ],
-            'crafted_gem_prismatic' => [
-                'name' => 'Gemme prismatique',
-                'name_translations' => ['en' => 'Prismatic Gem'],
-                'description' => 'Une gemme aux reflets arc-en-ciel, concentrant toutes les énergies élémentaires',
-                'type' => 'resource',
-                'slug' => 'crafted-gem-prismatic',
-                'price' => 1750,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'rarity' => ItemRarity::Legendary,
             ],
 
             // --- Consommables alchimiste (recettes craft) ---
@@ -2520,66 +2484,29 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'materiaSlots' => 2,
                 'level' => 12,
             ],
-            'legendary_ring' => [
-                'name' => 'Anneau prismatique',
-                'name_translations' => ['en' => 'Prismatic Ring'],
-                'description' => 'Un anneau d\'orichalque serti d\'une gemme prismatique, chef-d\'œuvre de joaillerie',
-                'type' => 'gear',
-                'slug' => 'legendary-ring',
-                'gear_location' => Item::GEAR_LOCATION_RING_1,
-                'price' => 8650,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => -1,
-                'rarity' => ItemRarity::Epic,
-                'protection' => 5,
-                'materiaSlots' => 3,
-                'level' => 18,
-                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
-                'bindType' => 'bind_on_pickup',
-            ],
-            'legendary_amulet' => [
-                'name' => 'Amulette prismatique',
-                'name_translations' => ['en' => 'Prismatic Amulet'],
-                'description' => 'Une amulette d\'orichalque abritant une gemme prismatique, irradiant de puissance',
-                'type' => 'gear',
-                'slug' => 'legendary-amulet',
-                'gear_location' => 'neck',
-                'price' => 8650,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => -1,
-                'rarity' => ItemRarity::Epic,
-                'protection' => 6,
-                'materiaSlots' => 3,
-                'level' => 18,
-                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
-                'bindType' => 'bind_on_pickup',
-            ],
 
             // === Tier 4+ : Chefs-d'oeuvre exclusifs aux maitres artisans (task 122) ===
             // Chacun necessite la specialisation correspondante pour etre fabrique.
 
             // Maitre Forgeron — lame de maitre
-            'masterwork_blade' => [
-                'name' => 'Lame du maitre forgeron',
-                'name_translations' => ['en' => 'Master Blacksmith\'s Blade'],
-                'description' => 'Lame d\'orichalque trempee dans le sang d\'etoile, signature des plus grands forgerons.',
-                'type' => 'gear',
-                'slug' => 'masterwork-blade',
-                'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
-                'price' => 14200,
-                'space' => 2,
+
+            // Maitre Tanneur — manteau de maitre
+            'masterwork_grand_elixir' => [
+                'name' => 'Grand elixir du maitre alchimiste',
+                'name_translations' => ['en' => 'Master Alchemist\'s Grand Elixir'],
+                'description' => 'Distillation parfaite de mandragore, ginseng et essence prismatique. Restaure pleinement le porteur.',
+                'type' => 'stuff',
+                'slug' => 'masterwork-grand-elixir',
+                'spell' => 'elixir_vitality_spell',
+                'effect' => '{"action":"use_spell","slug":"elixir-vitality"}',
+                'price' => 2200,
+                'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 500,
+                'nb_usages' => 1,
                 'rarity' => ItemRarity::Legendary,
-                'materiaSlots' => 3,
-                'level' => 20,
                 // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
                 'bindType' => 'bind_on_pickup',
             ],
-
-            // Maitre Tanneur — manteau de maitre
             'masterwork_drakehide_cloak' => [
                 'name' => 'Manteau du maitre tanneur',
                 'name_translations' => ['en' => 'Master Leatherworker\'s Cloak'],
@@ -2600,42 +2527,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
 
             // Maitre Alchimiste — elixir supreme
-            'masterwork_grand_elixir' => [
-                'name' => 'Grand elixir du maitre alchimiste',
-                'name_translations' => ['en' => 'Master Alchemist\'s Grand Elixir'],
-                'description' => 'Distillation parfaite de mandragore, ginseng et essence prismatique. Restaure pleinement le porteur.',
-                'type' => 'stuff',
-                'slug' => 'masterwork-grand-elixir',
-                'spell' => 'elixir_vitality_spell',
-                'effect' => '{"action":"use_spell","slug":"elixir-vitality"}',
-                'price' => 2200,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => 1,
-                'rarity' => ItemRarity::Legendary,
-                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
-                'bindType' => 'bind_on_pickup',
-            ],
 
             // Maitre Joaillier — anneau de maitre
-            'masterwork_starforged_ring' => [
-                'name' => 'Anneau du maitre joaillier',
-                'name_translations' => ['en' => 'Master Jeweler\'s Ring'],
-                'description' => 'Anneau d\'orichalque serti d\'une gemme prismatique parfaitement taillee, pulsant d\'energie pure.',
-                'type' => 'gear',
-                'slug' => 'masterwork-starforged-ring',
-                'gear_location' => Item::GEAR_LOCATION_RING_1,
-                'price' => 11000,
-                'space' => 1,
-                'energy_cost' => 0,
-                'nb_usages' => -1,
-                'rarity' => ItemRarity::Legendary,
-                'protection' => 8,
-                'materiaSlots' => 4,
-                'level' => 20,
-                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
-                'bindType' => 'bind_on_pickup',
-            ],
 
             // === Équipement Tier 2 — Variantes élémentaires (Feu, Eau, Terre, Air) ===
             // Chaque pièce octroie +10% de dégâts de l'élément correspondant.

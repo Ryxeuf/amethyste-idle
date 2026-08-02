@@ -184,38 +184,6 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Forger le mithril requiert un savoir-faire exceptionnel.',
                 'name_translations' => ['en' => 'Mithril Ingot'],
             ],
-            'recipe_adamantite_ingot' => [
-                'name' => 'Lingot d\'adamantite',
-                'slug' => 'recipe-adamantite-ingot',
-                'craft' => 'forgeron',
-                'required_level' => 6,
-                'ingredients' => [
-                    ['slug' => 'ore-adamantite', 'quantity' => 3],
-                    ['slug' => 'ore-darksteel', 'quantity' => 2],
-                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 1],
-                ],
-                'result_ref' => 'crafted_adamantite_ingot',
-                'crafting_time' => 20,
-                'xp_reward' => 80,
-                'description' => 'Fond l\'adamantite avec du sombracier pour un alliage indestructible.',
-                'name_translations' => ['en' => 'Adamantite Ingot'],
-            ],
-            'recipe_orichalcum_ingot' => [
-                'name' => 'Lingot d\'orichalque',
-                'slug' => 'recipe-orichalcum-ingot',
-                'craft' => 'forgeron',
-                'required_level' => 8,
-                'ingredients' => [
-                    ['slug' => 'ore-orichalcum', 'quantity' => 3],
-                    ['slug' => 'ore-starmetal', 'quantity' => 2],
-                    ['slug' => 'crafted-adamantite-ingot', 'quantity' => 1],
-                ],
-                'result_ref' => 'crafted_orichalcum_ingot',
-                'crafting_time' => 25,
-                'xp_reward' => 120,
-                'description' => 'Le métal mythique des anciens, forgé avec l\'astrétal des étoiles.',
-                'name_translations' => ['en' => 'Orichalcum Ingot'],
-            ],
 
             // --- Forge T2 : Armures en fer ---
             'recipe_iron_chestplate' => [
@@ -1625,74 +1593,38 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Mithril Amulet'],
             ],
 
-            // --- Joaillerie T4 : gemmes prismatiques (niveau 7-8) ---
-            'recipe_prismatic_gem' => [
-                'name' => 'Gemme prismatique',
-                'slug' => 'recipe-prismatic-gem',
-                'craft' => 'joaillier',
-                'required_level' => 8,
-                'ingredients' => [
-                    ['slug' => 'crafted-gem-enchanted', 'quantity' => 2],
-                    ['slug' => 'ore-starmetal', 'quantity' => 1],
-                ],
-                'result_ref' => 'crafted_gem_prismatic',
-                'crafting_time' => 20,
-                'xp_reward' => 80,
-                'description' => 'Fusionne des gemmes enchantées avec de l\'astrétal pour créer un prisme multi-élémentaire.',
-                'name_translations' => ['en' => 'Prismatic Gem'],
-            ],
-
-            // --- Joaillerie T5 : bijoux légendaires (niveau 9-10) ---
-            'recipe_legendary_ring' => [
-                'name' => 'Anneau prismatique',
-                'slug' => 'recipe-legendary-ring',
-                'craft' => 'joaillier',
-                'required_level' => 10,
-                'ingredients' => [
-                    ['slug' => 'crafted-orichalcum-ingot', 'quantity' => 2],
-                    ['slug' => 'crafted-gem-prismatic', 'quantity' => 1],
-                ],
-                'result_ref' => 'legendary_ring',
-                'crafting_time' => 25,
-                'xp_reward' => 120,
-                'description' => 'Chef-d\'œuvre ultime : un anneau d\'orichalque abritant une gemme prismatique.',
-                'name_translations' => ['en' => 'Prismatic Ring'],
-            ],
-            'recipe_legendary_amulet' => [
-                'name' => 'Amulette prismatique',
-                'slug' => 'recipe-legendary-amulet',
-                'craft' => 'joaillier',
-                'required_level' => 10,
-                'ingredients' => [
-                    ['slug' => 'crafted-orichalcum-ingot', 'quantity' => 2],
-                    ['slug' => 'crafted-gem-prismatic', 'quantity' => 1],
-                ],
-                'result_ref' => 'legendary_amulet',
-                'crafting_time' => 25,
-                'xp_reward' => 120,
-                'description' => 'Chef-d\'œuvre ultime : une amulette d\'orichalque irradiant de puissance prismatique.',
-                'name_translations' => ['en' => 'Prismatic Amulet'],
-            ],
-
             // === Recettes exclusives aux maitres artisans (task 122 sous-phase 2) ===
             // Chacune requiert la specialisation correspondante et un niveau eleve.
+            // OBJ-02b : la joaillerie T4-T5 (gemme prismatique, bijoux
+            // legendaires) et les autres recettes butant sur les minerais
+            // d'extension sont versees a docs/EXTENSION_RESERVE.md. Le grand
+            // elixir, lui, ne butait que par la gemme prismatique : il est
+            // reecrit dans le perimetre de la base — sans lui, le fruit du
+            // vide (raccorde par ZON-35) redevenait une recolte sans debouche.
 
-            'recipe_masterwork_blade' => [
-                'name' => 'Lame du maitre forgeron',
-                'slug' => 'recipe-masterwork-blade',
-                'craft' => 'forgeron',
+            'recipe_masterwork_grand_elixir' => [
+                'name' => 'Grand elixir du maitre alchimiste',
+                'slug' => 'recipe-masterwork-grand-elixir',
+                'craft' => 'alchimiste',
                 'required_level' => 10,
-                'required_specialization' => CraftSpecialization::Forgeron,
+                'required_specialization' => CraftSpecialization::Alchimiste,
                 'ingredients' => [
-                    ['slug' => 'crafted-orichalcum-ingot', 'quantity' => 3],
-                    ['slug' => 'crafted-adamantite-ingot', 'quantity' => 2],
-                    ['slug' => 'ore-starmetal', 'quantity' => 2],
+                    ['slug' => 'crafted-potion-base', 'quantity' => 3],
+                    ['slug' => 'plant-mandrake', 'quantity' => 3],
+                    ['slug' => 'plant-ginseng', 'quantity' => 2],
+                    // OBJ-02b : la gemme enchantee (joaillier, niveau 5)
+                    // remplace la gemme prismatique partie a la reserve
+                    // d'extension — le chainage inter-metiers est conserve.
+                    ['slug' => 'crafted-gem-enchanted', 'quantity' => 1],
+                    // ZON-35 : le fruit du vide, la plus rare du monde, au sommet
+                    // de l'alchimie. C'est la seule place qui lui allait.
+                    ['slug' => 'plant-voidfruit', 'quantity' => 1],
                 ],
-                'result_ref' => 'masterwork_blade',
-                'crafting_time' => 30,
-                'xp_reward' => 200,
-                'description' => 'Reservee aux Maitres Forgerons. Forge la lame ultime, signature des grands artisans.',
-                'name_translations' => ['en' => 'Master Blacksmith\'s Blade'],
+                'result_ref' => 'masterwork_grand_elixir',
+                'crafting_time' => 25,
+                'xp_reward' => 180,
+                'description' => 'Reservee aux Maitres Alchimistes. Distille un elixir parfait infuse d\'energie enchantee.',
+                'name_translations' => ['en' => 'Master Alchemist\'s Grand Elixir'],
             ],
 
             'recipe_masterwork_drakehide_cloak' => [
@@ -1723,45 +1655,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Master Leatherworker\'s Cloak'],
             ],
 
-            'recipe_masterwork_grand_elixir' => [
-                'name' => 'Grand elixir du maitre alchimiste',
-                'slug' => 'recipe-masterwork-grand-elixir',
-                'craft' => 'alchimiste',
-                'required_level' => 10,
-                'required_specialization' => CraftSpecialization::Alchimiste,
-                'ingredients' => [
-                    ['slug' => 'crafted-potion-base', 'quantity' => 3],
-                    ['slug' => 'plant-mandrake', 'quantity' => 3],
-                    ['slug' => 'plant-ginseng', 'quantity' => 2],
-                    ['slug' => 'crafted-gem-prismatic', 'quantity' => 1],
-                    // ZON-35 : le fruit du vide, la plus rare du monde, au sommet
-                    // de l'alchimie. C'est la seule place qui lui allait.
-                    ['slug' => 'plant-voidfruit', 'quantity' => 1],
-                ],
-                'result_ref' => 'masterwork_grand_elixir',
-                'crafting_time' => 25,
-                'xp_reward' => 180,
-                'description' => 'Reservee aux Maitres Alchimistes. Distille un elixir parfait infuse d\'energie prismatique.',
-                'name_translations' => ['en' => 'Master Alchemist\'s Grand Elixir'],
-            ],
 
-            'recipe_masterwork_starforged_ring' => [
-                'name' => 'Anneau du maitre joaillier',
-                'slug' => 'recipe-masterwork-starforged-ring',
-                'craft' => 'joaillier',
-                'required_level' => 10,
-                'required_specialization' => CraftSpecialization::Joaillier,
-                'ingredients' => [
-                    ['slug' => 'crafted-orichalcum-ingot', 'quantity' => 2],
-                    ['slug' => 'crafted-gem-prismatic', 'quantity' => 2],
-                    ['slug' => 'ore-starmetal', 'quantity' => 2],
-                ],
-                'result_ref' => 'masterwork_starforged_ring',
-                'crafting_time' => 30,
-                'xp_reward' => 200,
-                'description' => 'Reservee aux Maitres Joailliers. Cisele un anneau pulsant d\'energie pure.',
-                'name_translations' => ['en' => 'Master Jeweler\'s Ring'],
-            ],
 
             // ── ECO-19 : recettes citees par les arbres de talent ──────────────
             // Ces slugs etaient debloques par des skills sans qu'aucune recette

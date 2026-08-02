@@ -21,7 +21,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | OBJ-01 ✅ | La taxonomie alignée sur 5 types | S | ∅ |
-| OBJ-02 | Le ménage : doublons et hors-périmètre | S | ← OBJ-01 |
+| OBJ-02 ✅ | Le ménage : doublons et hors-périmètre | S | ← OBJ-01 |
 | OBJ-03 | La grille d'équipement neutre | M | ∅ |
 | OBJ-04 | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
 | OBJ-05 | L'outil de récolte | M | ∅ |
@@ -63,20 +63,28 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
       (toute matière d'une famille de récolte est `resource`), objets de
       quête liés (`ItemTaxonomyTest`)
 
-### OBJ-02 — Le ménage (S | ★★ | HAUTE) — ⚙ OBJ-02a livré 2026-08-02 (doublons + fixtures mortes), reste OBJ-02b (recettes hors périmètre)
+### OBJ-02 — Le ménage (S | ★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 (en deux moitiés, règle 8)
 > Prérequis : ← OBJ-01
 - [x] Doublons supprimés : `wood_log` (les butins et la quête du menuisier
       passent à `wood-beech`), `pickaxe` sans palier (les butins passent à
       `pickaxe_bronze`), `herb_lavender`, `herb_mint`, `leather_skin_1/2`
       (le sac de démo passe à `leather_raw`), `food_bread` — et les trois
       exclusions fantômes d'`affinities.yaml` avec eux
-- [ ] Retirer les **8 recettes hors périmètre** et les 3 minerais d'extension
-      (`ore-adamantite`, `ore-starmetal`, `ore-voidium`) vers la réserve
-      d'extension — `GAME_ZONES` §3 les réserve explicitement aux Extensions 1
-      et 2. Une recette éternellement infabricable est un mensonge d'interface
-- [ ] **Suivi ouvert** : la courbe de recettes perd ses 8 derniers crans. Le haut
-      de la chaîne d'artisanat est à re-remplir **dans le périmètre de la base**
-      — chantier à instruire avec `PLAN_ZONES` et la carte des minerais
+- [x] Les recettes hors périmètre et les 3 minerais d'extension
+      (`ore-adamantite`, `ore-starmetal`, `ore-voidium`) versés à la réserve
+      (`docs/EXTENSION_RESERVE.md` — un fichier, pas du contenu livré), avec
+      les 3 spots legacy et les 2 nœuds de minage qui les promettaient
+      (l'arbre du mineur recâblé, le capstone garde ses bonus). **Nuance
+      découverte en route** : le Grand élixir ne butait que par la gemme
+      prismatique — il est **réécrit en base** (gemme enchantée) plutôt que
+      retiré, sans quoi le fruit du vide (ZON-35) redevenait sans débouché.
+      7 recettes retirées, 1 réécrite ; les nœuds maîtres qui les citaient
+      restent, en dette déclarée (`RECIPES_TO_AUTHOR`)
+- [x] **Suivi ouvert** : la courbe de recettes perd ses derniers crans. Le haut
+      de la chaîne d'artisanat est à re-remplir **dans le périmètre de la
+      base** — chantier à instruire avec `PLAN_ZONES` et la carte des
+      minerais ; `ore-orichalcum` (filon réel, débouché parti en extension)
+      est l'exception nommée de `HarvestHarmonyTest` en attendant
 - [x] Fixtures mortes supprimées (`fixtures/domain.yaml`,
       `fixtures/game/{skill,spell,monster}/`) — elles annonçaient 15 domaines
       quand la vraie source en a 36, et rien ne signalait qu'elles n'étaient
@@ -84,8 +92,9 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 - [x] Tests : aucun doublon de slug (344 slugs, toutes sources), les doublons
       legacy ne reviennent pas, les fixtures mortes non plus
       (`ItemCleanupTest`)
-- [ ] **OBJ-02b** : aucune recette infabricable — retrait des 8 recettes et
-      des 3 minerais d'extension, et le test qui les garde dehors
+- [x] **OBJ-02b** : aucune recette infabricable — tout ingrédient résout vers
+      un objet livré, et le hors-périmètre ne revient pas sans ses filons
+      (`RecipeCraftabilityTest`)
 
 ### OBJ-07 — Les matières (S | ★★ | MOYENNE)
 > Prérequis : ← OBJ-02

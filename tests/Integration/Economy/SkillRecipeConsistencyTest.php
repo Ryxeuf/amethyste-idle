@@ -31,16 +31,30 @@ final class SkillRecipeConsistencyTest extends AbstractIntegrationTestCase
     /**
      * Slugs cites par un skill mais sans recette livree.
      *
-     * **La liste est vide** : les 17 recettes que l'audit ECO-18 avait relevees
-     * comme du contenu a ecrire ont ete ecrites en ECO-19.
-     *
      * Y ajouter une entree est un aveu explicite, pas une commodite — le
      * troisieme test verifie qu'une entree declaree est toujours reellement
      * manquante.
      *
+     * OBJ-02b a retire les 7 recettes hors perimetre (elles butaient toutes
+     * sur l'adamantite et l'astretal, reserves aux extensions —
+     * EXTENSION_RESERVE.md ; le grand elixir, qui ne butait que par la gemme
+     * prismatique, a ete reecrit en base plutot que retire). Les nœuds qui
+     * les citaient restent : le haut de la chaine d'artisanat est **a
+     * re-remplir dans le perimetre de la base** (suivi ouvert de PLAN_ITEMS),
+     * et cette liste est precisement la dette qui le rappelle a chaque run
+     * de CI.
+     *
      * @var list<string>
      */
-    private const RECIPES_TO_AUTHOR = [];
+    private const RECIPES_TO_AUTHOR = [
+        'recipe-adamantite-ingot',
+        'recipe-legendary-amulet',
+        'recipe-legendary-ring',
+        'recipe-masterwork-blade',
+        'recipe-masterwork-starforged-ring',
+        'recipe-orichalcum-ingot',
+        'recipe-prismatic-gem',
+    ];
 
     /**
      * Recettes livrees qu'aucun skill ne debloque.

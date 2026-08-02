@@ -120,9 +120,20 @@ class HarvestHarmonyTest extends TestCase
     {
         $recipes = $this->recipes();
 
+        // OBJ-02b : l'orichalque garde son filon mais perd son alliage — la
+        // recette butait sur les minerais d'extension et n'est plus livree.
+        // C'est l'intrant de base que les alliages d'extension consommeront
+        // (GAME_WORLD §5.5), et le suivi ouvert de PLAN_ITEMS doit lui rendre
+        // un debouche DANS la base ; en attendant, l'exception est nommee
+        // plutot que silencieuse.
+        $extensionIntrants = ['ore-orichalcum'];
+
         $orphans = [];
         foreach ($this->veins() as $vein) {
             $item = (string) $vein['item'];
+            if (\in_array($item, $extensionIntrants, true)) {
+                continue;
+            }
             if (!str_contains($recipes, sprintf("['slug' => '%s'", $item))) {
                 $orphans[] = sprintf('%s (%s)', $item, $vein['zone']);
             }
