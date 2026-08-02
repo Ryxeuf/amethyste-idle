@@ -99,7 +99,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
       `(levier, points de budget, condition ?)` remplaçant `damage`/`heal`/`hit`/`critical`/`life`
 - [ ] **Une place et une seule par levier dans la formule** — `DamageCalculator`,
-      `CriticalCalculator`, `HitChanceCalculator`, `StatusEffectManager` consomment chacun
+      `CriticalCalculator`, `FightCalculator` (le jet de touche), `StatusEffectManager` consomment chacun
       les leviers qui les concernent, et le taux de change vit dans **un seul** convertisseur
 - [ ] `thrift` et `wind` se convertissent selon la **ressource du registre** (§4, note 1)
 - [ ] `life` et `recovery` restent hors de la double borne (décision DOM-01, inchangée),
