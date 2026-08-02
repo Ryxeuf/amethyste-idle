@@ -71,6 +71,50 @@ class DungeonModelTest extends TestCase
     }
 
     /**
+     * DON-05 — un donjon par palier T1-T4, dans quatre zones distinctes.
+     *
+     * 4 donjons pour 12 zones, tous entasses sur deux paliers : la couverture
+     * est un contrat, pas un hasard de fixtures. Les zones visees par les
+     * donjons doivent couvrir exactement les paliers 1 a 4, chacune la sienne.
+     */
+    public function testOneDungeonPerTierInFourDistinctZones(): void
+    {
+        $source = (string) file_get_contents($this->root() . '/src/DataFixtures/DungeonFixtures.php');
+        preg_match_all("/findOneBy\(\['slug' => '([a-z0-9-]+)'\]\)/", $source, $inline);
+        preg_match_all("/'zone' => '([a-z0-9-]+)'/", $source, $declared);
+        $zoneSlugs = array_values(array_unique(array_merge($inline[1], $declared[1])));
+
+        $this->assertCount(4, $zoneSlugs, 'Quatre donjons, quatre zones distinctes (DON-05).');
+
+        $world = (string) file_get_contents($this->root() . '/config/game/zones/world_1.yaml');
+        $tiers = [];
+        foreach ($zoneSlugs as $slug) {
+            $this->assertSame(
+                1,
+                preg_match(sprintf('/    %s:\n(?:        .*\n)*?        tier: (\d+)/', preg_quote($slug, '/')), $world, $match),
+                sprintf('La zone « %s » visee par un donjon est introuvable dans le graphe.', $slug),
+            );
+            $tiers[] = (int) $match[1];
+        }
+        sort($tiers);
+
+        $this->assertSame([1, 2, 3, 4], $tiers, 'Les donjons couvrent exactement les paliers 1 a 4 (DON-05).');
+    }
+
+    /**
+     * DON-05 — la fusion tient : « Racines de la foret » racontait la meme
+     * chose que « Les Galeries envahies » au meme endroit. Le revenant
+     * doublerait le T1 en laissant croire que la couverture est plus large.
+     */
+    public function testTheMergedDungeonStaysMerged(): void
+    {
+        $source = (string) file_get_contents($this->root() . '/src/DataFixtures/DungeonFixtures.php');
+
+        $this->assertStringNotContainsString("setSlug('racines-de-la-foret')", $source);
+        $this->assertStringContainsString("'slug' => 'galeries-envahies'", $source);
+    }
+
+    /**
      * DON-01b — le chemin solo mort le reste : l'entree par teleportation sur
      * une `Map`, `DungeonRun` et ses coordonnees d'origine, l'ecran
      * `/game/dungeon` separe. Tout donjon passe par la voie de zone.
