@@ -5,7 +5,6 @@ namespace App\Controller\Game;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\EnchantmentDefinition;
-use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftSpecialization;
 use App\GameEngine\Crafting\CraftBranchCatalog;
@@ -54,7 +53,9 @@ class CraftingController extends AbstractController
         // OBJ-06 : les sept metiers exigent leur outil — la marmite, la varlope
         // et l'aiguille existent desormais (`Item::CRAFT_TOOL_TYPES` les cite),
         // et le palier d'entree est livre par le nœud gratuit de chaque arbre.
-        $crafts = array_keys(Item::CRAFT_TOOL_TYPES);
+        // La liste reste litterale : les tests de ligne de production (fish,
+        // wood, cloth) verifient chaque onglet par son nom.
+        $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier', 'cuisinier', 'charpentier', 'tailleur'];
         // FOY-07 : le bonus que le lieu accorde, metier par metier. Le joueur
         // doit pouvoir arbitrer *ou* crafter — un total sans sa composition ne
         // lui dirait pas quoi faire de l'information.
