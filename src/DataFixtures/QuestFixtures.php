@@ -111,7 +111,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'xp' => 50,
                     'gold' => 30,
                     'items' => [
-                        'materia_soin' => 1,
+                        'materia_life_heal' => 1,
                     ],
                 ],
             ],
@@ -1201,7 +1201,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'xp' => 70,
                     'gold' => 40,
                     'items' => [
-                        'materia_soin' => 1,
+                        'materia_life_heal' => 1,
                     ],
                 ],
                 'isHidden' => true,
@@ -2677,6 +2677,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         return [
             GameEventFixtures::class,
             SeasonArcFixtures::class,
+            MateriaCatalogFixtures::class,
             MapFixtures::class,
         ];
     }
