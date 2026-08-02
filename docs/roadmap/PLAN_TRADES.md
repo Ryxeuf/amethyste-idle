@@ -62,6 +62,14 @@ n'existe pas.
 
 ### MET-01 — La bande de pureté porte un prix — **bloquant** (M)
 
+> **Décision (2026-08-02) : livraison en avance de phase.** MET-01 est un
+> correctif économique autonome — il se livre **tout de suite**, sans attendre
+> l'ouverture du reste du chantier métiers. La qualité gagne une valeur
+> d'échange pour les joueurs actuels, et le chantier MET ne s'ouvrira pas sur
+> une fondation morte. Les coefficients actés (×1 / ×1,8 / ×3,5 / ×9) partent
+> tels quels ; le risque est contenu, le parfait étant rarissime (vitalité
+> pleine exigée).
+
 **Le constat.** `PurityChain` propage la bande, `CraftOrderManager` l'exige sur
 les commandes, `PurityDrawer` la tire : la bande a une valeur **d'usage** et
 aucune valeur **d'échange**. Un joueur qui investit dans la qualité produit

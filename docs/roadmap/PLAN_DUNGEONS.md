@@ -70,6 +70,14 @@ tout le reste se fait en double.
 > matéria, ni équipement n'entrent dans le calcul. Et la rencontre ne riposte
 > jamais — **un donjon ne peut pas être perdu**.
 > Prérequis : ← DON-01
+>
+> **Séquencement DON ↔ ARC tranché le 2026-08-02 : DON d'abord, pont assumé.**
+> MAT étant livré (8/8), les sorts de matéria serties existent réellement :
+> DON-02 branche les **vraies actions de sort** dès maintenant. Les builds de
+> mêlée utilisent l'attaque de base jusqu'à **ARC-02** (« le geste d'arme
+> devient une matéria ») — dette documentée, sur le modèle d'OBJ-04 pour le
+> typage Technique. On ne réécrira pas le combat : ARC-02 ajoutera des actions
+> au même résolveur, il ne changera pas le modèle.
 - [x] L'action d'un membre est **son action réelle** (`DungeonActionResolver`) :
       le geste de l'arme équipée (le `spell` de la pièce) + les passifs de
       dégâts des arbres, ou un sort de matéria sertie
