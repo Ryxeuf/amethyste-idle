@@ -592,6 +592,11 @@
                            data-group-dungeon-target="cleared">🏆 {{ 'game.zone.dungeon.cleared'|trans }}{% if groupDungeon.rewardGils is not null %} <span class="ds-num ds-num--gain">+{{ groupDungeon.rewardGils }} gils</span>{% endif %}</p>
 
                         <div data-group-dungeon-target="combat" class="{{ groupDungeon.combat.status == 'completed' ? 'hidden' : '' }}">
+                            {# DON-03 : l'etape et la creature — plus une barre anonyme. #}
+                            <p class="ds-hint mt-2" data-group-dungeon-target="encounter"
+                               data-step-template="{{ 'game.zone.dungeon.step'|trans({'%step%': '%step%', '%total%': '%total%'}) }}">
+                                {{- 'game.zone.dungeon.step'|trans({'%step%': groupDungeon.combat.currentStep, '%total%': groupDungeon.combat.totalSteps}) }}{% if groupDungeon.combat.encounterName %} · {{ groupDungeon.combat.encounterName }}{% endif -%}
+                            </p>
                             <div class="ds-meter mt-2 mb-1">
                                 <div class="ds-meter__fill ds-meter__fill--hp" style="width: {{ groupDungeon.combat.encounterHpPercent }}%"
                                      data-group-dungeon-target="hpBar"></div>

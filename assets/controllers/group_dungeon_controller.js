@@ -9,7 +9,7 @@ import { Controller } from '@hotwired/stimulus';
  * paresseusement cote serveur ; Mercure n'est qu'un confort d'affichage.
  */
 export default class extends Controller {
-    static targets = ['hpBar', 'hpText', 'turn', 'attack', 'waiting', 'cleared', 'combat', 'abandon'];
+    static targets = ['hpBar', 'hpText', 'turn', 'attack', 'waiting', 'cleared', 'combat', 'abandon', 'encounter'];
     static values = {
         mercureUrl: String,
         runId: Number,
@@ -56,6 +56,15 @@ export default class extends Controller {
         }
         if (this.hasHpTextTarget && typeof data.encounterHpCurrent === 'number') {
             this.hpTextTarget.textContent = `${data.encounterHpCurrent} / ${data.encounterHpMax} PV`;
+        }
+        // DON-03 : l'etape et la creature suivent le flux temps reel. Le
+        // gabarit traduit vient du serveur (data-step-template), le JS ne
+        // porte aucun texte.
+        if (this.hasEncounterTarget && typeof data.currentStep === 'number') {
+            const template = this.encounterTarget.dataset.stepTemplate || '%step%/%total%';
+            const label = template.replace('%step%', data.currentStep).replace('%total%', data.totalSteps);
+            const name = data.encounterName ? ` · ${data.encounterName}` : '';
+            this.encounterTarget.textContent = `${label}${name}`;
         }
 
         this._remaining = typeof data.turnRemainingSeconds === 'number' ? data.turnRemainingSeconds : null;

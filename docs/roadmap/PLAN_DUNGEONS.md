@@ -90,16 +90,27 @@ tout le reste se fait en double.
       atteignable, les membres à terre sont sautés
       (`GroupDungeonCombatServiceTest`, `DungeonActionResolverTest`)
 
-### DON-03 — Les étapes et les vraies rencontres (M | ★★ | HAUTE)
+### DON-03 — Les étapes et les vraies rencontres (M | ★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > `currentStep` existe sur l'entité et **n'est jamais avancé** ; la rencontre est
 > un sac de PV abstrait sans `Monster`, sans élément, sans IA.
 > Prérequis : ← DON-02, **BES-01** (le palier et le rang)
-- [ ] Trois étapes par donjon : `Common` → `Elite` → `Boss` **du palier de la
-      zone** — le donjon ne définit pas ses créatures, il **puise dans la faune
-      de son palier**
-- [ ] `currentStep` avance réellement ; un donjon T4 se peuple tout seul le jour
-      où le palier T4 est peuplé
-- [ ] Tests : trois étapes franchies, rencontres au bon palier, aucun sac de PV
+- [x] Trois étapes par donjon : `Common` → `Elite` → `Boss` **du palier de la
+      zone** — `DungeonEncounterPicker` tire dans la faune **réellement
+      placée** du palier (les espèces qu'un `Mob` zoné incarne, même
+      définition que MAT-08), ce qui écarte d'office mannequins et boss
+      narratifs réservés sans liste à entretenir ; repli sur les espèces
+      livrées du palier, puis sur les curseurs historiques — un donjon ne
+      refuse jamais de s'ouvrir
+- [x] `currentStep` avance réellement (la rencontre tombée ouvre l'étape
+      suivante, seule la chute du boss termine le run) ; un donjon T4 se
+      peuple tout seul le jour où le palier T4 est peuplé
+      (`DungeonFaunaCoverageTest` : les 4 paliers × 3 rangs servis)
+- [x] La rencontre incarne son monstre : la barre est sa vie × la taille du
+      groupe, la riposte est **son** coup (une élite frappe plus fort qu'un
+      commun sans réglage spécial), l'écran dit qui l'on affronte (étape,
+      nom — Twig + flux Mercure)
+- [x] Tests : trois étapes franchies, rencontres au bon palier, aucun sac de
+      PV, repli sans faune, la chute d'étape ne riposte pas
 
 ### DON-04 — Le butin, et `lootPreview` qui ne ment plus (S | ★★★ | HAUTE)
 > `lootPreview` promet « Équipement tier 2, Matéria commune, Composants
