@@ -182,6 +182,32 @@ jobs:
           echo "========================================="
           REMOTE_SCRIPT
 
+      # `docker compose up --wait` ne dit qu'une chose quand le conteneur ne
+      # demarre pas : « container ... is unhealthy ». La raison est dans les
+      # logs du conteneur, sur le serveur, ou personne n'ira la chercher.
+      - name: Diagnostic en cas d'echec
+        if: failure()
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "DEPLOY_PATH='${DEPLOY_PATH}' bash -uo pipefail -s" <<'REMOTE_SCRIPT' || true
+          cd "${DEPLOY_PATH}"
+          COMPOSE="docker compose -f compose.yaml -f compose.prod.yaml"
+
+          echo "===================== etat des conteneurs ====================="
+          $COMPOSE ps -a
+
+          echo ""
+          echo "===================== derniers logs php ======================="
+          $COMPOSE logs --no-color --tail=150 php
+
+          echo ""
+          echo "===================== sonde de sante =========================="
+          CID="$($COMPOSE ps -aq php | head -n1)"
+          if [ -n "$CID" ]; then
+            docker inspect --format '{{json .State}}' "$CID"
+          fi
+          REMOTE_SCRIPT
+
       - name: Verify deployment
         run: |
           ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
