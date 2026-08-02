@@ -373,6 +373,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'phoenix-flame']],
                 'requirements' => ['pyro_rang3_1'],
             ],
+            'pyro_t2_flamer' => [
+                'title' => 'Materia : Feu',
+                'slug' => 'pyro-t2-flamer',
+                'description' => 'Permet d\'utiliser la materia Feu — jet de flammes soutenu',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'flamer']],
+                'requirements' => ['pyro_rang3_4'],
+            ],
 
             // Rang 4 (60-100 pts) — 3 skills
             'pyro_rang4_1' => [
@@ -394,7 +403,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['pyro_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // Rang 5 (100-150 pts) — 2 skills
+            'pyro_t3_solar' => [
+                'title' => 'Materia : Explosion solaire',
+                'slug' => 'pyro-t3-solar',
+                'description' => 'Permet d\'utiliser la materia Explosion solaire — chaleur qui carbonise',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'solar-burst']],
+                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
+            ],
             'pyro_rang5_1' => [
                 'title' => 'Materia : Eruption volcanique',
                 'slug' => 'pyro-rang5-1',
@@ -1006,7 +1024,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['knight_rang3_3', 'knight_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // Rang 5 (100-150 pts) — 2 skills
+            'knight_t3_orichalcum' => [
+                'title' => 'Materia : Lame d\'orichalque',
+                'slug' => 'knight-t3-orichalcum',
+                'description' => 'Permet d\'utiliser la materia Lame d\'orichalque — tranche les defenses',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'orichalcum-blade']],
+                'requirements' => ['knight_rang4_1', 'knight_rang4_2'],
+            ],
             'knight_rang5_1' => [
                 'title' => 'Materia : Forteresse d\'acier',
                 'slug' => 'knight-rang5-1',
@@ -1306,7 +1333,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['hydro_rang3_3', 'hydro_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // Rang 5 (100-150 pts) — 2 skills
+            'hydro_t3_maelstrom' => [
+                'title' => 'Materia : Maelstrom glacial',
+                'slug' => 'hydro-t3-maelstrom',
+                'description' => 'Permet d\'utiliser la materia Maelstrom glacial — tourbillon qui gele',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'frost-maelstrom']],
+                'requirements' => ['hydro_rang4_1', 'hydro_rang4_2'],
+            ],
             'hydro_rang5_1' => [
                 'title' => 'Materia : Tsunami',
                 'slug' => 'hydro-rang5-1',
@@ -2741,7 +2777,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['tamer_rang3_3', 'tamer_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // Rang 5 (100-150 pts) — 2 skills
+            'tamer_t3_primal' => [
+                'title' => 'Materia : Eveil primordial',
+                'slug' => 'tamer-t3-primal',
+                'description' => 'Permet d\'utiliser la materia Eveil primordial — poison et regain',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'primal-awakening']],
+                'requirements' => ['tamer_rang4_1', 'tamer_rang4_2'],
+            ],
             'tamer_rang5_1' => [
                 'title' => 'Materia : Rugissement alpha',
                 'slug' => 'tamer-rang5-1',
@@ -2885,7 +2930,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['storm_rang3_3', 'storm_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // Rang 5 (100-150 pts) — 2 skills
+            'storm_t3_thunder' => [
+                'title' => 'Materia : Tempete de foudre',
+                'slug' => 'storm-t3-thunder',
+                'description' => 'Permet d\'utiliser la materia Tempete de foudre — eclairs aveugles',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thunder-storm']],
+                'requirements' => ['storm_rang4_1', 'storm_rang4_2'],
+            ],
             'storm_materia_3' => [
                 'title' => 'Materia : Ouragan',
                 'slug' => 'storm-materia-3',
@@ -3958,7 +4012,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['warlock_rang3_3', 'warlock_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // Rang 5 (100-150 pts) — 2 skills
+            'warlock_t3_covenant' => [
+                'title' => 'Materia : Pacte des ombres',
+                'slug' => 'warlock-t3-covenant',
+                'description' => 'Permet d\'utiliser la materia Pacte des ombres — drain et poison de l\'ame',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-covenant']],
+                'requirements' => ['warlock_rang4_1', 'warlock_rang4_2'],
+            ],
             'warlock_rang5_1' => [
                 'title' => 'Materia : Pacte sombre',
                 'slug' => 'warlock-rang5-1',

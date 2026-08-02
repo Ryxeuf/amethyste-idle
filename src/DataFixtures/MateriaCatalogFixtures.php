@@ -34,21 +34,15 @@ use Doctrine\Persistence\ObjectManager;
 class MateriaCatalogFixtures extends Fixture implements DependentFixtureInterface
 {
     /**
-     * Les sept materia qu'aucun nœud n'ouvre encore : leurs sorts existent,
-     * on les garde au catalogue — MAT-07 les raccrochera au nœud terminal de
-     * l'arbre de leur element.
+     * Les materia qu'aucun nœud n'ouvre : vide depuis MAT-07, qui a raccroche
+     * les sept dernieres au nœud terminal de l'arbre de leur element. La liste
+     * reste le filet de securite du catalogue — une entree n'y survit que le
+     * temps qu'un nœud l'ouvre (`MateriaCatalogTest::testOrphanListIsAccurate`),
+     * et « aucune materia sans accord » est desormais un invariant teste.
      *
      * @var list<string>
      */
-    public const ORPHAN_SPELLS = [
-        'flamer',
-        'frost-maelstrom',
-        'orichalcum-blade',
-        'primal-awakening',
-        'shadow-covenant',
-        'solar-burst',
-        'thunder-storm',
-    ];
+    public const ORPHAN_SPELLS = [];
 
     public function __construct(private readonly MateriaDerivation $derivation)
     {

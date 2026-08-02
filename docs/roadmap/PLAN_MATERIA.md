@@ -28,7 +28,7 @@
 | MAT-04 ✅ | Le plancher du jour 1 | M | ← MAT-03 |
 | MAT-05 ✅ | Le butin dérivé | M | ← MAT-01, MAT-03 |
 | MAT-06 ✅ | Coffres et donjons | S | ← MAT-03 |
-| MAT-07 | Le nettoyage | S | ← MAT-03 |
+| MAT-07 ✅ | Le nettoyage | S | ← MAT-03 |
 | MAT-08 | Tests du plan | S | ‖ |
 
 ```
@@ -106,15 +106,24 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
       (`MateriaCatalogTest`) ; sur base réelle, une matéria par unlock,
       slug et élément dérivés du sort (`MateriaCatalogIntegrationTest`)
 
-### MAT-07 — Le nettoyage (S | ★★ | MOYENNE)
+### MAT-07 — Le nettoyage (S | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
 > Prérequis : ← MAT-03
-- [ ] Retirer `nb_usages` de `type: materia` — inerte en combat, mais contredit
-      « la matéria est le build du personnage » (GAME_MATERIA §2.4)
-- [ ] Raccrocher les **7 matéria qu'aucun nœud n'ouvre** (`flamer`,
-      `frost-maelstrom`, `orichalcum-blade`, `primal-awakening`,
-      `shadow-covenant`, `solar-burst`, `thunder-storm`) au nœud terminal de
-      l'arbre de leur élément
-- [ ] Tests : aucune matéria consommable, aucune matéria sans accord
+- [x] `nb_usages` retiré de `type: materia` — le catalogue dérivé n'en fixait
+      déjà jamais (l'illimité -1 de l'entité), les dix exemplaires du joueur
+      démo qui portaient des charges finies reprennent celui de leur objet
+      générique (GAME_MATERIA §2.4)
+- [x] Les **7 matéria qu'aucun nœud n'ouvrait** raccrochées au nœud terminal
+      de l'arbre de leur élément, sur le motif défenseur/prêtre (nœud à
+      100 points entre le rang 4 et l'ultime) : `solar-burst` → pyromancien,
+      `frost-maelstrom` → hydromancien, `thunder-storm` → foudromancien,
+      `orichalcum-blade` → chevalier, `primal-awakening` → dompteur,
+      `shadow-covenant` → sorcier ; `flamer` (sort de niveau 2) entre en
+      milieu d'arbre du pyromancien (50 points). `ORPHAN_SPELLS` vidée —
+      la liste reste le filet de sécurité du catalogue
+- [x] Tests : aucune matéria consommable, aucune matéria sans accord
+      (`MateriaCleanupTest`) ; le raccrochage est verrouillé par
+      `MateriaCatalogTest::testOrphanListIsAccurate` et le compte du
+      catalogue par `MateriaCatalogIntegrationTest`
 
 ---
 
