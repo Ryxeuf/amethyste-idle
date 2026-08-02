@@ -1,4 +1,4 @@
-# Anatomie d'un arbre de combat — l'Assassin, déroulé de bout en bout
+# Anatomie d'un arbre de combat — deux arbres déroulés de bout en bout
 
 > **Statut : exercice instruit, 2026-08-01.** Ce document ne décide rien que
 > [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) et [GAME_DOMAINS.md](GAME_DOMAINS.md)
@@ -15,8 +15,15 @@
 mais au niveau de la *grammaire* : les leviers, le budget, la fourche. Aucun ne
 descend jusqu'à ce qu'un joueur voit à l'écran, ce qu'un nœud pèse en base, ni ce
 qu'il faut écrire dans `SkillFixtures.php` pour que l'arbre existe. Celui-ci
-descend, sur un arbre unique, jusqu'au dernier prérequis — pour qu'on puisse
-répondre à la question : *qu'est-ce qu'un arbre peut contenir, et à quel niveau ?*
+descend jusqu'au dernier prérequis — pour qu'on puisse répondre à la question :
+*qu'est-ce qu'un arbre peut contenir, et à quel niveau ?*
+
+**Deux arbres, et le second n'est pas une redite.** Les §0 à §11 déroulent
+l'**Assassin** (ténèbres × mêlée × assaut) et servent de méthode : les natures de
+nœud, le budget, les matéria, les invariants. Le §12 déroule le **Nécromancien**
+(ténèbres × sorts × contrôle) — *même élément, même marque, et rien en commun* —
+pour mettre à l'épreuve ce que le premier a établi. Il a trouvé ce qu'un arbre
+seul ne pouvait pas montrer.
 
 ---
 
@@ -712,7 +719,7 @@ GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
   les rapports entre paliers, les vérifications du §7. Ce qui sera recalculé :
   tous les effets affichés. Le juge final est `app:balance:simulate` (ARC-17), pas
   la relecture d'un tableau.
-- **Les vingt-trois autres arbres.** La procédure du §10.1 du canon suffit ; cet
+- **Les vingt-deux autres arbres.** La procédure du §10.1 du canon suffit ; cet
   exercice montre seulement à quoi ressemble son résultat quand on la suit
   jusqu'au bout.
 - **Le nom des gestes.** Les six accords sont désignés par leur **rôle** dans le
@@ -720,3 +727,200 @@ GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
   (GAME_MATERIA §2.1), pas écrites ici.
 - **La forme de l'écran d'arbre** — §8 bis du canon dit ce qu'il doit *dire* ;
   comment il le montre est du design d'interface.
+
+---
+
+## 12. Le second arbre — le Nécromancien
+
+### 12.0 Pourquoi celui-là
+
+Un second arbre ne sert à rien s'il ne met à l'épreuve que ce que le premier a
+déjà montré. Le Nécromancien est choisi pour être **le voisin le plus proche
+possible** de l'Assassin — même élément, donc **la même marque** — et pour ne
+partager avec lui absolument rien d'autre :
+
+| | Assassin | Nécromancien |
+|---|---|---|
+| Élément | ténèbres | ténèbres |
+| Marque | **Aveuglé** | **Aveuglé** |
+| Registre | mêlée | **sorts** |
+| Fonction | assaut | **contrôle** |
+| Ressource | le tour (reprise) | **les PM** |
+| Levier principal | `power` | **`grip`** |
+| Teinte | `dodge` | **`mending`** |
+| Profil temporel | la pointe | **la montée** |
+
+**C'est le test du voisin dans sa forme la plus dure** : si deux arbres qui
+partagent l'élément *et* la marque restent discernables, la grammaire tient. Il
+apporte en plus trois choses qu'aucun exercice du canon n'avait écrites dans un
+arbre concret : la fonction **contrôle** en entier, le **familier** (la forme de
+geste la plus discutée du §13), et une fourche qui oppose **le solo au donjon**.
+
+Son entrée au catalogue public est déjà écrite : *« À faire servir ce qui est
+mort, et à payer ce que cela coûte. »* · Équipe : *« Bâtons, grimoires et
+tissu. »*
+
+### 12.1 L'identité
+
+| | |
+|---|---|
+| **Triplet** | ténèbres × **sorts** × **contrôle** |
+| **Promesse** | *Je décide de qui joue et quand — et ce que je pose continue sans moi.* |
+| **Coût structurel** | La mise en place : ses trois premiers tours ne tuent rien, et il n'a pas de plan de secours offensif |
+| **Profil temporel** | **La montée** — inoffensif au tour 1, il possède le combat au tour 6 |
+| **Sa faiblesse** | Ce qui meurt vite (le contrôle n'a pas le temps d'exister) et ce qui résiste aux statuts |
+| **Sa marque** | **Aveuglé**, comme l'Assassin — mais il la **prolonge** là où l'autre la **consomme** |
+| **Sa palette** (contrôle) | **`grip`**, `hit`, `thrift`, `tempo`, `pierce` |
+| **Sa teinte** | **`mending`** — *ce qu'il prend, il le garde* : ses drains rendent des PV, et c'est la seule façon dont il survit |
+| **Sa famille d'arme** | **bâton** — canalise, frappe mal |
+| **Sa ligne d'armure** | **tissu** — il ne survit pas, il fait en sorte que rien ne l'atteigne |
+
+### 12.2 Les dix-huit nœuds
+
+| Palier | Coût | Nœud | Nature | Effet | pb | Exige |
+|---|---:|---|---|---|---:|---|
+| Entrée | 0 | Accord : **Voile de cendre** | accord | `entrave`·`une cible`· **applique Aveuglé, 2 tours** | — | — |
+| Entrée | 0 | Accord : **Drain de vie** | accord | `dégât`+`soin`·`une cible` | — | — |
+| 1 | 10 | **Œil mort** | passif | `hit` +1,5 pt | 3 | Voile de cendre |
+| 1 | 10 | **Souffle court** | passif | `tempo` +3 % | 3 | Drain de vie |
+| 1 | 10 | Accord : **Malédiction** | accord | `entrave`·`une cible`· dégâts sur la durée | — | Voile de cendre |
+| 1 | 10 | *Port* : bâton, échelon 2 | port | — | 0 | échelon 1 |
+| 2 | 25 | **Ce qui s'accroche** | passif | `grip` **+7,2 %** | 6 | Œil mort |
+| 2 | 25 | **Économie du geste** | passif | `thrift` **−5 %** *en tissu* — escalier, −1 %/pièce | 6 | Souffle court |
+| 2 | 25 | Accord : **Pulsation cauchemardesque** | accord | `entrave`·`plusieurs cibles` | — | Malédiction |
+| 2 | 25 | *Port* : bâton, échelon 3 | port | — | 0 | échelon 2 |
+| 3 · **Linceul** | 50 | **Rien ne passe** | passif | `pierce` +6,3 pt | 9 | Ce qui s'accroche |
+| 3 · **Linceul** | 50 | **Devancer** | passif | `tempo` +9 % | 9 | Économie du geste |
+| 3 · **Linceul** | 50 | Accord : **Linceul** | accord | `entrave`·`une cible`· **longue durée** | — | Pulsation |
+| 3 · **Veillée** | 50 | **Ce qu'il prend** | passif | `mending` **+12,6 %** *main gauche libre* *(teinte)* | 9 | Ce qui s'accroche |
+| 3 · **Veillée** | 50 | **Longue patience** | passif | `thrift` **−5,4 %** | 9 | Économie du geste |
+| 3 · **Veillée** | 50 | Accord : **Serviteur d'ossements** | accord | `dégât`·`une cible`· **forme : familier** *(dépôt offensif)* | — | Pulsation |
+| **Capstone** | 100 | **Ce qui ne lâche pas** | capstone | `grip` **+28 %** *contre une cible qui subit un de vos statuts* | 14 | **l'accord de branche** |
+| *Dormant* | *150* | *Accord d'hybride (ténèbres)* | dormant | — | — | rien |
+
+**18 nœuds écrits · 15 apprenables · 390 points · 50 pb par branche.**
+
+### 12.3 Ce que la fourche oppose — le solo contre le donjon
+
+C'est la forme forte de la règle 6 du §6.1 bis, et elle tombe naturellement ici.
+
+***Le Linceul*** tient **l'ennemi**, et il tient seul. Il perce les résistances,
+il joue avant l'autre, et son accord immobilise une cible longtemps. C'est
+l'archétype de contrôle classique : *rien ne me touche parce que rien ne joue.*
+En duel, sa valeur est exactement celle qu'a mesurée le §9 quinquies — une
+entrave ne vole un tour que si elle en vole **deux**, d'où sa durée.
+
+***La Veillée*** tient **la durée**, et elle est faite pour le donjon
+semi-synchrone. Son accord est un **familier** : un dépôt offensif qui frappe à
+chaque tour de la rencontre pendant N tours, **y compris les tours où son
+invocateur n'est pas connecté**. C'est la réponse littérale au défaut mesuré au
+§13.1 du canon — *le tour d'un absent ne produit qu'une attaque de base*.
+
+> **Le familier est traité comme un dépôt, jamais comme un acteur** (arbitrage du
+> 2026-08-01) : retirez-lui le ciblage et il ne reste qu'une chose qui frappe
+> chaque tour pendant une durée. On économise un acteur, une IA et une cible, et
+> on garde tout ce qui comptait. **Sa valeur totale vaut ~1 tour d'attaque** — la
+> correction 21 : *un dépôt offensif ne dépasse jamais un tour d'attaque par tour
+> investi*, quand un dépôt défensif peut valoir davantage parce que la barre de
+> vie de sa cible l'écrête toute seule.
+
+Les deux branches ne partagent aucun levier (`pierce`/`tempo` contre
+`mending`/`thrift`), chacune ouvre son geste, et la teinte `mending` n'existe que
+dans la Veillée : *le nécromancien qui joue seul ne se soigne pas, il empêche.*
+
+### 12.4 Les vérifications
+
+| Invariant | Mesure |
+|---|---|
+| Budget = 50 pb | Linceul : 3+3+6+6+9+9+14 = **50** ✔ · Veillée : idem **50** ✔ |
+| Plafonds par levier | `grip` 6+14 = **20/20** · `hit` 3/10 · `tempo` 12/12 *(Linceul)* · `thrift` 6+9 = **15/15** *(Veillée)* · `pierce` 9/12 · `mending` 9/20 ✔ |
+| Palette ≥ 40, hors palette ≤ 10 | Linceul : **50** en palette ✔ · Veillée : 41 en palette, **9** hors (`mending` seul) ✔ |
+| Triplet unique | ténèbres × sorts × contrôle : le seul ✔ |
+| Intentions du contrôle : ≥ 2 `entrave`, ≥ 1 `dégât` | **4** entraves (Voile, Malédiction, Pulsation, Linceul), **2** dégâts ✔ |
+| ≥ 1 accord non-`dégât` · ≥ 1 accord exclusif | 4 entraves ✔ · le Serviteur d'ossements ✔ |
+| Un accord d'entrée applique la marque | Voile de cendre → Aveuglé ✔ |
+| Capstone atteignable au tour 2 avec le kit gratuit | Voile de cendre est gratuit ✔ |
+| ≥ 2 passifs sans condition | Linceul : **4** · Veillée : **3** ✔ |
+| Branches sans levier commun | {`pierce`,`tempo`} ∩ {`mending`,`thrift`} = ∅ ✔ |
+| Aucune entrave d'un seul tour | Voile 2 tours · Malédiction sur la durée · Linceul longue durée ✔ *(§5.1 rectifié)* |
+| Test de l'arbre nu | *précision, durée des statuts, perce-résistance, initiative, économie de PM* → on lit un contrôleur sans avoir vu un accord ✔ |
+
+### 12.5 Les six matéria
+
+Le contraste avec l'Assassin est net : **quatre gestes sur six existent déjà et
+n'ont rien à changer** — ce sont des sorts, et le Nécromancien est un arbre de
+sorts. C'est exactement ce que GAME_MATERIA annonçait (« il ne manque que l'objet
+qui les porte ») ; l'exception était le registre mêlée, pas la règle.
+
+| # | Rôle | Geste | Niv. | Slug | Rareté | Prix | PM | État |
+|---|---|---|---:|---|---|---:|---:|---|
+| 1 | l'entrave d'entrée · la marque | Voile de cendre (`ash-veil`) | 2 | `m2-ash-veil` | Rare | 180 | 15 | **créer** |
+| 2 | le plan B offensif | Drain de vie (`soul-drain`) | 2 | `m2-soul-drain` | Rare | 180 | 15 | existe ✔ |
+| 3 | l'entrave sur la durée | Malédiction (`plague-strike`) | 3 | `m3-plague-strike` | Epic | 280 | 20 | existe ✔ |
+| 4 | l'entrave de zone | Pulsation (`nightmare-pulse`) | 3 | `m3-nightmare-pulse` | Epic | 280 | 20 | existe ✔ |
+| 5 | branche Linceul | Linceul (`shroud`) | 4 | `m4-shroud` | Legendary | 320 | 25 | **créer** |
+| 6 | branche Veillée · **familier** | Serviteur d'ossements (`bone-servant`) | 3 | `m3-bone-servant` | Epic | 280 | 20 | **créer** |
+
+Trois remarques qui comptent :
+
+- **`nightmare-pulse` applique `paralysis`, pas Aveuglé** — et c'est légitime :
+  une marque est ce que l'**élément** applique, pas ce que tout geste applique.
+  Un arbre de contrôle pose des statuts variés ; sa marque reste sa signature.
+- **`m2-ash-veil` est à créer, et c'est le même besoin que chez l'Assassin** :
+  il faut un geste d'entrée qui applique la marque de l'élément, et **aucun des
+  deux arbres de ténèbres n'en a un**. Le statut `blind` est le prérequis commun.
+- **Le Serviteur d'ossements est le seul geste du jeu dont la valeur dépend de
+  la présence du joueur** (≈ 1 tour d'attaque s'il joue, +56 % sur six tours
+  d'absence). C'est le premier accord dont l'équilibrage se mesure en **taux de
+  connexion**, pas en tours.
+
+### 12.6 Le test du voisin, chiffré
+
+Deux arbres, même élément, même marque. Ce qu'un joueur voit :
+
+| | Assassin | Nécromancien |
+|---|---|---|
+| Tour 1 | Embuscade — **le pic de dégâts de la rencontre** | Voile de cendre — **zéro dégât** |
+| Ce qu'il fait d'Aveuglé | la **consomme** : son capstone donne +28 % de dégâts contre une cible aveuglée | la **prolonge** : `grip` +28 % de durée, et son capstone récompense la cible *encore* sous statut |
+| Ce qu'il craint | le combat qui dure | le combat qui finit trop vite |
+| Ce qu'il paie | des PV — il est au contact | des PM — 4 gestes sur 6 en coûtent |
+| En donjon | il frappe, et son tour d'absence ne produit rien | il **dépose** — le familier joue les tours où il n'est pas là |
+| Ses six gestes | 5 `dégât`, 1 `protection` | 4 `entrave`, 2 `dégât` |
+
+**Ils ne se marchent pas dessus, et ils se complètent sans se ressembler** : la
+marque que l'un pose sert à l'autre. Un assassin qui entre dans un combat déjà
+tenu par un nécromancien trouve une cible aveuglée, donc son capstone allumé dès
+son premier tour. Aucune règle spéciale n'a été écrite pour ça — c'est la
+troisième règle des marques (« deux marques différentes coexistent », et *a
+fortiori* la même, qui se rafraîchit).
+
+### 12.7 Ce que le second arbre a trouvé
+
+**Écart n° 8 — le levier du capstone ne peut jamais apparaître au palier 3.**
+Découvert en écrivant l'arbre : `grip` est le levier principal du contrôle, donc
+le candidat naturel de sa fourche *et* de son capstone. Or le capstone en consomme
+14, un nœud de palier 3 en vaut 9, et le plafond le plus haut du jeu est 20 :
+**14 + 9 = 23 est impossible**. Le levier du capstone ne peut donc apparaître
+qu'une fois, au palier 1 (3 pb) ou au palier 2 (6 pb).
+
+> **Conséquence de design, contre-intuitive et vraie pour les 24 arbres : le
+> levier principal d'un arbre est presque absent de sa propre fourche.** La
+> fourche est faite des leviers *secondaires* de la palette — ce qui est une
+> bonne nouvelle déguisée : c'est ce qui empêche les deux branches d'être « le
+> même arbre en plus fort », et ce qui les force à différer par leur **nature**
+> plutôt que par leur dosage. *Porté au canon en §7.1, corollaire 2.*
+
+**Observation n° 9 — les leviers à plafond bas sont des leviers de bas d'arbre.**
+`hit` (10 pb) ne supporte pas deux nœuds si l'un est au palier 3 (3 + 9 = 12 > 10) ;
+`critical`, `pierce`, `tempo`, `dodge`, `wind`, `recovery` (12 pb) n'en supportent
+deux que dans la combinaison 3 + 9. **Un levier ne se place donc pas librement :
+son plafond dit à quels paliers il a le droit d'exister.** Ce n'est pas un défaut
+— c'est la grille qui fait son travail — mais c'est une contrainte que l'auteur
+d'un arbre doit connaître avant de poser ses sept passifs, et le §10.1 (étape 3)
+ne la mentionne pas.
+
+**Ce que le second arbre a confirmé** : la procédure du §10.1 produit bien un
+arbre lisible en cinq étapes, les plafonds attrapent les erreurs avant qu'on les
+écrive, et deux arbres du même élément restent discernables **par leurs gestes
+avant leurs pourcentages** — ce que le canon affirme depuis le §9 bis et qui se
+vérifie ici pour la seconde fois.

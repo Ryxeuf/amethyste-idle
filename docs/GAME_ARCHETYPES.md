@@ -1012,11 +1012,29 @@ d'assaut sur le critique, un capstone d'encaisse sur l'esquive. Une signature ne
 se pose pas sur un levier volatil dont le plafond dit lui-même qu'il casse le jeu
 quand on le pousse.
 
-> **Corollaire pour l'auteur** : si la condition canonique de la fonction ne
+> **Corollaire 1, pour l'auteur** : si la condition canonique de la fonction ne
 > convient pas à l'arbre, on change la **condition**, jamais la valeur (§10.1,
 > étape 4) — et si c'est le **levier** qui ne convient pas, l'arbre a deux
 > options et pas trois. C'est peu, et c'est le prix d'un sommet comparable d'un
 > arbre à l'autre.
+
+> **Corollaire 2 — le levier du capstone n'apparaît jamais au palier 3.**
+> *(Trouvé en écrivant le Nécromancien, GAME_TREE_ANATOMY §12.7.)* Le capstone
+> consomme 14 pb ; un nœud de palier 3 en vaut 9 ; le plafond le plus haut du jeu
+> est 20. **14 + 9 = 23 est impossible**, quel que soit le levier. Le levier du
+> capstone ne peut donc apparaître qu'**une** fois ailleurs : au palier 1 (3 pb)
+> ou au palier 2 (6 pb).
+>
+> Ce que ça produit, et qui est contre-intuitif : **le levier principal d'un arbre
+> est presque absent de sa propre fourche.** Une fourche est faite des leviers
+> *secondaires* de la palette. C'est une bonne nouvelle déguisée — c'est ce qui
+> empêche une branche d'être « l'autre en plus fort », et ce qui force les deux à
+> différer par leur **nature** plutôt que par leur dosage.
+>
+> **Et la règle se généralise** : le plafond d'un levier dit à quels paliers il a
+> le droit d'exister. `hit` (10 pb) ne supporte pas deux nœuds dont l'un est au
+> palier 3 ; les leviers à 12 pb ne les supportent que dans la combinaison 3 + 9.
+> À vérifier **avant** de poser les sept passifs (§10.1, étape 3), pas après.
 
 ---
 
@@ -2581,7 +2599,9 @@ Ce qui doit casser la CI si on le viole :
     dans une seule branche. Un dix-neuvième nœud échoue le test.
 21 ter. **Le capstone vise un levier de plafond ≥ 14 pb** (§7.1) — un capstone sur
     `critical`, `hit`, `pierce`, `wind`, `dodge`, `recovery` ou `tempo` est
-    inachetable par construction et doit échouer en CI, pas en relecture.
+    inachetable par construction et doit échouer en CI, pas en relecture. **Et son
+    levier n'apparaît jamais au palier 3** (corollaire 2) : 14 + 9 dépasse le
+    plafond le plus haut du jeu.
 21 quater. **Les prérequis internes suivent la loi du §6.6** — au plus un parent
     par nœud, pris au palier précédent ; **le capstone exige l'accord de branche**
     et jamais ses passifs ; aucun prérequis ne traverse la fourche ; les échelons
