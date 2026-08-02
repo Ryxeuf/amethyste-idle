@@ -16,7 +16,7 @@
 
 ## Vue d'ensemble
 
-**8 jalons** (**OBJ-01** à **OBJ-08**) en 3 pistes.
+**8 jalons** (**OBJ-01** à **OBJ-08**) en 3 pistes. **✅ Plan complet 8/8 (2026-08-02).**
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -27,7 +27,7 @@
 | OBJ-05 ✅ | L'outil de récolte | M | ∅ |
 | OBJ-06 ✅ | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
 | OBJ-07 ✅ | Les matières : le champignon et l'équilibre des lignes | S | ← OBJ-02 |
-| OBJ-08 | Tests du plan | S | ‖ |
+| OBJ-08 ✅ | Tests du plan | S | ‖ |
 
 ```
 Piste A — La donnée      : OBJ-01 → OBJ-02 → OBJ-07
@@ -214,10 +214,21 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 
 ## Piste — Le contrat
 
-### OBJ-08 — Tests du plan (S | ★★★ | HAUTE)
-> ‖ au fil des jalons. Les 9 invariants de GAME_ITEMS §6.
-- [ ] Cinq types, pas douze ; l'onglet Matériaux est complet
-- [ ] Aucune pièce d'équipement ne porte d'élément ; les emplacements
-      progressent ; 100 % du vestiaire est typé
-- [ ] Aucun outil sans fonction ; aucun palier d'outil sans source
-- [ ] Aucune recette infabricable ; aucun doublon de slug
+### OBJ-08 — Tests du plan (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 — **plan objets complet 8/8**
+> ‖ au fil des jalons. Les 9 invariants de GAME_ITEMS §6, tenus par
+> `ItemsPlanContractTest` (l'index du contrat + les deux morceaux qui
+> manquaient) et les tests nés des jalons.
+- [x] Cinq types, pas douze (`ItemTaxonomyTest`) ; l'onglet Matériaux est
+      complet (`ItemTaxonomyTest` + **tout ingrédient de recette est une
+      ressource**, porté par l'index)
+- [x] Aucune pièce d'équipement ne porte d'élément (`GearNeutralityTest`) ;
+      les emplacements progressent ; 100 % du vestiaire est typé
+      (`MateriaSlotTypingTest` — versant Spell, la dette Technique est
+      déclarée sur ARC)
+- [x] Aucun outil sans fonction (**tout type d'outil est exigé par une récolte
+      ou un craft**, porté par l'index) ; aucun palier d'outil sans source
+      (`CraftToolContractTest`, `GatherToolContractTest`,
+      `DomainAccessManagerTest`)
+- [x] Aucune recette infabricable (`RecipeCraftabilityTest`) ; aucun doublon
+      de slug (`ItemCleanupTest`)
+- [x] L'index ne pourrit pas : chaque test cité par le contrat existe
