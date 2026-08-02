@@ -23,7 +23,7 @@
 | OBJ-01 ✅ | La taxonomie alignée sur 5 types | S | ∅ |
 | OBJ-02 ✅ | Le ménage : doublons et hors-périmètre | S | ← OBJ-01 |
 | OBJ-03 ✅ | La grille d'équipement neutre | M | ∅ |
-| OBJ-04 | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
+| OBJ-04 ✅ | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
 | OBJ-05 | L'outil de récolte | M | ∅ |
 | OBJ-06 | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
 | OBJ-07 | Les matières : le champignon et l'équilibre des lignes | S | ← OBJ-02 |
@@ -136,19 +136,30 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
       élémentaire ne revient pas, la grille **3 paliers × 7 formes** sans
       trou (`GearNeutralityTest`)
 
-### OBJ-04 — Les emplacements typés et progressifs (M | ★★★ | HAUTE)
+### OBJ-04 — Les emplacements typés et progressifs (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 (versant Spell + progression ; le versant Technique attend ARC)
 > Le cœur du build. `materiaSlotType` existe, `MateriaGearSetter` le lit, et
 > **9 pièces sur 178 le renseignent** — le défaut `Free` fait que 169 pièces
 > acceptent tout, donc DOM-03 est inerte sur 95 % du vestiaire.
 > Prérequis : ← OBJ-03 ; **à livrer avec ou après MAT-03**, jamais avant
-- [ ] **Progression des emplacements** : 1 / 2 / 3 en t1 / t2 / t3 — ce que
-      GAME_WORLD §2.1 promet et que le jeu ne tient pas (t1=1, t2=1, t3=1-2)
-- [ ] **Type d'emplacement dérivé de la famille**, jamais posé pièce par pièce :
-      lanceur et tissu → `Spell` ; mêlée, tir et plaque → `Technique` ; cuir →
-      1 `Spell` + le reste `Technique` ; accessoires → `Free` (GAME_ITEMS §3.4)
-- [ ] Cohérence avec `domain_catalog.yaml`, qui annonce déjà ces familles aux
-      joueurs (« Bâtons, baguettes et tissu », « Haches, épées lourdes et cuir »)
-- [ ] Tests : 100 % du vestiaire typé, dérivation depuis la famille, progression
+- [x] **Progression des emplacements** : plancher 1 / 2 / 3 par bande de
+      niveau (1-4 / 5-12 / 13+) sur **tout** le vestiaire, PHP et YAML
+      (73 pièces relevées) — un plancher, jamais un écrêtage : les pièces
+      uniques gardent leur avance. Migration idempotente
+      (`Version20260802EMateriaSlotFloor`)
+- [x] **Type dérivé de la famille — versant Spell** : les armes de lanceur
+      au-dessus du palier d'entrée rejoignent le tissu (`t2-staff`,
+      `t3-staff`, `guardian-thorn-staff` → `Spell`). **Le versant
+      `Technique` (mêlée, tir, plaque, cuir mixte) est une dette sur ARC** :
+      aucune matéria de technique n'existe (« le geste d'arme devient une
+      matéria » est ARC-01→10), et
+      `MateriaSlotTypingTest::testNoPieceDeclaresASocketNothingCanFill`
+      interdit — à raison — un emplacement que rien ne peut remplir. Typer
+      la plaque aujourd'hui murerait 95 % du vestiaire contre la seule
+      famille de matéria livrée
+- [x] Cohérence avec `domain_catalog.yaml` : le versant livré est exactement
+      ce qu'il annonce (« Bâtons, baguettes et tissu »)
+- [x] Tests : progression vérifiée sur 100 % du vestiaire, lanceurs typés,
+      le plancher jour 1 et l'exception maintenus (`MateriaSlotTypingTest`)
 
 ---
 

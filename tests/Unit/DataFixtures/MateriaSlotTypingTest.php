@@ -46,6 +46,17 @@ class MateriaSlotTypingTest extends TestCase
      */
     private const ENTRY_TIER_CLOTH = ['linen-hood', 'linen-robe', 'linen-gloves'];
 
+    /**
+     * OBJ-04 — les armes de lanceur au-dessus du palier d'entree portent des
+     * emplacements de sort (GAME_ITEMS §3.4 : « lanceur et tissu → Spell »).
+     * Le versant Technique de la derivation (melee, tir, plaque, cuir mixte)
+     * attend les materia de technique (ARC) — le test
+     * `testNoPieceDeclaresASocketNothingCanFill` dit pourquoi.
+     *
+     * @var list<string>
+     */
+    private const LAUNCHER_TYPED = ['t2-staff', 't3-staff', 'guardian-thorn-staff'];
+
     private function root(): string
     {
         return \dirname(__DIR__, 3);
@@ -73,6 +84,19 @@ class MateriaSlotTypingTest extends TestCase
                 if ($slug !== null && preg_match("/^\s+materia_slot_type: '([a-z]+)'/", $line, $match) === 1) {
                     $types[$slug] = $match[1];
                 }
+            }
+        }
+
+        // OBJ-04 : les pieces PHP comptent aussi — les armes de lanceur de la
+        // grille neutre y vivent.
+        $source = (string) file_get_contents($this->root() . '/src/DataFixtures/ItemFixtures.php');
+        preg_match_all("/'slug' => '([a-z0-9-]+)'/", $source, $slugs, \PREG_OFFSET_CAPTURE);
+        foreach ($slugs[1] as $i => [$slug, $offset]) {
+            $end = isset($slugs[1][$i + 1]) ? $slugs[1][$i + 1][1] : \strlen($source);
+            $block = substr($source, $offset, $end - $offset);
+            $types[$slug] ??= 'free';
+            if (preg_match("/'materiaSlotType' => MateriaSlotType::([A-Za-z]+)/", $block, $match)) {
+                $types[$slug] = strtolower($match[1]);
             }
         }
 
@@ -140,6 +164,80 @@ class MateriaSlotTypingTest extends TestCase
             'Ces pieces declarent un emplacement de technique alors qu\'aucune materia de technique n\'existe : '
             . 'elles portent un emplacement que rien ne peut remplir.',
         );
+    }
+
+    /**
+     * OBJ-04 — les armes de lanceur au-dessus du palier d'entree sont typees
+     * sort : la famille decide, jamais la piece (GAME_ITEMS §3.4).
+     */
+    public function testLauncherWeaponsCarrySpellSockets(): void
+    {
+        $types = $this->slotTypes();
+
+        $wrong = [];
+        foreach (self::LAUNCHER_TYPED as $slug) {
+            self::assertArrayHasKey($slug, $types, sprintf('La piece "%s" a disparu.', $slug));
+            if ('spell' !== $types[$slug]) {
+                $wrong[] = $slug;
+            }
+        }
+
+        self::assertSame([], $wrong, 'Ces armes de lanceur ne portent plus d\'emplacement de sort (OBJ-04).');
+    }
+
+    /**
+     * OBJ-04 — les emplacements progressent avec le palier : au moins 1 / 2 / 3
+     * par bande de niveau (1-4, 5-12, 13+). C'est la promesse de GAME_WORLD
+     * §2.1 (« l'equipement de haut niveau offre plus d'emplacements ») — un
+     * plancher, jamais un ecretage : les pieces uniques gardent leur avance.
+     */
+    public function testSocketsProgressWithTheTier(): void
+    {
+        $offenders = [];
+
+        $source = (string) file_get_contents($this->root() . '/src/DataFixtures/ItemFixtures.php');
+        preg_match_all("/'type' => '([a-z_]+)'/", $source, $types, \PREG_OFFSET_CAPTURE);
+        foreach ($types[1] as $i => [$type, $offset]) {
+            if ('gear' !== $type) {
+                continue;
+            }
+            $end = isset($types[1][$i + 1]) ? $types[1][$i + 1][1] : \strlen($source);
+            $block = substr($source, $offset, $end - $offset);
+            preg_match("/'slug' => '([a-z0-9-]+)'/", $block, $slug);
+            preg_match("/'level' => (\d+)/", $block, $level);
+            preg_match("/'materiaSlots' => (\d+)/", $block, $slots);
+            $floor = $this->slotFloor((int) ($level[1] ?? 1));
+            if ((int) ($slots[1] ?? 0) < $floor) {
+                $offenders[] = sprintf('%s (%d < %d)', $slug[1] ?? '?', (int) ($slots[1] ?? 0), $floor);
+            }
+        }
+
+        foreach ((array) glob($this->root() . '/fixtures/game/item/*.yaml') as $file) {
+            preg_match_all('/^  [a-z0-9_]+ \(extends item\):((?:\n    .*)+)/m', (string) file_get_contents((string) $file), $blocks);
+            foreach ($blocks[1] as $block) {
+                if (!preg_match('/type: [\'"]gear[\'"]/', $block)) {
+                    continue;
+                }
+                preg_match("/slug: '([a-z0-9-]+)'/", $block, $slug);
+                preg_match('/level: (\d+)/', $block, $level);
+                preg_match('/materia_slots: (\d+)/', $block, $slots);
+                $floor = $this->slotFloor((int) ($level[1] ?? 1));
+                if ((int) ($slots[1] ?? 0) < $floor) {
+                    $offenders[] = sprintf('%s (%d < %d)', $slug[1] ?? '?', (int) ($slots[1] ?? 0), $floor);
+                }
+            }
+        }
+
+        self::assertSame(
+            [],
+            $offenders,
+            sprintf('Des pieces portent moins d\'emplacements que le plancher de leur palier (OBJ-04) : %s.', implode(', ', $offenders)),
+        );
+    }
+
+    private function slotFloor(int $level): int
+    {
+        return $level <= 4 ? 1 : ($level <= 12 ? 2 : 3);
     }
 
     /**
