@@ -32,7 +32,7 @@ Trois conséquences qui structurent le plan :
 
 ## Vue d'ensemble
 
-**10 jalons** (**MET-01** à **MET-10**) en 3 pistes.
+**11 jalons** (**MET-01** à **MET-11**) en 3 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -45,10 +45,11 @@ Trois conséquences qui structurent le plan :
 | MET-07 | Les branches d'artisanat déplacent la qualité au lieu de fermer l'accès | M | ← MET-03 |
 | MET-08 | Les 12 arbres réécrits au gabarit (~15 nœuds, 50 pb) | **L** | ← MET-03→07 |
 | MET-09 | Le simulateur étendu aux métiers (`app:balance:simulate --trades`) | M | ← ARC-17, MET-08 |
-| MET-10 | Contrat de test transverse (les 10 invariants) | S | ‖ |
+| MET-10 | Contrat de test transverse (les 12 invariants) | S | ‖ |
+| MET-11 | **L'outil porte un chiffre**, et la derniere porte est un monopole | S | ← MET-04, OBJ-05 |
 
-**Ordre de chantier recommandé :** MET-01 → MET-02 → MET-03 → (MET-04, MET-05)
-→ MET-06 → MET-07 → MET-08 → MET-09 → MET-10.
+**Ordre de chantier recommandé :** MET-01 → MET-02 → MET-03 → (MET-04, MET-05,
+MET-11) → MET-06 → MET-07 → MET-08 → MET-09 → MET-10.
 
 MET-01 et MET-02 sont indépendants et petits ; les livrer ensemble est
 raisonnable. **Rien d'autre ne vaut la peine avant eux** : sans prix de bande et
@@ -139,8 +140,15 @@ reste gratuit à l'ouverture de l'arbre (OBJ, modèle `rung1.free`).
 jeu ([GAME_WORLD](../GAME_WORLD.md) §6) ramené à l'échelle d'une personne et
 d'une journée.
 
-- **Extraire** — `yield`, `stride`, accord **la Percée** (un filon sous 0,33 de
-  vitalité rend davantage). Écrit 32 pb.
+- **Extraire** — `yield`, `stride`, accord **la Percée** : le filon rend jusqu'à
+  **1,5× son débit du jour**, pris sur celui de demain, et la pâleur monte
+  d'autant. Écrit 32 pb.
+
+  **Attention, c'est la correction qui sauve la fourche.** Un accord qui donnerait
+  du *rendement* ne donne rien : le débit du filon est déjà la contrainte
+  (GAME_TRADES §7.3). Mesuré sans la Percée, Extraire perd **13 % à portes
+  égales et 17 % toutes portes ouvertes** — l'invariant 10 tombe aux deux
+  échelles. Avec +50 % de débit : −0 % et +6 %.
 - **Préserver** — `purity`, `care`, accord **le Repos** (un filon au-dessus de
   0,66 rend une bande de plus). Écrit 32 pb.
 - **`sight` reste dans le tronc** : l'information est la famille la plus sûre et
@@ -152,7 +160,8 @@ d'une journée.
 
 **Le seuil à tenir** (GAME_TRADES §6) : les deux branches gagnent **autant** —
 moins de 10 % d'écart de chiffre d'affaires journalier — en vendant **autre
-chose** — plus de 2× d'écart sur la part de bande haute.
+chose** — plus de 2× d'écart sur la part de bande haute. **À vérifier aux deux
+échelles** (portes T0-T1 et toutes portes), sinon l'écart passe inaperçu.
 
 **Ce que ça renvoie à FOY.** Le coût de restauration d'un filon doit se comparer
 à ce qu'une journée d'Extraire rapporte. Trop bas, personne n'arbitre ; trop
@@ -209,14 +218,41 @@ d'un même métier, l'écart de composition entre elles, et — premier scénari
 par jour ? le document le suppose, l'ancre commune étant le point d'énergie,
 mais ne le vérifie pas).
 
+### MET-11 — L'outil porte un chiffre, et la dernière porte est un monopole (S)
+
+**Deux manques mesurés le 2026-08-01** (GAME_TRADES §7.5 et §7.6), petits en
+code et structurants en jeu.
+
+**L'outil.** GAME_ITEMS promet que *« le palier module le rendement, jamais
+l'accès »* sans jamais dire de combien. Les quatre paliers existent et coûtent
+déjà 50 / 150 / 400 / 1 000 gils. Le chiffre : **+0 / +8 / +18 / +30 %**. Mesuré
+à **×1,11** sur la journée d'un expert — peu, parce que c'est de la quantité,
+donc soumis à la borne de débit. Sa vraie fonction est d'être un **gouffre à
+gils** qui donne au palier 4 une raison d'exister.
+
+**La dernière porte.** `requires_skill` existe déjà sur **11 filons sur 56**
+(`miner-mithril-xs`, `miner-orichalcum-xs`, `fisher-kraken`…) et c'est le levier
+le plus puissant du jeu : l'expert n'est pas le meilleur fournisseur de
+sombracier, il est **le seul**. Il doit être la récompense de **fin d'arbre**,
+jamais un palier intermédiaire.
+
+**Plus le capstone qui manque** : *le filon signé* — une fois par jour, travailler
+un filon comme s'il était à pleine vitalité. Sur un T4 pressé, le plafond passe
+de `clair` à `parfait` : la seule façon régulière d'obtenir du parfait, donc
+d'éveiller une matéria. Borné en fréquence, énorme en valeur, **zéro unité de
+plus**.
+
 ### MET-10 — Le contrat de test transverse (S)
 
-Les **10 invariants** de GAME_TRADES §5, en CI. Les deux qui comptent le plus :
+Les **12 invariants** de GAME_TRADES §5, en CI. Les trois qui comptent le plus :
 
 - **Invariant 5** — la famille « quantité » sous 24 pb par arbre. C'est le seul
   garde-fou contre l'inflation.
 - **Invariant 10** — deux branches gagnent autant en vendant autre chose. Si
   celui-là tombe, la fourche n'est qu'un choix cosmétique.
+- **Invariant 11** — l'invariant 10 se vérifie **à deux échelles** (portes T0-T1
+  et toutes portes). C'est ce qui a fait apparaître que la fourche ne tenait pas
+  au sommet : une mesure à une seule échelle ne l'aurait pas vu.
 
 ---
 
