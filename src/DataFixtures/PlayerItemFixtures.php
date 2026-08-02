@@ -73,15 +73,13 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
             ],
-            'player_leather_skin_1' => [
-                'generic_item' => 'leather_skin_1',
+            // OBJ-02 : les doublons legacy ont disparu — le sac de demo porte
+            // le cuir brut que les recettes consomment reellement, et la
+            // pioche sans palier laisse place a la ligne d'outils.
+            'player_leather_raw' => [
+                'generic_item' => 'leather_raw',
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
-            ],
-            'player_pickaxe' => [
-                'generic_item' => 'pickaxe',
-                'inventory' => 'inventory_bag',
-                'nb_usages' => 100,
             ],
             'player_beer_pint' => [
                 'generic_item' => 'beer_pint',
@@ -291,9 +289,10 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 
         // === Items pour le joueur Remy (un exemplaire de chaque) ===
         $remyBagItems = [
-            // Stuff
-            'life_potion', 'fishing_rod', 'beer_pint', 'mushroom', 'pickaxe',
-            'wood_log', 'leather_skin_1', 'leather_skin_2',
+            // Stuff — OBJ-02 : plus de doublons (pickaxe sans palier,
+            // wood_log, leather_skin_1/2) ; le bois vient de la ligne du bois.
+            'life_potion', 'fishing_rod', 'beer_pint', 'mushroom',
+            'wood_beech',
             'life_domain_parchment', 'miner_domain_parchment', 'herbalist_domain_parchment',
             // Ressources - Minerais
             'ore_ruby', 'ore_iron', 'ore_copper', 'ore_silver', 'ore_gold', 'ore_mithril', 'ore_amethyst_crystal',

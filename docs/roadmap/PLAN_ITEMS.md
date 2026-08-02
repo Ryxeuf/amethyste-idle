@@ -63,10 +63,13 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
       (toute matière d'une famille de récolte est `resource`), objets de
       quête liés (`ItemTaxonomyTest`)
 
-### OBJ-02 — Le ménage (S | ★★ | HAUTE)
+### OBJ-02 — Le ménage (S | ★★ | HAUTE) — ⚙ OBJ-02a livré 2026-08-02 (doublons + fixtures mortes), reste OBJ-02b (recettes hors périmètre)
 > Prérequis : ← OBJ-01
-- [ ] Supprimer les doublons : `wood_log`, `pickaxe` (sans palier),
-      `herb_lavender`, `herb_mint`, `leather_skin_1/2`, `food_bread`
+- [x] Doublons supprimés : `wood_log` (les butins et la quête du menuisier
+      passent à `wood-beech`), `pickaxe` sans palier (les butins passent à
+      `pickaxe_bronze`), `herb_lavender`, `herb_mint`, `leather_skin_1/2`
+      (le sac de démo passe à `leather_raw`), `food_bread` — et les trois
+      exclusions fantômes d'`affinities.yaml` avec eux
 - [ ] Retirer les **8 recettes hors périmètre** et les 3 minerais d'extension
       (`ore-adamantite`, `ore-starmetal`, `ore-voidium`) vers la réserve
       d'extension — `GAME_ZONES` §3 les réserve explicitement aux Extensions 1
@@ -74,10 +77,15 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 - [ ] **Suivi ouvert** : la courbe de recettes perd ses 8 derniers crans. Le haut
       de la chaîne d'artisanat est à re-remplir **dans le périmètre de la base**
       — chantier à instruire avec `PLAN_ZONES` et la carte des minerais
-- [ ] Supprimer les fixtures mortes lisibles (`fixtures/domain.yaml`,
-      `fixtures/game/{skill,spell,monster}/`) — elles annoncent 15 domaines quand
-      la vraie source en a 36, et rien ne signale qu'elles ne sont plus chargées
-- [ ] Tests : aucun doublon de slug, aucune recette infabricable
+- [x] Fixtures mortes supprimées (`fixtures/domain.yaml`,
+      `fixtures/game/{skill,spell,monster}/`) — elles annonçaient 15 domaines
+      quand la vraie source en a 36, et rien ne signalait qu'elles n'étaient
+      plus chargées
+- [x] Tests : aucun doublon de slug (344 slugs, toutes sources), les doublons
+      legacy ne reviennent pas, les fixtures mortes non plus
+      (`ItemCleanupTest`)
+- [ ] **OBJ-02b** : aucune recette infabricable — retrait des 8 recettes et
+      des 3 minerais d'extension, et le test qui les garde dehors
 
 ### OBJ-07 — Les matières (S | ★★ | MOYENNE)
 > Prérequis : ← OBJ-02
