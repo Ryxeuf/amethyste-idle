@@ -55,12 +55,7 @@ class FightHandler
             $this->enchantmentManager->cleanExpiredForPlayer($partyPlayer);
         }
 
-
         foreach ($mobs as $mob) {
-            if ($statMultiplier > 1.0) {
-                $scaledLife = (int) round($mob->getLife() * $statMultiplier);
-                $mob->setLife($scaledLife);
-            }
             $fight->addMob($mob);
             $mob->setFight($fight);
 
