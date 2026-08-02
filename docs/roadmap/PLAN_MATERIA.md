@@ -23,7 +23,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | MAT-01 ✅ | L'élément des monstres | S | ∅ |
-| MAT-02 | La dérivation matéria ← sort | M | ∅ |
+| MAT-02 ✅ | La dérivation matéria ← sort | M | ∅ |
 | MAT-03 | Le catalogue à 200 | M | ← MAT-02 |
 | MAT-04 | Le plancher du jour 1 | M | ← MAT-03 |
 | MAT-05 | Le butin dérivé | M | ← MAT-01, MAT-03 |
@@ -64,19 +64,21 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
       mannequins, aucun monstre faible à son propre élément
       (`MonsterElementTest`)
 
-### MAT-02 — La dérivation matéria ← sort (M | ★★★ | HAUTE)
+### MAT-02 — La dérivation matéria ← sort (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > Une matéria ne s'écrit pas, elle se dérive (GAME_MATERIA §2.1). Ce jalon livre
 > la règle et la convention de slug, avant qu'on génère quoi que ce soit.
-> Prérequis : ∅
-- [ ] Service de dérivation : `spell` → `element`, `name`, `slug`, `price`,
-      `energy_cost`, `type`, `space`
-- [ ] **Convention de slug redressée** : `m<niveau du sort>-<slug du sort>`
-      (`fire-ball` niveau 1 → `m1-fire-ball`). L'actuelle est incohérente —
-      `m1-fire` et `m1-flame` ne disent pas ce qui les distingue
-- [ ] `rarity` **jamais déclarée** : `inferRarity()` la lit déjà du préfixe de
-      slug. Une rareté écrite en dur dans une fixture de matéria est un bug
-- [ ] Grilles par palier figées (prix 130/180/280/320/380, énergie 10/15/20/25/30)
-- [ ] Tests : dérivation complète, unicité des slugs, rareté non déclarée
+- [x] Service de dérivation : `MateriaDerivation::derive(Spell)` →
+      `MateriaBlueprint` (`element`, `name` + traductions dérivées du sort,
+      `slug`, `price`, `energy_cost`, `type`, `space`)
+- [x] **Convention de slug redressée** : `m<niveau du sort>-<slug du sort>`
+      (`fire-ball` niveau 1 → `m1-fire-ball`), portée par `slugFor()` —
+      déductible du sort, donc vérifiable, et la collision impossible
+- [x] `rarity` **jamais déclarée** : `MateriaBlueprint` n'a aucun champ pour
+      elle (ni pour `nb_usages`) — un test le verrouille
+- [x] Grilles par palier figées (prix 130/180/280/320/380, énergie 10/15/20/25/30),
+      constantes publiques du service ; un sort hors palier 1-5 est refusé
+- [x] Tests : dérivation complète, unicité des slugs, rareté non déclarée,
+      grilles exactes, traductions qui suivent le sort (`MateriaDerivationTest`)
 
 ### MAT-03 — Le catalogue à 200 (M | ★★★ | HAUTE) — **le pivot**
 > Une matéria par `unlock` distinct. Plus aucun nœud d'arbre ne promet ce qui
