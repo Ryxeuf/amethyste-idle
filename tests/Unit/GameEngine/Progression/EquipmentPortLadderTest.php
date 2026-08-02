@@ -138,6 +138,12 @@ class EquipmentPortLadderTest extends TestCase
         $shipped = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/Game/SkillFixtures.php');
 
         foreach ($this->catalog()->families() as $key => $family) {
+            // ONB-20b-b : la loi des references historiques ne vaut que pour
+            // les armes — les echelons d'armure n'ont aucun nœud historique a
+            // conserver, ils sont generes (cf. ArmorPortLadderTest).
+            if ('weapon' !== $family['line']) {
+                continue;
+            }
             foreach (['rung2', 'rung3'] as $rung) {
                 self::assertStringContainsString(
                     sprintf("'%s' => [", $family[$rung]),
@@ -174,7 +180,14 @@ class EquipmentPortLadderTest extends TestCase
         ];
 
         $declared = array_keys($tierOneWeapons);
-        $families = array_keys($this->catalog()->families());
+        // ONB-20b-b : la loi ne vaut que pour la ligne des armes — les lignes
+        // d'armure n'ont pas d'« arme de palier 1 », leur palier 1 est
+        // volontairement libre (le kit de depart se porte sans rien) et leur
+        // echelle mord aux paliers 2-3 (cf. ArmorPortLadderTest).
+        $families = array_keys(array_filter(
+            $this->catalog()->families(),
+            static fn (array $family): bool => 'weapon' === $family['line'],
+        ));
         sort($declared);
         sort($families);
 
@@ -289,7 +302,11 @@ class EquipmentPortLadderTest extends TestCase
 
             foreach ([$family['rung2'], $family['rung3']] as $reference) {
                 $slug = str_replace('_', '-', $reference);
-                if (!str_contains($skills, sprintf("'slug' => '%s'", $slug))) {
+                // ONB-20b-b : les echelons d'armure sont generes — leur slug
+                // derive de la reference par la meme convention que la
+                // resolution, il n'apparait donc pas en litteral dans la
+                // source. La loi de resolution, elle, vaut pour tous.
+                if ('weapon' === $family['line'] && !str_contains($skills, sprintf("'slug' => '%s'", $slug))) {
                     $unreachable[] = $key . '/' . $slug;
                     continue;
                 }

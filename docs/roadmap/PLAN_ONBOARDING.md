@@ -49,7 +49,7 @@
 | ONB-19b ✅ | Les sept indicateurs du tunnel + exposition admin | M | ★★ |
 | ONB-20a ✅ | Mains nues (ferme la moitie de D13) | S | ★★★ |
 | ONB-20b-a ✅ | Le port des **armes** par nœuds d'entree (echelon 1) | M | ★★★ |
-| ONB-20b-b | Le port des **armures et outils** (echelles restantes) | M | ★★ |
+| ONB-20b-b ✅ | Le port des **armures et outils** (echelles restantes) | M | ★★ |
 
 ```
 Piste A — Le compte existe    : ONB-01 → ONB-02 → ONB-03 → ONB-04
@@ -586,44 +586,58 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
   - [x] Un sort manquant en base **rate le coup**, il ne lève pas — une exception ici
         recréerait exactement le défaut réparé
   - [x] Une arme sans sort vaut une main vide
+- **ONB-20b-b ✅ LIVRÉ 2026-08-02 — les échelles d'armures et du bouclier.** Quatre
+  lignes (`line: armor` dans `equipment_ports.yaml`) : tissu (9 arbres de sorts),
+  cuir (5 arbres agiles), plaque (7 arbres de mêlée), bouclier (5 porteurs).
+  L'échelon 1 est le nœud d'entrée gratuit ; les échelons 2-3 sont **générés**
+  (les armes réutilisaient des nœuds historiques, les armures n'en avaient aucun),
+  câblés par la même passe (chaînage, domaines, aucune statistique). **Le palier 1
+  des pièces reste libre** — le kit de départ se porte sans rien, la doctrine gate
+  l'évolution, jamais l'arrivée ; les pièces t2/t3 des lignes (fine-linen, hardened,
+  iron, mithril, shadowsilk, dragon…) exigent leur échelon, boucliers compris.
+  Migration de rattrapage (mêmes deux requêtes que 20b-a), affordance A19 déjà
+  servie par `describeMissingPort()`. Les **outils** n'avaient pas besoin d'échelle
+  neuve : leurs nœuds `equip.tool` par palier, chaînés dans les arbres de métier,
+  sont déjà cette échelle (OBJ-05/06). Tests : `ArmorPortLadderTest` + lois
+  communes de `EquipmentPortLadderTest` étendues aux 11 familles
 - **ONB-20b-a ✅ LIVRÉ 2026-07-30 — l'échelle de port des armes.** Découpé au titre de la
   règle #8 : les armes portent l'échelle héritée et le défaut le plus net (porter une hache
   imposait le feu, porter un bâton imposait un arbre de mêlée). Les armures et les outils de
   métier suivent en **ONB-20b-b**
-- [ ] Le prérequis d'équipement par compétence est **déjà en place** (`Item::requirements`
+- [x] Le prérequis d'équipement par compétence est **déjà en place** (`Item::requirements`
       ManyToMany vers `Skill`, `PlayerItemHelper::canBeEquipped()` qui exige *toutes* les
       compétences) — rien à construire, seulement à généraliser
-- [ ] **Les nœuds de port sont les points d'entrée gratuits des arbres** (0 point de domaine).
+- [x] **Les nœuds de port sont les points d'entrée gratuits des arbres** (0 point de domaine).
       Ouvrir un arbre livre immédiatement son kit de port — un maître mage ouvre *port du
       bâton*, *port de la baguette*, *port du tissu*. **Aucun « parchemin de port » à créer** :
       le compte reste à 32 parchemins, un par arbre
-- [ ] **Le port est une échelle, par famille / ligne / outil** : échelon 1 = le port de base
+- [x] **Le port est une échelle, par famille / ligne / outil** : échelon 1 = le port de base
       (palier T1), **gratuit**, nœud d'entrée de l'arbre ; échelons suivants **paliés et
       chaînés** pour les pièces évoluées — l'arc à poulie exige l'arc, le marteau de précision
       exige le marteau ordinaire
-- [ ] **Les compétences d'arme existantes SONT cette échelle et ne bougent pas.**
+- [x] **Les compétences d'arme existantes SONT cette échelle et ne bougent pas.**
       `soldier_weapon_t2` → `soldier_weapon_t3`, `berserk_weapon_t2` → `t3` : chaînées,
       conservées telles quelles. Ce qui manque est **l'échelon 1** (les armes T1 n'ont aucun
       prérequis aujourd'hui) et **les échelles d'armures et d'outils**, inexistantes
-- [ ] **L'échelle suit les paliers d'objets déjà en place** (T1/T2/T3) — n'inventer aucun cran
-- [ ] **Un échelon de port n'est jamais seul sur un palier d'arbre** : il accompagne des
+- [x] **L'échelle suit les paliers d'objets déjà en place** (T1/T2/T3) — n'inventer aucun cran
+- [x] **Un échelon de port n'est jamais seul sur un palier d'arbre** : il accompagne des
       passifs, sinon le rang est un péage
-- [ ] Bénéfice à exploiter : l'échelle donne aux **arbres d'artisanat** une raison de monter
+- [x] Bénéfice à exploiter : l'échelle donne aux **arbres d'artisanat** une raison de monter
       qui n'est pas la liste des recettes — de meilleurs outils
-- [ ] **Nœuds partagés : plusieurs chemins pour la même chose.** « Port de la hache de
+- [x] **Nœuds partagés : plusieurs chemins pour la même chose.** « Port de la hache de
       guerre » existe dans tous les arbres qui l'enseignent ; **en ouvrir un seul suffit**.
       `Skill::domains` est déjà un ManyToMany
-- [ ] **Jamais borné par l'élément.** Les prérequis actuels sont nommés par domaine
+- [x] **Jamais borné par l'élément.** Les prérequis actuels sont nommés par domaine
       (`berserk_weapon_t2` = feu × mêlée, `knight_weapon_t2` = métal × mêlée) et `steel-axe`
       porte `'domain' => 'soldier'` : pris tels quels, porter une hache imposerait un élément,
       ce que DOM-01 a séparé
-- [ ] **L'arme de métier est un nœud entièrement séparé.** Hache de guerre (arbres de mêlée)
+- [x] **L'arme de métier est un nœud entièrement séparé.** Hache de guerre (arbres de mêlée)
       et hache de bûcheron (arbre du bûcheron, ZON-34/DOM-05) : deux nœuds, deux buts. Idem
       pioche, canne, couteau à dépecer — nœuds d'entrée de leurs métiers
-- [ ] **L'affordance (A19)** : une pièce non portable dit **ce qui manque et où l'apprendre**,
+- [x] **L'affordance (A19)** : une pièce non portable dit **ce qui manque et où l'apprendre**,
       jamais un grisé muet. Le crochet existe — `EquipmentController` renvoie `'locked_skill'`
-- [ ] Migration : les personnages existants gardent ce qu'ils peuvent déjà équiper
-- [ ] Tests : attaque possible sans arme ; aucun `EntityNotFoundException` sur un chemin de
+- [x] Migration : les personnages existants gardent ce qu'ils peuvent déjà équiper
+- [x] Tests : attaque possible sans arme ; aucun `EntityNotFoundException` sur un chemin de
       combat ; un échelon ouvert dans **un** arbre autorise la pièce partout ; aucune pièce
       n'exige un élément précis ; **l'échelon 1 de toute échelle est gratuit** ; **aucun palier
       d'arbre ne contient qu'un échelon de port** ; le kit T1 de l'acte I est portable avec le

@@ -66,6 +66,7 @@ App\Entity\Game\Item:
 
   # === Armures Cuir Renforcé — Tier 2 (Uncommon, niveau 8) ===
   hardened_vest (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Plastron de cuir renforce"
     description: "Un plastron de cuir bouilli et renforce d'os, offrant une protection superieure tout en restant leger"
     type: "gear"
@@ -79,6 +80,7 @@ App\Entity\Game\Item:
     level: 8
     space: 2
   hardened_boots (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Bottes de cuir renforce"
     description: "Des bottes de cuir epais renforcees de plaques d'os, robustes et souples"
     type: "gear"
@@ -91,6 +93,7 @@ App\Entity\Game\Item:
     materia_slots: 2
     level: 8
   hardened_gloves (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Gants de cuir renforce"
     description: "Des gants de cuir epais avec des renforts en crocs de bete, ideaux pour le combat"
     type: "gear"
@@ -103,6 +106,7 @@ App\Entity\Game\Item:
     materia_slots: 2
     level: 8
   hardened_belt (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Ceinture de cuir renforce"
     description: "Une ceinture de cuir tanne epaisse, renforcee par des lanieres tressees"
     type: "gear"
@@ -115,6 +119,7 @@ App\Entity\Game\Item:
     materia_slots: 2
     level: 8
   hardened_shoulders (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Epaulieres de cuir renforce"
     description: "Des epaulieres de cuir bouilli ornees de plaques d'os, protectrices et intimidantes"
     type: "gear"
@@ -128,6 +133,7 @@ App\Entity\Game\Item:
     level: 8
     space: 2
   hardened_pants (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Jambieres de cuir renforce"
     description: "Des jambieres de cuir epais avec renforts aux genoux, alliant mobilite et protection"
     type: "gear"
@@ -141,6 +147,7 @@ App\Entity\Game\Item:
     level: 8
     space: 2
   exotic_leather_vest (extends item):
+    requirements: ['@leather_armor_t2']
     name: "Plastron de cuir exotique"
     description: "Un plastron taille dans la fourrure de loup-garou, impregne d'une resistance surnaturelle"
     type: "gear"
@@ -156,6 +163,7 @@ App\Entity\Game\Item:
 
   # === Armures Fer — Tier 2 (Uncommon, niveau 8) ===
   iron_chestplate (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Plastron en fer"
     description: "Un plastron en fer forge, solide et fiable. La protection standard des soldats aguerris."
     type: "gear"
@@ -169,6 +177,7 @@ App\Entity\Game\Item:
     level: 8
     space: 3
   iron_greaves (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Jambieres en fer"
     description: "Des jambieres en fer articulees qui protegent les cuisses et les genoux."
     type: "gear"
@@ -182,6 +191,7 @@ App\Entity\Game\Item:
     level: 8
     space: 2
   iron_boots (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Bottes en fer"
     description: "Des bottes renforcees de plaques de fer, lourdes mais protectrices."
     type: "gear"
@@ -194,6 +204,7 @@ App\Entity\Game\Item:
     materia_slots: 2
     level: 8
   iron_gauntlets (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Gantelets en fer"
     description: "Des gantelets en fer avec jointures renforcees, parfaits pour le combat rapproche."
     type: "gear"
@@ -206,6 +217,7 @@ App\Entity\Game\Item:
     materia_slots: 2
     level: 8
   iron_pauldrons (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Epaulieres en fer"
     description: "Des epaulieres en fer massives qui protegent les epaules et le haut des bras."
     type: "gear"
@@ -219,6 +231,7 @@ App\Entity\Game\Item:
     level: 8
     space: 2
   iron_belt_reinforced (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Ceinture de fer"
     description: "Une ceinture de cuir renforcee de plaques de fer, pratique et resistante."
     type: "gear"
@@ -233,6 +246,7 @@ App\Entity\Game\Item:
 
   # === Armures Mithril — Tier 3 (Rare, niveau 15) ===
   mithril_helm (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Heaume de mithril"
     description: "Un heaume forge dans le mithril, un alliage rare aussi leger que resistant. Brille d'un eclat argente."
     type: "gear"
@@ -246,6 +260,7 @@ App\Entity\Game\Item:
     level: 15
     space: 2
   mithril_cuirass (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Cuirasse de mithril"
     description: "Une cuirasse en mithril etincelante, presque aussi legere que le cuir mais infiniment plus solide."
     type: "gear"
@@ -259,6 +274,7 @@ App\Entity\Game\Item:
     level: 15
     space: 3
   mithril_greaves (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Greves de mithril"
     description: "Des greves en mithril finement ouvragees, offrant une mobilite remarquable pour leur niveau de protection."
     type: "gear"
@@ -272,6 +288,7 @@ App\Entity\Game\Item:
     level: 15
     space: 2
   mithril_sabatons (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Solerets de mithril"
     description: "Des bottes de mithril aux reflets lunaires, silencieuses malgre leur solidite."
     type: "gear"
@@ -284,6 +301,7 @@ App\Entity\Game\Item:
     materia_slots: 3
     level: 15
   mithril_gauntlets (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Gantelets de mithril"
     description: "Des gantelets de mithril aux articulations souples, permettant une dexterite parfaite au combat."
     type: "gear"
@@ -296,6 +314,7 @@ App\Entity\Game\Item:
     materia_slots: 3
     level: 15
   mithril_pauldrons (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Epaulieres de mithril"
     description: "Des epaulieres de mithril ornees de motifs elfiques, aussi belles que fonctionnelles."
     type: "gear"
@@ -309,6 +328,7 @@ App\Entity\Game\Item:
     level: 15
     space: 2
   mithril_girdle (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Ceinturon de mithril"
     description: "Un ceinturon de mithril tresse, renforce de plaques fines mais quasi indestructibles."
     type: "gear"
@@ -479,6 +499,7 @@ App\Entity\Game\Item:
   # Ces objets manquaient : les skills les debloquaient deja, mais ni la recette
   # ni l'objet n'existaient. Le skill s'apprenait sans rien produire.
   iron_chainmail (extends item):
+    requirements: ['@plate_armor_t2']
     name: "Cotte de mailles en fer"
     description: "Des milliers d'anneaux de fer rivetes un a un, la premiere vraie armure d'un forgeron"
     type: "gear"
@@ -492,6 +513,7 @@ App\Entity\Game\Item:
     level: 4
     space: 3
   steel_chainmail (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Cotte de mailles en acier"
     description: "Les memes anneaux, mais trempes : l'acier ne cede pas la ou le fer plie"
     type: "gear"
@@ -505,6 +527,7 @@ App\Entity\Game\Item:
     level: 12
     space: 3
   steel_plate (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Plastron d'acier"
     description: "Une plaque d'acier martelee d'une piece, lourde et sans compromis"
     type: "gear"
@@ -518,6 +541,7 @@ App\Entity\Game\Item:
     level: 14
     space: 4
   heavy_steel_plate (extends item):
+    requirements: ['@plate_armor_t3']
     name: "Harnois d'acier lourd"
     description: "Une armure complete d'acier double de mithril, taillee pour tenir la ligne"
     type: "gear"
@@ -557,6 +581,7 @@ App\Entity\Game\Item:
     level: 14
     space: 2
   dragon_vest (extends item):
+    requirements: ['@leather_armor_t3']
     name: "Plastron d'ecailles de dragon"
     description: "Des ecailles se recouvrant comme des tuiles ; la chaleur glisse dessus sans mordre"
     type: "gear"
@@ -570,6 +595,7 @@ App\Entity\Game\Item:
     level: 24
     space: 3
   dragon_boots (extends item):
+    requirements: ['@leather_armor_t3']
     name: "Bottes d'ecailles de dragon"
     description: "Semelles d'ecailles cousues de lanieres : silencieuses et insensibles a la braise"
     type: "gear"
@@ -583,6 +609,7 @@ App\Entity\Game\Item:
     level: 24
     space: 2
   enchanted_vest (extends item):
+    requirements: ['@leather_armor_t3']
     name: "Plastron de cuir enchante"
     description: "Fourrure de loup-garou tannee dans un bain runique, une gemme enchassee au plexus"
     type: "gear"
@@ -656,6 +683,7 @@ App\Entity\Game\Item:
   # tenue, et la robe de lin est la tenue du debutant lanceur de sorts. A partir
   # du lin fin, le tissu assume ce qu'il est : le support des sorts.
   fine_linen_hood (extends item):
+    requirements: ['@cloth_armor_t2']
     name: "Capuche de lin fin"
     description: "Un lin battu et lisse jusqu'a la soie, borde d'une laniere de cuir souple"
     type: "gear"
@@ -670,6 +698,7 @@ App\Entity\Game\Item:
     materia_slot_type: 'spell'
     level: 8
   fine_linen_robe (extends item):
+    requirements: ['@cloth_armor_t2']
     name: "Robe de lin fin"
     description: "Une robe d'un lin si serre qu'il tombe droit. Les coutures sont invisibles, et c'est la moitie du travail"
     type: "gear"
@@ -685,6 +714,7 @@ App\Entity\Game\Item:
     level: 8
     space: 2
   fine_linen_gloves (extends item):
+    requirements: ['@cloth_armor_t2']
     name: "Mitaines de lin fin"
     description: "Le fil est double au bout des doigts, la ou le geste use la toile"
     type: "gear"
@@ -703,6 +733,7 @@ App\Entity\Game\Item:
   # La fourrure de loup-garou tannee entre dans la trame. Le tailleur cesse ici
   # de travailler le seul lin, et depend pour de bon des autres metiers.
   shadowsilk_hood (extends item):
+    requirements: ['@cloth_armor_t3']
     name: "Capuche de soie d'ombre"
     description: "Du lin tisse serre avec du poil de loup-garou. Elle ne renvoie pas la lumiere, elle la garde"
     type: "gear"
@@ -717,6 +748,7 @@ App\Entity\Game\Item:
     materia_slot_type: 'spell'
     level: 18
   shadowsilk_robe (extends item):
+    requirements: ['@cloth_armor_t3']
     name: "Robe de soie d'ombre"
     description: "Une robe qu'on croit noire jusqu'a la voir bouger. La trame de poil boit ce qui la traverse"
     type: "gear"
@@ -736,6 +768,7 @@ App\Entity\Game\Item:
   # Le sommet de la ligne, et le pendant exact du plastron de cuir enchante :
   # meme palier, meme rarete, meme gemme du joaillier au coeur de la piece.
   archivist_mantle (extends item):
+    requirements: ['@cloth_armor_t3']
     name: "Mantelet de l'archiviste"
     description: "Un mantelet a epaules doubles, cousu pour tenir des heures penche sur une table sans peser"
     type: "gear"
@@ -750,6 +783,7 @@ App\Entity\Game\Item:
     materia_slot_type: 'spell'
     level: 28
   archivist_robe (extends item):
+    requirements: ['@cloth_armor_t3']
     name: "Robe de l'archiviste"
     description: "Une gemme enchantee cousue au col, et dix aunes de lin autour. Ce qu'on lit dedans reste lu"
     type: "gear"
