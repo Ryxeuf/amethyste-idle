@@ -617,6 +617,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
         return [
             MonsterFixtures::class,
             ItemFixtures::class,
+            MateriaCatalogFixtures::class,
             GameItemFixtures::class,
         ];
     }

@@ -17,12 +17,12 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
         // Création des materias pour le joueur demo
         $playerMaterias = [
             'player_materia_soin_1' => [
-                'generic_item' => 'materia_soin',
+                'generic_item' => 'materia_life_heal',
                 'inventory' => 'inventory_materia',
                 'nb_usages' => 10,
             ],
             'player_materia_soin_2' => [
-                'generic_item' => 'materia_soin',
+                'generic_item' => 'materia_life_heal',
                 'inventory' => 'inventory_materia',
                 'nb_usages' => 10,
             ],
@@ -357,7 +357,7 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 
         // Materias pour Remy
         $remyMateriaItems = [
-            'materia_soin', 'materia_fire_ball', 'materia_flame', 'materia_flamer', 'materia_flame_rain',
+            'materia_life_heal', 'materia_fire_ball', 'materia_flame', 'materia_flamer', 'materia_flame_rain',
             'materia_wind_lame', 'materia_stone_throw', 'materia_punishment', 'materia_liana_whip',
             'materia_sharp_blade', 'materia_combustion', 'materia_frost_mist', 'materia_air_chain_lightning',
             'materia_stone_shield', 'materia_steel_riposte', 'materia_savage_bite', 'materia_light_blessing',
@@ -383,6 +383,7 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ItemFixtures::class,
+            MateriaCatalogFixtures::class,
             GameItemFixtures::class,
             InventoryFixtures::class,
         ];

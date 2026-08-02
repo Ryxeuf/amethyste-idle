@@ -24,7 +24,7 @@
 |------|----------|--------|-------------|
 | MAT-01 ✅ | L'élément des monstres | S | ∅ |
 | MAT-02 ✅ | La dérivation matéria ← sort | M | ∅ |
-| MAT-03 | Le catalogue à 200 | M | ← MAT-02 |
+| MAT-03 ✅ | Le catalogue à 200 | M | ← MAT-02 |
 | MAT-04 | Le plancher du jour 1 | M | ← MAT-03 |
 | MAT-05 | Le butin dérivé | M | ← MAT-01, MAT-03 |
 | MAT-06 | Coffres et donjons | S | ← MAT-03 |
@@ -80,19 +80,31 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
 - [x] Tests : dérivation complète, unicité des slugs, rareté non déclarée,
       grilles exactes, traductions qui suivent le sort (`MateriaDerivationTest`)
 
-### MAT-03 — Le catalogue à 200 (M | ★★★ | HAUTE) — **le pivot**
+### MAT-03 — Le catalogue à 200 (M | ★★★ | HAUTE) — **le pivot** — ✅ LIVRÉ 2026-08-02
 > Une matéria par `unlock` distinct. Plus aucun nœud d'arbre ne promet ce qui
 > n'existe pas.
-> Prérequis : ← MAT-02
-- [ ] Générer les **139 matéria manquantes** par dérivation des sorts existants
-      (30 en m1, 67 en m2, 52 en m3, 31 en m4, 20 en m5)
-- [ ] **Renommer les 68 matéria existantes** à la nouvelle convention — le jeu
-      est en pur dev, aucune compatibilité à préserver
-- [ ] `domain` = l'arbre qui porte le nœud ; `null` si plusieurs arbres l'ouvrent
-      (une matéria n'appartient pas à un arbre, elle est *ouverte* par lui)
-- [ ] Découpage : par élément (8 lots), jamais 139 entrées en une passe
-      (règle 8 du CLAUDE.md)
-- [ ] Tests : 200 matéria, une par `unlock`, aucun nœud orphelin
+- [x] Le catalogue entier est **génératif** : `MateriaCatalogFixtures` lit les
+      nœuds `actions.materia.unlock` en base, résout chaque sort et dérive
+      l'objet par `MateriaDerivation` (MAT-02). Les 200 unlocks (répartition
+      30/67/52/31/20 par niveau, au chiffre près du cadrage) sont couverts
+      sans **aucune entrée de données** — la règle 8 est satisfaite par
+      construction : zéro entrée écrite, plutôt que 139 en lots
+- [x] Les 69 matéria manuelles d'`ItemFixtures` **supprimées** — renommées de
+      fait à la convention `m<niveau>-<slug du sort>` par la dérivation. Un
+      nœud qui citerait un sort inexistant **casse le chargement** au lieu de
+      mentir en silence
+- [x] `domain` = l'arbre qui porte le nœud (via `Skill::domains`) ; `null`
+      dès que plusieurs arbres l'ouvrent
+- [x] Les références de fixtures deviennent `materia_<slug du sort>` — la
+      forme que le butin, les quêtes et les inventaires de démo citaient
+      déjà ; seule `materia_soin` (clé non canonique) migre vers
+      `materia_life_heal` (4 sites)
+- [x] Les **7 orphelines** (MAT-07) restent au catalogue via
+      `ORPHAN_SPELLS`, dérivées comme les autres — un test exige qu'une
+      entrée sorte de la liste le jour où un nœud l'ouvre
+- [x] Tests : source unique et nœuds qui ne mentent pas
+      (`MateriaCatalogTest`) ; sur base réelle, une matéria par unlock,
+      slug et élément dérivés du sort (`MateriaCatalogIntegrationTest`)
 
 ### MAT-07 — Le nettoyage (S | ★★ | MOYENNE)
 > Prérequis : ← MAT-03
