@@ -294,7 +294,7 @@ class GameEventFixtures extends Fixture implements DependentFixtureInterface
                     'monster_slug' => 'ancient_wyrm',
                     'map_id' => 2,
                     'coordinates' => '20.20',
-                    'level' => 30,
+                    'tier' => 4,
                 ],
                 'recurring' => true,
                 'recurrence_interval' => 10080, // 7 jours en minutes

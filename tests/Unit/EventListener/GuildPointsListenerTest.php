@@ -50,7 +50,7 @@ class GuildPointsListenerTest extends TestCase
         $player = $this->createMock(Player::class);
         $player->method('isDead')->willReturn(false);
 
-        $mob = $this->createMobWithFight(10, [$player]);
+        $mob = $this->createMobWithFight(3, [$player]);
 
         $this->guildManager->method('getPlayerGuild')
             ->with($player)
@@ -60,8 +60,8 @@ class GuildPointsListenerTest extends TestCase
 
         $this->listener->onMobDead(new MobDeadEvent($mob));
 
-        // level 10 => 1 + floor(10/5) = 3 points
-        $this->assertSame(3, $guild->getPoints());
+        // BES-01 : palier 3 => 4 points
+        $this->assertSame(4, $guild->getPoints());
     }
 
     public function testOnMobDeadNoGuildNoPoints(): void
@@ -69,7 +69,7 @@ class GuildPointsListenerTest extends TestCase
         $player = $this->createMock(Player::class);
         $player->method('isDead')->willReturn(false);
 
-        $mob = $this->createMobWithFight(5, [$player]);
+        $mob = $this->createMobWithFight(2, [$player]);
 
         $this->guildManager->method('getPlayerGuild')
             ->willReturn(null);
@@ -98,7 +98,7 @@ class GuildPointsListenerTest extends TestCase
         $deadPlayer = $this->createMock(Player::class);
         $deadPlayer->method('isDead')->willReturn(true);
 
-        $mob = $this->createMobWithFight(10, [$deadPlayer]);
+        $mob = $this->createMobWithFight(3, [$deadPlayer]);
 
         $this->guildManager->expects($this->never())->method('getPlayerGuild');
         $this->em->expects($this->once())->method('flush');
@@ -162,7 +162,7 @@ class GuildPointsListenerTest extends TestCase
     /**
      * @param Player[] $players
      */
-    private function createMobWithFight(int $level, array $players): Mob&MockObject
+    private function createMobWithFight(int $tier, array $players): Mob&MockObject
     {
         $fight = $this->createMock(Fight::class);
         $fight->method('getPlayers')->willReturn(new ArrayCollection($players));
@@ -170,7 +170,7 @@ class GuildPointsListenerTest extends TestCase
         $mob = $this->createMock(Mob::class);
         $mob->method('isSummoned')->willReturn(false);
         $mob->method('getFight')->willReturn($fight);
-        $mob->method('getLevel')->willReturn($level);
+        $mob->method('getTier')->willReturn($tier);
 
         return $mob;
     }

@@ -135,13 +135,12 @@ corrections:
     plant-moonflower: water
 
     # --- Les reserves d'extension -------------------------------------------
-    # Trois minerais declares et sans filon dans le jeu de base (GAME_ZONES
-    # § 3). Ils entrent ici parce qu'ils existent en fixtures : les laisser hors
-    # table ferait croire a un oubli le jour ou l'extension les sourcera. Deux
-    # se corrigent parce que leur nom **est** leur flux ; l'adamantite garde la
-    # ligne, faute de canon qui dise autre chose.
-    ore-starmetal: light
-    ore-voidium: dark
+    # OBJ-02b : les trois minerais d'extension (adamantite, astretal, voidium)
+    # ne sont plus livres du tout — leurs definitions et leurs corrections
+    # d'affinite (astretal → light, voidium → dark) vivent a
+    # docs/EXTENSION_RESERVE.md. Le test de conformite rejette une correction
+    # qui nomme une matiere inexistante, et c'est ce qui garantit qu'elles
+    # reviendront **avec** leurs filons, jamais avant.
 
 # -----------------------------------------------------------------------------
 # Le substrat — aucune affinite, et ce n'est pas un oubli.
@@ -162,13 +161,10 @@ without_affinity:
 # **ou** inscrit ici — de sorte qu'une piece `leather-cape` livree demain fasse
 # rougir la CI au lieu de devenir silencieusement une matiere premiere.
 #
-# On y trouve deux familles :
-#   - l'equipement de cuir — neuf pieces, qui portent le nom de leur matiere ;
-#   - trois restes d'inventaire — une buche de decor que ZON-34 a remplacee par
-#     quatre essences reelles, et deux peaux qu'ECO-02 a defaites au profit de
-#     `leather-raw`. Ni filon, ni recette, ni depecage. Leur inventer une
-#     affinite les ferait ressusciter un jour au motif qu'elles avaient l'air
-#     completes.
+# On n'y trouve plus qu'une famille : l'equipement de cuir — neuf pieces, qui
+# portent le nom de leur matiere. Les trois restes d'inventaire qui vivaient
+# ici (une buche de decor, deux peaux sans consommateur) ont ete supprimes par
+# OBJ-02 — le test de conformite rejette une exclusion qui ne nomme plus rien.
 excluded:
     - 'leather-armor'
     - 'leather-belt'
@@ -179,6 +175,3 @@ excluded:
     - 'leather-pants'
     - 'leather-quiver'
     - 'leather-shoulders'
-    - 'wood-log'
-    - 'leather-skin-1'
-    - 'leather-skin-2'

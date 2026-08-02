@@ -350,7 +350,7 @@ rencontre » (`GAME_ONBOARDING`) — n'a rien a lire.
 | Echelle | Sert a | Ne sert **pas** a |
 |---|---|---|
 | `level` (1-40, avec trous) | XP de materia, reputation, quetes de guilde, affichage | la difficulte |
-| `difficulty` (1-5) | le gate de butin (`MonsterItem::minDifficulty`) | la difficulte ressentie |
+| `difficulty` (1-5) — **remplacee par `rank` (BES-01)** | le gate de butin (devenu `MonsterItem::minRank`) | la difficulte ressentie |
 | `isBoss` (bool, 10 monstres) | multiplicateur d'XP, `bossPhases` | un rang — il manque « elite » |
 | `life`/`hit`/`speed`/sorts/IA | **la difficulte reelle** | — |
 

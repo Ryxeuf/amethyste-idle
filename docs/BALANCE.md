@@ -90,7 +90,7 @@ resistance elementaire cesse d'etre un chiffre pour devenir un choix.
 
 Les items `guaranteed = true` droppent toujours (100%), independamment de la probabilite.
 
-Le champ `minDifficulty` sur `MonsterItem` permet de restreindre un drop aux instances haute difficulte du monstre.
+Le champ `minRank` sur `MonsterItem` (BES-01) permet de restreindre un drop aux rangs eleves du monstre (`elite`, `boss`).
 
 ---
 

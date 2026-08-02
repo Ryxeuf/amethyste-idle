@@ -492,7 +492,7 @@ class ZoneController extends AbstractController
         // n'en a aucune).
         $mob->setZone($zone);
         $mob->setLife($monster->getLife());
-        $mob->setLevel($monster->getLevel());
+        $mob->setTier($monster->getTier());
         $mob->setNocturnal($nocturnal);
 
         return $mob;

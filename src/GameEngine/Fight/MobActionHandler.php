@@ -403,7 +403,6 @@ class MobActionHandler
         $monsterSlug = $summonConfig['monster_slug'] ?? null;
         $countPerSummon = $summonConfig['count'] ?? 1;
         $cooldownTurns = $summonConfig['cooldown'] ?? 3;
-        $levelOffset = $summonConfig['level_offset'] ?? 0;
 
         if ($monsterSlug === null) {
             $this->logger->warning('[MobActionHandler] Summon config missing monster_slug');
@@ -427,13 +426,16 @@ class MobActionHandler
         }
 
         $messages = [];
-        $summonedLevel = max(1, $summoner->getLevel() + $levelOffset);
+        // BES-01 : l'invoque vit au palier de son invocateur — le rang et le
+        // palier ont remplace l'echelle de niveau, et un decalage n'y a plus
+        // de sens.
+        $summonedTier = $summoner->getTier();
 
         for ($i = 0; $i < $actualCount; ++$i) {
             $summonedMob = new Mob();
             $summonedMob->setMonster($monsterDef);
             $summonedMob->setLife($monsterDef->getLife());
-            $summonedMob->setLevel($summonedLevel);
+            $summonedMob->setTier($summonedTier);
             $summonedMob->setSummoned(true);
             $summonedMob->setFight($fight);
             $summonedMob->setMap(null);

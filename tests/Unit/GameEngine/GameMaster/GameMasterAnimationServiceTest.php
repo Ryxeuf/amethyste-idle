@@ -61,7 +61,7 @@ class GameMasterAnimationServiceTest extends TestCase
     {
         $monster = new Monster();
         $monster->setName('Loup');
-        $monster->setLevel(4);
+        $monster->setTier(4);
         $monster->setLife(30);
 
         return $monster;
@@ -87,7 +87,7 @@ class GameMasterAnimationServiceTest extends TestCase
             $this->assertSame($monster, $mob->getMonster());
             // Le monstre d'animation est ordinaire : un mob qui frapperait plus
             // fort qu'un autre rendrait la soiree illisible.
-            $this->assertSame(4, $mob->getLevel());
+            $this->assertSame(4, $mob->getTier());
             $this->assertSame(30, $mob->getLife());
         }
     }

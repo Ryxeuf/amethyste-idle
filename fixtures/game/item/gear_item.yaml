@@ -40,7 +40,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'uncommon'
-    element: 'light'
     materia_slots: 1
   leather_shoulders (extends item):
     name: "Epaulières de cuir"
@@ -76,7 +75,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 6
-    materia_slots: 1
+    materia_slots: 2
     level: 8
     space: 2
   hardened_boots (extends item):
@@ -89,7 +88,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 4
-    materia_slots: 1
+    materia_slots: 2
     level: 8
   hardened_gloves (extends item):
     name: "Gants de cuir renforce"
@@ -101,7 +100,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 4
-    materia_slots: 1
+    materia_slots: 2
     level: 8
   hardened_belt (extends item):
     name: "Ceinture de cuir renforce"
@@ -113,7 +112,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 3
-    materia_slots: 1
+    materia_slots: 2
     level: 8
   hardened_shoulders (extends item):
     name: "Epaulieres de cuir renforce"
@@ -125,7 +124,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 5
-    materia_slots: 1
+    materia_slots: 2
     level: 8
     space: 2
   hardened_pants (extends item):
@@ -138,7 +137,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 5
-    materia_slots: 1
+    materia_slots: 2
     level: 8
     space: 2
   exotic_leather_vest (extends item):
@@ -151,7 +150,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 10
-    materia_slots: 2
+    materia_slots: 3
     level: 15
     space: 3
 
@@ -166,7 +165,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 8
-    materia_slots: 1
+    materia_slots: 2
     level: 8
     space: 3
   iron_greaves (extends item):
@@ -179,7 +178,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 6
-    materia_slots: 1
+    materia_slots: 2
     level: 8
     space: 2
   iron_boots (extends item):
@@ -192,7 +191,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 5
-    materia_slots: 1
+    materia_slots: 2
     level: 8
   iron_gauntlets (extends item):
     name: "Gantelets en fer"
@@ -204,7 +203,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 5
-    materia_slots: 1
+    materia_slots: 2
     level: 8
   iron_pauldrons (extends item):
     name: "Epaulieres en fer"
@@ -216,7 +215,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 6
-    materia_slots: 1
+    materia_slots: 2
     level: 8
     space: 2
   iron_belt_reinforced (extends item):
@@ -229,7 +228,7 @@ App\Entity\Game\Item:
     nbUsages: 150
     rarity: 'uncommon'
     protection: 3
-    materia_slots: 1
+    materia_slots: 2
     level: 8
 
   # === Armures Mithril — Tier 3 (Rare, niveau 15) ===
@@ -243,7 +242,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 12
-    materia_slots: 2
+    materia_slots: 3
     level: 15
     space: 2
   mithril_cuirass (extends item):
@@ -256,7 +255,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 14
-    materia_slots: 2
+    materia_slots: 3
     level: 15
     space: 3
   mithril_greaves (extends item):
@@ -269,7 +268,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 10
-    materia_slots: 2
+    materia_slots: 3
     level: 15
     space: 2
   mithril_sabatons (extends item):
@@ -282,7 +281,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 8
-    materia_slots: 2
+    materia_slots: 3
     level: 15
   mithril_gauntlets (extends item):
     name: "Gantelets de mithril"
@@ -294,7 +293,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 8
-    materia_slots: 2
+    materia_slots: 3
     level: 15
   mithril_pauldrons (extends item):
     name: "Epaulieres de mithril"
@@ -306,7 +305,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 10
-    materia_slots: 2
+    materia_slots: 3
     level: 15
     space: 2
   mithril_girdle (extends item):
@@ -319,7 +318,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'rare'
     protection: 6
-    materia_slots: 2
+    materia_slots: 3
     level: 15
 
   # === Anneaux — Tier 1 (Common) ===
@@ -328,6 +327,7 @@ App\Entity\Game\Item:
     description: "Un anneau taillé dans un os de monstre, rugueux mais solide"
     type: "gear"
     slug: 'bone-ring'
+    materia_slots: 1
     price: 25
     gear_location: 'ring_1'
     nbUsages: -1
@@ -356,9 +356,8 @@ App\Entity\Game\Item:
     gear_location: 'ring_1'
     nbUsages: -1
     rarity: 'uncommon'
-    element: 'fire'
     level: 5
-    materia_slots: 1
+    materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"fire","amount":8}'
   sapphire_ring (extends item):
     name: "Anneau de saphir"
@@ -369,9 +368,8 @@ App\Entity\Game\Item:
     gear_location: 'ring_2'
     nbUsages: -1
     rarity: 'rare'
-    element: 'water'
     level: 8
-    materia_slots: 1
+    materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"water","amount":8}'
 
   # === Anneaux — Tier 3 (Epic) ===
@@ -384,7 +382,6 @@ App\Entity\Game\Item:
     gear_location: 'ring_1'
     nbUsages: -1
     rarity: 'epic'
-    element: 'earth'
     level: 12
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"earth","amount":12}'
@@ -397,9 +394,8 @@ App\Entity\Game\Item:
     gear_location: 'ring_2'
     nbUsages: -1
     rarity: 'epic'
-    element: 'dark'
     level: 15
-    materia_slots: 2
+    materia_slots: 3
     effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
 
   # === Amulettes — Tier 1 (Common) ===
@@ -408,6 +404,7 @@ App\Entity\Game\Item:
     description: "Un pendentif sculpté dans du bois d'orme, simple mais réconfortant"
     type: "gear"
     slug: 'wooden-pendant'
+    materia_slots: 1
     price: 20
     gear_location: 'neck'
     nbUsages: -1
@@ -436,9 +433,8 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'uncommon'
-    element: 'fire'
     level: 6
-    materia_slots: 1
+    materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"fire","amount":8}'
   wind_pendant (extends item):
     name: "Pendentif du vent"
@@ -449,9 +445,8 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'rare'
-    element: 'air'
     level: 8
-    materia_slots: 1
+    materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"air","amount":8}'
 
   # === Amulettes — Tier 3 (Epic) ===
@@ -464,7 +459,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'epic'
-    element: 'light'
     level: 12
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"light","amount":12}'
@@ -477,9 +471,8 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'epic'
-    element: 'dark'
     level: 15
-    materia_slots: 2
+    materia_slots: 3
     effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
 
   # ── ECO-19 : resultats des recettes citees par les arbres de talent ────────
@@ -508,7 +501,7 @@ App\Entity\Game\Item:
     nbUsages: 180
     rarity: 'uncommon'
     protection: 8
-    materia_slots: 1
+    materia_slots: 2
     level: 12
     space: 3
   steel_plate (extends item):
@@ -521,7 +514,7 @@ App\Entity\Game\Item:
     nbUsages: 200
     rarity: 'uncommon'
     protection: 11
-    materia_slots: 2
+    materia_slots: 3
     level: 14
     space: 4
   heavy_steel_plate (extends item):
@@ -534,7 +527,7 @@ App\Entity\Game\Item:
     nbUsages: 250
     rarity: 'rare'
     protection: 18
-    materia_slots: 2
+    materia_slots: 3
     level: 22
     space: 5
   leather_quiver (extends item):
@@ -547,7 +540,7 @@ App\Entity\Game\Item:
     nbUsages: 120
     rarity: 'common'
     protection: 1
-    materia_slots: 1
+    materia_slots: 2
     level: 6
     space: 2
   hardened_quiver (extends item):
@@ -560,7 +553,7 @@ App\Entity\Game\Item:
     nbUsages: 180
     rarity: 'uncommon'
     protection: 3
-    materia_slots: 1
+    materia_slots: 3
     level: 14
     space: 2
   dragon_vest (extends item):
@@ -572,9 +565,8 @@ App\Entity\Game\Item:
     gear_location: 'chest'
     nbUsages: 220
     rarity: 'rare'
-    element: 'fire'
     protection: 16
-    materia_slots: 2
+    materia_slots: 3
     level: 24
     space: 3
   dragon_boots (extends item):
@@ -586,9 +578,8 @@ App\Entity\Game\Item:
     gear_location: 'foot'
     nbUsages: 200
     rarity: 'rare'
-    element: 'fire'
     protection: 9
-    materia_slots: 1
+    materia_slots: 3
     level: 24
     space: 2
   enchanted_vest (extends item):
@@ -675,7 +666,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 2
     effect: '{"action":"magic_boost","amount":9}'
-    materia_slots: 1
+    materia_slots: 2
     materia_slot_type: 'spell'
     level: 8
   fine_linen_robe (extends item):
@@ -689,7 +680,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 3
     effect: '{"action":"magic_boost","amount":16}'
-    materia_slots: 1
+    materia_slots: 2
     materia_slot_type: 'spell'
     level: 8
     space: 2
@@ -704,7 +695,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 2
     effect: '{"action":"magic_boost","amount":9}'
-    materia_slots: 1
+    materia_slots: 2
     materia_slot_type: 'spell'
     level: 8
 
@@ -720,10 +711,9 @@ App\Entity\Game\Item:
     gear_location: 'head'
     nbUsages: 200
     rarity: 'rare'
-    element: 'dark'
     protection: 3
     effect: '{"action":"magic_boost","amount":20}'
-    materia_slots: 2
+    materia_slots: 3
     materia_slot_type: 'spell'
     level: 18
   shadowsilk_robe (extends item):
@@ -735,10 +725,9 @@ App\Entity\Game\Item:
     gear_location: 'chest'
     nbUsages: 200
     rarity: 'rare'
-    element: 'dark'
     protection: 5
     effect: '{"action":"magic_boost","amount":34}'
-    materia_slots: 2
+    materia_slots: 3
     materia_slot_type: 'spell'
     level: 18
     space: 2
@@ -757,7 +746,7 @@ App\Entity\Game\Item:
     rarity: 'epic'
     protection: 5
     effect: '{"action":"magic_boost","amount":32}'
-    materia_slots: 2
+    materia_slots: 3
     materia_slot_type: 'spell'
     level: 28
   archivist_robe (extends item):

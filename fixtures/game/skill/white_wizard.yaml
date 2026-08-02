@@ -1,7 +1,0 @@
-App\Entity\Game\Skill:
-  stormcaller_materia_1 (extends skill):
-    title: "Apprenti foudromancien"
-    slug: stormcaller-materia-1
-    description: "Permet d'utiliser les matéria de foudromancien de niveau 1"
-    requiredPoints: 0
-    domain: '@stormcaller'

@@ -24,7 +24,7 @@ class FightEdgeCasesTest extends AbstractIntegrationTestCase
     public function testPlayerWithNoWeaponCanStillAttack(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         // Retirer tout equipement du joueur (gear = 0 signifie non equipe)
         foreach ($player->getInventories() as $inventory) {
@@ -66,7 +66,7 @@ class FightEdgeCasesTest extends AbstractIntegrationTestCase
     public function testFleeFromCombat(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         // Sauvegarder les coordonnees avant le combat
         $lastCoordinates = $player->getLastCoordinates();
@@ -121,7 +121,7 @@ class FightEdgeCasesTest extends AbstractIntegrationTestCase
     public function testPlayerDeathInCombat(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         $maxLife = $player->getMaxLife();
         $this->assertGreaterThan(0, $maxLife);

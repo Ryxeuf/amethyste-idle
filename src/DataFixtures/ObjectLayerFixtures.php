@@ -436,25 +436,8 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             ],
 
             // --- T4 dans les mines ---
-            'spot-adamantite-xs' => [
-                'name' => 'Filon d\'adamantite',
-                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
-                'coordinates' => '68.2',
-                'requiredToolType' => 'pickaxe',
-                'respawnDelay' => 900,
-                'items' => [['slug' => 'ore-adamantite', 'min' => 1, 'max' => 1]],
-                'map' => 'map_4',
-            ],
-            'spot-starmetal-xs' => [
-                'name' => 'Météorite d\'astrétal',
-                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
-                'coordinates' => '70.2',
-                'requiredToolType' => 'pickaxe',
-                'respawnDelay' => 900,
-                'nightOnly' => true,
-                'items' => [['slug' => 'ore-starmetal', 'min' => 1, 'max' => 1]],
-                'map' => 'map_4',
-            ],
+            // OBJ-02b : les spots d'adamantite et d'astretal partent avec
+            // leurs minerais a la reserve d'extension (EXTENSION_RESERVE.md).
             'spot-orichalcum-xs' => [
                 'name' => 'Filon d\'orichalque ancien',
                 'type' => ObjectLayer::TYPE_HARVEST_SPOT,
@@ -473,16 +456,6 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'requiredToolType' => 'pickaxe',
                 'respawnDelay' => 1800,
                 'items' => [['slug' => 'ore-amethyst-crystal', 'min' => 1, 'max' => 1]],
-                'map' => 'map_4',
-            ],
-            'spot-voidium-xs' => [
-                'name' => 'Fissure de voidium',
-                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
-                'coordinates' => '78.2',
-                'requiredToolType' => 'pickaxe',
-                'respawnDelay' => 3600,
-                'nightOnly' => true,
-                'items' => [['slug' => 'ore-voidium', 'min' => 1, 'max' => 1]],
                 'map' => 'map_4',
             ],
         ];

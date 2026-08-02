@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Recipe;
 use App\Enum\GuildQuestType;
+use App\Enum\MonsterRank;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GuildQuestManager
@@ -199,8 +200,10 @@ class GuildQuestManager
      */
     private function buildKillQuest(): ?array
     {
+        // BES-01 : les boss restent hors des quetes de chasse — le rang a
+        // absorbe le booleen `isBoss`, le critere suit.
         $monsters = $this->entityManager->getRepository(Monster::class)->findBy(
-            ['isBoss' => false],
+            ['rank' => [MonsterRank::Common, MonsterRank::Elite]],
         );
 
         if (\count($monsters) === 0) {
@@ -209,7 +212,9 @@ class GuildQuestManager
 
         $monster = $monsters[array_rand($monsters)];
         $goal = self::KILL_GOALS[array_rand(self::KILL_GOALS)];
-        $multiplier = 1 + ($monster->getLevel() / 10);
+        // Recalibrage BES-01 : 1 + palier (T0-T4 → x1 a x5), la ou l'ancien
+        // 1 + niveau/10 donnait x1.1 a x5 sur l'echelle 1-40.
+        $multiplier = 1 + $monster->getTier();
 
         return [
             'target' => $monster->getSlug(),

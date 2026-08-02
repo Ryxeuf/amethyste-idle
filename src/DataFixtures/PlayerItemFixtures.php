@@ -14,57 +14,50 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Création des materias pour le joueur demo
+        // Création des materias pour le joueur demo.
+        // MAT-07 : la materia est le build du personnage, jamais un consommable
+        // (GAME_MATERIA §2.4) — aucun nb_usages fini ici, chaque exemplaire
+        // reprend l'illimité (-1) de son objet générique.
         $playerMaterias = [
             'player_materia_soin_1' => [
-                'generic_item' => 'materia_soin',
+                'generic_item' => 'materia_life_heal',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 10,
             ],
             'player_materia_soin_2' => [
-                'generic_item' => 'materia_soin',
+                'generic_item' => 'materia_life_heal',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 10,
             ],
             'player_materia_stone_throw' => [
                 'generic_item' => 'materia_stone_throw',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 20,
             ],
             'player_materia_punishment' => [
                 'generic_item' => 'materia_punishment',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 8,
             ],
             'player_materia_liana_whip' => [
                 'generic_item' => 'materia_liana_whip',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 15,
             ],
             'player_materia_sharp_blade' => [
                 'generic_item' => 'materia_sharp_blade',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 25,
             ],
             'player_materia_wind_lame' => [
                 'generic_item' => 'materia_wind_lame',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 20,
             ],
             'player_materia_flame' => [
                 'generic_item' => 'materia_flame',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 25,
             ],
             'player_materia_flamer' => [
                 'generic_item' => 'materia_flamer',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 15,
             ],
             'player_materia_flame_rain' => [
                 'generic_item' => 'materia_flame_rain',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 5,
             ],
         ];
 
@@ -80,15 +73,13 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
             ],
-            'player_leather_skin_1' => [
-                'generic_item' => 'leather_skin_1',
+            // OBJ-02 : les doublons legacy ont disparu — le sac de demo porte
+            // le cuir brut que les recettes consomment reellement, et la
+            // pioche sans palier laisse place a la ligne d'outils.
+            'player_leather_raw' => [
+                'generic_item' => 'leather_raw',
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
-            ],
-            'player_pickaxe' => [
-                'generic_item' => 'pickaxe',
-                'inventory' => 'inventory_bag',
-                'nb_usages' => 100,
             ],
             'player_beer_pint' => [
                 'generic_item' => 'beer_pint',
@@ -239,9 +230,10 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
         // Création des materias pour le joueur
         foreach ($playerMaterias as $key => $data) {
             $playerItem = new PlayerItem();
-            $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
+            $genericItem = $this->getReference($data['generic_item'], Item::class);
+            $playerItem->setGenericItem($genericItem);
             $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
-            $playerItem->setNbUsages($data['nb_usages']);
+            $playerItem->setNbUsages($genericItem->getNbUsages());
             $playerItem->setCreatedAt(new \DateTime());
             $playerItem->setUpdatedAt(new \DateTime());
 
@@ -297,9 +289,10 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 
         // === Items pour le joueur Remy (un exemplaire de chaque) ===
         $remyBagItems = [
-            // Stuff
-            'life_potion', 'fishing_rod', 'beer_pint', 'mushroom', 'pickaxe',
-            'wood_log', 'leather_skin_1', 'leather_skin_2',
+            // Stuff — OBJ-02 : plus de doublons (pickaxe sans palier,
+            // wood_log, leather_skin_1/2) ; le bois vient de la ligne du bois.
+            'life_potion', 'fishing_rod', 'beer_pint', 'mushroom',
+            'wood_beech',
             'life_domain_parchment', 'miner_domain_parchment', 'herbalist_domain_parchment',
             // Ressources - Minerais
             'ore_ruby', 'ore_iron', 'ore_copper', 'ore_silver', 'ore_gold', 'ore_mithril', 'ore_amethyst_crystal',
@@ -357,7 +350,7 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 
         // Materias pour Remy
         $remyMateriaItems = [
-            'materia_soin', 'materia_fire_ball', 'materia_flame', 'materia_flamer', 'materia_flame_rain',
+            'materia_life_heal', 'materia_fire_ball', 'materia_flame', 'materia_flamer', 'materia_flame_rain',
             'materia_wind_lame', 'materia_stone_throw', 'materia_punishment', 'materia_liana_whip',
             'materia_sharp_blade', 'materia_combustion', 'materia_frost_mist', 'materia_air_chain_lightning',
             'materia_stone_shield', 'materia_steel_riposte', 'materia_savage_bite', 'materia_light_blessing',
@@ -383,6 +376,7 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ItemFixtures::class,
+            MateriaCatalogFixtures::class,
             GameItemFixtures::class,
             InventoryFixtures::class,
         ];

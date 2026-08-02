@@ -111,7 +111,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'xp' => 50,
                     'gold' => 30,
                     'items' => [
-                        'materia_soin' => 1,
+                        'materia_life_heal' => 1,
                     ],
                 ],
             ],
@@ -231,7 +231,10 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'The village carpenter needs wood for his creations. Gather some logs to help him.'],
                 'requirements' => [
                     'collect' => [
-                        'wood_log' => 8,
+                        // OBJ-02 : la buche generique a disparu — le menuisier
+                        // demande du hetre, l'essence d'entree de la ligne du
+                        // bois (slug canonique, comme plant-mint plus bas).
+                        'wood-beech' => 8,
                     ],
                 ],
                 'rewards' => [
@@ -1201,7 +1204,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'xp' => 70,
                     'gold' => 40,
                     'items' => [
-                        'materia_soin' => 1,
+                        'materia_life_heal' => 1,
                     ],
                 ],
                 'isHidden' => true,
@@ -2677,6 +2680,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         return [
             GameEventFixtures::class,
             SeasonArcFixtures::class,
+            MateriaCatalogFixtures::class,
             MapFixtures::class,
         ];
     }

@@ -95,24 +95,6 @@ App\Entity\Game\Item:
   # =====================================================================
   # T4 — ÉPIQUE (zones dangereuses)
   # =====================================================================
-  ore_adamantite (extends item):
-    id: 90
-    name: 'Minerai d''adamantite'
-    description: 'Le minerai le plus dur connu, capable de briser toute lame ordinaire.'
-    type: 'resource'
-    slug: 'ore-adamantite'
-    price: 250
-    rarity: 'epic'
-    domain: '@miner'
-  ore_starmetal (extends item):
-    id: 91
-    name: 'Astrétal'
-    description: 'Un métal tombé des étoiles, parcouru d''éclats cosmiques violet-bleu.'
-    type: 'resource'
-    slug: 'ore-starmetal'
-    price: 300
-    rarity: 'epic'
-    domain: '@miner'
   ore_orichalcum (extends item):
     id: 92
     name: 'Minerai d''orichalque'
@@ -124,11 +106,16 @@ App\Entity\Game\Item:
     domain: '@miner'
 
   # =====================================================================
-  # T5 — LÉGENDAIRE (zones endgame)
+  # OBJ-02b — les minerais d'extension quittent la base.
   #
-  # L'amethystite y figure encore par son rang de fichier, plus par son
-  # palier : elle n'en a plus (voir juste dessous). Le voidium reste le seul
-  # legendaire de la ligne.
+  # L'adamantite et l'astretal (Extension 1) et le voidium (Extension 2)
+  # vivaient ici sans un seul filon : GAME_ZONES §3 les reserve aux
+  # extensions, et une matiere livree sans source est un mensonge
+  # d'interface. Leur definition est versee a docs/EXTENSION_RESERVE.md.
+  # L'orichalque reste : son filon existe (Cite ensevelie), c'est l'intrant
+  # de base que les alliages d'extension viendront consommer (GAME_WORLD
+  # §5.5). L'amethystite y figure encore par son rang de fichier, plus par
+  # son palier : elle n'en a plus (voir juste dessous).
   # =====================================================================
   # ZON-40 — l'amethystite quitte le palier legendaire.
   #
@@ -154,13 +141,4 @@ App\Entity\Game\Item:
     slug: 'ore-amethyst-crystal'
     price: 15
     rarity: 'common'
-    domain: '@miner'
-  ore_voidium (extends item):
-    id: 93
-    name: 'Voidium'
-    description: 'Un minerai noir-violet parcouru de particules du Vide. Le plus rare et le plus dangereux à extraire.'
-    type: 'resource'
-    slug: 'ore-voidium'
-    price: 1500
-    rarity: 'legendary'
     domain: '@miner'

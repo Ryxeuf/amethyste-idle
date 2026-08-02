@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\MonsterRank;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -26,8 +27,12 @@ class MonsterItem
     #[ORM\Column(name: 'guaranteed', type: 'boolean', options: ['default' => false])]
     private bool $guaranteed = false;
 
-    #[ORM\Column(name: 'min_difficulty', type: 'integer', nullable: true)]
-    private ?int $minDifficulty = null;
+    /**
+     * Rang minimal du monstre pour que cette ligne de butin s'applique
+     * (BES-01) — `null` : la ligne vaut pour tous les rangs.
+     */
+    #[ORM\Column(name: 'min_rank', type: 'string', length: 20, nullable: true, enumType: MonsterRank::class)]
+    private ?MonsterRank $minRank = null;
 
     #[ORM\ManyToOne(targetEntity: Monster::class, inversedBy: 'monsterItems')]
     #[ORM\JoinColumn(name: 'monster_id', referencedColumnName: 'id')]
@@ -123,14 +128,14 @@ class MonsterItem
         return $this;
     }
 
-    public function getMinDifficulty(): ?int
+    public function getMinRank(): ?MonsterRank
     {
-        return $this->minDifficulty;
+        return $this->minRank;
     }
 
-    public function setMinDifficulty(?int $minDifficulty): self
+    public function setMinRank(?MonsterRank $minRank): self
     {
-        $this->minDifficulty = $minDifficulty;
+        $this->minRank = $minRank;
 
         return $this;
     }

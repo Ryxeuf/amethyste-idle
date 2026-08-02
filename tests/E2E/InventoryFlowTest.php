@@ -129,18 +129,30 @@ class InventoryFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('.equip-stat-pill--def');
 
         // 2. Unequip all gear first to get a clean baseline
+        //
+        // Chaque desequipement doit etre **constate** avant de soumettre le
+        // suivant : sans cela la boucle relit un DOM que Turbo n'a pas encore
+        // remplace, resoumet le meme bouton, et empile jusqu'a douze ecritures
+        // concurrentes dont la derniere reponse ecrase l'equipement du point 4.
         for ($i = 0; $i < 12; ++$i) {
-            $hasBtn = static::$pantherClient->executeScript(
-                "const btn = document.querySelector('.equip-unequip-btn');
-                 if (btn) { btn.closest('form').requestSubmit(); return true; }
-                 return false;"
-            );
-            if (!$hasBtn) {
+            $remaining = $this->countSelector('.equip-unequip-btn');
+            if (0 === $remaining) {
                 break;
             }
-            $this->waitForTurbo();
-            $this->waitForSelector('.equip-stat-pill--def');
+
+            static::$pantherClient->executeScript(
+                "document.querySelector('.equip-unequip-btn').closest('form').requestSubmit();"
+            );
+
+            // Une piece qui refuserait de se retirer n'est pas un echec de ce
+            // test : on s'arrete la, et la reference du point 3 vaut ce qu'elle
+            // vaut — les assertions qui suivent sont toutes relatives a elle.
+            if (!$this->waitUntil(fn (): bool => $this->countSelector('.equip-unequip-btn') < $remaining)) {
+                break;
+            }
         }
+
+        $this->waitForSelector('.equip-stat-pill--def');
 
         // 3. Read baseline stats (nothing equipped)
         $baselineStats = $this->readEquipmentStats();
@@ -165,32 +177,53 @@ class InventoryFlowTest extends AbstractE2ETestCase
             $this->markTestSkipped('Aucun equipement avec DEF > 0 pour le test de cycle complet.');
         }
 
-        $this->waitForTurbo();
-        $this->waitForSelector('.equip-stat-pill--def');
-
         // 5. Verify stats increased
-        $afterEquipStats = $this->readEquipmentStats();
+        $afterEquipDef = $this->waitForDef(fn (int $def): bool => $def > $baselineStats['def']);
         $this->assertGreaterThan(
             $baselineStats['def'],
-            $afterEquipStats['def'],
+            $afterEquipDef,
             'La DEF doit augmenter apres equipement'
         );
 
         // 6. Unequip the item
+        $this->assertTrue(
+            $this->waitUntil(fn (): bool => $this->selectorExists('.equip-unequip-btn')),
+            'Le bouton de desequipement doit exister une fois la piece equipee.'
+        );
         static::$pantherClient->executeScript(
             "document.querySelector('.equip-unequip-btn').closest('form').requestSubmit();"
         );
 
-        $this->waitForTurbo();
-        $this->waitForSelector('.equip-stat-pill--def');
-
         // 7. Verify stats returned to baseline
-        $restoredStats = $this->readEquipmentStats();
+        $restoredDef = $this->waitForDef(fn (int $def): bool => $def === $baselineStats['def']);
         $this->assertSame(
             $baselineStats['def'],
-            $restoredStats['def'],
+            $restoredDef,
             'La DEF doit revenir a la valeur initiale apres desequipement'
         );
+    }
+
+    /**
+     * Attend que la DEF affichee satisfasse une condition, puis la rend.
+     *
+     * On lit la consequence de l'ecriture, jamais l'horloge : si le fragment
+     * n'est pas encore revenu, la valeur relue est celle d'avant et l'attente
+     * continue. En cas d'expiration, la derniere valeur lue est rendue telle
+     * quelle — l'assertion de l'appelant produit alors le vrai message d'erreur.
+     *
+     * @param callable(int):bool $isSettled
+     */
+    private function waitForDef(callable $isSettled): int
+    {
+        $def = 0;
+
+        $this->waitUntil(function () use (&$def, $isSettled): bool {
+            $def = $this->readEquipmentStats()['def'];
+
+            return $isSettled($def);
+        });
+
+        return $def;
     }
 
     /**

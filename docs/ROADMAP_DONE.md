@@ -7,7 +7,453 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-31 (**WIK-02 + WIK-03** — le wiki joueur devient public, et un test l'empeche de mentir ; **ZON-41** — les illustrations de zone cessent d'etre volatiles ; **3e source de cuivre** — le premier metal se trouve dans la premiere zone ; **Restes ZON-26b** — le Marais et la Crete declarent enfin leur faune ; **ONB-19b** — le tunnel d'entree cesse d'etre invisible ; **RET-10** — les quatre dettes d'ecran du hub, et la semaine qui se date ; **RET-09** — le lundi devient un etat du bloc, et la chronique des foyers trouve sa premiere surface joueur) ; 2026-07-30 (**RET-08** — le bloc « La semaine » sur le hub ; **ZON-40** — l'amethyste affleure, et trois signatures cessent d'etre inertes ; **ZON-39** — la loi de nommage rejoint les libelles, et une loi qui derive des types ; **NAR-20** — l'acte I dit qui vous etes et sur quoi le village est bati) ; 2026-07-29 (**ONB-07a** — le peuple cesse de porter des chiffres ; **ONB-06** — l'unicite d'un nom cesse d'etre une question d'octets ; **ONB-20a** — les mains nues, aucun chemin de combat ne peut plus echouer faute d'arme ; **ONB-15** — l'acte I cesse de viser la carte de test ; **ONB-03** — le bannissement cesse d'etre decoratif, et la connexion mene la ou le joueur en est ; **ONB-01** — le compte peut naitre : `/register` cesse de lever un 404, ouverture du plan d'onboarding ; **ZON-16b** — la carte se clique par son territoire, et la brume couvre ce qu'on n'a pas parcouru ; **FAC-01** — l'identite naît de ce qu'on renonce : tension par paires, patronage exclusif, et les bonus de palier qui s'appliquent enfin ; **DOM-07 + DOM-08** — la porte qu'on savait la, et le contrat qui tient le reste : **plan des domaines complet 8/8** ; **DOM-06** — le choix pris a l'etabli se voit enfin dans l'arbre ; **DOM-05** — la hache arrive avec celui a qui elle sert ; **DOM-04** — le renoncement se joue dans l'arbre, pas entre les arbres ; **DOM-03** — la piece decide de ce qu'elle accepte ; **DOM-02** — la borne est ce qu'on porte, jamais un interdit ; **DOM-01** — un passif ne sert plus tous les gestes a la fois, ouverture du plan des domaines ; **ZON-33** — les lois de zone valent contrat, **plan de contenu des zones complet 7/7** ; **ZON-36** — chaque ressource est la materialisation mineure d'un flux, la loi 10 ; **ZON-35** — les recoltes harmonisees, plus une matiere sans debouche ni sans source ; **ECO-31** — le tailleur, ou les mages cessent de s'habiller en cuir, **Piste H complete 3/3** ; **ECO-30** — le charpentier, ou quatre essences cessent d'etre orphelines ; **ECO-29** — le cuisinier, sept poissons cessent d'etre orphelins ; **ZON-34** — la ligne du bois, cinquieme recolte ; **ZON-32** — une zone, une facon dont le temps s'est depose ; **ZON-31** — les Dunes d'Ambre cessent d'etre la zone la plus pauvre ; **ZON-30** — les Vallons d'Aubepine, la zone-ecole du depeceur, ouverture du plan de contenu des zones ; **FOY-16** — le contrat du pilier territorial, **plan foyers complet 17/17** ; **FOY-15** — la saison devient une boucle plutot qu'un calendrier ; **FOY-13** — l'axe qui divise tout le monde devient un batiment, **Piste E complete** ; **FOY-12** — la sanction devient une depense politique, **Piste D complete**) ; 2026-07-28 (**FOY-11** — l'extraction laisse une trace, la Paleur ; **ECO-27** — aucun craft ne detruit de la valeur, **Piste G complete** ; **ECO-26** — la purete se propage par le maillon le plus faible ; **ECO-25** — la chaine de production gagne une verticale ; **RET-07** — la semaine est une, **plan de retention complet 7/7** ; **RET-04** — l'assiduite en paliers, jamais en serie ; **FOY-14** — la chronique des foyers : le journal de monde grave qui a bati quoi, en bien comme en mal ; **ECO-24c** — le savoir redevient une porte : les filons de haut palier se gatent sur competence ; **FOY-09** — une grande ville boit la croissance de ses voisines, **Piste C complete** ; **FOY-08** — la Crue, le pilier devient politique ; **RET-06** — l’Affleurement de la semaine ; **RET-05** — le chantier de la semaine ; **ECO-23** — la purete se negocie, **Piste F 3/4** ; **ECO-22** — d'ou vient la bande ; **ECO-21** — bandes de purete, ouverture de la Piste F ; **RET-02b** — la commission se livre au foyer ; **FOY-07** — on voyage pour crafter, **Piste B complete** ; **FOY-06** — le rang ouvre des portes, et `group_dungeon` quitte la table ; **FOY-10** — l'etiage s'annonce et la chute se borne ; **RET-02a** — socle de la commission hebdomadaire ; **RET-03** — la commande de la semaine ; **FOY-04** — le foyer devient un chantier visible, **Piste A complete** ; **FOY-05** — ce que le rang ouvre, et ce qu'il ne ferme jamais ; **FOY-03** — ce qui n'est plus frequente s'amincit ; **FOY-02** — l'activite des joueurs devient la matiere du monde ; **ZON-38** — la recolte redevient observable ; **FOY-01** — le foyer d'une zone, ouverture du pilier territorial ; **Recalibrage des filons** — le monde cesse d'etre surdimensionne ; **ZON-37** — la regeneration d'un filon devient un debit ; **FOY-17b** — le facteur de monde ; **FOY-17a** — mesurer la charge du monde, pas les tetes ; **ECO-24b-b** — les cuirs du tanneur ont enfin une source ; **ECO-24b-a** — la ligne du metal a enfin ses sources ; **RET-01** — la rotation hebdomadaire des defis de guilde, premier jalon du plan Retention) ; 2026-07-27 (**Refonte des trois zones de depart** : village, foret et mines decrits de bout en bout en YAML — exploration jour/nuit, filons, populations et habitants declares ; six ressources rendues atteignables, pool nocturne de la foret repare, boss de zone, Codex et chaine de quetes « Le cercle de Lumiere » ; **Tableau de bord — le hub devient un hub** : reprise, attentes actionnables et recap remplacent l'equipement porte et la barre de statut redondante ; **ZON-07b** : rendement par point d'energie — six competences de recolte promettaient un bonus sans l'accorder ; **ZON-19c** : le donjon de groupe devient atteignable — moteur livre mais sans contenu de groupe ni bouton de lancement ; **plafond d'energie d'action porte a 240** (24 h de regen) ; **correctifs competences & montures** : l'apprentissage dit pourquoi il refuse, l'arbre n'affiche plus le verrouille, le catalogue de montures cesse d'etre une boutique ; **correctifs pivot — position, inventaire, administration** : un joueur ne reste plus sans zone, l'inventaire cesse de proposer l'impossible, les ecrans d'administration parlent zone ; **tache 134 jalon F.0** — l'activation du planificateur rendue sure ; **tache 134 jalon F** — audit de scaling, decouverte que le calendrier des taches ne tourne pas ; **ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-08-02 (**OBJ-04** — les emplacements de materia progressent (plancher 1/2/3 par palier, 73 pieces relevees) et les armes de lanceur rejoignent le tissu cote Spell ; le versant Technique attend ARC, dette documentee — **4/8** ; **OBJ-03b** — le palier t1 etait deja complet (le set de depart de l'onboarding), la grille 3 paliers x 7 formes est verrouillee — **OBJ-03 complet, 3/8** ; **OBJ-03a** — l'equipement redevient neutre : plus une piece ne porte d'element, les 56 pieces elementaires fusionnent en 14 neutres, et le build passe aux emplacements de materia ; **OBJ-02b** — le hors-perimetre quitte la base : 7 recettes et 3 minerais d'extension verses a la reserve, le grand elixir reecrit en base, plus une recette infabricable — **OBJ-02 complet** ; **OBJ-02a** — le menage, premiere moitie : les sept doublons legacy supprimes au profit des lignes reelles, et les fixtures mortes qui annonçaient 15 domaines disparaissent ; **OBJ-01** — la taxonomie alignee sur les 5 types du code : 60 matieres rejoignent l'onglet Materiaux, les objets de quete se distinguent par la liaison, ouverture du plan objets ; **MAT-08** — les tests du plan materia : les 7 invariants de GAME_MATERIA §6 en CI, l'obtenabilite a mordu (21 m2 sans canal, corriges par trois retiers), **plan materia complet 8/8** ; **MAT-07** — le nettoyage : plus une materia consommable, plus une materia sans accord — les sept orphelines raccrochees au nœud terminal de l'arbre de leur element ; **MAT-06** — coffres et donjons : le palier moyen dans les coffres indexes sur la zone, le sommet du catalogue reserve aux donjons ; **MAT-05** — le butin derive : un monstre lache des materia de son element, la table de butin cesse de s'ecrire a la main ; **MAT-04** — le plancher du jour 1 : les materia d'entree ont des marchands, a une liaison du Fanal au plus, et plus rien du build d'entree ne depend du hasard ; **MAT-03** — le catalogue a 200 : les materia cessent de s'ecrire, elles se derivent des nœuds et des sorts, 69 entrees manuelles supprimees ; **BES-06** — le contrat du bestiaire : les huit invariants tenus par des tests nommes, **plan bestiaire complet 6/6** ; **BES-05** — le piege de lecture est retire : HitChanceCalculator supprime, et le balayage emporte deux orphelins de plus ; **BES-04** — la faille du milieu est refermee : les 12 cases palier × rang se remplissent par redistribution, aucun monstre cree ; **BES-03** — une seule source de faune : zones.yaml devient la source unique du peuplement, MobFixtures et ses 91 mobs par coordonnees disparaissent ; **BES-02** — les stats se derivent du gabarit tier × rang : 61 monstres sur 65 quittent l'ecriture a la main, et le saut de vie de ×4 ne peut plus revenir ; **BES-01** — deux axes, tier et rang : les trois echelles de monstre qui ne disaient pas la difficulte disparaissent, et les consommateurs sont recalibres dans le meme geste ; **MAT-02** — la derivation materia ← sort : la regle et la convention de slug, avant de generer quoi que ce soit ; **MAT-01** — l'element des monstres : le butin derive a son prerequis, et le flair de l'Orc a enfin quelque chose a lire ; ouverture du plan materia) ; 2026-07-31 (**WIK-02 + WIK-03** — le wiki joueur devient public, et un test l'empeche de mentir ; **ZON-41** — les illustrations de zone cessent d'etre volatiles ; **3e source de cuivre** — le premier metal se trouve dans la premiere zone ; **Restes ZON-26b** — le Marais et la Crete declarent enfin leur faune ; **ONB-19b** — le tunnel d'entree cesse d'etre invisible ; **RET-10** — les quatre dettes d'ecran du hub, et la semaine qui se date ; **RET-09** — le lundi devient un etat du bloc, et la chronique des foyers trouve sa premiere surface joueur) ; 2026-07-30 (**RET-08** — le bloc « La semaine » sur le hub ; **ZON-40** — l'amethyste affleure, et trois signatures cessent d'etre inertes ; **ZON-39** — la loi de nommage rejoint les libelles, et une loi qui derive des types ; **NAR-20** — l'acte I dit qui vous etes et sur quoi le village est bati) ; 2026-07-29 (**ONB-07a** — le peuple cesse de porter des chiffres ; **ONB-06** — l'unicite d'un nom cesse d'etre une question d'octets ; **ONB-20a** — les mains nues, aucun chemin de combat ne peut plus echouer faute d'arme ; **ONB-15** — l'acte I cesse de viser la carte de test ; **ONB-03** — le bannissement cesse d'etre decoratif, et la connexion mene la ou le joueur en est ; **ONB-01** — le compte peut naitre : `/register` cesse de lever un 404, ouverture du plan d'onboarding ; **ZON-16b** — la carte se clique par son territoire, et la brume couvre ce qu'on n'a pas parcouru ; **FAC-01** — l'identite naît de ce qu'on renonce : tension par paires, patronage exclusif, et les bonus de palier qui s'appliquent enfin ; **DOM-07 + DOM-08** — la porte qu'on savait la, et le contrat qui tient le reste : **plan des domaines complet 8/8** ; **DOM-06** — le choix pris a l'etabli se voit enfin dans l'arbre ; **DOM-05** — la hache arrive avec celui a qui elle sert ; **DOM-04** — le renoncement se joue dans l'arbre, pas entre les arbres ; **DOM-03** — la piece decide de ce qu'elle accepte ; **DOM-02** — la borne est ce qu'on porte, jamais un interdit ; **DOM-01** — un passif ne sert plus tous les gestes a la fois, ouverture du plan des domaines ; **ZON-33** — les lois de zone valent contrat, **plan de contenu des zones complet 7/7** ; **ZON-36** — chaque ressource est la materialisation mineure d'un flux, la loi 10 ; **ZON-35** — les recoltes harmonisees, plus une matiere sans debouche ni sans source ; **ECO-31** — le tailleur, ou les mages cessent de s'habiller en cuir, **Piste H complete 3/3** ; **ECO-30** — le charpentier, ou quatre essences cessent d'etre orphelines ; **ECO-29** — le cuisinier, sept poissons cessent d'etre orphelins ; **ZON-34** — la ligne du bois, cinquieme recolte ; **ZON-32** — une zone, une facon dont le temps s'est depose ; **ZON-31** — les Dunes d'Ambre cessent d'etre la zone la plus pauvre ; **ZON-30** — les Vallons d'Aubepine, la zone-ecole du depeceur, ouverture du plan de contenu des zones ; **FOY-16** — le contrat du pilier territorial, **plan foyers complet 17/17** ; **FOY-15** — la saison devient une boucle plutot qu'un calendrier ; **FOY-13** — l'axe qui divise tout le monde devient un batiment, **Piste E complete** ; **FOY-12** — la sanction devient une depense politique, **Piste D complete**) ; 2026-07-28 (**FOY-11** — l'extraction laisse une trace, la Paleur ; **ECO-27** — aucun craft ne detruit de la valeur, **Piste G complete** ; **ECO-26** — la purete se propage par le maillon le plus faible ; **ECO-25** — la chaine de production gagne une verticale ; **RET-07** — la semaine est une, **plan de retention complet 7/7** ; **RET-04** — l'assiduite en paliers, jamais en serie ; **FOY-14** — la chronique des foyers : le journal de monde grave qui a bati quoi, en bien comme en mal ; **ECO-24c** — le savoir redevient une porte : les filons de haut palier se gatent sur competence ; **FOY-09** — une grande ville boit la croissance de ses voisines, **Piste C complete** ; **FOY-08** — la Crue, le pilier devient politique ; **RET-06** — l’Affleurement de la semaine ; **RET-05** — le chantier de la semaine ; **ECO-23** — la purete se negocie, **Piste F 3/4** ; **ECO-22** — d'ou vient la bande ; **ECO-21** — bandes de purete, ouverture de la Piste F ; **RET-02b** — la commission se livre au foyer ; **FOY-07** — on voyage pour crafter, **Piste B complete** ; **FOY-06** — le rang ouvre des portes, et `group_dungeon` quitte la table ; **FOY-10** — l'etiage s'annonce et la chute se borne ; **RET-02a** — socle de la commission hebdomadaire ; **RET-03** — la commande de la semaine ; **FOY-04** — le foyer devient un chantier visible, **Piste A complete** ; **FOY-05** — ce que le rang ouvre, et ce qu'il ne ferme jamais ; **FOY-03** — ce qui n'est plus frequente s'amincit ; **FOY-02** — l'activite des joueurs devient la matiere du monde ; **ZON-38** — la recolte redevient observable ; **FOY-01** — le foyer d'une zone, ouverture du pilier territorial ; **Recalibrage des filons** — le monde cesse d'etre surdimensionne ; **ZON-37** — la regeneration d'un filon devient un debit ; **FOY-17b** — le facteur de monde ; **FOY-17a** — mesurer la charge du monde, pas les tetes ; **ECO-24b-b** — les cuirs du tanneur ont enfin une source ; **ECO-24b-a** — la ligne du metal a enfin ses sources ; **RET-01** — la rotation hebdomadaire des defis de guilde, premier jalon du plan Retention) ; 2026-07-27 (**Refonte des trois zones de depart** : village, foret et mines decrits de bout en bout en YAML — exploration jour/nuit, filons, populations et habitants declares ; six ressources rendues atteignables, pool nocturne de la foret repare, boss de zone, Codex et chaine de quetes « Le cercle de Lumiere » ; **Tableau de bord — le hub devient un hub** : reprise, attentes actionnables et recap remplacent l'equipement porte et la barre de statut redondante ; **ZON-07b** : rendement par point d'energie — six competences de recolte promettaient un bonus sans l'accorder ; **ZON-19c** : le donjon de groupe devient atteignable — moteur livre mais sans contenu de groupe ni bouton de lancement ; **plafond d'energie d'action porte a 240** (24 h de regen) ; **correctifs competences & montures** : l'apprentissage dit pourquoi il refuse, l'arbre n'affiche plus le verrouille, le catalogue de montures cesse d'etre une boutique ; **correctifs pivot — position, inventaire, administration** : un joueur ne reste plus sans zone, l'inventaire cesse de proposer l'impossible, les ecrans d'administration parlent zone ; **tache 134 jalon F.0** — l'activation du planificateur rendue sure ; **tache 134 jalon F** — audit de scaling, decouverte que le calendrier des taches ne tourne pas ; **ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## OBJ-04 — les emplacements types et progressifs (2026-08-02)
+
+> [`PLAN_ITEMS.md`](roadmap/PLAN_ITEMS.md). Le cœur du build : `materiaSlotType` existait,
+> `MateriaGearSetter` le lisait, et 9 pieces sur 178 le renseignaient.
+
+**Les emplacements progressent enfin.** GAME_WORLD §2.1 promettait que l'equipement de haut
+niveau offre plus d'emplacements ; le jeu livrait t1=1, t2=1, t3=1-2. Le plancher devient
+**1 / 2 / 3 par bande de niveau** (1-4 / 5-12 / 13+), sur tout le vestiaire, PHP et YAML —
+73 pieces relevees, un plancher jamais un ecretage (les uniques gardent leur avance).
+Migration idempotente pour les bases existantes.
+
+**Le versant Spell de la derivation par famille.** Les armes de lanceur au-dessus du palier
+d'entree rejoignent le tissu (`t2-staff`, `t3-staff`, `guardian-thorn-staff` → `Spell`) —
+exactement ce que `domain_catalog.yaml` annonce (« Batons, baguettes et tissu »). **Le
+versant Technique est une dette declaree sur ARC** : aucune materia de technique n'existe
+encore (« le geste d'arme devient une materia » est ARC-01→10), et le garde-fou DOM-03
+interdit — a raison — un emplacement que rien ne peut remplir : typer la plaque aujourd'hui
+murerait 95 % du vestiaire contre la seule famille de materia livree.
+`MateriaSlotTypingTest` verifie la progression sur 100 % du vestiaire, les lanceurs types,
+et maintient le plancher jour 1 comme l'exception.
+
+---
+
+## OBJ-03b — le palier t1, verifie plutot que re-cree (2026-08-02) — OBJ-03 complet
+
+> [`PLAN_ITEMS.md`](roadmap/PLAN_ITEMS.md), seconde moitie d'OBJ-03. Le plan demandait de
+> « completer le palier t1, qui ne compte que 5 pieces » — un constat perime.
+
+**Le t1 existait deja.** Le set de depart livre par l'onboarding — `starter_*` (bouclier,
+heaume, plastron, jambieres, bottes, gants) plus l'epee de bois — couvre exactement les
+7 formes de la grille au niveau 1. Plutot que de creer des doublons, le jalon verifie et
+verrouille : `GearNeutralityTest` exige desormais la grille **3 paliers × 7 formes** sans
+trou (t1 = set de depart, t2 = trempe, t3 = elite). Une piece qui disparait — ou un retour
+du constat errone — casse la CI.
+
+---
+
+## OBJ-03a — l'equipement redevient neutre (2026-08-02)
+
+> [`PLAN_ITEMS.md`](roadmap/PLAN_ITEMS.md), premiere moitie d'OBJ-03 (regle 8 — la seconde
+> completera le palier t1). La grille elementaire ne bouclait pas : t2 couvrait quatre
+> elements, t3 les quatre autres, aucun element n'avait de progression — et la completer
+> aurait demande 168 pieces, pour une variable qui n'est pas celle du build.
+
+**La piece ne porte plus d'element.** Plus une seule, PHP comme YAML : les 56 pieces
+elementaires fusionnent en **une piece par forme et par palier** (14 neutres — epee,
+bouclier, heaume, cuirasse, jambieres, bottes, gants × t2/t3, dans le prolongement de la
+grille d'armes neutre t1-t3 livree par DOM) ; les 2 cosmetiques, les 11 pieces uniques de
+boss et les 13 pieces YAML perdent le champ, leur identite restant dans le nom et les
+effets. Le build vit dans les emplacements de materia (GAME_ITEMS §3.2), jamais dans le
+vestiaire — c'est OBJ-04 qui les typera et les fera progresser.
+
+**Les consommateurs suivent.** 76 lignes de butin remappees vers les pieces neutres, et les
+quatre sets elementaires t3 (Acier Runique, Predateur Sauvage, Aurore Sacree, Abime
+Eternel) fusionnent en un **Set de l'Elite** neutre sur la grille t3. `GearNeutralityTest`
+verrouille les trois invariants : aucune piece avec un element, le vestiaire elementaire ne
+revient pas, la grille t2/t3 sans trou.
+
+---
+
+## OBJ-02b — le hors-perimetre quitte la base (2026-08-02) — OBJ-02 complet
+
+> [`PLAN_ITEMS.md`](roadmap/PLAN_ITEMS.md), seconde moitie d'OBJ-02. GAME_ZONES §3 reserve
+> l'adamantite et l'astretal a l'Extension 1, le voidium a l'Extension 2 — mais leurs
+> definitions, des recettes et des nœuds d'arbre vivaient dans la base, sans un seul filon.
+
+**Une recette eternellement infabricable est un mensonge d'interface.** Les 3 minerais, les
+7 recettes qui butaient dessus (lingots d'adamantite et d'orichalque, gemme prismatique,
+bijoux legendaires, lame et anneau de maitre), les 3 spots legacy et les 2 nœuds de minage
+qui les promettaient sont verses a **`docs/EXTENSION_RESERVE.md`** — un fichier, pas du
+contenu livre. L'arbre du mineur est recable, son capstone garde ses bonus sans plus
+promettre un filon absent, et les nœuds maitres des artisans restent en **dette declaree**
+(`RECIPES_TO_AUTHOR`) : le haut de la chaine est a re-remplir dans le perimetre de la base.
+
+**Deux nuances decouvertes en route.** Le Grand elixir du maitre alchimiste ne butait que
+par la gemme prismatique : il est **reecrit en base** (la gemme enchantee la remplace)
+plutot que retire — sans lui, le fruit du vide (raccorde par ZON-35) redevenait une recolte
+sans debouche. Et l'orichalque garde son filon (Cite ensevelie) mais perd son alliage :
+c'est l'intrant de base des alliages d'extension (GAME_WORLD §5.5), exception nommee de
+`HarvestHarmonyTest` en attendant son debouche de base. `RecipeCraftabilityTest` verrouille
+l'invariant 8 : tout ingredient resout vers un objet livre, et le hors-perimetre ne revient
+pas sans ses filons. L'echelle du metal de ProductionChainTest s'arrete desormais au
+mithril, et les listes EXTENSION_RESERVED des tests de zone se vident — la reserve est un
+fichier, pas une exception de test.
+
+---
+
+## OBJ-02a — le menage, doublons et fixtures mortes (2026-08-02)
+
+> [`PLAN_ITEMS.md`](roadmap/PLAN_ITEMS.md), premiere moitie d'OBJ-02 (regle 8 — la seconde,
+> OBJ-02b, retirera les recettes hors perimetre et les minerais d'extension).
+
+**Une matiere a un slug et un seul.** Les sept doublons legacy disparaissent au profit des
+lignes reelles : la buche de decor (`wood_log`) cede aux essences du bois — les butins de
+monstre et la quete du menuisier passent a `wood-beech` —, la pioche sans palier cede a
+`pickaxe_bronze`, les herbes prefixees `herb-` a leurs jumelles `plant-` recoltables, les
+deux peaux sans consommateur a `leather_raw`/`leather_thick` (ECO-02 l'avait diagnostique,
+jamais acheve), et le pain double au pain. Les trois exclusions fantomes d'`affinities.yaml`
+partent avec eux — le test de conformite rejette une exclusion qui ne nomme plus rien.
+
+**Une fixture morte ment a qui la lit.** `fixtures/domain.yaml` et
+`fixtures/game/{skill,spell,monster}/` — 104 Ko que plus rien ne charge, et qui annonçaient
+15 domaines quand la vraie source en a 36 — sont supprimes. `ItemCleanupTest` verrouille les
+trois invariants : aucun doublon de slug (344 slugs, toutes sources), les doublons legacy ne
+reviennent pas, les fixtures mortes non plus.
+
+---
+
+## OBJ-01 — la taxonomie alignee sur 5 types (2026-08-02)
+
+> [`PLAN_ITEMS.md`](roadmap/PLAN_ITEMS.md), premier jalon du plan objets. Le code porte
+> 5 constantes (`stuff`/`gear`/`materia`/`resource`/`tool`), les donnees en portaient 12 —
+> et l'onglet Materiaux, qui filtre sur `isResource()`, cachait 57 matieres sur 91.
+
+**Les donnees s'alignent sur le code, jamais l'inverse.** `crafted`, `plant`, `ore` et
+`herb` deviennent `resource` (57 objets) ; `quest`, `food` et `potion` deviennent `stuff`
+(11) ; `weapon` devient `gear` (4). Le test de contrat en a attrape **trois de plus** que le
+plan n'avait pas comptees : `wood-log` et les deux peaux, matieres de recolte historiquement
+`stuff`. Migration idempotente pour les bases existantes, et les consommateurs suivent : le
+catalogue de ressources et son listener ne filtrent plus que sur `resource`, le formulaire
+admin offre enfin les 5 types, et le badge du catalogue lit le **prefixe de slug** — la
+famille fine n'est jamais un champ, c'est deja la cle d'`affinities.yaml` et de
+`purity.yaml`.
+
+**Un objet de quete est un `stuff` lie.** La liaison a l'obtention (ECO-01) porte la
+distinction — les deux objets de quete non lies le deviennent. `ItemTaxonomyTest` verrouille
+les trois invariants : les 5 types seulement (PHP + YAML), toute matiere d'une famille de
+recolte dans l'onglet Materiaux, tout objet de quete lie.
+
+---
+
+## MAT-08 — les tests du plan materia (2026-08-02) — plan materia complet 8/8
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md). Les 7 invariants de GAME_MATERIA §6 tenus par
+> des tests nommes, et le plan qui a rendu le jeu jouable se referme.
+
+**L'invariant qui mord.** Six des sept invariants etaient deja couverts au fil des jalons ;
+le septieme — *toute materia est obtenable par au moins un canal* — ne l'etait par personne,
+et pour cause : **21 m2 n'avaient aucun canal**. Le butin est le canal normal des m1-m3, mais
+ni le feu, ni l'air, ni la lumiere n'avaient de monstre au T2. `MateriaObtainabilityTest`
+verifie desormais chaque materia contre les quatre canaux, sur les especes reellement
+placees — jamais sur le seul catalogue.
+
+**Trois retiers, pas un monstre cree.** La salamandre redescend au T2 et niche pres des
+forges des Mines (la zone de la ligne du feu), la sylphe et le feu follet montent au T2 —
+le feu follet vivait deja au Marais (T2). Le taiju prend le cran d'elite que la sylphe
+laisse en Foret, le troll redevient le tout-venant de la Crete (cibles BES-04 tenues :
+6 communs, 3 elites, 1 boss par palier), et sa ceinture perd la garde `minRank` qui l'aurait
+rendue introuvable. Le m1-healing-touch, que plus aucun gibier T1 de lumiere ne porte,
+rejoint l'etal d'Elionor au temple. En complement : la rarete se deduit du palier en base
+(invariant 5) et aucune materia n'est consommable en base non plus (invariant 6).
+
+---
+
+## MAT-07 — le nettoyage (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md). Deux contradictions residuelles du canon :
+> des materia qui se presentaient comme des consommables, et sept materia qu'aucun arbre
+> n'ouvrait.
+
+**Plus une materia consommable.** Le catalogue derive ne fixait deja jamais de charges
+(l'illimite -1 de l'entite) ; les dix exemplaires du joueur demo qui portaient des
+`nb_usages` finis (5 a 25) reprennent celui de leur objet generique. La materia est le build
+du personnage, jamais une charge qui s'epuise (GAME_MATERIA §2.4) — et rien en combat ne la
+decomptait de toute facon.
+
+**Plus une materia sans accord.** Les sept orphelines rejoignent le nœud terminal de l'arbre
+de leur element, sur le motif pose par le defenseur et le pretre (nœud a 100 points entre le
+rang 4 et l'ultime) : Explosion solaire chez le pyromancien, Maelstrom glacial chez
+l'hydromancien, Tempete de foudre chez le foudromancien, Lame d'orichalque chez le chevalier,
+Eveil primordial chez le dompteur, Pacte des ombres chez le sorcier — et Feu (`flamer`, sort
+de niveau 2) en milieu d'arbre du pyromancien. `ORPHAN_SPELLS` est vide et reste le filet de
+securite du catalogue. `MateriaCleanupTest` verrouille les deux invariants.
+
+---
+
+## MAT-06 — coffres et donjons (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md). Les coffres d'exploration ne donnaient que des
+> gils, et les donjons n'avaient aucun contenu propre.
+
+**Le coffre suit la zone.** Un coffre sur dix contient une materia du palier moyen ou haut —
+m3 dans les zones T1-T2, m4 en T3-T4 (`Zone::tier`, pose par BES-01) — d'un element tire au
+hasard. Les neuf autres gardent leurs gils : la materia est le bonus, pas la raison du coffre.
+
+**Le donjon est le seul canal du m5.** Sur une reussite **fraiche** (aucune dans la fenetre
+glissante de ZON-20), chaque membre recoit une materia m4 — m5 une fois sur cinq. La
+recompense decroissante protegeait les gils du farm ; celle-ci protege le sommet du catalogue.
+C'est la premiere raison mecanique d'entrer en donjon, et DON-04 en derivera `lootPreview`.
+
+---
+
+## MAT-05 — le butin derive (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md). La voie normale et abondante du canon : le
+> monde livrait 9 materia distinctes sur 31 lignes de butin ecrites a la main.
+
+**La table se derive, comme la materia.** `MateriaLootTable` porte la regle actee : un monstre
+lache des materia de **son element**, a un palier borne par son palier de monde (T1→m1,
+T2→m2, T3 et T4→m3), dans la fourchette canonique 4-10 % selon le rang. m4 est reserve au T4
+hors tout-venant (20 % des butins reussis), **m5 ne tombe jamais** — le haut du catalogue
+passe par les coffres et les donjons (MAT-06). Un mannequin ne lache rien, et un butin reussi
+redescend d'un palier plutot que de s'evaporer sur un trou de catalogue. Les 31 lignes
+manuelles de `MonsterItemFixtures` disparaissent — avec MAT-01 (l'element), BES-01 (le palier)
+et MAT-03 (le catalogue), les trois pieces que la regle attendait sont en place.
+
+---
+
+## MAT-04 — le plancher du jour 1 (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md). Le jalon qui rend le jeu jouable : un joueur
+> qui se specialise dans le feu a ses premieres materia de feu au premier jour, pas a la
+> premiere semaine (GAME_MATERIA §3, fige).
+
+**Le plancher a des marchands.** Les 24 arbres de combat ouvrent 48 nœuds a 0 point — 43
+materia distinctes, cinq unlocks etant partages. **Lucine l'accordeuse**, nouvelle habitante du
+Fanal, vend les 28 d'entree (m1) aux prix de la grille : le plancher T1 PNJ etendu au build, le
+marche joueur peut faire mieux, jamais moins. Les 15 dont le sort est de niveau 2 restent au
+plancher — le palier de distribution suit le nœud, jamais le sort — et se vendent chez le PNJ
+de la zone dont la ligne porte l'element : la Terre chez Morrigane (Foret), le Feu et le Metal
+chez Kolm (Mines), la Bete chez la vieille Brune (Vallons), l'Eau et l'Ombre chez **Ysoline,
+troqueuse des brumes** — le premier habitant declare du Marais — et la Lumiere chez **Elionor,
+chantre du temple** (Quartier des Jardins). Toutes a une liaison du Fanal.
+
+**La quete donne toujours la premiere.** `ActOneMateriaGranter` (ONB-12b) offrait deja la
+premiere materia de l'arbre choisi ; le catalogue complet (MAT-03) le rend effectif pour les
+24 arbres. `MateriaDayOneFloorTest` verrouille le contrat : chaque materia du plancher a une
+source non aleatoire a au plus une liaison du Fanal, et une boutique ne peut pas vendre une
+materia qu'aucun sort ne derive.
+
+---
+
+## MAT-03 — le catalogue a 200 (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md), le pivot du plan. Les arbres promettaient 200
+> materia, le jeu en livrait 68 — et 20 arbres de combat sur 24 demarraient sans aucun sort.
+
+**Le catalogue est generatif, pas ecrit.** `MateriaCatalogFixtures` ne contient aucune entree
+de donnees : elle lit les nœuds `actions.materia.unlock` charges en base, resout chaque sort
+et derive l'objet par `MateriaDerivation` (MAT-02) — nom, slug `m<niveau>-<slug du sort>`,
+element, prix et energie par palier, rarete par palier, `domain` quand un seul arbre porte le
+nœud. Les 200 unlocks (30/67/52/31/20 par niveau de sort, au chiffre pres du cadrage) sont
+couverts par construction, et un nœud qui citerait un sort inexistant **casse le chargement**
+au lieu de mentir en silence. Les 69 entrees manuelles d'`ItemFixtures` disparaissent.
+
+**Les references suivent la forme que le monde citait deja.** Le butin, les quetes et les
+inventaires de demonstration referencaient `materia_<cle du sort>` : le catalogue enregistre
+exactement cette forme, derivee du slug. Seule `materia_soin` — la seule cle non canonique —
+migre vers `materia_life_heal`. Les 7 orphelines qu'aucun nœud n'ouvre restent au catalogue
+(`ORPHAN_SPELLS`, a raccrocher par MAT-07), et un test exige qu'une entree sorte de la liste
+le jour ou un nœud l'ouvre.
+
+**Le contrat, aux deux niveaux.** `MateriaCatalogTest` (source) : plus aucune materia ecrite a
+la main, aucun nœud ne ment, la liste des orphelines est exacte.
+`MateriaCatalogIntegrationTest` (base reelle) : une materia par unlock distinct, slug et
+element derives du sort.
+
+---
+
+## BES-06 — le contrat du plan bestiaire (2026-08-02)
+
+> [`PLAN_BESTIARY.md`](roadmap/PLAN_BESTIARY.md) — **plan complet 6/6**, ouvert et referme le
+> meme jour. Les huit invariants de GAME_BESTIARY §6 sont tous tenus par un test nomme.
+
+**Un index, pas une redite.** Cinq jalons avaient deja pose leurs gardes
+(`MonsterTierRankTest`, `MonsterStatTemplateTest`, `MonsterStatDerivationTest`,
+`FaunaSingleSourceTest`, `MonsterTierCoverageTest`, `MonsterElementTest`) ;
+`BestiaryPlanContractTest` porte le seul invariant qui manquait — **T0 est sur** : aucune
+faune hostile dans une zone de palier 0, « ici, rien ne mord » etant une promesse du monde et
+non un reglage d'exploration — plus son miroir, une zone peuplee vit dans un palier reel
+(le palier 0 par defaut ne peut pas etre un oubli silencieux). Le docblock du test sert
+d'index au contrat : chaque invariant, et qui le tient.
+
+---
+
+## BES-05 — le menage du code mort (2026-08-02)
+
+> [`PLAN_BESTIARY.md`](roadmap/PLAN_BESTIARY.md). `HitChanceCalculator` portait une quatrieme
+> regle de touche que rien n'appelait — pas un bug d'equilibrage, un piege pour qui lit le
+> code. Le calcul reel est `FightCalculator::hasAttackHit()`, et il ne bouge pas.
+
+**Le balayage a paye.** En verifiant qu'aucun autre calcul de combat n'etait orphelin, deux
+classes de plus sont tombees : `PlayerActionHandler` — l'orchestrateur a `AutowireIterator`
+que plus aucun controleur n'appelait, les chemins de combat etant servis en direct — et
+`FightChecker`, que lui seul consommait. `MobDeathQueuing`, faussement orphelin au grep, est
+un subscriber auto-branche : epargne. Les docs (`DOCUMENTATION.md`, `GAME_DOMAINS`,
+`PLAN_ARCHETYPES`) cessent de pointer un calculateur qui n'existe plus.
+
+---
+
+## BES-04 — la faille du milieu et la Crete (2026-08-02)
+
+> [`PLAN_BESTIARY.md`](roadmap/PLAN_BESTIARY.md). Le monde se coupait en deux — depart et
+> fin, rien entre les deux — et la Crete de Ventombre offrait le metal le plus rare du monde
+> de base sans rien faire risquer.
+
+**Par redistribution, jamais par creation.** Les 65 especes suffisaient : l'ochu, la sylphide
+et le grand cerf de l'aubepine deviennent les elites du T1 (le palier n'en avait aucune) ;
+l'hydre devient le **boss du Marais** — le T2 n'avait aucun boss en zone, les Racines etant un
+donjon ; la harpie d'hiver, l'ombre de givre et le basilic redeviennent le tout-venant du T4.
+La gargouille quitte les Mines pour la Crete seule, la salamandre et le scorpion retournent au
+desert : trois especes rejoignent le T3, qui manquait de tout-venant. Grace a BES-02, les
+stats suivent toutes seules — promouvoir l'ochu, c'est une ligne de rang, pas un equilibrage.
+
+**Le compte est tenu par un test.** `MonsterTierCoverageTest` exige, par palier T1-T4, au
+moins 6 communs, 3 elites et 1 boss **atteignables** — comptes sur les placements reels
+(zones du graphe et donjons), jamais sur le seul catalogue. Les 12 cases tiennent :
+T1 14/3/4, T2 9/6/2, T3 6/4/1, T4 6/4/1.
+
+---
+
+## BES-03 — une seule source de faune (2026-08-02)
+
+> [`PLAN_BESTIARY.md`](roadmap/PLAN_BESTIARY.md). Doctrine ZON-11 : « ajouter du contenu =
+> ajouter de la donnee ici, pas du code ». Deux mecanismes de peuplement cohabitaient, et le
+> legacy portait encore 91 mobs par coordonnees — dont 87 sur la carte de test, hors graphe.
+
+**`zones.yaml` devient la source unique.** Les restes ZON-26b avaient deja fait passer le
+Marais et la Crete au declaratif ; restaient quatre especes que seule la carte de test placait.
+Le gobelin et le taiju rejoignent la Foret des Murmures (leur palier, T1), le loup-garou et le
+necromancien la nuit du Marais (T2). `MobFixtures` est **supprime** — les coordonnees ne disent
+plus rien depuis que la position d'un joueur est sa zone (regle 7).
+
+**Les donjons suivent leur propre chemin.** Les quatre mobs des Racines de la foret survivent
+dans `DungeonMobFixtures`, hors graphe — et une garde de test interdit a cette fixture de
+placer ailleurs que sur une carte `map_dungeon_*` : elle ne redeviendra pas un canal de
+peuplement du monde ouvert.
+
+**Le contrat, dans les deux sens.** `FaunaSingleSourceTest` tient quatre invariants : le
+peuplement par coordonnees a disparu, la fixture de donjon reste cantonnee aux donjons,
+**aucune espece n'est perdue** (tout monstre livre est place, hors mannequins et boss narratifs
+reserves — `ancient_wyrm`, `convergence_guardian`, `the_first_silence`), et aucune zone ne
+place une espece qui n'existe pas. Au passage, les tests d'integration de combat cessent de
+chercher leurs mobs sur la carte du joueur : on cherche l'espece, pas la carte.
+
+---
+
+## BES-02 — les stats derivees du gabarit (2026-08-02)
+
+> [`PLAN_BESTIARY.md`](roadmap/PLAN_BESTIARY.md). Comme les filons ont des profils de palier
+> et les materia une derivation depuis le sort, les stats d'un monstre se derivent de sa case
+> `tier × rank` — c'est ce qui rend la courbe lisible et l'equilibrage possible.
+
+**`MonsterStatTemplate`, source unique.** La grille de vie du cadrage (30/90/250 en T1 jusqu'a
+300/850/2400 en T4, ×~2,2 par palier et ×~3 par rang) vit dans une seule classe, que les
+fixtures et le rapport d'equilibrage lisent tous les deux. La precision suit la formule actee
+(70 + 5 par palier, +5 pour l'elite et le boss). La vitesse reste d'abord un **trait
+d'espece** — la chauve-souris file, le zombie traine — : la valeur declaree est l'ecart
+explicite, le gabarit ne sert que de repli.
+
+**La derivation est un defaut, pas une prison.** 61 monstres sur 65 quittent l'ecriture a la
+main. Les quatre ecarts sont inscrits dans une **liste fermee** et commentes dans la fixture :
+les deux mannequins (valeurs pedagogiques d'ONB-11), le Gardien de la Foret (boss de zone
+affronte en groupe par l'assaut, 400 PV au lieu des 250 du gabarit T1 Boss) et le Premier
+Silence (l'ultime rencontre de l'an 1, 3200 PV au lieu de 2400). `MonsterStatDerivationTest`
+refuse toute stat ecrite a la main hors de la liste, et exige que chaque ecart dise pourquoi.
+
+**Le saut de ×4 ne peut plus revenir.** `MonsterStatTemplateTest` verrouille la faille du
+milieu a la racine : aucun passage de palier a palier, ni de rang a rang, n'atteint le ×4 —
+l'ecart qui coupait le monde en deux etait exactement celui-la.
+
+---
+
+## BES-01 — deux axes : tier et rang (2026-08-02)
+
+> [`PLAN_BESTIARY.md`](roadmap/PLAN_BESTIARY.md), ouverture du plan. Trois echelles
+> cohabitaient (`level` 1-40, `difficulty` 1-5, `isBoss`) et aucune ne disait la difficulte —
+> le joueur n'ayant pas de niveau (regle 6), l'echelle 1-40 ne se comparait a rien.
+
+**Deux axes orthogonaux, un seul langage de palier.** `tier` (T0-T4) dit ou vit la creature et
+se **reprend de la zone** : `zones.yaml` declare desormais `tier:` par zone (porte par
+`Zone::tier`), et le palier d'un monstre est celui de sa zone la plus basse — ecarts
+explicites et commentes pour le fond des Mines (le forgeron abyssal et le seigneur des forges
+sont T4 dans une zone T2). `rank` (`common`/`elite`/`boss`, enum `MonsterRank`) absorbe
+`difficulty` et `isBoss` — le booleen manquait le cran du milieu. `Monster::isBoss()` survit
+comme **derive du rang** : les treize appelants (phases, fuite interdite, respawn d'une heure,
+fin de donjon) n'ont pas eu a changer.
+
+**Les consommateurs recalibres dans le meme geste**, sans quoi l'XP de materia etait divisee
+par huit du jour au lendemain : `MateriaXpGranter` (10 × facteur de palier 1/3/8/18/32, elite
+×2, boss ×5 — magnitude constante avec l'ancien monde), les seuils de reputation (10/15/25/50
+par palier), le multiplicateur des quetes de guilde (`1 + tier`) et — hors liste du plan mais
+meme piege — les points de guilde par mise a mort. Deux chausse-trapes du critere par nom de
+champ sont fermees : le `findBy(['isBoss' => false])` des quetes de guilde et la DQL
+`m.level >= 3` d'un test d'integration.
+
+**La recopie suit.** `Mob::level` devient `Mob::tier`, l'invasion cesse de gonfler une echelle
+que plus rien ne lisait, l'invoque vit au palier de son invocateur, et le gate de butin
+`MonsterItem::minDifficulty` devient `minRank` — les quatre lignes gatees passent a `elite`,
+et leurs quatre porteurs sont bien de rang elite. `MonsterTierRankTest` verrouille le contrat :
+les trois echelles ont disparu des donnees, chaque monstre porte un palier valide, le palier
+suit la zone (55 especes placees verifiees contre `zones.yaml`), et `bossPhases` n'appartient
+qu'au rang boss.
+
+---
+
+## MAT-02 — la derivation materia ← sort (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md). Une materia ne s'ecrit pas, elle se derive
+> (GAME_MATERIA §2.1) — ce jalon livre la regle avant qu'on genere quoi que ce soit.
+
+**Le service, pas la donnee.** `MateriaDerivation::derive(Spell)` rend un `MateriaBlueprint`
+complet : le nom reprend celui du sort (« Matéria : Boule de feu »), les traductions suivent
+celles du sort — une locale qu'il ne traduit pas n'est pas inventee —, l'element n'est jamais
+redeclare, et prix comme cout en energie sortent des grilles par palier figees sur les medianes
+des 68 materia livrees (130/180/280/320/380 gils, 10/15/20/25/30 energie). Un sort hors des
+paliers 1-5 est refuse : on n'invente pas un prix.
+
+**La convention de slug est redressee.** `m<niveau du sort>-<slug du sort>` — `fire-ball`
+niveau 1 donne `m1-fire-ball`. Le slug devient deductible du sort, donc verifiable par un test,
+et la collision impossible puisque les slugs de sort sont uniques. L'ancienne convention ne
+disait pas ce qui distingue `m1-fire` de `m1-flame` ; le renommage des 68 slugs existants est
+l'affaire de MAT-03.
+
+**La rarete n'a nulle part ou s'ecrire.** `MateriaBlueprint` n'a aucun champ pour elle — ni
+pour `nb_usages`. Elle est une fonction du prefixe de slug (`ItemFixtures::inferRarity()`), et
+le slug une fonction du sort : la declarer serait creer une deuxieme source de verite. Le test
+le verrouille par `property_exists`.
+
+---
+
+## MAT-01 — l'element des monstres (2026-08-02)
+
+> [`PLAN_MATERIA.md`](roadmap/PLAN_MATERIA.md), ouverture du plan. Aucun des 65 monstres ne
+> portait d'element : le butin de materia derive (MAT-05) n'avait pas de prerequis, et le
+> flair de l'Orc (ONB-07b) n'avait rien a lire.
+
+**L'element se derive, il ne se decide pas.** 44 monstres declaraient deja des
+`elementalResistances` sans dire de quel flux ils relevent : la plus haute resistance positive
+nomme l'element (l'araignee est Bete, le spectre Tenebres, l'elementaire Feu). Les 21 sans
+resistances suivent la lignee de leur zone — les creatures du Glacier relevent de l'Eau, celles
+des Dunes de la Bete ou de la Terre. Les deux mannequins d'entrainement restent `none` : un
+mannequin ne releve d'aucun flux, et c'est la seule exception que le test autorise.
+
+**La coherence est une regle, pas 44 valeurs.** Un monstre resiste a son propre element : quand
+la fixture ne declare rien, le loader pose +0.3 (`OWN_ELEMENT_RESISTANCE`). Une valeur declaree
+la precise ; ce qu'elle ne peut pas faire, c'est la contredire — `MonsterElementTest` refuse
+toute resistance negative a son propre element.
+
+**Le flair de l'Orc lit enfin quelque chose.** Le bestiaire affiche l'element dans le bloc que
+`BestiaryRevealPolicy` gate deja : des la premiere rencontre pour un Orc, au palier de dix mises
+a mort pour les autres. Les cles `game.element.*` naissent en FR et EN — l'ecran n'invente pas
+de vocabulaire, il reprend les libelles de l'enum `Element`.
 
 ---
 

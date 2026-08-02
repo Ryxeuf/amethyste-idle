@@ -104,9 +104,9 @@ class WorldBossLootDistributor implements EventSubscriberInterface
     private function generatePlayerLoot(Mob $mob, Player $player, bool $isTopContributor, float $dropMultiplier): void
     {
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
-            $monsterDifficulty = $mob->getMonster()->getDifficulty();
+            $monsterRank = $mob->getMonster()->getRank();
 
-            if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
+            if (null !== $monsterItem->getMinRank() && !$monsterRank->atLeast($monsterItem->getMinRank())) {
                 continue;
             }
 

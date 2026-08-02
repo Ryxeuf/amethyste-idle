@@ -60,20 +60,17 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
                 $monster,
                 sprintf('Monster fixture "%s" should be loaded.', $slug)
             );
-            self::assertGreaterThanOrEqual(
-                2,
-                $monster->getDifficulty(),
-                sprintf('Monster "%s" should have difficulty >= 2 (tier 2+).', $slug)
-            );
             self::assertGreaterThan(
                 0,
                 $monster->getLife(),
                 sprintf('Monster "%s" should have positive max life.', $slug)
             );
+            // BES-01 : deux axes — le palier vient de la zone (T1-T4 pour un
+            // vrai monstre), le rang dit ce que c'est.
             self::assertGreaterThanOrEqual(
                 1,
-                $monster->getLevel(),
-                sprintf('Monster "%s" should have a valid level.', $slug)
+                $monster->getTier(),
+                sprintf('Monster "%s" should live in a real tier (T1+).', $slug)
             );
         }
     }
@@ -148,7 +145,7 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     }
 
     /**
-     * MonsterRepository contient au moins 10 monstres tier 2+ (niveau >= 3),
+     * MonsterRepository contient au moins 10 monstres de palier T2+ (BES-01),
      * correspondant a l'exigence de la tache 141.
      */
     public function testAtLeastTenTier2Monsters(): void
@@ -156,15 +153,15 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
         $tier2Count = (int) $this->em->createQueryBuilder()
             ->select('COUNT(m.id)')
             ->from(Monster::class, 'm')
-            ->where('m.level >= :level')
-            ->setParameter('level', 3)
+            ->where('m.tier >= :tier')
+            ->setParameter('tier', 2)
             ->getQuery()
             ->getSingleScalarResult();
 
         self::assertGreaterThanOrEqual(
             10,
             $tier2Count,
-            'Fixtures should expose at least 10 tier 2+ monsters (level >= 3).'
+            'Fixtures should expose at least 10 tier 2+ monsters.'
         );
     }
 
@@ -175,7 +172,9 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     public function testStartFightAgainstTier2Wyvern(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->findMobBySlug('wyvern', $player->getMap());
+        // BES-03 : la faune vit dans les zones du graphe, plus sur la carte
+        // de test du joueur — on cherche l'espece, pas la carte.
+        $mob = $this->findMobBySlug('wyvern');
 
         /** @var FightHandler $fightHandler */
         $fightHandler = $this->getService(FightHandler::class);
@@ -198,7 +197,9 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     public function testStartFightAgainstBossInitializesPhaseMetadata(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->findMobBySlug('alpha_wolf', $player->getMap());
+        // BES-03 : la faune vit dans les zones du graphe, plus sur la carte
+        // de test du joueur — on cherche l'espece, pas la carte.
+        $mob = $this->findMobBySlug('alpha_wolf');
 
         /** @var FightHandler $fightHandler */
         $fightHandler = $this->getService(FightHandler::class);
@@ -222,7 +223,9 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
     public function testMobActionHandlerExecutesBossTurn(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->findMobBySlug('will_o_wisp', $player->getMap());
+        // BES-03 : la faune vit dans les zones du graphe, plus sur la carte
+        // de test du joueur — on cherche l'espece, pas la carte.
+        $mob = $this->findMobBySlug('will_o_wisp');
 
         /** @var FightHandler $fightHandler */
         $fightHandler = $this->getService(FightHandler::class);

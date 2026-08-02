@@ -102,6 +102,37 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
+     * Attend qu'une condition lue dans la page devienne vraie.
+     *
+     * `waitForTurbo()` observe un etat (« aucun fragment occupe ») qui est
+     * **deja vrai** dans l'instant qui suit une soumission : le fragment n'a pas
+     * encore commence a charger, donc la methode rend la main avant que la page
+     * ait change. Enchainer une ecriture et une lecture sur cette seule garantie
+     * est une course — c'est ce qui faisait tomber le cycle equipement une fois
+     * sur quelques dizaines, toujours sur une valeur restee a sa valeur d'avant.
+     *
+     * Attendre la **consequence** (la valeur a change) plutot que le rendu ferme
+     * la course : la condition est reevaluee jusqu'a l'expiration du delai.
+     *
+     * @param callable():bool $condition
+     *
+     * @return bool false si le delai expire sans que la condition soit vraie
+     */
+    protected function waitUntil(callable $condition, int $timeout = self::WAIT_TIMEOUT): bool
+    {
+        $deadline = microtime(true) + $timeout;
+
+        do {
+            if ($condition()) {
+                return true;
+            }
+            usleep(200_000);
+        } while (microtime(true) < $deadline);
+
+        return $condition();
+    }
+
+    /**
      * Wait for a CSS selector to be present in the DOM.
      */
     protected function waitForSelector(string $selector, int $timeout = self::WAIT_TIMEOUT): void

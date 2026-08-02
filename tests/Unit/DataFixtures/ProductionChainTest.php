@@ -43,8 +43,11 @@ class ProductionChainTest extends TestCase
         'recipe_iron_ingot' => 'crafted-bronze-ingot',
         'recipe_cobalt_ingot' => 'crafted-iron-ingot',
         'recipe_mithril_ingot' => 'crafted-cobalt-ingot',
-        'recipe_adamantite_ingot' => 'crafted-mithril-ingot',
-        'recipe_orichalcum_ingot' => 'crafted-adamantite-ingot',
+        // OBJ-02b : l'echelle s'arrete au mithril — les lingots d'adamantite
+        // et d'orichalque butaient sur des minerais reserves aux extensions
+        // (EXTENSION_RESERVE.md). Le haut de la chaine est a re-remplir dans
+        // le perimetre de la base (suivi ouvert de PLAN_ITEMS), et la
+        // verticale devra se prolonger avec lui.
     ];
 
     /**
@@ -58,8 +61,8 @@ class ProductionChainTest extends TestCase
     private const AUDITED_ORPHANS = [
         'recipe_cobalt_ingot',
         'recipe_steel_chainmail',
-        'recipe_adamantite_ingot',
-        'recipe_orichalcum_ingot',
+        // OBJ-02b : recipe_adamantite_ingot et recipe_orichalcum_ingot ne
+        // sont plus livrees — leur guerison etait reelle, leur perimetre non.
         'recipe_poison_vial',
         'recipe_masterwork_drakehide_cloak',
     ];

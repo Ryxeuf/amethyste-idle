@@ -63,6 +63,20 @@ class ZoneContentReferenceTest extends TestCase
             $slugs = array_merge($slugs, $matches[1]);
         }
 
+        // MAT-03 : les materia ne s'ecrivent plus, elles se derivent des sorts
+        // (`MateriaCatalogFixtures`). Leur slug est deductible — `m<niveau du
+        // sort>-<slug du sort>` — donc le catalogue connu l'est aussi.
+        $spellSource = (string) file_get_contents($root . '/src/DataFixtures/SpellFixtures.php');
+        preg_match_all("/\n            '([a-z_0-9]+)' => \[/", $spellSource, $blocks, PREG_OFFSET_CAPTURE);
+        foreach ($blocks[1] as $i => [$key, $offset]) {
+            $end = isset($blocks[1][$i + 1]) ? $blocks[1][$i + 1][1] : \strlen($spellSource);
+            $body = substr($spellSource, $offset, $end - $offset);
+            if (preg_match("/'slug' => '([a-z0-9-]+)'/", $body, $slug)) {
+                preg_match("/'level' => (\d+)/", $body, $level);
+                $slugs[] = sprintf('m%d-%s', (int) ($level[1] ?? 1), $slug[1]);
+            }
+        }
+
         return array_values(array_unique($slugs));
     }
 

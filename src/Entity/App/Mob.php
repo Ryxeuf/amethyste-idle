@@ -72,10 +72,10 @@ class Mob implements CharacterInterface
     private $items;
 
     /**
-     * Niveau du mob.
+     * Palier du mob (BES-01) — recopie du palier du monstre au spawn, T0-T4.
      */
-    #[ORM\Column(name: 'level', type: 'integer')]
-    protected int $level;
+    #[ORM\Column(name: 'tier', type: 'integer', options: ['default' => 1])]
+    protected int $tier = 1;
 
     /**
      * Si true, le mob n'apparait que la nuit (20h-6h in-game).
@@ -220,14 +220,14 @@ class Mob implements CharacterInterface
         $this->items->removeElement($item);
     }
 
-    public function getLevel(): int
+    public function getTier(): int
     {
-        return $this->level;
+        return $this->tier;
     }
 
-    public function setLevel(int $level): void
+    public function setTier(int $tier): void
     {
-        $this->level = $level;
+        $this->tier = max(0, min(4, $tier));
     }
 
     public function isNocturnal(): bool

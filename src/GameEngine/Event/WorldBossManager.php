@@ -117,7 +117,7 @@ class WorldBossManager implements EventSubscriberInterface
         $mob->setMonster($monster);
         $mob->setMap($map);
         $mob->setCoordinates($params['coordinates']);
-        $mob->setLevel($params['level'] ?? $monster->getLevel());
+        $mob->setTier($params['tier'] ?? $monster->getTier());
         $mob->setLife($monster->getLife());
         $mob->setIsWorldBoss(true);
         $mob->setGameEvent($gameEvent);
@@ -169,7 +169,7 @@ class WorldBossManager implements EventSubscriberInterface
                     'id' => (int) $mob->getId(),
                     'name' => $mob->getName(),
                     'slug' => $mob->getMonster()->getSlug(),
-                    'level' => $mob->getLevel(),
+                    'tier' => $mob->getTier(),
                     'x' => (int) $x,
                     'y' => (int) $y,
                     'spriteKey' => 'mob_' . $mob->getMonster()->getSlug(),

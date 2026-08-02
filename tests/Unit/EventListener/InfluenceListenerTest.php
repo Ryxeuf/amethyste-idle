@@ -73,16 +73,16 @@ class InfluenceListenerTest extends TestCase
         $monster = $this->createMock(Monster::class);
         $monster->method('getSlug')->willReturn('goblin');
 
-        $mob = $this->createMobWithFight($region, $monster, 8, [$player]);
+        $mob = $this->createMobWithFight($region, $monster, 3, [$player]);
 
         $this->influenceManager->expects($this->once())
             ->method('awardInfluence')
             ->with(
                 $player,
                 InfluenceActivityType::MobKill,
-                ['mob_level' => 8],
+                ['mob_tier' => 3],
                 $region,
-                $this->callback(fn (array $d) => $d['monster'] === 'goblin' && $d['level'] === 8),
+                $this->callback(fn (array $d) => $d['monster'] === 'goblin' && $d['tier'] === 3),
             )
             ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
@@ -328,7 +328,7 @@ class InfluenceListenerTest extends TestCase
     /**
      * @param Player[] $players
      */
-    private function createMobWithFight(?Region $region, Monster&MockObject $monster, int $level, array $players): Mob&MockObject
+    private function createMobWithFight(?Region $region, Monster&MockObject $monster, int $tier, array $players): Mob&MockObject
     {
         $map = $this->createMock(Map::class);
         $map->method('getRegion')->willReturn($region);
@@ -341,7 +341,7 @@ class InfluenceListenerTest extends TestCase
         $mob->method('getFight')->willReturn($fight);
         $mob->method('getMap')->willReturn($map);
         $mob->method('getMonster')->willReturn($monster);
-        $mob->method('getLevel')->willReturn($level);
+        $mob->method('getTier')->willReturn($tier);
 
         return $mob;
     }

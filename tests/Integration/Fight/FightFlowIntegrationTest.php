@@ -21,7 +21,7 @@ class FightFlowIntegrationTest extends AbstractIntegrationTestCase
     public function testEngageMobCreatesFight(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         $this->assertNull($player->getFight(), 'Player should not be in a fight initially.');
         $this->assertNull($mob->getFight(), 'Mob should not be in a fight initially.');
@@ -58,7 +58,7 @@ class FightFlowIntegrationTest extends AbstractIntegrationTestCase
     public function testPlayerAttackReducesMobHp(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         $fight = $this->createFight($player, $mob);
 
@@ -84,7 +84,7 @@ class FightFlowIntegrationTest extends AbstractIntegrationTestCase
     public function testMobDeathEndsFight(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         $fight = $this->createFight($player, $mob);
 
@@ -118,7 +118,7 @@ class FightFlowIntegrationTest extends AbstractIntegrationTestCase
     public function testLootAfterVictory(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
 
         $fight = $this->createFight($player, $mob);
 
