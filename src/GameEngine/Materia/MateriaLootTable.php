@@ -46,6 +46,19 @@ final class MateriaLootTable
      */
     public const RARE_UPGRADE_CHANCE = 20;
 
+    /**
+     * MAT-06 — les coffres d'exploration : la chance qu'un coffre contienne
+     * une materia en plus de ses gils. Palier m3 dans les zones T1-T2, m4
+     * dans les zones T3-T4 — le palier moyen et haut, indexe sur la zone.
+     */
+    public const CHEST_MATERIA_CHANCE = 10;
+
+    /**
+     * MAT-06 — les donjons prennent m4-m5 : la chance qu'une recompense de
+     * donjon monte a m5 — le seul canal du sommet du catalogue.
+     */
+    public const DUNGEON_M5_CHANCE = 20;
+
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
@@ -89,12 +102,57 @@ final class MateriaLootTable
             $palier = 4;
         }
 
+        return $this->pickForPalier($monster->getElement(), $palier, $pickRoll);
+    }
+
+    /**
+     * MAT-06 — le coffre d'exploration : m3-m4 indexe sur le palier de la
+     * zone, d'un element tire au hasard. `null` neuf fois sur dix — le coffre
+     * garde ses gils, la materia est le bonus.
+     */
+    public function chestRoll(int $zoneTier, ?int $chanceRoll = null, ?int $elementRoll = null, ?int $pickRoll = null): ?Item
+    {
+        if (($chanceRoll ?? random_int(0, 99)) >= self::CHEST_MATERIA_CHANCE) {
+            return null;
+        }
+
+        return $this->pickForPalier($this->randomElement($elementRoll), self::chestPalier($zoneTier), $pickRoll);
+    }
+
+    /**
+     * Le palier d'un coffre suit la zone : m3 en T1-T2, m4 en T3-T4.
+     */
+    public static function chestPalier(int $zoneTier): int
+    {
+        return $zoneTier >= 3 ? 4 : 3;
+    }
+
+    /**
+     * MAT-06 — la recompense de donjon : m4 garanti, m5 en rare. Le seul
+     * canal du sommet du catalogue — la premiere raison mecanique d'entrer.
+     */
+    public function dungeonPick(?int $rareRoll = null, ?int $elementRoll = null, ?int $pickRoll = null): ?Item
+    {
+        $palier = (($rareRoll ?? random_int(0, 99)) < self::DUNGEON_M5_CHANCE) ? 5 : 4;
+
+        return $this->pickForPalier($this->randomElement($elementRoll), $palier, $pickRoll);
+    }
+
+    private function randomElement(?int $elementRoll = null): Element
+    {
+        $elements = array_values(array_filter(Element::cases(), static fn (Element $e): bool => $e !== Element::None));
+
+        return $elements[($elementRoll ?? random_int(0, 99)) % \count($elements)];
+    }
+
+    private function pickForPalier(Element $element, int $palier, ?int $pickRoll = null): ?Item
+    {
         $repository = $this->entityManager->getRepository(Item::class);
         for (; $palier >= 1; --$palier) {
             /** @var list<Item> $candidates */
             $candidates = $repository->findBy([
                 'type' => Item::TYPE_MATERIA,
-                'element' => $monster->getElement(),
+                'element' => $element,
                 'level' => $palier,
             ]);
 

@@ -1524,7 +1524,8 @@
           "chest": "Vous découvrez un coffre : +%gils% gils.",
           "harvest": "Vous repérez un filon prometteur. La récolte arrive bientôt.",
           "pnj": "Vous rencontrez %pnj%, qui vous salue.",
-          "nothing": "Vous explorez les environs sans rien trouver de notable."
+          "nothing": "Vous explorez les environs sans rien trouver de notable.",
+          "chest_materia": "Vous trouvez un coffre : +%gils% gils, et une matéria — %materia% !"
         },
         "error": {
           "traveling": "Impossible d'explorer en plein voyage.",

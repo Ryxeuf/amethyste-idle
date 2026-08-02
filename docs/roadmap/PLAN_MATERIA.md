@@ -27,7 +27,7 @@
 | MAT-03 ✅ | Le catalogue à 200 | M | ← MAT-02 |
 | MAT-04 ✅ | Le plancher du jour 1 | M | ← MAT-03 |
 | MAT-05 ✅ | Le butin dérivé | M | ← MAT-01, MAT-03 |
-| MAT-06 | Coffres et donjons | S | ← MAT-03 |
+| MAT-06 ✅ | Coffres et donjons | S | ← MAT-03 |
 | MAT-07 | Le nettoyage | S | ← MAT-03 |
 | MAT-08 | Tests du plan | S | ‖ |
 
@@ -165,14 +165,19 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
       8 éléments, m4 réservé, m5 jamais, fenêtre 4-10 %, repli de palier,
       mannequins muets
 
-### MAT-06 — Coffres et donjons (S | ★★ | MOYENNE)
+### MAT-06 — Coffres et donjons (S | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
 > Le palier moyen et haut, et le premier contenu **propre** des donjons.
-> Prérequis : ← MAT-03
-- [ ] Les coffres d'exploration (`explore.weights.chest`) ne donnent aujourd'hui
-      que des gils : ils prennent m3-m4, indexés sur la zone
-- [ ] Les donjons prennent m4-m5 — leur première raison mécanique d'exister
-- [ ] Converge avec la revue des donjons (2 donjons de groupe pour 12 zones)
-- [ ] Tests : distribution par zone, bornes de palier
+- [x] Les coffres d'exploration prennent m3-m4, **indexés sur la zone**
+      (`Zone::tier`, BES-01) : m3 en T1-T2, m4 en T3-T4, un coffre sur dix,
+      d'un élément tiré au hasard — les neuf autres gardent leurs gils
+- [x] Les donjons prennent m4-m5 — m4 garanti, m5 en rare (20 %) — sur une
+      réussite **fraîche** seulement : la récompense décroissante protège
+      les gils, celle-ci protège le sommet du catalogue du farm
+- [x] La convergence avec la revue des donjons est notée : DON-04 dérivera
+      `lootPreview` de cette table
+- [x] Tests : palier de coffre par zone, donjon seul canal du m5, chance
+      bornée (`MateriaLootTableTest`), gils/décroissance inchangés
+      (`GroupDungeonRewardServiceTest`)
 
 ---
 
