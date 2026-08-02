@@ -17,7 +17,10 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
      * ECO-02 : les betes lachent `leather_raw` / `leather_thick`, les cuirs que
      * les recettes de tanneur consomment reellement. Elles lachaient auparavant
      * `leather_skin_1` / `leather_skin_2`, doublons sans aucun consommateur —
-     * resultat, le tanneur n'avait pas une seule recette realisable.
+     * resultat, le tanneur n'avait pas une seule recette realisable. OBJ-02 a
+     * fini le geste : les doublons n'existent plus du tout, et le bois comme
+     * la pioche des butins viennent des lignes reelles (`wood_beech`,
+     * `pickaxe_bronze`).
      */
     public function load(ObjectManager $manager): void
     {
@@ -49,7 +52,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 
             ['monster' => 'zombie', 'item' => 'mushroom', 'probability' => 75],
             ['monster' => 'zombie', 'item' => 'leather_raw', 'probability' => 90],
-            ['monster' => 'zombie', 'item' => 'pickaxe', 'probability' => 10],
+            ['monster' => 'zombie', 'item' => 'pickaxe_bronze', 'probability' => 10],
             ['monster' => 'zombie', 'item' => 'antidote', 'probability' => 12],
             ['monster' => 'zombie', 'item' => 'wooden_sword', 'probability' => 6],
             ['monster' => 'zombie', 'item' => 'starter_helmet', 'probability' => 5],
@@ -75,7 +78,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'mushroom_golem', 'item' => 'mushroom', 'probability' => 80],
             ['monster' => 'mushroom_golem', 'item' => 'antidote', 'probability' => 20],
             ['monster' => 'mushroom_golem', 'item' => 'healing_potion_small', 'probability' => 15],
-            ['monster' => 'mushroom_golem', 'item' => 'wood_log', 'probability' => 30],
+            ['monster' => 'mushroom_golem', 'item' => 'wood_beech', 'probability' => 30],
             ['monster' => 'mushroom_golem', 'item' => 'starter_helmet', 'probability' => 4],
 
             ['monster' => 'ghost', 'item' => 'energy_potion_small', 'probability' => 25],
@@ -99,7 +102,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'venom_snake', 'item' => 'antidote', 'probability' => 30],
 
             ['monster' => 'taiju', 'item' => 'mushroom', 'probability' => 80],
-            ['monster' => 'taiju', 'item' => 'wood_log', 'probability' => 50],
+            ['monster' => 'taiju', 'item' => 'wood_beech', 'probability' => 50],
             ['monster' => 'taiju', 'item' => 'healing_potion_small', 'probability' => 15],
             ['monster' => 'taiju', 'item' => 'grilled_meat', 'probability' => 10],
 
@@ -114,7 +117,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 
             // --- Niveau 3 : Ochu, Loup-garou, Gargouille, Troll, Élémentaire ---
             ['monster' => 'ochu', 'item' => 'mushroom', 'probability' => 90],
-            ['monster' => 'ochu', 'item' => 'wood_log', 'probability' => 60],
+            ['monster' => 'ochu', 'item' => 'wood_beech', 'probability' => 60],
             ['monster' => 'ochu', 'item' => 'healing_potion_medium', 'probability' => 10],
             ['monster' => 'ochu', 'item' => 'antidote', 'probability' => 15],
             ['monster' => 'ochu', 'item' => 'grilled_meat', 'probability' => 12],
@@ -125,12 +128,12 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'werewolf', 'item' => 'grilled_meat', 'probability' => 20],
 
             ['monster' => 'gargoyle', 'item' => 'leather_thick', 'probability' => 50],
-            ['monster' => 'gargoyle', 'item' => 'pickaxe', 'probability' => 15],
+            ['monster' => 'gargoyle', 'item' => 'pickaxe_bronze', 'probability' => 15],
             ['monster' => 'gargoyle', 'item' => 'energy_potion_small', 'probability' => 20],
             ['monster' => 'gargoyle', 'item' => 'scroll_teleport', 'probability' => 5],
 
             ['monster' => 'troll', 'item' => 'leather_thick', 'probability' => 70],
-            ['monster' => 'troll', 'item' => 'wood_log', 'probability' => 50],
+            ['monster' => 'troll', 'item' => 'wood_beech', 'probability' => 50],
             ['monster' => 'troll', 'item' => 'long_sword', 'probability' => 5],
             ['monster' => 'troll', 'item' => 'healing_potion_medium', 'probability' => 15],
             ['monster' => 'troll', 'item' => 'stew', 'probability' => 8],
@@ -152,7 +155,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'minotaur', 'item' => 'healing_potion_major', 'probability' => 10],
             ['monster' => 'minotaur', 'item' => 'grilled_meat', 'probability' => 15],
 
-            ['monster' => 'stone_golem', 'item' => 'pickaxe', 'probability' => 30],
+            ['monster' => 'stone_golem', 'item' => 'pickaxe_bronze', 'probability' => 30],
             ['monster' => 'stone_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
             ['monster' => 'stone_golem', 'item' => 'iron_sword', 'probability' => 5],
             ['monster' => 'stone_golem', 'item' => 'scroll_teleport', 'probability' => 8],
@@ -279,7 +282,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             // Golem d'argile (Terre, lvl 5)
             ['monster' => 'clay_golem', 'item' => 'leather_thick', 'probability' => 60],
             ['monster' => 'clay_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
-            ['monster' => 'clay_golem', 'item' => 'pickaxe', 'probability' => 25],
+            ['monster' => 'clay_golem', 'item' => 'pickaxe_bronze', 'probability' => 25],
             ['monster' => 'clay_golem', 'item' => 'stew', 'probability' => 10],
 
             // Automate rouillé (Métal, lvl 3)

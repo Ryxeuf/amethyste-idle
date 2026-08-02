@@ -1,7 +1,0 @@
-App\Entity\Game\Skill:
-  druid_materia_1 (extends skill):
-    title: "Apprenti druide"
-    slug: druid-materia-1
-    description: "Permet d'utiliser les matéria de druide de niveau 1"
-    requiredPoints: 0
-    domain: '@druid'

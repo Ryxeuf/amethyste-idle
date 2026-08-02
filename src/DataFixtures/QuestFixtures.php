@@ -231,7 +231,10 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'The village carpenter needs wood for his creations. Gather some logs to help him.'],
                 'requirements' => [
                     'collect' => [
-                        'wood_log' => 8,
+                        // OBJ-02 : la buche generique a disparu — le menuisier
+                        // demande du hetre, l'essence d'entree de la ligne du
+                        // bois (slug canonique, comme plant-mint plus bas).
+                        'wood-beech' => 8,
                     ],
                 ],
                 'rewards' => [
