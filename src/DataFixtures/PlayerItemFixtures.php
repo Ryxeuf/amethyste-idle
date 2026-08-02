@@ -14,57 +14,50 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Création des materias pour le joueur demo
+        // Création des materias pour le joueur demo.
+        // MAT-07 : la materia est le build du personnage, jamais un consommable
+        // (GAME_MATERIA §2.4) — aucun nb_usages fini ici, chaque exemplaire
+        // reprend l'illimité (-1) de son objet générique.
         $playerMaterias = [
             'player_materia_soin_1' => [
                 'generic_item' => 'materia_life_heal',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 10,
             ],
             'player_materia_soin_2' => [
                 'generic_item' => 'materia_life_heal',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 10,
             ],
             'player_materia_stone_throw' => [
                 'generic_item' => 'materia_stone_throw',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 20,
             ],
             'player_materia_punishment' => [
                 'generic_item' => 'materia_punishment',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 8,
             ],
             'player_materia_liana_whip' => [
                 'generic_item' => 'materia_liana_whip',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 15,
             ],
             'player_materia_sharp_blade' => [
                 'generic_item' => 'materia_sharp_blade',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 25,
             ],
             'player_materia_wind_lame' => [
                 'generic_item' => 'materia_wind_lame',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 20,
             ],
             'player_materia_flame' => [
                 'generic_item' => 'materia_flame',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 25,
             ],
             'player_materia_flamer' => [
                 'generic_item' => 'materia_flamer',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 15,
             ],
             'player_materia_flame_rain' => [
                 'generic_item' => 'materia_flame_rain',
                 'inventory' => 'inventory_materia',
-                'nb_usages' => 5,
             ],
         ];
 
@@ -239,9 +232,10 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
         // Création des materias pour le joueur
         foreach ($playerMaterias as $key => $data) {
             $playerItem = new PlayerItem();
-            $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
+            $genericItem = $this->getReference($data['generic_item'], Item::class);
+            $playerItem->setGenericItem($genericItem);
             $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
-            $playerItem->setNbUsages($data['nb_usages']);
+            $playerItem->setNbUsages($genericItem->getNbUsages());
             $playerItem->setCreatedAt(new \DateTime());
             $playerItem->setUpdatedAt(new \DateTime());
 
