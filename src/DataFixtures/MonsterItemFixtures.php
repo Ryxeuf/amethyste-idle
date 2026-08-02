@@ -135,7 +135,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'troll', 'item' => 'healing_potion_medium', 'probability' => 15],
             ['monster' => 'troll', 'item' => 'stew', 'probability' => 8],
 
-            ['monster' => 'fire_elemental', 'item' => 'materia_fire_ball', 'probability' => 8],
             ['monster' => 'fire_elemental', 'item' => 'energy_potion_small', 'probability' => 30],
             ['monster' => 'fire_elemental', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'fire_elemental', 'item' => 'scroll_xp_boost', 'probability' => 3],
@@ -154,7 +153,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'minotaur', 'item' => 'grilled_meat', 'probability' => 15],
 
             ['monster' => 'stone_golem', 'item' => 'pickaxe', 'probability' => 30],
-            ['monster' => 'stone_golem', 'item' => 'materia_stone_throw', 'probability' => 10],
             ['monster' => 'stone_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
             ['monster' => 'stone_golem', 'item' => 'iron_sword', 'probability' => 5],
             ['monster' => 'stone_golem', 'item' => 'scroll_teleport', 'probability' => 8],
@@ -164,8 +162,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'wyvern', 'item' => 'leather_thick', 'probability' => 70],
             ['monster' => 'wyvern', 'item' => 'healing_potion_medium', 'probability' => 25],
             ['monster' => 'wyvern', 'item' => 'healing_potion_major', 'probability' => 10],
-            ['monster' => 'wyvern', 'item' => 'materia_wind_lame', 'probability' => 6],
-            ['monster' => 'wyvern', 'item' => 'materia_fire_ball', 'probability' => 5],
             ['monster' => 'wyvern', 'item' => 'stew', 'probability' => 15],
             ['monster' => 'wyvern', 'item' => 't2_air_sword', 'probability' => 5],
             ['monster' => 'wyvern', 'item' => 't2_fire_helmet', 'probability' => 4],
@@ -176,8 +172,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'cursed_knight', 'item' => 'iron_sword', 'probability' => 5],
             ['monster' => 'cursed_knight', 'item' => 'healing_potion_medium', 'probability' => 25],
             ['monster' => 'cursed_knight', 'item' => 'healing_potion_major', 'probability' => 12],
-            ['monster' => 'cursed_knight', 'item' => 'materia_vital_drain', 'probability' => 5],
-            ['monster' => 'cursed_knight', 'item' => 'materia_steel_riposte', 'probability' => 5],
             ['monster' => 'cursed_knight', 'item' => 'ancient_scroll', 'probability' => 10],
 
             // Naga (Eau/Bête, lvl 13)
@@ -185,8 +179,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'naga', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'naga', 'item' => 'healing_potion_major', 'probability' => 10],
             ['monster' => 'naga', 'item' => 'antidote', 'probability' => 25],
-            ['monster' => 'naga', 'item' => 'materia_frost_mist', 'probability' => 6],
-            ['monster' => 'naga', 'item' => 'materia_savage_bite', 'probability' => 4],
             ['monster' => 'naga', 'item' => 't2_water_sword', 'probability' => 5],
             ['monster' => 'naga', 'item' => 't2_water_shield', 'probability' => 4],
 
@@ -194,8 +186,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'crystal_golem', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'crystal_golem', 'item' => 'healing_potion_major', 'probability' => 20],
             ['monster' => 'crystal_golem', 'item' => 'healing_potion_medium', 'probability' => 30],
-            ['monster' => 'crystal_golem', 'item' => 'materia_stone_throw', 'probability' => 8],
-            ['monster' => 'crystal_golem', 'item' => 'materia_light_blessing', 'probability' => 5],
             ['monster' => 'crystal_golem', 'item' => 'scroll_xp_boost', 'probability' => 6],
             ['monster' => 'crystal_golem', 'item' => 'scroll_teleport', 'probability' => 8],
             ['monster' => 'crystal_golem', 'item' => 't2_earth_shield', 'probability' => 5],
@@ -207,8 +197,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_major', 'probability' => 20],
             ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'corrupted_archdruid', 'item' => 'antidote', 'probability' => 25],
-            ['monster' => 'corrupted_archdruid', 'item' => 'materia_savage_bite', 'probability' => 6],
-            ['monster' => 'corrupted_archdruid', 'item' => 'materia_vital_drain', 'probability' => 5],
             ['monster' => 'corrupted_archdruid', 'item' => 't2_earth_chest', 'probability' => 5],
             ['monster' => 'corrupted_archdruid', 'item' => 't2_earth_gloves', 'probability' => 4],
 
@@ -216,8 +204,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'lesser_lich', 'item' => 'ancient_scroll', 'probability' => 25],
             ['monster' => 'lesser_lich', 'item' => 'healing_potion_major', 'probability' => 25],
             ['monster' => 'lesser_lich', 'item' => 'energy_potion_small', 'probability' => 30],
-            ['monster' => 'lesser_lich', 'item' => 'materia_vital_drain', 'probability' => 7],
-            ['monster' => 'lesser_lich', 'item' => 'materia_light_blessing', 'probability' => 4],
             ['monster' => 'lesser_lich', 'item' => 'scroll_xp_boost', 'probability' => 8],
             ['monster' => 'lesser_lich', 'item' => 't2_air_helmet', 'probability' => 5],
             ['monster' => 'lesser_lich', 'item' => 't2_air_boots', 'probability' => 4],
@@ -227,8 +213,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'swamp_hydra', 'item' => 'healing_potion_major', 'probability' => 30],
             ['monster' => 'swamp_hydra', 'item' => 'healing_potion_medium', 'probability' => 35],
             ['monster' => 'swamp_hydra', 'item' => 'antidote', 'probability' => 30],
-            ['monster' => 'swamp_hydra', 'item' => 'materia_frost_mist', 'probability' => 7],
-            ['monster' => 'swamp_hydra', 'item' => 'materia_savage_bite', 'probability' => 5],
             ['monster' => 'swamp_hydra', 'item' => 'scroll_teleport', 'probability' => 10],
             ['monster' => 'swamp_hydra', 'item' => 't2_water_sword', 'probability' => 6],
             ['monster' => 'swamp_hydra', 'item' => 't2_water_chest', 'probability' => 5],
@@ -237,8 +221,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'abyssal_blacksmith', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'abyssal_blacksmith', 'item' => 'healing_potion_major', 'probability' => 35],
             ['monster' => 'abyssal_blacksmith', 'item' => 'iron_sword', 'probability' => 12],
-            ['monster' => 'abyssal_blacksmith', 'item' => 'materia_steel_riposte', 'probability' => 8],
-            ['monster' => 'abyssal_blacksmith', 'item' => 'materia_fire_ball', 'probability' => 6],
             ['monster' => 'abyssal_blacksmith', 'item' => 'scroll_xp_boost', 'probability' => 10],
             ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_sword', 'probability' => 6],
             ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_chest', 'probability' => 5],
@@ -249,7 +231,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'forest_guardian', 'item' => 'energy_potion_small', 'probability' => 60],
             ['monster' => 'forest_guardian', 'item' => 'ancient_scroll', 'probability' => 40],
             ['monster' => 'forest_guardian', 'item' => 'scroll_xp_boost', 'probability' => 15],
-            ['monster' => 'forest_guardian', 'item' => 'materia_savage_bite', 'probability' => 20],
             // Drops uniques garantis
             ['monster' => 'forest_guardian', 'item' => 'guardian_bark_armor', 'probability' => 12, 'guaranteed' => true],
             ['monster' => 'forest_guardian', 'item' => 'guardian_thorn_staff', 'probability' => 12, 'guaranteed' => true],
@@ -259,14 +240,11 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'forge_lord', 'item' => 'energy_potion_small', 'probability' => 60],
             ['monster' => 'forge_lord', 'item' => 'ancient_scroll', 'probability' => 50],
             ['monster' => 'forge_lord', 'item' => 'scroll_xp_boost', 'probability' => 15],
-            ['monster' => 'forge_lord', 'item' => 'materia_steel_riposte', 'probability' => 20],
             // Drops uniques garantis
             ['monster' => 'forge_lord', 'item' => 'forgelord_obsidian_blade', 'probability' => 10, 'guaranteed' => true],
             ['monster' => 'forge_lord', 'item' => 'forgelord_dark_plate', 'probability' => 10, 'guaranteed' => true],
 
             // --- Boss : Dragon ---
-            ['monster' => 'dragon', 'item' => 'materia_fire_ball', 'probability' => 40],
-            ['monster' => 'dragon', 'item' => 'materia_flame_rain', 'probability' => 25],
             ['monster' => 'dragon', 'item' => 'iron_sword', 'probability' => 20],
             ['monster' => 'dragon', 'item' => 'healing_potion_medium', 'probability' => 80],
             ['monster' => 'dragon', 'item' => 'ancient_scroll', 'probability' => 50],
@@ -284,56 +262,48 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'salamander', 'item' => 'mushroom', 'probability' => 40],
             ['monster' => 'salamander', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'salamander', 'item' => 'grilled_meat', 'probability' => 15],
-            ['monster' => 'salamander', 'item' => 'materia_fire_ball', 'probability' => 6],
             ['monster' => 'salamander', 'item' => 'energy_potion_small', 'probability' => 15],
 
             // Ondine (Eau, lvl 2)
             ['monster' => 'undine', 'item' => 'mushroom', 'probability' => 50],
             ['monster' => 'undine', 'item' => 'healing_potion_small', 'probability' => 25],
             ['monster' => 'undine', 'item' => 'antidote', 'probability' => 20],
-            ['monster' => 'undine', 'item' => 'materia_frost_mist', 'probability' => 6],
             ['monster' => 'undine', 'item' => 'energy_potion_small', 'probability' => 12],
 
             // Sylphe (Air, lvl 4)
             ['monster' => 'sylph', 'item' => 'leather_thick', 'probability' => 50],
             ['monster' => 'sylph', 'item' => 'healing_potion_medium', 'probability' => 15],
             ['monster' => 'sylph', 'item' => 'ancient_scroll', 'probability' => 8],
-            ['monster' => 'sylph', 'item' => 'materia_wind_lame', 'probability' => 5],
             ['monster' => 'sylph', 'item' => 'scroll_teleport', 'probability' => 6],
 
             // Golem d'argile (Terre, lvl 5)
             ['monster' => 'clay_golem', 'item' => 'leather_thick', 'probability' => 60],
             ['monster' => 'clay_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
             ['monster' => 'clay_golem', 'item' => 'pickaxe', 'probability' => 25],
-            ['monster' => 'clay_golem', 'item' => 'materia_stone_throw', 'probability' => 8],
             ['monster' => 'clay_golem', 'item' => 'stew', 'probability' => 10],
 
             // Automate rouillé (Métal, lvl 3)
             ['monster' => 'rusty_automaton', 'item' => 'leather_thick', 'probability' => 45],
             ['monster' => 'rusty_automaton', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'rusty_automaton', 'item' => 'short_sword', 'probability' => 8],
-            ['monster' => 'rusty_automaton', 'item' => 'materia_steel_riposte', 'probability' => 5],
             ['monster' => 'rusty_automaton', 'item' => 'energy_potion_small', 'probability' => 18],
 
             // Loup alpha (Bête, lvl 4)
             ['monster' => 'alpha_wolf', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'alpha_wolf', 'item' => 'grilled_meat', 'probability' => 30],
             ['monster' => 'alpha_wolf', 'item' => 'healing_potion_small', 'probability' => 20],
-            ['monster' => 'alpha_wolf', 'item' => 'materia_savage_bite', 'probability' => 5],
             ['monster' => 'alpha_wolf', 'item' => 'healing_potion_medium', 'probability' => 10],
 
             // Feu follet (Lumière, lvl 2)
             ['monster' => 'will_o_wisp', 'item' => 'mushroom', 'probability' => 45],
             ['monster' => 'will_o_wisp', 'item' => 'energy_potion_small', 'probability' => 30],
             ['monster' => 'will_o_wisp', 'item' => 'healing_potion_small', 'probability' => 15],
-            ['monster' => 'will_o_wisp', 'item' => 'materia_light_blessing', 'probability' => 6],
             ['monster' => 'will_o_wisp', 'item' => 'scroll_identification', 'probability' => 8],
 
             // Ombre rampante (Ombre, lvl 5)
             ['monster' => 'creeping_shadow', 'item' => 'ancient_scroll', 'probability' => 15],
             ['monster' => 'creeping_shadow', 'item' => 'healing_potion_medium', 'probability' => 20],
             ['monster' => 'creeping_shadow', 'item' => 'energy_potion_small', 'probability' => 25],
-            ['monster' => 'creeping_shadow', 'item' => 'materia_vital_drain', 'probability' => 6],
             ['monster' => 'creeping_shadow', 'item' => 'scroll_xp_boost', 'probability' => 4],
 
             // --- Équipement Tier 2 élémentaire (tâche 29) ---
@@ -555,7 +525,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'ancient_root', 'item' => 'healing_potion_major', 'probability' => 80],
             ['monster' => 'ancient_root', 'item' => 'energy_potion_small', 'probability' => 60],
             ['monster' => 'ancient_root', 'item' => 'ancient_scroll', 'probability' => 40],
-            ['monster' => 'ancient_root', 'item' => 'materia_stone_throw', 'probability' => 15],
             // Drop garanti du boss
             ['monster' => 'ancient_root', 'item' => 'guardian_thorn_staff', 'probability' => 10, 'guaranteed' => true],
 
@@ -617,7 +586,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
         return [
             MonsterFixtures::class,
             ItemFixtures::class,
-            MateriaCatalogFixtures::class,
             GameItemFixtures::class,
         ];
     }

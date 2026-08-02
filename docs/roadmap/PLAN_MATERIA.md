@@ -26,7 +26,7 @@
 | MAT-02 ✅ | La dérivation matéria ← sort | M | ∅ |
 | MAT-03 ✅ | Le catalogue à 200 | M | ← MAT-02 |
 | MAT-04 ✅ | Le plancher du jour 1 | M | ← MAT-03 |
-| MAT-05 | Le butin dérivé | M | ← MAT-01, MAT-03 |
+| MAT-05 ✅ | Le butin dérivé | M | ← MAT-01, MAT-03 |
 | MAT-06 | Coffres et donjons | S | ← MAT-03 |
 | MAT-07 | Le nettoyage | S | ← MAT-03 |
 | MAT-08 | Tests du plan | S | ‖ |
@@ -145,19 +145,25 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
       non aléatoire), à ≤ 1 liaison du Fanal ; et une boutique ne vend
       jamais une matéria qu'aucun sort ne peut dériver
 
-### MAT-05 — Le butin dérivé (M | ★★★ | HAUTE)
-> La voie normale et abondante du canon. Aujourd'hui : 9 matéria distinctes sur
-> 31 lignes de butin — le canon affirmait 69, l'écart est l'objet de ce plan.
-> Prérequis : ← MAT-01 (l'élément), MAT-03 (le catalogue)
-- [ ] Règle de distribution : **un monstre lâche des matéria de son élément, à un
-      palier borné par son niveau** — la table cesse d'être écrite à la main
-- [ ] Paliers m1 à m3 en voie normale, m4 en rare, m5 jamais en butin
-- [ ] Conserver la fourchette de probabilité canonique (4-10 %)
-- [ ] **Vigilance** : la courbe de monstres est creuse au-delà du niveau 5
-      (42 des 65 monstres tiennent dans les niveaux 1-5, cf. audit §6.1). Les
-      paliers m4-m5 n'auront pas de porteurs suffisants — d'où MAT-06, et une
-      dépendance à la revue des monstres
-- [ ] Tests : dérivation, bornes de palier, couverture des 8 éléments
+### MAT-05 — Le butin dérivé (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
+> La voie normale et abondante du canon. Avant : 9 matéria distinctes sur
+> 31 lignes de butin écrites à la main.
+- [x] Règle de distribution portée par `MateriaLootTable` : **un monstre lâche
+      des matéria de son élément, à un palier borné par son palier de monde**
+      (T1→m1, T2→m2, T3/T4→m3) — les 31 lignes manuelles de
+      `MonsterItemFixtures` sont supprimées, la table se dérive
+- [x] m1-m3 en voie normale, **m4 en rare** (réservé au T4 hors tout-venant,
+      20 % des butins réussis), **m5 jamais en butin** ; un monstre sans
+      élément — les mannequins — ne lâche rien ; un butin réussi redescend
+      d'un palier plutôt que de s'évaporer sur un trou de catalogue
+- [x] Fourchette canonique conservée : 4 % (commun), 7 % (élite), 10 %
+      (boss) — et le multiplicateur d'événement s'applique comme au reste
+- [x] La vigilance du plan est levée par BES-01→04 : la courbe n'est plus
+      creuse (12 cases peuplées), les porteurs T3/T4 existent — MAT-06 reste
+      le canal m4-m5 propre
+- [x] Tests : `MateriaLootTableTest` — bornes de palier, couverture des
+      8 éléments, m4 réservé, m5 jamais, fenêtre 4-10 %, repli de palier,
+      mannequins muets
 
 ### MAT-06 — Coffres et donjons (S | ★★ | MOYENNE)
 > Le palier moyen et haut, et le premier contenu **propre** des donjons.
