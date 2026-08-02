@@ -44,14 +44,18 @@ class DungeonEncounterPicker
      */
     public function candidates(int $tier, MonsterRank $rank): array
     {
+        // GROUP BY sur la cle primaire plutot que DISTINCT : l'entite porte
+        // des colonnes json (traductions) sans operateur d'egalite en
+        // PostgreSQL, et la dependance fonctionnelle sur l'id couvre le reste.
         $placed = $this->entityManager->createQueryBuilder()
-            ->select('DISTINCT m')
+            ->select('m')
             ->from(Monster::class, 'm')
             ->join(Mob::class, 'mob', 'WITH', 'mob.monster = m')
             ->where('mob.zone IS NOT NULL')
             ->andWhere('m.tier = :tier')
             ->andWhere('m.rank = :rank')
             ->andWhere('m.trainingMode IS NULL')
+            ->groupBy('m.id')
             ->setParameter('tier', $tier)
             ->setParameter('rank', $rank)
             ->getQuery()
