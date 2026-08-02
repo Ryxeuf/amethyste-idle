@@ -8,7 +8,10 @@ use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
+use App\Entity\Game\Monster;
+use App\Enum\MonsterRank;
 use App\GameEngine\Dungeon\DungeonActionResolver;
+use App\GameEngine\Dungeon\DungeonEncounterPicker;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonException;
 use App\GameEngine\Dungeon\GroupDungeonRewardService;
@@ -29,12 +32,26 @@ class GroupDungeonCombatServiceTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private EntityRepository&MockObject $parameterRepository;
     private EntityRepository&MockObject $playerRepository;
+    private GroupDungeonRewardService&MockObject $rewardService;
     private DungeonActionResolver&MockObject $actionResolver;
     private GroupDungeonCombatService $service;
     public \DateTimeImmutable $now;
 
     /** @var array<int, int> degat par id de joueur (defaut 100) */
     public array $damageByPlayer = [];
+
+    /**
+     * DON-03 : la faune servie par le tireur, par rang. Le commun porte
+     * 120 PV et un coup de 10 pour que les scenarios DON-02 gardent leurs
+     * chiffres — la rencontre d'alors etait un sac de 120 PV/membre qui
+     * frappait a 10.
+     *
+     * @var array<string, ?Monster>
+     */
+    public array $monstersByRank = [];
+
+    /** @var list<int> paliers demandes au tireur */
+    public array $pickedTiers = [];
 
     protected function setUp(): void
     {
@@ -56,13 +73,26 @@ class GroupDungeonCombatServiceTest extends TestCase
             ]
         );
 
+        $this->monstersByRank = [
+            'common' => $this->buildMonster('Loup cendre', MonsterRank::Common, 120, 10),
+            'elite' => $this->buildMonster('Alpha cendre', MonsterRank::Elite, 200, 25),
+            'boss' => $this->buildMonster('Ancien des bois', MonsterRank::Boss, 300, 30),
+        ];
+        $this->pickedTiers = [];
+        $picker = $this->createMock(DungeonEncounterPicker::class);
+        $picker->method('pick')->willReturnCallback(function (int $tier, MonsterRank $rank): ?Monster {
+            $this->pickedTiers[] = $tier;
+
+            return $this->monstersByRank[$rank->value] ?? null;
+        });
+
         $publisher = $this->createMock(GroupDungeonCombatPublisher::class);
-        $rewardService = $this->createMock(GroupDungeonRewardService::class);
+        $this->rewardService = $this->createMock(GroupDungeonRewardService::class);
         $test = $this;
-        $this->service = new class($this->entityManager, $publisher, $rewardService, $this->actionResolver, $test) extends GroupDungeonCombatService {
-            public function __construct(EntityManagerInterface $em, GroupDungeonCombatPublisher $publisher, GroupDungeonRewardService $rewardService, DungeonActionResolver $actionResolver, private $test)
+        $this->service = new class($this->entityManager, $publisher, $this->rewardService, $this->actionResolver, $picker, $test) extends GroupDungeonCombatService {
+            public function __construct(EntityManagerInterface $em, GroupDungeonCombatPublisher $publisher, GroupDungeonRewardService $rewardService, DungeonActionResolver $actionResolver, DungeonEncounterPicker $picker, private $test)
             {
-                parent::__construct($em, $publisher, $rewardService, $actionResolver);
+                parent::__construct($em, $publisher, $rewardService, $actionResolver, $picker);
             }
 
             protected function now(): \DateTimeImmutable
@@ -70,6 +100,17 @@ class GroupDungeonCombatServiceTest extends TestCase
                 return $this->test->now;
             }
         };
+    }
+
+    private function buildMonster(string $name, MonsterRank $rank, int $life, int $hit): Monster
+    {
+        $monster = new Monster();
+        $monster->setName($name);
+        $monster->setRank($rank);
+        $monster->setLife($life);
+        $monster->setHit($hit);
+
+        return $monster;
     }
 
     private function buildPlayer(int $id, int $life = 50): Player
@@ -249,20 +290,120 @@ class GroupDungeonCombatServiceTest extends TestCase
         $this->assertSame(2, $state['activePlayerId']); // tour avance vers p2
     }
 
+    // =====================================================================
+    // DON-03 — les etapes et les vraies rencontres
+    // =====================================================================
+
+    /**
+     * La rencontre tombee ouvre l'etape suivante — et ne riposte pas. Le run
+     * ne se termine qu'au boss : Common -> Elite -> Boss, `currentStep`
+     * avance reellement.
+     */
+    public function testTheThreeStepsAreCrossedToTheBoss(): void
+    {
+        $p1 = $this->buildPlayer(1, 200);
+        $this->damageByPlayer = [1 => 1000]; // chaque geste couche l'etape
+        $run = $this->buildRun([$p1]);
+        $this->rewardService->expects($this->once())->method('award');
+
+        $state = $this->service->state($run);
+        $this->assertSame(1, $state['currentStep']);
+        $this->assertSame('Loup cendre', $state['encounterName']);
+
+        $state = $this->service->act($p1, $run); // le commun tombe
+        $this->assertSame(GroupDungeonRun::STATUS_IN_PROGRESS, $state['status']);
+        $this->assertSame(2, $state['currentStep']);
+        $this->assertSame('Alpha cendre', $state['encounterName']);
+        $this->assertSame('elite', $state['encounterRank']);
+        $this->assertSame(200, $p1->getLife(), 'Une rencontre qui tombe ne riposte pas.');
+
+        $state = $this->service->act($p1, $run); // l'elite tombe
+        $this->assertSame(3, $state['currentStep']);
+        $this->assertSame('Ancien des bois', $state['encounterName']);
+
+        $state = $this->service->act($p1, $run); // le boss tombe -> victoire
+        $this->assertSame(GroupDungeonRun::STATUS_COMPLETED, $state['status']);
+        $this->assertSame(2, $run->getCurrentStep());
+        $this->assertNull($run->getTurnDeadline());
+    }
+
+    /**
+     * Aucun sac de PV : la barre est la vie du monstre de l'etape multipliee
+     * par la taille du groupe, et la riposte est le coup du monstre — une
+     * elite frappe plus fort qu'un commun, sans reglage special.
+     */
+    public function testTheEncounterIsTheMonsterNotAnHpBag(): void
+    {
+        $p1 = $this->buildPlayer(1, 200);
+        $p2 = $this->buildPlayer(2, 200);
+        $this->damageByPlayer = [1 => 240, 2 => 50];
+        $run = $this->buildRun([$p1, $p2]);
+
+        $state = $this->service->state($run);
+        $this->assertSame(240, $state['encounterHpMax'], 'Etape 1 : la vie du commun (120) x 2 membres.');
+
+        $state = $this->service->act($p1, $run); // le commun tombe d'un coup
+        $this->assertSame(400, $state['encounterHpMax'], 'Etape 2 : la vie de l\'elite (200) x 2 membres.');
+
+        $this->service->act($p2, $run); // entame l'elite : la riposte est son coup
+        $this->assertSame(175, $p2->getLife(), 'L\'elite frappe a 25, pas au curseur de 10.');
+    }
+
+    /**
+     * Les rencontres se tirent au palier de la zone du donjon — et a defaut,
+     * au palier de la zone du run. Le donjon ne definit pas ses creatures.
+     */
+    public function testEncountersAreDrawnFromTheZoneTier(): void
+    {
+        $p1 = $this->buildPlayer(1);
+        $run = $this->buildRun([$p1]);
+        $run->getDungeon()->setZone((new Zone())->setSlug('mines')->setName('Mines')->setTier(3));
+
+        $this->service->state($run);
+
+        $this->assertSame([3], $this->pickedTiers);
+    }
+
+    /**
+     * Sans faune (palier vide, monstre supprime), les curseurs historiques
+     * reprennent : un donjon ne refuse jamais de s'ouvrir pour un accident
+     * de repartition.
+     */
+    public function testWithoutFaunaTheLegacyCursorsApply(): void
+    {
+        $this->monstersByRank = [];
+        $p1 = $this->buildPlayer(1, 50);
+        $p2 = $this->buildPlayer(2, 50);
+        $run = $this->buildRun([$p1, $p2]);
+
+        $state = $this->service->state($run);
+        $this->assertSame(240, $state['encounterHpMax'], '2 membres x 120 PV/membre.');
+        $this->assertNull($state['encounterName']);
+
+        $this->service->act($p1, $run);
+        $this->assertSame(40, $p1->getLife(), 'La riposte retombe sur le curseur de 10.');
+    }
+
     public function testEncounterDefeatCompletesRun(): void
     {
-        // 1 membre, HP 120, degat 100 : 2 attaques suffisent — et la
-        // rencontre qui tombe ne riposte pas.
-        $p1 = $this->buildPlayer(1, 50);
+        // 1 membre, trois etapes (120, 200, 300 PV), degat 100 : sept
+        // attaques — la derniere couche le boss, et une rencontre qui tombe
+        // ne riposte jamais.
+        $p1 = $this->buildPlayer(1, 200);
         $run = $this->buildRun([$p1]);
         $this->service->state($run);
 
-        $this->service->act($p1, $run); // 120 -> 20, riposte : 50 -> 40
-        $state = $this->service->act($p1, $run); // 20 -> 0 => complete, pas de riposte
+        $state = null;
+        for ($i = 0; $i < 7; ++$i) {
+            $state = $this->service->act($p1, $run);
+        }
 
         $this->assertSame(GroupDungeonRun::STATUS_COMPLETED, $state['status']);
         $this->assertSame(0, $state['encounterHpCurrent']);
-        $this->assertSame(40, $p1->getLife());
+        // 7 actions, 4 ripostes seulement : les chutes d'etape (2 communs ->
+        // non, 1 chute par etape x 3) ne ripostent pas. Ripostes subies :
+        // commun 10 (1 fois), elite 25 (1 fois), boss 30 (2 fois).
+        $this->assertSame(200 - 10 - 25 - 30 - 30, $p1->getLife());
         $this->assertNull($run->getTurnDeadline());
     }
 }

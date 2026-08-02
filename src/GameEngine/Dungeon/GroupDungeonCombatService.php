@@ -5,6 +5,7 @@ namespace App\GameEngine\Dungeon;
 use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\Enum\MonsterRank;
 use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -38,11 +39,19 @@ class GroupDungeonCombatService
 
     private const MAX_AUTO_RESOLUTIONS = 100;
 
+    /**
+     * DON-03 — les trois etapes d'un donjon, du tout-venant au boss.
+     * Le rang de chaque etape est fixe ; la creature qui l'incarne est tiree
+     * dans la faune du palier de la zone.
+     */
+    public const STEP_RANKS = [MonsterRank::Common, MonsterRank::Elite, MonsterRank::Boss];
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly GroupDungeonCombatPublisher $publisher,
         private readonly GroupDungeonRewardService $rewardService,
         private readonly DungeonActionResolver $actionResolver,
+        private readonly DungeonEncounterPicker $encounterPicker,
     ) {
     }
 
@@ -115,9 +124,51 @@ class GroupDungeonCombatService
         }
 
         $run->setTurnOrder($order);
-        $hp = $this->getHpPerMember() * \count($order);
-        $run->setEncounterHp($hp, $hp);
+        $run->setCurrentStep(0);
+        $this->openEncounter($run);
         $run->setTurnDeadline($this->now()->modify(sprintf('+%d seconds', $this->getTurnSeconds())));
+    }
+
+    /**
+     * Ouvre la rencontre de l'etape courante (DON-03).
+     *
+     * Le donjon ne definit pas ses creatures : le rang vient de l'etape
+     * (Common -> Elite -> Boss), la creature vient de la faune du **palier de
+     * la zone** — un donjon T4 se peuple tout seul le jour ou le palier T4
+     * est peuple. La barre de la rencontre est la vie du monstre multipliee
+     * par la taille du groupe : chaque membre a « son monstre » a abattre,
+     * et le rang se sent — une elite du meme palier porte plusieurs fois la
+     * vie d'un commun (BES-02), la ou le sac de PV rendait toutes les etapes
+     * identiques.
+     *
+     * Sans faune (palier vide, monstre supprime), les curseurs historiques
+     * reprennent : un donjon ne refuse jamais de s'ouvrir pour un accident
+     * de repartition.
+     */
+    private function openEncounter(GroupDungeonRun $run): void
+    {
+        $rank = self::STEP_RANKS[$run->getCurrentStep()] ?? MonsterRank::Boss;
+        $monster = $this->encounterPicker->pick($this->encounterTier($run), $rank);
+        $run->setEncounterMonster($monster);
+
+        $members = max(1, \count($run->getTurnOrder()));
+        $hp = null !== $monster
+            ? max(1, (int) $monster->getLife()) * $members
+            : $this->getHpPerMember() * $members;
+        $run->setEncounterHp($hp, $hp);
+    }
+
+    /**
+     * Le palier des rencontres : celui de la zone du donjon (GAME_DUNGEONS §3).
+     *
+     * Le plancher est T1 — une zone T0 est sure par definition (GAME_BESTIARY,
+     * invariant 3), son donjon puise donc au premier palier qui a une faune.
+     */
+    private function encounterTier(GroupDungeonRun $run): int
+    {
+        $tier = $run->getDungeon()->getZone()?->getTier() ?? $run->getZone()?->getTier() ?? 1;
+
+        return max(1, min(4, $tier));
     }
 
     /**
@@ -163,6 +214,17 @@ class GroupDungeonCombatService
         $run->damageEncounter($action['damage']);
 
         if ($run->getEncounterHpCurrent() <= 0) {
+            // DON-03 : la rencontre tombee ouvre l'etape suivante — le boss
+            // seul termine le run. `currentStep` avance reellement.
+            if ($run->getCurrentStep() < \count(self::STEP_RANKS) - 1) {
+                $run->setCurrentStep($run->getCurrentStep() + 1);
+                $this->openEncounter($run);
+                $this->advanceToNextStandingMember($run);
+                $run->setTurnDeadline($this->now()->modify(sprintf('+%d seconds', $this->getTurnSeconds())));
+
+                return;
+            }
+
             $run->setStatus(GroupDungeonRun::STATUS_COMPLETED);
             $run->setTurnDeadline(null);
             // Recompenses decroissantes & lockouts (ZON-20), au seul instant
@@ -173,8 +235,10 @@ class GroupDungeonCombatService
         }
 
         // DON-02 : la riposte. La rencontre frappe le membre qui vient d'agir
-        // — agir a un cout, et un donjon peut desormais etre perdu.
-        $player->setLife(max(0, $player->getLife() - $this->getEncounterHit()));
+        // — agir a un cout, et un donjon peut desormais etre perdu. DON-03 :
+        // le coup est celui du monstre de l'etape — une elite frappe plus
+        // fort qu'un commun, sans reglage special (GAME_ARCHETYPES §9 octies).
+        $player->setLife(max(0, $player->getLife() - $this->getEncounterStrike($run)));
         if (0 === $player->getLife() && null === $player->getDiedAt()) {
             $player->setDiedAt(new \DateTime());
         }
@@ -225,15 +289,36 @@ class GroupDungeonCombatService
     private function snapshot(GroupDungeonRun $run): array
     {
         $deadline = $run->getTurnDeadline();
+        $monster = $run->getEncounterMonster();
 
         return [
             'status' => $run->getStatus(),
             'encounterHpCurrent' => $run->getEncounterHpCurrent(),
             'encounterHpMax' => $run->getEncounterHpMax(),
             'encounterHpPercent' => $run->getEncounterHpPercent(),
+            // DON-03 : l'etape et la creature qui l'incarne — l'ecran dit qui
+            // l'on affronte, plus une barre anonyme.
+            'currentStep' => $run->getCurrentStep() + 1,
+            'totalSteps' => \count(self::STEP_RANKS),
+            'encounterName' => $monster?->getName(),
+            'encounterRank' => $monster?->getRank()->value,
             'activePlayerId' => $run->getActivePlayerId(),
             'turnRemainingSeconds' => null !== $deadline ? max(0, $deadline->getTimestamp() - $this->now()->getTimestamp()) : null,
         ];
+    }
+
+    /**
+     * Le coup de la rencontre : celui du monstre de l'etape, ou le curseur
+     * historique quand la faune manque.
+     */
+    private function getEncounterStrike(GroupDungeonRun $run): int
+    {
+        $monster = $run->getEncounterMonster();
+        if (null !== $monster && $monster->getHit() > 0) {
+            return $monster->getHit();
+        }
+
+        return $this->getEncounterHit();
     }
 
     public function getTurnSeconds(): int

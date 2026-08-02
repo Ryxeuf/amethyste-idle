@@ -3,6 +3,7 @@
 namespace App\Entity\App;
 
 use App\Entity\Game\Dungeon;
+use App\Entity\Game\Monster;
 use App\Repository\GroupDungeonRunRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -59,6 +60,18 @@ class GroupDungeonRun
     private int $currentStep = 0;
 
     // ── Etat de combat tour par tour partage (ZON-19 sous-jalon 2) ──
+
+    /**
+     * Le monstre que l'etape courante incarne (DON-03).
+     *
+     * La rencontre n'est plus un sac de PV abstrait : elle est un `Monster`
+     * du palier de la zone, dont la vie dimensionne la barre et dont le
+     * coup nourrit la riposte. `SET NULL` en cas de suppression : le run
+     * retombe alors sur les curseurs historiques, il ne casse pas.
+     */
+    #[ORM\ManyToOne(targetEntity: Monster::class)]
+    #[ORM\JoinColumn(name: 'encounter_monster_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Monster $encounterMonster = null;
 
     #[ORM\Column(name: 'encounter_hp_max', type: 'integer', options: ['default' => 0])]
     private int $encounterHpMax = 0;
@@ -137,6 +150,16 @@ class GroupDungeonRun
     public function isActive(): bool
     {
         return \in_array($this->status, [self::STATUS_FORMING, self::STATUS_IN_PROGRESS], true);
+    }
+
+    public function getEncounterMonster(): ?Monster
+    {
+        return $this->encounterMonster;
+    }
+
+    public function setEncounterMonster(?Monster $encounterMonster): void
+    {
+        $this->encounterMonster = $encounterMonster;
     }
 
     public function getCurrentStep(): int
