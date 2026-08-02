@@ -29,7 +29,7 @@
 | MAT-05 ✅ | Le butin dérivé | M | ← MAT-01, MAT-03 |
 | MAT-06 ✅ | Coffres et donjons | S | ← MAT-03 |
 | MAT-07 ✅ | Le nettoyage | S | ← MAT-03 |
-| MAT-08 | Tests du plan | S | ‖ |
+| MAT-08 ✅ | Tests du plan | S | ‖ |
 
 ```
 Piste A — La donnée   : MAT-02 → MAT-03 → MAT-07
@@ -192,15 +192,30 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
 
 ## Piste C — Le contrat
 
-### MAT-08 — Tests du plan (S | ★★★ | HAUTE)
+### MAT-08 — Tests du plan (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 — **plan matéria complet 8/8**
 > ‖ au fil des jalons. Les 7 invariants de GAME_MATERIA §6, en CI.
-- [ ] Aucun nœud ne ment : tout `materia.unlock` a sa matéria
-- [ ] Aucune matéria orpheline : toute matéria est ouverte par un nœud
-- [ ] Le jour 1 est tenu : 48 matéria sourcées, ≤ 1 liaison, source non aléatoire
-- [ ] Toute matéria est obtenable par au moins un canal
-- [ ] La dérivation tient : slug, élément et rareté déductibles du sort
-- [ ] Aucune matéria n'est consommable
-- [ ] Le catalogue est complet : 200, une par `unlock` distinct
+- [x] Aucun nœud ne ment : tout `materia.unlock` a sa matéria
+      (`MateriaCatalogTest`, `MateriaCatalogIntegrationTest`)
+- [x] Aucune matéria orpheline : toute matéria est ouverte par un nœud
+      (`MateriaCleanupTest`, compte du catalogue en intégration)
+- [x] Le jour 1 est tenu : 48 matéria sourcées, ≤ 1 liaison, source non
+      aléatoire (`MateriaDayOneFloorTest`)
+- [x] Toute matéria est obtenable par au moins un canal
+      (`MateriaObtainabilityTest`, sur les espèces réellement placées) —
+      l'invariant a mordu : sans monstre de feu, d'air ou de lumière au T2,
+      **21 m2 n'avaient aucun canal**. Correctifs : la salamandre redescend
+      au T2 et gagne les Mines (la zone de la ligne du feu), la sylphe et le
+      feu follet montent au T2 ; le taiju prend le cran d'élite laissé par la
+      sylphe et le troll redevient commun (cibles de couverture BES-04
+      tenues) ; le m1-healing-touch, plus aucun gibier T1 de lumière pour le
+      porter, rejoint l'étal d'Élionor
+- [x] La dérivation tient : slug, élément et rareté déductibles du sort
+      (`MateriaCatalogIntegrationTest::testDerivationHolds` +
+      `MateriaObtainabilityTest::testRarityFollowsThePalier`)
+- [x] Aucune matéria n'est consommable (`MateriaCleanupTest` en source,
+      `MateriaObtainabilityTest::testNoMateriaIsConsumable` en base)
+- [x] Le catalogue est complet : 200+, une par `unlock` distinct
+      (`MateriaCatalogIntegrationTest::testCatalogMatchesTheTreesPromises`)
 
 ---
 

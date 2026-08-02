@@ -465,7 +465,9 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minRank' => 'elite'],
             ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minRank' => 'elite'],
             ['monster' => 'stone_golem', 'item' => 'golem_heart_shield', 'probability' => 3, 'minRank' => 'elite'],
-            ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3, 'minRank' => 'elite'],
+            // MAT-08 : le troll est redevenu un commun de la Crete — la garde
+            // `minRank` rendrait la ceinture introuvable, le 3 % suffit.
+            ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3],
 
             // =================================================================
             // ECO-24b-b — Les cuirs du tanneur
