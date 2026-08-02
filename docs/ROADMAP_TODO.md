@@ -29,10 +29,10 @@ L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'
 - [PIVOT_PBBG.md](PIVOT_PBBG.md) — decision du pivot, equivalences carte → zones
 - [ZON_CAMPAIGN_RECAP.md](ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis (traites en Sprint 13)
 - [roadmap/PLAN_ONBOARDING.md](roadmap/PLAN_ONBOARDING.md) — **17/20 livres** (le jeu a une porte d'entree) ; restent **ONB-02/04 (mailer — dernier bloquant dur)**, ONB-07b, ONB-20b-b
-- [roadmap/PLAN_DUNGEONS.md](roadmap/PLAN_DUNGEONS.md) ⚙ — **en cours, front actuel** (DON-01a livre le 2026-08-02 ; reste DON-01b→06)
+- [roadmap/PLAN_DUNGEONS.md](roadmap/PLAN_DUNGEONS.md) ⚙ — **2/6, en cours, front actuel** (DON-01 et DON-02 livres le 2026-08-02 : modele unique + le combat rend le build pertinent ; restent DON-03→06)
 - [roadmap/PLAN_MATERIA.md](roadmap/PLAN_MATERIA.md) ✅ — **8/8** (chaine competence → materia → sort reparee, invariants en CI)
 - [roadmap/PLAN_BESTIARY.md](roadmap/PLAN_BESTIARY.md) ✅ — **6/6** (tier × rank, zones.yaml source unique de la faune)
-- [roadmap/PLAN_ITEMS.md](roadmap/PLAN_ITEMS.md) — **4/8** (taxonomie, menage, equipement neutre, emplacements progressifs) ; restent OBJ-05→08
+- [roadmap/PLAN_ITEMS.md](roadmap/PLAN_ITEMS.md) ✅ — **8/8, complet le 2026-08-02** (taxonomie, menage, equipement neutre, emplacements progressifs, outils de recolte et d'artisanat, champignon, invariants en CI)
 - [roadmap/PLAN_ARCHETYPES.md](roadmap/PLAN_ARCHETYPES.md) — **0/19, a ouvrir** (les archetypes de combat ; prerequis externes livres)
 - [roadmap/PLAN_TRADES.md](roadmap/PLAN_TRADES.md) — **0/11, a ouvrir** (les arbres de metier ; MET-01 bloquant)
 - [roadmap/PLAN_RETENTION.md](roadmap/PLAN_RETENTION.md) ✅ — **10/10** (retention hebdomadaire, vague 4 « tableau du lundi » comprise)
