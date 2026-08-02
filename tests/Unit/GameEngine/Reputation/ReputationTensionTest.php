@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerFaction;
 use App\Entity\Game\Faction;
 use App\GameEngine\Reputation\FactionTensionCatalog;
+use App\GameEngine\Reputation\GestureReputationCatalog;
 use App\GameEngine\Reputation\ReputationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -209,6 +210,6 @@ class ReputationTensionTest extends TestCase
             fn (string $class): EntityRepository => $class === Faction::class ? $factionRepository : $playerFactionRepository,
         );
 
-        return new ReputationManager($entityManager, $this->catalog());
+        return new ReputationManager($entityManager, $this->catalog(), new GestureReputationCatalog(\dirname(__DIR__, 4)));
     }
 }

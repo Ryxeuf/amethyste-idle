@@ -9,6 +9,7 @@ use App\Entity\Game\Faction;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
 use App\GameEngine\Achievement\AchievementTracker;
+use App\GameEngine\Reputation\GestureReputationCatalog;
 use App\GameEngine\Reputation\ReputationListener;
 use App\GameEngine\Reputation\ReputationManager;
 use App\Repository\PlayerAchievementRepository;
@@ -45,6 +46,7 @@ class QuestCompletedEventIntegrationTest extends TestCase
         $this->reputationListener = new ReputationListener(
             $this->reputationManager,
             $this->entityManager,
+            new GestureReputationCatalog(\dirname(__DIR__, 3)),
         );
     }
 

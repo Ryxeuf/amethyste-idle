@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
+use App\Event\Game\AuctionSaleEvent;
 use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\GameMaster\GameMasterPolicy;
@@ -28,6 +29,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class AuctionManagerTest extends TestCase
 {
@@ -37,6 +39,7 @@ class AuctionManagerTest extends TestCase
     private NotificationService&MockObject $notificationService;
     private GuildManager&MockObject $guildManager;
     private AuctionAntiExploit&MockObject $antiExploit;
+    private EventDispatcher $eventDispatcher;
     private AuctionManager $manager;
 
     protected function setUp(): void
@@ -49,7 +52,8 @@ class AuctionManagerTest extends TestCase
         $this->notificationService = $this->createMock(NotificationService::class);
         $this->guildManager = $this->createMock(GuildManager::class);
         $this->antiExploit = $this->createMock(AuctionAntiExploit::class);
-        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy());
+        $this->eventDispatcher = new EventDispatcher();
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy(), $this->eventDispatcher);
     }
 
     public function testCreateListingSuccess(): void
@@ -184,6 +188,36 @@ class AuctionManagerTest extends TestCase
         $this->assertSame(100, $seller->getGils()); // 0 + 100 (pas de taxe region)
         $this->assertSame(100, $transaction->getTotalPrice());
         $this->assertSame(0, $transaction->getRegionTaxAmount());
+    }
+
+    /**
+     * FAC-02 : la vente conclue est un geste — l'event part au moment ou
+     * l'annonce devient une transaction, et il porte le vendeur, seul
+     * destinataire de la reputation marchande.
+     */
+    public function testBuyListingDispatchesTheSaleEvent(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $buyer = $this->createPlayer(2, 500);
+        $item = $this->createPlayerItem();
+
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(5);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        $seen = [];
+        $this->eventDispatcher->addListener(AuctionSaleEvent::NAME, function (AuctionSaleEvent $event) use (&$seen) {
+            $seen[] = $event->getSeller();
+        });
+
+        $this->manager->buyListing($buyer, $listing);
+
+        $this->assertSame([$seller], $seen, 'La vente conclue doit emettre l\'event du geste marchand, cote vendeur.');
     }
 
     public function testBuyListingWithRegionTax(): void
@@ -779,7 +813,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy(), $this->eventDispatcher);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -796,7 +830,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(19);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy(), $this->eventDispatcher);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -814,7 +848,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-2 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy(), $this->eventDispatcher);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -831,7 +865,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-10 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy(), $this->eventDispatcher);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -1109,7 +1143,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-30 seconds'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit, new GameMasterPolicy(), $this->eventDispatcher);
 
         $admin = $this->createPlayer(1, 0);
         $item = $this->createPlayerItem();

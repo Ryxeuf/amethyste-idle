@@ -14,6 +14,7 @@ use App\EventListener\BestiaryListener;
 use App\GameEngine\Achievement\AchievementTracker;
 use App\GameEngine\Quest\PlayerQuestUpdater;
 use App\GameEngine\Quest\QuestMonsterTrackingListener;
+use App\GameEngine\Reputation\GestureReputationCatalog;
 use App\GameEngine\Reputation\ReputationListener;
 use App\GameEngine\Reputation\ReputationManager;
 use App\Repository\PlayerAchievementRepository;
@@ -65,6 +66,7 @@ class MobDeadEventIntegrationTest extends TestCase
         $this->reputationListener = new ReputationListener(
             $this->reputationManager,
             $this->entityManager,
+            new GestureReputationCatalog(\dirname(__DIR__, 3)),
         );
     }
 
@@ -98,10 +100,11 @@ class MobDeadEventIntegrationTest extends TestCase
                 return $this->createMock(EntityRepository::class);
             });
 
-        // Reputation: faction associated → rep granted
+        // Reputation: faction associated → rep granted through the capped
+        // gesture path (FAC-02 — a kill is a gesture, quests stay uncapped)
         $this->reputationManager->method('getReputationAmount')->with(3)->willReturn(5);
         $this->reputationManager->expects($this->once())
-            ->method('addReputation')
+            ->method('grantCappedReputation')
             ->with($player, $faction, 5);
 
         // Quest tracker called
@@ -128,7 +131,9 @@ class MobDeadEventIntegrationTest extends TestCase
 
         // Reputation: dead player should NOT get rep
         $this->reputationManager->expects($this->never())
-            ->method('addReputation');
+            ->method('grantCappedReputation');
+        $this->reputationManager->expects($this->never())
+            ->method('grantGestureReputation');
 
         // But quest tracking still runs (it uses PlayerQuestHelper internally, not fight players)
         $this->playerQuestUpdater->expects($this->once())
@@ -162,7 +167,9 @@ class MobDeadEventIntegrationTest extends TestCase
         $event = new MobDeadEvent($mob);
 
         $this->reputationManager->expects($this->never())
-            ->method('addReputation');
+            ->method('grantCappedReputation');
+        $this->reputationManager->expects($this->never())
+            ->method('grantGestureReputation');
 
         $this->reputationListener->onMobDead($event);
     }

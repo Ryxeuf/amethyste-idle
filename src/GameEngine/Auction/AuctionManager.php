@@ -11,6 +11,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
+use App\Event\Game\AuctionSaleEvent;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\RegionBonusProvider;
@@ -20,6 +21,7 @@ use App\GameEngine\Region\PlayerRegionResolver;
 use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class AuctionManager
 {
@@ -53,6 +55,7 @@ class AuctionManager
         private readonly GuildManager $guildManager,
         private readonly AuctionAntiExploit $antiExploit,
         private readonly GameMasterPolicy $gameMasterPolicy,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -171,6 +174,8 @@ class AuctionManager
             'region_tax' => $settlement->taxAmount,
             'member_rebate' => $settlement->memberRebate,
         ]);
+
+        $this->eventDispatcher->dispatch(new AuctionSaleEvent($listing, $transaction), AuctionSaleEvent::NAME);
 
         return $transaction;
     }
@@ -520,6 +525,8 @@ class AuctionManager
             'region_tax' => $settlement->taxAmount,
             'member_rebate' => $settlement->memberRebate,
         ]);
+
+        $this->eventDispatcher->dispatch(new AuctionSaleEvent($listing, $transaction), AuctionSaleEvent::NAME);
 
         return $transaction;
     }
