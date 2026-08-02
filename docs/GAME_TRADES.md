@@ -118,6 +118,15 @@ Le plafond actuel de **+100 % de rendement** est donc exactement à l'envers : l
 seul levier du jeu est celui de la famille la plus inflationniste, et il est
 plafonné au doublement.
 
+> **Amendement du 2026-08-01 (§7.5, correction 3).** La mesure a montré que cette
+> règle est **plus forte que sa justification**. Ce n'est pas par prudence
+> économique qu'un levier de quantité doit être borné : c'est que **le débit du
+> filon le borne déjà**, et de mieux en mieux à mesure qu'on monte en palier. Un
+> bonus de rendement ne produit pas une unité de plus dès que le filon est la
+> contrainte — il vide le filon plus vite. La famille « quantité » n'est donc pas
+> *dangereuse*, elle est **faible**, et elle ne récompense pas l'expertise. La
+> conclusion pratique ne change pas ; sa raison, si.
+
 ---
 
 ## 2. Le vocabulaire fermé des leviers de métier
@@ -130,7 +139,7 @@ occupe une place dans la formule qu'aucun autre n'occupe.*
 
 | Levier | Effet | 1 point de budget vaut | Plafond / arbre | Risque |
 |---|---|---:|---:|---|
-| **`yield`** | quantité récoltée | **+1,0 %** | **12 pb** | quantité — **borné bas** |
+| **`yield`** | quantité récoltée | **+1,0 %** | **12 pb** | quantité — **borné bas**, et **borné une seconde fois par le débit du filon** (§7.3) |
 | **`purity`** | poids de la bande haute dans le tirage | **+1,0 pt** | 18 pb | composition |
 | **`stride`** | coût en énergie du geste | **−0,5 %** | 12 pb | quantité *(il agrandit la journée)* |
 | **`sight`** | chance de repérer un filon caché, lecture de la vitalité | **+2,0 pt** | 18 pb | information — **le plus sûr** |
@@ -191,7 +200,7 @@ quotidien**.
 |---|---|---|
 | Ce qu'on optimise | ce que rapporte **la journée** | ce que rapporte **le filon, sur la durée** |
 | Leviers | `yield`, `stride` | `purity`, `care` |
-| L'accord | **la Percée** — un filon sous 0,33 de vitalité rend davantage | **le Repos** — un filon au-dessus de 0,66 rend une bande de plus |
+| L'accord | **la Percée** — le filon rend jusqu'à **1,5× son débit du jour**, pris sur celui de demain (§7.5) | **le Repos** — un filon au-dessus de 0,66 rend une bande de plus |
 | Ce qu'on vend | **du volume en bande basse** | **du peu en bande haute** |
 | Ce qu'on laisse derrière soi | de la **pâleur**, que quelqu'un paiera | un filon qui rendra encore la semaine prochaine |
 
@@ -362,9 +371,16 @@ Aucun capstone de métier n'augmente une quantité. C'est la règle §1.3 appliq
 10. **Le simulateur** (ARC-17, étendu) tient l'écart de chiffre d'affaires
     journalier entre les deux branches d'un même métier **sous 10 %**, et
     l'écart de **composition** au-dessus de 2× sur la part de bande haute.
+11. **L'invariant 10 se vérifie à deux échelles** : à portes égales (T0-T1) *et*
+    toutes portes ouvertes. Sans la Percée, il tombe aux deux (−13 % et −17 %,
+    §7.4) — et l'écart se creuse à mesure qu'on monte, ce qu'une mesure à une
+    seule échelle ne verrait pas.
+12. **Un arbre terminé ouvre au moins un filon `requires_skill`.** C'est la
+    récompense de fin d'arbre (§7.6) : un monopole, jamais un pourcentage.
 
 L'invariant 10 est le seul qui compte vraiment : deux branches doivent gagner
-**autant**, en vendant **autre chose**.
+**autant**, en vendant **autre chose**. L'invariant 11 est ce qui l'empêche
+d'être vrai par accident.
 
 ---
 
@@ -451,7 +467,181 @@ ne stérilise rien.
 
 ---
 
-## 7. Ce que ce document ne décide pas
+## 7. Ce qu'un expert gagne — mesuré
+
+**La question, posée le 2026-08-01 :** *un mineur avancé ne devrait-il pas miner
+plus et mieux qu'un débutant ? Il faut bien un avantage à celui qui a terminé
+l'arbre.*
+
+Elle est juste, et §1.3 se lisait comme une réponse négative. Elle ne l'est pas —
+mais le document ne l'avait jamais chiffré, ce qui revient au même. Voici la
+mesure, sur les vrais prix (`fixtures/game/item/ore.yaml`) et les vrais débits de
+filon (`config/game/zones/world_1.yaml`, tableau de calibrage du 2026-07-28).
+
+### 7.1 L'écart réel : ×9,1
+
+Une journée de 240 points d'énergie, un mineur seul, qui descend les paliers du
+plus cher au moins cher jusqu'à épuiser son énergie.
+
+| | Ce qu'il travaille | Journée |
+|---|---|---:|
+| **Débutant** — arbre vide, pioche de bronze, portes T0-T1 | 160 unités de **fer** | **2 384 gils** |
+| **Expert Extraire** — arbre fini, pioche de mithril, toutes portes | sombracier, platine, or | **18 137 gils** |
+| **Expert Préserver** — idem | sombracier, platine, or | **21 792 gils** |
+
+> **×7,6 à ×9,1.** La réponse est donc **oui**, et largement. Ce que le document
+> ne disait pas, c'est **d'où** vient cet écart.
+
+### 7.2 D'où il vient
+
+| Ce qui l'apporte | Facteur | Part de l'écart |
+|---|---:|---:|
+| **Les portes** — il ne mine plus du fer à 10 gils, il mine du sombracier à 120 | **×6,4** | **90 %** |
+| **La composition** — sa bande haute vaut ×3,5 et ×9 | ×1,29 | 7 % |
+| **L'outil** de palier 4 | ×1,11 | 3 % |
+
+> **La puissance d'un arbre de métier est dans ses portes.** C'est exactement la
+> doctrine du combat ([GAME_ARCHETYPES](GAME_ARCHETYPES.md)) : *l'accès est la
+> puissance, le pourcentage est la nuance.* Un arbre de combat fini ne frappe pas
+> 6 fois plus fort — il ouvre des gestes. Un arbre de métier fini n'extrait pas
+> 6 fois plus vite — il ouvre des filons.
+>
+> Et **11 filons sur 56 portent déjà un `requires_skill`** (`miner-mithril-xs`,
+> `miner-orichalcum-xs`, `fisher-kraken`…). Ce n'est pas une porte, c'est un
+> **monopole** : l'expert n'est pas le meilleur fournisseur de sombracier, il est
+> **le seul**. §4.1 traitait les portes comme un catalogue à dégraisser ; elles
+> sont la courbe de puissance.
+
+### 7.3 Ce que la mesure a trouvé, et que le document ignorait
+
+**À portes égales** — les deux sur les mêmes filons T0-T1, même outil :
+
+| | Journée | Écart |
+|---|---:|---:|
+| Arbre vide | 2 384 | — |
+| **Extraire** fini (leviers seuls) | 2 646 | **×1,11** |
+| **Préserver** fini (leviers seuls) | 3 072 | **×1,29** |
+
+Onze pour cent pour 22 points de budget en quantité. Pourquoi si peu ? Parce que
+le **débit du filon** est la contrainte, pas le geste :
+
+| Palier | Débit soutenu | Ce qu'un joueur seul peut en prendre par jour |
+|---|---:|---|
+| T0 | 247 u/jour | il reste de la marge |
+| T1 | **161 u/jour** | **160 unités** — la borne mord exactement |
+| T2 | 96 u/jour | il l'épuise en 48 gestes |
+| T4 | **29 u/jour** | **il l'épuise en 15 gestes** |
+
+> **Un levier de quantité multiplie ce qu'un geste rapporte, jamais ce que le
+> filon contient.** Dès que le débit mord — c'est-à-dire dès le T1 — un bonus de
+> rendement ne produit pas une unité de plus : il vide le filon plus vite, et
+> l'expert doit descendre d'un palier pour finir sa journée.
+
+C'est mesurable sur le seul levier livré : **`gather_percent`, plafonné à
++100 %, ne double rien au-delà du T1.** Il porte un chiffre spectaculaire et un
+effet quasi nul là où l'expert travaille.
+
+**Et il n'est même pas réparti** : bûcheron **+70 %**, mineur **+35 %**,
+herboriste **+15 %**, pêcheur **+12 %**, dépeceur **+12 %**. Six fois d'écart
+entre deux métiers, sans raison écrite nulle part — et le plafond de +100 %
+qu'aucun arbre n'atteint.
+
+### 7.4 Le défaut que ça révèle : la fourche ne tient pas au sommet
+
+Si un levier de quantité vaut ×1,11 en bas et ~0 en haut, alors **Extraire n'est
+pas une branche, c'est une étape** — bonne au début, morte à la fin :
+
+| | À portes égales (T0-T1) | Toutes portes ouvertes |
+|---|---:|---:|
+| Extraire | 3 152 | 18 137 |
+| Préserver | 3 633 | 21 792 |
+| **Écart** | **−13 %** | **−17 %** |
+
+L'invariant 10 (moins de 10 % d'écart) tombe aux deux échelles, et il tombe de
+plus en plus fort à mesure qu'on monte. **La composition échappe à la borne du
+débit ; la quantité non.**
+
+### 7.5 Les trois corrections
+
+**Correction 1 — l'accord d'Extraire donne du *débit*, pas du rendement.**
+
+C'est la correction qui sauve la fourche, et elle rend la branche plus fidèle à
+sa fiction :
+
+> **La Percée** — le filon rend jusqu'à **une fois et demie** son débit du jour,
+> en puisant dans ce qu'il aurait rendu demain. La pâleur monte d'autant.
+
+Extraire cesse d'acheter du rendement — que le monde lui reprend — pour acheter
+du **temps emprunté**. Mesuré :
+
+| Percée | À portes égales | Toutes portes |
+|---|---:|---:|
+| +0 % (rendement seul) | −13 % | −17 % |
+| **+50 % de débit** | **−0 %** | **+6 %** |
+
+L'invariant 10 tient alors aux deux échelles. Et la fiction se referme : *ce que
+l'extracteur gagne aujourd'hui, il l'a pris à demain* — ce qui n'était qu'une
+phrase en §3.1 devient la mécanique elle-même.
+
+**Correction 2 — l'outil porte un chiffre.**
+
+[GAME_ITEMS](GAME_ITEMS.md) promet que *« le palier module le rendement, jamais
+l'accès »* sans jamais dire de combien. Les quatre paliers existent et coûtent
+déjà 50 / 150 / 400 / **1 000 gils** :
+
+| Palier | Bronze | Fer | Acier | Mithril |
+|---|---:|---:|---:|---:|
+| Rendement | **+0 %** | **+8 %** | **+18 %** | **+30 %** |
+
+Mesuré : **×1,11** sur la journée d'un expert. C'est peu — et c'est bien, parce
+que c'est de la quantité, donc soumis à la même borne de débit. Sa vraie
+fonction est ailleurs : **c'est un gouffre à gils** (1 000 pour la pioche de
+mithril) qui donne au palier 4 une raison d'exister.
+
+**Correction 3 — la règle §1.3 se reformule.**
+
+Elle disait : *la progression ne doit pas augmenter la quantité produite.*
+C'était une prudence économique. La mesure montre que c'est plus fort que ça :
+
+> **La quantité n'est pas bornée par l'arbre, elle est bornée par le monde.** Le
+> débit d'un filon est la contrainte, et il est déjà calibré. Un levier de
+> rendement n'est donc pas *dangereux* — il est **faible**, et il devient
+> d'autant plus faible qu'on monte en palier. Ce n'est pas un levier qu'on
+> plafonne par prudence, c'est un levier qui ne récompense pas l'expertise.
+
+Conséquence : **le plafond de `yield` peut rester bas sans rien coûter**, et
+`stride` doit être relu de la même façon — économiser de l'énergie ne sert qu'à
+descendre d'un palier plus tôt.
+
+### 7.6 Ce qui reste plat, et ce qu'on y met
+
+Il reste un vrai manque, et c'est celui que la question désignait : **le dernier
+nœud d'un arbre de métier ne donne rien** — le même constat que DOM-10 fait pour
+les arbres de combat.
+
+Trois choses qu'un arbre **terminé** doit donner, et qui n'ajoutent **aucune
+unité au monde** :
+
+1. **Le monopole** — la dernière porte doit ouvrir un filon `requires_skill` que
+   presque personne n'a. Le mécanisme existe (11 filons sur 56) ; il doit être la
+   récompense de fin d'arbre, jamais un palier intermédiaire.
+2. **Le capstone, revalorisé.** Les trois formes de §4.3 valent chacune quelques
+   pour cent. Une quatrième les vaut toutes : **le filon signé** — une fois par
+   jour, l'expert travaille un filon *comme s'il était à pleine vitalité*. Sur un
+   T4 pressé, le plafond passe de `clair` à `parfait` : c'est la seule façon
+   régulière d'obtenir du parfait, donc d'éveiller une matéria. Borné en
+   fréquence, énorme en valeur, **zéro unité de plus**.
+3. **La demande, pas l'offre.** `CraftOrderManager` sait déjà exiger une bande.
+   Une commande qui exige du **pur ou mieux** n'est honorable que par un arbre
+   fini : l'expert ne gagne pas en produisant plus, il gagne en étant **le seul
+   à qui on puisse commander**.
+
+> **La formule.** Un débutant vend ce qu'il ramasse. Un expert vend ce qu'on lui
+> demande, et il est seul à pouvoir le fournir.
+
+---
+
+## 8. Ce que ce document ne décide pas
 
 - **Les valeurs.** Tous les nombres sont illustratifs (§0.2). La recalibration
   passe par `app:balance:simulate` (ARC-17), **étendu aux métiers** : mêmes
