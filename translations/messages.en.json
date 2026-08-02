@@ -1854,6 +1854,7 @@
       }
     },
     "coach": {
+      "help_link": "Read again in the help",
       "dismiss": "Close",
       "zone": {
         "title": "You are in a zone",

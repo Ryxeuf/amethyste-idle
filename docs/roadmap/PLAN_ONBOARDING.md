@@ -506,14 +506,16 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
       une croix. Ne revient jamais seul
 - [x] Les **dix** encarts déclarés dans `CoachMark` ; **trois branchés** (zone, combat,
       inventaire) — les sept autres sont une ligne de gabarit chacun (**ONB-17b**)
-- [ ] Les sept écrans restants : catalogue des arbres, quêtes, artisanat, carte du monde, hub,
-      marché, guilde (**ONB-17b**)
+- [x] **ONB-17b ✅ LIVRÉ 2026-08-02** — les sept écrans restants branchés : catalogue des
+      arbres, quêtes, artisanat, carte du monde, hub, marché, guilde (constaté au code :
+      les dix `coach_mark(...)` sont dans leurs gabarits, traductions comprises)
 - [x] Le coach de combat s'affiche sur **le premier mannequin** — le seul combat où lire ne tue
       pas (ONB-11)
 - [x] **C1** : jamais un système inutilisable · **C2** : toujours le coût · **C3** : à
       l'arrivée, jamais au temps écoulé
 - [x] Le coach du **hub** n'apparaît qu'après l'acte I
-- [ ] Relecture depuis l'aide (lien wiki) — **attend WIK-02**, dégradation acceptable d'ici là
+- [x] Relecture depuis l'aide — chaque encart pointe vers **sa** page du wiki
+      (`CoachMark::helpPage()`, WIK-02 livré), et un test refuse toute page morte
 - [x] Le coach est **par personnage**
 - [x] Tests : affichage unique, persistance, C1/C2/C3 respectées, idempotence de la fermeture
 

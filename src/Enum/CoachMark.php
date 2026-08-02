@@ -117,4 +117,29 @@ enum CoachMark: string
     {
         return 'game.coach.' . $this->value . '.cost';
     }
+
+    /**
+     * La page d'aide ou relire cette explication (ONB-17, via WIK-02).
+     *
+     * L'encart ne revient jamais seul : la relecture passe par le wiki, et
+     * chaque ecran pointe vers **sa** page — un lien generique vers l'accueil
+     * de l'aide obligerait a rechercher ce qu'on vient de fermer.
+     *
+     * @return array{section: string, page: string}
+     */
+    public function helpPage(): array
+    {
+        return match ($this) {
+            self::Zone => ['section' => '01-commencer', 'page' => 'premiere-session'],
+            self::Combat => ['section' => '06-combattre', 'page' => 'combat'],
+            self::Inventory => ['section' => '02-devenir', 'page' => 'equipement-et-build'],
+            self::TreeCatalog => ['section' => '02-devenir', 'page' => 'arbres-de-domaine'],
+            self::Quests => ['section' => '01-commencer', 'page' => 'premiere-session'],
+            self::Crafting => ['section' => '04-produire', 'page' => 'artisanats'],
+            self::WorldMap => ['section' => '03-le-monde', 'page' => 'zones-et-voyage'],
+            self::Hub => ['section' => '05-vivre-ensemble', 'page' => 'la-semaine'],
+            self::Market => ['section' => '04-produire', 'page' => 'commerce'],
+            self::Guild => ['section' => '05-vivre-ensemble', 'page' => 'guildes-et-cites'],
+        };
+    }
 }
