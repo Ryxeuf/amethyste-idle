@@ -10,6 +10,7 @@ use App\Enum\PlayerRenownTier;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
+use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
@@ -31,6 +32,7 @@ class ShopController extends AbstractController
         private readonly PlayerRenownDiscountProvider $renownDiscountProvider,
         private readonly GameMasterPolicy $gameMasterPolicy,
         private readonly HostileConsequenceResolver $hostileConsequences,
+        private readonly CrystalBuybackFloor $buybackFloor,
     ) {
     }
 
@@ -247,6 +249,15 @@ class ShopController extends AbstractController
 
         // Sell price = 30% of buy price
         $sellPrice = max(1, (int) (($item->getPrice() ?? 0) * 0.3));
+
+        // FAC-04a — le plancher d'achat du cristal : au comptoir de la
+        // Fonderie, l'amethystite a un prix garanti, jamais inferieur au taux
+        // commun. Miroir du plancher T1 (ECO-02), cote vente.
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        $floor = null !== $pnj ? $this->buybackFloor->floorFor($pnj, $item, $player) : null;
+        if (null !== $floor) {
+            $sellPrice = max($sellPrice, $floor);
+        }
 
         $player->addGils($sellPrice);
         $this->entityManager->remove($playerItem);

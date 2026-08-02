@@ -115,12 +115,20 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
 > + plancher de rachat) et **04b** (conversion fondre/lire sur `PlayerItem` matéria,
 > essence en monnaie de services, gains Codex/accord côté lecture).
 > Prérequis : ∅
-- [ ] 04a : entité de faction (5e), PNJ au carreau des Mines, visible dès le jour 1,
-      plancher d'achat du cristal
+- [x] 04a ✅ (**livré le 2026-08-02**) : la 5e faction semée (`fonderie` — tout l'attendait :
+      la paire de tension FAC-01, la route `materia_melt` FAC-02 et la conséquence
+      `buyback_floor_closed` FAC-03 s'activent d'elles-mêmes, un test le vérifie) ; le
+      comptoir au carreau des Mines (`mines-comptoir-de-la-fonderie`, PNJ déclaratif de
+      `world_1.yaml`, visible dès le jour 1) ; le **plancher d'achat du cristal**
+      (`CrystalBuybackFloor` : l'améthystite rend 9 gils garantis au comptoir au lieu du
+      taux commun de 30 %, miroir du plancher T1 d'ECO-02 — fermé aux Hostiles, la vente
+      au taux commun restant toujours ouverte)
 - [ ] 04b : action fondre (gils + essence) / lire (Codex + réputation Lecteurs + accord),
       essence dépensable **uniquement en services** ; chaque lecture versée au Répertoire
       (crochet no-op tant que le Répertoire n'est pas jalonné)
 - [ ] Tests : conversion à deux destinataires, essence non échangeable, crochet Répertoire
+      (04a testé : crochets pointés sur le slug semé, plancher borné bas/haut par la
+      donnée réelle, fermeture Hostile, comptoir déclaré et marchand)
 
 ### FAC-05 — Contrats d'approvisionnement (S | ★★ | HAUTE)
 > §12.2 complément. Prix garanti **toujours sous le marché** — le miroir inverse du

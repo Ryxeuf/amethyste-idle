@@ -155,7 +155,7 @@ class NamingLawTest extends TestCase
      */
     public function testNoFactionLabelUsesAnElementName(): void
     {
-        $this->assertFixtureLabelsAreLegal('src/DataFixtures/Game/FactionFixtures.php', 4);
+        $this->assertFixtureLabelsAreLegal('src/DataFixtures/Game/FactionFixtures.php', 5);
     }
 
     /**

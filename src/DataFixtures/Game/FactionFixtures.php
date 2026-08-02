@@ -49,6 +49,26 @@ class FactionFixtures extends Fixture
                 'icon' => 'faction_ombres',
                 'ref' => 'faction_ombres',
             ],
+            [
+                // FAC-04a — la cinquieme maison (GAME_WORLD §12.2). Elle etait
+                // attendue partout : la paire de tension fonderie <-> mages, la
+                // route de geste materia_melt et la consequence Hostile
+                // buyback_floor_closed sont declarees depuis FAC-01/02/03 et
+                // s'activent d'elles-memes le jour ou ce slug est seme.
+                //
+                // Point de conception tenu : la Fonderie n'est pas un empire et
+                // ne conspire pas. Elle eclaire les cites, paie bien, et a
+                // raison a court terme — c'est ce qui la rend impossible a
+                // combattre. L'antagoniste du jeu est le Reflux ; elle est ce
+                // qui l'accelere en ameliorant la vie de tout le monde.
+                'slug' => 'fonderie',
+                'name' => 'La Fonderie',
+                'name_translations' => ['en' => 'The Foundry'],
+                'description' => 'Le grand consortium qui brûle le cristal pour en tirer lumière, chaleur et force. Ses comptoirs paient bien, ses enseignes éclairent les villes, et ses gens sont sincèrement inquiets de voir des villages sans lumière. Chaque améthyste fondue disparaît pourtant du monde, à jamais.',
+                'description_translations' => ['en' => 'The great consortium that burns crystal for light, warmth and power. Its counters pay well, its signs light the cities, and its people are sincerely worried about villages going dark. Yet every amethyst melted is gone from the world, forever.'],
+                'icon' => 'faction_fonderie',
+                'ref' => 'faction_fonderie',
+            ],
         ];
 
         foreach ($factions as $data) {
