@@ -25,7 +25,7 @@
 | BES-02 ✅ | Les stats dérivées du gabarit | M | ← BES-01 |
 | BES-03 ✅ | La bascule du peuplement dans `zones.yaml` | M | ∅ |
 | BES-04 ✅ | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
-| BES-05 | Le ménage du code mort | S | ∅ |
+| BES-05 ✅ | Le ménage du code mort | S | ∅ |
 | BES-06 | Tests du plan | S | ‖ |
 
 ```
@@ -134,15 +134,22 @@ en premier. BES-01 est le pivot et doit voyager avec MAT-01.
       aucune espèce perdue (hors mannequins et boss narratifs réservés),
       et aucune zone ne place une espèce inexistante
 
-### BES-05 — Le ménage du code mort (S | ★★ | MOYENNE)
-> Prérequis : ∅
-- [ ] Supprimer `HitChanceCalculator` : sa formule
-      `spell.hit + (spell.level − target.level) × 2` rendrait un monstre de
-      niveau 30+ intouchable (15 à 35 % de touche), mais **elle n'est appelée
-      nulle part** — le calcul réel est `FightCalculator::hasAttackHit()`. Ce
-      n'est pas un bug d'équilibrage, c'est un piège de lecture
-- [ ] Vérifier qu'aucun autre calcul de combat n'est orphelin
-- [ ] Tests : aucune régression sur le chemin de touche réel
+### BES-05 — Le ménage du code mort (S | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
+- [x] `HitChanceCalculator` supprimé (avec son test) : sa formule
+      `spell.hit + (spell.level − target.level) × 2` rendait un monstre de
+      haut niveau intouchable, mais **elle n'était appelée nulle part** — le
+      calcul réel est `FightCalculator::hasAttackHit()`. Un piège de lecture,
+      pas un bug d'équilibrage — et depuis BES-01, `target.level` n'existait
+      même plus
+- [x] Le balayage a trouvé **deux orphelins de plus** : `PlayerActionHandler`
+      (l'orchestrateur à `AutowireIterator`, référencé nulle part — les
+      contrôleurs de combat appellent leurs chemins directement) et
+      `FightChecker`, que lui seul consommait. Supprimés tous les deux ;
+      `MobDeathQueuing` a été épargné (subscriber auto-branché)
+- [x] Le chemin de touche réel reste couvert : `FightCalculator::hasAttackHit`
+      garde ses deux appelants (attaque de mob, sort de joueur) et ses tests
+- [x] Les docs cessent de mentir : `DOCUMENTATION.md`, `GAME_DOMAINS` §
+      stats et `PLAN_ARCHETYPES` pointent désormais le vrai calculateur
 
 ---
 
