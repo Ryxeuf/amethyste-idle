@@ -24,7 +24,7 @@
 | OBJ-02 ✅ | Le ménage : doublons et hors-périmètre | S | ← OBJ-01 |
 | OBJ-03 ✅ | La grille d'équipement neutre | M | ∅ |
 | OBJ-04 ✅ | Les emplacements typés et progressifs | M | ← OBJ-03 ; ‖ MAT-03 |
-| OBJ-05 | L'outil de récolte | M | ∅ |
+| OBJ-05 ✅ | L'outil de récolte | M | ∅ |
 | OBJ-06 | Les paliers d'outil et les 3 métiers manquants | M | ← OBJ-05 |
 | OBJ-07 | Les matières : le champignon et l'équilibre des lignes | S | ← OBJ-02 |
 | OBJ-08 | Tests du plan | S | ‖ |
@@ -165,17 +165,25 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 
 ## Piste C — Les outils
 
-### OBJ-05 — L'outil de récolte (M | ★★ | MOYENNE)
+### OBJ-05 — L'outil de récolte (M | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
 > `GatherService` n'exige aucun outil : pioche, faucille, canne, couteau et
 > hache — **20 objets** — n'ont aucune fonction mécanique.
 > Prérequis : ∅
-- [ ] La récolte exige un outil du bon type, comme le craft
-- [ ] **Le palier module le rendement, jamais l'accès au filon**
-- [ ] **La garantie anti-mur** : l'outil de palier 1 est **gratuit et livré à
-      l'ouverture de l'arbre de récolte**, sur le modèle de `rung1.free`
-      (`equipment_ports.yaml`). Sans elle, le jalon contredit
-      `GAME_ZONE_ACTIONS` (« une récolte n'échoue jamais »)
-- [ ] Tests : outil requis, rendement par palier, jamais de filon inaccessible
+- [x] La récolte exige un outil du bon type, comme le craft — refus **avant**
+      la dépense d'énergie ; la possession suffit (équipé préféré, le sac
+      travaille aussi), un outil cassé ne compte pas
+- [x] **Le palier module le rendement, jamais l'accès au filon** — +0/+8/+18/
+      +30 % (barème GAME_TRADES §7), appliqué en direct et **jamais via
+      `gather_percent`**, qui décale aussi la bande de pureté
+- [x] **La garantie anti-mur** : l'outil de palier 1 est **gratuit et livré à
+      l'ouverture de l'arbre de récolte** (`grantGatherToolKit`, dérivé des
+      nœuds `tool_slot.unlock` du graphe réel) ; migration de rattrapage pour
+      les personnages grand-périsés par ONB-08
+- [x] **Au passage** : la hache avait un type d'outil (DOM-05) mais aucun bit
+      d'équipement — `GEAR_TOOL_AXE` existe, le bûcheronnage devient outillable
+- [x] Tests : outil requis, rendement par palier, jamais de filon inaccessible
+      (`GatherToolContractTest` : toute profession a un type, tout type a son
+      palier 1 en fixtures et son emplacement)
 
 ### OBJ-06 — Les paliers d'outil et les 3 métiers manquants (M | ★★ | MOYENNE)
 > Sur 4 paliers déclarés, seuls bronze et fer sont atteignables : l'outillage

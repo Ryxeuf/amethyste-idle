@@ -133,6 +133,7 @@ class GearHelper
             'tool_tanning_kit' => PlayerItem::GEAR_TOOL_TANNING_KIT,
             'tool_mortar' => PlayerItem::GEAR_TOOL_MORTAR,
             'tool_chisel' => PlayerItem::GEAR_TOOL_CHISEL,
+            'tool_axe' => PlayerItem::GEAR_TOOL_AXE,
             default => null,
         };
     }

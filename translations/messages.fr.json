@@ -1558,7 +1558,8 @@
           "no_zone": "Votre personnage n'est rattaché à aucune zone.",
           "unknown_resource": "Cette ressource n'est pas récoltable ici.",
           "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue.",
-          "missing_skill": "Ce filon demande un savoir que vous n'avez pas encore."
+          "missing_skill": "Ce filon demande un savoir que vous n'avez pas encore.",
+          "missing_tool": "Ce filon demande un outil de récolte que vous ne possédez pas — l'ouverture de l'arbre du métier l'offre."
         },
         "purity_ceiling": "Ce filon ne rend pas mieux que",
         "locked_by": "Demande :",
