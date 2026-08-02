@@ -69,13 +69,13 @@ class ZoneLawsTest extends TestCase
     /**
      * Matieres volontairement sans source dans le jeu de base.
      *
-     * Meme liste, meme raison qu'`OreSourceReferenceTest` : la carte des
-     * minerais (GAME_ZONES § 3) les reserve aux extensions, et leurs recettes
-     * d'alliage sont livrees d'avance a dessein.
+     * Vide depuis OBJ-02b : les minerais d'extension et leurs recettes ne
+     * sont plus livres du tout — la reserve est un fichier
+     * (docs/EXTENSION_RESERVE.md), pas une exception de test.
      *
      * @var list<string>
      */
-    private const EXTENSION_RESERVED = ['ore-adamantite', 'ore-starmetal'];
+    private const EXTENSION_RESERVED = [];
 
     /**
      * Profils de palier du calibrage (BALANCE § 22.3, en tete de `world_1.yaml`).

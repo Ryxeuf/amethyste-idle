@@ -42,8 +42,11 @@ class OreSourceReferenceTest extends TestCase
      * @var array<string, string>
      */
     private const EXTENSION_RESERVED = [
-        'ore-adamantite' => 'Extension 1 — Mer de Sel (GAME_ZONES §3)',
-        'ore-starmetal' => 'Extension 1 — Glacier du Silence (GAME_ZONES §3)',
+        // OBJ-02b : plus rien ici — l'adamantite et l'astretal ne sont plus
+        // livres du tout (leurs recettes non plus), la reserve est un fichier
+        // (docs/EXTENSION_RESERVE.md), pas une exception de test. Une entree
+        // ne revient ici que si une extension livre le minerai AVANT son
+        // filon, ce qui serait deja un defaut.
     ];
 
     /**

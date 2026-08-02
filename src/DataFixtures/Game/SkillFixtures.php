@@ -4168,26 +4168,13 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
 
             // =================================================================
-            // RANG 4 (55-80 pts) — T4 Épique : Adamantite, Astrétal, Orichalque
+            // RANG 4 (55-80 pts) — T4 Épique : Orichalque
+            //
+            // OBJ-02b : les nœuds d'adamantite et d'astretal partent avec
+            // leurs minerais a la reserve d'extension (EXTENSION_RESERVE.md) —
+            // un nœud qui promet un filon inexistant est un mensonge
+            // d'interface. L'Extension 1 les ramenera avec leurs filons.
             // =================================================================
-            'miner_adamantite_xs' => [
-                'slug' => 'miner-adamantite-xs',
-                'title' => 'Minage de l\'adamantite',
-                'description' => 'Permet de miner les filons d\'adamantite, le minerai le plus dur',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-adamantite-xs']]],
-                'requiredPoints' => 55,
-                'domain' => $d,
-                'requirements' => ['miner_darksteel_xs', 'miner_platinum_xs'],
-            ],
-            'miner_starmetal_xs' => [
-                'slug' => 'miner-starmetal-xs',
-                'title' => 'Minage de l\'astretal',
-                'description' => 'Permet de miner les filons d\'astretal, un metal tombe des etoiles',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-starmetal-xs']]],
-                'requiredPoints' => 65,
-                'domain' => $d,
-                'requirements' => ['miner_adamantite_xs'],
-            ],
             'miner_yield_2' => [
                 'slug' => 'miner-yield-2',
                 'title' => 'Filon prodigieux',
@@ -4197,7 +4184,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'critical' => 3,
                 'hit' => 2,
-                'requirements' => ['miner_adamantite_xs'],
+                'requirements' => ['miner_darksteel_xs', 'miner_platinum_xs'],
             ],
             'miner_orichalcum_xs' => [
                 'slug' => 'miner-orichalcum-xs',
@@ -4206,7 +4193,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-orichalcum-xs']]],
                 'requiredPoints' => 80,
                 'domain' => $d,
-                'requirements' => ['miner_starmetal_xs'],
+                'requirements' => ['miner_darksteel_xs', 'miner_platinum_xs'],
             ],
 
             // =================================================================
@@ -4221,11 +4208,12 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['miner_orichalcum_xs', 'miner_yield_2'],
             ],
+            // OBJ-02b : le voidium (Extension 2) n'existe plus dans la base —
+            // le capstone garde ses bonus, il ne promet plus un filon absent.
             'miner_master' => [
                 'slug' => 'miner-master',
                 'title' => 'Maitre mineur',
-                'description' => 'Maitrise absolue du minage — acces aux filons de voidium et bonus ultimes',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-voidium-xs']]],
+                'description' => 'Maitrise absolue du minage — bonus ultimes de l\'art',
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'damage' => 2,
