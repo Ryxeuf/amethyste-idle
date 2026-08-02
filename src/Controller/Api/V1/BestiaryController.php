@@ -44,7 +44,8 @@ class BestiaryController extends AbstractController
                 'monster' => [
                     'slug' => $monster->getSlug(),
                     'name' => $monster->getLocalizedName($locale),
-                    'level' => $monster->getLevel(),
+                    'tier' => $monster->getTier(),
+                    'rank' => $monster->getRank()->value,
                     'isBoss' => $monster->isBoss(),
                 ],
                 'killCount' => $entry->getKillCount(),

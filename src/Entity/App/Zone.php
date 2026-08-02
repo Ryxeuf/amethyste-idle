@@ -73,6 +73,14 @@ class Zone
     #[ORM\Column(name: 'map_shape', type: 'text', nullable: true)]
     private ?string $mapShape = null;
 
+    /**
+     * Palier de la zone (BES-01, GAME_ZONES §2) : T0 (sur) a T4. C'est le
+     * meme vocabulaire que les profils de filon, les bandes de purete et les
+     * rangs de foyer — et la source du palier des monstres qui y vivent.
+     */
+    #[ORM\Column(name: 'tier', type: 'integer', options: ['default' => 0])]
+    private int $tier = 0;
+
     #[ORM\Column(name: 'type', type: 'string', length: 32, options: ['default' => self::TYPE_WILDERNESS])]
     private string $type = self::TYPE_WILDERNESS;
 
@@ -310,6 +318,18 @@ class Zone
     public function setIllustrationPath(?string $illustrationPath): self
     {
         $this->illustrationPath = $illustrationPath;
+
+        return $this;
+    }
+
+    public function getTier(): int
+    {
+        return $this->tier;
+    }
+
+    public function setTier(int $tier): self
+    {
+        $this->tier = max(0, min(4, $tier));
 
         return $this;
     }

@@ -3,6 +3,7 @@
 namespace App\Entity\Game;
 
 use App\Enum\Element;
+use App\Enum\MonsterRank;
 use App\Enum\TrainingMode;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -62,8 +63,20 @@ class Monster
     #[ORM\Column(name: 'hit', type: 'integer', options: ['default' => 20])]
     private $hit = 20;
 
-    #[ORM\Column(name: 'level', type: 'integer', options: ['default' => 1])]
-    private $level = 1;
+    /**
+     * Ou vit la creature (BES-01) : T0 (sur) a T4, repris du palier de la
+     * zone qui la place — jamais invente. Remplace l'echelle `level` 1-40,
+     * qui ne se comparait a rien : le joueur n'a pas de niveau (regle 6).
+     */
+    #[ORM\Column(name: 'tier', type: 'integer', options: ['default' => 1])]
+    private int $tier = 1;
+
+    /**
+     * Qu'est-ce que c'est (BES-01) : le tout-venant, la rencontre qui fait
+     * hesiter, ou l'evenement. Absorbe `difficulty` et `isBoss`.
+     */
+    #[ORM\Column(name: 'rank', type: 'string', length: 20, enumType: MonsterRank::class, options: ['default' => 'common'])]
+    private MonsterRank $rank = MonsterRank::Common;
 
     #[ORM\Column(name: 'ai_pattern', type: 'json', nullable: true)]
     private ?array $aiPattern = null;
@@ -82,9 +95,6 @@ class Monster
     #[ORM\Column(name: 'element', type: 'string', length: 20, enumType: Element::class, options: ['default' => 'none'])]
     private Element $element = Element::None;
 
-    #[ORM\Column(name: 'is_boss', type: 'boolean', options: ['default' => false])]
-    private bool $isBoss = false;
-
     /**
      * Mannequin d'entrainement, et lequel (ONB-11).
      *
@@ -102,9 +112,6 @@ class Monster
 
     #[ORM\Column(name: 'boss_phases', type: 'json', nullable: true)]
     private ?array $bossPhases = null;
-
-    #[ORM\Column(name: 'difficulty', type: 'integer', options: ['default' => 1])]
-    private int $difficulty = 1;
 
     #[ORM\ManyToOne(targetEntity: Faction::class)]
     #[ORM\JoinColumn(name: 'faction_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
@@ -291,14 +298,24 @@ class Monster
         $this->hit = $hit;
     }
 
-    public function getLevel(): int
+    public function getTier(): int
     {
-        return $this->level;
+        return $this->tier;
     }
 
-    public function setLevel(int $level): void
+    public function setTier(int $tier): void
     {
-        $this->level = $level;
+        $this->tier = max(0, min(4, $tier));
+    }
+
+    public function getRank(): MonsterRank
+    {
+        return $this->rank;
+    }
+
+    public function setRank(MonsterRank $rank): void
+    {
+        $this->rank = $rank;
     }
 
     public function getAiPattern(): ?array
@@ -330,9 +347,14 @@ class Monster
         return $this->elementalResistances[$element] ?? 0.0;
     }
 
+    /**
+     * Derive du rang (BES-01) : `Boss` reste le porteur de `bossPhases`, du
+     * multiplicateur d'XP et de l'interdiction de fuite. Le booleen n'est
+     * plus une colonne — le rang est la seule echelle.
+     */
     public function isBoss(): bool
     {
-        return $this->isBoss;
+        return $this->rank === MonsterRank::Boss;
     }
 
     public function getElement(): Element
@@ -366,11 +388,6 @@ class Monster
         return $this->trainingMode !== null;
     }
 
-    public function setIsBoss(bool $isBoss): void
-    {
-        $this->isBoss = $isBoss;
-    }
-
     public function getBossPhases(): ?array
     {
         return $this->bossPhases;
@@ -389,16 +406,6 @@ class Monster
     public function setFaction(?Faction $faction): void
     {
         $this->faction = $faction;
-    }
-
-    public function getDifficulty(): int
-    {
-        return $this->difficulty;
-    }
-
-    public function setDifficulty(int $difficulty): void
-    {
-        $this->difficulty = max(1, min(5, $difficulty));
     }
 
     public function getCurrentBossPhase(int $currentHpPercent): ?array

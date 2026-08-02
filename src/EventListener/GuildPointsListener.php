@@ -47,7 +47,15 @@ class GuildPointsListener implements EventSubscriberInterface
                 continue;
             }
 
-            $points = 1 + (int) floor($mob->getLevel() / 5);
+            // BES-01, recalibrage a magnitude constante : l'ancien
+            // 1 + niveau/5 rendait 1-2 points au depart (ex-niveaux 1-5) et
+            // jusqu'a 9 au bloc de fin (ex-niveau 40).
+            $points = match ($mob->getTier()) {
+                0, 1 => 1,
+                2 => 2,
+                3 => 4,
+                default => 7,
+            };
             $this->awardGuildPoints($player, $points);
         }
 

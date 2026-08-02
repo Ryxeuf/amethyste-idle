@@ -469,7 +469,7 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             $mob->setCoordinates($data['coordinates']);
             $mob->setMonster($monster);
             $mob->setLife($monster->getLife());
-            $mob->setLevel($monster->getLevel());
+            $mob->setTier($monster->getTier());
             $mob->setNocturnal($data['nocturnal'] ?? false);
             $mob->setSpawnWeather($data['spawnWeather'] ?? null);
             $mob->setGroupTag($data['groupTag'] ?? null);

@@ -109,6 +109,9 @@ class ZoneDefinitionLoader
             'description_en' => \is_string($definition['description_en'] ?? null) ? $definition['description_en'] : null,
             'type' => $type,
             'safe' => (bool) ($definition['safe'] ?? false),
+            // Palier de la zone (BES-01, GAME_ZONES §2) : T0 (sur) a T4.
+            // C'est de lui que les monstres tiennent leur palier.
+            'tier' => max(0, min(4, (int) ($definition['tier'] ?? 0))),
             'enabled' => (bool) ($definition['enabled'] ?? true),
             'source_map' => \is_string($definition['source_map'] ?? null) ? $definition['source_map'] : null,
             // Position sur la carte du monde illustree (ZON-16), en pourcentage

@@ -393,15 +393,13 @@
 									{% endif %}
 								</h2>
 								<div class="flex items-center gap-1 flex-wrap">
-									<span class="text-[9px]" title="{{ 'game.fight.difficulty'|trans({'%level%': mob.monster.difficulty}) }}">
-										{% for i in 1..5 %}
-											{% if i <= (mob.monster.difficulty ?? 1) %}
-												<span class="text-rarity-legendary">&#9733;</span>
-											{% else %}
-												<span class="text-line-strong">&#9733;</span>
-											{% endif %}
-										{% endfor %}
-									</span>
+									{# BES-01 : le rang remplace les etoiles de difficulte. #}
+									<span class="text-[9px] text-ink-2 font-mono">{{ 'game.fight.tier'|trans({'%tier%': mob.tier}) }}</span>
+									{% if mob.monster.rank.value == 'elite' %}
+										<span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] sm:text-[9px] bg-amber-900/40 text-amber-300 border border-amber-700/50">
+											{{ 'game.monster_rank.elite'|trans }}
+										</span>
+									{% endif %}
 									{% if bossPhases[mob.id] is defined %}
 										<span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] sm:text-[9px] bg-yellow-900/40 text-yellow-300 border border-yellow-700/50">
 											{{ bossPhases[mob.id].name }}

@@ -211,13 +211,14 @@ class InvasionManager implements EventSubscriberInterface
             $monster = $monsters[array_rand($monsters)];
             $coords = $spawnCoordinates[array_rand($spawnCoordinates)];
 
-            $levelBoost = ($currentWave - 1) * 2;
-
             $mob = new Mob();
             $mob->setMonster($monster);
             $mob->setMap($map);
             $mob->setCoordinates($coords);
-            $mob->setLevel($monster->getLevel() + $levelBoost);
+            // BES-01 : le palier suit le monstre. L'ancien boost de niveau
+            // par vague ne nourrissait que l'affichage — la difficulte reelle
+            // d'une vague vient de son nombre, pas d'une echelle.
+            $mob->setTier($monster->getTier());
             $mob->setLife($monster->getLife());
             $mob->setGameEvent($gameEvent);
 
@@ -405,7 +406,7 @@ class InvasionManager implements EventSubscriberInterface
                     'id' => (int) $mob->getId(),
                     'name' => $mob->getName(),
                     'slug' => $mob->getMonster()->getSlug(),
-                    'level' => $mob->getLevel(),
+                    'tier' => $mob->getTier(),
                     'x' => (int) $x,
                     'y' => (int) $y,
                     'spriteKey' => 'mob_' . $mob->getMonster()->getSlug(),

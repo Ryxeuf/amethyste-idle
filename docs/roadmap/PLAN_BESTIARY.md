@@ -21,7 +21,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| BES-01 | Deux axes : `tier` et `rank` | M | ← MAT-01 (même migration) |
+| BES-01 ✅ | Deux axes : `tier` et `rank` | M | ← MAT-01 (même migration) |
 | BES-02 | Les stats dérivées du gabarit | M | ← BES-01 |
 | BES-03 | La bascule du peuplement dans `zones.yaml` | M | ∅ |
 | BES-04 | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
@@ -40,21 +40,37 @@ en premier. BES-01 est le pivot et doit voyager avec MAT-01.
 
 ## Piste A — Les échelles
 
-### BES-01 — Deux axes : `tier` et `rank` (M | ★★★ | HAUTE)
-> Trois échelles cohabitent (`level` 1-40, `difficulty` 1-5, `isBoss`) et aucune
-> ne dit la difficulté. Le joueur n'ayant **pas de niveau** (règle 6), l'échelle
-> 1-40 ne se compare à rien.
-> Prérequis : ← MAT-01 — **même migration d'entité**, à livrer ensemble
-- [ ] `tier` (T0…T4) remplace `level` — **repris de la zone**, jamais inventé :
-      `GAME_ZONES` §2 déclare déjà le palier de chaque zone
-- [ ] `rank` (`Common` / `Elite` / `Boss`) remplace `difficulty` **et** `isBoss` ;
-      les 10 monstres déjà marqués `isBoss` deviennent `rank: Boss`
-- [ ] `MonsterItem::minDifficulty` devient `minRank`
-- [ ] **Recalibrer les 3 consommateurs de `level` dans le même jalon**, sinon
-      l'XP de matéria est divisée par huit : `MateriaXpGranter`
-      (`BASE_XP_PER_KILL × level`), `ReputationManager::getReputationAmount`
-      (seuils 20/10/5), `GuildQuestManager` (`1 + level / 10`)
-- [ ] Tests : deux axes seulement, palier cohérent avec la zone, recalibrage
+### BES-01 — Deux axes : `tier` et `rank` (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
+> Trois échelles cohabitaient (`level` 1-40, `difficulty` 1-5, `isBoss`) et aucune
+> ne disait la difficulté. Le joueur n'ayant **pas de niveau** (règle 6), l'échelle
+> 1-40 ne se comparait à rien.
+> Prérequis : ← MAT-01 ✅ — livré **à la suite** (jamais en parallèle), même entité
+- [x] `tier` (T0…T4) remplace `level` — **repris de la zone**, jamais inventé :
+      `zones.yaml` déclare désormais la clé `tier` par zone (portée par
+      `Zone::tier`, importée), et le palier d'un monstre est celui de sa zone
+      la plus basse ; écarts explicites : fond des Mines T4
+      (`abyssal_blacksmith`, `forge_lord`)
+- [x] `rank` (`Common` / `Elite` / `Boss`, enum `MonsterRank`) remplace
+      `difficulty` **et** `isBoss` ; les 10 monstres `isBoss` deviennent
+      `rank: 'boss'`, les élites reprennent l'ancienne difficulté 4-5 ;
+      `Monster::isBoss()` reste comme **dérivé du rang** (porteur de
+      `bossPhases`, du multiplicateur d'XP, de l'interdiction de fuite)
+- [x] `MonsterItem::minDifficulty` devient `minRank` — les 4 lignes gatées
+      passent à `elite`, et leurs 4 porteurs (griffon, minotaure, golem de
+      pierre, troll) sont bien de rang élite
+- [x] **Les 3 consommateurs de `level` recalibrés dans le même jalon** —
+      `MateriaXpGranter` (10 × facteur de palier 1/3/8/18/32, élite ×2, boss
+      ×5), `ReputationManager::getReputationAmount` (seuils par palier
+      10/15/25/50), `GuildQuestManager` (`1 + tier`, et le critère Doctrine
+      `findBy(['isBoss' => false])` devient `rank IN (common, elite)`) ; plus
+      `GuildPointsListener` (1/1/2/4/7 par palier), hors liste mais même piège
+- [x] `Mob::level` devient `Mob::tier` (recopie du monstre au spawn) ;
+      l'invasion cesse de gonfler une échelle morte, l'invoqué vit au palier
+      de son invocateur
+- [x] Tests : deux axes seulement, palier cohérent avec la zone (55 espèces
+      placées vérifiées contre `zones.yaml`), `bossPhases` réservées au rang
+      boss (`MonsterTierRankTest`) ; recalibrages couverts par les tests des
+      consommateurs
 
 ### BES-02 — Les stats dérivées du gabarit (M | ★★ | HAUTE)
 > Comme les filons ont des profils de palier et les matéria une dérivation depuis

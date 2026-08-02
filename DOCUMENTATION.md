@@ -270,7 +270,7 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 |--------|-------------|-------------|
 | **User** | Compte utilisateur | email, username, roles, password |
 | **Player** | Personnage jouable | name, life, maxLife, energy, hit (précision 0-100), speed, classType, coordinates, isMoving |
-| **Mob** | Instance de monstre | monster (template), level, coordinates, life |
+| **Mob** | Instance de monstre | monster (template), tier, coordinates, life |
 | **Fight** | Combat en cours | step, inProgress, players[], mobs[], statusEffects[] |
 | **FightStatusEffect** | Effet de statut actif | fight, targetType, targetId, type, remainingTurns, power |
 | **Inventory** | Conteneur d'objets | type (bag=1/materia=2/bank=3), size, gold |

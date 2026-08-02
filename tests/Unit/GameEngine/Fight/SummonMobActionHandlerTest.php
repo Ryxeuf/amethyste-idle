@@ -87,7 +87,7 @@ class SummonMobActionHandlerTest extends TestCase
         $mob->method('getId')->willReturn(10);
         $mob->method('getAttack')->willReturn($basicAttack);
         $mob->method('isSummoned')->willReturn(false);
-        $mob->method('getLevel')->willReturn(3);
+        $mob->method('getTier')->willReturn(3);
 
         return $mob;
     }
@@ -97,7 +97,7 @@ class SummonMobActionHandlerTest extends TestCase
         $monster = $this->createMock(Monster::class);
         $monster->method('getName')->willReturn('Squelette');
         $monster->method('getLife')->willReturn(35);
-        $monster->method('getLevel')->willReturn(2);
+        $monster->method('getTier')->willReturn(2);
         $monster->method('getSlug')->willReturn('skeleton');
 
         return $monster;
@@ -239,8 +239,8 @@ class SummonMobActionHandlerTest extends TestCase
         $this->assertInstanceOf(Mob::class, $persistedMob);
         $this->assertTrue($persistedMob->isSummoned());
         $this->assertSame(35, $persistedMob->getLife());
-        // Level = max(1, summoner.level + level_offset) = max(1, 3 + 0) = 3
-        $this->assertSame(3, $persistedMob->getLevel());
+        // BES-01 : l'invoque vit au palier de son invocateur
+        $this->assertSame(3, $persistedMob->getTier());
     }
 
     public function testSummonWithZeroChanceNeverSummons(): void

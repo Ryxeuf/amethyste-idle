@@ -28,7 +28,7 @@ class MobGenerator
         $mob->setMonster($monster);
         $mob->setLife($monster->getLife());
         $mob->setCoordinates($cell->x . '.' . $cell->y);
-        $mob->setLevel($monster->getLevel());
+        $mob->setTier($monster->getTier());
 
         $this->entityManager->persist($mob);
         $this->entityManager->flush();

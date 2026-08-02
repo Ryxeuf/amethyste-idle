@@ -705,10 +705,10 @@
         "error_collect": "Une erreur est survenue lors de la récupération des objets."
       },
       "error_action": "Une erreur est survenue lors de l'action.",
-      "difficulty": "Difficulté %level%/5",
       "training_dummy": {
         "spins": "%name% tourne lentement sur lui-même."
-      }
+      },
+      "tier": "T%tier%"
     },
     "ranking": {
       "title": "Classement",
@@ -811,9 +811,8 @@
       "empty": "Aucun monstre rencontré",
       "empty_hint": "Affrontez des monstres sur la carte pour remplir votre bestiaire",
       "boss": "Boss",
-      "level": "Niveau %level%",
-      "difficulty": "Difficulté %level%/5",
-      "element": "Élément"
+      "element": "Élément",
+      "tier": "Palier T%tier%"
     },
     "factions": {
       "title": "Factions",
@@ -1781,8 +1780,8 @@
         "heading": "Faire apparaître des monstres",
         "empty": "Rejoignez une zone pour y poser des monstres.",
         "hint": "Monstres ordinaires — même vie, même niveau, même butin que ceux du vivier. %max% au maximum par geste.",
-        "level": "niv. %level%",
-        "submit": "Poser"
+        "submit": "Poser",
+        "tier": "T%tier%"
       },
       "events": {
         "heading": "Événements de la zone",
@@ -1924,6 +1923,11 @@
       "dark": "Ténèbres",
       "metal": "Métal",
       "beast": "Bête"
+    },
+    "monster_rank": {
+      "common": "Commun",
+      "elite": "Élite",
+      "boss": "Boss"
     }
   },
   "common": {

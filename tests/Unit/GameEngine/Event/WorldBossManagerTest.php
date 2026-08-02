@@ -38,14 +38,14 @@ class WorldBossManagerTest extends TestCase
 
     public function testSpawnWorldBossOnActivation(): void
     {
-        $monster = $this->createMonster('ancient_wyrm', 'Wyrm Ancien', 2000, 30);
+        $monster = $this->createMonster('ancient_wyrm', 'Wyrm Ancien', 2000, 4);
         $map = $this->createMap(2);
 
         $event = $this->createBossSpawnEvent([
             'monster_slug' => 'ancient_wyrm',
             'map_id' => 2,
             'coordinates' => '15.10',
-            'level' => 30,
+            'tier' => 4,
         ]);
 
         $monsterRepo = $this->createMock(EntityRepository::class);
@@ -67,7 +67,7 @@ class WorldBossManagerTest extends TestCase
                 $this->assertSame($monster, $mob->getMonster());
                 $this->assertSame($map, $mob->getMap());
                 $this->assertSame('15.10', $mob->getCoordinates());
-                $this->assertSame(30, $mob->getLevel());
+                $this->assertSame(4, $mob->getTier());
                 $this->assertTrue($mob->isWorldBoss());
                 $this->assertSame(2000, $mob->getLife());
 
@@ -156,7 +156,7 @@ class WorldBossManagerTest extends TestCase
 
     public function testSpawnSeasonBossOnClimaxBeatActivation(): void
     {
-        $monster = $this->createMonster('forest_guardian', 'Gardien de la Forêt', 400, 20);
+        $monster = $this->createMonster('forest_guardian', 'Gardien de la Forêt', 400, 2);
         $map = $this->createMap(3);
 
         // Beat de climax de type CUSTOM (NAR-08) portant des parametres de boss (NAR-10).
@@ -250,13 +250,13 @@ class WorldBossManagerTest extends TestCase
         return $event;
     }
 
-    private function createMonster(string $slug, string $name, int $life, int $level): Monster
+    private function createMonster(string $slug, string $name, int $life, int $tier): Monster
     {
         $monster = new Monster();
         $monster->setName($name);
         $monster->setSlug($slug);
         $monster->setLife($life);
-        $monster->setLevel($level);
+        $monster->setTier($tier);
 
         return $monster;
     }
