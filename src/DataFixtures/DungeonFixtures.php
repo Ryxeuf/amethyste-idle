@@ -16,24 +16,11 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $zoneRepository = $manager->getRepository(Zone::class);
         $map = $this->getReference('map_dungeon_racines', Map::class);
 
-        $dungeon = new Dungeon();
-        $dungeon->setSlug('racines-de-la-foret');
-        $dungeon->setName('Racines de la foret');
-        $dungeon->setNameTranslations(['en' => 'Roots of the Forest']);
-        $dungeon->setDescription('Un reseau de galeries souterraines envahi par des racines corrompues. Les creatures qui y rodent sont devenues hostiles, et une menace plus ancienne sommeille dans les profondeurs.');
-        $dungeon->setDescriptionTranslations(['en' => 'A network of underground tunnels overrun by corrupted roots. The creatures that prowl within have grown hostile, and an older threat slumbers in the depths.']);
-        $dungeon->setMap($map);
-        // DON-01 : un seul modele — le donjon solo est un donjon de zone a
-        // `maxPlayers: 1`, lance depuis l'ecran de zone comme les autres.
-        $dungeon->setZone($zoneRepository->findOneBy(['slug' => 'foret-des-murmures']));
-        $dungeon->setMinLevel(5);
-        $dungeon->setMaxPlayers(1);
-        $dungeon->setLootPreview(['Equipement tier 2', 'Materia rare', 'Potions avancees']);
-        $dungeon->setCreatedAt(new \DateTime());
-        $dungeon->setUpdatedAt(new \DateTime());
-
-        $manager->persist($dungeon);
-        $this->addReference('dungeon_racines', $dungeon);
+        // DON-05 : « Racines de la foret » a fusionne dans « Les Galeries
+        // envahies » — les deux racontaient la meme chose au meme endroit
+        // (« sous les racines de la foret »), et garder les deux doublait le
+        // T1 en laissant trois paliers a decouvert. La carte de donjon reste
+        // (support de donnees de DungeonMobFixtures), le donjon disparait.
 
         // Donjon final : Le Nexus de la Convergence (tache 94 — Acte 3)
         $mapConvergence = $this->getReference('map_dungeon_convergence', Map::class);
@@ -45,9 +32,11 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $convergence->setDescription('Le coeur du cristal d\'Amethyste bat au plus profond de ce sanctuaire oublie. Les quatre fragments resonent, attirant leur porteur vers une verite ancienne. Seuls ceux qui ont rassemble les fragments peuvent penetrer ces lieux et affronter le Gardien de la Convergence.');
         $convergence->setDescriptionTranslations(['en' => 'The heart of the Amethyst crystal beats deep within this forgotten sanctuary. The four fragments resonate, drawing their bearer toward an ancient truth. Only those who have gathered all fragments may enter these halls and face the Guardian of Convergence.']);
         $convergence->setMap($mapConvergence);
-        // DON-01 : le Nexus se lance depuis la Crete — la zone du fragment du
-        // Sommet, ou l'acte 3 s'acheve.
-        $convergence->setZone($zoneRepository->findOneBy(['slug' => 'crete-de-ventombre']));
+        // DON-05 : le Nexus est le donjon du T4, a la Cite ensevelie —
+        // GAME_ZONES §2 la declare « T4 — donjon » et §3 y place l'orichalque
+        // comme « butin de donjon plus que filon ». La fin de l'arc se merite
+        // au bout du monde, pas a la zone de l'acte 3.
+        $convergence->setZone($zoneRepository->findOneBy(['slug' => 'cite-ensevelie']));
         $convergence->setMinLevel(25);
         $convergence->setMaxPlayers(1);
         $convergence->setLootPreview(['Equipement Amethyste', 'Titre exclusif', 'Epilogue de la trame']);
@@ -103,6 +92,19 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
                 'minLevel' => 8,
                 'maxPlayers' => 5,
                 'lootPreview' => ['Equipement tier 3', 'Materia rare', 'Lingots de cobalt'],
+            ],
+            // DON-05 : le donjon du T3 — le seul a ecrire, au palier dont la
+            // Crete a justement besoin (GAME_BESTIARY §1.3).
+            [
+                'slug' => 'nid-des-rafales',
+                'zone' => 'crete-de-ventombre',
+                'name' => 'Le Nid des rafales',
+                'nameEn' => 'The Gale Nest',
+                'description' => 'Sous la crete, le vent s\'engouffre dans une aire creusee a meme la falaise. Ce qui niche la-haut ne redescend jamais — c\'est aux cordees de monter le chercher.',
+                'descriptionEn' => 'Beneath the crest, the wind rushes into an eyrie carved from the cliff itself. What nests up there never comes down — roped parties must climb to find it.',
+                'minLevel' => 14,
+                'maxPlayers' => 4,
+                'lootPreview' => ['Equipement tier 3', 'Materia rare'],
             ],
         ];
 

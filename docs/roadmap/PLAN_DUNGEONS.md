@@ -137,22 +137,23 @@ tout le reste se fait en double.
 
 ## Piste B — La couverture
 
-### DON-05 — Un donjon par palier (S | ★★ | MOYENNE)
+### DON-05 — Un donjon par palier (S | ★★ | MOYENNE) — ✅ LIVRÉ 2026-08-02
 > 4 donjons pour 12 zones, les deux de groupe rattachés aux deux zones qui
-> portent déjà tout le contenu.
+> portent déjà tout le contenu. **Avancé avant DON-04** : la table de butin
+> indexée sur le palier exige un donjon T4, sans quoi m5 perdrait son canal
+> (invariant 4 de GAME_MATERIA).
 > Prérequis : ← DON-01
-- [ ] **Fusionner `racines-de-la-foret` dans `galeries-envahies`** : les deux
-      racontent la même chose au même endroit (« sous les racines de la forêt »),
-      et garder les deux doublerait le T1 en laissant trois paliers à découvert
-- [ ] Répartition cible — T1 Forêt (existant), T2 Mines (existant), **T3 Crête de
-      Ventombre ou Dunes d'Ambre (à écrire)**, T4 Cité ensevelie (le Nexus
-      converti)
-- [ ] **La Cité ensevelie était déjà prévue pour ça** : `GAME_ZONES` §2 la
-      déclare « T4 — donjon » et §3 y place l'orichalque comme « butin de donjon
-      plus que filon »
-- [ ] Coût net : **un donjon à écrire**, celui du T3 — le palier dont la Crête a
-      justement besoin (cf. GAME_BESTIARY §1.3)
-- [ ] Tests : un donjon par palier T1-T4, quatre zones distinctes
+- [x] **`racines-de-la-foret` a fusionné dans `galeries-envahies`** : les deux
+      racontaient la même chose au même endroit, et garder les deux doublait
+      le T1 en laissant trois paliers à découvert. La carte de donjon reste
+      (support de `DungeonMobFixtures`), le donjon disparaît
+- [x] Répartition livrée — T1 Forêt (`galeries-envahies`), T2 Mines
+      (`forges-noyees`), **T3 Crête de Ventombre : « Le Nid des rafales »**
+      (le seul donjon écrit — groupe de 4, palier dont la Crête avait besoin),
+      T4 Cité ensevelie (**le Nexus converti** — la fin de l'arc se mérite au
+      bout du monde, et GAME_ZONES §2 déclarait déjà la Cité « T4 — donjon »)
+- [x] Tests : un donjon par palier T1-T4, quatre zones distinctes, la fusion
+      tient (`DungeonModelTest`)
 
 ---
 
