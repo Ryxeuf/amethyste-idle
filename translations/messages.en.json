@@ -58,6 +58,9 @@
     "email_placeholder": "you@email.com"
   },
   "game": {
+    "shop": {
+      "hostile_surcharge": "The Merchants have not forgotten your deeds: +%percent%% on every price. The shop still serves you, but it makes you pay."
+    },
     "title": "Amethyst",
     "welcome_message": "Welcome to the game area, %email%",
     "access_info": "This page is accessible only to logged-in users.",

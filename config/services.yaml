@@ -106,6 +106,12 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # FAC-03 : ce qu'etre Hostile coute, maison par maison. Le vocabulaire des
+    # types est ferme — aucune consequence ne sait bloquer la boucle cœur.
+    App\GameEngine\Reputation\HostileConsequenceCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # ONB-09 : ce que le catalogue dit de chaque arbre — deux phrases, et pas
     # une de plus. Le fichier n'a aucun champ pour les nœuds ni les valeurs :
     # une donnee qui n'existe pas ne fuit pas.

@@ -19,7 +19,7 @@
 |------|----------|--------|-------------|
 | FAC-01 ✅ | Tension par paires + patronage exclusif | M | ∅ |
 | FAC-02 ✅ | Les gestes nourrissent la réputation | S | ← FAC-01 |
-| FAC-03 | Hostile à conséquences | S | ← FAC-01 |
+| FAC-03 ✅ | Hostile à conséquences | S | ← FAC-01 |
 | FAC-04 | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
 | FAC-05 | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
 | FAC-06 | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
@@ -89,14 +89,24 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       inactif sans la faction cible, tension appliquée sur le chemin plafonné, dispatch de
       l'event de vente, chaque slug mort-vivant existe au bestiaire
 
-### FAC-03 — Hostile à conséquences (S | ★★ | HAUTE)
+### FAC-03 — Hostile à conséquences (S | ★★ | HAUTE) ✅
 > §6.4 d. Bornes absolues : jamais la boucle cœur, jamais une agression.
-> Prérequis : ← FAC-01
-- [ ] Table déclarative par faction : Marchands = surcharge 10 % PNJ ; Chevaliers =
-      fouilles (surcoût de voyage vers zones Bastion) + taxe d'Autel au plafond ; Ruelles =
-      rumeurs empoisonnées ; Fonderie = plancher de rachat fermé ; Mages = lecture refusée
-- [ ] Garde-fou testé : aucun Hostile ne bloque énergie, voyage de base, combat, plancher T1
-- [ ] Tests : chaque conséquence, et le garde-fou
+> Prérequis : ← FAC-01 — **livré le 2026-08-02**
+- [x] Table déclarative par faction (bloc `hostile` de `config/game/factions.yaml`) :
+      Marchands = surcharge 10 % PNJ (**active** — appliquée à l'achat et affichée sur
+      l'écran boutique) ; Chevaliers = fouilles, +50 % de temps de voyage vers les zones à
+      foyer Bastion (**active** — appliquée après la monture, jamais sur une liaison
+      instantanée, ONB-10 gagne toujours) + taxe d'Autel au plafond (**crochet** — l'Autel
+      d'éveil n'est pas branché) ; Ruelles = rumeurs empoisonnées (**crochet** ← FAC-06) ;
+      Fonderie = plancher de rachat fermé, Mages = lecture refusée (**crochets** ← FAC-04)
+- [x] Garde-fou : le **vocabulaire fermé** des types de conséquence — un type inconnu est
+      refusé par le loader, aucun type ne sait bloquer énergie, voyage de base, combat ou
+      plancher T1 (une conséquence surcharge ou refuse un privilège, jamais un droit) ;
+      jamais Hostile par défaut (pas de ligne de réputation = rien à payer)
+- [x] Tests : chaque conséquence active (surcharge appliquée/affichée, fouilles vers
+      Bastion seulement), le garde-fou (vocabulaire figé, un Hostile solvable achète
+      toujours, une liaison instantanée le reste, le premier voyage reste offert), et les
+      refus du loader
 
 ## Piste B — La Fonderie
 

@@ -10,6 +10,7 @@ use App\Enum\PlayerRenownTier;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
+use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,6 +30,7 @@ class ShopController extends AbstractController
         private readonly RegionBonusProvider $regionBonusProvider,
         private readonly PlayerRenownDiscountProvider $renownDiscountProvider,
         private readonly GameMasterPolicy $gameMasterPolicy,
+        private readonly HostileConsequenceResolver $hostileConsequences,
     ) {
     }
 
@@ -61,6 +63,9 @@ class ShopController extends AbstractController
         $guildDiscount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
         $renownDiscount = $this->renownDiscountProvider->getShopDiscount($player);
         $totalDiscount = $this->renownDiscountProvider->combineDiscount($guildDiscount, $player);
+        // FAC-03 — la rancune des Marchands se lit avant de payer : le prix
+        // affiche est le prix demande.
+        $hostileSurcharge = $this->hostileConsequences->shopSurchargePercent($player);
 
         return $this->render('game/shop/index.html.twig', [
             'pnj' => $pnj,
@@ -73,6 +78,7 @@ class ShopController extends AbstractController
             'guildDiscount' => $guildDiscount,
             'renownDiscount' => $renownDiscount,
             'totalDiscount' => $totalDiscount,
+            'hostileSurcharge' => $hostileSurcharge,
             'renownTier' => PlayerRenownTier::fromScore($player->getRenownScore()),
         ]);
     }
@@ -136,6 +142,14 @@ class ShopController extends AbstractController
         $totalCost = $discount > 0
             ? (int) ceil($baseCost * (1 - $discount))
             : $baseCost;
+
+        // FAC-03 — Hostile chez les Marchands : la boutique vend toujours (le
+        // plancher T1 est un droit, jamais gate), mais elle fait payer la
+        // rancune. Une surcharge, pas un refus.
+        $hostileSurcharge = $this->hostileConsequences->shopSurchargePercent($player);
+        if ($hostileSurcharge > 0) {
+            $totalCost = (int) ceil($totalCost * (1 + $hostileSurcharge / 100));
+        }
 
         if ($player->getGils() < $totalCost) {
             return new JsonResponse([

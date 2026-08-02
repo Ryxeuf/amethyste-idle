@@ -11,6 +11,7 @@ use App\Entity\Game\Mount;
 use App\Event\Zone\PlayerTraveledEvent;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Repository\PlayerVisitedZoneRepository;
@@ -24,6 +25,7 @@ class ZoneTravelServiceTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
     private EventDispatcherInterface&MockObject $eventDispatcher;
+    private HostileConsequenceResolver&MockObject $hostileConsequences;
     private ZoneTravelService $service;
 
     protected function setUp(): void
@@ -31,7 +33,10 @@ class ZoneTravelServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy());
+        // Par defaut, aucun surcout : le mock rend 0. Les cas FAC-03 le
+        // configurent explicitement.
+        $this->hostileConsequences = $this->createMock(HostileConsequenceResolver::class);
+        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy(), $this->hostileConsequences);
     }
 
     private function buildZone(string $slug): Zone
@@ -98,6 +103,64 @@ class ZoneTravelServiceTest extends TestCase
         $arrivesAt = $this->service->startTravel($player, new ZoneConnection($vallons, $foret, 300));
 
         self::assertEqualsWithDelta(time() + 300, $arrivesAt->getTimestamp(), 2);
+    }
+
+    /**
+     * FAC-03 — les fouilles de l'Ordre : Hostile aux Chevaliers, on entre plus
+     * lentement dans une zone a foyer Bastion. Un surcout de temps, applique
+     * apres la monture, jamais un refus.
+     */
+    public function testHostileTravelSurchargeLengthensTheJourney(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('bastion');
+        $player = $this->buildPlayerIn($from);
+
+        $this->hostileConsequences->method('travelSurchargePercent')
+            ->with($player, $to)
+            ->willReturn(50);
+
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($from, $to, 300));
+
+        self::assertEqualsWithDelta(time() + 450, $arrivesAt->getTimestamp(), 2, 'Les fouilles doivent majorer la duree de 50 %.');
+    }
+
+    /**
+     * Le garde-fou de FAC-03 : la surcharge ne bloque jamais le voyage. Une
+     * liaison instantanee reste instantanee (0 majore vaut 0), et le voyage
+     * part dans tous les cas — l'hostilite ralentit, elle ne ferme pas.
+     */
+    public function testHostileSurchargeNeverBlocksNorResurrectsInstantTravel(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('bastion');
+        $player = $this->buildPlayerIn($from);
+
+        $this->hostileConsequences->method('travelSurchargePercent')->willReturn(50);
+
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($from, $to, 0));
+
+        self::assertEqualsWithDelta(time(), $arrivesAt->getTimestamp(), 2, 'Une liaison instantanee doit le rester, meme Hostile.');
+        self::assertSame($to, $player->getCurrentZone(), 'Le voyage doit aboutir : l\'hostilite ne le refuse jamais.');
+    }
+
+    /**
+     * ONB-10 gagne sur FAC-03 : le premier voyage reste offert, meme Hostile.
+     * La faveur d'onboarding est un droit du personnage neuf — et un
+     * personnage neuf n'a d'ailleurs aucun moyen legitime d'etre deja Hostile.
+     */
+    public function testTheFirstJourneyStaysFreeEvenWhenHostile(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('bastion');
+        $player = new Player();
+        $player->setCurrentZone($from);
+
+        $this->hostileConsequences->method('travelSurchargePercent')->willReturn(50);
+
+        $arrivesAt = $this->service->startTravel($player, new ZoneConnection($from, $to, 600));
+
+        self::assertEqualsWithDelta(time(), $arrivesAt->getTimestamp(), 2, 'Le premier voyage reste offert, meme Hostile.');
     }
 
     public function testStartTravelSetsDestinationAndArrival(): void

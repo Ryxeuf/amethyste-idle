@@ -12,6 +12,7 @@ use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -32,6 +33,7 @@ class ZoneTravelService
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly MountTravelSpeed $mountTravelSpeed,
         private readonly GameMasterPolicy $gameMasterPolicy,
+        private readonly HostileConsequenceResolver $hostileConsequences,
     ) {
     }
 
@@ -85,6 +87,18 @@ class ZoneTravelService
         $seconds = $isGameMaster
             ? 0
             : $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
+
+        // FAC-03 — les fouilles de l'Ordre : un joueur Hostile aux Chevaliers
+        // entre plus lentement dans une zone a foyer Bastion. Un surcout de
+        // temps sur une liaison qui en coutait deja, **jamais un refus** — le
+        // voyage de base est un droit que l'hostilite ne ferme pas, et une
+        // liaison instantanee le reste (0 majore de 50 % vaut 0).
+        if (!$isGameMaster && $seconds > 0) {
+            $surcharge = $this->hostileConsequences->travelSurchargePercent($player, $connection->getToZone());
+            if ($surcharge > 0) {
+                $seconds = (int) ceil($seconds * (1 + $surcharge / 100));
+            }
+        }
 
         // ONB-10 — le **premier voyage est offert**, une seule fois.
         //
