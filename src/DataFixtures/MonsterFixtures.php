@@ -170,6 +170,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'liana_whip',
                 'tier' => 1,
+                // MAT-08 : l'arbre-garde prend le cran d'elite que la sylphe
+                // laisse en montant au T2 — la Foret garde ses trois elites.
+                'rank' => 'elite',
                 'element' => 'earth',
                 'spells' => ['natural_healing', 'thorn_burst'],
                 'aiPattern' => [
@@ -259,7 +262,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 3,
                 'attack' => 'stone_throw',
                 'tier' => 3,
-                'rank' => 'elite',
+                // MAT-08 : le troll des cols devient le tout-venant de la
+                // Crete — la salamandre redescendue au T2 laissait le palier
+                // sous sa cible de communs.
                 'element' => 'earth',
                 'spells' => ['boulder_throw', 'earthquake'],
                 'aiPattern' => [
@@ -520,9 +525,12 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Salamander'],
                 'speed' => 10,
                 'attack' => 'fire_ball',
-                // BES-04 : la salamandre devient une bete des Dunes (T3) — en
-                // foret elle doublonnait le tout-venant du T1.
-                'tier' => 3,
+                // MAT-08 : seul porteur possible du m2 de feu — sans monstre
+                // de feu au T2, sept materia n'avaient aucun canal. La
+                // salamandre redescend d'un cran et gagne les Mines (la zone
+                // de la ligne du feu), tout en restant le petit gibier des
+                // Dunes, comme le tout-venant T1 peuple le Marais T2.
+                'tier' => 2,
                 'element' => 'fire',
                 'spells' => ['combustion', 'fire_wall'],
                 'aiPattern' => [
@@ -551,7 +559,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Sylph'],
                 'speed' => 16,
                 'attack' => 'wind_lame',
-                'tier' => 1,
+                // MAT-08 : seule porteuse possible du m2 d'air. Elite des
+                // cimes au-dessus de la zone, comme le forgeron abyssal (T4)
+                // hante les Mines (T2).
+                'tier' => 2,
                 // BES-04 : elite des cimes de la Foret.
                 'rank' => 'elite',
                 'element' => 'air',
@@ -649,7 +660,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Will-o\'-the-Wisp'],
                 'speed' => 15,
                 'attack' => 'holy_light',
-                'tier' => 1,
+                // MAT-08 : seul porteur possible du m2 de lumiere — il vit
+                // deja au Marais (T2), le palier suit enfin sa zone la plus
+                // haute.
+                'tier' => 2,
                 'rank' => 'boss',
                 'element' => 'light',
                 'spells' => ['sacred_light', 'light_aura', 'light_blessing', 'holy_nova'],

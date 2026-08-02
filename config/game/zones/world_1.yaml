@@ -421,6 +421,9 @@ zones:
             # dependant de l'ordre des flushs.
             - { monster: rusty_automaton, count: 4, group_tag: patrouille-de-la-mine }
             - { monster: crystal_golem, count: 2 }
+            # MAT-08 : la salamandre niche pres des forges — le seul porteur
+            # du m2 de feu, dans la zone de la ligne du feu.
+            - { monster: salamander, count: 2 }
             # Salles profondes.
             - { monster: abyssal_blacksmith, count: 1 }
             # Vivier nocturne. `explore.night.mob_slugs` restreint les rencontres
@@ -624,7 +627,10 @@ zones:
               name_en: 'Elionor, Temple Cantor'
               class_type: villager
               greeting: "La lumiere n'est pas rare, elle est patiente. Ces materia attendent quelqu'un qui veuille bien s'en servir."
-              shop_items: [m2-light-aura, m2-holy-light, m2-prayer, m2-sacred-strike, m2-smite]
+              # MAT-08 : le toucher guerisseur s'ajoute au plancher — la lumiere
+              # n'a pas de gibier T1 (le feu follet garde le Marais), le temple
+              # est donc le seul canal de son premier palier hors plancher.
+              shop_items: [m1-healing-touch, m2-light-aura, m2-holy-light, m2-prayer, m2-sacred-strike, m2-smite]
         source_map: 'Le Fanal'
 
     dunes-d-ambre:

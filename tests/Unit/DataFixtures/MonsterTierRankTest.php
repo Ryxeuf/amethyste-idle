@@ -18,13 +18,18 @@ class MonsterTierRankTest extends TestCase
 {
     /**
      * Ecarts au palier de zone, explicites et commentes dans la fixture
-     * (GAME_BESTIARY §2.1 : fond des Mines T4).
+     * (GAME_BESTIARY §2.1 : fond des Mines T4 ; MAT-08 : la sylphe et le feu
+     * follet montent au T2 au-dessus de leur zone la plus basse — seuls
+     * porteurs possibles du m2 d'air et de lumiere, le feu follet vivant
+     * aussi au Marais T2).
      *
      * @var array<string, int>
      */
     private const EXPLICIT_TIER_EXCEPTIONS = [
         'abyssal_blacksmith' => 4,
         'forge_lord' => 4,
+        'sylph' => 2,
+        'will_o_wisp' => 2,
     ];
 
     private function monsterSource(): string
