@@ -14,7 +14,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $recipes = $this->getRecipesData();
+        $recipes = $this->getRecipesData() + self::toolRecipesData();
 
         foreach ($recipes as $key => $data) {
             $recipe = new Recipe();
@@ -48,6 +48,95 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $manager->flush();
+    }
+
+    /**
+     * OBJ-06 — les recettes d'outils du forgeron : acier et mithril, pour les
+     * 12 types (GAME_ITEMS §4.2, point 3).
+     *
+     * Sur 4 paliers declares, seuls bronze et fer etaient atteignables :
+     * l'outillage s'arretait au fer. L'acier et le mithril deviennent des
+     * **crafts de forgeron** — un debouche recurrent, puisque l'outil s'use
+     * (`durability`, `wearCraftTool`).
+     *
+     * Une recette d'outil ne s'ecrit pas, elle se derive : meme grille pour
+     * les 12 types, seuls le nom et le resultat changent. L'acier est un
+     * alliage (ECO-25 : lingot de fer + lingot de cobalt — il n'existe aucun
+     * « lingot d'acier »), le mithril part de son lingot, et chaque palier
+     * consomme un manche de charpentier — l'interdependance des metiers
+     * (ECO-14) vaut aussi pour l'outillage.
+     *
+     * Publique et statique : le contrat (`CraftToolContractTest`) verifie la
+     * derivation elle-meme, pas une copie.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function toolRecipesData(): array
+    {
+        $bases = [
+            'pickaxe' => ['Pioche', 'Pickaxe'],
+            'sickle' => ['Faucille', 'Sickle'],
+            'fishing_rod' => ['Canne à pêche', 'Fishing Rod'],
+            'skinning_knife' => ['Couteau de dépeçage', 'Skinning Knife'],
+            'hammer' => ['Marteau de forge', 'Smithing Hammer'],
+            'tanning_kit' => ['Kit de tannage', 'Tanning Kit'],
+            'mortar' => ['Mortier d\'alchimie', 'Alchemy Mortar'],
+            'chisel' => ['Burin de joaillier', 'Jeweler\'s Chisel'],
+            'axe' => ['Hache', 'Axe'],
+            'cookpot' => ['Marmite de cuisine', 'Cooking Pot'],
+            'plane' => ['Varlope de charpentier', 'Carpenter\'s Plane'],
+            'needle' => ['Aiguille de tailleur', 'Tailor\'s Needle'],
+        ];
+
+        $tiers = [
+            'steel' => [
+                'fr' => 'en acier',
+                'en' => 'Steel',
+                'required_level' => 4,
+                'crafting_time' => 18,
+                'xp_reward' => 50,
+                'ingredients' => [
+                    ['slug' => 'crafted-iron-ingot', 'quantity' => 1],
+                    ['slug' => 'crafted-cobalt-ingot', 'quantity' => 1],
+                    ['slug' => 'crafted-wood-haft', 'quantity' => 1],
+                ],
+                'description' => 'Allie le fer au cobalt sur un manche de hêtre : l\'outil tient le fil des matières dures.',
+            ],
+            'mithril' => [
+                'fr' => 'en mithril',
+                'en' => 'Mithril',
+                'required_level' => 5,
+                'crafting_time' => 24,
+                'xp_reward' => 70,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 1],
+                    ['slug' => 'crafted-iron-ingot', 'quantity' => 1],
+                    ['slug' => 'crafted-wood-haft', 'quantity' => 1],
+                ],
+                'description' => 'Monte le mithril sur une âme de fer : l\'outil le plus léger et le plus endurant qui soit.',
+            ],
+        ];
+
+        $recipes = [];
+        foreach ($bases as $type => [$fr, $en]) {
+            $slugType = str_replace('_', '-', $type);
+            foreach ($tiers as $tierSlug => $spec) {
+                $recipes[sprintf('recipe_%s_%s', $type, $tierSlug)] = [
+                    'name' => sprintf('%s %s', $fr, $spec['fr']),
+                    'slug' => sprintf('recipe-%s-%s', $slugType, $tierSlug),
+                    'craft' => 'forgeron',
+                    'required_level' => $spec['required_level'],
+                    'ingredients' => $spec['ingredients'],
+                    'result_ref' => sprintf('%s_%s', $type, $tierSlug),
+                    'crafting_time' => $spec['crafting_time'],
+                    'xp_reward' => $spec['xp_reward'],
+                    'description' => $spec['description'],
+                    'name_translations' => ['en' => sprintf('%s %s', $spec['en'], $en)],
+                ];
+            }
+        }
+
+        return $recipes;
     }
 
     private function getRecipesData(): array

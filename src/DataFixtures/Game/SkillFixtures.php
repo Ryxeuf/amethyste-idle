@@ -4765,10 +4765,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // soit** : six filons de peche, un arbre entier de competences, et rien au
     // bout. L'arbre du cuisinier ouvre les sept plats qui ferment ce trou.
     //
-    // **Aucun emplacement d'outil.** On cuisine avec ce qu'on a, et
-    // `Item::CRAFT_TOOL_TYPES` ne cite pas ce metier : inventer une marmite
-    // aurait demande un type d'outil, un bit d'equipement et un emplacement
-    // d'interface neufs — un changement de mecanisme pour un jalon de contenu.
+    // OBJ-06 : la marmite existe — le type d'outil, le bit d'equipement et
+    // l'emplacement d'interface qu'ECO-29 avait differes sont livres, et le
+    // nœud gratuit du four porte l'emplacement et le palier d'entree.
     private function getCookSkills(): array
     {
         $d = 'cook';
@@ -4779,7 +4778,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'cook-bread',
                 'title' => 'Panification',
                 'description' => 'Permet de cuire le pain de campagne a partir du ble',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-bread']]],
+                // OBJ-06 : la marmite arrive avec le premier feu — emplacement
+                // ouvert et palier d'entree livres par le nœud gratuit, comme
+                // dans les quatre arbres d'artisanat historiques.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-bread']], ['action' => 'tool_slot.unlock', 'slot' => 'cookpot'], ['action' => 'equip.tool', 'slugs' => ['cookpot-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4797,7 +4799,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'cook-stew',
                 'title' => 'Mijotage',
                 'description' => 'Permet de mijoter la carpe des etangs avec le gibier de plaine',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-carp-stew']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-carp-stew']], ['action' => 'equip.tool', 'slugs' => ['cookpot-iron']]],
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'requirements' => ['cook_skewer'],
@@ -4829,7 +4831,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'cook-roast',
                 'title' => 'Rotissage',
                 'description' => 'Permet de rotir le saumon des rapides sur son lit de pain',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-salmon-roast']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-salmon-roast']], ['action' => 'equip.tool', 'slugs' => ['cookpot-steel']]],
                 'requiredPoints' => 35,
                 'domain' => $d,
                 'requirements' => ['cook_stew'],
@@ -4849,7 +4851,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'cook-eel',
                 'title' => 'Anguille au poivre',
                 'description' => 'Permet d\'apprêter l\'anguille electrique sans se faire mordre',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-eel-dish']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-eel-dish']], ['action' => 'equip.tool', 'slugs' => ['cookpot-mithril']]],
                 'requiredPoints' => 90,
                 'domain' => $d,
                 'requirements' => ['cook_moonfish'],
@@ -5105,10 +5107,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // abattre le chene murmurant et n'avoir rien a en faire. Cet arbre ouvre les
     // dix recettes qui ferment ce trou, et chaque essence y trouve sa fin.
     //
-    // **Aucun emplacement d'outil**, comme le cuisinier : `Item::CRAFT_TOOL_TYPES`
-    // ne cite pas ce metier, et inventer une varlope aurait demande un type
-    // d'outil, un bit d'equipement et un emplacement d'interface neufs — un
-    // changement de mecanisme pour un jalon de contenu.
+    // OBJ-06 : la varlope existe — le mecanisme differe par ECO-30 est livre,
+    // et le nœud gratuit de la planche porte l'emplacement et le palier
+    // d'entree.
     private function getCarpenterSkills(): array
     {
         $d = 'carpenter';
@@ -5119,7 +5120,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'carpenter-plank',
                 'title' => 'Debit du hetre',
                 'description' => 'Permet de debiter le hetre en planches, la matiere de tout le metier',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-plank']]],
+                // OBJ-06 : la varlope arrive avec la planche — meme motif que
+                // les autres arbres, le nœud gratuit livre l'emplacement et le
+                // palier d'entree.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-plank']], ['action' => 'tool_slot.unlock', 'slot' => 'plane'], ['action' => 'equip.tool', 'slugs' => ['plane-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -5140,7 +5144,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'carpenter-first-weapons',
                 'title' => 'Arcs et batons',
                 'description' => 'Permet de cintrer l\'arc court et de tailler le baton de novice',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t1-bow', 'recipe-t1-staff']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t1-bow', 'recipe-t1-staff']], ['action' => 'equip.tool', 'slugs' => ['plane-iron']]],
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'requirements' => ['carpenter_plank'],
@@ -5169,7 +5173,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'carpenter-composite',
                 'title' => 'Collage composite',
                 'description' => 'Permet de coller le chene murmurant et la corne en armes de second palier',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t2-bow', 'recipe-t2-staff']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-t2-bow', 'recipe-t2-staff']], ['action' => 'equip.tool', 'slugs' => ['plane-steel']]],
                 'requiredPoints' => 60,
                 'domain' => $d,
                 'requirements' => ['carpenter_first_weapons'],
@@ -5180,7 +5184,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'carpenter-cabinetmaking',
                 'title' => 'Ebenisterie',
                 'description' => 'Permet de monter le necessaire qui meuble la demeure d\'un autre joueur',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-furnishing-kit']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-furnishing-kit']], ['action' => 'equip.tool', 'slugs' => ['plane-mithril']]],
                 'requiredPoints' => 90,
                 'domain' => $d,
                 'requirements' => ['carpenter_joinery'],
@@ -5278,10 +5282,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // passage `crafted-cloth`, un objet livre de longue date que **rien ne
     // produisait ni ne consommait**.
     //
-    // **Aucun emplacement d'outil**, comme le cuisinier et le charpentier :
-    // `Item::CRAFT_TOOL_TYPES` ne cite pas ce metier, et lui inventer une
-    // aiguille aurait demande un type d'outil, un bit d'equipement et un
-    // emplacement d'interface neufs — un mecanisme pour un jalon de contenu.
+    // OBJ-06 : l'aiguille existe — le mecanisme differe par ECO-31 est livre,
+    // et le nœud gratuit du tissage porte l'emplacement et le palier d'entree.
     private function getTailorSkills(): array
     {
         $d = 'tailor';
@@ -5292,7 +5294,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'tailor-weaving',
                 'title' => 'Tissage',
                 'description' => 'Permet de rouir, filer et tisser le lin des Vallons en toile',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cloth']]],
+                // OBJ-06 : l'aiguille arrive avec la toile — meme motif que les
+                // autres arbres, le nœud gratuit livre l'emplacement et le
+                // palier d'entree.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cloth']], ['action' => 'tool_slot.unlock', 'slot' => 'needle'], ['action' => 'equip.tool', 'slugs' => ['needle-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -5314,7 +5319,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'tailor-robe',
                 'title' => 'Montage de la robe',
                 'description' => 'Permet de monter la premiere robe du monde : rien n\'y entrave le geste',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-linen-robe']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-linen-robe']], ['action' => 'equip.tool', 'slugs' => ['needle-iron']]],
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'requirements' => ['tailor_weaving'],
@@ -5343,7 +5348,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'tailor-fine-robe',
                 'title' => 'Couture invisible',
                 'description' => 'Permet de monter la robe de lin fin, dont les coutures ne se voient pas',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-fine-linen-robe']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-fine-linen-robe']], ['action' => 'equip.tool', 'slugs' => ['needle-steel']]],
                 'requiredPoints' => 60,
                 'domain' => $d,
                 'requirements' => ['tailor_fine_weave'],
@@ -5354,7 +5359,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'tailor-shadowsilk',
                 'title' => 'Trame d\'ombre',
                 'description' => 'Permet de tisser le poil de loup-garou dans la toile : la soie d\'ombre',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-shadowsilk-hood', 'recipe-shadowsilk-robe']]],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-shadowsilk-hood', 'recipe-shadowsilk-robe']], ['action' => 'equip.tool', 'slugs' => ['needle-mithril']]],
                 'requiredPoints' => 90,
                 'domain' => $d,
                 'requirements' => ['tailor_fine_robe'],
@@ -5514,7 +5519,14 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'smith-steel-weapons',
                 'title' => 'Forge d\'acier — armes',
                 'description' => 'Permet de forger des armes en acier',
-                'actions' => [['action' => 'equip.tool', 'slugs' => ['hammer-steel']], ['action' => 'craft', 'recipes' => ['recipe-steel-sword', 'recipe-steel-dagger']]],
+                // OBJ-06 : le forgeron devient la source des outils d'acier —
+                // les 12 types, recettes derivees (RecipeFixtures::toolRecipesData).
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['hammer-steel']], ['action' => 'craft', 'recipes' => [
+                    'recipe-steel-sword', 'recipe-steel-dagger',
+                    'recipe-pickaxe-steel', 'recipe-sickle-steel', 'recipe-fishing-rod-steel', 'recipe-skinning-knife-steel',
+                    'recipe-hammer-steel', 'recipe-tanning-kit-steel', 'recipe-mortar-steel', 'recipe-chisel-steel',
+                    'recipe-axe-steel', 'recipe-cookpot-steel', 'recipe-plane-steel', 'recipe-needle-steel',
+                ]]],
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'requirements' => ['smith_sword', 'smith_temper'],
@@ -5561,7 +5573,14 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'smith-mithril',
                 'title' => 'Forge de mithril',
                 'description' => 'Permet de forger des equipements en mithril',
-                'actions' => [['action' => 'equip.tool', 'slugs' => ['hammer-mithril']], ['action' => 'craft', 'recipes' => ['recipe-mithril-helm', 'recipe-mithril-cuirass', 'recipe-mithril-greaves', 'recipe-mithril-sabatons', 'recipe-mithril-gauntlets', 'recipe-mithril-pauldrons']]],
+                // OBJ-06 : et des outils de mithril — le haut de l'echelle
+                // d'outillage est un craft, pas une boutique.
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['hammer-mithril']], ['action' => 'craft', 'recipes' => [
+                    'recipe-mithril-helm', 'recipe-mithril-cuirass', 'recipe-mithril-greaves', 'recipe-mithril-sabatons', 'recipe-mithril-gauntlets', 'recipe-mithril-pauldrons',
+                    'recipe-pickaxe-mithril', 'recipe-sickle-mithril', 'recipe-fishing-rod-mithril', 'recipe-skinning-knife-mithril',
+                    'recipe-hammer-mithril', 'recipe-tanning-kit-mithril', 'recipe-mortar-mithril', 'recipe-chisel-mithril',
+                    'recipe-axe-mithril', 'recipe-cookpot-mithril', 'recipe-plane-mithril', 'recipe-needle-mithril',
+                ]]],
                 'requiredPoints' => 60,
                 'domain' => $d,
                 'requirements' => ['smith_steel_weapons', 'smith_steel_armor'],

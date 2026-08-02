@@ -246,6 +246,10 @@
         "tanning_kit": "Tanning kit",
         "mortar": "Alchemy mortar",
         "chisel": "Jeweler's chisel",
+        "axe": "Axe",
+        "cookpot": "Cooking pot",
+        "plane": "Carpenter's plane",
+        "needle": "Tailor's needle",
         "unknown": "Tool"
       },
       "tools": {

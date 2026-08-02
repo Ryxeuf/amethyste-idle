@@ -40,6 +40,10 @@ class PlayerItem
     // OBJ-05 : la hache avait un type d'outil (DOM-05) mais aucun bit — elle
     // ne pouvait pas etre equipee, donc le bucheronnage n'avait pas d'outil.
     public const GEAR_TOOL_AXE = 0b100000000000000000000; // 1048576
+    // OBJ-06 : les outils du cuisinier, du charpentier et du tailleur.
+    public const GEAR_TOOL_COOKPOT = 0b1000000000000000000000; // 2097152
+    public const GEAR_TOOL_PLANE = 0b10000000000000000000000; // 4194304
+    public const GEAR_TOOL_NEEDLE = 0b100000000000000000000000; // 8388608
 
     public const GEARS = [
         self::GEAR_HEAD,
@@ -66,6 +70,9 @@ class PlayerItem
         self::GEAR_TOOL_MORTAR,
         self::GEAR_TOOL_CHISEL,
         self::GEAR_TOOL_AXE,
+        self::GEAR_TOOL_COOKPOT,
+        self::GEAR_TOOL_PLANE,
+        self::GEAR_TOOL_NEEDLE,
     ];
 
     public const TOOL_TYPE_TO_GEAR = [
@@ -78,6 +85,9 @@ class PlayerItem
         Item::TOOL_TYPE_MORTAR => self::GEAR_TOOL_MORTAR,
         Item::TOOL_TYPE_CHISEL => self::GEAR_TOOL_CHISEL,
         Item::TOOL_TYPE_AXE => self::GEAR_TOOL_AXE,
+        Item::TOOL_TYPE_COOKPOT => self::GEAR_TOOL_COOKPOT,
+        Item::TOOL_TYPE_PLANE => self::GEAR_TOOL_PLANE,
+        Item::TOOL_TYPE_NEEDLE => self::GEAR_TOOL_NEEDLE,
     ];
 
     #[ORM\Column(name: 'id', type: 'integer')]

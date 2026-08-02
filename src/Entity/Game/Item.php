@@ -35,6 +35,13 @@ class Item
     // servir. Le charpentier existe depuis ECO-30 ; l'outil arrive avec celui a
     // qui il sert, comme la note de ZON-34 l'annoncait.
     public const TOOL_TYPE_AXE = 'axe';
+    // OBJ-06 : les trois metiers sans outil en recoivent un (GAME_ITEMS §4.2).
+    // La marmite du cuisinier, la varlope du charpentier et l'aiguille du
+    // tailleur — le type, le bit et l'emplacement qu'ECO-29/30/31 avaient
+    // differes comme « un changement de mecanisme pour un jalon de contenu ».
+    public const TOOL_TYPE_COOKPOT = 'cookpot';
+    public const TOOL_TYPE_PLANE = 'plane';
+    public const TOOL_TYPE_NEEDLE = 'needle';
 
     public const TOOL_GEAR_LOCATIONS = [
         self::TOOL_TYPE_PICKAXE => 'tool_pickaxe',
@@ -46,6 +53,9 @@ class Item
         self::TOOL_TYPE_MORTAR => 'tool_mortar',
         self::TOOL_TYPE_CHISEL => 'tool_chisel',
         self::TOOL_TYPE_AXE => 'tool_axe',
+        self::TOOL_TYPE_COOKPOT => 'tool_cookpot',
+        self::TOOL_TYPE_PLANE => 'tool_plane',
+        self::TOOL_TYPE_NEEDLE => 'tool_needle',
     ];
 
     public const CRAFT_TOOL_TYPES = [
@@ -53,6 +63,10 @@ class Item
         'tanneur' => self::TOOL_TYPE_TANNING_KIT,
         'alchimiste' => self::TOOL_TYPE_MORTAR,
         'joaillier' => self::TOOL_TYPE_CHISEL,
+        // OBJ-06 : les sept metiers d'artisanat exigent desormais leur outil.
+        'cuisinier' => self::TOOL_TYPE_COOKPOT,
+        'charpentier' => self::TOOL_TYPE_PLANE,
+        'tailleur' => self::TOOL_TYPE_NEEDLE,
     ];
 
     // OBJ-05 : l'outil que chaque profession de filon exige (GAME_ITEMS §4).
@@ -89,6 +103,9 @@ class Item
         self::TOOL_TYPE_MORTAR => 'un mortier d\'alchimie',
         self::TOOL_TYPE_CHISEL => 'un burin de joaillier',
         self::TOOL_TYPE_AXE => 'une hache',
+        self::TOOL_TYPE_COOKPOT => 'une marmite de cuisine',
+        self::TOOL_TYPE_PLANE => 'une varlope de charpentier',
+        self::TOOL_TYPE_NEEDLE => 'une aiguille de tailleur',
     ];
 
     public const TOOL_TIER_BRONZE = 1;

@@ -134,6 +134,9 @@ class GearHelper
             'tool_mortar' => PlayerItem::GEAR_TOOL_MORTAR,
             'tool_chisel' => PlayerItem::GEAR_TOOL_CHISEL,
             'tool_axe' => PlayerItem::GEAR_TOOL_AXE,
+            'tool_cookpot' => PlayerItem::GEAR_TOOL_COOKPOT,
+            'tool_plane' => PlayerItem::GEAR_TOOL_PLANE,
+            'tool_needle' => PlayerItem::GEAR_TOOL_NEEDLE,
             default => null,
         };
     }

@@ -237,6 +237,10 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                     // d'entree autorise sans que personne puisse l'obtenir.
                     'pickaxe-bronze', 'sickle-bronze', 'fishing-rod-bronze', 'skinning-knife-bronze', 'axe-bronze',
                     'hammer-bronze', 'tanning-kit-bronze', 'mortar-bronze', 'chisel-bronze',
+                    // OBJ-06 : la marmite, la varlope et l'aiguille — les trois
+                    // metiers rejoignent la regle « un outil requis, son palier
+                    // d'entree au plancher T1 ».
+                    'cookpot-bronze', 'plane-bronze', 'needle-bronze',
                     'bread', 'grilled-meat', 'stew', 'mushroom', 'beer-pint', 'scroll-teleport',
                 ],
                 'opensAt' => 8,

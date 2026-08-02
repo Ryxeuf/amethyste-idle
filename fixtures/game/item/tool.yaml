@@ -423,3 +423,140 @@ App\Entity\Game\Item:
     toolType: 'axe'
     toolTier: 4
     durability: 500
+
+  # --- OBJ-06 : les trois metiers sans outil en recoivent un ---
+  # La marmite du cuisinier, la varlope du charpentier et l'aiguille du
+  # tailleur — differees par ECO-29/30/31 comme un changement de mecanisme,
+  # livrees avec lui (type, bit d'equipement et emplacement d'interface).
+  cookpot_bronze (extends item):
+    id: 99
+    name: 'Marmite de cuisine en bronze'
+    description: 'Une marmite de bronze qui accueille aussi bien le ragout que la friture'
+    type: 'tool'
+    slug: 'cookpot-bronze'
+    price: 50
+    domain: '@cook'
+    toolType: 'cookpot'
+    toolTier: 1
+    durability: 100
+  cookpot_iron (extends item):
+    id: 100
+    name: 'Marmite de cuisine en fer'
+    description: 'Le fond epais du fer repartit la chaleur sans jamais attacher'
+    type: 'tool'
+    slug: 'cookpot-iron'
+    price: 150
+    domain: '@cook'
+    toolType: 'cookpot'
+    toolTier: 2
+    durability: 200
+  cookpot_steel (extends item):
+    id: 101
+    name: 'Marmite de cuisine en acier'
+    description: 'L''acier garde le fumet et supporte les cuissons les plus longues'
+    type: 'tool'
+    slug: 'cookpot-steel'
+    price: 400
+    domain: '@cook'
+    toolType: 'cookpot'
+    toolTier: 3
+    durability: 350
+  cookpot_mithril (extends item):
+    id: 102
+    name: 'Marmite de cuisine en mithril'
+    description: 'Si legere qu''on cuisine en marchant, et rien n''y brule jamais'
+    type: 'tool'
+    slug: 'cookpot-mithril'
+    price: 1000
+    domain: '@cook'
+    toolType: 'cookpot'
+    toolTier: 4
+    durability: 500
+  plane_bronze (extends item):
+    id: 103
+    name: 'Varlope de charpentier en bronze'
+    description: 'Une varlope de bronze qui tire des copeaux honnetes du hetre'
+    type: 'tool'
+    slug: 'plane-bronze'
+    price: 50
+    domain: '@carpenter'
+    toolType: 'plane'
+    toolTier: 1
+    durability: 100
+  plane_iron (extends item):
+    id: 104
+    name: 'Varlope de charpentier en fer'
+    description: 'Le fer de fer mord droit et laisse la planche lisse au toucher'
+    type: 'tool'
+    slug: 'plane-iron'
+    price: 150
+    domain: '@carpenter'
+    toolType: 'plane'
+    toolTier: 2
+    durability: 200
+  plane_steel (extends item):
+    id: 105
+    name: 'Varlope de charpentier en acier'
+    description: 'L''acier tient le fil des essences dures sans se reaffuter'
+    type: 'tool'
+    slug: 'plane-steel'
+    price: 400
+    domain: '@carpenter'
+    toolType: 'plane'
+    toolTier: 3
+    durability: 350
+  plane_mithril (extends item):
+    id: 106
+    name: 'Varlope de charpentier en mithril'
+    description: 'Elle glisse sur le bois petrifie comme sur du hetre vert'
+    type: 'tool'
+    slug: 'plane-mithril'
+    price: 1000
+    domain: '@carpenter'
+    toolType: 'plane'
+    toolTier: 4
+    durability: 500
+  needle_bronze (extends item):
+    id: 107
+    name: 'Aiguille de tailleur en bronze'
+    description: 'Une aiguille de bronze qui passe la toile de lin sans rechigner'
+    type: 'tool'
+    slug: 'needle-bronze'
+    price: 50
+    domain: '@tailor'
+    toolType: 'needle'
+    toolTier: 1
+    durability: 100
+  needle_iron (extends item):
+    id: 108
+    name: 'Aiguille de tailleur en fer'
+    description: 'Le fer perce les doublures epaisses d''un geste regulier'
+    type: 'tool'
+    slug: 'needle-iron'
+    price: 150
+    domain: '@tailor'
+    toolType: 'needle'
+    toolTier: 2
+    durability: 200
+  needle_steel (extends item):
+    id: 109
+    name: 'Aiguille de tailleur en acier'
+    description: 'L''acier file a travers les etoffes fines sans tirer un fil'
+    type: 'tool'
+    slug: 'needle-steel'
+    price: 400
+    domain: '@tailor'
+    toolType: 'needle'
+    toolTier: 3
+    durability: 350
+  needle_mithril (extends item):
+    id: 110
+    name: 'Aiguille de tailleur en mithril'
+    description: 'Si fine qu''elle coud la soie d''ombre sans laisser de trace'
+    type: 'tool'
+    slug: 'needle-mithril'
+    price: 1000
+    domain: '@tailor'
+    toolType: 'needle'
+    toolTier: 4
+    durability: 500
