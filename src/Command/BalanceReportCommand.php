@@ -10,6 +10,7 @@ use App\Entity\Game\MonsterItem;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\Enum\MonsterRank;
+use App\GameEngine\Bestiary\MonsterStatTemplate;
 use App\GameEngine\Economy\GilsSupplyService;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,18 +37,6 @@ class BalanceReportCommand extends Command
      */
     private const TIER_XP_FACTOR = [0 => 1, 1 => 3, 2 => 8, 3 => 18, 4 => 32];
 
-    /**
-     * Grille de vie de depart par case tier x rang (GAME_BESTIARY §3).
-     *
-     * @var array<int, array<string, int>>
-     */
-    private const TIER_RANK_LIFE = [
-        0 => ['common' => 30, 'elite' => 60, 'boss' => 100],
-        1 => ['common' => 30, 'elite' => 90, 'boss' => 250],
-        2 => ['common' => 70, 'elite' => 200, 'boss' => 550],
-        3 => ['common' => 150, 'elite' => 420, 'boss' => 1100],
-        4 => ['common' => 300, 'elite' => 850, 'boss' => 2400],
-    ];
     private const SELL_RATIO = 0.3;
     private const DPS_VARIANCE_THRESHOLD = 0.3;
     private const LONG_FIGHT_THRESHOLD = 20;
@@ -168,12 +157,12 @@ class BalanceReportCommand extends Command
             }
 
             // Alerte : HP hors de la fourchette du gabarit tier x rang
-            // (grille de depart GAME_BESTIARY §3, tolerance x0.3 a x3 en
-            // attendant BES-02 qui derive les stats du gabarit).
-            $gridLife = self::TIER_RANK_LIFE[$tier][$rank->value] ?? null;
+            // (BES-02 : les stats se derivent du gabarit, la tolerance ne
+            // couvre plus que les ecarts explicites).
+            $gridLife = MonsterStatTemplate::LIFE[$tier][$rank->value] ?? null;
             if ($gridLife !== null) {
-                $expectedHpMin = (int) round($gridLife * 0.3);
-                $expectedHpMax = (int) round($gridLife * 3);
+                $expectedHpMin = (int) round($gridLife * 0.5);
+                $expectedHpMax = (int) round($gridLife * 2);
                 if ($monster->getLife() < $expectedHpMin) {
                     $alerts[] = sprintf('[MONSTRE] %s (T%d %s) HP %d < seuil min %d', $monster->getName(), $tier, $rank->label(), $monster->getLife(), $expectedHpMin);
                 }
