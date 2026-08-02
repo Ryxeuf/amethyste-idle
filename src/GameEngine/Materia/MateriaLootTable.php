@@ -18,8 +18,10 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * Bornes : m1-m3 en voie normale (le palier suit le tier, plafonne a m3),
  * m4 en rare (reserve au T4, jamais sur le tout-venant), **m5 jamais en
- * butin** — le haut du catalogue passe par les coffres et les donjons
- * (MAT-06). Un monstre sans element (les mannequins) ne lache rien.
+ * butin** — le haut du catalogue passe par les coffres et les donjons,
+ * eux-memes indexes sur le palier de leur zone (MAT-06, DON-04 : seul un
+ * donjon T4 sert le m5). Un monstre sans element (les mannequins) ne lache
+ * rien.
  */
 final class MateriaLootTable
 {
@@ -54,10 +56,20 @@ final class MateriaLootTable
     public const CHEST_MATERIA_CHANCE = 10;
 
     /**
-     * MAT-06 — les donjons prennent m4-m5 : la chance qu'une recompense de
-     * donjon monte a m5 — le seul canal du sommet du catalogue.
+     * DON-04 — le palier de materia d'un donjon suit le palier de sa zone
+     * (GAME_MATERIA §4.3) : T1 → m2, T2 → m3, T3 → m3, T4 → m4. Les paliers
+     * hauts (T3-T4) peuvent monter d'un cran en rare — c'est ce qui fait de
+     * T3 un canal m3-m4 et de T4 le seul canal du m5.
+     *
+     * @var array<int, int>
      */
-    public const DUNGEON_M5_CHANCE = 20;
+    public const DUNGEON_PALIER_BY_TIER = [1 => 2, 2 => 3, 3 => 3, 4 => 4];
+
+    /**
+     * La chance (sur 100) qu'une recompense de donjon T3-T4 monte d'un
+     * palier (m3 → m4 en T3, m4 → m5 en T4).
+     */
+    public const DUNGEON_UPGRADE_CHANCE = 20;
 
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
@@ -131,11 +143,31 @@ final class MateriaLootTable
      * MAT-06 — la recompense de donjon : m4 garanti, m5 en rare. Le seul
      * canal du sommet du catalogue — la premiere raison mecanique d'entrer.
      */
-    public function dungeonPick(?int $rareRoll = null, ?int $elementRoll = null, ?int $pickRoll = null): ?Item
+    public function dungeonPick(int $tier, ?int $rareRoll = null, ?int $elementRoll = null, ?int $pickRoll = null): ?Item
     {
-        $palier = (($rareRoll ?? random_int(0, 99)) < self::DUNGEON_M5_CHANCE) ? 5 : 4;
+        $paliers = self::dungeonPaliers($tier);
+        $palier = $paliers[0];
+        if (\count($paliers) > 1 && ($rareRoll ?? random_int(0, 99)) < self::DUNGEON_UPGRADE_CHANCE) {
+            $palier = $paliers[1];
+        }
 
         return $this->pickForPalier($this->randomElement($elementRoll), $palier, $pickRoll);
+    }
+
+    /**
+     * DON-04 — les paliers de materia que sert un donjon de ce palier de
+     * monde. C'est la **meme lecture** qui nourrit le tirage reel
+     * (`dungeonPick`) et l'apercu de butin de l'ecran de zone : les deux ne
+     * peuvent pas diverger, un apercu qui ment est pire que pas d'apercu.
+     *
+     * @return non-empty-list<int>
+     */
+    public static function dungeonPaliers(int $tier): array
+    {
+        $tier = max(1, min(4, $tier));
+        $base = self::DUNGEON_PALIER_BY_TIER[$tier];
+
+        return $tier >= 3 ? [$base, $base + 1] : [$base];
     }
 
     private function randomElement(?int $elementRoll = null): Element

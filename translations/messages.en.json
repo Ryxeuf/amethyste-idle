@@ -1516,6 +1516,8 @@
         "attack": "Attack",
         "waiting_turn": "Waiting for an ally's turn…",
         "step": "Step %step%/%total%",
+        "loot_materia": "Materia %paliers%",
+        "loot_gils": "diminishing gils",
         "semisync_hint": "Each member acts on their turn; past the delay, the basic attack is played automatically (semi-synchronous).",
         "offers_title": "Group dungeons",
         "offers_hint": "Form a party in this zone, then the leader launches the dungeon. Combat turns are free and unlimited.",

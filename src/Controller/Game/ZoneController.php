@@ -15,6 +15,7 @@ use App\Enum\WeeklyCommissionReward;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\GameMaster\GameMasterPolicy;
+use App\GameEngine\Materia\MateriaLootTable;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
@@ -793,7 +794,13 @@ class ZoneController extends AbstractController
                 'dungeon' => $dungeon,
                 'maxPlayers' => $dungeon->getMaxPlayers(),
                 'requiredExperience' => $dungeon->getRequiredExperience(),
-                'lootPreview' => $dungeon->getLootPreview() ?? [],
+                // DON-04 : l'apercu de butin se **derive** de la table reelle
+                // — la meme lecture que le tirage (`dungeonPaliers`), donc
+                // impossible a desynchroniser. Plus aucun texte libre.
+                'lootMateria' => implode('-', array_map(
+                    static fn (int $palier): string => 'm' . $palier,
+                    MateriaLootTable::dungeonPaliers($dungeon->getZone()?->getTier() ?? 1),
+                )),
                 'canLaunch' => null === $blocker,
                 'blocker' => $blocker,
             ];

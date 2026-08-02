@@ -172,15 +172,36 @@ class MateriaLootTableTest extends TestCase
     }
 
     /**
-     * MAT-06 — le donjon prend m4-m5, et il est le seul canal du m5.
+     * DON-04 — la table de donjon est indexee sur le palier de la zone
+     * (GAME_MATERIA §4.3) : T1 → m2, T2 → m3, T3 → m3-m4, T4 → m4-m5. Le
+     * donjon T4 reste le seul canal du m5.
      */
-    public function testDungeonTakesTheTopOfTheCatalog(): void
+    public function testDungeonLootIsIndexedOnTheTier(): void
     {
-        $normal = $this->table->dungeonPick(MateriaLootTable::DUNGEON_M5_CHANCE, 0, 0);
-        $this->assertStringStartsWith('m4-', (string) $normal?->getSlug());
+        $blocked = MateriaLootTable::DUNGEON_UPGRADE_CHANCE;
 
-        $rare = $this->table->dungeonPick(0, 0, 0);
-        $this->assertStringStartsWith('m5-', (string) $rare?->getSlug());
+        $this->assertStringStartsWith('m2-', (string) $this->table->dungeonPick(1, $blocked, 0, 0)?->getSlug());
+        $this->assertStringStartsWith('m3-', (string) $this->table->dungeonPick(2, $blocked, 0, 0)?->getSlug());
+        $this->assertStringStartsWith('m3-', (string) $this->table->dungeonPick(3, $blocked, 0, 0)?->getSlug());
+        $this->assertStringStartsWith('m4-', (string) $this->table->dungeonPick(4, $blocked, 0, 0)?->getSlug());
+
+        // La montee en rare ne vaut qu'aux paliers hauts : T1-T2 ne montent
+        // jamais, T3 monte a m4, T4 a m5.
+        $this->assertStringStartsWith('m2-', (string) $this->table->dungeonPick(1, 0, 0, 0)?->getSlug());
+        $this->assertStringStartsWith('m4-', (string) $this->table->dungeonPick(3, 0, 0, 0)?->getSlug());
+        $this->assertStringStartsWith('m5-', (string) $this->table->dungeonPick(4, 0, 0, 0)?->getSlug());
+    }
+
+    /**
+     * DON-04 — l'apercu et le tirage lisent la meme table : `dungeonPaliers`
+     * est la seule verite des paliers servis.
+     */
+    public function testDungeonPaliersMatchTheCanon(): void
+    {
+        $this->assertSame([2], MateriaLootTable::dungeonPaliers(1));
+        $this->assertSame([3], MateriaLootTable::dungeonPaliers(2));
+        $this->assertSame([3, 4], MateriaLootTable::dungeonPaliers(3));
+        $this->assertSame([4, 5], MateriaLootTable::dungeonPaliers(4));
     }
 
     /**

@@ -1516,6 +1516,8 @@
         "attack": "Attaquer",
         "waiting_turn": "En attente du tour d'un allie…",
         "step": "Étape %step%/%total%",
+        "loot_materia": "Matéria %paliers%",
+        "loot_gils": "gils décroissants",
         "semisync_hint": "Chacun agit a son tour ; passe le delai, l'attaque de base est jouee automatiquement (semi-synchrone).",
         "offers_title": "Donjons de groupe",
         "offers_hint": "Formez un groupe dans cette zone, puis le chef lance le donjon. Les tours de combat sont gratuits et illimites.",
