@@ -73,7 +73,7 @@ généré par `getDormantHybridAccords()`.
 | Accords de matéria | **10** | ambush, necrotic-touch, death-touch, life-leech, vital-drain, shadow-bolt, death-grip, soul-siphon, deadly-strike, death-nova, shadow-dance *(11 avec le rang 5)* |
 | Passifs | 3 | `critical +2`, `damage +1`, `hit +2` |
 | Échelons de port (dague) | 2 | T2 (`critical +1`), T3 (`critical +2`) |
-| Accord dormant | 1 | 200 points, `materia.hybrid` / `dark` |
+| Accord dormant | 1 | 150 points, `materia.hybrid` / `dark` *(200 avant la correction de l'écart n° 6)* |
 
 **Coût total pour tout apprendre : 515 points** (hors dormant), pour un plafond
 global de 500 encore présent dans le code
@@ -291,7 +291,7 @@ déclare son élément parent (`dark`) et rien d'autre : nommer l'hybride revien
 à décider de la fusion avant qu'elle n'existe. Il ne compte dans aucun budget tant
 que la fusion n'ouvre pas.
 
-*(En base il coûte 200 points ; le canon en dit 150 — écart n° 6 du §10.)*
+*(Il coûtait 200 points en base contre 150 au canon — écart n° 6, corrigé le 2026-08-01.)*
 
 ### 4.7 L'arbre complet, d'un coup d'œil
 
@@ -646,13 +646,13 @@ rien l'un sans l'autre.
 
 ## 10. Ce que l'exercice a trouvé — sept écarts
 
-**Onze des quatorze sont réglés** au 2026-08-01 : les écarts **1 à 4**, **8**,
+**Douze des quatorze sont réglés** au 2026-08-01 : les écarts **1 à 4**, **8**,
 **11**, **13** et **14** sont tranchés et portés dans
-[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) ; les écarts **5** et **10** sont
-corrigés dans le code. Restent : le **6** (à aligner), le **7** (un trou de grille
-dans GAME_MATERIA, ouvert par l'exercice des matéria du §9 bis) et les
-observations **12** et **15**, qui ne demandent pas d'arbitrage mais une mesure du
-simulateur et un jalon de donjon.
+[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) ; les écarts **5**, **6** et **10** sont
+corrigés dans le code. Reste le **7** — un trou de grille dans GAME_MATERIA,
+ouvert par l'exercice des matéria du §9 bis — plus les observations **12** et
+**15**, qui ne demandent pas d'arbitrage mais une mesure du simulateur et un
+jalon de donjon.
 
 Les écarts 8 à 12 sont détaillés là où ils ont été trouvés — §12.7 pour le second
 arbre, §13.8 pour le troisième.
@@ -709,9 +709,16 @@ arbre, §13.8 pour le troisième.
    la vérifie **après recâblage**. *Un échelon est une porte, jamais une
    récompense* — ce que `getWeaponPortRungs()` faisait déjà pour l'échelon 1.
 
-6. **L'accord dormant coûte 200 points en base, 150 au canon.** Sans effet
-   aujourd'hui (le nœud n'est pas apprenable), à aligner avant que la fusion
-   n'ouvre.
+6. **L'accord dormant coûtait 200 points en base, 150 au canon.** La valeur de
+   200 était héritée de l'échelle d'avant le gabarit, où le rang 5 culminait à
+   150 ; le canon pose le dormant **au-dessus du sommet** (capstone 100, dormant
+   150).
+   → **Corrigé le 2026-08-01** : les 24 accords générés coûtent 150.
+   `DomainPlanContractTest::testTheDormantAccordCostsWhatTheCanonSays()` lit la
+   valeur dans la table génératrice et la compare au canon. *L'écart n'avait
+   aucun effet — le nœud n'est pas apprenable — et c'est exactement ce qui le
+   rendait dangereux : personne ne l'aurait vu avant l'ouverture de la fusion, et
+   il aurait alors été lu comme une décision.*
 
 7. **La grille par palier de GAME_MATERIA §2.3 ne connaît que les PM.** Elle
    donne un `energy_cost` de 10 à 30 selon le palier — ce qui est la grille des

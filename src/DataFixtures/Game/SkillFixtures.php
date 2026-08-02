@@ -292,9 +292,14 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'title' => 'Accord d\'hybride',
                 'description' => 'Un accord reserve, pose et pas encore ouvert : il attend que la fusion des elements existe.',
                 'actions' => [['action' => 'materia.hybrid', 'element' => $element]],
-                // Le cout le plus haut de l'echelle : quand il ouvrira, ce sera
-                // un sommet d'arbre, pas une case a cocher en passant.
-                'requiredPoints' => 200,
+                // Au-dessus du sommet, et pas d'un cran arbitraire : le capstone
+                // vaut 100 points (echelle 0/10/25/50/100), l'accord dormant en
+                // vaut **150** — GAME_ARCHETYPES § 6.1. Il portait 200, une
+                // valeur heritee de l'echelle d'avant le gabarit, ou le rang 5
+                // culminait a 150 ; l'ecart n'avait aucun effet puisque le nœud
+                // n'est pas apprenable, mais il aurait ete lu comme une decision
+                // le jour ou la fusion ouvrira.
+                'requiredPoints' => 150,
                 'domain' => $domain,
                 'dormant' => true,
             ];
