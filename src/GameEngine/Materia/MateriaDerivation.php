@@ -46,11 +46,7 @@ final class MateriaDerivation
     {
         $tier = $spell->getLevel();
         if (!isset(self::PRICES[$tier], self::ENERGY_COSTS[$tier])) {
-            throw new \InvalidArgumentException(sprintf(
-                'Le sort "%s" est de niveau %d : la grille de derivation ne connait que les paliers 1 a 5.',
-                $spell->getSlug(),
-                $tier,
-            ));
+            throw new \InvalidArgumentException(sprintf('Le sort "%s" est de niveau %d : la grille de derivation ne connait que les paliers 1 a 5.', $spell->getSlug(), $tier));
         }
 
         return new MateriaBlueprint(
