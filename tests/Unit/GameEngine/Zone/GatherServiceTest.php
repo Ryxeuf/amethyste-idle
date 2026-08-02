@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\GameEngine\Zone;
 
 use App\Entity\App\Fight;
+use App\Entity\App\Inventory;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
@@ -118,7 +119,48 @@ class GatherServiceTest extends TestCase
         $player = new Player();
         $player->setCurrentZone($this->buildZone($resources));
 
+        // OBJ-05 : la recolte exige un outil. Ces scenarios portent sur le
+        // filon, pas sur l'outillage — le joueur type porte la pioche de
+        // bronze (bonus nul), comme la garantie d'ouverture d'arbre le fait
+        // dans le vrai jeu.
+        $this->giveTool($player);
+
         return $player;
+    }
+
+    /**
+     * Donne un outil au joueur, equipe par defaut, et retourne l'exemplaire.
+     */
+    private function giveTool(Player $player, string $toolType = Item::TOOL_TYPE_PICKAXE, int $tier = Item::TOOL_TIER_BRONZE, bool $equipped = true): PlayerItem
+    {
+        $toolItem = new Item();
+        $toolItem->setName('Outil de test');
+        $toolItem->setSlug($toolType . '-tier-' . $tier);
+        $toolItem->setType(Item::TYPE_TOOL);
+        $toolItem->setToolType($toolType);
+        $toolItem->setToolTier($tier);
+
+        $playerItem = new PlayerItem();
+        $playerItem->setGenericItem($toolItem);
+        if ($equipped) {
+            $playerItem->setGear(PlayerItem::TOOL_TYPE_TO_GEAR[$toolType]);
+        }
+
+        $bag = null;
+        foreach ($player->getInventories() as $inventory) {
+            if ($inventory->isBag()) {
+                $bag = $inventory;
+                break;
+            }
+        }
+        if (null === $bag) {
+            $bag = new Inventory();
+            $player->addInventory($bag);
+        }
+        $bag->addItem($playerItem);
+        $playerItem->setInventory($bag);
+
+        return $playerItem;
     }
 
     private function buildItem(int $id, string $slug, string $name): Item
@@ -716,6 +758,99 @@ class GatherServiceTest extends TestCase
         $result = $this->service->gather($player, 'filon-de-fer');
 
         self::assertSame($result->quantity, $vein->getExtractedSinceTick());
+    }
+
+    // =====================================================================
+    // OBJ-05 — la recolte exige un outil, le palier module le rendement
+    // =====================================================================
+
+    /**
+     * Le refus tombe **avant** la depense d'energie, comme le gate de
+     * competence : un joueur ne paie jamais pour apprendre qu'il ne peut pas.
+     */
+    public function testGatherRefusesWithoutTheProfessionToolAndSpendsNoEnergy(): void
+    {
+        $player = new Player();
+        $player->setCurrentZone($this->buildZone([$this->ironResource()]));
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+
+        $this->actionEnergyManager->expects($this->never())->method('spend');
+        $this->expectException(ZoneActionException::class);
+        $this->expectExceptionMessage('game.zone.gather.error.missing_tool');
+
+        $this->service->gather($player, 'filon-de-fer');
+    }
+
+    /**
+     * L'exigence est la **possession**, pas le geste d'equipement : un outil au
+     * fond du sac travaille aussi. Exiger l'equipement transformerait la
+     * garantie anti-mur (l'outil offert avec l'arbre) en piege d'interface.
+     */
+    public function testAToolInTheBagWorksWithoutBeingEquipped(): void
+    {
+        $player = new Player();
+        $player->setCurrentZone($this->buildZone([$this->ironResource()]));
+        $this->giveTool($player, Item::TOOL_TYPE_PICKAXE, Item::TOOL_TIER_BRONZE, equipped: false);
+
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [1];
+
+        $this->assertSame(1, $this->service->gather($player, 'filon-de-fer')->quantity);
+    }
+
+    /**
+     * Meme regle que le craft : un outil casse ne compte pas.
+     */
+    public function testABrokenToolDoesNotCount(): void
+    {
+        $player = new Player();
+        $player->setCurrentZone($this->buildZone([$this->ironResource()]));
+        $this->giveTool($player)->setCurrentDurability(0);
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+
+        $this->expectExceptionMessage('game.zone.gather.error.missing_tool');
+        $this->service->gather($player, 'filon-de-fer');
+    }
+
+    /**
+     * Le palier module le rendement (GAME_ITEMS §4.2), en direct et jamais via
+     * `gather_percent` — ce curseur-la decale aussi la bande de purete, or
+     * l'outil ne doit toucher que la quantite.
+     */
+    public function testAHigherTierToolYieldsMore(): void
+    {
+        $player = new Player();
+        $player->setCurrentZone($this->buildZone([$this->ironResource()]));
+        $this->giveTool($player, Item::TOOL_TYPE_PICKAXE, Item::TOOL_TIER_MITHRIL);
+
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [3]; // yield brut 3, +30 % (mithril) -> 3.9 arrondi a 4
+
+        $this->assertSame(4, $this->service->gather($player, 'filon-de-fer')->quantity);
+    }
+
+    /**
+     * Une profession hors de la table (ni filon de mine, d'herbe, de peche ou
+     * de bois) ne demande aucun outil : le gate est opt-in par construction,
+     * rien de ce qui etait accessible ne se ferme.
+     */
+    public function testAProfessionWithoutToolMappingNeedsNoTool(): void
+    {
+        $player = new Player();
+        $player->setCurrentZone($this->buildZone([
+            ['slug' => 'source-etrange', 'item' => 'ore-iron', 'profession' => 'gathering', 'capacity' => 20, 'respawn_seconds' => 900, 'yield_min' => 1, 'yield_max' => 1],
+        ]));
+
+        $this->itemRepository->method('findOneBy')->willReturn($this->buildItem(7, 'ore-iron', 'Minerai de fer'));
+        $this->veinRepository->method('findOneByZoneAndSlug')->willReturn(null);
+        $this->playerItemGenerator->method('generateFromItemId')->willReturn(new PlayerItem());
+        $this->service->rolls = [1];
+
+        $this->assertSame(1, $this->service->gather($player, 'source-etrange')->quantity);
     }
 
     /**

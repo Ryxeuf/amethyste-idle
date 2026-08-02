@@ -1558,7 +1558,8 @@
           "no_zone": "Your character is not attached to any zone.",
           "unknown_resource": "This resource cannot be harvested here.",
           "depleted": "The vein is depleted — wait for it to replenish.",
-          "missing_skill": "This vein calls for knowledge you have not learned yet."
+          "missing_skill": "This vein calls for knowledge you have not learned yet.",
+          "missing_tool": "This vein calls for a gathering tool you do not own — opening the trade's tree grants it."
         },
         "purity_ceiling": "This vein yields no better than",
         "locked_by": "Requires:",

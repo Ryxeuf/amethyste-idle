@@ -2,9 +2,12 @@
 
 namespace App\GameEngine\Progression;
 
+use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerDomainAccess;
+use App\Entity\App\PlayerItem;
 use App\Entity\Game\Domain;
+use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\GameEngine\Notification\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,6 +70,13 @@ class DomainAccessManager
         // les points.
         $this->grantPortKit($player, $domain);
 
+        // OBJ-05 — ouvrir un arbre de recolte livre l'outil de palier 1.
+        // C'est la garantie anti-mur de GAME_ITEMS §4.3 : la recolte exige
+        // desormais un outil, et « une recolte n'echoue jamais » ne tient que
+        // si l'outil arrive avec l'arbre. Le cout reel est le parchemin,
+        // jamais l'outil.
+        $this->grantGatherToolKit($player, $domain);
+
         // ONB-09 — l'ouverture est **notifiee**. Un arbre qui apparaitrait
         // simplement dans un menu se lirait comme un changement d'interface,
         // alors que c'est le seul moment de la boucle *parchemin -> arbre ->
@@ -101,6 +111,122 @@ class DomainAccessManager
         }
 
         return $granted;
+    }
+
+    /**
+     * Livre l'outil de palier 1 des professions de recolte que l'arbre
+     * enseigne (OBJ-05).
+     *
+     * Le type d'outil se lit dans le **graphe reel** — les nœuds
+     * `tool_slot.unlock` du domaine — exactement comme le kit de port se lit
+     * dans les echelons 1 : aucune table de correspondance entre domaines et
+     * outils a tenir a jour. Seuls les types de recolte sont concernes
+     * (GATHER_TOOL_TYPES) : l'outil d'artisanat reste un achat, la recolte
+     * seule porte la garantie « une recolte n'echoue jamais ».
+     *
+     * Un joueur qui possede deja un outil du type — achete, ou herite d'une
+     * autre ouverture — n'en recoit pas un second : l'octroi comble un
+     * manque, il ne remplit pas un entrepot.
+     */
+    public function grantGatherToolKit(Player $player, Domain $domain): int
+    {
+        $granted = 0;
+
+        foreach ($this->gatherToolTypes($domain) as $toolType) {
+            if ($this->ownsToolOfType($player, $toolType)) {
+                continue;
+            }
+
+            $item = $this->entityManager->getRepository(Item::class)
+                ->findOneBy(['toolType' => $toolType, 'toolTier' => Item::TOOL_TIER_BRONZE]);
+            if (null === $item) {
+                continue;
+            }
+
+            $bag = $this->bagOf($player);
+            if (null === $bag) {
+                continue;
+            }
+
+            $playerItem = new PlayerItem();
+            $playerItem->setGenericItem($item);
+            $playerItem->setNbUsages($item->getNbUsages());
+            $bag->addItem($playerItem);
+            $playerItem->setInventory($bag);
+
+            // L'emplacement s'ouvre et l'outil s'y range : un outil offert
+            // qu'il faudrait encore savoir equiper reconstruirait le mur que
+            // l'octroi vient d'abattre.
+            $player->unlockToolSlot($toolType);
+            $gearBit = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType] ?? null;
+            if (null !== $gearBit && !$this->hasEquippedToolBit($player, $gearBit)) {
+                $playerItem->setGear($gearBit);
+            }
+
+            $this->entityManager->persist($playerItem);
+            ++$granted;
+        }
+
+        return $granted;
+    }
+
+    /**
+     * @return list<string> les types d'outil de recolte que l'arbre enseigne
+     */
+    private function gatherToolTypes(Domain $domain): array
+    {
+        $types = [];
+        foreach ($domain->getSkills() as $skill) {
+            foreach ($skill->getActions() ?? [] as $action) {
+                if (!\is_array($action) || ($action['action'] ?? null) !== 'tool_slot.unlock') {
+                    continue;
+                }
+                $slot = $action['slot'] ?? null;
+                if (\is_string($slot) && \in_array($slot, Item::GATHER_TOOL_TYPES, true) && !\in_array($slot, $types, true)) {
+                    $types[] = $slot;
+                }
+            }
+        }
+
+        return $types;
+    }
+
+    private function ownsToolOfType(Player $player, string $toolType): bool
+    {
+        foreach ($player->getInventories() as $inventory) {
+            foreach ($inventory->getItems() as $playerItem) {
+                $generic = $playerItem->getGenericItem();
+                if ($generic->isTool() && $generic->getToolType() === $toolType) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function hasEquippedToolBit(Player $player, int $gearBit): bool
+    {
+        foreach ($player->getInventories() as $inventory) {
+            foreach ($inventory->getItems() as $playerItem) {
+                if ($playerItem->getGear() & $gearBit) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function bagOf(Player $player): ?Inventory
+    {
+        foreach ($player->getInventories() as $inventory) {
+            if ($inventory->isBag()) {
+                return $inventory;
+            }
+        }
+
+        return null;
     }
 
     private function announce(Player $player, Domain $domain): void

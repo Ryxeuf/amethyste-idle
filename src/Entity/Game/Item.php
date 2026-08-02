@@ -55,6 +55,30 @@ class Item
         'joaillier' => self::TOOL_TYPE_CHISEL,
     ];
 
+    // OBJ-05 : l'outil que chaque profession de filon exige (GAME_ITEMS §4).
+    // Le depecage (`skinning`) n'a pas de filon — il passe par le depecage de
+    // carcasse — mais la cle est declaree pour que la regle soit la meme le
+    // jour ou un filon de depeçage existera.
+    public const GATHER_TOOL_TYPES = [
+        'mining' => self::TOOL_TYPE_PICKAXE,
+        'herbalism' => self::TOOL_TYPE_SICKLE,
+        'fishing' => self::TOOL_TYPE_FISHING_ROD,
+        'woodcutting' => self::TOOL_TYPE_AXE,
+        'skinning' => self::TOOL_TYPE_SKINNING_KNIFE,
+    ];
+
+    // OBJ-05 : le palier de l'outil module le rendement, jamais l'acces
+    // (GAME_ITEMS §4.2). Bareme de GAME_TRADES §7 — bronze est la reference,
+    // et le bonus ne passe PAS par `gather_percent` : ce curseur decale aussi
+    // la bande de purete (PurityDrawer), l'outil ne doit toucher que la
+    // quantite.
+    public const TOOL_TIER_YIELD_PERCENT = [
+        self::TOOL_TIER_BRONZE => 0,
+        self::TOOL_TIER_IRON => 8,
+        self::TOOL_TIER_STEEL => 18,
+        self::TOOL_TIER_MITHRIL => 30,
+    ];
+
     public const TOOL_TYPE_LABELS = [
         self::TOOL_TYPE_PICKAXE => 'une pioche',
         self::TOOL_TYPE_SICKLE => 'une faucille',

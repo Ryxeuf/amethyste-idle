@@ -4,6 +4,7 @@ namespace App\GameEngine\Zone;
 
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
 use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
@@ -38,9 +39,12 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * stock partage vit dans `ZoneVein`, cree paresseusement a la premiere recolte.
  * Ajouter une ressource = ajouter de la donnee, pas du code.
  *
- * ECO-24c ajoute la seule condition d'acces du moteur : `requires_skill:` sur un
- * filon. Elle est **opt-in** — un filon qui ne la declare pas reste ouvert a
- * tous — et le refus tombe avant la depense d'energie.
+ * ECO-24c ajoute la premiere condition d'acces du moteur : `requires_skill:`
+ * sur un filon. Elle est **opt-in** — un filon qui ne la declare pas reste
+ * ouvert a tous — et le refus tombe avant la depense d'energie. OBJ-05 ajoute
+ * la seconde : la recolte exige un outil du type de la profession, dont le
+ * palier module le rendement (jamais l'acces) — l'outil de palier 1 etant
+ * offert a l'ouverture de l'arbre, le cout reel reste le parchemin.
  */
 class GatherService
 {
@@ -226,6 +230,14 @@ class GatherService
             throw new ZoneActionException('game.zone.gather.error.missing_skill');
         }
 
+        // OBJ-05 — la recolte exige un outil du bon type, comme le craft
+        // (GAME_ITEMS §4.2). Le refus tombe avant la depense d'energie, comme
+        // le gate de competence. La garantie anti-mur tient ailleurs : l'outil
+        // de palier 1 est offert a l'ouverture de l'arbre de recolte
+        // (DomainAccessManager::grantGatherToolKit), donc quiconque a l'arbre
+        // a l'outil — le cout reel est le parchemin, jamais l'outil.
+        $tool = $this->resolveTool($player, $resource['profession']);
+
         $now = $this->now();
         $vein = $this->resolveVein($zone, $resource, $now);
 
@@ -239,7 +251,7 @@ class GatherService
         $this->actionEnergyManager->spend($player, $this->getGatherCost(), false);
 
         $vitalityBefore = $vein->getStock();
-        $quantity = $this->computeYield($player, $zone, $resource, $vitalityBefore, $vein->getPaleness());
+        $quantity = $this->computeYield($player, $zone, $resource, $vitalityBefore, $vein->getPaleness(), $tool?->getGenericItem()->getToolTier() ?? Item::TOOL_TIER_BRONZE);
         $remaining = $vitalityBefore - $quantity;
         $vein->setStock($remaining);
         if ($remaining <= 0) {
@@ -452,7 +464,7 @@ class GatherService
      *
      * @param array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int, requires_skill: string|null} $resource
      */
-    private function computeYield(Player $player, Zone $zone, array $resource, int $stock, float $paleness = 0.0): int
+    private function computeYield(Player $player, Zone $zone, array $resource, int $stock, float $paleness = 0.0, int $toolTier = Item::TOOL_TIER_BRONZE): int
     {
         $min = $resource['yield_min'];
         $max = $resource['yield_max'];
@@ -460,6 +472,16 @@ class GatherService
         $yield = $min + ($span > 0 ? $this->roll($span + 1) - 1 : 0);
 
         $yield = $this->yieldResolver->applyBonus($player, ActionYieldResolver::CATEGORY_GATHER, $yield);
+
+        // OBJ-05 — le palier de l'outil module le rendement, jamais l'acces
+        // (GAME_ITEMS §4.2). Le bonus s'applique en direct et non via
+        // `gather_percent` : ce curseur-la decale aussi la bande de purete
+        // (PurityDrawer le lit), or l'outil ne doit toucher que la quantite —
+        // c'est la separation que MET-02 exigera de toute la ligne.
+        $toolPercent = Item::TOOL_TIER_YIELD_PERCENT[$toolTier] ?? 0;
+        if ($toolPercent > 0) {
+            $yield = (int) round($yield * (100 + $toolPercent) / 100);
+        }
 
         // FOY-13 — l'atelier de la Fonderie fait rendre le filon davantage, et
         // le fait palir d'autant plus vite (VeinPalenessService). Le bonus
@@ -557,6 +579,57 @@ class GatherService
     private function findItem(string $slug): ?Item
     {
         return $this->entityManager->getRepository(Item::class)->findOneBy(['slug' => $slug]);
+    }
+
+    /**
+     * L'outil que ce geste va employer, ou `null` si la profession n'en
+     * demande aucun (OBJ-05).
+     *
+     * L'exigence est la **possession**, pas l'equipement : l'outil equipe est
+     * prefere, mais un outil au fond du sac travaille aussi — exiger le geste
+     * d'equipement transformerait la garantie anti-mur en piege d'interface,
+     * et la recolte doit rester ouvrable par quiconque a l'arbre. Un outil
+     * casse (durabilite a zero) ne compte pas : c'est la meme regle que le
+     * craft, et c'est ce qui donnera un jour un debouche au reparateur.
+     *
+     * @throws ZoneActionException si un outil est requis et qu'aucun ne sert
+     */
+    private function resolveTool(Player $player, string $profession): ?PlayerItem
+    {
+        $toolType = Item::GATHER_TOOL_TYPES[$profession] ?? null;
+        if (null === $toolType) {
+            return null;
+        }
+
+        $gearBit = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType] ?? null;
+        $best = null;
+
+        foreach ($player->getInventories() as $inventory) {
+            if (!$inventory->isBag()) {
+                continue;
+            }
+            foreach ($inventory->getItems() as $playerItem) {
+                $generic = $playerItem->getGenericItem();
+                if (!$generic->isTool() || $generic->getToolType() !== $toolType) {
+                    continue;
+                }
+                if (null !== $playerItem->getCurrentDurability() && $playerItem->getCurrentDurability() <= 0) {
+                    continue;
+                }
+                if (null !== $gearBit && ($playerItem->getGear() & $gearBit)) {
+                    return $playerItem;
+                }
+                if (null === $best || ($generic->getToolTier() ?? 0) > ($best->getGenericItem()->getToolTier() ?? 0)) {
+                    $best = $playerItem;
+                }
+            }
+        }
+
+        if (null === $best) {
+            throw new ZoneActionException('game.zone.gather.error.missing_tool');
+        }
+
+        return $best;
     }
 
     /**

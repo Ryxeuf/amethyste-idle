@@ -37,6 +37,9 @@ class PlayerItem
     public const GEAR_TOOL_TANNING_KIT = 0b100000000000000000; // 131072
     public const GEAR_TOOL_MORTAR = 0b1000000000000000000; // 262144
     public const GEAR_TOOL_CHISEL = 0b10000000000000000000; // 524288
+    // OBJ-05 : la hache avait un type d'outil (DOM-05) mais aucun bit — elle
+    // ne pouvait pas etre equipee, donc le bucheronnage n'avait pas d'outil.
+    public const GEAR_TOOL_AXE = 0b100000000000000000000; // 1048576
 
     public const GEARS = [
         self::GEAR_HEAD,
@@ -62,6 +65,7 @@ class PlayerItem
         self::GEAR_TOOL_TANNING_KIT,
         self::GEAR_TOOL_MORTAR,
         self::GEAR_TOOL_CHISEL,
+        self::GEAR_TOOL_AXE,
     ];
 
     public const TOOL_TYPE_TO_GEAR = [
@@ -73,6 +77,7 @@ class PlayerItem
         Item::TOOL_TYPE_TANNING_KIT => self::GEAR_TOOL_TANNING_KIT,
         Item::TOOL_TYPE_MORTAR => self::GEAR_TOOL_MORTAR,
         Item::TOOL_TYPE_CHISEL => self::GEAR_TOOL_CHISEL,
+        Item::TOOL_TYPE_AXE => self::GEAR_TOOL_AXE,
     ];
 
     #[ORM\Column(name: 'id', type: 'integer')]

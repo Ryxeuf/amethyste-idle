@@ -2,13 +2,17 @@
 
 namespace App\Tests\Unit\GameEngine\Progression;
 
+use App\Entity\App\Inventory;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
 use App\Entity\Game\Domain;
+use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\GameEngine\Notification\NotificationService;
 use App\GameEngine\Progression\DomainAccessManager;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -219,6 +223,120 @@ class DomainAccessManagerTest extends TestCase
 
         self::assertSame(1, $this->manager->grantPortKit($player, $domain));
         self::assertSame(0, $this->manager->grantPortKit($player, $domain));
+    }
+
+    // =====================================================================
+    // OBJ-05 — ouvrir un arbre de recolte livre l'outil de palier 1
+    // =====================================================================
+
+    /**
+     * La garantie anti-mur de GAME_ITEMS §4.3 : la recolte exige un outil,
+     * donc l'outil de bronze arrive avec l'arbre — range au sac, equipe, et
+     * l'emplacement d'outil ouvert. Le cout reel est le parchemin, jamais
+     * l'outil.
+     */
+    public function testOpeningAGatheringTreeDeliversItsBronzeTool(): void
+    {
+        $manager = $this->managerWithBronzeTool($bronze);
+
+        $player = new Player();
+        $bag = new Inventory();
+        $player->addInventory($bag);
+
+        $domain = $this->domain(1);
+        $domain->addSkill($this->toolUnlockSkill($domain, 'pickaxe'));
+
+        $manager->open($player, $domain);
+
+        self::assertCount(1, $bag->getItems());
+        /** @var PlayerItem $granted */
+        $granted = $bag->getItems()->first();
+        self::assertSame($bronze, $granted->getGenericItem());
+        self::assertSame(PlayerItem::TOOL_TYPE_TO_GEAR['pickaxe'], $granted->getGear(), 'L\'outil offert doit arriver equipe.');
+        self::assertTrue($player->hasToolSlot('pickaxe'), 'L\'emplacement d\'outil doit s\'ouvrir avec l\'octroi.');
+    }
+
+    /**
+     * L'octroi comble un manque, il ne remplit pas un entrepot : un joueur qui
+     * possede deja un outil du type n'en recoit pas un second.
+     */
+    public function testTheToolIsNotGrantedTwiceNorWhenOneIsAlreadyOwned(): void
+    {
+        $manager = $this->managerWithBronzeTool($bronze);
+
+        $player = new Player();
+        $bag = new Inventory();
+        $player->addInventory($bag);
+
+        $owned = new PlayerItem();
+        $owned->setGenericItem($bronze);
+        $bag->addItem($owned);
+        $owned->setInventory($bag);
+
+        $domain = $this->domain(1);
+        $domain->addSkill($this->toolUnlockSkill($domain, 'pickaxe'));
+
+        self::assertSame(0, $manager->grantGatherToolKit($player, $domain));
+        self::assertCount(1, $bag->getItems());
+    }
+
+    /**
+     * Seule la recolte porte la garantie : l'outil d'artisanat reste un achat
+     * (GAME_ITEMS §4.3 parle de l'arbre de **recolte**), et un arbre sans nœud
+     * `tool_slot.unlock` ne livre rien.
+     */
+    public function testACraftToolIsNeverGrantedAtOpening(): void
+    {
+        $manager = $this->managerWithBronzeTool($bronze);
+
+        $player = new Player();
+        $player->addInventory(new Inventory());
+
+        $craftDomain = $this->domain(1);
+        $craftDomain->addSkill($this->toolUnlockSkill($craftDomain, 'hammer'));
+
+        self::assertSame(0, $manager->grantGatherToolKit($player, $craftDomain));
+        self::assertSame(0, $manager->grantGatherToolKit($player, $this->domain(2)));
+    }
+
+    /**
+     * Manager dont le depot d'objets sait rendre un outil de bronze du type
+     * demande. L'outil est expose par reference pour les assertions.
+     */
+    private function managerWithBronzeTool(?Item &$bronze): DomainAccessManager
+    {
+        $bronze = new Item();
+        $bronze->setName('Outil de bronze');
+        $bronze->setSlug('tool-bronze');
+        $bronze->setType(Item::TYPE_TOOL);
+        $bronze->setToolTier(Item::TOOL_TIER_BRONZE);
+
+        $itemRepository = $this->createMock(EntityRepository::class);
+        $itemRepository->method('findOneBy')->willReturnCallback(function (array $criteria) use (&$bronze): ?Item {
+            $bronze->setToolType($criteria['toolType']);
+
+            return $bronze;
+        });
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getRepository')->willReturnMap([
+            [Item::class, $itemRepository],
+        ]);
+
+        return new DomainAccessManager(
+            $entityManager,
+            $this->createMock(NotificationService::class),
+            new NullLogger(),
+            new EquipmentPortCatalog(\dirname(__DIR__, 4)),
+        );
+    }
+
+    private function toolUnlockSkill(Domain $domain, string $slot): Skill
+    {
+        $skill = $this->skill([$domain], 'entry-' . $slot);
+        $skill->setActions([['action' => 'tool_slot.unlock', 'slot' => $slot]]);
+
+        return $skill;
     }
 
     /**
