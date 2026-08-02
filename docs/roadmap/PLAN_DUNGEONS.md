@@ -165,12 +165,20 @@ tout le reste se fait en double.
 
 ## Piste — Le contrat
 
-### DON-06 — Tests du plan (S | ★★★ | HAUTE)
-> ‖ au fil des jalons. Les 8 invariants de GAME_DUNGEONS §6.
-- [ ] Un seul modèle ; tout donjon est complétable
-- [ ] Toute rencontre est un vrai monstre au palier de sa zone
-- [ ] Le build compte ; un donjon peut être perdu
-- [ ] `lootPreview` ne ment pas ; un donjon par palier ; seuil calculé en un point
+### DON-06 — Tests du plan (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02 — **plan donjons complet 6/6**
+> ‖ au fil des jalons. Les 8 invariants de GAME_DUNGEONS §6, tenus par
+> `DungeonsPlanContractTest` (l'index du contrat + le garde-fou qui manquait)
+> et les tests nés des jalons.
+- [x] Un seul modèle ; le chemin solo mort le reste (`DungeonModelTest`) ;
+      tout donjon est complétable (`GroupDungeonCombatServiceTest`,
+      `DungeonFaunaCoverageTest`)
+- [x] Toute rencontre est un vrai monstre au palier de sa zone (DON-03)
+- [x] Le build compte (`DungeonActionResolverTest`) ; un donjon peut être
+      perdu (`STATUS_FAILED` atteint)
+- [x] `lootPreview` ne ment pas — **le texte libre ne revient pas** (garde-fou
+      porté par l'index : aucun `set/getLootPreview` dans `src/`, et l'écran
+      dérive toujours de `dungeonPaliers`) ; un donjon par palier ; seuil
+      calculé en un point (`DungeonModelTest`)
 
 ---
 
