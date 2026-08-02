@@ -239,7 +239,7 @@ class EquipmentPortLadderTest extends TestCase
 
         self::assertSame([], $offenders, sprintf(
             "Ces echelons de port portent une statistique : %s.\n"
-            . "Un echelon est une porte, jamais une recompense — et comme il est partage par tous les arbres qui "
+            . 'Un echelon est une porte, jamais une recompense — et comme il est partage par tous les arbres qui '
             . "l'enseignent, sa statistique fuit dans des cases qui ne l'ont pas payee.",
             implode(', ', $offenders),
         ));
