@@ -24,7 +24,7 @@
 | BES-01 ✅ | Deux axes : `tier` et `rank` | M | ← MAT-01 (même migration) |
 | BES-02 ✅ | Les stats dérivées du gabarit | M | ← BES-01 |
 | BES-03 ✅ | La bascule du peuplement dans `zones.yaml` | M | ∅ |
-| BES-04 | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
+| BES-04 ✅ | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
 | BES-05 | Le ménage du code mort | S | ∅ |
 | BES-06 | Tests du plan | S | ‖ |
 
@@ -90,19 +90,24 @@ en premier. BES-01 est le pivot et doit voyager avec MAT-01.
       la fixture, aucun saut de ×4 entre paliers ni entre rangs
       (`MonsterStatTemplateTest`, `MonsterStatDerivationTest`)
 
-### BES-04 — La faille du milieu et la Crête (S | ★★★ | HAUTE)
-> Le monde se coupe en deux : départ 1-24, fin 26-38, avec un saut de vie de ×4
-> et pour seul pont le Marais, qui n'existe que par le legacy.
-> Prérequis : ← BES-01, BES-03
-- [ ] Répartir les 65 espèces sur les 12 cases `palier × rang` — **cible
-      minimale par palier peuplé : 6 communs, 3 élites, 1 boss**
-- [ ] **La Crête de Ventombre** : zone T3 à sommet T4 (cobalt, mithril) peuplée
-      de monstres de niveaux 3 à 5. On y récolte le métal le plus rare du monde
-      de base sans rien risquer — la faune doit rejoindre le palier de la zone
-- [ ] Vérifier qu'aucune espèce ne devient inaccessible, hors mannequins
-      d'entraînement et boss narratifs réservés (`ancient_wyrm`,
-      `convergence_guardian`, `the_first_silence`)
-- [ ] Tests : aucun palier vide, richesse et danger alignés par zone
+### BES-04 — La faille du milieu et la Crête (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
+> Le monde se coupait en deux : départ 1-24, fin 26-38, avec un saut de vie de ×4
+> et pour seul pont le Marais, qui n'existait que par le legacy.
+- [x] Les 12 cases `palier × rang` sont remplies **par redistribution, aucun
+      monstre créé** : T1 14/3/4, T2 9/6/2, T3 6/4/1, T4 6/4/1 — l'ochu, la
+      sylphide et le grand cerf de l'aubépine deviennent les élites du T1 ;
+      l'hydre devient le **boss du Marais** (le T2 n'avait aucun boss en
+      zone) ; la harpie, l'ombre de givre et le basilic redeviennent le
+      tout-venant du T4 (leurs paliers ont déjà la menace)
+- [x] **La Crête** : la gargouille quitte les Mines pour la Crête seule
+      (T3) ; la salamandre et le scorpion retournent au désert (T3) — en
+      forêt ils doublonnaient le tout-venant du T1. Les stats suivent toutes
+      seules : elles se dérivent du gabarit (BES-02)
+- [x] Aucune espèce inaccessible (tenu par `FaunaSingleSourceTest`, BES-03),
+      hors mannequins et boss narratifs réservés
+- [x] Tests : `MonsterTierCoverageTest` — chaque palier T1-T4 porte au moins
+      6 communs, 3 élites et 1 boss **atteignables** (comptés sur les
+      placements réels, jamais sur le seul catalogue)
 
 ---
 

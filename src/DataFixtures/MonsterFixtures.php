@@ -210,6 +210,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 15,
                 'attack' => 'liana_whip',
                 'tier' => 1,
+                // BES-04 : la rencontre qui fait hesiter dans la Foret — le palier
+                // T1 n'avait aucune elite.
+                'rank' => 'elite',
                 'element' => 'beast',
                 'spells' => ['poison_cloud', 'entangling_roots'],
                 'aiPattern' => [
@@ -240,7 +243,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Gargoyle'],
                 'speed' => 9,
                 'attack' => 'stone_throw',
-                'tier' => 2,
+                // BES-04 : la gargouille quitte les Mines pour la Crete seule —
+                // le palier T3 manquait de tout-venant.
+                'tier' => 3,
                 'element' => 'earth',
                 'spells' => ['earth_spike', 'stone_spikes'],
                 'aiPattern' => [
@@ -383,6 +388,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 16,
                 'attack' => 'none_attack_1',
                 'tier' => 1,
+                // BES-04 : le grand cerf de l'aubepine, l'elite des Vallons.
+                'rank' => 'elite',
                 'element' => 'beast',
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -459,7 +466,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Scorpion'],
                 'speed' => 7,
                 'attack' => 'venomous_bite',
-                'tier' => 1,
+                // BES-04 : le scorpion retourne au desert (T3) — un scorpion de
+                // foret doublonnait le tout-venant du T1.
+                'tier' => 3,
                 'element' => 'beast',
                 'spells' => ['toxic_spores'],
                 'aiPattern' => [
@@ -511,7 +520,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Salamander'],
                 'speed' => 10,
                 'attack' => 'fire_ball',
-                'tier' => 1,
+                // BES-04 : la salamandre devient une bete des Dunes (T3) — en
+                // foret elle doublonnait le tout-venant du T1.
+                'tier' => 3,
                 'element' => 'fire',
                 'spells' => ['combustion', 'fire_wall'],
                 'aiPattern' => [
@@ -541,6 +552,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 16,
                 'attack' => 'wind_lame',
                 'tier' => 1,
+                // BES-04 : elite des cimes de la Foret.
+                'rank' => 'elite',
                 'element' => 'air',
                 'spells' => ['cyclone', 'air_slash', 'wind_blast'],
                 'aiPattern' => [
@@ -853,7 +866,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 6,
                 'attack' => 'water_jet',
                 'tier' => 2,
-                'rank' => 'elite',
+                // BES-04 : l'hydre devient le boss du Marais — le palier T2
+                // n'avait aucun boss en zone (les Racines sont un donjon).
+                'rank' => 'boss',
                 'element' => 'water',
                 'spells' => ['tidal_wave', 'poison_cloud', 'venomous_bite', 'frost_bolt'],
                 'aiPattern' => [
@@ -1054,7 +1069,6 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'venomous_bite',
                 'tier' => 4,
-                'rank' => 'elite',
                 'element' => 'earth',
                 'spells' => ['poison_cloud', 'stone_spikes'],
                 'aiPattern' => [
@@ -1102,7 +1116,6 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 18,
                 'attack' => 'frost_bolt',
                 'tier' => 4,
-                'rank' => 'elite',
                 'element' => 'water',
                 'spells' => ['frost_mist', 'glacial_prison', 'shadow_bolt'],
                 'aiPattern' => [
@@ -1135,7 +1148,6 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 28,
                 'attack' => 'wind_lame',
                 'tier' => 4,
-                'rank' => 'elite',
                 'element' => 'air',
                 'spells' => ['cyclone', 'ice_lance', 'wind_scythe'],
                 'aiPattern' => [

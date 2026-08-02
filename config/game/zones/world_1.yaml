@@ -298,12 +298,10 @@ zones:
             - { monster: beetle, count: 3 }
             - { monster: spider, count: 3 }
             - { monster: venom_snake, count: 3 }
-            - { monster: scorpion, count: 2 }
             - { monster: mushroom_golem, count: 2 }
             - { monster: ochu, count: 2 }
             - { monster: undine, count: 2 }
             - { monster: sylph, count: 2 }
-            - { monster: salamander, count: 1 }
             - { monster: alpha_wolf, count: 1, group_tag: meute-des-murmures }
             # Vivier nocturne — c'est lui que `explore.night.mob_slugs` restreint.
             # Le squelette manquait : le pool nocturne le nommait sans qu'aucun
@@ -406,7 +404,6 @@ zones:
             # et deux entrees pour un meme monstre rendraient l'effectif final
             # dependant de l'ordre des flushs.
             - { monster: rusty_automaton, count: 4, group_tag: patrouille-de-la-mine }
-            - { monster: gargoyle, count: 2 }
             - { monster: crystal_golem, count: 2 }
             # Salles profondes.
             - { monster: abyssal_blacksmith, count: 1 }
