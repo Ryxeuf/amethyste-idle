@@ -112,17 +112,27 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 
 ## Piste B — Le vestiaire
 
-### OBJ-03 — La grille d'équipement neutre (M | ★★★ | HAUTE)
+### OBJ-03 — La grille d'équipement neutre (M | ★★★ | HAUTE) — ⚙ OBJ-03a livré 2026-08-02 (neutralité + fusion), reste OBJ-03b (compléter t1)
 > t2 couvre air/terre/feu/eau, t3 couvre bête/ombre/lumière/métal : **aucun
 > élément n'a de progression t2 → t3**. Compléter la grille demanderait
 > 168 pièces — pour une variable qui n'est pas celle du build.
 > Prérequis : ∅
-- [ ] **La pièce d'équipement ne porte plus d'élément** (GAME_ITEMS §3.2)
-- [ ] Fusionner les 56 pièces `t2_<élément>_*` / `t3_<élément>_*` en une grille
-      neutre de ~21 pièces par palier ; supprimer les doublons plutôt que les
-      renommer (pur dev)
-- [ ] Compléter le palier t1, qui ne compte que 5 pièces
-- [ ] Tests : aucune pièce d'équipement avec un élément, 3 paliers complets
+- [x] **La pièce d'équipement ne porte plus d'élément** (GAME_ITEMS §3.2) —
+      plus une seule, PHP comme YAML : les 56 élémentaires, les 2 cosmétiques,
+      les 11 pièces uniques de boss et les 13 pièces YAML (pendentifs, anneaux,
+      série dragon/shadowsilk) perdent le champ ; l'identité reste dans le nom
+      et les effets
+- [x] Les 56 pièces `t2_<élément>_*` / `t3_<élément>_*` fusionnées en **une
+      pièce par forme et par palier** (14 pièces : sword/shield/helmet/chest/
+      legs/boots/gloves × t2/t3), dans le prolongement de la grille d'armes
+      neutre existante (t1-t3 axe/bow/dagger/lance/staff) ; 76 lignes de butin
+      remappées, les 4 sets élémentaires t3 fusionnés en un **Set de l'Élite**
+      neutre
+- [ ] **OBJ-03b** : compléter le palier t1 (5 pièces + les starter_*) et le
+      test « 3 paliers complets »
+- [x] Tests : aucune pièce d'équipement avec un élément, le vestiaire
+      élémentaire ne revient pas, la grille t2/t3 sans trou
+      (`GearNeutralityTest`)
 
 ### OBJ-04 — Les emplacements typés et progressifs (M | ★★★ | HAUTE)
 > Le cœur du build. `materiaSlotType` existe, `MateriaGearSetter` le lit, et

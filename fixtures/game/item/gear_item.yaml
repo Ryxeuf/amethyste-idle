@@ -40,7 +40,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'uncommon'
-    element: 'light'
     materia_slots: 1
   leather_shoulders (extends item):
     name: "Epaulières de cuir"
@@ -356,7 +355,6 @@ App\Entity\Game\Item:
     gear_location: 'ring_1'
     nbUsages: -1
     rarity: 'uncommon'
-    element: 'fire'
     level: 5
     materia_slots: 1
     effect: '{"action":"elemental_damage_boost","element":"fire","amount":8}'
@@ -369,7 +367,6 @@ App\Entity\Game\Item:
     gear_location: 'ring_2'
     nbUsages: -1
     rarity: 'rare'
-    element: 'water'
     level: 8
     materia_slots: 1
     effect: '{"action":"elemental_damage_boost","element":"water","amount":8}'
@@ -384,7 +381,6 @@ App\Entity\Game\Item:
     gear_location: 'ring_1'
     nbUsages: -1
     rarity: 'epic'
-    element: 'earth'
     level: 12
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"earth","amount":12}'
@@ -397,7 +393,6 @@ App\Entity\Game\Item:
     gear_location: 'ring_2'
     nbUsages: -1
     rarity: 'epic'
-    element: 'dark'
     level: 15
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
@@ -436,7 +431,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'uncommon'
-    element: 'fire'
     level: 6
     materia_slots: 1
     effect: '{"action":"elemental_damage_boost","element":"fire","amount":8}'
@@ -449,7 +443,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'rare'
-    element: 'air'
     level: 8
     materia_slots: 1
     effect: '{"action":"elemental_damage_boost","element":"air","amount":8}'
@@ -464,7 +457,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'epic'
-    element: 'light'
     level: 12
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"light","amount":12}'
@@ -477,7 +469,6 @@ App\Entity\Game\Item:
     gear_location: 'neck'
     nbUsages: -1
     rarity: 'epic'
-    element: 'dark'
     level: 15
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
@@ -572,7 +563,6 @@ App\Entity\Game\Item:
     gear_location: 'chest'
     nbUsages: 220
     rarity: 'rare'
-    element: 'fire'
     protection: 16
     materia_slots: 2
     level: 24
@@ -586,7 +576,6 @@ App\Entity\Game\Item:
     gear_location: 'foot'
     nbUsages: 200
     rarity: 'rare'
-    element: 'fire'
     protection: 9
     materia_slots: 1
     level: 24
@@ -720,7 +709,6 @@ App\Entity\Game\Item:
     gear_location: 'head'
     nbUsages: 200
     rarity: 'rare'
-    element: 'dark'
     protection: 3
     effect: '{"action":"magic_boost","amount":20}'
     materia_slots: 2
@@ -735,7 +723,6 @@ App\Entity\Game\Item:
     gear_location: 'chest'
     nbUsages: 200
     rarity: 'rare'
-    element: 'dark'
     protection: 5
     effect: '{"action":"magic_boost","amount":34}'
     materia_slots: 2

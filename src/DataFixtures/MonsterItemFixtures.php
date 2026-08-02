@@ -166,8 +166,8 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'wyvern', 'item' => 'healing_potion_medium', 'probability' => 25],
             ['monster' => 'wyvern', 'item' => 'healing_potion_major', 'probability' => 10],
             ['monster' => 'wyvern', 'item' => 'stew', 'probability' => 15],
-            ['monster' => 'wyvern', 'item' => 't2_air_sword', 'probability' => 5],
-            ['monster' => 'wyvern', 'item' => 't2_fire_helmet', 'probability' => 4],
+            ['monster' => 'wyvern', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'wyvern', 'item' => 't2_helmet', 'probability' => 4],
 
             // Chevalier maudit (Dark/Métal, lvl 12)
             ['monster' => 'cursed_knight', 'item' => 'leather_thick', 'probability' => 60],
@@ -182,8 +182,8 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'naga', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'naga', 'item' => 'healing_potion_major', 'probability' => 10],
             ['monster' => 'naga', 'item' => 'antidote', 'probability' => 25],
-            ['monster' => 'naga', 'item' => 't2_water_sword', 'probability' => 5],
-            ['monster' => 'naga', 'item' => 't2_water_shield', 'probability' => 4],
+            ['monster' => 'naga', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'naga', 'item' => 't2_shield', 'probability' => 4],
 
             // Golem de cristal (Terre/Lumière, lvl 15)
             ['monster' => 'crystal_golem', 'item' => 'leather_thick', 'probability' => 75],
@@ -191,8 +191,8 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'crystal_golem', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'crystal_golem', 'item' => 'scroll_xp_boost', 'probability' => 6],
             ['monster' => 'crystal_golem', 'item' => 'scroll_teleport', 'probability' => 8],
-            ['monster' => 'crystal_golem', 'item' => 't2_earth_shield', 'probability' => 5],
-            ['monster' => 'crystal_golem', 'item' => 't2_earth_chest', 'probability' => 4],
+            ['monster' => 'crystal_golem', 'item' => 't2_shield', 'probability' => 5],
+            ['monster' => 'crystal_golem', 'item' => 't2_chest', 'probability' => 4],
 
             // --- Monstres tier 2 avancés (tâche 65) — lvl 15-25 ---
             // Archidruide corrompu (Bête/Ombre, lvl 16)
@@ -200,16 +200,16 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_major', 'probability' => 20],
             ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'corrupted_archdruid', 'item' => 'antidote', 'probability' => 25],
-            ['monster' => 'corrupted_archdruid', 'item' => 't2_earth_chest', 'probability' => 5],
-            ['monster' => 'corrupted_archdruid', 'item' => 't2_earth_gloves', 'probability' => 4],
+            ['monster' => 'corrupted_archdruid', 'item' => 't2_chest', 'probability' => 5],
+            ['monster' => 'corrupted_archdruid', 'item' => 't2_gloves', 'probability' => 4],
 
             // Liche mineure (Ombre, lvl 18)
             ['monster' => 'lesser_lich', 'item' => 'ancient_scroll', 'probability' => 25],
             ['monster' => 'lesser_lich', 'item' => 'healing_potion_major', 'probability' => 25],
             ['monster' => 'lesser_lich', 'item' => 'energy_potion_small', 'probability' => 30],
             ['monster' => 'lesser_lich', 'item' => 'scroll_xp_boost', 'probability' => 8],
-            ['monster' => 'lesser_lich', 'item' => 't2_air_helmet', 'probability' => 5],
-            ['monster' => 'lesser_lich', 'item' => 't2_air_boots', 'probability' => 4],
+            ['monster' => 'lesser_lich', 'item' => 't2_helmet', 'probability' => 5],
+            ['monster' => 'lesser_lich', 'item' => 't2_boots', 'probability' => 4],
 
             // Hydre des marais (Eau/Bête, lvl 20)
             ['monster' => 'swamp_hydra', 'item' => 'leather_thick', 'probability' => 80],
@@ -217,17 +217,17 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'swamp_hydra', 'item' => 'healing_potion_medium', 'probability' => 35],
             ['monster' => 'swamp_hydra', 'item' => 'antidote', 'probability' => 30],
             ['monster' => 'swamp_hydra', 'item' => 'scroll_teleport', 'probability' => 10],
-            ['monster' => 'swamp_hydra', 'item' => 't2_water_sword', 'probability' => 6],
-            ['monster' => 'swamp_hydra', 'item' => 't2_water_chest', 'probability' => 5],
+            ['monster' => 'swamp_hydra', 'item' => 't2_sword', 'probability' => 6],
+            ['monster' => 'swamp_hydra', 'item' => 't2_chest', 'probability' => 5],
 
             // Forgeron abyssal (Métal/Feu, lvl 24)
             ['monster' => 'abyssal_blacksmith', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'abyssal_blacksmith', 'item' => 'healing_potion_major', 'probability' => 35],
             ['monster' => 'abyssal_blacksmith', 'item' => 'iron_sword', 'probability' => 12],
             ['monster' => 'abyssal_blacksmith', 'item' => 'scroll_xp_boost', 'probability' => 10],
-            ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_sword', 'probability' => 6],
-            ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_chest', 'probability' => 5],
-            ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_shield', 'probability' => 5],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't2_sword', 'probability' => 6],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't2_chest', 'probability' => 5],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't2_shield', 'probability' => 5],
 
             // --- Boss de zone : Gardien de la Forêt (tâche 66) ---
             ['monster' => 'forest_guardian', 'item' => 'healing_potion_major', 'probability' => 80],
@@ -311,96 +311,96 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 
             // --- Équipement Tier 2 élémentaire (tâche 29) ---
             // Monstres Niveau 2
-            ['monster' => 'skeleton', 'item' => 't2_earth_sword', 'probability' => 3],
-            ['monster' => 'skeleton', 'item' => 't2_earth_helmet', 'probability' => 3],
-            ['monster' => 'spider', 'item' => 't2_earth_gloves', 'probability' => 3],
-            ['monster' => 'venom_snake', 'item' => 't2_water_boots', 'probability' => 3],
-            ['monster' => 'venom_snake', 'item' => 't2_water_gloves', 'probability' => 3],
-            ['monster' => 'venom_snake', 'item' => 't2_water_legs', 'probability' => 3],
-            ['monster' => 'taiju', 'item' => 't2_earth_chest', 'probability' => 2],
-            ['monster' => 'taiju', 'item' => 't2_earth_legs', 'probability' => 3],
-            ['monster' => 'specter', 'item' => 't2_air_gloves', 'probability' => 3],
-            ['monster' => 'specter', 'item' => 't2_air_helmet', 'probability' => 2],
-            ['monster' => 'banshee', 'item' => 't2_air_chest', 'probability' => 2],
-            ['monster' => 'banshee', 'item' => 't2_air_boots', 'probability' => 3],
+            ['monster' => 'skeleton', 'item' => 't2_sword', 'probability' => 3],
+            ['monster' => 'skeleton', 'item' => 't2_helmet', 'probability' => 3],
+            ['monster' => 'spider', 'item' => 't2_gloves', 'probability' => 3],
+            ['monster' => 'venom_snake', 'item' => 't2_boots', 'probability' => 3],
+            ['monster' => 'venom_snake', 'item' => 't2_gloves', 'probability' => 3],
+            ['monster' => 'venom_snake', 'item' => 't2_legs', 'probability' => 3],
+            ['monster' => 'taiju', 'item' => 't2_chest', 'probability' => 2],
+            ['monster' => 'taiju', 'item' => 't2_legs', 'probability' => 3],
+            ['monster' => 'specter', 'item' => 't2_gloves', 'probability' => 3],
+            ['monster' => 'specter', 'item' => 't2_helmet', 'probability' => 2],
+            ['monster' => 'banshee', 'item' => 't2_chest', 'probability' => 2],
+            ['monster' => 'banshee', 'item' => 't2_boots', 'probability' => 3],
 
             // Monstres Niveau 3
-            ['monster' => 'ochu', 'item' => 't2_earth_shield', 'probability' => 4],
-            ['monster' => 'ochu', 'item' => 't2_earth_boots', 'probability' => 4],
-            ['monster' => 'werewolf', 'item' => 't2_fire_legs', 'probability' => 4],
-            ['monster' => 'werewolf', 'item' => 't2_fire_gloves', 'probability' => 4],
-            ['monster' => 'gargoyle', 'item' => 't2_air_shield', 'probability' => 4],
-            ['monster' => 'gargoyle', 'item' => 't2_air_legs', 'probability' => 4],
-            ['monster' => 'troll', 'item' => 't2_earth_sword', 'probability' => 3],
-            ['monster' => 'troll', 'item' => 't2_earth_chest', 'probability' => 3],
-            ['monster' => 'fire_elemental', 'item' => 't2_fire_sword', 'probability' => 5],
-            ['monster' => 'fire_elemental', 'item' => 't2_fire_chest', 'probability' => 4],
-            ['monster' => 'fire_elemental', 'item' => 't2_fire_helmet', 'probability' => 4],
+            ['monster' => 'ochu', 'item' => 't2_shield', 'probability' => 4],
+            ['monster' => 'ochu', 'item' => 't2_boots', 'probability' => 4],
+            ['monster' => 'werewolf', 'item' => 't2_legs', 'probability' => 4],
+            ['monster' => 'werewolf', 'item' => 't2_gloves', 'probability' => 4],
+            ['monster' => 'gargoyle', 'item' => 't2_shield', 'probability' => 4],
+            ['monster' => 'gargoyle', 'item' => 't2_legs', 'probability' => 4],
+            ['monster' => 'troll', 'item' => 't2_sword', 'probability' => 3],
+            ['monster' => 'troll', 'item' => 't2_chest', 'probability' => 3],
+            ['monster' => 'fire_elemental', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'fire_elemental', 'item' => 't2_chest', 'probability' => 4],
+            ['monster' => 'fire_elemental', 'item' => 't2_helmet', 'probability' => 4],
 
             // Monstres élémentaires tier 1 — drops thématiques
-            ['monster' => 'salamander', 'item' => 't2_fire_boots', 'probability' => 5],
-            ['monster' => 'salamander', 'item' => 't2_fire_shield', 'probability' => 4],
-            ['monster' => 'undine', 'item' => 't2_water_sword', 'probability' => 5],
-            ['monster' => 'undine', 'item' => 't2_water_helmet', 'probability' => 4],
-            ['monster' => 'undine', 'item' => 't2_water_shield', 'probability' => 4],
-            ['monster' => 'sylph', 'item' => 't2_air_sword', 'probability' => 5],
-            ['monster' => 'sylph', 'item' => 't2_air_chest', 'probability' => 4],
-            ['monster' => 'clay_golem', 'item' => 't2_earth_gloves', 'probability' => 5],
-            ['monster' => 'clay_golem', 'item' => 't2_earth_legs', 'probability' => 4],
-            ['monster' => 'clay_golem', 'item' => 't2_earth_shield', 'probability' => 4],
+            ['monster' => 'salamander', 'item' => 't2_boots', 'probability' => 5],
+            ['monster' => 'salamander', 'item' => 't2_shield', 'probability' => 4],
+            ['monster' => 'undine', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'undine', 'item' => 't2_helmet', 'probability' => 4],
+            ['monster' => 'undine', 'item' => 't2_shield', 'probability' => 4],
+            ['monster' => 'sylph', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'sylph', 'item' => 't2_chest', 'probability' => 4],
+            ['monster' => 'clay_golem', 'item' => 't2_gloves', 'probability' => 5],
+            ['monster' => 'clay_golem', 'item' => 't2_legs', 'probability' => 4],
+            ['monster' => 'clay_golem', 'item' => 't2_shield', 'probability' => 4],
 
             // Niveau 4 — toutes les variantes accessibles
-            ['monster' => 'griffin', 'item' => 't2_air_sword', 'probability' => 5],
-            ['monster' => 'griffin', 'item' => 't2_air_helmet', 'probability' => 5],
-            ['monster' => 'minotaur', 'item' => 't2_fire_sword', 'probability' => 5],
-            ['monster' => 'minotaur', 'item' => 't2_fire_chest', 'probability' => 5],
-            ['monster' => 'stone_golem', 'item' => 't2_earth_sword', 'probability' => 5],
-            ['monster' => 'stone_golem', 'item' => 't2_earth_shield', 'probability' => 5],
+            ['monster' => 'griffin', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'griffin', 'item' => 't2_helmet', 'probability' => 5],
+            ['monster' => 'minotaur', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'minotaur', 'item' => 't2_chest', 'probability' => 5],
+            ['monster' => 'stone_golem', 'item' => 't2_sword', 'probability' => 5],
+            ['monster' => 'stone_golem', 'item' => 't2_shield', 'probability' => 5],
 
             // --- Équipement Tier 3 élémentaire (tâche 64) ---
             // Golem de cristal (Terre/Lumière, lvl 15) → T3 Light
-            ['monster' => 'crystal_golem', 'item' => 't3_light_helmet', 'probability' => 3],
-            ['monster' => 'crystal_golem', 'item' => 't3_light_shield', 'probability' => 2],
+            ['monster' => 'crystal_golem', 'item' => 't3_helmet', 'probability' => 3],
+            ['monster' => 'crystal_golem', 'item' => 't3_shield', 'probability' => 2],
 
             // Archidruide corrompu (Bête/Ombre, lvl 16) → T3 Beast
-            ['monster' => 'corrupted_archdruid', 'item' => 't3_beast_chest', 'probability' => 3],
-            ['monster' => 'corrupted_archdruid', 'item' => 't3_beast_gloves', 'probability' => 2],
+            ['monster' => 'corrupted_archdruid', 'item' => 't3_chest', 'probability' => 3],
+            ['monster' => 'corrupted_archdruid', 'item' => 't3_gloves', 'probability' => 2],
 
             // Liche mineure (Ombre, lvl 18) → T3 Dark
-            ['monster' => 'lesser_lich', 'item' => 't3_dark_helmet', 'probability' => 3],
-            ['monster' => 'lesser_lich', 'item' => 't3_dark_boots', 'probability' => 2],
+            ['monster' => 'lesser_lich', 'item' => 't3_helmet', 'probability' => 3],
+            ['monster' => 'lesser_lich', 'item' => 't3_boots', 'probability' => 2],
 
             // Hydre des marais (Eau/Bête, lvl 20) → T3 Beast
-            ['monster' => 'swamp_hydra', 'item' => 't3_beast_sword', 'probability' => 3],
-            ['monster' => 'swamp_hydra', 'item' => 't3_beast_legs', 'probability' => 2],
+            ['monster' => 'swamp_hydra', 'item' => 't3_sword', 'probability' => 3],
+            ['monster' => 'swamp_hydra', 'item' => 't3_legs', 'probability' => 2],
 
             // Forgeron abyssal (Métal/Feu, lvl 24) → T3 Metal
-            ['monster' => 'abyssal_blacksmith', 'item' => 't3_metal_sword', 'probability' => 3],
-            ['monster' => 'abyssal_blacksmith', 'item' => 't3_metal_chest', 'probability' => 2],
-            ['monster' => 'abyssal_blacksmith', 'item' => 't3_metal_shield', 'probability' => 2],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't3_sword', 'probability' => 3],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't3_chest', 'probability' => 2],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't3_shield', 'probability' => 2],
 
             // Wyvern (Air/Feu, lvl 10) → T3 Light
-            ['monster' => 'wyvern', 'item' => 't3_light_boots', 'probability' => 2],
+            ['monster' => 'wyvern', 'item' => 't3_boots', 'probability' => 2],
 
             // Chevalier maudit (Ombre/Métal, lvl 12) → T3 Dark + Metal
-            ['monster' => 'cursed_knight', 'item' => 't3_dark_sword', 'probability' => 2],
-            ['monster' => 'cursed_knight', 'item' => 't3_metal_legs', 'probability' => 2],
+            ['monster' => 'cursed_knight', 'item' => 't3_sword', 'probability' => 2],
+            ['monster' => 'cursed_knight', 'item' => 't3_legs', 'probability' => 2],
 
             // Naga (Eau/Bête, lvl 13) → T3 Beast
-            ['monster' => 'naga', 'item' => 't3_beast_boots', 'probability' => 2],
+            ['monster' => 'naga', 'item' => 't3_boots', 'probability' => 2],
 
             // Boss : Gardien de la Forêt → T3 Light & Beast
-            ['monster' => 'forest_guardian', 'item' => 't3_light_sword', 'probability' => 5],
-            ['monster' => 'forest_guardian', 'item' => 't3_beast_shield', 'probability' => 4],
+            ['monster' => 'forest_guardian', 'item' => 't3_sword', 'probability' => 5],
+            ['monster' => 'forest_guardian', 'item' => 't3_shield', 'probability' => 4],
 
             // Boss : Seigneur de la Forge → T3 Metal & Dark
-            ['monster' => 'forge_lord', 'item' => 't3_metal_helmet', 'probability' => 5],
-            ['monster' => 'forge_lord', 'item' => 't3_dark_chest', 'probability' => 4],
+            ['monster' => 'forge_lord', 'item' => 't3_helmet', 'probability' => 5],
+            ['monster' => 'forge_lord', 'item' => 't3_chest', 'probability' => 4],
 
             // Boss : Dragon → T3 variés
-            ['monster' => 'dragon', 'item' => 't3_dark_sword', 'probability' => 4],
-            ['monster' => 'dragon', 'item' => 't3_light_chest', 'probability' => 3],
-            ['monster' => 'dragon', 'item' => 't3_metal_gloves', 'probability' => 3],
+            ['monster' => 'dragon', 'item' => 't3_sword', 'probability' => 4],
+            ['monster' => 'dragon', 'item' => 't3_chest', 'probability' => 3],
+            ['monster' => 'dragon', 'item' => 't3_gloves', 'probability' => 3],
 
             // --- Armures Fer T2 (tâche 143) — monstres de niveau moyen ---
             ['monster' => 'wolf', 'item' => 'iron_helmet', 'probability' => 2],
