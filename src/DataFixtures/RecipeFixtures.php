@@ -1655,8 +1655,6 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'name_translations' => ['en' => 'Master Leatherworker\'s Cloak'],
             ],
 
-
-
             // ── ECO-19 : recettes citees par les arbres de talent ──────────────
             // Ces slugs etaient debloques par des skills sans qu'aucune recette
             // ne porte le nom. Le skill s'apprenait, le joueur depensait ses
