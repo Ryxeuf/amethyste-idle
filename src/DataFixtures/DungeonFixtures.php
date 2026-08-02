@@ -13,6 +13,7 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
+        $zoneRepository = $manager->getRepository(Zone::class);
         $map = $this->getReference('map_dungeon_racines', Map::class);
 
         $dungeon = new Dungeon();
@@ -22,6 +23,9 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $dungeon->setDescription('Un reseau de galeries souterraines envahi par des racines corrompues. Les creatures qui y rodent sont devenues hostiles, et une menace plus ancienne sommeille dans les profondeurs.');
         $dungeon->setDescriptionTranslations(['en' => 'A network of underground tunnels overrun by corrupted roots. The creatures that prowl within have grown hostile, and an older threat slumbers in the depths.']);
         $dungeon->setMap($map);
+        // DON-01 : un seul modele — le donjon solo est un donjon de zone a
+        // `maxPlayers: 1`, lance depuis l'ecran de zone comme les autres.
+        $dungeon->setZone($zoneRepository->findOneBy(['slug' => 'foret-des-murmures']));
         $dungeon->setMinLevel(5);
         $dungeon->setMaxPlayers(1);
         $dungeon->setLootPreview(['Equipement tier 2', 'Materia rare', 'Potions avancees']);
@@ -41,6 +45,9 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $convergence->setDescription('Le coeur du cristal d\'Amethyste bat au plus profond de ce sanctuaire oublie. Les quatre fragments resonent, attirant leur porteur vers une verite ancienne. Seuls ceux qui ont rassemble les fragments peuvent penetrer ces lieux et affronter le Gardien de la Convergence.');
         $convergence->setDescriptionTranslations(['en' => 'The heart of the Amethyst crystal beats deep within this forgotten sanctuary. The four fragments resonate, drawing their bearer toward an ancient truth. Only those who have gathered all fragments may enter these halls and face the Guardian of Convergence.']);
         $convergence->setMap($mapConvergence);
+        // DON-01 : le Nexus se lance depuis la Crete — la zone du fragment du
+        // Sommet, ou l'acte 3 s'acheve.
+        $convergence->setZone($zoneRepository->findOneBy(['slug' => 'crete-de-ventombre']));
         $convergence->setMinLevel(25);
         $convergence->setMaxPlayers(1);
         $convergence->setLootPreview(['Equipement Amethyste', 'Titre exclusif', 'Epilogue de la trame']);
@@ -64,9 +71,9 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * Donjons de **groupe**, rattaches a une zone du graphe : ce sont les seuls
-     * que l'ecran de zone propose (`maxPlayers > 1`). Les deux donjons solo
-     * ci-dessus restent hors graphe, ouverts depuis `/game/dungeon`.
+     * Donjons de **groupe**, rattaches a une zone du graphe. Depuis DON-01,
+     * les donjons solo ci-dessus vivent dans le meme modele (`maxPlayers: 1`,
+     * rattaches a leur zone) — un seul modele, une seule mecanique.
      *
      * Ils forment le reservoir de contenu gratuit du modele PBBG : l'entree ne
      * coute pas d'energie et la repetition est reglee par la decroissance de

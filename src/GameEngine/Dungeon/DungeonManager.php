@@ -45,7 +45,7 @@ class DungeonManager
         if (!$this->meetsLevelRequirement($player, $dungeon)) {
             return ['run' => null, 'error' => sprintf(
                 'Experience insuffisante. Ce donjon requiert au moins %d points d\'experience dans un domaine de combat.',
-                $dungeon->getMinLevel() * 100,
+                $dungeon->getRequiredExperience(),
             )];
         }
 
@@ -146,7 +146,7 @@ class DungeonManager
      */
     public function meetsLevelRequirement(Player $player, Dungeon $dungeon): bool
     {
-        $requiredXp = $dungeon->getMinLevel() * 100;
+        $requiredXp = $dungeon->getRequiredExperience();
 
         foreach ($player->getDomainExperiences() as $domainExp) {
             if ($domainExp->getTotalExperience() >= $requiredXp) {

@@ -32,9 +32,12 @@ class GroupDungeonService
     }
 
     /**
-     * Donjons de groupe lancables depuis une zone, dans l'ordre de leur exigence
+     * Donjons lancables depuis une zone, dans l'ordre de leur exigence
      * d'experience. Renvoie la donnee brute : l'eligibilite du joueur est
      * evaluee par `getLaunchBlocker()`.
+     *
+     * DON-01 : un seul modele — les donjons solo (`maxPlayers: 1`) vivent
+     * dans le meme graphe et s'offrent par le meme ecran de zone.
      *
      * @return list<Dungeon>
      */
@@ -44,7 +47,6 @@ class GroupDungeonService
         $dungeons = $this->entityManager->getRepository(Dungeon::class)
             ->createQueryBuilder('d')
             ->where('d.zone = :zone')
-            ->andWhere('d.maxPlayers > 1')
             ->setParameter('zone', $zone)
             ->orderBy('d.minLevel', 'ASC')
             ->addOrderBy('d.slug', 'ASC')
@@ -120,30 +122,31 @@ class GroupDungeonService
      */
     private function resolveParticipants(Player $leader, Dungeon $dungeon, Zone $zone): array
     {
-        // Un donjon solo n'est pas lancable en groupe : sans ce garde-fou, une
-        // party d'un seul joueur passait la limite `maxPlayers` de 1 et
-        // contournait le cooldown et les prerequis de la voie solo.
-        if (!$dungeon->isGroupDungeon()) {
-            throw new GroupDungeonException('game.zone.dungeon.error.not_group');
-        }
-
         // On ne lance que depuis la zone du donjon (regle #7 : position = zone).
         if ($dungeon->getZone()?->getId() !== $zone->getId()) {
             throw new GroupDungeonException('game.zone.dungeon.error.wrong_zone');
         }
 
+        // DON-01 : un seul modele de donjon. Le solo passe par la meme
+        // mecanique — un donjon a `maxPlayers: 1` se lance seul, sans party ;
+        // `maxPlayers` est la seule borne de taille.
         $membership = $this->partyManager->getPlayerMembership($leader);
         if (null === $membership) {
-            throw new GroupDungeonException('game.zone.dungeon.error.no_party');
-        }
-        $party = $membership->getParty();
-        if ($party->getLeader()->getId() !== $leader->getId()) {
-            throw new GroupDungeonException('game.zone.dungeon.error.not_leader');
-        }
+            if ($dungeon->isGroupDungeon()) {
+                throw new GroupDungeonException('game.zone.dungeon.error.no_party');
+            }
 
-        $participants = [$leader->getId() => $leader];
-        foreach ($party->getMembers() as $member) {
-            $participants[$member->getPlayer()->getId()] = $member->getPlayer();
+            $participants = [$leader->getId() => $leader];
+        } else {
+            $party = $membership->getParty();
+            if ($party->getLeader()->getId() !== $leader->getId()) {
+                throw new GroupDungeonException('game.zone.dungeon.error.not_leader');
+            }
+
+            $participants = [$leader->getId() => $leader];
+            foreach ($party->getMembers() as $member) {
+                $participants[$member->getPlayer()->getId()] = $member->getPlayer();
+            }
         }
 
         if (\count($participants) > max(1, $dungeon->getMaxPlayers())) {

@@ -792,7 +792,7 @@ class ZoneController extends AbstractController
                 // `localized_dungeon_name` / `localized_dungeon_description`.
                 'dungeon' => $dungeon,
                 'maxPlayers' => $dungeon->getMaxPlayers(),
-                'requiredExperience' => $dungeon->getMinLevel() * 100,
+                'requiredExperience' => $dungeon->getRequiredExperience(),
                 'lootPreview' => $dungeon->getLootPreview() ?? [],
                 'canLaunch' => null === $blocker,
                 'blocker' => $blocker,

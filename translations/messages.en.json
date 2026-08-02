@@ -1502,7 +1502,6 @@
           "not_active": "This group dungeon is no longer active.",
           "unknown": "Dungeon not found.",
           "not_your_turn": "It is not your turn.",
-          "not_group": "This dungeon is solo only.",
           "wrong_zone": "This dungeon cannot be launched from this zone.",
           "member_experience": "A party member lacks the experience required for this dungeon.",
           "member_items": "A party member lacks the required entry items."
