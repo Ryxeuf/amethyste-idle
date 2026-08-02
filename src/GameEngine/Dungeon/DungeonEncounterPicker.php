@@ -58,16 +58,14 @@ class DungeonEncounterPicker
             ->getResult();
 
         if ([] !== $placed) {
-            return array_values($placed);
+            return $placed;
         }
 
         // Repli : la case n'est pas placee dans le graphe — les especes
         // livrees du palier suffisent, un donjon ne doit jamais etre vide
         // parce qu'une redistribution de faune est passee par la.
-        $shipped = $this->entityManager->getRepository(Monster::class)
+        return $this->entityManager->getRepository(Monster::class)
             ->findBy(['tier' => $tier, 'rank' => $rank, 'trainingMode' => null]);
-
-        return array_values($shipped);
     }
 
     /**
