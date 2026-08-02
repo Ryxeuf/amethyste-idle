@@ -2,8 +2,13 @@
 # CD Pipeline — Deploiement automatique sur le serveur de production
 # =============================================================================
 #
-# Declenchee automatiquement quand semantic-release publie une nouvelle release.
-# Peut aussi etre lance manuellement via workflow_dispatch (rollback, re-deploy).
+# Trois facons de l'appeler :
+#   1. `workflow_call` — depuis `release.yml`, une fois l'image poussee vers
+#      GHCR. C'est le chemin automatique, et le seul qui compte au quotidien.
+#   2. `workflow_dispatch` — a la main (re-deploiement, rollback).
+#   3. `release: published` — filet de securite pour une release publiee a la
+#      main par un humain. Une release creee par le GITHUB_TOKEN n'emet PAS cet
+#      evenement : c'est precisement pourquoi le chemin 1 existe.
 #
 # Prerequis (GitHub Secrets a configurer) :
 #   - DEPLOY_HOST        : IP ou hostname du serveur (ex: amethyste.best)
@@ -12,23 +17,33 @@
 #   - DEPLOY_PATH        : Chemin du projet sur le serveur (ex: /opt/amethyste-idle)
 #   - DEPLOY_SSH_PORT    : Port SSH (optionnel, defaut 22)
 #
-# Flux :
-#   push main -> release.yml (CI + semantic-release + Docker push)
-#            -> release publiee -> deploy.yml (ce fichier)
+# Flux nominal :
+#   merge de PR -> auto-merge.yml -> release.yml (CI + semantic-release +
+#   push GHCR) -> deploy.yml (ce fichier)
 #
 # =============================================================================
 
 name: Deploy
 
 on:
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      version:
+        description: "Version deployee (ex: v1.2.3), a titre informatif."
+        required: false
+        type: string
+        default: ""
   workflow_dispatch:
     inputs:
       version:
         description: "Version a deployer (ex: v1.2.3). Defaut: latest release."
         required: false
         type: string
+  release:
+    types: [published]
+
+permissions:
+  contents: read
 
 concurrency:
   group: deploy-production
@@ -38,6 +53,7 @@ jobs:
   deploy:
     name: "Deploy to production"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: read
@@ -45,118 +61,151 @@ jobs:
       name: production
       url: https://amethyste.best
 
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      # Sans ce garde-fou, un secret absent produit un `ssh @` illisible dix
+      # lignes plus bas, une fois la cle deja ecrite sur le disque.
+      - name: Verifier la configuration de deploiement
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          missing=""
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_PATH DEPLOY_SSH_KEY; do
+            if [ -z "${!name:-}" ]; then
+              missing="${missing} ${name}"
+            fi
+          done
+
+          if [ -n "$missing" ]; then
+            echo "::error title=Secrets de deploiement manquants::${missing}"
+            echo "Renseignez-les dans Settings > Secrets and variables > Actions." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "Configuration de deploiement complete."
 
       - name: Determine version
         id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "tag=${{ inputs.version }}" >> $GITHUB_OUTPUT
-            echo "Deploiement manuel: ${{ inputs.version }}"
-          elif [ "${{ github.event_name }}" = "release" ]; then
-            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
-            echo "Deploiement automatique: ${{ github.event.release.tag_name }}"
+          if [ -n "${INPUT_VERSION}" ]; then
+            TAG="${INPUT_VERSION}"
+          elif [ -n "${RELEASE_TAG}" ]; then
+            TAG="${RELEASE_TAG}"
           else
-            echo "tag=latest" >> $GITHUB_OUTPUT
-            echo "Deploiement: latest"
+            TAG="latest"
           fi
+
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Version deployee : ${TAG}"
 
       - name: Configure SSH
         env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
         run: |
           SSH_PORT="${RAW_PORT:-22}"
+          echo "SSH_PORT=${SSH_PORT}" >> $GITHUB_ENV
+
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 700 ~/.ssh
+          printf '%s\n' "${DEPLOY_SSH_KEY}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+          ssh-keyscan -p "${SSH_PORT}" -H "${DEPLOY_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+          # Un known_hosts vide ferait echouer chaque commande SSH sur un
+          # « Host key verification failed » sans rapport apparent avec la cause.
+          if [ ! -s ~/.ssh/known_hosts ]; then
+            echo "::error title=Cle d'hote introuvable::ssh-keyscan n'a rien retourne pour ${DEPLOY_HOST}:${SSH_PORT}."
+            exit 1
+          fi
 
       - name: Login to GHCR on server
         env:
-          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
-          SSH_USER: ${{ secrets.DEPLOY_USER }}
-          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # `github.actor` peut valoir `github-actions[bot]` quand le run est
+          # declenche par un workflow : les crochets sont des caracteres de
+          # motif pour le shell distant. Le proprietaire du depot est stable.
+          GHCR_USER: ${{ github.repository_owner }}
         run: |
-          SSH_PORT="${RAW_PORT:-22}"
-          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" \
-            "echo '${GHCR_TOKEN}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "docker login ghcr.io -u '${GHCR_USER}' --password-stdin" <<< "${GHCR_TOKEN}"
 
       - name: Deploy to server
         env:
-          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
-          SSH_USER: ${{ secrets.DEPLOY_USER }}
-          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           DEPLOY_VERSION: ${{ steps.version.outputs.tag }}
         run: |
-          SSH_PORT="${RAW_PORT:-22}"
-          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" << DEPLOY_SCRIPT
-            set -euo pipefail
+          # Les variables passent par l'environnement de la commande distante :
+          # plus aucune interpolation locale a l'interieur du script, donc plus
+          # de `\$` a compter a la main.
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "DEPLOY_PATH='${DEPLOY_PATH}' \
+             DEPLOY_VERSION='${DEPLOY_VERSION}' \
+             DEPLOY_SHA='${GITHUB_SHA}' \
+             bash -euo pipefail -s" <<'REMOTE_SCRIPT'
+          echo "========================================="
+          echo " Deploiement Amethyste-Idle"
+          echo " Version : ${DEPLOY_VERSION}"
+          echo " Commit  : ${DEPLOY_SHA}"
+          echo " Date    : $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "========================================="
 
-            echo "========================================="
-            echo " Deploiement Amethyste-Idle"
-            echo " Version: ${DEPLOY_VERSION}"
-            echo " Date: \$(date '+%Y-%m-%d %H:%M:%S')"
-            echo " Commit: ${{ github.sha }}"
-            echo "========================================="
+          cd "${DEPLOY_PATH}"
 
-            cd ${{ secrets.DEPLOY_PATH }}
+          PREVIOUS_COMMIT="$(git rev-parse HEAD)"
+          echo "Commit precedent (pour rollback) : ${PREVIOUS_COMMIT}"
 
-            # Sauvegarder le commit actuel pour rollback eventuel
-            PREVIOUS_COMMIT=\$(git rev-parse HEAD)
-            echo "Commit precedent: \${PREVIOUS_COMMIT}"
+          echo ""
+          echo "==> Pull des modifications..."
+          git fetch origin main
+          git reset --hard origin/main
 
-            # Pull des modifications
-            echo ""
-            echo "==> Pull des modifications..."
-            git fetch origin main
-            git reset --hard origin/main
+          echo ""
+          echo "==> Lancement du deploiement..."
+          ./scripts/deploy.sh --prod
 
-            # Executer le script de deploiement (pull image GHCR + restart)
-            echo ""
-            echo "==> Lancement du deploiement..."
-            ./scripts/deploy.sh --prod
-
-            echo ""
-            echo "========================================="
-            echo " Deploiement termine avec succes!"
-            echo " Version: ${DEPLOY_VERSION}"
-            echo " Commit: \$(git rev-parse HEAD)"
-            echo "========================================="
-          DEPLOY_SCRIPT
+          echo ""
+          echo "========================================="
+          echo " Deploiement termine avec succes"
+          echo " Version : ${DEPLOY_VERSION}"
+          echo " Commit  : $(git rev-parse HEAD)"
+          echo "========================================="
+          REMOTE_SCRIPT
 
       - name: Verify deployment
-        env:
-          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
-          SSH_USER: ${{ secrets.DEPLOY_USER }}
-          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
         run: |
-          SSH_PORT="${RAW_PORT:-22}"
-          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" << 'VERIFY_SCRIPT'
-            set -euo pipefail
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "DEPLOY_PATH='${DEPLOY_PATH}' bash -euo pipefail -s" <<'REMOTE_SCRIPT'
+          cd "${DEPLOY_PATH}"
 
-            cd ${{ secrets.DEPLOY_PATH }}
+          echo "==> Verification des conteneurs..."
+          docker compose -f compose.yaml -f compose.prod.yaml ps
 
-            echo "==> Verification des conteneurs..."
-            docker compose -f compose.yaml -f compose.prod.yaml ps
+          echo ""
+          echo "==> Health check..."
+          for i in $(seq 1 30); do
+            if docker compose -f compose.yaml -f compose.prod.yaml exec -T php \
+                 curl -sf http://localhost:2019/metrics > /dev/null 2>&1; then
+              echo "Health check OK !"
+              exit 0
+            fi
+            echo "  Tentative ${i}/30..."
+            sleep 2
+          done
 
-            echo ""
-            echo "==> Health check..."
-            for i in $(seq 1 30); do
-              if docker compose -f compose.yaml -f compose.prod.yaml exec -T php curl -sf http://localhost:2019/metrics > /dev/null 2>&1; then
-                echo "Health check OK!"
-                exit 0
-              fi
-              echo "  Tentative ${i}/30..."
-              sleep 2
-            done
-
-            echo "ERREUR: Health check echoue apres 60 secondes"
-            exit 1
-          VERIFY_SCRIPT
+          echo "ERREUR: Health check echoue apres 60 secondes"
+          exit 1
+          REMOTE_SCRIPT
 
       - name: Deploy summary
         if: success()
@@ -173,8 +222,8 @@ jobs:
       - name: Notify failure
         if: failure()
         run: |
-          echo "::error::Le deploiement a echoue! Verifiez les logs ci-dessus."
+          echo "::error::Le deploiement a echoue ! Verifiez les logs ci-dessus."
           echo "Pour un rollback manuel, connectez-vous au serveur et executez:"
-          echo "  cd ${{ secrets.DEPLOY_PATH }}"
+          echo "  cd <DEPLOY_PATH>"
           echo "  git reset --hard <commit-precedent>"
           echo "  ./scripts/deploy.sh --prod"
