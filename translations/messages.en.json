@@ -1524,7 +1524,8 @@
           "chest": "You discover a chest: +%gils% gils.",
           "harvest": "You spot a promising vein. Gathering is coming soon.",
           "pnj": "You meet %pnj%, who greets you.",
-          "nothing": "You explore the surroundings without finding anything notable."
+          "nothing": "You explore the surroundings without finding anything notable.",
+          "chest_materia": "You find a chest: +%gils% gils, and a materia — %materia%!"
         },
         "error": {
           "traveling": "You cannot explore while traveling.",

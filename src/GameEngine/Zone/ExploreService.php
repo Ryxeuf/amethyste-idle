@@ -7,7 +7,10 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
+use App\Entity\App\Inventory;
+use App\Entity\App\PlayerItem;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\Materia\MateriaLootTable;
 use App\GameEngine\Progression\ActionYieldResolver;
 use App\GameEngine\World\GameTimeService;
 use App\Repository\MobRepository;
@@ -52,6 +55,7 @@ class ExploreService
         private readonly PlayerJournalEntryRepository $journalRepository,
         private readonly GameTimeService $gameTimeService,
         private readonly ActionYieldResolver $yieldResolver,
+        private readonly MateriaLootTable $materiaLootTable,
     ) {
     }
 
@@ -218,6 +222,36 @@ class ExploreService
         $gils = $this->yieldResolver->applyBonus($player, ActionYieldResolver::CATEGORY_CHEST, $gils);
 
         $player->addGils($gils);
+
+        // MAT-06 : un coffre peut contenir une materia du palier moyen ou haut
+        // (m3 en zone T1-T2, m4 en T3-T4) — le canal qui complete le butin de
+        // creature (m1-m3) sans jamais toucher au sommet (m5, donjons).
+        $materia = $this->materiaLootTable->chestRoll($zone->getTier());
+        if (null !== $materia) {
+            $inventory = null;
+            foreach ($player->getInventories() as $candidate) {
+                if ($candidate->getType() === Inventory::TYPE_MATERIA) {
+                    $inventory = $candidate;
+                    break;
+                }
+            }
+            if (null !== $inventory) {
+                $playerItem = new PlayerItem();
+                $playerItem->setGenericItem($materia);
+                $playerItem->setNbUsages($materia->getNbUsages());
+                $inventory->addItem($playerItem);
+                $this->entityManager->persist($playerItem);
+
+                $this->addJournalEntry($player, sprintf('Exploration : coffre trouve, +%d gils et une materia (%s)', $gils, $zone->getName()), [
+                    'zone' => $zone->getSlug(),
+                    'event' => ExploreResult::EVENT_CHEST,
+                    'gils' => $gils,
+                    'materia' => $materia->getSlug(),
+                ]);
+
+                return new ExploreResult(ExploreResult::EVENT_CHEST, 'game.zone.explore.result.chest_materia', ['%gils%' => $gils, '%materia%' => $materia->getName()]);
+            }
+        }
 
         $this->addJournalEntry($player, sprintf('Exploration : coffre trouve, +%d gils (%s)', $gils, $zone->getName()), [
             'zone' => $zone->getSlug(),

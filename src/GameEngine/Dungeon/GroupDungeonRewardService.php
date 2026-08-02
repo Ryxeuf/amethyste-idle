@@ -4,7 +4,10 @@ namespace App\GameEngine\Dungeon;
 
 use App\Entity\App\GroupDungeonClear;
 use App\Entity\App\GroupDungeonRun;
+use App\Entity\App\Inventory;
 use App\Entity\App\Parameter;
+use App\Entity\App\PlayerItem;
+use App\GameEngine\Materia\MateriaLootTable;
 use App\Repository\GroupDungeonClearRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -40,6 +43,7 @@ class GroupDungeonRewardService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly GroupDungeonClearRepository $clearRepository,
+        private readonly MateriaLootTable $materiaLootTable,
     ) {
     }
 
@@ -63,6 +67,27 @@ class GroupDungeonRewardService
 
             if ($gils > 0) {
                 $player->addGils($gils);
+            }
+
+            // MAT-06 : les donjons prennent m4-m5 — leur premiere raison
+            // mecanique d'exister. La materia ne tombe que sur une reussite
+            // **fraiche** (aucune dans la fenetre glissante) : la recompense
+            // decroissante protege les gils, celle-ci protege le sommet du
+            // catalogue du farm.
+            if (0 === $recentClears) {
+                $materia = $this->materiaLootTable->dungeonPick();
+                if (null !== $materia) {
+                    foreach ($player->getInventories() as $inventory) {
+                        if ($inventory->getType() === Inventory::TYPE_MATERIA) {
+                            $playerItem = new PlayerItem();
+                            $playerItem->setGenericItem($materia);
+                            $playerItem->setNbUsages($materia->getNbUsages());
+                            $inventory->addItem($playerItem);
+                            $this->entityManager->persist($playerItem);
+                            break;
+                        }
+                    }
+                }
             }
 
             $this->entityManager->persist(new GroupDungeonClear($player, $dungeon, $run, $gils, $now));

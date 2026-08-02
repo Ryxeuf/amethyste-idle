@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
 use App\GameEngine\Dungeon\GroupDungeonRewardService;
+use App\GameEngine\Materia\MateriaLootTable;
 use App\Repository\GroupDungeonClearRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -32,7 +33,12 @@ class GroupDungeonRewardServiceTest extends TestCase
             [Parameter::class, $this->parameterRepository],
         ]);
 
-        $this->service = new GroupDungeonRewardService($this->entityManager, $this->clearRepository);
+        // MAT-06 : la table de butin est mockee muette — ces tests portent
+        // sur les gils et la decroissance, pas sur la materia.
+        $materiaLootTable = $this->createMock(MateriaLootTable::class);
+        $materiaLootTable->method('dungeonPick')->willReturn(null);
+
+        $this->service = new GroupDungeonRewardService($this->entityManager, $this->clearRepository, $materiaLootTable);
     }
 
     private function buildPlayer(int $id): Player

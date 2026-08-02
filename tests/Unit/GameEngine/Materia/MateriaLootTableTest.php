@@ -154,6 +154,36 @@ class MateriaLootTableTest extends TestCase
     }
 
     /**
+     * MAT-06 — le coffre suit la zone : m3 en T1-T2, m4 en T3-T4, jamais m5,
+     * et neuf coffres sur dix gardent leurs seuls gils.
+     */
+    public function testChestPalierFollowsTheZone(): void
+    {
+        $this->assertSame(3, MateriaLootTable::chestPalier(1));
+        $this->assertSame(3, MateriaLootTable::chestPalier(2));
+        $this->assertSame(4, MateriaLootTable::chestPalier(3));
+        $this->assertSame(4, MateriaLootTable::chestPalier(4));
+
+        $materia = $this->table->chestRoll(2, 0, 0, 0);
+        $this->assertNotNull($materia);
+        $this->assertStringStartsWith('m3-', $materia->getSlug());
+
+        $this->assertNull($this->table->chestRoll(2, MateriaLootTable::CHEST_MATERIA_CHANCE), 'Au-dela de la chance, le coffre garde ses seuls gils.');
+    }
+
+    /**
+     * MAT-06 — le donjon prend m4-m5, et il est le seul canal du m5.
+     */
+    public function testDungeonTakesTheTopOfTheCatalog(): void
+    {
+        $normal = $this->table->dungeonPick(MateriaLootTable::DUNGEON_M5_CHANCE, 0, 0);
+        $this->assertStringStartsWith('m4-', (string) $normal?->getSlug());
+
+        $rare = $this->table->dungeonPick(0, 0, 0);
+        $this->assertStringStartsWith('m5-', (string) $rare?->getSlug());
+    }
+
+    /**
      * Un butin reussi ne s'evapore pas sur un trou de catalogue : si
      * l'element n'a rien au palier vise, on redescend d'un palier.
      */
