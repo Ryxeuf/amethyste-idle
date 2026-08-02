@@ -1504,7 +1504,8 @@
           "not_your_turn": "Ce n'est pas votre tour.",
           "wrong_zone": "Ce donjon ne se lance pas depuis cette zone.",
           "member_experience": "Un membre du groupe n'a pas l'experience requise pour ce donjon.",
-          "member_items": "Un membre du groupe n'a pas les objets d'entree requis."
+          "member_items": "Un membre du groupe n'a pas les objets d'entree requis.",
+          "member_down": "Ce membre est à terre — le tour passe aux survivants."
         },
         "cleared": "Rencontre vaincue ! Donjon de groupe termine.",
         "turn_in": "tour suivant dans %seconds% s",

@@ -27,8 +27,14 @@ class GroupDungeonCombatService
 {
     public const DEFAULT_TURN_SECONDS = 45;
     public const PARAM_TURN_SECONDS = 'zone.dungeon.turn_seconds';
-    public const DEFAULT_HP_PER_MEMBER = 200;
+    // DON-02 : 200 etait calibre pour une rencontre **sans riposte** — le jour
+    // ou elle frappe, 800 PV pour quatre rendraient le soigneur obligatoire
+    // (GAME_ARCHETYPES §7 bis). Ramene a ~120 avec l'arrivee de la riposte.
+    public const DEFAULT_HP_PER_MEMBER = 120;
     public const PARAM_HP_PER_MEMBER = 'zone.dungeon.encounter_hp_per_member';
+    // DON-02 : la riposte — la rencontre frappe le membre qui vient d'agir.
+    public const DEFAULT_ENCOUNTER_HIT = 10;
+    public const PARAM_ENCOUNTER_HIT = 'zone.dungeon.encounter_hit';
 
     private const MAX_AUTO_RESOLUTIONS = 100;
 
@@ -36,6 +42,7 @@ class GroupDungeonCombatService
         private readonly EntityManagerInterface $entityManager,
         private readonly GroupDungeonCombatPublisher $publisher,
         private readonly GroupDungeonRewardService $rewardService,
+        private readonly DungeonActionResolver $actionResolver,
     ) {
     }
 
@@ -71,7 +78,7 @@ class GroupDungeonCombatService
      *
      * @throws GroupDungeonException si ce n'est pas le tour du joueur ou si le run est termine
      */
-    public function act(Player $player, GroupDungeonRun $run): array
+    public function act(Player $player, GroupDungeonRun $run, ?string $spellSlug = null): array
     {
         if (GroupDungeonRun::STATUS_IN_PROGRESS === $run->getStatus() && !$run->isCombatInitialized()) {
             $this->initializeCombat($run);
@@ -84,8 +91,11 @@ class GroupDungeonCombatService
         if ($run->getActivePlayerId() !== $player->getId()) {
             throw new GroupDungeonException('game.zone.dungeon.error.not_your_turn');
         }
+        if ($player->isDead()) {
+            throw new GroupDungeonException('game.zone.dungeon.error.member_down');
+        }
 
-        $this->applyAction($run, $player);
+        $this->applyAction($run, $player, $spellSlug);
         $this->entityManager->flush();
 
         $snapshot = $this->snapshot($run);
@@ -129,8 +139,8 @@ class GroupDungeonCombatService
             ++$guard;
             $activeId = $run->getActivePlayerId();
             $active = null !== $activeId ? $this->entityManager->getRepository(Player::class)->find($activeId) : null;
-            if (null === $active) {
-                // Joueur introuvable : on avance simplement le tour.
+            if (null === $active || $active->isDead()) {
+                // Joueur introuvable ou a terre (DON-02) : le tour passe.
                 $run->advanceTurn();
                 $run->setTurnDeadline($this->now()->modify(sprintf('+%d seconds', $this->getTurnSeconds())));
                 continue;
@@ -142,13 +152,15 @@ class GroupDungeonCombatService
     }
 
     /**
-     * Applique l'attaque de base d'un joueur a la rencontre, avance le tour, et
-     * complete le run si la rencontre tombe.
+     * Applique l'action reelle d'un joueur (DON-02) : le geste de son build
+     * frappe la rencontre, la rencontre riposte sur lui, et le run se termine
+     * — victoire quand la rencontre tombe, echec quand plus un membre ne
+     * tient debout.
      */
-    private function applyAction(GroupDungeonRun $run, Player $player): void
+    private function applyAction(GroupDungeonRun $run, Player $player, ?string $spellSlug = null): void
     {
-        $damage = max(1, $player->getHit());
-        $run->damageEncounter($damage);
+        $action = $this->actionResolver->resolve($player, $spellSlug);
+        $run->damageEncounter($action['damage']);
 
         if ($run->getEncounterHpCurrent() <= 0) {
             $run->setStatus(GroupDungeonRun::STATUS_COMPLETED);
@@ -160,8 +172,51 @@ class GroupDungeonCombatService
             return;
         }
 
-        $run->advanceTurn();
+        // DON-02 : la riposte. La rencontre frappe le membre qui vient d'agir
+        // — agir a un cout, et un donjon peut desormais etre perdu.
+        $player->setLife(max(0, $player->getLife() - $this->getEncounterHit()));
+        if (0 === $player->getLife() && null === $player->getDiedAt()) {
+            $player->setDiedAt(new \DateTime());
+        }
+
+        if ($this->everyMemberIsDown($run)) {
+            $run->setStatus(GroupDungeonRun::STATUS_FAILED);
+            $run->setTurnDeadline(null);
+
+            return;
+        }
+
+        $this->advanceToNextStandingMember($run);
         $run->setTurnDeadline($this->now()->modify(sprintf('+%d seconds', $this->getTurnSeconds())));
+    }
+
+    private function everyMemberIsDown(GroupDungeonRun $run): bool
+    {
+        foreach ($run->getMemberPlayers() as $member) {
+            if (!$member->isDead()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Avance le tour en sautant les membres a terre — borne par la taille du
+     * groupe, l'echec total etant deja ecarte par l'appelant.
+     */
+    private function advanceToNextStandingMember(GroupDungeonRun $run): void
+    {
+        $members = [];
+        foreach ($run->getMemberPlayers() as $member) {
+            $members[$member->getId()] = $member;
+        }
+
+        $guard = \count($members) + 1;
+        do {
+            $run->advanceTurn();
+            $active = $members[$run->getActivePlayerId()] ?? null;
+        } while (--$guard > 0 && null !== $active && $active->isDead());
     }
 
     /**
@@ -193,6 +248,13 @@ class GroupDungeonCombatService
         $value = $this->readParameter(self::PARAM_HP_PER_MEMBER, self::DEFAULT_HP_PER_MEMBER);
 
         return $value > 0 ? $value : self::DEFAULT_HP_PER_MEMBER;
+    }
+
+    private function getEncounterHit(): int
+    {
+        $value = $this->readParameter(self::PARAM_ENCOUNTER_HIT, self::DEFAULT_ENCOUNTER_HIT);
+
+        return $value > 0 ? $value : self::DEFAULT_ENCOUNTER_HIT;
     }
 
     private function readParameter(string $name, int $default): int

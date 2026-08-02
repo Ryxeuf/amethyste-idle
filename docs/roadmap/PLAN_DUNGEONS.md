@@ -65,19 +65,30 @@ tout le reste se fait en double.
       chemin solo mort le reste (`DungeonModelTest`) ; lancement solo accepté
       seul, party de 2 refusée dans un donjon solo (`GroupDungeonServiceTest`)
 
-### DON-02 — Le combat rend le build pertinent (M | ★★★ | HAUTE)
+### DON-02 — Le combat rend le build pertinent (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > Aujourd'hui `damage = max(1, $player->getHit())` : ni arme, ni sort, ni
 > matéria, ni équipement n'entrent dans le calcul. Et la rencontre ne riposte
 > jamais — **un donjon ne peut pas être perdu**.
 > Prérequis : ← DON-01
-- [ ] L'action d'un membre devient **son action réelle** : attaque de base de son
-      arme, ou sort d'une matéria sertie (`CombatCapacityResolver`)
-- [ ] **La rencontre riposte** : elle frappe un membre à chaque tour selon ses
-      stats ; ajouter `STATUS_FAILED`, atteint quand tous les membres sont à terre
-- [ ] Conserver la boucle semi-synchrone qui marche : `turnOrder`,
-      `turnDeadline`, action par défaut quand l'échéance passe
-- [ ] Tests : le build modifie le dégât, la riposte s'applique, l'échec est
-      atteignable
+- [x] L'action d'un membre est **son action réelle** (`DungeonActionResolver`) :
+      le geste de l'arme équipée (le `spell` de la pièce) + les passifs de
+      dégâts des arbres, ou un sort de matéria sertie
+      (`CombatCapacityResolver`) avec le bonus d'accord d'élément — un sort
+      verrouillé retombe sur l'attaque de base, mains nues = 1 (ONB-20a). Le
+      contrôleur accepte un paramètre `spell`
+- [x] **La rencontre riposte** : elle frappe le membre qui vient d'agir
+      (`zone.dungeon.encounter_hit`, défaut 10 — les vraies stats arrivent
+      avec les monstres de DON-03) ; `STATUS_FAILED` atteint quand tous les
+      membres sont à terre, le tour saute les membres couchés, et un membre
+      tombé hors donjon ne peut pas agir. **Recalibrage** :
+      `encounter_hp_per_member` 200 → 120 (GAME_ARCHETYPES §7 bis — 200 était
+      le réglage d'une rencontre sans riposte)
+- [x] La boucle semi-synchrone conservée : `turnOrder`, `turnDeadline`, action
+      par défaut à l'échéance — l'action par défaut est désormais la vraie
+      attaque de base du build
+- [x] Tests : le build modifie le dégât, la riposte s'applique, l'échec est
+      atteignable, les membres à terre sont sautés
+      (`GroupDungeonCombatServiceTest`, `DungeonActionResolverTest`)
 
 ### DON-03 — Les étapes et les vraies rencontres (M | ★★ | HAUTE)
 > `currentStep` existe sur l'entité et **n'est jamais avancé** ; la rencontre est
