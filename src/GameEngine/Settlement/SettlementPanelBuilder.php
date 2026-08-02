@@ -9,6 +9,7 @@ use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Retention\WeekKey;
+use App\GameEngine\World\WorldScaleService;
 use App\Repository\SettlementContributionRepository;
 use App\Repository\SettlementRepository;
 use App\Repository\SettlementWeeklyWorkContributionRepository;
@@ -43,6 +44,7 @@ class SettlementPanelBuilder
         private readonly SettlementWeeklyWorkContributionRepository $workContributionRepository,
         private readonly CrueQuotaService $crueQuota,
         private readonly VassalageService $vassalage,
+        private readonly WorldScaleService $worldScale,
     ) {
     }
 
@@ -73,7 +75,13 @@ class SettlementPanelBuilder
             return null;
         }
 
-        $definition = $this->loader->load();
+        // BALANCE § 24.3 : les seuils affiches sont ceux que le tick applique —
+        // les seuils calibres a W = 1, mis a l'echelle du monde. Montrer le
+        // seuil nominal promettrait un Bourg moins cher que ce qu'il coute.
+        $ranks = SettlementRankCalculator::scaleThresholds(
+            $this->loader->load()['ranks'],
+            $this->worldScale->current(),
+        );
         $total = $settlement->getTotalSediment();
         $rank = $settlement->getRank();
 
@@ -94,7 +102,7 @@ class SettlementPanelBuilder
             'type' => $settlement->getType(),
             'total' => $total,
             'indices' => $this->indices($settlement->getAllSediment(), $total),
-            'next' => $this->nextStep($rank, $total, $definition['ranks']),
+            'next' => $this->nextStep($rank, $total, $ranks),
             // FOY-06 : ce que le rang a **deja** ouvert, et ou cela mene. La
             // ligne `next.opens` promet ; celle-ci donne la porte. Les services
             // fermes restent affiches avec leur rang manquant — les masquer
@@ -105,7 +113,7 @@ class SettlementPanelBuilder
             'work' => $this->weeklyWork($zone),
             // FOY-08 : le foyer merite un rang que la Crue lui refuse. La
             // competition doit se **voir**, sinon elle est vecue comme un bug.
-            'crue' => $this->crueWait($settlement, $rank, $definition['ranks']),
+            'crue' => $this->crueWait($settlement, $rank, $ranks),
             // FOY-09 : une grande voisine boit la croissance. Le dire est ce
             // qui transforme un plafond subi en decision de lieu.
             'overlord' => $this->overlord($settlement),

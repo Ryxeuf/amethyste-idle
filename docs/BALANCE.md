@@ -1599,11 +1599,12 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    config**) : la table de depot de `config/game/settlements.yaml` passe du grain
    uniforme au grain pondere par l'energie du geste (kill 1,7, evenement 3,3). FOY-02
    etant livre sur la table uniforme, c'est une correction de donnees, pas de moteur.
-   **Constat d'audit (2026-07-29)** : la ponderation n'est **toujours pas** appliquee —
-   la table `sediment:` de `config/game/settlements.yaml` est encore uniforme
-   (`mob_kill: grains: 1` au lieu de 1,7). `SedimentRule::$grains` est un float : la
-   valeur passe sans migration. Le biais Comptoir/Bastion decrit en §23.1 est donc
-   toujours actif. Reste l'**action immediate n°1**.
+   ✅ **Applique le 2026-08-02** : `mob_kill` passe a 1,7 grain dans
+   `config/game/settlements.yaml` (`SedimentRule::$grains` est un float, aucune
+   migration). Le biais Comptoir/Bastion decrit en §23.1 est corrige. La ligne
+   « evenement de zone » (3,3) entrera dans la table avec son listener, comme les
+   trois autres lignes non branchees (regle `SettlementSedimentWiringTest` : jamais
+   de depot chiffre sans point d'accroche).
 
 1. **La passe post-arbres.** Les arbres de domaine (GAME_DOMAINS, DOM-01+) apporteront des
    passifs de **reduction de cout d'energie** et de **reduction de temps** (craft, voyage ?)
@@ -1634,6 +1635,14 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    seuils `ranks:`) doit multiplier les seuils par `W` via `WorldScaleService`, au meme
    titre que la capacite des filons. A implementer avec la ponderation du grain (§24.0) —
    les deux corrections touchent la meme chaine de depot.
+   ✅ **Soldee le 2026-08-02** : `SettlementRankCalculator::scaleThresholds()` (pur,
+   statique, teste seul comme le reste du calculateur) multiplie les seuils par `W`,
+   et les deux seuls lecteurs de `ranks:` l'appliquent — `SettlementTickService`
+   (le rang qu'on gagne) et `SettlementPanelBuilder` (le seuil qu'on affiche : montrer
+   le nominal promettrait un Bourg moins cher que ce qu'il coute). Les **taux**
+   (decroissance, hysteresis) ne bougent pas, conformement a l'en-tete de
+   `settlements.yaml`. A `W = 1`, la table est rendue telle quelle : le monde livre
+   n'a pas bouge d'un grain.
 
 4. **Calibrage du rendement et de la duree du jardin** (herite du Sprint 11, tache 129 /
    HOU-02) : 1 unite semee rend 2 a 3 en 3 h, sans energie ni presence — un rendement pose

@@ -39,6 +39,27 @@ class SettlementRankCalculatorTest extends TestCase
     }
 
     /**
+     * BALANCE § 24.3 — les seuils suivent le facteur de monde `W`, comme la
+     * capacite des filons : c'est ce qui garde constant le *temps* de montee
+     * d'un foyer quand la population change. A W = 1, la table est rendue
+     * telle quelle — le monde livre ne doit pas bouger d'un grain.
+     */
+    public function testThresholdsScaleWithTheWorldFactor(): void
+    {
+        self::assertSame(self::THRESHOLDS, SettlementRankCalculator::scaleThresholds(self::THRESHOLDS, 1.0));
+
+        $doubled = SettlementRankCalculator::scaleThresholds(self::THRESHOLDS, 2.0);
+        self::assertSame(300, $doubled['camp']);
+        self::assertSame(16000, $doubled['town']);
+        self::assertSame(120000, $doubled['metropolis']);
+
+        // Un facteur fractionnaire arrondit sans jamais tomber a zero : un
+        // seuil nul rendrait un rang gratuit.
+        $shrunk = SettlementRankCalculator::scaleThresholds(['camp' => 1], 0.4);
+        self::assertSame(1, $shrunk['camp']);
+    }
+
+    /**
      * Demi-vie d'environ 35 jours (BALANCE § 23.2) : un foyer delaisse une maree
      * entiere descend visiblement, un foyer delaisse une semaine ne s'effondre
      * pas. C'est ce reglage qui fait du rang une photographie de la

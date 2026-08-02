@@ -12,6 +12,7 @@ use App\GameEngine\Settlement\CrueQuotaService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementTickService;
 use App\GameEngine\Settlement\VassalageService;
+use App\GameEngine\World\WorldScaleService;
 use App\Repository\SettlementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -35,10 +36,14 @@ class SettlementTickServiceTest extends TestCase
     /** @var list<Settlement> */
     private array $settlements = [];
 
+    /** Facteur de monde lu par le tick (BALANCE § 24.3) ; 1 par defaut. */
+    private float $worldScale = 1.0;
+
     protected function setUp(): void
     {
         $this->dispatched = [];
         $this->settlements = [];
+        $this->worldScale = 1.0;
     }
 
     public function testTheFirstTickOnlyPlantsTheAnchor(): void
@@ -415,6 +420,30 @@ class SettlementTickServiceTest extends TestCase
         self::assertFalse($settlement->isEbbWarned());
     }
 
+    /**
+     * BALANCE § 24.3 — les seuils suivent le facteur de monde. Le stock qui
+     * fait un Hameau a W = 1 n'en fait plus un a W = 2 : sans cette mise a
+     * l'echelle, les foyers d'un monde peuple montent plus vite que le
+     * calibrage § 23.3, et le « temps de montee constant » que FOY-17b promet
+     * a trois endroits de la doc serait faux.
+     */
+    public function testTheWorldScaleRaisesTheRankThresholds(): void
+    {
+        $this->worldScale = 2.0;
+        $settlement = $this->settlement(
+            ['trade' => 1300],
+            SettlementRank::Ruin,
+            $this->now()->modify('-1 day'),
+        );
+
+        $report = $this->service()->tick($this->now());
+
+        // 1274 apres decroissance : Hameau a W = 1 (1200), mais a W = 2 le
+        // Hameau coute 2400 — seul le Campement (300) est acquis.
+        self::assertSame(SettlementRank::Camp, $settlement->getRank());
+        self::assertSame(1, $report['promoted']);
+    }
+
     private function now(): \DateTimeImmutable
     {
         return new \DateTimeImmutable(self::NOW);
@@ -473,6 +502,9 @@ class SettlementTickServiceTest extends TestCase
             'without_settlement' => [],
         ]);
 
+        $worldScale = $this->createMock(WorldScaleService::class);
+        $worldScale->method('current')->willReturnCallback(fn (): float => $this->worldScale);
+
         return new SettlementTickService(
             $entityManager,
             $repository,
@@ -480,6 +512,7 @@ class SettlementTickServiceTest extends TestCase
             $dispatcher,
             $this->crueQuota(),
             $this->vassalage(),
+            $worldScale,
         );
     }
 

@@ -40,6 +40,37 @@ final class SettlementRankCalculator
     }
 
     /**
+     * Seuils mis a l'echelle du monde : chaque seuil est multiplie par `W`
+     * (BALANCE § 24.3, dette FOY-17b -> FOY-08 soldee).
+     *
+     * Les filons donnent capacite x W ; si les seuils restaient a W = 1, les
+     * foyers monteraient d'autant plus vite que le serveur est peuple, et le
+     * « temps de montee constant » — l'invariant que le facteur de monde existe
+     * pour servir — serait faux precisement quand il compte. Les **taux**
+     * (decroissance, marge d'hysteresis), eux, ne bougent jamais : c'est ce qui
+     * garde constant le *temps*, pas seulement l'effort.
+     *
+     * L'arrondi ne peut pas desordonner l'echelle : une multiplication par un
+     * facteur strictement positif preserve l'ordre, et les seuils livres sont
+     * trop ecartes pour se rejoindre par arrondi.
+     *
+     * @param array<string, int> $thresholds seuils par rang, calibres a W = 1
+     *
+     * @return array<string, int>
+     */
+    public static function scaleThresholds(array $thresholds, float $worldScale): array
+    {
+        if ($worldScale <= 0.0 || $worldScale === 1.0) {
+            return $thresholds;
+        }
+
+        return array_map(
+            static fn (int $threshold): int => max(1, (int) round($threshold * $worldScale)),
+            $thresholds,
+        );
+    }
+
+    /**
      * Stock restant apres `$days` jours de decroissance.
      *
      * Compose sur le nombre de jours plutot que de s'appliquer une fois : un

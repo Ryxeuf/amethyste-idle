@@ -7,6 +7,7 @@ use App\Enum\SettlementIndex;
 use App\Enum\SettlementRank;
 use App\Enum\SettlementType;
 use App\Event\Zone\SettlementRankChangedEvent;
+use App\GameEngine\World\WorldScaleService;
 use App\Repository\SettlementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -36,6 +37,7 @@ class SettlementTickService
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly CrueQuotaService $crueQuota,
         private readonly VassalageService $vassalage,
+        private readonly WorldScaleService $worldScale,
     ) {
     }
 
@@ -46,6 +48,13 @@ class SettlementTickService
     {
         $now ??= new \DateTimeImmutable();
         $definition = $this->loader->load();
+        // BALANCE § 24.3 : les seuils de rang suivent le facteur de monde `W`,
+        // comme la capacite des filons. Lu une fois par tick — `W` bouge par
+        // paliers, jamais au milieu d'une passe.
+        $definition['ranks'] = SettlementRankCalculator::scaleThresholds(
+            $definition['ranks'],
+            $this->worldScale->current(),
+        );
 
         $report = ['processed' => 0, 'decayed' => 0, 'promoted' => 0, 'demoted' => 0, 'typed' => 0, 'skipped' => 0];
 
