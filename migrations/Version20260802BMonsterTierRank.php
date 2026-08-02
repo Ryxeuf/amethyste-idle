@@ -95,7 +95,7 @@ final class Version20260802BMonsterTierRank extends AbstractMigration
         $this->addSql('ALTER TABLE game_monsters DROP COLUMN IF EXISTS rank');
 
         $this->addSql('ALTER TABLE game_monster_items ADD COLUMN IF NOT EXISTS min_difficulty INT DEFAULT NULL');
-        $this->addSql("UPDATE game_monster_items SET min_difficulty = 3 WHERE min_rank IS NOT NULL");
+        $this->addSql('UPDATE game_monster_items SET min_difficulty = 3 WHERE min_rank IS NOT NULL');
         $this->addSql('ALTER TABLE game_monster_items DROP COLUMN IF EXISTS min_rank');
 
         $this->addSql('ALTER TABLE mob ADD COLUMN IF NOT EXISTS level INT DEFAULT 1 NOT NULL');
