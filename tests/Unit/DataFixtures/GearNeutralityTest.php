@@ -82,26 +82,38 @@ class GearNeutralityTest extends TestCase
     }
 
     /**
-     * La grille neutre est complete sur ses deux paliers fusionnes : une
-     * piece par forme en t2 et en t3 — c'est ce qui remplace les 56.
+     * La grille neutre est complete sur ses trois paliers : une piece par
+     * forme et par palier. Le t1 est porte par le set de depart de
+     * l'onboarding (`starter_*` + l'epee de bois) — le constat du plan
+     * (« t1 : 5 pieces ») precedait sa livraison ; le verrouiller ici
+     * empeche de le re-creuser.
      */
-    public function testTheNeutralGridCoversBothTiers(): void
+    public function testTheNeutralGridCoversAllThreeTiers(): void
     {
         $source = (string) file_get_contents($this->root() . '/src/DataFixtures/ItemFixtures.php');
 
-        $missing = [];
+        $grid = [
+            // t1 — le set de depart, une piece par forme, niveau 1.
+            'wooden-sword', 'starter-shield', 'starter-helmet', 'starter-chest',
+            'starter-legs', 'starter-boots', 'starter-gloves',
+        ];
         foreach (['t2', 't3'] as $tier) {
             foreach (['sword', 'shield', 'helmet', 'chest', 'legs', 'boots', 'gloves'] as $shape) {
-                if (!str_contains($source, sprintf("'slug' => '%s-%s'", $tier, $shape))) {
-                    $missing[] = sprintf('%s-%s', $tier, $shape);
-                }
+                $grid[] = sprintf('%s-%s', $tier, $shape);
+            }
+        }
+
+        $missing = [];
+        foreach ($grid as $slug) {
+            if (!str_contains($source, sprintf("'slug' => '%s'", $slug))) {
+                $missing[] = $slug;
             }
         }
 
         $this->assertSame(
             [],
             $missing,
-            sprintf('La grille neutre a des trous (OBJ-03) : %s.', implode(', ', $missing)),
+            sprintf('La grille neutre a des trous (OBJ-03, 3 paliers x 7 formes) : %s.', implode(', ', $missing)),
         );
     }
 }
