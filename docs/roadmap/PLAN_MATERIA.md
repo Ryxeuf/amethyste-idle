@@ -25,7 +25,7 @@
 | MAT-01 ✅ | L'élément des monstres | S | ∅ |
 | MAT-02 ✅ | La dérivation matéria ← sort | M | ∅ |
 | MAT-03 ✅ | Le catalogue à 200 | M | ← MAT-02 |
-| MAT-04 | Le plancher du jour 1 | M | ← MAT-03 |
+| MAT-04 ✅ | Le plancher du jour 1 | M | ← MAT-03 |
 | MAT-05 | Le butin dérivé | M | ← MAT-01, MAT-03 |
 | MAT-06 | Coffres et donjons | S | ← MAT-03 |
 | MAT-07 | Le nettoyage | S | ← MAT-03 |
@@ -120,22 +120,30 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
 
 ## Piste B — Le monde
 
-### MAT-04 — Le plancher du jour 1 (M | ★★★ | HAUTE)
-> Le jalon qui rend le jeu jouable. Les 24 arbres de combat portent **déjà**
-> exactement 2 nœuds `unlock` à 0 point : la structure est en place, seules les
-> 48 matéria correspondantes manquent (4 obtenables, 13 sans source, 31 à créer).
-> Prérequis : ← MAT-03
-- [ ] Les 48 matéria du jour 1 en **boutique PNJ** — plancher T1 étendu au build
-      (`GAME_PRINCIPLES`) : le marché joueur peut faire mieux, jamais moins
-- [ ] Placement : les huit éléments au palier d'entrée **au Fanal** ; le reste
-      chez le PNJ de la zone dont la ligne porte l'élément
-- [ ] **Le palier de distribution suit le nœud, pas le sort** : une matéria
-      ouverte à 0 point est au plancher même si son sort est de niveau 2
-      (15 des 48 sont dans ce cas — on ne retouche pas 15 sorts équilibrés)
-- [ ] La 1re matéria de l'arbre choisi est **donnée** par l'acte I, sur le modèle
-      de `materia_soin` (le seul canal de quête livré aujourd'hui)
-- [ ] Tests : les 48 sourcées, à ≤ 1 liaison du Fanal, au moins une source
-      **non aléatoire** par matéria
+### MAT-04 — Le plancher du jour 1 (M | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
+> Le jalon qui rend le jeu jouable. Les 24 arbres de combat portaient déjà
+> exactement 2 nœuds `unlock` à 0 point ; le catalogue (MAT-03) a créé les
+> matéria, ce jalon leur donne des marchands.
+- [x] Les matéria du jour 1 (48 nœuds, **43 matéria distinctes** — cinq
+      unlocks sont partagés entre arbres) en **boutique PNJ**, aux prix de la
+      grille : le plancher T1 PNJ étendu au build
+- [x] Placement : **Lucine l'accordeuse au Fanal** vend les 28 m1 (les huit
+      éléments au palier d'entrée) ; les 15 dont le sort est de niveau 2 se
+      vendent chez le PNJ de la zone dont la ligne porte l'élément — Terre
+      chez Morrigane (Forêt, la référence du monde), Feu et Métal chez Kolm
+      (Mines, la forge), Bête chez la vieille Brune (Vallons, le gibier),
+      Eau et Ombre chez **Ysoline, troqueuse des brumes** (premier PNJ
+      déclaré du Marais), Lumière chez **Élionor, chantre du temple**
+      (Quartier des Jardins). L'Air n'a pas de m2 au plancher. Toutes les
+      zones vendeuses sont à **une liaison** du Fanal
+- [x] **Le palier de distribution suit le nœud, pas le sort** : les 15 m2 du
+      plancher se vendent au jour 1 comme les m1 — aucun sort retouché
+- [x] La 1re matéria de l'arbre choisi est **donnée** par l'acte I — déjà
+      tenu par `ActOneMateriaGranter` (ONB-12b), que le catalogue complet
+      (MAT-03) rend effectif pour les 24 arbres
+- [x] Tests : `MateriaDayOneFloorTest` — les 43 sourcées en boutique (source
+      non aléatoire), à ≤ 1 liaison du Fanal ; et une boutique ne vend
+      jamais une matéria qu'aucun sort ne peut dériver
 
 ### MAT-05 — Le butin dérivé (M | ★★★ | HAUTE)
 > La voie normale et abondante du canon. Aujourd'hui : 9 matéria distinctes sur

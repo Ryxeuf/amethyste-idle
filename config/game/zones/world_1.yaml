@@ -203,6 +203,19 @@ zones:
               shop_items: [beer-pint, bread, grilled-meat]
               # Horaire a cheval sur minuit : `Pnj::isShopOpen` traite le cas
               # `opens_at > closes_at` comme une plage nocturne (20h -> 6h).
+            # MAT-04 — le plancher du jour 1. Les materia d'entree (m1) ouvertes
+            # a 0 point par les 24 arbres de combat sont achetables ici, au prix
+            # de la grille (GAME_MATERIA §2.3) : le plancher T1 PNJ etendu au
+            # build — le marche joueur peut faire mieux, jamais moins. Les
+            # quinze du plancher dont le sort est de niveau 2 se vendent chez
+            # le PNJ de la zone dont la ligne porte l'element (toutes a une
+            # liaison du Fanal).
+            - slug: village-accordeuse-lucine
+              name: "Lucine l'accordeuse"
+              name_en: 'Lucine the Attuner'
+              class_type: villager
+              greeting: "Une amethyste ou un geste est reste lisible, voila tout ce qu'est une materia. Choisis ton flux : les premieres ne sont jamais hors de portee d'une bourse de debutant."
+              shop_items: [m1-air-dash, m1-angelic-touch, m1-aqua-shield, m1-beast-bond, m1-burning-touch, m1-falcon-strike, m1-fire-ball, m1-flame, m1-frozen-touch, m1-gust, m1-haste, m1-hex, m1-liana-whip, m1-life-heal, m1-magnetic-pull, m1-natural-healing, m1-necrotic-touch, m1-precise-shot, m1-provocation, m1-punishment, m1-quicksand, m1-rock-armor, m1-sharp-blade, m1-stone-throw, m1-water-heal, m1-water-jet, m1-wind-lame, m1-wind-shield]
               opens_at: 20
               closes_at: 6
 
@@ -332,6 +345,9 @@ zones:
               class_type: hunter
               life: 45
               greeting: "Le jour, la foret n'est qu'une foret. Apres le crepuscule, ce qui marche entre les arbres n'a plus de souffle. Rentre."
+              # MAT-04 : la part de Terre du plancher du jour 1 — la Foret est
+              # la reference du monde, le depot sans a-coups (purity.yaml).
+              shop_items: [m2-earth-shield, m2-shared-shield]
 
     # =========================================================================
     # ZONE 3 — Mines Profondes (extraction, palier au-dessus de la foret)
@@ -430,6 +446,9 @@ zones:
               name_en: 'Kolm, Lantern Bearer'
               class_type: villager
               greeting: "Je marche devant, tu marches derriere. Si ma lampe s'eteint, ne cours pas : ecoute."
+              # MAT-04 : la part de Feu et de Metal du plancher du jour 1 — la
+              # forge et la ligne du metal vivent ici.
+              shop_items: [m2-rage-flame, m2-ember-shield, m2-steel-shield]
 
     marais-brumeux:
         name: 'Marais Brumeux'
@@ -439,6 +458,17 @@ zones:
         type: wilderness
         tier: 2
         safe: false
+        # MAT-04 : le premier habitant declare du Marais — la part d'Eau et
+        # d'Ombre du plancher du jour 1. L'eau stagnante et la nuit du Marais
+        # portent ces deux flux (purity.yaml : le Marais nocturne est le
+        # premier endroit ou l'on voit du Pur).
+        pnjs:
+            - slug: marais-troqueuse-ysoline
+              name: 'Ysoline, troqueuse des brumes'
+              name_en: 'Ysoline, Mist Barterer'
+              class_type: villager
+              greeting: "On ne vient pas ici par hasard. L'eau et l'ombre laissent des gestes dans la pierre — je les troque contre des gils, c'est plus simple."
+              shop_items: [m1-water-jet, m2-rising-tide, m2-soul-drain, m2-ambush]
         map_x: 32
         map_y: 74
         map_shape: '4,58 14,54 26,57 33,64 34,74 22,80 8,78'
@@ -586,6 +616,15 @@ zones:
         map_x: 42
         map_y: 46
         map_shape: '30,44 40,41 48,42 50,48 44,53 34,52 29,48'
+        # MAT-04 : la part de Lumiere du plancher du jour 1 — les jardins du
+        # temple sont a une minute du Fanal, et la lumiere s'y apprend.
+        pnjs:
+            - slug: jardins-chantre-elionor
+              name: 'Elionor, chantre du temple'
+              name_en: 'Elionor, Temple Cantor'
+              class_type: villager
+              greeting: "La lumiere n'est pas rare, elle est patiente. Ces materia attendent quelqu'un qui veuille bien s'en servir."
+              shop_items: [m2-light-aura, m2-holy-light, m2-prayer, m2-sacred-strike, m2-smite]
         source_map: 'Le Fanal'
 
     dunes-d-ambre:
@@ -908,7 +947,9 @@ zones:
               # La tutrice naturelle de la quatrieme recolte : c'est elle qui
               # vend le couteau et achete le gibier.
               greeting: "Un cerf, ça ne s'affronte pas, ça se chasse. Reviens avec des peaux, je te dirai si tu as appris quelque chose."
-              shop_items: [healing-potion-small]
+              # MAT-04 : la part de Bete du plancher du jour 1 — le gibier des
+              # Vallons, la zone-ecole du depeceur.
+              shop_items: [healing-potion-small, m2-venomous-bite, m2-thorn-shield]
               opens_at: 6
               closes_at: 21
 
