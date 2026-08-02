@@ -46,6 +46,12 @@
             </div>
         {% endif %}
 
+        {% if hostileSurcharge is defined and hostileSurcharge > 0 %}
+            <div class="ds-banner ds-banner--loss mb-4">
+                <p>{{ 'game.shop.hostile_surcharge'|trans({'%percent%': hostileSurcharge}) }}</p>
+            </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {# Buy section #}
             <div>
@@ -58,6 +64,9 @@
                             {% set itemStock = stockInfo[item.slug] ?? null %}
                             {% set outOfStock = itemStock is not null and itemStock <= 0 %}
                             {% set effectivePrice = (totalDiscount is defined and totalDiscount > 0) ? (item.price * (1 - totalDiscount))|round(0, 'ceil') : item.price %}
+                            {% if hostileSurcharge is defined and hostileSurcharge > 0 %}
+                                {% set effectivePrice = ((effectivePrice * (100 + hostileSurcharge)) / 100)|round(0, 'ceil') %}
+                            {% endif %}
                             <div class="ds-row ds-edge-{{ item.rarity|default('common') }}{% if outOfStock %} opacity-50{% endif %}"
                                  data-item-slug="{{ item.slug }}">
                                 <div class="flex-1 min-w-0">

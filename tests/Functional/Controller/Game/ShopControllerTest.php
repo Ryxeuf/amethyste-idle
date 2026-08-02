@@ -12,6 +12,7 @@ use App\Entity\Game\Item;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
+use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use App\Helper\PlayerHelper;
@@ -31,6 +32,7 @@ class ShopControllerTest extends TestCase
     private GameTimeService $gameTimeService;
     private RegionBonusProvider&MockObject $regionBonusProvider;
     private PlayerRenownDiscountProvider $renownDiscountProvider;
+    private HostileConsequenceResolver&MockObject $hostileConsequences;
     private ShopController $controller;
 
     protected function setUp(): void
@@ -40,6 +42,9 @@ class ShopControllerTest extends TestCase
         $this->gameTimeService = new GameTimeService(new StaticUtcDayCycleFactorProvider(1.0));
         $this->regionBonusProvider = $this->createMock(RegionBonusProvider::class);
         $this->renownDiscountProvider = new PlayerRenownDiscountProvider();
+        // Par defaut, pas de surcharge (le mock rend 0) : les cas FAC-03 la
+        // configurent explicitement.
+        $this->hostileConsequences = $this->createMock(HostileConsequenceResolver::class);
 
         $this->controller = new ShopController(
             $this->playerHelper,
@@ -48,6 +53,7 @@ class ShopControllerTest extends TestCase
             $this->regionBonusProvider,
             $this->renownDiscountProvider,
             new GameMasterPolicy(),
+            $this->hostileConsequences,
         );
 
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -103,6 +109,56 @@ class ShopControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
         $this->assertTrue($data['success']);
         $this->assertStringContainsString('renommée', $data['message']);
+    }
+
+    /**
+     * FAC-03 — Hostile chez les Marchands : la boutique fait payer la rancune.
+     * 100 gils deviennent 110 — une surcharge, appliquee apres les remises.
+     */
+    public function testBuyAppliesHostileSurcharge(): void
+    {
+        $pnj = $this->createPnjMock(['iron-sword']);
+        $item = $this->createItemMock('iron-sword', 100, 'Épée en fer');
+        $this->setupRepositories(pnj: $pnj, item: $item);
+
+        $player = $this->createPlayerMock(500);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerHelper->method('getBagInventory')->willReturn($this->createMock(Inventory::class));
+
+        $this->hostileConsequences->method('shopSurchargePercent')->with($player)->willReturn(10);
+
+        $player->expects($this->once())->method('removeGils')->with(110);
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $response = $this->controller->buy(1, $this->createBuyRequest('iron-sword'));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getContent(), true);
+        $this->assertTrue($data['success']);
+    }
+
+    /**
+     * Le garde-fou de FAC-03 : la surcharge ne ferme jamais la boutique. Le
+     * plancher T1 (ECO-02) reste un droit — un Hostile qui a les gils achete,
+     * simplement plus cher. Seul le manque de gils refuse, comme pour tous.
+     */
+    public function testAHostilePlayerCanStillBuyWhenSolvent(): void
+    {
+        $pnj = $this->createPnjMock(['bronze-pickaxe']);
+        $item = $this->createItemMock('bronze-pickaxe', 50, 'Pioche de bronze');
+        $this->setupRepositories(pnj: $pnj, item: $item);
+
+        $player = $this->createPlayerMock(55);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerHelper->method('getBagInventory')->willReturn($this->createMock(Inventory::class));
+
+        $this->hostileConsequences->method('shopSurchargePercent')->willReturn(10);
+
+        $player->expects($this->once())->method('removeGils')->with(55);
+
+        $response = $this->controller->buy(1, $this->createBuyRequest('bronze-pickaxe'));
+
+        $this->assertEquals(200, $response->getStatusCode(), 'L\'hostilite surcharge le prix, elle ne ferme jamais la boutique.');
     }
 
     public function testBuyInsufficientGils(): void

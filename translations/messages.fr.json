@@ -58,6 +58,9 @@
     "email_placeholder": "votre@email.com"
   },
   "game": {
+    "shop": {
+      "hostile_surcharge": "Les Marchands n'ont pas oublié vos gestes : +%percent% % sur tous les prix. La boutique vous sert, mais elle vous fait payer."
+    },
     "title": "Améthyste",
     "welcome_message": "Bienvenue dans l'espace de jeu, %email%",
     "access_info": "Cette page est accessible uniquement aux utilisateurs connectés.",

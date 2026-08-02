@@ -127,6 +127,38 @@ gestures:
         - 'dune_wraith'
         - 'hoarfrost_shade'
 
+# --- Hostile a consequences (FAC-03) -----------------------------------------
+# GAME_WORLD § 6.4 d : etre Hostile (reputation negative) coute quelque chose
+# aupres de chaque maison — mais **jamais la boucle cœur**. Deux bornes
+# absolues, tenues par le vocabulaire ferme des types de consequence : aucun
+# type ne peut bloquer l'energie, le voyage de base, le combat ou le plancher
+# T1 — une consequence **surcharge ou refuse un privilege**, elle ne ferme
+# jamais un droit.
+#
+# Les types actifs aujourd'hui : `shop_surcharge` (les Marchands font payer
+# leur rancune au comptoir PNJ) et `bastion_travel_surcharge` (les fouilles de
+# l'Ordre ralentissent l'entree dans les zones a foyer Bastion — un surcout de
+# temps, jamais un refus). Les autres sont des **crochets declares en avance**,
+# meme doctrine que les routes de geste : `altar_tax_ceiling` attend l'Autel
+# d'eveil (REP), `poisoned_rumors` attend les rumeurs (FAC-06),
+# `buyback_floor_closed` et `materia_reading_refused` attendent la Fonderie
+# (FAC-04). Un crochet inerte n'est pas invalide.
+hostile:
+    consequences:
+        marchands:
+            -   type: 'shop_surcharge'
+                percent: 10
+        chevaliers:
+            -   type: 'bastion_travel_surcharge'
+                percent: 50
+            -   type: 'altar_tax_ceiling'
+        ombres:
+            -   type: 'poisoned_rumors'
+        fonderie:
+            -   type: 'buyback_floor_closed'
+        mages:
+            -   type: 'materia_reading_refused'
+
 # --- Le patronage ------------------------------------------------------------
 # GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent un
 # patronage — on porte les couleurs d'une seule faction a la fois (changeable
