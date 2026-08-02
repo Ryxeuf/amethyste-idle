@@ -524,7 +524,7 @@ du geste (§3.1).
 |---|---|---|---:|---|---|---:|---:|---|
 | 1 | **Le geste** — ouverture | Embuscade (`ambush`) | 2 | `m2-ambush` | Rare | 180 | 1 | à **reclasser** |
 | 2 | **Le plan B** — et la marque | Toucher nécrotique (`necrotic-touch`) | 1 | `m1-necrotic-touch` | Uncommon | 130 | 0 | à **reclasser** + statut |
-| 3 | **La réponse** — posture | Voile d'ombre (`shadow-veil`) | 2 | `m2-shadow-veil` | Rare | 180 | 3 | à **créer** |
+| 3 | **La réponse** — posture | Voile d'ombre (`shadow-veil`) | 2 | `m2-shadow-veil` | Rare | 180 | 1 | à **créer** |
 | 4 | **La zone** | Moulinet d'ombre (`shadow-whirl`) | 3 | `m3-shadow-whirl` | Epic | 280 | 2 | à **créer** |
 | 5 | **Branche l'Ombre** — rouvrir | Danse des ombres (`shadow-dance`) | 5 | `m5-shadow-dance` | Legendary | 380 | 4 | à **reclasser** |
 | 6 | **Branche la Lame** — la pointe | Coup mortel (`deadly-strike`) | 4 | `m4-deadly-strike` | Legendary | 320 | 3 | à **reclasser** |
@@ -536,25 +536,28 @@ de ténèbres pour les paliers 2-3, coffre et donjon pour les 4-5.
 
 ### 9 bis.2 La grille de reprise — ce que la mêlée paie à la place des PM
 
-GAME_MATERIA §2.3 donne un `energy_cost` par palier. C'est la grille des **sorts**.
-Une technique ne coûte pas de PM : elle coûte **le tour**, et le canon a déjà dit
-où ça vit (`Spell::cooldown`, au modèle, sans consommateur). Il manque la grille.
+GAME_MATERIA §2.3 ne donnait qu'un `energy_cost` par palier — la grille des
+**sorts**. Une technique ne coûte pas de PM : elle coûte **le tour**, et le canon
+avait déjà dit où ça vit (`Spell::cooldown`, au modèle, sans consommateur). Il
+manquait la grille ; *elle est actée depuis le 2026-08-01 (GAME_MATERIA §2.3 bis,
+écart n° 7), avec la ligne « distance » que le §13.6 a rendue nécessaire.*
 
 | Palier | m1 | m2 | m3 | m4 | m5 |
 |---|---:|---:|---:|---:|---:|
 | **Sorts** — PM | 10 | 15 | 20 | 25 | 30 |
 | **Mêlée** — reprise (tours) | **0** | **1** | **2** | **3** | **4** |
+| **Distance** — munitions | **1** | **2** | **3** | **4** | **5** |
 
 > **Le contrôle est déjà dans les données** : `shadow-dance`, unique geste livré à
 > porter une reprise, porte `cooldown: 4` — exactement ce que la grille prescrit
 > pour un niveau 5. La grille ne s'invente pas, elle se lit.
 
 Ce que ça produit au combat, et qui est le vrai visage du registre mêlée : un
-assassin fini a **six gestes dont deux sont disponibles à chaque tour** (le
-Toucher nécrotique et l'Embuscade), et quatre qui reviennent par cycles. Il ne
-tombe jamais en panne — il joue une **rotation**, là où le pyromancien joue un
-pic puis se tait. C'est la différence structurelle du §2, obtenue sans une seule
-règle supplémentaire.
+assassin fini a **six gestes dont un seul est disponible à chaque tour** — le
+Toucher nécrotique, celui du palier 1 —, les cinq autres revenant par cycles de 1
+à 4 tours. Il ne tombe jamais en panne, mais il n'a jamais tout sous la main : il
+joue une **rotation**, là où le pyromancien joue un pic puis se tait. C'est la
+différence structurelle du §2, obtenue sans une seule règle supplémentaire.
 
 ### 9 bis.3 Les six matéria, en détail
 
@@ -586,9 +589,16 @@ l'Assassin existe, c'est le statut Aveuglé** — pas une matéria.
 **3 · Matéria : Voile d'ombre** — `m2-shadow-veil` · ténèbres · technique mêlée ·
 `protection` / `soi` · **forme : posture** · **à créer**
 
-> À écrire : aucun dégât, reprise 3, dépose **2 tours** d'esquive accrue sur son
-> lanceur. Portée `soi`, donc pas de dépôt de groupe — mais **une durée**, parce
-> que toute `protection` en porte une (invariant 19).
+> À écrire : aucun dégât, reprise 1 *(la grille de son palier — aucune exception
+> par intention)*, dépose **2 tours** d'esquive accrue sur son lanceur. Portée
+> `soi`, donc pas de dépôt de groupe — mais **une durée**, parce que toute
+> `protection` en porte une (invariant 19).
+>
+> *Un dépôt de 2 tours à reprise 1 se maintiendrait en permanence — et c'est très
+> bien : le relancer coûte **le tour**, donc un assassin qui ne fait que se
+> protéger n'attaque jamais. La grille reste stricte, et le jeu s'auto-régule par
+> le coût d'opportunité. C'est ce que le canon veut dire par « en mêlée, le vrai
+> coût est en PV, puisqu'on reste au contact ».*
 
 Le seul accord non-`dégât` de l'arbre, et il est obligatoire : c'est le plan B du
 test du jour 1. C'est aussi ce qui donne un sens à la branche l'Ombre — un
@@ -646,13 +656,13 @@ rien l'un sans l'autre.
 
 ## 10. Ce que l'exercice a trouvé — sept écarts
 
-**Douze des quatorze sont réglés** au 2026-08-01 : les écarts **1 à 4**, **8**,
-**11**, **13** et **14** sont tranchés et portés dans
-[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) ; les écarts **5**, **6** et **10** sont
-corrigés dans le code. Reste le **7** — un trou de grille dans GAME_MATERIA,
-ouvert par l'exercice des matéria du §9 bis — plus les observations **12** et
-**15**, qui ne demandent pas d'arbitrage mais une mesure du simulateur et un
-jalon de donjon.
+**Les treize écarts sont réglés** au 2026-08-01. Les écarts **1 à 4**, **8**,
+**11**, **13** et **14** sont tranchés dans
+[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md), le **7** dans
+[GAME_MATERIA.md](GAME_MATERIA.md) ; les écarts **5**, **6** et **10** sont
+corrigés dans le code. Ne restent que les observations **12** et **15**, qui ne
+demandent pas d'arbitrage mais une mesure du simulateur (ARC-17) et un jalon de
+donjon (DON-02/03).
 
 Les écarts 8 à 12 sont détaillés là où ils ont été trouvés — §12.7 pour le second
 arbre, §13.8 pour le troisième.
@@ -720,14 +730,18 @@ arbre, §13.8 pour le troisième.
    rendait dangereux : personne ne l'aurait vu avant l'ouverture de la fusion, et
    il aurait alors été lu comme une décision.*
 
-7. **La grille par palier de GAME_MATERIA §2.3 ne connaît que les PM.** Elle
-   donne un `energy_cost` de 10 à 30 selon le palier — ce qui est la grille des
-   **sorts**. Une matéria de technique ne coûte pas de PM : elle coûte une
-   **reprise** (§2 du canon : « le registre mêlée est le seul dont la ressource
-   ne se reporte pas d'un combat au suivant »). Sans seconde ligne, une matéria de
-   mêlée dérivée par la grille facturera des PM à un guerrier. *Proposition :
-   la grille du §9 bis.2 — reprise 0/1/2/3/4 par palier, qui tombe exactement sur
-   le `cooldown: 4` du seul geste livré qui en porte un.*
+7. **La grille par palier de GAME_MATERIA §2.3 ne connaissait que les PM** — la
+   grille des **sorts**. Une matéria de technique ne coûte pas de PM : elle coûte
+   une **reprise**, et une matéria de distance une **munition**. Sans ces lignes,
+   toute matéria dérivée par la grille facturait des PM à un guerrier, effaçant la
+   seule différence structurelle entre les trois registres.
+   → **Tranché le 2026-08-01** (GAME_MATERIA §2.3 bis) : une ligne par registre —
+   PM 10/15/20/25/30, reprise **0/1/2/3/4**, munitions **1/2/3/4/5** — plus trois
+   règles : *un geste ne facture que la ressource de son registre*, *aucune
+   exception par intention*, et un `cooldown` additionnel permis hors mêlée à
+   partir du palier 3 comme garde-fou anti-spam. La ligne mêlée ne s'invente pas :
+   elle tombe sur le `cooldown: 4` du seul geste livré qui en porte un. Reste à
+   créer côté modèle : le champ `ammoCost` sur `Spell`.
 
 ---
 
@@ -1086,11 +1100,11 @@ combat court au combat long**. Aucun levier commun (`grip`/`tempo` contre
 | # | Rôle | Geste | Niv. | Slug | Rareté | Prix | Munitions | État |
 |---|---|---|---:|---|---|---:|---:|---|
 | 1 | l'entrée · la marque | Piège incendiaire (`fire-trap`) | 2 | `m2-fire-trap` | Rare | 180 | 2 | existe ✔ |
-| 2 | le plan B | Bouclier d'étincelles (`ember-shield`) | 2 | `m2-ember-shield` | Rare | 180 | 0 | existe ✔ |
-| 3 | l'entrave de zone | Mur de feu (`fire-wall`) | 2 | `m2-fire-wall` | Rare | 180 | 3 | existe ✔ · `domain: null` |
+| 2 | le plan B | Bouclier d'étincelles (`ember-shield`) | 2 | `m2-ember-shield` | Rare | 180 | 2 | existe ✔ |
+| 3 | l'entrave de zone | Mur de feu (`fire-wall`) | 2 | `m2-fire-wall` | Rare | 180 | 2 | existe ✔ · `domain: null` |
 | 4 | l'entrave déposée | Nappe de poix (`tar-slick`) | 3 | `m3-tar-slick` | Epic | 280 | 3 | **créer** |
 | 5 | branche Mèche courte | Détonateur (`detonator`) | 4 | `m4-detonator` | Legendary | 320 | 4 | **créer** |
-| 6 | branche Réserve | Tir couvrant (`suppressing-fire`) | 3 | `m3-suppressing-fire` | Epic | 280 | 4 | **créer** |
+| 6 | branche Réserve | Tir couvrant (`suppressing-fire`) | 3 | `m3-suppressing-fire` | Epic | 280 | 3 | **créer** |
 
 **Trois existent, trois sont à créer** — et le ratio se lit : les gestes livrés
 sont ceux que l'arbre partage avec la tradition du feu ; ceux à écrire sont ceux
@@ -1101,10 +1115,12 @@ exception : une matéria ouverte par plusieurs arbres n'appartient à aucun
 (GAME_MATERIA §2.1). Le Pyromancien et l'Artificier l'ouvrent tous les deux — l'un
 au palier 1, l'autre au palier 1 : **le même geste, deux raisons de le vouloir.**
 
-> **Ce que la colonne « Munitions » suppose** : que `Spell` porte un coût en
-> munitions comme il porte un `energyCost` et un `cooldown`. C'est la troisième
-> ligne de la grille par palier (§9 bis.2), et elle manque au même titre que la
-> reprise. Proposition symétrique : **2 / 2 / 3 / 4 / 5** par palier m1→m5.
+> **La colonne « Munitions » suit strictement le palier** — 1/2/3/4/5, la
+> troisième ligne de la grille actée à GAME_MATERIA §2.3 bis. Y compris le
+> Bouclier d'étincelles : *aucune exception par intention*, une protection de
+> distance consomme sa charge comme un tir. Un geste qui ne coûterait rien parce
+> qu'il ne vise personne serait le seul geste gratuit du jeu, donc le seul qu'on
+> jouerait sans réfléchir. Reste à créer : le champ `ammoCost` sur `Spell`.
 
 ### 13.7 Le test du voisin, croisé
 
