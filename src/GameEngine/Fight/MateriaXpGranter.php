@@ -3,6 +3,7 @@
 namespace App\GameEngine\Fight;
 
 use App\Enum\Element;
+use App\Enum\MonsterRank;
 use App\Event\Fight\MobDeadEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,6 +13,20 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class MateriaXpGranter implements EventSubscriberInterface
 {
     private const BASE_XP_PER_KILL = 10;
+
+    /**
+     * BES-01 : l'XP suit la case `tier × rank`, plus une echelle 1-40.
+     *
+     * Recalibrage a magnitude constante : les monstres T1 (ex-niveaux 1-5)
+     * rendaient 10-50 XP, les T4 (ex-niveaux 26-40) 260-400. Le rang
+     * multiplie — l'elite vaut deux tout-venants, le boss en vaut cinq
+     * (l'ancien BOSS_XP_MULTIPLIER, conserve).
+     *
+     * @var array<int, int>
+     */
+    private const TIER_XP_FACTOR = [0 => 1, 1 => 3, 2 => 8, 3 => 18, 4 => 32];
+
+    private const ELITE_XP_MULTIPLIER = 2;
     private const BOSS_XP_MULTIPLIER = 5;
 
     public function __construct(
@@ -43,12 +58,13 @@ class MateriaXpGranter implements EventSubscriberInterface
         }
 
         $monster = $mob->getMonster();
-        $monsterLevel = $monster->getLevel();
-        $xpGain = self::BASE_XP_PER_KILL * $monsterLevel;
+        $xpGain = self::BASE_XP_PER_KILL * (self::TIER_XP_FACTOR[$monster->getTier()] ?? 1);
 
-        if ($monster->isBoss()) {
-            $xpGain *= self::BOSS_XP_MULTIPLIER;
-        }
+        $xpGain *= match ($monster->getRank()) {
+            MonsterRank::Boss => self::BOSS_XP_MULTIPLIER,
+            MonsterRank::Elite => self::ELITE_XP_MULTIPLIER,
+            MonsterRank::Common => 1,
+        };
 
         $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($mob->getMap());
         $xpGain = (int) round($xpGain * $xpMultiplier);

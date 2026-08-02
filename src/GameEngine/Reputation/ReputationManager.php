@@ -100,12 +100,17 @@ class ReputationManager
         ]);
     }
 
-    public function getReputationAmount(int $monsterLevel): int
+    /**
+     * BES-01 : les seuils suivent le palier, plus une echelle 1-40.
+     * Recalibrage a magnitude constante — l'ancien seuil >= 20 (50 points)
+     * couvrait les ex-niveaux du bloc de fin, devenus T4.
+     */
+    public function getReputationAmount(int $monsterTier): int
     {
         return match (true) {
-            $monsterLevel >= 20 => 50,
-            $monsterLevel >= 10 => 25,
-            $monsterLevel >= 5 => 15,
+            $monsterTier >= 4 => 50,
+            $monsterTier >= 3 => 25,
+            $monsterTier >= 2 => 15,
             default => 10,
         };
     }

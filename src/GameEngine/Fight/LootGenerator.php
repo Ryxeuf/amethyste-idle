@@ -47,7 +47,7 @@ class LootGenerator implements EventSubscriberInterface
         $dungeonDropMultiplier = (float) ($mob->getFight()?->getMetadataValue('difficulty_drop_multiplier', 1.0) ?? 1.0);
         $dropMultiplier *= $dungeonDropMultiplier;
 
-        $monsterDifficulty = $mob->getMonster()->getDifficulty();
+        $monsterRank = $mob->getMonster()->getRank();
 
         // Determine if this is a coop fight for round-robin loot distribution
         $fight = $mob->getFight();
@@ -63,7 +63,7 @@ class LootGenerator implements EventSubscriberInterface
         $roundRobinIndex = 0;
 
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
-            if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
+            if (null !== $monsterItem->getMinRank() && !$monsterRank->atLeast($monsterItem->getMinRank())) {
                 continue;
             }
 

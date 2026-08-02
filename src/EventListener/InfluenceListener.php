@@ -67,9 +67,9 @@ class InfluenceListener implements EventSubscriberInterface
             $this->awardForPlayer(
                 $player,
                 InfluenceActivityType::MobKill,
-                ['mob_level' => $mob->getLevel()],
+                ['mob_tier' => $mob->getTier()],
                 $region,
-                ['monster' => $mob->getMonster()->getSlug(), 'level' => $mob->getLevel()],
+                ['monster' => $mob->getMonster()->getSlug(), 'tier' => $mob->getTier()],
             );
         }
 

@@ -6,6 +6,7 @@ use App\DataFixtures\Game\ItemFixtures as GameItemFixtures;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
+use App\Enum\MonsterRank;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -491,10 +492,10 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'dragon', 'item' => 'obsidian_pendant', 'probability' => 2],
 
             // --- Drops légendaires rares sur monstres de haut niveau ---
-            ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minDifficulty' => 3],
-            ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],
-            ['monster' => 'stone_golem', 'item' => 'golem_heart_shield', 'probability' => 3, 'minDifficulty' => 3],
-            ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3, 'minDifficulty' => 3],
+            ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minRank' => 'elite'],
+            ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minRank' => 'elite'],
+            ['monster' => 'stone_golem', 'item' => 'golem_heart_shield', 'probability' => 3, 'minRank' => 'elite'],
+            ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3, 'minRank' => 'elite'],
 
             // =================================================================
             // ECO-24b-b — Les cuirs du tanneur
@@ -601,7 +602,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             $monsterItem->setItem($this->getReference($data['item'], Item::class));
             $monsterItem->setProbability($data['probability']);
             $monsterItem->setGuaranteed($data['guaranteed'] ?? false);
-            $monsterItem->setMinDifficulty($data['minDifficulty'] ?? null);
+            $monsterItem->setMinRank(isset($data['minRank']) ? MonsterRank::from($data['minRank']) : null);
             $monsterItem->setCreatedAt(new \DateTime());
             $monsterItem->setUpdatedAt(new \DateTime());
 

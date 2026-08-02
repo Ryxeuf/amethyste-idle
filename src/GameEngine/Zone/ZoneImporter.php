@@ -107,6 +107,7 @@ class ZoneImporter
         $zone->setDescriptionTranslations(null !== $data['description_en'] ? ['en' => (string) $data['description_en']] : null);
         $zone->setType((string) $data['type']);
         $zone->setIsSafe((bool) $data['safe']);
+        $zone->setTier((int) $data['tier']);
         $zone->setEnabled((bool) $data['enabled']);
         $zone->setMapX(isset($data['map_x']) ? (int) $data['map_x'] : null);
         $zone->setMapY(isset($data['map_y']) ? (int) $data['map_y'] : null);
@@ -226,7 +227,7 @@ class ZoneImporter
         // mais non nullable en base.
         $mob->setCoordinates('0.0');
         $mob->setLife($monster->getLife());
-        $mob->setLevel($monster->getLevel());
+        $mob->setTier($monster->getTier());
         $mob->setNocturnal((bool) $entry['nocturnal']);
 
         if (null !== $entry['group_tag']) {

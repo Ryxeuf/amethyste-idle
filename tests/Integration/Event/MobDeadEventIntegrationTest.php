@@ -244,12 +244,12 @@ class MobDeadEventIntegrationTest extends TestCase
         return $player;
     }
 
-    private function createMobWithFight(array $players, string $monsterSlug, int $level, ?Faction $faction): Mob&MockObject
+    private function createMobWithFight(array $players, string $monsterSlug, int $tier, ?Faction $faction): Mob&MockObject
     {
         $monster = $this->createMock(Monster::class);
         $monster->method('getSlug')->willReturn($monsterSlug);
         $monster->method('getName')->willReturn(ucfirst($monsterSlug));
-        $monster->method('getLevel')->willReturn($level);
+        $monster->method('getTier')->willReturn($tier);
         $monster->method('getFaction')->willReturn($faction);
 
         $fight = $this->createMock(Fight::class);
@@ -258,7 +258,7 @@ class MobDeadEventIntegrationTest extends TestCase
         $mob = $this->createMock(Mob::class);
         $mob->method('getFight')->willReturn($fight);
         $mob->method('getMonster')->willReturn($monster);
-        $mob->method('getLevel')->willReturn($level);
+        $mob->method('getTier')->willReturn($tier);
         $mob->method('isSummoned')->willReturn(false);
 
         return $mob;

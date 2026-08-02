@@ -49,7 +49,7 @@ class ReputationListener implements EventSubscriberInterface
             return;
         }
 
-        $amount = $this->reputationManager->getReputationAmount($monster->getLevel());
+        $amount = $this->reputationManager->getReputationAmount($monster->getTier());
 
         foreach ($players as $player) {
             if ($player->isDead()) {

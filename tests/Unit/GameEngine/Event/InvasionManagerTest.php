@@ -52,7 +52,7 @@ class InvasionManagerTest extends TestCase
 
     public function testSpawnsMobsOnActivation(): void
     {
-        $monster = $this->createMonster('goblin', 'Gobelin', 50, 5);
+        $monster = $this->createMonster('goblin', 'Gobelin', 50, 1);
         $map = $this->createMap(2);
         $event = $this->createInvasionEvent();
 
@@ -230,7 +230,7 @@ class InvasionManagerTest extends TestCase
 
     public function testTickSpawnsNextWaveWhenReady(): void
     {
-        $monster = $this->createMonster('goblin', 'Gobelin', 50, 5);
+        $monster = $this->createMonster('goblin', 'Gobelin', 50, 1);
         $map = $this->createMap(2);
 
         $event = $this->createInvasionEvent();
@@ -348,13 +348,13 @@ class InvasionManagerTest extends TestCase
         return $event;
     }
 
-    private function createMonster(string $slug, string $name, int $life, int $level): Monster
+    private function createMonster(string $slug, string $name, int $life, int $tier): Monster
     {
         $monster = new Monster();
         $monster->setName($name);
         $monster->setSlug($slug);
         $monster->setLife($life);
-        $monster->setLevel($level);
+        $monster->setTier($tier);
 
         return $monster;
     }

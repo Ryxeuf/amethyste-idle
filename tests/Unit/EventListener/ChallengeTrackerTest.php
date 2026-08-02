@@ -350,7 +350,7 @@ class ChallengeTrackerTest extends TestCase
     /**
      * @param Player[] $players
      */
-    private function createMobWithFight(int $level, array $players): Mob&MockObject
+    private function createMobWithFight(int $tier, array $players): Mob&MockObject
     {
         $fight = $this->createMock(Fight::class);
         $fight->method('getPlayers')->willReturn(new ArrayCollection($players));
@@ -358,7 +358,7 @@ class ChallengeTrackerTest extends TestCase
         $mob = $this->createMock(Mob::class);
         $mob->method('isSummoned')->willReturn(false);
         $mob->method('getFight')->willReturn($fight);
-        $mob->method('getLevel')->willReturn($level);
+        $mob->method('getTier')->willReturn($tier);
 
         return $mob;
     }
