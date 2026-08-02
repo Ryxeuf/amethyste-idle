@@ -22,6 +22,12 @@ use Doctrine\Migrations\AbstractMigration;
  * Les personnages deja crees gardent leurs statistiques telles quelles. Les
  * recalculer serait pire que le defaut : on retirerait des points de vie a des
  * joueurs en place pour corriger une decision qu'ils n'ont pas prise.
+ *
+ * La table s'appelle `game_races`, pas `race` : l'entite `Race` porte
+ * `#[ORM\Table(name: 'game_races')]` depuis sa creation
+ * (`Version20260318Race`). Ecrite `race`, cette migration a mis la production
+ * en boucle de redemarrage le 2026-08-02 — l'entree du conteneur applique les
+ * migrations au demarrage, et `set -e` fait sortir sur la premiere qui echoue.
  */
 final class Version20260729MRaceDropStatModifiers extends AbstractMigration
 {
@@ -32,14 +38,14 @@ final class Version20260729MRaceDropStatModifiers extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE race DROP COLUMN IF EXISTS stat_modifiers');
+        $this->addSql('ALTER TABLE game_races DROP COLUMN IF EXISTS stat_modifiers');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE race ADD COLUMN IF NOT EXISTS stat_modifiers JSON DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_races ADD COLUMN IF NOT EXISTS stat_modifiers JSON DEFAULT NULL');
         $this->addSql(<<<'SQL'
-            UPDATE race
+            UPDATE game_races
             SET stat_modifiers = '{"life": 0, "energy": 0, "speed": 0, "hit": 0}'::json
             WHERE stat_modifiers IS NULL
         SQL);
