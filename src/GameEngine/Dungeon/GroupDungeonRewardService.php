@@ -82,7 +82,14 @@ class GroupDungeonRewardService
                             $playerItem = new PlayerItem();
                             $playerItem->setGenericItem($materia);
                             $playerItem->setNbUsages($materia->getNbUsages());
-                            $inventory->addItem($playerItem);
+                            $playerItem->setInventory($inventory);
+
+                            // Liaison a l'obtention (ECO-01), comme `InventoryHelper::addItem()` —
+                            // qui ecrit dans le sac du joueur de session, pas celui qu'on recompense.
+                            if ($materia->isBoundOnPickup() && !$playerItem->isBound()) {
+                                $playerItem->setBoundToPlayerId($player->getId());
+                            }
+
                             $this->entityManager->persist($playerItem);
                             break;
                         }

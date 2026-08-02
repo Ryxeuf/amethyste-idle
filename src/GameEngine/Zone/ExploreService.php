@@ -2,13 +2,13 @@
 
 namespace App\GameEngine\Zone;
 
+use App\Entity\App\Inventory;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
 use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
-use App\Entity\App\Inventory;
-use App\Entity\App\PlayerItem;
 use App\GameEngine\Fight\Handler\FightHandler;
 use App\GameEngine\Materia\MateriaLootTable;
 use App\GameEngine\Progression\ActionYieldResolver;
@@ -239,7 +239,14 @@ class ExploreService
                 $playerItem = new PlayerItem();
                 $playerItem->setGenericItem($materia);
                 $playerItem->setNbUsages($materia->getNbUsages());
-                $inventory->addItem($playerItem);
+                $playerItem->setInventory($inventory);
+
+                // Liaison a l'obtention (ECO-01), comme `InventoryHelper::addItem()` —
+                // qui ne peut pas servir ici : il ecrit dans le sac, pas le porte-materia.
+                if ($materia->isBoundOnPickup() && !$playerItem->isBound()) {
+                    $playerItem->setBoundToPlayerId($player->getId());
+                }
+
                 $this->entityManager->persist($playerItem);
 
                 $this->addJournalEntry($player, sprintf('Exploration : coffre trouve, +%d gils et une materia (%s)', $gils, $zone->getName()), [
