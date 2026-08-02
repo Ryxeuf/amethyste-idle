@@ -39,7 +39,7 @@ class DungeonActionResolver
     public function resolve(Player $player, ?string $spellSlug = null): array
     {
         $bonuses = $this->skillResolver->getCombatBonuses($player);
-        $skillDamage = max(0, (int) ($bonuses['damage'] ?? 0));
+        $skillDamage = max(0, $bonuses['damage']);
 
         if (null !== $spellSlug && '' !== $spellSlug) {
             $entry = $this->capacityResolver->findMateriaSpell($player, $spellSlug);
