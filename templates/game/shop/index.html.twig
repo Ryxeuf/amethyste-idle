@@ -65,7 +65,7 @@
                             {% set outOfStock = itemStock is not null and itemStock <= 0 %}
                             {% set effectivePrice = (totalDiscount is defined and totalDiscount > 0) ? (item.price * (1 - totalDiscount))|round(0, 'ceil') : item.price %}
                             {% if hostileSurcharge is defined and hostileSurcharge > 0 %}
-                                {% set effectivePrice = (effectivePrice * (1 + hostileSurcharge / 100))|round(0, 'ceil') %}
+                                {% set effectivePrice = ((effectivePrice * (100 + hostileSurcharge)) / 100)|round(0, 'ceil') %}
                             {% endif %}
                             <div class="ds-row ds-edge-{{ item.rarity|default('common') }}{% if outOfStock %} opacity-50{% endif %}"
                                  data-item-slug="{{ item.slug }}">

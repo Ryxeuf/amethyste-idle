@@ -148,7 +148,9 @@ class ShopController extends AbstractController
         // rancune. Une surcharge, pas un refus.
         $hostileSurcharge = $this->hostileConsequences->shopSurchargePercent($player);
         if ($hostileSurcharge > 0) {
-            $totalCost = (int) ceil($totalCost * (1 + $hostileSurcharge / 100));
+            // Arithmetique entiere (plafond) : 100 * 1.1 en flottant vaut
+            // 110,000...01 et son ceil() facturerait 111.
+            $totalCost = intdiv($totalCost * (100 + $hostileSurcharge) + 99, 100);
         }
 
         if ($player->getGils() < $totalCost) {

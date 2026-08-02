@@ -96,7 +96,9 @@ class ZoneTravelService
         if (!$isGameMaster && $seconds > 0) {
             $surcharge = $this->hostileConsequences->travelSurchargePercent($player, $connection->getToZone());
             if ($surcharge > 0) {
-                $seconds = (int) ceil($seconds * (1 + $surcharge / 100));
+                // Arithmetique entiere (plafond), pas de flottant : voir la
+                // surcharge boutique.
+                $seconds = intdiv($seconds * (100 + $surcharge) + 99, 100);
             }
         }
 
