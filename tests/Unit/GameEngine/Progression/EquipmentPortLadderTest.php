@@ -167,6 +167,7 @@ class EquipmentPortLadderTest extends TestCase
             'axe' => 't1-axe',
             'staff' => 't1-staff',
             'bow' => 't1-bow',
+            'crossbow' => 't1-crossbow',
             'dagger' => 't1-dagger',
             'lance' => 't1-lance',
             'sword' => 'short-sword',

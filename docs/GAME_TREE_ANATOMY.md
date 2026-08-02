@@ -271,7 +271,7 @@ pas une fatalité*.
 
 | Nœud | Nature | Levier | pb | Effet |
 |---|---|---|---:|---|
-| **Ce qui ne voit pas venir** | capstone | `power` | 14 | **+28 %** de dégâts *contre une cible Aveuglée* (14 pb × 2,0) |
+| **Ce qui ne voit pas venir** | capstone | `power` | 14 | **+19,6 %** de dégâts *contre une cible Aveuglée* (14 pb × 1,4 — décision 23) |
 
 Mois 3. La condition est **atteignable au tour 2 avec le seul kit d'entrée** —
 Toucher nécrotique applique Aveuglé, et il est gratuit. Elle ne demande jamais un
@@ -312,7 +312,7 @@ que la fusion n'ouvre pas.
 | 3 · Lame | 50 | **Entre les côtes** | passif | `critical_power` +13,5 % | 9 |
 | 3 · Lame | 50 | **Fil aiguisé** | passif | `pierce` +6,3 pt | 9 |
 | 3 · Lame | 50 | Accord : **Coup mortel** | accord | `dégât` · `une cible` | — |
-| Capstone | 100 | **Ce qui ne voit pas venir** | capstone | `power` **+28 %** *contre une cible Aveuglée* | 14 |
+| Capstone | 100 | **Ce qui ne voit pas venir** | capstone | `power` **+19,6 %** *contre une cible Aveuglée* | 14 |
 | *Dormant* | *150* | *Accord d'hybride (ténèbres)* | *dormant* | *réservé* | — |
 
 **18 nœuds écrits · 15 apprenables · 390 points** (`4×10 + 4×25 + 3×50 + 100`)
@@ -425,7 +425,7 @@ C'est la moitié de la réponse à « tout ce qu'un arbre peut comprendre » : c
 | **Fin de semaine 1** | 40 | +3 % de dégâts, +1,5 pt de critique, Voile, dague T2 | Le premier tour où frapper n'est pas la réponse devient jouable. Les passifs sont invisibles individuellement — c'est assumé |
 | **Semaines 3-4** | 140 | Critique conditionné à la dague, dégâts critiques, geste de zone, dague T3 | **Le premier vrai choix d'équipement** : l'épée trouvée hier est meilleure sur le papier, la dague vaut 4,2 points de critique |
 | **Semaines 6-8** | 290 | Une branche sur deux | Le choix qui distingue deux assassins. Il se paie pour en changer |
-| **Mois 3** | 390 | Le capstone | +28 % contre une cible Aveuglée — c'est-à-dire **après son propre tour 1**. Le joueur ne clique rien de plus : il est récompensé de jouer comme il jouait déjà |
+| **Mois 3** | 390 | Le capstone | +19,6 % contre une cible Aveuglée — c'est-à-dire **après son propre tour 1**. Le joueur ne clique rien de plus : il est récompensé de jouer comme il jouait déjà |
 
 **Le rythme.** À 16 combats par jour sur de la faune de son palier (T2 → 0,5 point
 par geste réussi), soit ~8 points par jour, les 390 points tombent en ~7 semaines
@@ -436,7 +436,7 @@ ne monte pas un arbre en tapant des rats.*
 **Ce qu'il porte au mois 3, et ce que ça vaut.** Cinq pièces de cuir (esquive
 pleine), une dague en main gauche et une en main droite (les deux conditions
 allumées), branche l'Ombre : +3 % de dégâts, +5,7 pt de critique, +9 % de dégâts
-critiques, +4,4 pt d'esquive, +12,6 % d'initiative — et +28 % de dégâts dès que sa
+critiques, +4,4 pt d'esquive, +12,6 % d'initiative — et +19,6 % de dégâts dès que sa
 cible est aveuglée. **Un assassin fini frappe environ 1,3 fois plus fort qu'un
 assassin qui vient d'ouvrir son arbre**, condition remplie, à équipement égal.
 C'est peu, et c'est voulu : la progression passe par le support, pas par l'arbre.
@@ -645,10 +645,14 @@ rien l'un sans l'autre.
 
 ## 10. Ce que l'exercice a trouvé — sept écarts
 
-**Les quatre premiers sont tranchés** (2026-08-01) et portés dans
-[GAME_ARCHETYPES.md](GAME_ARCHETYPES.md). **Le cinquième est corrigé** dans le
-code. Le sixième reste à aligner ; le septième est un trou de grille dans
-GAME_MATERIA, ouvert par l'exercice des matéria (§9 bis).
+**Sept des onze sont réglés** au 2026-08-01 : les écarts **1 à 4** et **11** sont
+tranchés et portés dans [GAME_ARCHETYPES.md](GAME_ARCHETYPES.md) ; les écarts
+**5** et **10** sont corrigés dans le code. Restent : le **6** (à aligner), le
+**7** (un trou de grille dans GAME_MATERIA, ouvert par l'exercice des matéria du
+§9 bis), le **8** (porté au canon en §7.1) et l'observation **12**.
+
+Les écarts 8 à 12 sont détaillés là où ils ont été trouvés — §12.7 pour le second
+arbre, §13.8 pour le troisième.
 
 1. **Le gabarit n'avait aucune place pour le pacte.** §6.1 écrit 18 nœuds et les
    nomme tous ; §6.5 autorisait un pacte sans dire où il se pose.
@@ -803,7 +807,7 @@ tissu. »*
 | 3 · **Veillée** | 50 | **Ce qu'il prend** | passif | `mending` **+12,6 %** *main gauche libre* *(teinte)* | 9 | Ce qui s'accroche |
 | 3 · **Veillée** | 50 | **Longue patience** | passif | `thrift` **−5,4 %** | 9 | Économie du geste |
 | 3 · **Veillée** | 50 | Accord : **Serviteur d'ossements** | accord | `dégât`·`une cible`· **forme : familier** *(dépôt offensif)* | — | Pulsation |
-| **Capstone** | 100 | **Ce qui ne lâche pas** | capstone | `grip` **+28 %** *contre une cible qui subit un de vos statuts* | 14 | **l'accord de branche** |
+| **Capstone** | 100 | **Ce qui ne lâche pas** | capstone | `grip` **+19,6 %** *contre une cible qui subit un de vos statuts* | 14 | **l'accord de branche** |
 | *Dormant* | *150* | *Accord d'hybride (ténèbres)* | dormant | — | — | rien |
 
 **18 nœuds écrits · 15 apprenables · 390 points · 50 pb par branche.**
@@ -889,7 +893,7 @@ Deux arbres, même élément, même marque. Ce qu'un joueur voit :
 | | Assassin | Nécromancien |
 |---|---|---|
 | Tour 1 | Embuscade — **le pic de dégâts de la rencontre** | Voile de cendre — **zéro dégât** |
-| Ce qu'il fait d'Aveuglé | la **consomme** : son capstone donne +28 % de dégâts contre une cible aveuglée | la **prolonge** : `grip` +28 % de durée, et son capstone récompense la cible *encore* sous statut |
+| Ce qu'il fait d'Aveuglé | la **consomme** : son capstone donne +19,6 % de dégâts contre une cible aveuglée | la **prolonge** : `grip` +19,6 % de durée, et son capstone récompense la cible *encore* sous statut |
 | Ce qu'il craint | le combat qui dure | le combat qui finit trop vite |
 | Ce qu'il paie | des PV — il est au contact | des PM — 4 gestes sur 6 en coûtent |
 | En donjon | il frappe, et son tour d'absence ne produit rien | il **dépose** — le familier joue les tours où il n'est pas là |
@@ -995,7 +999,7 @@ Catalogue public : *« À lancer le feu par la mécanique plutôt que par le ges
 | 3 · **Réserve** | 50 | **Rien ne se perd** | passif | `wind` **+13,5 %** de récupération de munition *(teinte)* | 9 | Ce qui couve |
 | 3 · **Réserve** | 50 | **Pointes durcies** | passif | `pierce` +6,3 pt | 9 | Ligne de tir |
 | 3 · **Réserve** | 50 | Accord : **Tir couvrant** | accord | `entrave`·`plusieurs cibles`· **dépôt long** | — | Nappe de poix |
-| **Capstone** | 100 | **Économie de guerre** | capstone | `thrift` **−16,8 %** de munition *contre une cible qui brûle* | 14 | **l'accord de branche** |
+| **Capstone** | 100 | **Économie de guerre** | capstone | `thrift` **−11,8 %** de munition *contre une cible qui brûle* | 14 | **l'accord de branche** |
 | *Dormant* | *150* | *Accord d'hybride (feu)* | dormant | — | — | rien |
 
 **18 nœuds écrits · 15 apprenables · 390 points · 50 pb par branche.**
@@ -1116,7 +1120,7 @@ durer, la dépenser.*
 
 ### 13.8 Ce que le troisième arbre a trouvé
 
-**Écart n° 10 — l'arbalète n'existe pas, et le catalogue public la promet.**
+**Écart n° 10 — l'arbalète n'existait pas, et le catalogue public la promettait.**
 `equipment_ports.yaml` déclare six familles (hache, épée, dague, lance, arc,
 bâton) ; `ItemFixtures` ne contient **aucun** objet `crossbow`. Or le catalogue
 public annonce à l'Artificier « Arbalètes, bombes et cuir », et le canon lui donne
@@ -1124,11 +1128,19 @@ un trait propre (« un gros coup, un long temps de reprise », §2.2). Conséque
 l'arbre **ne peut pas porter ses deux échelons de port** (2 des 15 nœuds), et
 aucun de ses passifs ne peut être conditionné à une famille d'arme.
 
-> *Proposition* : créer la famille `crossbow`, enseignée par **artificier,
-> ingénieur et chasseur** — trois éléments différents (feu, métal, bête), ce que
-> `EquipmentPortCatalog` exige déjà pour refuser qu'une arme impose un élément.
-> Plus les objets t1/t2/t3 correspondants. C'est le même chantier que la ligne du
-> bois de ZON-34 : une famille, trois paliers, un trait.
+> **Corrigé le 2026-08-01.** La famille `crossbow` existe : enseignée par
+> **artificier, ingénieur et chasseur** — trois éléments différents (feu, métal,
+> bête), ce que `EquipmentPortCatalog` exige déjà pour refuser qu'une arme impose
+> un élément. Trois objets (`t1/t2/t3-crossbow`, effet `damage` là où l'arc porte
+> `precision_boost` — *la frappe contre la cadence*), deux échelons
+> (`artificer_weapon_t2/t3`, **sans statistique**, conformément à l'écart n° 5),
+> et l'échelon 1 `port_crossbow` gratuit, généré depuis le catalogue.
+>
+> **Ce qui n'a délibérément pas changé** : le choix d'arme de l'acte I
+> (`QuestFixtures`) garde ses six voies. Une septième alourdirait le tunnel
+> d'entrée pour proposer l'archétype le moins lisible du jour 1 — et elle est
+> inutile : le parchemin de l'artificier livre `port_crossbow` comme n'importe
+> quel autre arbre livre le sien.
 
 **Écart n° 11 — le capstone contredit la règle de fréquence.** Le §7 fixe le
 capstone à ×2,0 d'amplitude « parce que sa condition de combat peut manquer ».
@@ -1137,30 +1149,35 @@ deux tiers du temps se paie ×1,4**. Or la condition canonique de l'assaut et du
 contrôle est *la marque de son propre élément*, posée par un accord **gratuit**
 dès le tour 1 : elle est vraie du tour 2 à la fin de la rencontre.
 
-| | Ce que le §7 accorde | Ce que la règle de fréquence donnerait |
-|---|---|---|
+| | Ancienne lecture | Lecture actée |
+|---|---:|---:|
 | Capstone de l'Assassin | `power` +28 % | `power` **+19,6 %** |
+| Capstone du Nécromancien | `grip` +28 % | `grip` **+19,6 %** |
 | Capstone du Pyromancien *(canon)* | `power` +28 % | `power` **+19,6 %** |
 | Capstone de l'Artificier | `thrift` −16,8 % | `thrift` **−11,8 %** |
+| Capstone du Guérisseur *(entretien)* | `mending` +28 % | `mending` +28 % — inchangé |
 
-**Les capstones d'assaut et de contrôle sont donc surévalués de 43 %** si la règle
-de fréquence s'applique, ce qui est un écart bien plus grand que tout ce que la
-grille des leviers arbitre. Deux sorties, à trancher :
+**Les capstones d'assaut, de contrôle et d'encaisse étaient donc surévalués de
+43 %** — un écart plus grand que tout ce que la grille des leviers arbitre par
+ailleurs.
 
-- **(a) Le capstone est l'exception assumée** — ×2,0 quelle que soit la fréquence,
-  parce qu'il coûte 100 points, qu'il arrive au mois 3 et qu'il demande un tour de
-  mise en place à chaque rencontre. *Simple, mais elle troue la règle.*
-- **(b) Le capstone suit la règle comme les autres** — ×1,4 quand sa condition est
-  structurellement fréquente, et le sommet d'un arbre rend +19,6 % au lieu de
-  +28 %. *Cohérent, mais il faut alors se demander si un capstone à +19,6 % se
-  **sent** encore.*
-
-> **Recommandation** : (b), avec une compensation prise ailleurs que dans le
-> multiplicateur — par exemple un capstone dont la condition est **réellement**
-> intermittente (« la cible est sous 40 % », « le premier tour »), ce que le
-> vocabulaire fermé offre déjà. C'est le simulateur d'ARC-05 qui doit mesurer la
-> fréquence, pas l'auteur qui l'estime — et cette mesure-ci, personne ne l'a
-> faite : elle se déduit du seul fait que l'accord qui marque est gratuit.
+> **Tranché le 2026-08-01** (GAME_ARCHETYPES §7, décision 23) : **le capstone
+> n'échappe pas à la règle de fréquence.** Trois fonctions sur quatre voient leur
+> sommet passer de +28 % à **+19,6 %** ; seul l'entretien, dont la condition
+> canonique est réellement intermittente (« le combat dure, ou la cible est sous
+> un seuil »), garde ×2,0.
+>
+> **La compensation ne se prend pas dans le multiplicateur, elle se prend dans la
+> condition** : un arbre qui veut l'amplitude ×2,0 choisit une condition
+> véritablement intermittente parmi les trois que le vocabulaire fermé offre. Ce
+> n'est pas une remise, c'est un choix d'archétype — un sommet qui s'allume à la
+> fin d'un combat récompense une autre façon de jouer que celui qui s'allume au
+> tour 2.
+>
+> Les capstones des trois arbres de ce document sont recalculés en conséquence.
+> Ce que la décision ne change pas : un capstone toujours vrai n'était pas un
+> passif conditionnel, c'était **un passif plat de 28 % payé 14 pb** — exactement
+> ce que le budget existe pour interdire.
 
 **Observation n° 12 — un archétype dont la fonction attaque sa propre ressource.**
 Le contrôle allonge les rencontres ; le carquois se vide en durant. Ce n'est pas un

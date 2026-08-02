@@ -973,20 +973,59 @@ jamais. Mais un capstone actif est interdit (règle 9). La sortie est la
 > l'archétype.** Il ne demande aucun clic ; il récompense une façon de jouer que
 > le joueur a déjà.
 
-| Fonction | La condition canonique | Exemple |
-|---|---|---|
-| **Assaut** | la cible porte déjà la marque de votre élément | *le feu qui a déjà brûlé brûle mieux* |
-| **Contrôle** | la cible subit un de vos statuts | *ce qui est entravé ne vous échappe pas* |
-| **Entretien** | le combat dure, ou la cible est sous un seuil | *le ressac revient plus fort* |
-| **Encaisse** | vous avez encaissé au tour précédent | *le coup reçu durcit la garde* |
+| Fonction | La condition canonique | Fréquence | × | Exemple |
+|---|---|---|---:|---|
+| **Assaut** | la cible porte déjà la marque de votre élément | **quasi permanente** | 1,4 | *le feu qui a déjà brûlé brûle mieux* |
+| **Contrôle** | la cible subit un de vos statuts | **quasi permanente** | 1,4 | *ce qui est entravé ne vous échappe pas* |
+| **Entretien** | le combat dure, ou la cible est sous un seuil | intermittente | 2,0 | *le ressac revient plus fort* |
+| **Encaisse** | vous avez encaissé au tour précédent | **quasi permanente** | 1,4 | *le coup reçu durcit la garde* |
 
 **Trois garde-fous.** (1) La condition doit être **atteignable au tour 2** avec le
 seul kit d'entrée de l'arbre — sinon le capstone est un piège pour qui n'a pas
 l'équipement. (2) Elle ne demande **jamais un second personnage** : le jeu est
-asynchrone (GAME_PROGRESSION §1). (3) Le capstone **coûte 14 pb, pas un de plus** :
-sa condition de combat lui donne déjà ×2 d'amplitude (§4.3), soit **+28 %** au
-lieu de +14. Lui accorder en plus un budget majoré « parce qu'il ne s'applique pas
-toujours » est la porte d'entrée classique des builds dégénérés.
+asynchrone (GAME_PROGRESSION §1). (3) Le capstone **coûte 14 pb, pas un de plus**.
+Lui accorder un budget majoré « parce qu'il ne s'applique pas toujours » est la
+porte d'entrée classique des builds dégénérés.
+
+#### Décision 23 — Le capstone n'échappe pas à la règle de fréquence
+
+*(Tranché le 2026-08-01, écart n° 11 de [GAME_TREE_ANATOMY.md](GAME_TREE_ANATOMY.md) §13.8 —
+une contradiction de ce document avec lui-même.)* Ce paragraphe accordait ×2,0 au
+capstone « parce que sa condition de combat peut manquer ». Mais le §4.3, corrigé
+au §9 bis, dit qu'**une condition vraie plus des deux tiers du temps se paie au
+tarif d'une condition de build (×1,4)**. Or la condition canonique de l'assaut et
+du contrôle est *la marque de son propre élément*, que la règle 1 du §1.1 fait
+poser par un accord **gratuit** dès le tour 1 : elle est vraie du tour 2 à la fin
+de chaque rencontre. Celle de l'encaisse — « vous avez encaissé au tour
+précédent » — l'est tout autant, et le §4.3 le disait déjà noir sur blanc.
+
+> **Le capstone suit la même règle que les autres passifs conditionnels : son
+> multiplicateur est celui de la fréquence mesurée de sa condition, pas un tarif
+> de faveur.** Trois fonctions sur quatre voient donc leur sommet passer de
+> **+28 % à +19,6 %**.
+
+| | Ancienne lecture | Lecture actée |
+|---|---:|---:|
+| Capstone d'assaut / contrôle / encaisse | +28 % | **+19,6 %** |
+| Capstone d'entretien *(condition réellement intermittente)* | +28 % | +28 % |
+
+**La compensation ne se prend pas dans le multiplicateur, elle se prend dans la
+condition.** Un arbre qui veut l'amplitude ×2,0 doit choisir une condition
+véritablement intermittente — le vocabulaire fermé (§4.3) en offre trois : *la
+cible est sous 40 % de ses PV*, *vous êtes sous 40 % des vôtres*, *le premier tour
+de la rencontre*. C'est un choix d'archétype, pas une remise : un capstone qui ne
+s'allume qu'à la fin d'un combat récompense une façon de jouer différente de celui
+qui s'allume dès le tour 2.
+
+> **Ce que ça coûte, et pourquoi c'est le bon prix.** Un sommet à +19,6 % se sent
+> moins qu'un sommet à +28 %. Mais un capstone dont la condition est **toujours
+> vraie** n'est pas un capstone conditionnel : c'est un passif plat de 28 %, payé
+> 14 pb, c'est-à-dire exactement le « levier à double tarif » que le budget existe
+> pour interdire. Et la mesure du §9 sexies vaut ici aussi : **+9 % sur un levier
+> ne retire pas un seul tour de combat** — l'identité d'un archétype n'a jamais
+> été dans ces points-là. Les valeurs de capstone citées dans les exemples du §9
+> sont antérieures à cette décision et se recalculent avec elle (§0.2 : aucun
+> nombre de ce document n'est une valeur de jeu).
 
 ### 7.1 Décision 22 — Le capstone ne vise qu'un levier de plafond ≥ 14 pb
 
@@ -2590,7 +2629,10 @@ Ce qui doit casser la CI si on le viole :
     garde qui ne couvre que le tour où elle est jouée punit l'encaisse de se défendre.
 20. **Le multiplicateur de condition suit la fréquence mesurée** — une condition de
     combat vraie plus des deux tiers du temps se paie ×1,4, pas ×2,0 (§4.3). Le
-    simulateur d'ARC-05 la mesure ; l'auteur ne l'estime pas.
+    simulateur d'ARC-05 la mesure ; l'auteur ne l'estime pas. **Le capstone n'y
+    échappe pas** (décision 23) : sa condition étant la marque de son propre
+    élément, posée par un accord gratuit, trois fonctions sur quatre ont un sommet
+    à ×1,4. Un capstone à ×2,0 doit porter une condition réellement intermittente.
 21. **Le pacte est unique et borné** — au plus un par arbre, au plus 10 pb de
     malus, malus **hors de la palette** de la fonction, nœud **feuille**, **au
     palier 3 seulement**, et les plafonds par levier tiennent malgré lui.

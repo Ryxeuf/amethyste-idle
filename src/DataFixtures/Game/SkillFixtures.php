@@ -725,6 +725,28 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'artillery-barrage']],
                 'requirements' => ['artif_rang4_1', 'artif_rang4_2'],
             ],
+
+            // Maitrise des armes (arbaletes) — GAME_TREE_ANATOMY § 13.8, ecart
+            // n° 10. La famille manquait a l'echelle alors que le catalogue
+            // public la promettait ; ces deux echelons sont recables sur elle
+            // par `rewireWeaponPortLadders()` (donc partages avec l'ingenieur et
+            // le chasseur), et ils ne portent **aucune statistique**.
+            'artificer_weapon_t2' => [
+                'title' => 'Maitrise de l\'arbalete (T2)',
+                'slug' => 'artificer-weapon-t2',
+                'description' => 'Permet d\'equiper les arbaletes de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['artif_apprenti_1'],
+            ],
+            'artificer_weapon_t3' => [
+                'title' => 'Maitrise de l\'arbalete (T3)',
+                'slug' => 'artificer-weapon-t3',
+                'description' => 'Permet d\'equiper les arbaletes de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['artificer_weapon_t2'],
+            ],
         ];
     }
 

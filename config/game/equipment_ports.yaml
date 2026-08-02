@@ -72,6 +72,24 @@ families:
         rung2: archer_weapon_t2
         rung3: archer_weapon_t3
 
+    crossbow:
+        label: 'Arbalète'
+        # Ajoutee le 2026-08-01 (GAME_TREE_ANATOMY § 13.8, ecart n° 10).
+        #
+        # Elle manquait, et le catalogue public la promettait deja : « Arbaletes,
+        # bombes et cuir » pour l'artificier. Le canon lui donne un trait propre
+        # (GAME_ARCHETYPES § 2.2 — « un gros coup, un long temps de reprise »),
+        # ce qui en fait le contraire exact de l'arc : la cadence contre la
+        # frappe. Sans elle, l'arbre de l'artificier ne pouvait porter ni ses
+        # deux echelons de port, ni un seul passif conditionne a une arme.
+        #
+        # Trois arbres l'enseignent, de trois elements differents (feu, metal,
+        # bete) : la regle « jamais bornee par l'element » est tenue.
+        taught_by: [artificer, engineer, hunter]
+        rung1: { reference: port_crossbow, slug: port-crossbow, title: 'Port de l''arbalète', free: true }
+        rung2: artificer_weapon_t2
+        rung3: artificer_weapon_t3
+
     staff:
         label: 'Bâton'
         # Le baton etait enseigne par le **paladin**, un arbre de melee. Une arme
