@@ -290,6 +290,10 @@ zones:
             # Vivier diurne — la marche de progression de la zone, du niveau 1
             # (gelee, loup, scarabee) au niveau 4 (loup alpha).
             - { monster: slime, count: 4 }
+            # BES-03 : especes que seule la carte de test placait — le graphe
+            # declaratif devient la source unique de la faune.
+            - { monster: goblin, count: 3 }
+            - { monster: taiju, count: 2 }
             - { monster: wolf, count: 4, group_tag: meute-des-murmures }
             - { monster: beetle, count: 3 }
             - { monster: spider, count: 3 }
@@ -478,6 +482,10 @@ zones:
             - { monster: ghost, count: 1, nocturnal: true }
             - { monster: specter, count: 1, nocturnal: true }
             - { monster: banshee, count: 1, nocturnal: true }
+            # BES-03 : le loup-garou et le necromancien quittent la carte de
+            # test pour la nuit du Marais, leur palier (T2).
+            - { monster: werewolf, count: 2, nocturnal: true }
+            - { monster: necromancer, count: 1, nocturnal: true }
             - { monster: will_o_wisp, count: 1, nocturnal: true }
             - { monster: creeping_shadow, count: 1, nocturnal: true }
         gather:

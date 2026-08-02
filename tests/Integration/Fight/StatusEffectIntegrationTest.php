@@ -32,7 +32,7 @@ class StatusEffectIntegrationTest extends AbstractIntegrationTestCase
     public function testPoisonTicksDamagePerTurn(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $poisonEffect = $this->em->getRepository(StatusEffect::class)
@@ -91,7 +91,7 @@ class StatusEffectIntegrationTest extends AbstractIntegrationTestCase
     public function testSilencePreventsSpellCasting(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $silenceEffect = $this->em->getRepository(StatusEffect::class)
@@ -148,7 +148,7 @@ class StatusEffectIntegrationTest extends AbstractIntegrationTestCase
     public function testEffectRefreshResetsDuration(): void
     {
         $player = $this->getPlayer();
-        $mob = $this->getMob($player->getMap());
+        $mob = $this->getMob();
         $fight = $this->createFight($player, $mob);
 
         $poisonEffect = $this->em->getRepository(StatusEffect::class)
