@@ -22,7 +22,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | BES-01 ✅ | Deux axes : `tier` et `rank` | M | ← MAT-01 (même migration) |
-| BES-02 | Les stats dérivées du gabarit | M | ← BES-01 |
+| BES-02 ✅ | Les stats dérivées du gabarit | M | ← BES-01 |
 | BES-03 | La bascule du peuplement dans `zones.yaml` | M | ∅ |
 | BES-04 | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
 | BES-05 | Le ménage du code mort | S | ∅ |
@@ -72,18 +72,23 @@ en premier. BES-01 est le pivot et doit voyager avec MAT-01.
       boss (`MonsterTierRankTest`) ; recalibrages couverts par les tests des
       consommateurs
 
-### BES-02 — Les stats dérivées du gabarit (M | ★★ | HAUTE)
+### BES-02 — Les stats dérivées du gabarit (M | ★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > Comme les filons ont des profils de palier et les matéria une dérivation depuis
 > le sort, les stats d'un monstre se dérivent de sa case `tier × rank`.
-> Prérequis : ← BES-01
-- [ ] Grille `life` de départ (GAME_BESTIARY §3) : 30/90/250 en T1 jusqu'à
-      300/850/2400 en T4 — ×~2,2 par palier, ×~3 par rang
-- [ ] `hit` = 70 + 5 × palier, +5 pour `Elite` et `Boss` ; `speed` et le nombre
-      de sorts au même principe
-- [ ] **L'écart au gabarit reste permis, mais explicite et commenté** — sur le
-      modèle des corrections d'`affinities.yaml`. Ce qui est interdit, c'est
-      l'absence de gabarit
-- [ ] Tests : dérivation, écarts déclarés, aucun saut de ×4 entre deux paliers
+- [x] Grille `life` de départ (GAME_BESTIARY §3) : 30/90/250 en T1 jusqu'à
+      300/850/2400 en T4 — portée par `MonsterStatTemplate`, source unique
+      (le rapport d'équilibrage la lit aussi). 61 monstres sur 65 dérivent
+- [x] `hit` = 70 + 5 × palier, +5 pour `Elite` et `Boss` ; `speed` reste
+      d'abord un **trait d'espèce** (la chauve-souris file, le zombie traîne) :
+      la valeur déclarée est l'écart explicite, le gabarit sert de repli.
+      Le nombre de sorts reste des données — aucune dérivation forcée
+- [x] **L'écart au gabarit reste permis, mais explicite et commenté** — quatre
+      écarts inscrits dans une liste fermée : les deux mannequins (valeurs
+      pédagogiques ONB-11), le Gardien de la Forêt (boss de zone affronté en
+      groupe, 400 PV) et le Premier Silence (l'ultime rencontre, 3200 PV)
+- [x] Tests : dérivation obligatoire hors liste fermée, écarts commentés dans
+      la fixture, aucun saut de ×4 entre paliers ni entre rangs
+      (`MonsterStatTemplateTest`, `MonsterStatDerivationTest`)
 
 ### BES-04 — La faille du milieu et la Crête (S | ★★★ | HAUTE)
 > Le monde se coupe en deux : départ 1-24, fin 26-38, avec un saut de vie de ×4
