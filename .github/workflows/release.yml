@@ -1,14 +1,24 @@
 # =============================================================================
-# Release Pipeline — Semantic Release + Docker Push
+# Release Pipeline — Semantic Release + Docker Push + Deploiement
 # =============================================================================
 #
-# Declenchee apres un push sur main (apres merge de PR).
+# Declenchee :
+#   - par un push direct sur `main` ;
+#   - par `auto-merge.yml`, qui appelle explicitement ce workflow apres avoir
+#     fusionne une PR (le squash-merge fait au GITHUB_TOKEN n'emet aucun
+#     evenement `push` — voir l'en-tete de auto-merge.yml) ;
+#   - a la main, depuis l'onglet Actions.
+#
 # Etapes :
-#   1. CI complete (lint, phpstan, tests, build Docker validation)
+#   1. CI complete (lint, phpstan, tests, e2e, build Docker de validation)
 #   2. Semantic Release (analyse des commits, creation tag + GitHub Release)
 #   3. Build et push de l'image Docker vers GHCR (tags: latest, vX.Y.Z, sha)
+#   4. Deploiement en production (appel de deploy.yml)
 #
-# Le workflow deploy.yml se declenche automatiquement via l'evenement release.
+# Le deploiement est appele DIRECTEMENT ici, et non via l'evenement
+# `release: published` : la release etant creee par le GITHUB_TOKEN, cet
+# evenement ne declenche aucun workflow. C'est pourquoi, sur les 30 derniers
+# deploiements du depot, aucun n'etait automatique.
 # =============================================================================
 
 name: Release
@@ -17,6 +27,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -39,6 +52,7 @@ jobs:
   release:
     name: "Semantic Release"
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [ci]
     permissions:
       contents: write
@@ -50,7 +64,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -69,9 +83,19 @@ jobs:
           if [ "${{ steps.semantic.outputs.new_release_published }}" = "true" ]; then
             echo "### 🏷️ Release v${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_STEP_SUMMARY
             echo "Type: ${{ steps.semantic.outputs.new_release_type }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "L'image va etre poussee vers GHCR, puis deployee en production." >> $GITHUB_STEP_SUMMARY
           else
             echo "### Pas de nouvelle release" >> $GITHUB_STEP_SUMMARY
-            echo "Aucun commit de type feat/fix/refactor/perf depuis la derniere release." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Aucun commit de type \`feat\`, \`fix\`, \`perf\` ou \`refactor\` depuis la derniere version." >> $GITHUB_STEP_SUMMARY
+            echo "**Aucun deploiement ne sera declenche** : c'est le comportement attendu pour" >> $GITHUB_STEP_SUMMARY
+            echo "une livraison qui ne change pas le produit (\`docs\`, \`ci\`, \`test\`, \`chore\`, \`style\`)." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Dernier commit analyse :" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            git log -1 --pretty=%s >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
 
   # ---------------------------------------------------------------------------
@@ -80,6 +104,7 @@ jobs:
   docker-push:
     name: "Docker Push"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [release]
     if: needs.release.outputs.new_release_published == 'true'
     permissions:
@@ -88,7 +113,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -125,3 +150,22 @@ jobs:
           echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY
           echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:v${{ needs.release.outputs.new_release_version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+  # ---------------------------------------------------------------------------
+  # 4. Deploiement en production
+  # ---------------------------------------------------------------------------
+  # L'image est poussee : elle peut etre tiree par le serveur. On enchaine donc
+  # ici, dans le meme run, plutot que d'esperer un evenement `release` que le
+  # GITHUB_TOKEN n'emettra jamais.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: "Deploiement"
+    needs: [release, docker-push]
+    if: needs.release.outputs.new_release_published == 'true'
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      contents: read
+      packages: read
+    secrets: inherit
+    with:
+      version: v${{ needs.release.outputs.new_release_version }}

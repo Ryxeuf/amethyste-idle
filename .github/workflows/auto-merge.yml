@@ -1,89 +1,161 @@
 # =============================================================================
 # Auto-Merge Pipeline — Amethyste-Idle
 # =============================================================================
-# Merge automatique des PRs vers main quand la CI passe.
+# Merge automatique des PR vers `main` quand la CI passe, puis declenchement
+# explicite du pipeline de release.
 #
-# Prérequis :
-#   - Secret PAT_AUTO_MERGE (PAT avec droits repo) — recommandé pour bypass
-#     les branch protection rules. Si absent, utilise le GITHUB_TOKEN par défaut.
-#   - Branch protection sur main : exiger que les status checks passent
+# POURQUOI UN DECLENCHEMENT EXPLICITE :
+#   GitHub n'emet aucun evenement pour une action effectuee par le GITHUB_TOKEN
+#   (« events triggered by the GITHUB_TOKEN [...] will not create a new workflow
+#   run »). Le squash-merge fait ici ne produit donc AUCUN evenement `push` sur
+#   `main`, et `release.yml` ne se declenchait jamais : entre le 2026-07-29 et
+#   le 2026-08-01, sept PR ont ete fusionnees sans qu'une seule version soit
+#   publiee ni une seule image poussee.
+#   `workflow_dispatch` est l'exception documentee a cette regle : un appel
+#   d'API explicite, lui, declenche bien le workflow vise.
+#
+# Prerequis (optionnel) :
+#   - Secret PAT_AUTO_MERGE (PAT avec droits repo) — permet de contourner des
+#     regles de protection de branche. S'il existe, le merge qu'il produit emet
+#     un vrai evenement `push` : le declenchement explicite est alors saute
+#     pour ne pas lancer deux releases pour un meme commit.
 # =============================================================================
 
 name: Auto-Merge
 
 on:
-  # Déclenché quand le workflow CI se termine
+  # Declenche quand le workflow CI se termine
   workflow_run:
     workflows: ["CI"]
     types: [completed]
 
+permissions: {}
+
 concurrency:
-  group: auto-merge-${{ github.ref }}
+  # Groupe unique et volontairement sans `github.ref` : deux PR ne doivent
+  # jamais etre fusionnees en parallele sur `main`.
+  group: auto-merge
   cancel-in-progress: false
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # Auto-merge des PRs quand la CI passe
-  # ---------------------------------------------------------------------------
   auto-merge-pr:
     name: "Auto-merge PR"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: >-
       github.event.workflow_run.conclusion == 'success'
       && github.event.workflow_run.event == 'pull_request'
     permissions:
       contents: write
       pull-requests: write
+      actions: write # createWorkflowDispatch sur release.yml
+
+    env:
+      HAS_PAT: ${{ secrets.PAT_AUTO_MERGE != '' }}
 
     steps:
-      - name: Find associated PR
-        id: find-pr
-        uses: actions/github-script@v7
+      - name: Merger la PR validee
+        id: merge
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.PAT_AUTO_MERGE || github.token }}
           script: |
-            const headBranch = context.payload.workflow_run.head_branch;
+            const run = context.payload.workflow_run;
+            const { owner, repo } = context.repo;
+
             const { data: pulls } = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner,
+              repo,
               state: 'open',
-              head: `${context.repo.owner}:${headBranch}`,
+              head: `${owner}:${run.head_branch}`,
               base: 'main',
             });
 
             if (pulls.length === 0) {
-              console.log(`Aucune PR ouverte trouvée pour la branche ${headBranch} vers main`);
+              core.info(`Aucune PR ouverte vers main pour la branche ${run.head_branch}.`);
               return;
             }
 
             const pr = pulls[0];
-            console.log(`PR #${pr.number} trouvée: ${pr.title}`);
-            core.setOutput('pr_number', pr.number);
-            core.setOutput('pr_found', 'true');
 
-      - name: Merge PR
-        id: merge-pr
-        if: steps.find-pr.outputs.pr_found == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.PAT_AUTO_MERGE || github.token }}
-          script: |
-            const prNumber = ${{ steps.find-pr.outputs.pr_number || 0 }};
-            if (prNumber === 0) return;
+            // Ce qui a ete teste doit etre ce qui va etre fusionne : si des
+            // commits sont arrives depuis, leur propre CI fera le merge.
+            if (pr.head.sha !== run.head_sha) {
+              core.info(
+                `PR #${pr.number} : la CI a valide ${run.head_sha.slice(0, 7)}, ` +
+                `la PR pointe sur ${pr.head.sha.slice(0, 7)}. Merge repousse.`
+              );
+              return;
+            }
+
+            if (pr.draft) {
+              core.info(`PR #${pr.number} en brouillon : pas de merge automatique.`);
+              return;
+            }
+
+            const blocking = ['wip', 'do-not-merge', 'ne-pas-merger', 'hold'];
+            const found = pr.labels
+              .map((label) => label.name.toLowerCase())
+              .filter((name) => blocking.includes(name));
+
+            if (found.length > 0) {
+              core.info(`PR #${pr.number} portee par ${found.join(', ')} : pas de merge automatique.`);
+              return;
+            }
+
+            // `pulls.list` ne calcule pas `mergeable` : il faut relire la PR.
+            const { data: full } = await github.rest.pulls.get({ owner, repo, pull_number: pr.number });
+            if (full.mergeable === false) {
+              core.warning(`PR #${pr.number} en conflit avec main (${full.mergeable_state}) : merge impossible.`);
+              return;
+            }
+
+            core.info(`Merge de la PR #${pr.number} : ${pr.title}`);
 
             try {
               await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
+                owner,
+                repo,
+                pull_number: pr.number,
                 merge_method: 'squash',
               });
-              console.log(`PR #${prNumber} mergée avec succès !`);
-              core.setOutput('merged', 'true');
             } catch (error) {
-              core.setFailed(`Impossible de merger la PR #${prNumber}: ${error.message}`);
+              core.setFailed(`Impossible de merger la PR #${pr.number} : ${error.message}`);
+              return;
             }
 
-      # Le merge squash dans main déclenche automatiquement release.yml
-      # via son trigger `on: push: branches: [main]`. Pas besoin de
-      # workflow_dispatch (qui nécessiterait un PAT avec actions:write).
+            core.setOutput('merged', 'true');
+            core.setOutput('pr_number', String(pr.number));
+            core.setOutput('pr_title', pr.title);
+            await core.summary
+              .addHeading('PR fusionnee')
+              .addRaw(`#${pr.number} — ${pr.title}`)
+              .write();
+
+      # Sans cette etape, la chaine s'arrete au merge : pas de version, pas
+      # d'image, pas de deploiement (cf. l'en-tete de ce fichier).
+      - name: Declencher le pipeline de release
+        if: steps.merge.outputs.merged == 'true' && env.HAS_PAT != 'true'
+        uses: actions/github-script@v8
+        with:
+          # Volontairement le GITHUB_TOKEN et pas le PAT : ici on veut declencher
+          # `release.yml`, ce que `workflow_dispatch` autorise explicitement.
+          github-token: ${{ github.token }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: 'release.yml',
+              ref: 'main',
+            });
+
+            core.info('Pipeline de release declenche sur main.');
+            await core.summary.addRaw('\n\nPipeline de release declenche sur `main`.').write();
+
+      - name: Rappel — le PAT fait le travail
+        if: steps.merge.outputs.merged == 'true' && env.HAS_PAT == 'true'
+        run: |
+          echo "PAT_AUTO_MERGE present : le merge a emis un evenement push," \
+               "qui declenche release.yml. Pas de declenchement explicite."
