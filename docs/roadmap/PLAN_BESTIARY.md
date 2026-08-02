@@ -17,7 +17,7 @@
 
 ## Vue d'ensemble
 
-**6 jalons** (**BES-01** à **BES-06**) en 2 pistes.
+**6 jalons** (**BES-01** à **BES-06**) en 2 pistes — **plan complet 6/6 au 2026-08-02**.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -26,7 +26,7 @@
 | BES-03 ✅ | La bascule du peuplement dans `zones.yaml` | M | ∅ |
 | BES-04 ✅ | La faille du milieu et la Crête | S | ← BES-01, BES-03 |
 | BES-05 ✅ | Le ménage du code mort | S | ∅ |
-| BES-06 | Tests du plan | S | ‖ |
+| BES-06 ✅ | Tests du plan | S | ‖ |
 
 ```
 Piste A — Les échelles  : BES-01 → BES-02 → BES-04
@@ -155,12 +155,17 @@ en premier. BES-01 est le pivot et doit voyager avec MAT-01.
 
 ## Piste — Le contrat
 
-### BES-06 — Tests du plan (S | ★★★ | HAUTE)
-> ‖ au fil des jalons. Les 8 invariants de GAME_BESTIARY §6.
-- [ ] Deux axes, pas quatre ; le palier suit la zone ; T0 est sûr
-- [ ] Aucun palier vide ; les stats suivent le gabarit
-- [ ] Une seule source de faune ; aucune espèce inaccessible
-- [ ] Tout monstre porte un élément (couvert par MAT-01)
+### BES-06 — Tests du plan (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
+> ‖ au fil des jalons. Les 8 invariants de GAME_BESTIARY §6, chacun tenu par
+> un test nommé — `BestiaryPlanContractTest` sert d'index au contrat.
+- [x] Deux axes, pas quatre ; le palier suit la zone (`MonsterTierRankTest`) ;
+      **T0 est sûr** (`BestiaryPlanContractTest`, le seul qui manquait — avec
+      son miroir : une zone peuplée vit dans un palier réel)
+- [x] Aucun palier vide (`MonsterTierCoverageTest`) ; les stats suivent le
+      gabarit (`MonsterStatDerivationTest`, `MonsterStatTemplateTest`)
+- [x] Une seule source de faune ; aucune espèce inaccessible
+      (`FaunaSingleSourceTest`)
+- [x] Tout monstre porte un élément (`MonsterElementTest`, MAT-01)
 
 ---
 
