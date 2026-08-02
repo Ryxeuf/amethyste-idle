@@ -11,7 +11,6 @@ use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\Handler\FightHandler;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Party\PartyManager;
-use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,6 @@ class FightHandlerWorldBossTest extends TestCase
     private EntityManagerInterface&MockObject $em;
     private CombatLogger&MockObject $combatLogger;
     private EnchantmentManager&MockObject $enchantmentManager;
-    private DungeonRunRepository&MockObject $dungeonRunRepository;
     private PartyManager&MockObject $partyManager;
     private FightTurnResolver&MockObject $turnResolver;
     private MobActionHandler&MockObject $mobActionHandler;
@@ -33,7 +31,6 @@ class FightHandlerWorldBossTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
         $this->enchantmentManager = $this->createMock(EnchantmentManager::class);
-        $this->dungeonRunRepository = $this->createMock(DungeonRunRepository::class);
         $this->partyManager = $this->createMock(PartyManager::class);
         $this->turnResolver = $this->createMock(FightTurnResolver::class);
         $this->mobActionHandler = $this->createMock(MobActionHandler::class);
@@ -43,7 +40,6 @@ class FightHandlerWorldBossTest extends TestCase
             new NullLogger(),
             $this->combatLogger,
             $this->enchantmentManager,
-            $this->dungeonRunRepository,
             $this->partyManager,
             $this->turnResolver,
             $this->mobActionHandler,
