@@ -812,7 +812,8 @@
       "empty_hint": "Affrontez des monstres sur la carte pour remplir votre bestiaire",
       "boss": "Boss",
       "level": "Niveau %level%",
-      "difficulty": "Difficulté %level%/5"
+      "difficulty": "Difficulté %level%/5",
+      "element": "Élément"
     },
     "factions": {
       "title": "Factions",
@@ -1912,6 +1913,17 @@
         "11": "novembre",
         "12": "décembre"
       }
+    },
+    "element": {
+      "none": "Aucun",
+      "fire": "Feu",
+      "water": "Eau",
+      "earth": "Terre",
+      "air": "Air",
+      "light": "Lumière",
+      "dark": "Ténèbres",
+      "metal": "Métal",
+      "beast": "Bête"
     }
   },
   "common": {

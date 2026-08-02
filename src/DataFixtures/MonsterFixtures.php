@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use App\Enum\TrainingMode;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,6 +13,16 @@ use Doctrine\Persistence\ObjectManager;
 
 class MonsterFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * MAT-01 — un monstre resiste a son propre element.
+     *
+     * C'est une regle, pas 44 valeurs a la main : quand un monstre ne declare
+     * aucune resistance sur son element, celle-ci est posee ici. Une valeur
+     * declaree explicitement dans la fixture la precise (jamais ne la
+     * contredit — un test le verifie).
+     */
+    private const OWN_ELEMENT_RESISTANCE = 0.3;
+
     public function load(ObjectManager $manager): void
     {
         $monsters = [
@@ -41,6 +52,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 1,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'none',
                 'difficulty' => 1,
                 'trainingMode' => TrainingMode::Inert,
                 'aiPattern' => ['spell_chance' => 0],
@@ -56,6 +68,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 5,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'none',
                 'difficulty' => 1,
                 'trainingMode' => TrainingMode::Capped,
                 'aiPattern' => ['spell_chance' => 0],
@@ -68,6 +81,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 3,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'water',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -81,6 +95,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 8,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'beast',
                 'difficulty' => 1,
             ],
             'bat' => [
@@ -91,6 +106,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 14,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -104,6 +120,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 10,
                 'attack' => 'sharp_blade',
                 'level' => 1,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'spells' => ['venomous_bite'],
                 'aiPattern' => [
@@ -118,6 +135,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 2,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'dark',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 10,
@@ -131,6 +149,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 5,
                 'attack' => 'punishment',
                 'level' => 2,
+                'element' => 'dark',
                 'difficulty' => 2,
                 'spells' => ['shadow_bolt'],
                 'aiPattern' => [
@@ -145,6 +164,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 9,
                 'attack' => 'venomous_bite',
                 'level' => 2,
+                'element' => 'beast',
                 'difficulty' => 2,
                 'spells' => ['poison_cloud', 'entangling_roots'],
                 'aiPattern' => [
@@ -160,6 +180,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 11,
                 'attack' => 'venomous_bite',
                 'level' => 2,
+                'element' => 'beast',
                 'difficulty' => 2,
                 'spells' => ['toxic_spores'],
                 'aiPattern' => [
@@ -175,6 +196,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'liana_whip',
                 'level' => 2,
+                'element' => 'earth',
                 'difficulty' => 2,
                 'spells' => ['natural_healing', 'thorn_burst'],
                 'aiPattern' => [
@@ -191,6 +213,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 8,
                 'attack' => 'punishment',
                 'level' => 2,
+                'element' => 'dark',
                 'difficulty' => 2,
                 'spells' => ['shadow_bolt', 'soul_drain'],
                 'aiPattern' => [
@@ -206,6 +229,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'punishment',
                 'level' => 2,
+                'element' => 'dark',
                 'difficulty' => 2,
                 'spells' => ['shadow_bolt', 'death_grip'],
                 'aiPattern' => [
@@ -221,6 +245,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 15,
                 'attack' => 'liana_whip',
                 'level' => 3,
+                'element' => 'beast',
                 'difficulty' => 3,
                 'spells' => ['poison_cloud', 'entangling_roots'],
                 'aiPattern' => [
@@ -237,6 +262,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'sharp_blade',
                 'level' => 3,
+                'element' => 'beast',
                 'difficulty' => 3,
                 'spells' => ['venomous_bite'],
                 'aiPattern' => [
@@ -256,6 +282,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 9,
                 'attack' => 'stone_throw',
                 'level' => 3,
+                'element' => 'earth',
                 'difficulty' => 3,
                 'spells' => ['earth_spike', 'stone_spikes'],
                 'aiPattern' => [
@@ -271,6 +298,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 3,
                 'attack' => 'stone_throw',
                 'level' => 3,
+                'element' => 'earth',
                 'difficulty' => 3,
                 'spells' => ['boulder_throw', 'earthquake'],
                 'aiPattern' => [
@@ -293,6 +321,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 10,
                 'attack' => 'fire_ball',
                 'level' => 3,
+                'element' => 'fire',
                 'difficulty' => 3,
                 'spells' => ['flame_rain', 'fire_wall', 'combustion'],
                 'aiPattern' => [
@@ -309,6 +338,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 15,
                 'attack' => 'wind_lame',
                 'level' => 4,
+                'element' => 'air',
                 'difficulty' => 4,
                 'spells' => ['cyclone', 'air_slash', 'wind_blast'],
                 'aiPattern' => [
@@ -325,6 +355,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 6,
                 'attack' => 'sword_10',
                 'level' => 4,
+                'element' => 'beast',
                 'difficulty' => 4,
                 'spells' => ['iron_fist', 'blade_dance'],
                 'aiPattern' => [
@@ -344,6 +375,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 4,
                 'attack' => 'stone_throw',
                 'level' => 4,
+                'element' => 'earth',
                 'difficulty' => 4,
                 'spells' => ['boulder_throw', 'earthquake', 'stone_spikes'],
                 'aiPattern' => [
@@ -366,6 +398,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 11,
                 'attack' => 'sharp_blade',
                 'level' => 1,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -394,6 +427,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'sharp_blade',
                 'level' => 2,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -410,6 +444,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 16,
                 'attack' => 'none_attack_1',
                 'level' => 3,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -425,6 +460,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 13,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -441,6 +477,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 15,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'air',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -467,6 +504,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 14,
                 'attack' => 'sharp_blade',
                 'level' => 4,
+                'element' => 'beast',
                 'difficulty' => 2,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -483,6 +521,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 10,
                 'attack' => 'sharp_blade',
                 'level' => 5,
+                'element' => 'beast',
                 'difficulty' => 2,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -497,6 +536,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'venomous_bite',
                 'level' => 2,
+                'element' => 'beast',
                 'difficulty' => 1,
                 'spells' => ['toxic_spores'],
                 'aiPattern' => [
@@ -512,6 +552,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 5,
                 'attack' => 'none_attack_1',
                 'level' => 1,
+                'element' => 'earth',
                 'difficulty' => 1,
                 'aiPattern' => [
                     'spell_chance' => 0,
@@ -526,6 +567,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 4,
                 'attack' => 'none_attack_1',
                 'level' => 2,
+                'element' => 'beast',
                 'difficulty' => 2,
                 'spells' => ['toxic_spores', 'poison_cloud'],
                 'aiPattern' => [
@@ -541,6 +583,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'punishment',
                 'level' => 2,
+                'element' => 'dark',
                 'difficulty' => 1,
                 'spells' => ['shadow_bolt'],
                 'aiPattern' => [
@@ -557,6 +600,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 10,
                 'attack' => 'fire_ball',
                 'level' => 3,
+                'element' => 'fire',
                 'difficulty' => 2,
                 'spells' => ['combustion', 'fire_wall'],
                 'aiPattern' => [
@@ -573,6 +617,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 9,
                 'attack' => 'water_jet',
                 'level' => 2,
+                'element' => 'water',
                 'difficulty' => 2,
                 'spells' => ['frost_bolt', 'water_heal'],
                 'aiPattern' => [
@@ -590,6 +635,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 16,
                 'attack' => 'wind_lame',
                 'level' => 4,
+                'element' => 'air',
                 'difficulty' => 3,
                 'spells' => ['cyclone', 'air_slash', 'wind_blast'],
                 'aiPattern' => [
@@ -606,6 +652,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 3,
                 'attack' => 'stone_throw',
                 'level' => 5,
+                'element' => 'earth',
                 'difficulty' => 3,
                 'spells' => ['earth_spike', 'boulder_throw', 'stone_spikes'],
                 'aiPattern' => [
@@ -627,6 +674,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'iron_fist',
                 'level' => 3,
+                'element' => 'metal',
                 'difficulty' => 2,
                 'spells' => ['blade_dance', 'steel_shield'],
                 'aiPattern' => [
@@ -643,6 +691,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 14,
                 'attack' => 'sharp_blade',
                 'level' => 4,
+                'element' => 'beast',
                 'difficulty' => 4,
                 'isBoss' => true,
                 'spells' => ['venomous_bite', 'savage_charge', 'primordial_roar'],
@@ -694,6 +743,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 15,
                 'attack' => 'holy_light',
                 'level' => 3,
+                'element' => 'light',
                 'difficulty' => 3,
                 'isBoss' => true,
                 'spells' => ['sacred_light', 'light_aura', 'light_blessing', 'holy_nova'],
@@ -738,6 +788,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 8,
                 'attack' => 'shadow_bolt',
                 'level' => 5,
+                'element' => 'dark',
                 'difficulty' => 4,
                 'isBoss' => true,
                 'spells' => ['soul_drain', 'death_grip', 'dark_harvest', 'dark_ritual'],
@@ -790,6 +841,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 14,
                 'attack' => 'wind_lame',
                 'level' => 10,
+                'element' => 'air',
                 'difficulty' => 4,
                 'spells' => ['cyclone', 'fire_ball', 'air_slash'],
                 'aiPattern' => [
@@ -810,6 +862,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'sharp_blade',
                 'level' => 12,
+                'element' => 'dark',
                 'difficulty' => 4,
                 'spells' => ['blade_dance', 'shadow_bolt', 'death_grip'],
                 'aiPattern' => [
@@ -830,6 +883,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 11,
                 'attack' => 'water_jet',
                 'level' => 13,
+                'element' => 'water',
                 'difficulty' => 4,
                 'spells' => ['frost_bolt', 'poison_cloud', 'water_heal'],
                 'aiPattern' => [
@@ -847,6 +901,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 4,
                 'attack' => 'stone_throw',
                 'level' => 15,
+                'element' => 'earth',
                 'difficulty' => 5,
                 'spells' => ['earthquake', 'stone_spikes', 'sacred_light', 'boulder_throw'],
                 'aiPattern' => [
@@ -869,6 +924,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 9,
                 'attack' => 'liana_whip',
                 'level' => 16,
+                'element' => 'beast',
                 'difficulty' => 4,
                 'spells' => ['natural_healing', 'poison_cloud', 'entangling_roots', 'dark_harvest'],
                 'aiPattern' => [
@@ -892,6 +948,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 8,
                 'attack' => 'necrotic_touch',
                 'level' => 18,
+                'element' => 'dark',
                 'difficulty' => 5,
                 'spells' => ['shadow_bolt', 'death_grip', 'soul_drain', 'dark_ritual'],
                 'aiPattern' => [
@@ -920,6 +977,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 6,
                 'attack' => 'water_jet',
                 'level' => 20,
+                'element' => 'water',
                 'difficulty' => 5,
                 'spells' => ['tidal_wave', 'poison_cloud', 'venomous_bite', 'frost_bolt'],
                 'aiPattern' => [
@@ -942,6 +1000,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 5,
                 'attack' => 'iron_fist',
                 'level' => 24,
+                'element' => 'metal',
                 'difficulty' => 5,
                 'spells' => ['blade_dance', 'fire_wall', 'steel_shield', 'shrapnel_burst'],
                 'aiPattern' => [
@@ -964,6 +1023,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 6,
                 'attack' => 'necrotic_touch',
                 'level' => 3,
+                'element' => 'dark',
                 'difficulty' => 3,
                 'spells' => ['shadow_bolt', 'natural_healing'],
                 'aiPattern' => [
@@ -990,6 +1050,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 9,
                 'attack' => 'leaf_blade',
                 'level' => 15,
+                'element' => 'beast',
                 'difficulty' => 5,
                 'isBoss' => true,
                 'spells' => ['leaf_blade', 'entangling_roots', 'nature_fury', 'primordial_roar'],
@@ -1032,6 +1093,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'iron_fist',
                 'level' => 20,
+                'element' => 'metal',
                 'difficulty' => 5,
                 'isBoss' => true,
                 'spells' => ['blade_dance', 'shrapnel_burst', 'shadow_bolt', 'metal_skin', 'dark_forge_blast'],
@@ -1094,6 +1156,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 22,
                 'attack' => 'sharp_blade',
                 'level' => 26,
+                'element' => 'earth',
                 'difficulty' => 4,
                 'spells' => ['quicksand', 'poison_arrow'],
                 'aiPattern' => [
@@ -1109,6 +1172,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 16,
                 'attack' => 'necrotic_touch',
                 'level' => 28,
+                'element' => 'dark',
                 'difficulty' => 4,
                 'spells' => ['shadow_wave', 'death_coil'],
                 'aiPattern' => [
@@ -1124,6 +1188,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'venomous_bite',
                 'level' => 30,
+                'element' => 'earth',
                 'difficulty' => 5,
                 'spells' => ['poison_cloud', 'stone_spikes'],
                 'aiPattern' => [
@@ -1144,6 +1209,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 6,
                 'attack' => 'iron_fist',
                 'level' => 32,
+                'element' => 'earth',
                 'difficulty' => 5,
                 'spells' => ['earthquake', 'stone_wall'],
                 'aiPattern' => [
@@ -1161,6 +1227,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 24,
                 'attack' => 'sharp_blade',
                 'level' => 30,
+                'element' => 'water',
                 'difficulty' => 4,
                 'spells' => ['frost_bolt', 'ice_shard'],
                 'aiPattern' => [
@@ -1176,6 +1243,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 18,
                 'attack' => 'frost_bolt',
                 'level' => 33,
+                'element' => 'water',
                 'difficulty' => 5,
                 'spells' => ['frost_mist', 'glacial_prison', 'shadow_bolt'],
                 'aiPattern' => [
@@ -1196,6 +1264,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 5,
                 'attack' => 'iron_fist',
                 'level' => 35,
+                'element' => 'water',
                 'difficulty' => 5,
                 'spells' => ['ice_storm', 'stone_skin'],
                 'aiPattern' => [
@@ -1211,6 +1280,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 28,
                 'attack' => 'wind_lame',
                 'level' => 36,
+                'element' => 'air',
                 'difficulty' => 5,
                 'spells' => ['cyclone', 'ice_lance', 'wind_scythe'],
                 'aiPattern' => [
@@ -1226,6 +1296,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 14,
                 'attack' => 'frost_bolt',
                 'level' => 38,
+                'element' => 'water',
                 'difficulty' => 5,
                 'spells' => ['frost_maelstrom', 'ice_storm', 'glacial_prison'],
                 'aiPattern' => [
@@ -1253,6 +1324,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 16,
                 'attack' => 'frost_bolt',
                 'level' => 40,
+                'element' => 'water',
                 'difficulty' => 5,
                 'isBoss' => true,
                 'spells' => ['frost_maelstrom', 'glacial_prison', 'ice_storm', 'death_nova'],
@@ -1275,6 +1347,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 8,
                 'attack' => 'fire_ball',
                 'level' => 30,
+                'element' => 'fire',
                 'difficulty' => 5,
                 'isBoss' => true,
                 'spells' => ['dragon_breath', 'meteor_strike', 'volcanic_eruption', 'fire_nova'],
@@ -1324,6 +1397,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 12,
                 'attack' => 'fire_ball',
                 'level' => 5,
+                'element' => 'fire',
                 'difficulty' => 5,
                 'isBoss' => true,
                 'spells' => ['dragon_breath', 'fire_nova', 'meteor_strike', 'volcanic_eruption'],
@@ -1373,6 +1447,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 10,
                 'attack' => 'holy_light',
                 'level' => 30,
+                'element' => 'light',
                 'difficulty' => 5,
                 'isBoss' => true,
                 'spells' => ['convergence_pulse', 'amethyst_shatter', 'fragment_barrier', 'meteor_strike', 'shadow_bolt'],
@@ -1425,6 +1500,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'speed' => 7,
                 'attack' => 'entangling_roots',
                 'level' => 10,
+                'element' => 'earth',
                 'difficulty' => 4,
                 'isBoss' => true,
                 'spells' => ['entangling_roots', 'nature_fury', 'poison_cloud', 'primordial_roar'],
@@ -1499,6 +1575,19 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // Resistances elementaires
             if (isset($data['elementalResistances'])) {
                 $monster->setElementalResistances($data['elementalResistances']);
+            }
+
+            // MAT-01 : l'element du monstre — la cle est obligatoire, un
+            // monstre sans element est une erreur de contenu. Les deux
+            // mannequins d'entrainement restent `none`.
+            $element = Element::from($data['element']);
+            $monster->setElement($element);
+            if ($element !== Element::None) {
+                $resistances = $monster->getElementalResistances() ?? [];
+                if (!\array_key_exists($element->value, $resistances)) {
+                    $resistances[$element->value] = self::OWN_ELEMENT_RESISTANCE;
+                    $monster->setElementalResistances($resistances);
+                }
             }
 
             // Boss

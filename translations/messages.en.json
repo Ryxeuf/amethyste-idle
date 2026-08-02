@@ -812,7 +812,8 @@
       "empty_hint": "Fight monsters on the map to fill your bestiary",
       "boss": "Boss",
       "level": "Level %level%",
-      "difficulty": "Difficulty %level%/5"
+      "difficulty": "Difficulty %level%/5",
+      "element": "Element"
     },
     "factions": {
       "title": "Factions",
@@ -1912,6 +1913,17 @@
         "11": "November",
         "12": "December"
       }
+    },
+    "element": {
+      "none": "None",
+      "fire": "Fire",
+      "water": "Water",
+      "earth": "Earth",
+      "air": "Air",
+      "light": "Light",
+      "dark": "Dark",
+      "metal": "Metal",
+      "beast": "Beast"
     }
   },
   "common": {

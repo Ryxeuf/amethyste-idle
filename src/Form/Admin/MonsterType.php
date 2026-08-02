@@ -4,8 +4,10 @@ namespace App\Form\Admin;
 
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,6 +24,11 @@ class MonsterType extends AbstractType
             ->add('hit', IntegerType::class, ['label' => 'Precision'])
             ->add('speed', IntegerType::class, ['label' => 'Vitesse'])
             ->add('level', IntegerType::class, ['label' => 'Niveau'])
+            ->add('element', EnumType::class, [
+                'class' => Element::class,
+                'choice_label' => static fn (Element $element): string => $element->label(),
+                'label' => 'Element',
+            ])
             ->add('attack', EntityType::class, [
                 'class' => Spell::class,
                 'choice_label' => 'name',

@@ -22,7 +22,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| MAT-01 | L'élément des monstres | S | ∅ |
+| MAT-01 ✅ | L'élément des monstres | S | ∅ |
 | MAT-02 | La dérivation matéria ← sort | M | ∅ |
 | MAT-03 | Le catalogue à 200 | M | ← MAT-02 |
 | MAT-04 | Le plancher du jour 1 | M | ← MAT-03 |
@@ -46,19 +46,23 @@ qui rend le jeu jouable — c'est lui qu'on vise en premier après le pivot.
 
 ## Piste A — La donnée
 
-### MAT-01 — L'élément des monstres (S | ★★★ | HAUTE)
+### MAT-01 — L'élément des monstres (S | ★★★ | HAUTE) — ✅ LIVRÉ 2026-08-02
 > Prérequis bloquant du butin dérivé, et de la capacité raciale de l'Orc.
-> Aucun des 65 monstres ne porte d'élément aujourd'hui ; 44 déclarent des
+> Aucun des 65 monstres ne portait d'élément ; 44 déclaraient des
 > `elementalResistances` sans jamais dire de quel flux ils relèvent.
-> Prérequis : ∅
-- [ ] Champ `element` (enum `Element`) sur l'entité `Monster` + migration
-- [ ] Renseigner les 65 monstres — dérivé de la zone et du bestiaire existant,
-      pas décidé au cas par cas ; les 2 mannequins d'entraînement restent `None`
-- [ ] Cohérence avec `elementalResistances` : un monstre résiste à son propre
-      élément (règle, pas 44 valeurs à la main)
-- [ ] Débloque `RaceCapability` de l'Orc (« lire l'élément d'un monstre dès la
-      1re rencontre », `GAME_ONBOARDING`), aujourd'hui sans rien à lire
-- [ ] Tests : couverture des 65, cohérence élément ↔ résistance, capacité orque
+- [x] Champ `element` (enum `Element`) sur l'entité `Monster` + migration
+      (`Version20260802AMonsterElement`, défaut `none`)
+- [x] Renseigner les 65 monstres — dérivé des résistances déclarées (la plus
+      haute résistance positive nomme le flux) et de la lignée de zone pour les
+      21 sans résistances ; les 2 mannequins d'entraînement restent `None`
+- [x] Cohérence avec `elementalResistances` : un monstre résiste à son propre
+      élément — règle posée dans le loader (`OWN_ELEMENT_RESISTANCE`, +0.3
+      par défaut quand rien n'est déclaré), jamais 44 valeurs à la main
+- [x] Débloque `RaceCapability` de l'Orc : le bestiaire affiche l'élément dans
+      le bloc que `BestiaryRevealPolicy` gate déjà (flair = première rencontre)
+- [x] Tests : couverture des 65 et validité de l'enum, `none` réservé aux
+      mannequins, aucun monstre faible à son propre élément
+      (`MonsterElementTest`)
 
 ### MAT-02 — La dérivation matéria ← sort (M | ★★★ | HAUTE)
 > Une matéria ne s'écrit pas, elle se dérive (GAME_MATERIA §2.1). Ce jalon livre
