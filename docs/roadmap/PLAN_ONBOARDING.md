@@ -124,6 +124,13 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 > Ferme **D2** : perdre son mot de passe revient à perdre son personnage, son inventaire, sa
 > guilde et sa place dans un foyer.
 > Prérequis : ← ONB-01
+>
+> **Infrastructure décidée le 2026-08-02** : fournisseur **Brevo** (français, RGPD,
+> 300 e-mails/jour gratuits, bridge `symfony/brevo-mailer`) ; adresse d'envoi
+> **`no-reply@amethyste.best`** (SPF/DKIM du fournisseur à poser dans la zone DNS
+> d'amethyste.best — à la main de l'opérateur). **Séquencement : le code d'abord** —
+> le jalon se livre complet et testé avec `MAILER_DSN` en env (`null://` en test),
+> le branchement prod se fait quand le compte Brevo et le DNS sont opérationnels.
 - [ ] Installer `symfony/mailer` **dans Docker** (règle 1) ; `MAILER_DSN` en env, `null://` en test
 - [ ] Demande : **réponse identique** que le compte existe ou non ; limiteur de débit
 - [ ] Jeton à usage unique, **1 heure**, un seul actif par compte, stocké haché
