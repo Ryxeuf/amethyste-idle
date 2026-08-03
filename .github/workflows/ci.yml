@@ -347,6 +347,85 @@ jobs:
             && echo "OK: scheduler-entrypoint present and executable" \
             || (echo "FAIL: scheduler-entrypoint missing from image" && exit 1)
 
+      # ---------------------------------------------------------------------
+      # Le worker demarre-t-il vraiment ? (jalon F.0b)
+      # ---------------------------------------------------------------------
+      # Les deux tests ci-dessus verifient qu'un fichier existe, pas qu'un
+      # processus vit. Le 2026-08-03, cinq releases consecutives ont ete perdues
+      # sur « container amethyste-idle-worker-1 is unhealthy » : le worker
+      # mourait au demarrage, et **aucun test du depot ne pouvait le voir**
+      # puisque aucun n'avait jamais lance le conteneur. Sa premiere execution a
+      # eu lieu en production.
+      #
+      # Ce smoke test lui donne une base et le laisse aller au bout de son
+      # entrypoint : purge du cache, attente de la base, attente des migrations,
+      # arriere de loyers, puis `messenger:consume`. Il attrape ce qu'aucune
+      # assertion sur un fichier n'attrape — transport introuvable, commande
+      # absente, erreur fatale au boot du noyau, cache empoisonne.
+      - name: Smoke test — le worker consomme reellement le calendrier
+        run: |
+          set -euo pipefail
+          IMAGE="ghcr.io/${{ env.IMAGE_NAME }}:ci-${{ github.sha }}"
+          DB_URL="postgresql://app:test_password@smoke-db:5432/amethyste?serverVersion=17&charset=utf8"
+
+          docker network create scheduler-smoke
+          docker run -d --name smoke-db --network scheduler-smoke \
+            -e POSTGRES_DB=amethyste \
+            -e POSTGRES_USER=app \
+            -e POSTGRES_PASSWORD=test_password \
+            postgres:17-alpine
+
+          echo "==> Attente de la base..."
+          for _ in $(seq 1 30); do
+            if docker exec smoke-db pg_isready -U app -d amethyste >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+
+          # Le schema sans rejouer les migrations : le worker attend seulement
+          # qu'elles soient *declarees* passees, et les rejouer ici testerait la
+          # chaine de migrations, pas le worker.
+          echo "==> Schema de test..."
+          run_console() {
+            docker run --rm --network scheduler-smoke -e DATABASE_URL="$DB_URL" \
+              --entrypoint php "$IMAGE" /app/bin/console "$@"
+          }
+          run_console doctrine:schema:create --no-interaction
+          run_console doctrine:migrations:sync-metadata-storage --no-interaction
+          run_console doctrine:migrations:version --add --all --no-interaction
+
+          echo "==> Demarrage du worker (entrypoint reel)..."
+          docker run -d --name smoke-worker --network scheduler-smoke \
+            -e DATABASE_URL="$DB_URL" \
+            --entrypoint scheduler-entrypoint "$IMAGE"
+
+          # Exactement la sonde de sante de `compose.yaml` : ce que la CI declare
+          # sain doit etre ce que la production declare sain.
+          ok=0
+          for _ in $(seq 1 60); do
+            if docker exec smoke-worker sh -c "tr '\0' '\n' < /proc/1/cmdline | grep -q messenger:consume" 2>/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 2
+          done
+
+          echo "===================== logs du worker ====================="
+          docker logs smoke-worker 2>&1 | tail -n 120
+          echo "=========================================================="
+
+          if [ "$ok" -ne 1 ]; then
+            echo "FAIL: le worker n'a pas atteint « messenger:consume » en 120 s."
+            echo "      C'est exactement l'echec qui casse le deploiement de production."
+            exit 1
+          fi
+          echo "OK: le worker consomme le transport scheduler_default."
+
+      - name: Nettoyage du smoke test worker
+        if: always()
+        run: |
+          docker rm -f smoke-worker smoke-db >/dev/null 2>&1 || true
+          docker network rm scheduler-smoke >/dev/null 2>&1 || true
+
   # ---------------------------------------------------------------------------
   # 6. Verdict unique — cible ideale pour une regle de protection de branche
   # ---------------------------------------------------------------------------

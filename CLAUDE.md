@@ -132,11 +132,17 @@ scripts/                # Scripts deploy, fixtures, etc.
 > `src/Scheduler/DefaultScheduleProvider.php` et sont consommees par le service Docker
 > **`worker`** (`compose.yaml`), lance par `frankenphp/scheduler-entrypoint.sh` —
 > **jamais** par l'entrypoint du web, qui rejouerait les migrations et les assets.
-> Trois regles : **une seule replique** (le calendrier n'a pas de verrou, jalon F.1 —
+> Quatre regles : **une seule replique** (le calendrier n'a pas de verrou, jalon F.1 —
 > ne jamais faire `--scale worker=N`), **rien n'est rejoue** (calendrier sans etat : un
-> declenchement manque pendant un redemarrage est perdu, pas rattrape), et **une commande
-> ajoutee au calendrier tourne vraiment** — verifier son cout et son idempotence.
-> Garde-fous : `tests/Unit/Scheduler/{ScheduledCommandTest,SchedulerWorkerDeploymentTest}.php`.
+> declenchement manque pendant un redemarrage est perdu, pas rattrape), **une commande
+> ajoutee au calendrier tourne vraiment** — verifier son cout et son idempotence — et
+> **le deploiement du site n'attend jamais le worker** (jalon F.0b : le `--wait` de
+> `scripts/deploy.sh` ne nomme que `database` et `php` ; le worker est releve ensuite,
+> verifie, et ses logs sont publies s'il ne consomme pas. Cinq releases ont ete perdues
+> le 2026-08-03 parce qu'un planificateur malsain faisait echouer la mise a jour du jeu).
+> Garde-fous : `tests/Unit/Scheduler/{ScheduledCommandTest,SchedulerWorkerDeploymentTest}.php`
+> et le smoke test « le worker consomme reellement le calendrier » de `ci.yml`, qui **demarre
+> le conteneur** — les assertions de fichier ne l'avaient jamais fait.
 
 > **Note ZON-21** : le code carte navigable (rendu PixiJS, pathfinding Dijkstra,
 > `PlayerMoveProcessor`, endpoints `/api/map/*`, editeur de carte admin, moteur
