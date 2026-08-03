@@ -47,7 +47,9 @@ class CrafterReputationManager
 
     public function recordDelivery(Player $crafter, CraftOrder $order): CrafterReputation
     {
-        $craft = $order->getRecipe()->getCraft();
+        // ECO-28 : un service n'a pas de recette — sa reputation va au metier
+        // du service (le joaillier, pour le sertissage).
+        $craft = $order->getRecipe()?->getCraft() ?? CraftOrder::SERVICE_CRAFT;
         $reputation = $this->repository->findOneForPlayerAndCraft($crafter, $craft);
 
         if (null === $reputation) {
@@ -71,7 +73,7 @@ class CrafterReputationManager
      */
     public function recordFailure(Player $crafter, CraftOrder $order): ?CrafterReputation
     {
-        $reputation = $this->repository->findOneForPlayerAndCraft($crafter, $order->getRecipe()->getCraft());
+        $reputation = $this->repository->findOneForPlayerAndCraft($crafter, $order->getRecipe()?->getCraft() ?? CraftOrder::SERVICE_CRAFT);
 
         // Rien a sanctionner chez un artisan qui n'a jamais rien livre : creer
         // une reputation a zero pour la punir n'aurait aucun effet.
@@ -84,7 +86,7 @@ class CrafterReputationManager
     {
         return max(
             self::MINIMUM_POINTS,
-            $order->getRecipe()->getRequiredLevel() * self::POINTS_PER_RECIPE_LEVEL
+            ($order->getRecipe()?->getRequiredLevel() ?? CraftOrder::SERVICE_LEVEL) * self::POINTS_PER_RECIPE_LEVEL
         );
     }
 
