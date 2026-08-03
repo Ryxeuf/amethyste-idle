@@ -55,7 +55,7 @@ class ResidentialParcels
      */
     public function scaledCapacity(SettlementRank $rank): ?int
     {
-        $capacities = $this->loader->load()['housing']['parcels_per_rank'] ?? [];
+        $capacities = $this->loader->load()['housing']['parcels_per_rank'];
         $nominal = $capacities[$rank->value] ?? null;
         if (!\is_int($nominal)) {
             return null;
