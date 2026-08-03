@@ -8,12 +8,14 @@ use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
+use App\Enum\CombatLever;
 use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\World\WeatherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -29,6 +31,7 @@ class SpellApplicator
         private readonly CriticalCalculator $criticalCalculator,
         private readonly WeatherService $weatherService,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
+        private readonly CombatLeverScale $leverScale,
     ) {
     }
 
@@ -39,6 +42,13 @@ class SpellApplicator
         $domainCritical = $options['critical'] ?? 0;
         $fight = $options['fight'] ?? null;
 
+        // ARC-03b — les leviers traversent le calcul, chacun n'etant lu qu'a
+        // sa place. Deux porteurs, parce que les leviers offensifs sont ceux
+        // de l'attaquant et les defensifs ceux de la cible : les confondre
+        // ferait profiter un attaquant de la garde de son adversaire.
+        $levers = $options['levers'] ?? CombatLeverEffects::none();
+        $targetLevers = $options['targetLevers'] ?? CombatLeverEffects::none();
+
         $messages = [];
 
         $effectiveMaxLife = $target instanceof Player
@@ -47,6 +57,19 @@ class SpellApplicator
 
         $damage = $this->damageCalculator->computeBaseDamage($spell, $domainDamage, $target, $effectiveMaxLife);
         $heal = $this->damageCalculator->computeBaseHeal($spell, $domainHeal, $target, $effectiveMaxLife);
+
+        // `dodge` — **avant tout calcul de degats**. Poser l'esquive ici et non
+        // apres la resistance est la moitie de ce qui la distingue de `guard` :
+        // ce qui est evite n'est pas reduit, il n'a pas lieu. Le soin passe :
+        // on n'esquive pas ce qui vous soigne.
+        if ($damage > 0 && $this->damageCalculator->isDodged($targetLevers, $this->leverScale)) {
+            $damage = 0;
+            $messages[] = sprintf('%s esquive !', $target->getName());
+        }
+
+        // `power` et `mending` — multiplicatifs sur la valeur de base.
+        $damage = $this->damageCalculator->applyPower($damage, $levers, $this->leverScale);
+        $heal = $this->damageCalculator->applyMending($heal, $levers, $this->leverScale);
 
         // Dungeon difficulty: scale mob damage output
         if ($damage > 0 && $sender instanceof Mob && $fight !== null) {
@@ -57,9 +80,9 @@ class SpellApplicator
         }
 
         // Critical hit check
-        if ($this->criticalCalculator->isCritical($spell, $domainCritical)) {
-            $heal = $this->criticalCalculator->applyCriticalModifier($heal);
-            $damage = $this->criticalCalculator->applyCriticalModifier($damage);
+        if ($this->criticalCalculator->isCritical($spell, $domainCritical, $levers, $this->leverScale)) {
+            $heal = $this->criticalCalculator->applyCriticalModifier($heal, $levers, $this->leverScale);
+            $damage = $this->criticalCalculator->applyCriticalModifier($damage, $levers, $this->leverScale);
             $messages[] = 'Coup critique !';
             if ($fight !== null) {
                 $this->combatLogger->logCritical($fight, $sender);
@@ -67,8 +90,10 @@ class SpellApplicator
         }
 
         // Elemental resistance (reduce damage if target is a mob with resistances)
+        // `pierce` en ignore une part — avant elle, jamais apres.
         if ($damage > 0 && $target instanceof Mob) {
-            $result = $this->damageCalculator->applyElementalResistance($damage, $spell, $target);
+            $pierce = $levers->isEmpty() ? 0.0 : $levers->pointsFor(CombatLever::Pierce, $this->leverScale);
+            $result = $this->damageCalculator->applyElementalResistance($damage, $spell, $target, $pierce);
             $damage = $result['damage'];
             if ($result['resisted']) {
                 $messages[] = sprintf('%s resiste a %s !', $target->getName(), $spell->getElement()->value);
@@ -105,6 +130,14 @@ class SpellApplicator
         if ($fight !== null && $this->hasBurnEffect($fight, $sender)) {
             $damage = $this->damageCalculator->applyBurnReduction($damage);
         }
+
+        // `guard` — **apres** la resistance, et apres tout ce que l'attaquant
+        // apporte (meteo, berserk, brulure) : c'est la derniere reduction que
+        // le corps de la cible oppose, avant le bouclier qui est un tampon
+        // exterieur. La borner ici plutot que dans le bloc de resistance la
+        // rend valable aussi quand la cible est un joueur, qui n'a pas de
+        // resistance elementaire.
+        $damage = $this->damageCalculator->applyGuard($damage, $targetLevers, $this->leverScale);
 
         // Invariant métier : les dégâts ne peuvent jamais être négatifs
         $damage = max(0, $damage);
@@ -170,7 +203,10 @@ class SpellApplicator
             ]);
 
             if ($statusEffect !== null) {
-                $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect);
+                // `grip` de celui qui applique, `ward` de celui qui subit :
+                // les deux se croisent sur le jet d'application, et nulle part
+                // ailleurs (ARC-03b).
+                $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect, $levers, $targetLevers);
                 $messages[] = sprintf('%s est affecte par %s !', $target->getName(), $statusEffect->getName());
                 $this->combatLogger->logStatusApply($fight, $target, $statusEffect->getName());
             }

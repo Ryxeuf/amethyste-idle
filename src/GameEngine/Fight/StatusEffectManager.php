@@ -9,7 +9,9 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerStatusEffect;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\StatusEffect;
+use App\Enum\CombatLever;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatLeverScale;
 use Doctrine\ORM\EntityManagerInterface;
 
 class StatusEffectManager
@@ -18,16 +20,29 @@ class StatusEffectManager
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogger $combatLogger,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
+        private readonly CombatLeverScale $leverScale,
     ) {
     }
 
     /**
      * Apply a status effect to a target within a fight.
+     *
+     * **`grip` et `ward` se rencontrent ici, et nulle part ailleurs** (ARC-03b).
+     * `grip` est le levier principal du controle : il porte la duree **et**
+     * l'intensite de ce qu'on applique. `ward` est ce qui resiste a
+     * l'application — pas ce qui raccourcit un statut deja pose, sinon il ferait
+     * double emploi. Les deux se croisent donc sur le **jet d'application**, en
+     * un seul point : la chance effective est celle du statut, augmentee par
+     * l'emprise de celui qui l'applique et reduite par la sauvegarde de celui
+     * qui la subit.
+     *
+     * Les marques elementaires (ARC-13) passeront par ce meme chemin — c'est ce
+     * qui fait que `grip` aura un objet.
      */
-    public function applyStatusEffect(Fight $fight, CharacterInterface $target, StatusEffect $effect): void
+    public function applyStatusEffect(Fight $fight, CharacterInterface $target, StatusEffect $effect, ?CombatLeverEffects $casterLevers = null, ?CombatLeverEffects $targetLevers = null): void
     {
         // Check probability
-        if (random_int(1, 100) > $effect->getChance()) {
+        if (random_int(1, 100) > $this->effectiveChance($effect, $casterLevers, $targetLevers)) {
             return;
         }
 
@@ -51,11 +66,52 @@ class StatusEffectManager
         $fightStatusEffect->setTargetType($targetType);
         $fightStatusEffect->setTargetId($target->getId());
         $fightStatusEffect->setStatusEffect($effect);
-        $fightStatusEffect->setRemainingTurns($effect->getDuration());
+        $fightStatusEffect->setRemainingTurns($this->effectiveDuration($effect, $casterLevers));
         $fightStatusEffect->setAppliedAt(new \DateTime());
 
         $this->entityManager->persist($fightStatusEffect);
         $this->entityManager->flush();
+    }
+
+    /**
+     * La chance d'application, emprise et sauvegarde comprises (ARC-03b).
+     *
+     * Elle reste bornee a [1, 100] : un statut dont l'application deviendrait
+     * certaine ou impossible cesserait d'etre un jet, et la fonction de controle
+     * n'aurait plus de risque a prendre.
+     */
+    private function effectiveChance(StatusEffect $effect, ?CombatLeverEffects $casterLevers, ?CombatLeverEffects $targetLevers): int
+    {
+        $chance = (float) $effect->getChance();
+
+        if ($casterLevers !== null && !$casterLevers->isEmpty()) {
+            $chance *= $casterLevers->multiplierFor(CombatLever::Grip, $this->leverScale);
+        }
+        if ($targetLevers !== null && !$targetLevers->isEmpty()) {
+            // `ward` porte un taux positif : il **resiste**, donc on divise
+            // l'effet au lieu de le multiplier. Lui donner un taux negatif
+            // aurait rendu « +10 % de sauvegarde » illisible dans un arbre.
+            $chance /= $targetLevers->multiplierFor(CombatLever::Ward, $this->leverScale);
+        }
+
+        return max(1, min(100, (int) round($chance)));
+    }
+
+    /**
+     * La duree d'un statut applique, emprise comprise (ARC-03b).
+     *
+     * `ward` n'entre pas ici : il resiste a l'application, il ne raccourcit pas
+     * ce qui a ete pose. Le faire agir aux deux endroits lui donnerait deux
+     * places dans la formule pour un seul levier.
+     */
+    private function effectiveDuration(StatusEffect $effect, ?CombatLeverEffects $casterLevers): int
+    {
+        $duration = $effect->getDuration();
+        if ($casterLevers === null || $casterLevers->isEmpty()) {
+            return $duration;
+        }
+
+        return max($duration, (int) round($duration * $casterLevers->multiplierFor(CombatLever::Grip, $this->leverScale)));
     }
 
     /**

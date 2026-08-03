@@ -24,7 +24,7 @@
 |------|----------|--------|-------------|
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
 | ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
-| ARC-03 ◐ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
+| ARC-03 ✅ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
 | ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
 | ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
@@ -150,7 +150,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       registre (invariant 7), avec la **liste d'attente d'ARC-08** nommée et vérifiée
       exacte — elle ne peut que rétrécir
 
-### ARC-03 — Les leviers (L → 2 sous-phases | ★★★ | CRITIQUE) ◐
+### ARC-03 — Les leviers (L → 2 sous-phases | ★★★ | CRITIQUE) ✅
 
 > **Découpé (règle 8) : ARC-03a le vocabulaire, ARC-03b la formule.** Le jalon touche
 > le vocabulaire, quatre consommateurs du moteur de combat et la place de chaque
@@ -172,7 +172,29 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > leur registre, et eux seuls ; `life` et `recovery` restent hors de la double
 > borne. Contrat tenu par `CombatLeverTest`.
 >
-> **ARC-03b — reste à faire** : la consommation dans la formule.
+> **ARC-03b — livré le 2026-08-03.** Les leviers entrent dans la formule, et chacun
+> **à la place que le canon lui donne** : `power`/`mending` multiplient la valeur de
+> base, `critical` s'ajoute au taux et `critical_power` au seul multiplicateur de
+> critique, `hit` s'ajoute au jet de touche, `pierce` **ignore une part de la
+> résistance avant elle**, `guard` réduit **après** elle, `dodge` évite **avant tout
+> calcul**, `life` porte sur les PV de base, et `grip`/`ward` se croisent sur le
+> **jet d'application** d'un statut — l'un l'augmente et prolonge, l'autre y résiste.
+> `CombatLeverEffects` est le porteur qui traverse le calcul ; il refuse de lire un
+> levier **dans la mauvaise unité** (un taux de critique lu comme un multiplicateur
+> donnerait un chiffre plausible et faux), et `CombatSkillResolver::getCombatLevers()`
+> les somme sous la **même borne** que les statistiques plates — sauf `life` et
+> `recovery`, que le canon place hors double borne et qui précèdent donc la borne.
+> Deux porteurs et non un : les leviers offensifs sont ceux de l'attaquant, les
+> défensifs ceux de la cible. **Aucune valeur de jeu ne change** — aucun nœud ne porte
+> de levier, donc tout porteur est vide et le moteur calcule exactement comme avant,
+> ce qu'un test nommé verrouille.
+>
+> **Quatre leviers restent sans consommateur, et c'est une dépendance, pas un oubli** :
+> `thrift` et `wind` portent sur la **ressource du registre**, qui n'existe pas encore
+> (**ARC-04** : PM, temps de reprise, munitions) ; `recovery` demande un crochet de
+> fin de tour et `tempo` un ordre d'initiative, qu'aucun système ne porte aujourd'hui.
+> Les brancher sur une ressource inventée aurait été pire que de les laisser lisibles
+> et inertes.
 > GAME_ARCHETYPES §4. Le refactor central : cinq entiers plats → **quinze** leviers en
 > pourcentage, avec taux de change et plafonds.
 - [x] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
@@ -188,8 +210,13 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [x] **`dodge` avant tout calcul, `guard` après résistance** : deux places distinctes,
       verrouillées par un test — c'est ce qui distingue le cuir de la plaque autrement que
       par un chiffre *(ARC-03a ; leur consommation est ARC-03b)*
-- [ ] `DamageCalculator`, `CriticalCalculator`, `FightCalculator` (le jet de touche) et
-      `StatusEffectManager` consomment chacun les leviers qui les concernent *(ARC-03b)*
+- [x] `DamageCalculator`, `CriticalCalculator`, `FightCalculator` (le jet de touche) et
+      `StatusEffectManager` consomment chacun les leviers qui les concernent *(ARC-03b)* —
+      plus `PlayerEffectiveStatsCalculator` pour `life` et `DungeonActionResolver` pour
+      `power`, sans quoi un arbre converti serait pertinent en zone et muet en donjon
+- [ ] `thrift` et `wind` dans la formule : ils portent sur la **ressource du registre**,
+      qui n'existe pas encore — reporté à **ARC-04** ; `recovery` (crochet de fin de tour)
+      et `tempo` (ordre d'initiative) attendent le système correspondant
 - [x] Tests : plafond par levier ; vocabulaire fermé ; un levier accordé deux fois par un
       nœud refusé *(ARC-03a)*
 - [ ] Tests : somme = 50 pb par arbre ; règle des 80/20 ; aucun passif plat sur un nœud de

@@ -5,6 +5,9 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\Enum\CombatRegister;
+use App\GameEngine\Progression\CombatLeverScale;
+use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Progression\SynergyCalculator;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 
@@ -15,6 +18,8 @@ class CombatSkillResolver
         private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
         private readonly PatronageBonusResolver $patronageBonusResolver,
+        private readonly SkillLeverReader $leverReader,
+        private readonly CombatLeverScale $leverScale,
     ) {
     }
 
@@ -129,6 +134,50 @@ class CombatSkillResolver
         // une source en particulier, et l'appliquer avant les sets ferait
         // dependre son effet de l'ordre des additions.
         return $this->patronageBonusResolver->amplify($player, $bonuses);
+    }
+
+    /**
+     * Les leviers du personnage sur cette action, en points de budget (ARC-03b).
+     *
+     * Meme loi de bornage que `getCombatBonuses()` — un passif ne sert pas tous
+     * les gestes a la fois (DOM-01) —, avec la meme exception : les leviers que
+     * le canon declare **hors double borne** (`life` et `recovery`, § 4.2)
+     * precedent la borne, parce qu'ils ne qualifient pas une action. La liste
+     * n'est pas ecrite ici : elle se lit sur le levier lui-meme, ce qui evite
+     * une seconde source de verite.
+     *
+     * On rend des **points de budget**, pas des effets : la conversion est le
+     * travail du convertisseur unique, et la faire ici la dupliquerait. C'est
+     * aussi ce qui permet de sommer — deux nœuds qui achetent `power` cumulent
+     * leurs points, exactement comme un arbre les depense.
+     *
+     * @return array<string, int>
+     */
+    public function getCombatLevers(Player $player, ?CombatScope $scope = null): array
+    {
+        $totals = [];
+
+        foreach ($player->getSkills() as $skill) {
+            $applies = $this->skillAppliesTo($player, $skill, $scope);
+
+            foreach ($this->leverReader->grantsOf($skill) as $grant) {
+                if (!$applies && $this->leverScale->isBounded($grant->lever)) {
+                    continue;
+                }
+
+                $totals[$grant->lever->value] = ($totals[$grant->lever->value] ?? 0) + $grant->budgetPoints;
+            }
+        }
+
+        return $totals;
+    }
+
+    /**
+     * Les leviers deja convertis en effets, pour le registre de l'action.
+     */
+    public function getLeverEffects(Player $player, ?CombatScope $scope = null, ?CombatRegister $register = null): CombatLeverEffects
+    {
+        return CombatLeverEffects::of($this->getCombatLevers($player, $scope), $this->leverScale, $register);
     }
 
     /**

@@ -9,10 +9,12 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
 use App\Entity\Game\Spell;
+use App\Enum\CombatRegister;
 use App\Enum\Element;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
 use App\GameEngine\Fight\CombatCapacityResolver;
+use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
@@ -21,6 +23,8 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
@@ -50,6 +54,10 @@ class FightSpellControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->combatSkillResolver = $this->createMock(CombatSkillResolver::class);
+        // ARC-03b : `CombatLeverEffects` est `final readonly`, donc PHPUnit ne
+        // sait pas en fabriquer un double. Un porteur vide laisse le calcul
+        // exactement ou il etait — aucun nœud livre ne porte de levier.
+        $this->combatSkillResolver->method('getLeverEffects')->willReturn(CombatLeverEffects::none());
         $this->combatCapacityResolver = $this->createMock(CombatCapacityResolver::class);
         $this->spellApplicator = $this->createMock(SpellApplicator::class);
         $this->synergyCalculator = $this->createMock(ElementalSynergyCalculator::class);
@@ -88,6 +96,7 @@ class FightSpellControllerTest extends TestCase
             $fightTurnPublisher,
             new DamageMultiplierNormalizer(),
             $this->createMock(\App\GameEngine\Reputation\CounterfeitService::class),
+            new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 5))),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
@@ -403,6 +412,10 @@ class FightSpellControllerTest extends TestCase
         $spell->method('getSlug')->willReturn($slug);
         $spell->method('getName')->willReturn(ucfirst($slug));
         $spell->method('getElement')->willReturn($element);
+        // ARC-03b : le controleur lit le registre du geste pour convertir les
+        // leviers de ressource. `CombatRegister` est une enumeration, que
+        // PHPUnit ne sait pas doubler — le stub est donc explicite.
+        $spell->method('getRegister')->willReturn(CombatRegister::Spell);
         $spell->method('getCooldown')->willReturn($cooldown);
         $spell->method('getHit')->willReturn(100);
         $spell->method('getDamage')->willReturn(5);
