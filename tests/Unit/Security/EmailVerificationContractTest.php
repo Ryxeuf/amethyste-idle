@@ -25,12 +25,19 @@ class EmailVerificationContractTest extends TestCase
      * Les fichiers autorises a connaitre l'etat de verification. Tout le
      * reste passe par `EmailVerificationGate` — y compris les gabarits, via
      * `EmailVerificationExtension` qui delegue a la porte.
+     *
+     * La loi porte sur la **decision** (lire l'etat pour autoriser un geste),
+     * jamais sur l'**ecriture** d'un etat initial : l'entite le porte, le
+     * gestionnaire le pose au clic, le depot le filtre pour les rappels, et
+     * les fixtures naissent verifiees — un compte de developpement represente
+     * un joueur etabli, pas un inconnu qui vient de s'inscrire.
      */
     private const ALLOWED_READERS = [
         'src/Entity/User.php',
         'src/Security/EmailVerificationGate.php',
         'src/Security/EmailVerificationManager.php',
         'src/Repository/UserRepository.php',
+        'src/DataFixtures/UserFixtures.php',
     ];
 
     /**

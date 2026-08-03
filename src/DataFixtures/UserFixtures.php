@@ -7,6 +7,18 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * Les comptes de developpement et de test.
+ *
+ * **Tous naissent verifies** (ONB-04). Un compte de fixture represente un
+ * joueur etabli, pas un inconnu qui vient de s'inscrire : le laisser non
+ * verifie fermerait le chat, l'hotel des ventes, les guildes et les groupes
+ * a tout developpeur qui charge les fixtures — et a la suite fonctionnelle,
+ * qui teste la validation des requetes derriere une porte fermee.
+ *
+ * C'est la meme decision que celle de la migration du jalon : les comptes qui
+ * precedent la porte la franchissent d'office (aucun blocage retroactif).
+ */
 class UserFixtures extends Fixture
 {
     private UserPasswordHasherInterface $passwordHasher;
@@ -25,6 +37,7 @@ class UserFixtures extends Fixture
         $user->setFirstName('Rémy');
         $user->setLastName('Mandon');
         $user->setPassword($this->passwordHasher->hashPassword($user, 'test'));
+        $user->setEmailVerifiedAt(new \DateTimeImmutable());
         $user->setRoles(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PLAYER']);
         $manager->persist($user);
         $this->addReference('user_remy', $user);
@@ -35,6 +48,7 @@ class UserFixtures extends Fixture
         $admin->setUsername('admin');
         $admin->setFirstName('Admin');
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'test'));
+        $admin->setEmailVerifiedAt(new \DateTimeImmutable());
         $admin->setRoles(['ROLE_ADMIN', 'ROLE_PLAYER']);
         $admin->setCreatedAt(new \DateTime());
         $admin->setUpdatedAt(new \DateTime());
@@ -47,6 +61,7 @@ class UserFixtures extends Fixture
         $gameDesigner->setUsername('designer');
         $gameDesigner->setFirstName('Game Designer');
         $gameDesigner->setPassword($this->passwordHasher->hashPassword($gameDesigner, 'test'));
+        $gameDesigner->setEmailVerifiedAt(new \DateTimeImmutable());
         $gameDesigner->setRoles(['ROLE_GAME_DESIGNER', 'ROLE_PLAYER']);
         $gameDesigner->setCreatedAt(new \DateTime());
         $gameDesigner->setUpdatedAt(new \DateTime());
@@ -59,6 +74,7 @@ class UserFixtures extends Fixture
         $worldBuilder->setUsername('builder');
         $worldBuilder->setFirstName('World Builder');
         $worldBuilder->setPassword($this->passwordHasher->hashPassword($worldBuilder, 'test'));
+        $worldBuilder->setEmailVerifiedAt(new \DateTimeImmutable());
         $worldBuilder->setRoles(['ROLE_WORLD_BUILDER', 'ROLE_PLAYER']);
         $worldBuilder->setCreatedAt(new \DateTime());
         $worldBuilder->setUpdatedAt(new \DateTime());
@@ -71,6 +87,7 @@ class UserFixtures extends Fixture
         $moderator->setUsername('moderator');
         $moderator->setFirstName('Moderateur');
         $moderator->setPassword($this->passwordHasher->hashPassword($moderator, 'test'));
+        $moderator->setEmailVerifiedAt(new \DateTimeImmutable());
         $moderator->setRoles(['ROLE_MODERATOR', 'ROLE_PLAYER']);
         $moderator->setCreatedAt(new \DateTime());
         $moderator->setUpdatedAt(new \DateTime());
@@ -83,6 +100,7 @@ class UserFixtures extends Fixture
         $userDemo->setUsername('demo');
         $userDemo->setRoles(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PLAYER']);
         $userDemo->setPassword($this->passwordHasher->hashPassword($userDemo, 'test'));
+        $userDemo->setEmailVerifiedAt(new \DateTimeImmutable());
         $userDemo->setCreatedAt(new \DateTime());
         $userDemo->setUpdatedAt(new \DateTime());
         $manager->persist($userDemo);
@@ -94,6 +112,7 @@ class UserFixtures extends Fixture
         $userDemo2->setUsername('demo2');
         $userDemo2->setRoles(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_PLAYER']);
         $userDemo2->setPassword($this->passwordHasher->hashPassword($userDemo2, 'test'));
+        $userDemo2->setEmailVerifiedAt(new \DateTimeImmutable());
         $userDemo2->setCreatedAt(new \DateTime());
         $userDemo2->setUpdatedAt(new \DateTime());
         $manager->persist($userDemo2);
