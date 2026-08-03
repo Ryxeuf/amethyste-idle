@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
 use App\Entity\Game\Spell;
+use App\Enum\CombatRegister;
 use App\Enum\Element;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
@@ -411,6 +412,10 @@ class FightSpellControllerTest extends TestCase
         $spell->method('getSlug')->willReturn($slug);
         $spell->method('getName')->willReturn(ucfirst($slug));
         $spell->method('getElement')->willReturn($element);
+        // ARC-03b : le controleur lit le registre du geste pour convertir les
+        // leviers de ressource. `CombatRegister` est une enumeration, que
+        // PHPUnit ne sait pas doubler — le stub est donc explicite.
+        $spell->method('getRegister')->willReturn(CombatRegister::Spell);
         $spell->method('getCooldown')->willReturn($cooldown);
         $spell->method('getHit')->willReturn(100);
         $spell->method('getDamage')->willReturn(5);
