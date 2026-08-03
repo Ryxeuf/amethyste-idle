@@ -58,6 +58,22 @@
     "email_placeholder": "votre@email.com"
   },
   "game": {
+    "craft_order": {
+      "service": {
+        "craft": "joaillier",
+        "socket_row": "Sertissage : %item%",
+        "board_title": "Commandes de service",
+        "board_meta": "Ouvrir un emplacement de matéria · joaillier niv. 3 · demandée par %requester%",
+        "claim": "Prendre en charge",
+        "form_title": "Commander un sertissage",
+        "form_hint": "Le joaillier ouvre un emplacement de matéria sur votre pièce — même liée : elle vous revient toujours. Coût : %cost% améthystites Pures (vous en avez %have%) + votre commission.",
+        "no_piece": "Aucune pièce de votre sac ne peut recevoir un emplacement de plus. Une pièce portée doit d’abord être retirée.",
+        "piece_label": "Pièce à sertir (emplacements ouverts / possibles)",
+        "commission_label": "Commission (gils)",
+        "crafter_label": "Joaillier (optionnel — commande directe)",
+        "submit": "Déposer la commande"
+      }
+    },
     "foundry": {
       "contract": {
         "title": "Contrat de la semaine",

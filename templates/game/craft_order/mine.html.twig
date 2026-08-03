@@ -23,7 +23,7 @@
                     {% for order in orders %}
                         <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-4">
                             <div class="min-w-0">
-                                <p class="text-sm text-gray-100 font-medium truncate">{{ order.recipe.name }}</p>
+                                <p class="text-sm text-gray-100 font-medium truncate">{% if order.service %}{{ 'game.craft_order.service.socket_row'|trans({'%item%': order.targetItem ? order.targetItem.genericItem.name : '?'}) }}{% else %}{{ order.recipe.name }}{% endif %}</p>
                                 <p class="text-xs text-gray-500 mt-0.5">
                                     {{ order.status.label }}
                                     {% if order.crafter %}· artisan : {{ order.crafter.name }}

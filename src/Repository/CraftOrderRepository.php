@@ -46,8 +46,10 @@ class CraftOrderRepository extends ServiceEntityRepository
      */
     public function findClaimedByCrafter(Player $crafter): array
     {
+        // ECO-28 : jointure externe — une commande de service n'a pas de
+        // recette, et l'atelier doit la montrer pour qu'elle soit livree.
         return $this->createQueryBuilder('o')
-            ->join('o.recipe', 'r')->addSelect('r')
+            ->leftJoin('o.recipe', 'r')->addSelect('r')
             ->join('o.requester', 'p')->addSelect('p')
             ->where('o.crafter = :crafter')
             ->andWhere('o.status = :claimed')
@@ -114,6 +116,38 @@ class CraftOrderRepository extends ServiceEntityRepository
     }
 
     /**
+     * Commandes de **service** ouvertes au tableau regional (ECO-28).
+     *
+     * Une section a part : la jointure sur la recette du tableau classique les
+     * exclurait, et un service se lit autrement (la piece du client, pas un
+     * objet a produire).
+     *
+     * @return CraftOrder[]
+     */
+    public function findOpenServiceInRegion(?Region $region, int $limit = 25): array
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->join('o.requester', 'p')->addSelect('p')
+            ->where('o.status = :open')
+            ->andWhere('o.serviceKind IS NOT NULL')
+            ->andWhere('o.targetCrafter IS NULL')
+            ->andWhere('o.guild IS NULL')
+            ->andWhere('o.expiresAt > :now')
+            ->setParameter('open', CraftOrderStatus::Open)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('o.createdAt', 'DESC')
+            ->setMaxResults(max(1, $limit));
+
+        if (null !== $region) {
+            $qb->andWhere('o.region = :region')->setParameter('region', $region);
+        } else {
+            $qb->andWhere('o.region IS NULL');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Commandes ouvertes d'une guilde — le canal interne de RET-03.
      *
      * @return CraftOrder[]
@@ -166,8 +200,10 @@ class CraftOrderRepository extends ServiceEntityRepository
      */
     public function findOpenDirectFor(Player $crafter): array
     {
+        // ECO-28 : jointure externe — une commande de service n'a pas de
+        // recette, et une commande directe de sertissage doit se voir.
         return $this->createQueryBuilder('o')
-            ->join('o.recipe', 'r')->addSelect('r')
+            ->leftJoin('o.recipe', 'r')->addSelect('r')
             ->join('o.requester', 'p')->addSelect('p')
             ->where('o.targetCrafter = :crafter')
             ->andWhere('o.status = :open')

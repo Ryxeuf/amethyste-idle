@@ -95,6 +95,51 @@
                 </div>
             </form>
         </div>
+
+        {# ECO-28 — la commande de service : le joaillier travaille votre piece,
+           y compris liee. La piece, l'amethystite Pure et la commission partent
+           en escrow ; la piece revient toujours, amelioree ou intacte. #}
+        {% if serviceablePieces is defined %}
+            <div class="game-card mt-4">
+                <div class="game-card-header">
+                    <h2 class="text-sm font-semibold text-amber-300">{{ 'game.craft_order.service.form_title'|trans }}</h2>
+                </div>
+                <div class="game-card-body">
+                    <p class="text-xs text-gray-500 mb-3">{{ 'game.craft_order.service.form_hint'|trans({'%cost%': serviceCrystalCost, '%have%': pureCrystals}) }}</p>
+                    {% if serviceablePieces is empty %}
+                        <p class="text-xs text-gray-600">{{ 'game.craft_order.service.no_piece'|trans }}</p>
+                    {% else %}
+                        <form method="post" action="{{ path('app_game_craft_order_create_service') }}" class="space-y-3">
+                            <input type="hidden" name="_token" value="{{ csrf_token('craft_order_create_service') }}">
+                            <div>
+                                <label for="target_item_id" class="block text-xs text-gray-400 mb-1">{{ 'game.craft_order.service.piece_label'|trans }}</label>
+                                <select name="target_item_id" id="target_item_id" required
+                                        class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                                    {% for piece in serviceablePieces %}
+                                        <option value="{{ piece.id }}">
+                                            {{ piece.genericItem.name }} ({{ piece.slots|length }}/{{ piece.genericItem.materiaSlots }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="service_commission" class="block text-xs text-gray-400 mb-1">{{ 'game.craft_order.service.commission_label'|trans }}</label>
+                                <input type="number" name="commission" id="service_commission" min="1" value="100" required
+                                       class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                            </div>
+                            <div>
+                                <label for="service_target_crafter" class="block text-xs text-gray-400 mb-1">{{ 'game.craft_order.service.crafter_label'|trans }}</label>
+                                <input type="text" name="target_crafter" id="service_target_crafter" maxlength="60"
+                                       class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                            </div>
+                            <button type="submit" class="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-ink-on text-sm rounded-lg transition-colors">
+                                {{ 'game.craft_order.service.submit'|trans }}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

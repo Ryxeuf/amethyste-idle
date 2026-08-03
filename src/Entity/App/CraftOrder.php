@@ -44,9 +44,32 @@ class CraftOrder
     #[ORM\JoinColumn(name: 'requester_id', referencedColumnName: 'id', nullable: false)]
     private Player $requester;
 
+    /**
+     * ECO-28 : nullable — une commande de **service** ne produit pas d'objet,
+     * elle travaille celui du client (`targetItem`). Une commande de craft
+     * classique porte toujours sa recette.
+     */
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
-    #[ORM\JoinColumn(name: 'recipe_id', referencedColumnName: 'id', nullable: false)]
-    private Recipe $recipe;
+    #[ORM\JoinColumn(name: 'recipe_id', referencedColumnName: 'id', nullable: true)]
+    private ?Recipe $recipe = null;
+
+    /**
+     * ECO-28 : la nature du service, ou `null` pour un craft classique. Le
+     * premier service est le sertissage (`socket`) — le joaillier ouvre un
+     * emplacement de materia sur la piece du client.
+     */
+    #[ORM\Column(name: 'service_kind', type: 'string', length: 20, nullable: true)]
+    private ?string $serviceKind = null;
+
+    /**
+     * ECO-28 : l'objet du client confie au service, en escrow. Il est
+     * **distinct des materiaux** : les materiaux se consomment, lui revient
+     * toujours a son proprietaire — ameliore ou intact — et sa liaison n'est
+     * jamais touchee.
+     */
+    #[ORM\ManyToOne(targetEntity: PlayerItem::class)]
+    #[ORM\JoinColumn(name: 'target_item_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?PlayerItem $targetItem = null;
 
     /**
      * Artisan ayant pris la commande. Nul tant qu'elle est ouverte.
@@ -169,14 +192,51 @@ class CraftOrder
         return $this;
     }
 
-    public function getRecipe(): Recipe
+    public function getRecipe(): ?Recipe
     {
         return $this->recipe;
     }
 
-    public function setRecipe(Recipe $recipe): self
+    public function setRecipe(?Recipe $recipe): self
     {
         $this->recipe = $recipe;
+
+        return $this;
+    }
+
+    /**
+     * ECO-28 : le sertissage, premier service. Le metier et le niveau exiges
+     * de l'artisan vivent ici — un service n'a pas de recette pour les porter.
+     */
+    public const SERVICE_SOCKET = 'socket';
+    public const SERVICE_CRAFT = 'joaillier';
+    public const SERVICE_LEVEL = 3;
+
+    public function getServiceKind(): ?string
+    {
+        return $this->serviceKind;
+    }
+
+    public function setServiceKind(?string $serviceKind): self
+    {
+        $this->serviceKind = $serviceKind;
+
+        return $this;
+    }
+
+    public function isService(): bool
+    {
+        return null !== $this->serviceKind;
+    }
+
+    public function getTargetItem(): ?PlayerItem
+    {
+        return $this->targetItem;
+    }
+
+    public function setTargetItem(?PlayerItem $targetItem): self
+    {
+        $this->targetItem = $targetItem;
 
         return $this;
     }

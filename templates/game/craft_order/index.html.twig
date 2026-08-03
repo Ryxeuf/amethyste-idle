@@ -75,6 +75,36 @@
                     {% endfor %}
                 </div>
             {% endif %}
+
+            {# ECO-28 — les commandes de service : la piece du client, pas un
+               objet a produire. Section a part : le filtre par metier de
+               recette ne s'applique pas. #}
+            {% if serviceOrders is defined and serviceOrders is not empty %}
+                <h3 class="text-sm font-semibold text-amber-300 mt-6 mb-2">{{ 'game.craft_order.service.board_title'|trans }}</h3>
+                <div class="space-y-2 sm:space-y-3">
+                    {% for order in serviceOrders %}
+                        <div class="bg-gray-900/60 border border-amber-900/40 rounded-lg p-3 flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm text-gray-100 font-medium truncate">
+                                    {{ 'game.craft_order.service.socket_row'|trans({'%item%': order.targetItem ? order.targetItem.genericItem.name : '?'}) }}
+                                </p>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    {{ 'game.craft_order.service.board_meta'|trans({'%requester%': order.requester.name}) }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="text-yellow-400 font-mono font-semibold text-sm">{{ order.commission|number_format(0, ',', ' ') }} G</span>
+                                <form method="post" action="{{ path('app_game_craft_order_claim', {id: order.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('craft_order_claim_' ~ order.id) }}">
+                                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-amber-700 hover:bg-amber-600 text-ink-on transition-colors">
+                                        {{ 'game.craft_order.service.claim'|trans }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

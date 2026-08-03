@@ -43,7 +43,7 @@ Prérequis roadmap : socle **HV** (Sprint 5 ✅), **guildes & contrôle de cité
 | ECO-25 ✅ | Chaînage des paliers raffinés |
 | ECO-26 ✅ | Propagation de la pureté dans la chaîne |
 | ECO-27 ✅ | Équilibrage & tests de la chaîne |
-| ECO-28 | Commandes de service — travailler un objet lié |
+| ECO-28 ✅ | Commandes de service — travailler un objet lié |
 | ECO-29 ✅ | Cuisinier — le débouché de la pêche et des vivres |
 | ECO-30 ✅ | Charpentier — le débouché du bois |
 | ECO-31 ✅ | Tailleur — la ligne tissu et l'armure des mages |
@@ -58,7 +58,7 @@ Piste B — HV régional            : ECO-03 ✅ → ECO-04 ✅  (complète)
 Piste C — Commandes de craft     : ECO-05 ✅ → ECO-06 ✅ → ECO-07 ✅ → ECO-08 ✅ → ECO-09 ✅  (complète)
 Piste D — Échoppes               : ECO-10 ✅ → ECO-11 ✅ → ECO-12 ✅ → ECO-13 ✅  (complète)
 Piste E — Métiers & équilibrage  : ECO-14 ✅, ECO-15 ✅, ECO-16 ✅, ECO-17 ✅  (complète)
-Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28
+Piste F — Pureté & améthyste     : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅ → ECO-28 ✅  (complète)
 Piste G — Chaîne de production    : ECO-24 ✅ → ECO-24b-a ✅ → ECO-24b-b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅  (complète)
 Piste H — Métiers manquants       : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅  (complète)
 Piste I — Caravanes               : ECO-32 → ECO-33 → ECO-34 → ECO-35  (à faire)
@@ -328,22 +328,28 @@ Piste I — Caravanes               : ECO-32 → ECO-33 → ECO-34 → ECO-35  (
 > **Le refus arrive avant l'escrow**, pas à la livraison : sinon un client immobiliserait
 > matière et commission dans une commande qu'aucun artisan ne pourrait honorer.
 
-### ECO-28 — Commandes de service : travailler un objet lié (M | ★★★ | HAUTE)
+### ECO-28 — Commandes de service : travailler un objet lié (M | ★★★ | HAUTE) ✅
 > Le joaillier améliore les emplacements de matéria d'une pièce qui ne lui appartient pas —
 > y compris une pièce **liée**. Réponse au problème structurel : sans ce canal, tout
 > l'artisanat de service sur le stuff HL lié est impossible (GAME_WORLD §2.1).
-> Prérequis : ← ECO-05..09 ✅ (commandes & escrow), ← ECO-21 (bandes de pureté)
-- [ ] `CraftOrder` étendu : type `service` — la commande cible un **`PlayerItem` du client**
-      (placé en escrow) au lieu de produire un objet neuf
-- [ ] **La liaison n'est jamais violée** : l'objet reste lié à son propriétaire pendant tout
-      le processus ; l'artisan ne peut ni l'équiper, ni le vendre, ni le garder ; à la
-      livraison (ou à l'expiration) il **revient au client**, amélioré ou intact
-- [ ] Premier service : le **sertissage** — ajouter/améliorer un emplacement de matéria,
-      consomme de l'améthyste **Pure** fournie par le client (+ commission)
-- [ ] Restitution garantie à l'expiration/annulation (mêmes invariants d'escrow qu'ECO-09)
-- [ ] Loi transverse à ajouter à `EconomyInvariantTest` : un objet en escrow de service
-      conserve son propriétaire de liaison, quel que soit le chemin de sortie
-- [ ] Tests : liaison préservée, escrow, restitution, refus si bande insuffisante
+> Prérequis : ← ECO-05..09 ✅ (commandes & escrow), ← ECO-21 (bandes de pureté) —
+> **livré le 2026-08-02, Piste F complète**
+- [x] `CraftOrder` étendu : `serviceKind` (+ recette nullable) — la commande cible un
+      **`PlayerItem` du client** (`targetItem`, en escrow **distinct des matériaux** : eux se
+      consomment, lui revient toujours) ; `createServiceOrder()`, tableau des services à part
+      (`findOpenServiceInRegion`), atelier et commandes directes en jointure externe
+- [x] **La liaison n'est jamais violée** : `boundToPlayerId` n'est écrit nulle part sur le
+      chemin de service — la pièce revient au client, améliorée ou intacte, sur les trois
+      sorties (livrée, annulée, expirée)
+- [x] Premier service : le **sertissage** — le joaillier (niv. 3) ouvre un emplacement de
+      matéria, jusqu'au nombre que la forme déclare (OBJ-04 en plafond) ; 2 améthystites
+      **Pures** fournies par le client + commission (règles HV : taxe, réputation d'artisan
+      au joaillier) ; **première mécanique du jeu qui crée un `Slot` hors fixtures**
+- [x] Restitution garantie à l'expiration/annulation (`releaseEscrow` rend aussi la pièce)
+- [x] Loi transverse dans `EconomyInvariantTest` : balayage des 9 chemins (3 sorties × 3
+      états de liaison) — le propriétaire de liaison ne bouge jamais
+- [x] Tests : liaison préservée, escrow triple, restitution, refus avant escrow si bande
+      insuffisante, pièce portée ou pleine refusée, livraison ouvre l'emplacement
 
 ---
 
@@ -612,7 +618,7 @@ Phase 5 (équilibrage)  : ECO-14 ✅, ECO-15 ✅, ECO-16 ✅, ECO-17 ✅
 Phase 6 (pureté)       : ECO-21 ✅ → ECO-22 ✅ → ECO-23 ✅
 Phase 7 (chaîne)       : ECO-24 ✅ → ECO-24b ✅ → ECO-25 ✅ → ECO-26 ✅ → ECO-27 ✅
 Phase 8 (métiers)      : ECO-29 ✅ → ECO-30 ✅ → ECO-31 ✅
-Phase 9 (suite)        : ECO-28 (Piste F — prérequis tous livrés), puis Piste I (ECO-32 → ECO-35)
+Phase 9 (suite)        : ECO-28 ✅ (Piste F complète), puis Piste I (ECO-32 → ECO-35)
 ```
 
 **Pistes F et G — pourquoi elles comptent.** La Piste G est le **levier principal contre le

@@ -7,6 +7,7 @@ use App\Entity\App\Guild;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\Entity\App\Slot;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftOrderStatus;
 use App\Enum\Purity;
@@ -19,6 +20,7 @@ use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Region\PlayerRegionResolver;
+use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\Repository\CraftOrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -56,6 +58,15 @@ class CraftOrderManager
      * livrer, et serait sanctionne pour un delai qu'il n'a pas choisi.
      */
     public const DELIVERY_WINDOW_HOURS = 24;
+
+    /**
+     * ECO-28 — le sertissage. Le travail d'un service n'a pas de recette pour
+     * porter son temps : dix minutes d'etabli, et deux amethystites Pures
+     * fournies par le client — la bande est la matiere du geste, c'est elle
+     * qui donne enfin un debouche d'usage au « pur » (ECO-23).
+     */
+    public const SERVICE_WORK_SECONDS = 600;
+    public const SERVICE_CRYSTAL_COST = 2;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -145,6 +156,133 @@ class CraftOrderManager
         ]);
 
         return $order;
+    }
+
+    /**
+     * Ouvre une commande de **service** : le joaillier travaille l'objet du
+     * client au lieu d'en produire un neuf (ECO-28).
+     *
+     * Le premier service est le sertissage — ouvrir un emplacement de materia
+     * sur une piece, jusqu'au nombre que sa forme declare (OBJ-04). L'objet du
+     * client part en escrow **sans que sa liaison soit touchee** : c'est tout
+     * le point du canal — sans lui, aucun artisanat de service sur le stuff
+     * lie n'est possible (GAME_WORLD § 2.1). Le client fournit l'amethystite
+     * **Pure** ; le refus d'une bande insuffisante arrive avant l'escrow,
+     * quand il ne coute encore rien (ECO-23).
+     */
+    public function createServiceOrder(
+        Player $requester,
+        PlayerItem $target,
+        int $commission,
+        ?Player $targetCrafter = null,
+        int $durationHours = self::DEFAULT_DURATION_HOURS,
+    ): CraftOrder {
+        if ($commission < 1) {
+            throw new \InvalidArgumentException('La commission doit etre superieure a 0.');
+        }
+
+        if ($this->orderRepository->countActiveByRequester($requester) >= self::MAX_ACTIVE_ORDERS) {
+            throw new \InvalidArgumentException(sprintf('Vous avez deja %d commandes en cours.', self::MAX_ACTIVE_ORDERS));
+        }
+
+        if ($target->getInventory()?->getPlayer()?->getId() !== $requester->getId()) {
+            throw new \InvalidArgumentException('Cet objet ne provient pas de votre inventaire.');
+        }
+
+        // La piece peut etre liee — c'est precisement le canal fait pour ca —
+        // mais pas portee : on ne travaille pas une piece sur le dos du client.
+        if (0 !== $target->getGear()) {
+            throw new \InvalidArgumentException('Retirez la piece avant de la confier : on ne sertit pas un equipement porte.');
+        }
+
+        if (!$target->getGenericItem()->isGear()) {
+            throw new \InvalidArgumentException('Le sertissage ne travaille que les pieces d\'equipement.');
+        }
+
+        if ($target->getSlots()->count() >= $target->getGenericItem()->getMateriaSlots()) {
+            throw new \InvalidArgumentException('Cette piece porte deja tous les emplacements que sa forme permet.');
+        }
+
+        $crystals = $this->collectServiceCrystals($requester);
+        if ([] === $crystals) {
+            // ECO-23 : le refus de bande arrive avant l'escrow.
+            throw new \InvalidArgumentException(sprintf('Le sertissage exige %d amethystite(s) de bande « %s » au moins.', self::SERVICE_CRYSTAL_COST, Purity::Pur->value));
+        }
+
+        if (null !== $targetCrafter) {
+            $this->assertTargetIsAcceptable($requester, $targetCrafter);
+        }
+
+        if (!$requester->removeGils($commission)) {
+            throw new \InvalidArgumentException('Fonds insuffisants pour la commission.');
+        }
+
+        $order = new CraftOrder();
+        $order->setRequester($requester);
+        $order->setServiceKind(CraftOrder::SERVICE_SOCKET);
+        $order->setCommission($commission);
+        $order->setMinPurity(Purity::Pur);
+        $order->setTargetCrafter($targetCrafter);
+        $order->setRegion($this->regionResolver->resolve($requester));
+        $order->setStatus(CraftOrderStatus::Open);
+        $order->setExpiresAt(new \DateTimeImmutable(sprintf('+%d hours', max(1, $durationHours))));
+
+        foreach ($crystals as $crystal) {
+            $crystal->setInventory(null);
+            $order->addMaterial($crystal);
+        }
+
+        // L'objet du client quitte l'inventaire comme les materiaux — mais par
+        // sa propre place : les materiaux se consomment, lui revient toujours.
+        $target->setInventory(null);
+        $order->setTargetItem($target);
+
+        $this->entityManager->persist($order);
+        $this->entityManager->flush();
+
+        $this->logger->info('Service order created', [
+            'order_id' => $order->getId(),
+            'requester_id' => $requester->getId(),
+            'service' => CraftOrder::SERVICE_SOCKET,
+            'target_item_id' => $target->getId(),
+            'commission' => $commission,
+            'region' => $order->getRegion()?->getSlug(),
+            'target_crafter_id' => $targetCrafter?->getId(),
+        ]);
+
+        return $order;
+    }
+
+    /**
+     * L'amethystite Pure du sac du client — la matiere du sertissage.
+     *
+     * Une bande sous « pur » ne convient pas, et une amethystite liee ou
+     * portee n'est pas prelevable. Rend `[]` si le compte n'y est pas : le
+     * refus se joue avant tout escrow.
+     *
+     * @return list<PlayerItem>
+     */
+    private function collectServiceCrystals(Player $requester): array
+    {
+        $collected = [];
+        foreach ($this->getBagInventory($requester)->getItems() as $playerItem) {
+            if (\count($collected) >= self::SERVICE_CRYSTAL_COST) {
+                break;
+            }
+            if (CrystalBuybackFloor::CRYSTAL_SLUG !== $playerItem->getGenericItem()->getSlug()) {
+                continue;
+            }
+            if (!$playerItem->isExchangeable()) {
+                continue;
+            }
+            $purity = $playerItem->getPurity();
+            if (null === $purity || !$purity->isAtLeast(Purity::Pur)) {
+                continue;
+            }
+            $collected[] = $playerItem;
+        }
+
+        return \count($collected) >= self::SERVICE_CRYSTAL_COST ? $collected : [];
     }
 
     /**
@@ -259,7 +397,11 @@ class CraftOrderManager
         $order->setStatus(CraftOrderStatus::Claimed);
         $order->setClaimedAt($now);
         // ECO-07 : le `craftingTime` de la recette devient une attente reelle.
-        $order->setReadyAt($now->modify(sprintf('+%d seconds', max(1, $order->getRecipe()->getCraftingTime()))));
+        // Un service n'a pas de recette : son temps d'etabli est le sien.
+        $workSeconds = $order->isService()
+            ? self::SERVICE_WORK_SECONDS
+            : max(1, $order->getRecipe()?->getCraftingTime() ?? 1);
+        $order->setReadyAt($now->modify(sprintf('+%d seconds', $workSeconds)));
 
         // ECO-09 : l'echeance cesse d'etre celle du tableau pour devenir celle
         // de la **livraison**, comptee depuis la prise en charge.
@@ -273,7 +415,7 @@ class CraftOrderManager
         $this->logger->info('Craft order claimed', [
             'order_id' => $order->getId(),
             'crafter_id' => $crafter->getId(),
-            'recipe' => $order->getRecipe()->getSlug(),
+            'recipe' => $order->getRecipe()?->getSlug(),
         ]);
     }
 
@@ -335,7 +477,21 @@ class CraftOrderManager
      */
     private function assertQualified(Player $crafter, CraftOrder $order): void
     {
+        // ECO-28 : un service n'a pas de recette — le metier et le niveau
+        // vivent sur la commande. Le sertissage est l'affaire du joaillier.
+        if ($order->isService()) {
+            $level = $this->craftingManager->getCraftingLevel($crafter, CraftOrder::SERVICE_CRAFT);
+            if ($level < CraftOrder::SERVICE_LEVEL) {
+                throw new \InvalidArgumentException(sprintf('Niveau de %s insuffisant : %d requis, vous avez %d.', CraftOrder::SERVICE_CRAFT, CraftOrder::SERVICE_LEVEL, $level));
+            }
+
+            return;
+        }
+
         $recipe = $order->getRecipe();
+        if (null === $recipe) {
+            throw new \InvalidArgumentException('Cette commande ne porte ni recette ni service.');
+        }
 
         $level = $this->craftingManager->getCraftingLevel($crafter, $recipe->getCraft());
         if ($level < $recipe->getRequiredLevel()) {
@@ -385,8 +541,17 @@ class CraftOrderManager
         // l'artisan qui travaille. Sanctionner la non-livraison est un sujet
         // distinct (ECO-09).
 
+        // ECO-28 : un service suit son propre chemin de livraison — l'objet du
+        // client est travaille, jamais produit.
+        if ($order->isService()) {
+            return $this->fulfillServiceOrder($crafter, $order);
+        }
+
         $requester = $order->getRequester();
         $recipe = $order->getRecipe();
+        if (null === $recipe) {
+            throw new \InvalidArgumentException('Cette commande ne porte ni recette ni service.');
+        }
 
         // ECO-20 : la qualite existe enfin sur l'objet, donc `minQuality` cesse
         // d'etre decoratif. Une piece en dessous du seuil est **retravaillee**,
@@ -456,6 +621,64 @@ class CraftOrderManager
     }
 
     /**
+     * Livraison d'un service : l'objet du client revient travaille (ECO-28).
+     *
+     * Le sertissage ouvre un emplacement de materia sur la piece, consomme
+     * l'amethystite Pure de l'escrow, et rend la piece **au commanditaire** —
+     * jamais a l'artisan, et **sans toucher sa liaison** : `boundToPlayerId`
+     * n'est ecrit nulle part sur ce chemin, c'est l'invariant du canal.
+     */
+    private function fulfillServiceOrder(Player $crafter, CraftOrder $order): AuctionSettlement
+    {
+        $requester = $order->getRequester();
+        $target = $order->getTargetItem();
+        if (null === $target) {
+            throw new \InvalidArgumentException('Cette commande de service a perdu son objet.');
+        }
+
+        // Les cristaux ont ete transformes : ils disparaissent, comme les
+        // materiaux d'une commande classique.
+        $this->consumeEscrowMaterials($order);
+
+        // Le geste : un emplacement de plus sur la piece. C'est la premiere
+        // mecanique du jeu qui cree un `Slot` hors fixtures.
+        $slot = new Slot();
+        $slot->setItem($target);
+        $slot->setCreatedAt(new \DateTime());
+        $slot->setUpdatedAt(new \DateTime());
+        $target->getSlots()->add($slot);
+        $this->entityManager->persist($slot);
+
+        // La piece rentre chez son proprietaire — ameliore, liaison intacte.
+        $target->setInventory($this->getBagInventory($requester));
+
+        $region = $order->getRegion();
+        $ruler = null !== $region ? $this->townControlManager->getControllingGuild($region) : null;
+        $settlement = $this->settleCommission($order, $ruler);
+        $this->grantCommission($order, $crafter, $settlement, $ruler);
+
+        $reputation = $this->reputationManager->recordDelivery($crafter, $order);
+
+        $order->setStatus(CraftOrderStatus::Fulfilled);
+        $order->setFulfilledAt(new \DateTimeImmutable());
+
+        $this->entityManager->flush();
+
+        $this->logger->info('Service order fulfilled', [
+            'order_id' => $order->getId(),
+            'crafter_id' => $crafter->getId(),
+            'requester_id' => $requester->getId(),
+            'service' => $order->getServiceKind(),
+            'target_item_id' => $target->getId(),
+            'commission' => $order->getCommission(),
+            'crafter_revenue' => $settlement->sellerRevenue,
+            'reputation' => $reputation->getPoints(),
+        ]);
+
+        return $settlement;
+    }
+
+    /**
      * Les materiaux en escrow **disparaissent** : ils ont ete transformes.
      *
      * On les detruit plutot que de les rendre a qui que ce soit — les rendre au
@@ -485,6 +708,11 @@ class CraftOrderManager
     private function deliverResult(CraftOrder $order, Player $requester, string $quality, ?Purity $purity = null): void
     {
         $recipe = $order->getRecipe();
+        if (null === $recipe) {
+            // Jamais atteint : le chemin de service livre par
+            // fulfillServiceOrder(). La garde vaut contrat.
+            throw new \InvalidArgumentException('Cette commande ne porte ni recette ni service.');
+        }
         $result = $recipe->getResult();
         $bag = $this->getBagInventory($requester);
 
@@ -636,7 +864,7 @@ class CraftOrderManager
                 $this->logger->info('Craft order not delivered in time', [
                     'order_id' => $order->getId(),
                     'crafter_id' => $crafter->getId(),
-                    'recipe' => $order->getRecipe()->getSlug(),
+                    'recipe' => $order->getRecipe()?->getSlug(),
                 ]);
             }
 
@@ -673,6 +901,14 @@ class CraftOrderManager
         foreach ($order->getMaterials() as $material) {
             $material->setInventory($bag);
             $material->setCraftOrder(null);
+        }
+
+        // ECO-28 : l'objet d'un service revient a son proprietaire, intact —
+        // et sa liaison n'est pas touchee : elle n'est ecrite nulle part sur
+        // ce chemin, quel que soit le statut de sortie.
+        $target = $order->getTargetItem();
+        if (null !== $target) {
+            $target->setInventory($bag);
         }
 
         $requester->addGils($order->getCommission());

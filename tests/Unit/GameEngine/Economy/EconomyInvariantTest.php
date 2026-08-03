@@ -2,8 +2,30 @@
 
 namespace App\Tests\Unit\GameEngine\Economy;
 
+use App\Entity\App\Inventory;
+use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
+use App\Entity\Game\Item;
+use App\Entity\User;
+use App\Enum\CraftOrderStatus;
+use App\Enum\Purity;
+use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Auction\AuctionSettlement;
+use App\GameEngine\Crafting\CrafterReputationManager;
+use App\GameEngine\Crafting\CraftingManager;
+use App\GameEngine\Crafting\CraftOrderManager;
+use App\GameEngine\Economy\PurityChain;
+use App\GameEngine\GameMaster\GameMasterPolicy;
+use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Region\PlayerRegionResolver;
+use App\Repository\CrafterReputationRepository;
+use App\Repository\CraftOrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 /**
  * Lois de l'economie joueur, tous canaux confondus (ECO-17).
@@ -236,5 +258,136 @@ class EconomyInvariantTest extends TestCase
         $this->assertSame(1_000, $settlement->sellerRevenue);
         $this->assertSame(1_000, $settlement->buyerCharge);
         $this->assertSame(0, $settlement->burnedAmount);
+    }
+
+    /**
+     * ECO-28 — la loi du canal de service : **un objet en escrow de service
+     * conserve son proprietaire de liaison, quel que soit le chemin de
+     * sortie**.
+     *
+     * Les trois sorties (livree, annulee, expiree) sont balayees contre les
+     * trois etats de liaison possibles (non lie, lie au commanditaire, lie a
+     * un tiers — l'etat herite d'un cadeau d'avant ECO-01). Neuf chemins, et
+     * sur aucun `boundToPlayerId` ne bouge : la commande de service est le
+     * seul canal ou un objet lie circule, et il ne doit jamais en profiter
+     * pour le delier ni le relier.
+     */
+    public function testAServiceEscrowNeverTouchesTheBindingOwner(): void
+    {
+        $combinations = 0;
+
+        foreach ([CraftOrderStatus::Fulfilled, CraftOrderStatus::Cancelled, CraftOrderStatus::Expired] as $exit) {
+            foreach ([null, 1, 42] as $boundTo) {
+                $manager = $this->serviceManager();
+                $requester = $this->servicePlayer(1, 1_000);
+                $piece = $this->servicePiece($requester, $boundTo);
+                $this->serviceCrystals($requester);
+
+                $order = $manager->createServiceOrder($requester, $piece, 100);
+
+                if (CraftOrderStatus::Fulfilled === $exit) {
+                    $crafter = $this->servicePlayer(2, 0);
+                    $order->setCrafter($crafter);
+                    $order->setStatus(CraftOrderStatus::Claimed);
+                    $order->setReadyAt(new \DateTimeImmutable('-1 minute'));
+                    $manager->fulfillOrder($crafter, $order);
+                } elseif (CraftOrderStatus::Cancelled === $exit) {
+                    $manager->cancelOrder($requester, $order);
+                } else {
+                    $manager->releaseEscrow($order, CraftOrderStatus::Expired);
+                }
+
+                $context = sprintf('sortie=%s, liaison=%s', $exit->value, $boundTo ?? 'aucune');
+                $this->assertSame($exit, $order->getStatus(), $context);
+                $this->assertSame($boundTo, $piece->getBoundToPlayerId(), sprintf('La liaison a bouge (%s).', $context));
+                $this->assertNotNull($piece->getInventory(), sprintf('La piece n\'est pas revenue (%s).', $context));
+                $this->assertSame($requester, $piece->getInventory()->getPlayer(), sprintf('La piece est revenue chez le mauvais joueur (%s).', $context));
+                ++$combinations;
+            }
+        }
+
+        $this->assertSame(9, $combinations, 'Le balayage doit couvrir les neuf chemins de sortie.');
+    }
+
+    private function serviceManager(): CraftOrderManager
+    {
+        $em = $this->createMock(EntityManagerInterface::class);
+        $orderRepository = $this->createMock(CraftOrderRepository::class);
+        $orderRepository->method('countActiveByRequester')->willReturn(0);
+        $craftingManager = $this->createMock(CraftingManager::class);
+        $craftingManager->method('getCraftingLevel')->willReturn(99);
+        $purityChain = $this->createMock(PurityChain::class);
+        $purityChain->method('weakestOf')->willReturn(null);
+
+        return new CraftOrderManager(
+            $em,
+            $orderRepository,
+            new PlayerRegionResolver(),
+            $craftingManager,
+            $this->createMock(AuctionAntiExploit::class),
+            new CrafterReputationManager($em, $this->createMock(CrafterReputationRepository::class)),
+            $this->createMock(TownControlManager::class),
+            $this->createMock(GuildManager::class),
+            $this->createMock(PlayerItemGenerator::class),
+            new NullLogger(),
+            $purityChain,
+            new GameMasterPolicy(),
+        );
+    }
+
+    private function servicePlayer(int $id, int $gils): Player
+    {
+        $player = new Player();
+        (new \ReflectionProperty(Player::class, 'id'))->setValue($player, $id);
+        $player->setGils($gils);
+
+        $user = new User();
+        (new \ReflectionProperty(User::class, 'id'))->setValue($user, $id);
+        $player->setUser($user);
+
+        $bag = new Inventory();
+        $bag->setType(Inventory::TYPE_BAG);
+        $bag->setSize(20);
+        $bag->setPlayer($player);
+        (new \ReflectionProperty(Player::class, 'inventories'))->setValue($player, new ArrayCollection([$bag]));
+
+        return $player;
+    }
+
+    private function servicePiece(Player $owner, ?int $boundTo): PlayerItem
+    {
+        $item = new Item();
+        $item->setName('Plastron de fer');
+        $item->setSlug('iron-chestplate');
+        $item->setType(Item::TYPE_GEAR_PIECE);
+        $item->setMateriaSlots(2);
+
+        $piece = new PlayerItem();
+        (new \ReflectionProperty(PlayerItem::class, 'id'))->setValue($piece, 101);
+        $piece->setGenericItem($item);
+        $piece->setInventory($owner->getInventories()->first());
+        $piece->setGear(0);
+        $piece->setBoundToPlayerId($boundTo);
+
+        return $piece;
+    }
+
+    private function serviceCrystals(Player $owner): void
+    {
+        $bag = $owner->getInventories()->first();
+        for ($i = 0; $i < CraftOrderManager::SERVICE_CRYSTAL_COST; ++$i) {
+            $item = new Item();
+            $item->setName('Amethystite');
+            $item->setSlug('ore-amethyst-crystal');
+            $item->setType(Item::TYPE_RESOURCE);
+
+            $crystal = new PlayerItem();
+            $crystal->setGenericItem($item);
+            $crystal->setInventory($bag);
+            $crystal->setPurity(Purity::Pur);
+            // Le cote inverse : la collection du sac est ce que le manager
+            // itere pour collecter les amethystites.
+            $bag->addItem($crystal);
+        }
     }
 }

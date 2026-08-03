@@ -24,10 +24,10 @@
                         {% for order in directOrders %}
                             <div class="bg-indigo-950/40 border border-indigo-800/50 rounded-lg p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
-                                    <p class="text-sm text-gray-100 font-medium truncate">{{ order.recipe.result.name }}</p>
+                                    <p class="text-sm text-gray-100 font-medium truncate">{% if order.service %}{{ 'game.craft_order.service.socket_row'|trans({'%item%': order.targetItem ? order.targetItem.genericItem.name : '?'}) }}{% else %}{{ order.recipe.result.name }}{% endif %}</p>
                                     <p class="text-xs text-gray-500 mt-0.5">
                                         de {{ order.requester.name }}
-                                        · {{ order.recipe.craft }}
+                                        · {{ order.service ? 'game.craft_order.service.craft'|trans : order.recipe.craft }}
                                         · expire le {{ order.expiresAt|date('d/m H:i') }}
                                     </p>
                                 </div>
@@ -53,10 +53,10 @@
                     {% for order in orders %}
                         <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-4">
                             <div class="min-w-0">
-                                <p class="text-sm text-gray-100 font-medium truncate">{{ order.recipe.result.name }}</p>
+                                <p class="text-sm text-gray-100 font-medium truncate">{% if order.service %}{{ 'game.craft_order.service.socket_row'|trans({'%item%': order.targetItem ? order.targetItem.genericItem.name : '?'}) }}{% else %}{{ order.recipe.result.name }}{% endif %}</p>
                                 <p class="text-xs text-gray-500 mt-0.5">
                                     pour {{ order.requester.name }}
-                                    · {{ order.recipe.craft }}
+                                    · {{ order.service ? 'game.craft_order.service.craft'|trans : order.recipe.craft }}
                                     · {{ order.materials|length }} materiau{{ order.materials|length > 1 ? 'x' : '' }} fourni{{ order.materials|length > 1 ? 's' : '' }}
                                 </p>
                             </div>

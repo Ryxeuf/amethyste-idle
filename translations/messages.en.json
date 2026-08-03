@@ -58,6 +58,22 @@
     "email_placeholder": "you@email.com"
   },
   "game": {
+    "craft_order": {
+      "service": {
+        "craft": "jeweler",
+        "socket_row": "Socketing: %item%",
+        "board_title": "Service orders",
+        "board_meta": "Open a materia socket · jeweler lv. 3 · requested by %requester%",
+        "claim": "Take on",
+        "form_title": "Commission a socketing",
+        "form_hint": "The jeweler opens a materia socket on your piece — even bound: it always comes back to you. Cost: %cost% Pure amethysts (you have %have%) + your commission.",
+        "no_piece": "No piece in your bag can take another socket. A worn piece must be removed first.",
+        "piece_label": "Piece to socket (open / possible sockets)",
+        "commission_label": "Commission (gils)",
+        "crafter_label": "Jeweler (optional — direct order)",
+        "submit": "Place the order"
+      }
+    },
     "foundry": {
       "contract": {
         "title": "Contract of the week",

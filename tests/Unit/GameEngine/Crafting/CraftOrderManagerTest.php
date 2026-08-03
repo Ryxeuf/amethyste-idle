@@ -1166,4 +1166,197 @@ class CraftOrderManagerTest extends TestCase
 
         return $player;
     }
+
+    // =====================================================================
+    // ECO-28 — les commandes de service : travailler un objet lie
+    // =====================================================================
+
+    /**
+     * ECO-28 : l'escrow d'un service est triple — la piece du client, ses
+     * amethystites Pures, sa commission. La piece part par sa propre place
+     * (`targetItem`), jamais dans les materiaux : eux se consomment, elle
+     * revient toujours. Et elle peut etre **liee** — c'est le canal fait
+     * pour ca.
+     */
+    public function testCreateServiceOrderEscrowsPieceCrystalsAndCommission(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $piece = $this->createServicePiece($requester, declaredSlots: 2, boundTo: 1);
+        $this->createServiceCrystals($requester, 2, Purity::Pur);
+
+        $order = $this->manager->createServiceOrder($requester, $piece, 200);
+
+        self::assertTrue($order->isService());
+        self::assertSame(CraftOrder::SERVICE_SOCKET, $order->getServiceKind());
+        self::assertSame($piece, $order->getTargetItem());
+        self::assertNull($piece->getInventory(), 'La piece quitte le sac : c\'est ce qui rend l\'escrow reel.');
+        self::assertSame(1, $piece->getBoundToPlayerId(), 'La liaison n\'est pas touchee par l\'escrow.');
+        self::assertCount(2, $order->getMaterials(), 'Les deux amethystites partent en escrow de materiaux.');
+        self::assertSame(800, $requester->getGils());
+        self::assertSame(Purity::Pur, $order->getMinPurity());
+    }
+
+    /**
+     * ECO-23 : le refus de bande arrive avant l'escrow. Des amethystites sous
+     * « pur » ne conviennent pas, et rien ne doit avoir bouge.
+     */
+    public function testAServiceRefusesCrystalsUnderTheBandBeforeAnythingIsLocked(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $piece = $this->createServicePiece($requester, declaredSlots: 2);
+        $this->createServiceCrystals($requester, 2, Purity::Clair);
+
+        try {
+            $this->manager->createServiceOrder($requester, $piece, 200);
+            self::fail('Une bande sous « pur » doit etre refusee.');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('pur', $e->getMessage());
+        }
+
+        self::assertSame(1_000, $requester->getGils(), 'La commission ne doit pas avoir quitte la bourse.');
+        self::assertNotNull($piece->getInventory(), 'La piece doit rester dans le sac.');
+    }
+
+    public function testAWornPieceCannotBeSentToService(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $piece = $this->createServicePiece($requester, declaredSlots: 2);
+        $piece->setGear(1);
+        $this->createServiceCrystals($requester, 2, Purity::Pur);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->manager->createServiceOrder($requester, $piece, 200);
+    }
+
+    public function testAPieceWithAllItsSocketsIsRefused(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $piece = $this->createServicePiece($requester, declaredSlots: 1, openSlots: 1);
+        $this->createServiceCrystals($requester, 2, Purity::Pur);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->manager->createServiceOrder($requester, $piece, 200);
+    }
+
+    /**
+     * ECO-28, le cœur : la livraison ouvre un emplacement, consomme les
+     * cristaux, et rend la piece **au commanditaire** — liaison intacte.
+     * C'est la premiere mecanique du jeu qui cree un `Slot` hors fixtures.
+     */
+    public function testServiceDeliveryOpensASlotAndReturnsTheBoundPiece(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $crafter = $this->createPlayer(2, 0);
+        $piece = $this->createServicePiece($requester, declaredSlots: 2, boundTo: 1);
+        $this->createServiceCrystals($requester, 2, Purity::Pur);
+
+        $order = $this->manager->createServiceOrder($requester, $piece, 200);
+        $order->setCrafter($crafter);
+        $order->setStatus(CraftOrderStatus::Claimed);
+        $order->setReadyAt(new \DateTimeImmutable('-1 minute'));
+
+        $settlement = $this->manager->fulfillOrder($crafter, $order);
+
+        self::assertNotNull($settlement);
+        self::assertSame(CraftOrderStatus::Fulfilled, $order->getStatus());
+        self::assertCount(1, $piece->getSlots(), 'Le sertissage ouvre un emplacement.');
+        self::assertNotNull($piece->getInventory(), 'La piece revient chez son proprietaire.');
+        self::assertSame($requester, $piece->getInventory()->getPlayer());
+        self::assertSame(1, $piece->getBoundToPlayerId(), 'La liaison n\'est jamais violee : elle appartient toujours au client.');
+        self::assertCount(2, $this->removed, 'Les deux amethystites sont consommees.');
+        self::assertSame(200, $crafter->getGils(), 'La commission va a l\'artisan (region sans taxe).');
+    }
+
+    /**
+     * Restitution garantie (memes invariants qu'ECO-09) : l'annulation rend
+     * la piece intacte, les cristaux et la commission.
+     */
+    public function testCancellingAServiceReturnsThePieceIntact(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $piece = $this->createServicePiece($requester, declaredSlots: 2, boundTo: 1);
+        $crystals = $this->createServiceCrystals($requester, 2, Purity::Pur);
+
+        $order = $this->manager->createServiceOrder($requester, $piece, 200);
+        $this->manager->cancelOrder($requester, $order);
+
+        self::assertSame(CraftOrderStatus::Cancelled, $order->getStatus());
+        self::assertNotNull($piece->getInventory(), 'La piece revient dans le sac.');
+        self::assertSame(1, $piece->getBoundToPlayerId());
+        self::assertCount(0, $piece->getSlots(), 'Une annulation ne sertit rien : la piece revient intacte.');
+        self::assertSame(1_000, $requester->getGils(), 'La commission est rendue.');
+        foreach ($crystals as $crystal) {
+            self::assertNotNull($crystal->getInventory(), 'Les amethystites sont rendues, pas consommees.');
+        }
+    }
+
+    /**
+     * L'expiration suit le meme chemin de restitution que l'annulation : la
+     * piece revient, liaison intacte, quel que soit le chemin de sortie.
+     */
+    public function testAnExpiredServiceReturnsThePiece(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $piece = $this->createServicePiece($requester, declaredSlots: 2, boundTo: 1);
+        $this->createServiceCrystals($requester, 2, Purity::Pur);
+
+        $order = $this->manager->createServiceOrder($requester, $piece, 200);
+        $this->orderRepository->method('findExpirable')->willReturn([$order]);
+
+        $result = $this->manager->expireOrders();
+
+        self::assertSame(1, $result['released']);
+        self::assertSame(CraftOrderStatus::Expired, $order->getStatus());
+        self::assertNotNull($piece->getInventory());
+        self::assertSame(1, $piece->getBoundToPlayerId());
+    }
+
+    /**
+     * @return PlayerItem une piece d'equipement du sac
+     */
+    private function createServicePiece(Player $owner, int $declaredSlots, int $openSlots = 0, ?int $boundTo = null): PlayerItem
+    {
+        $bag = $owner->getInventories()->first();
+        self::assertInstanceOf(Inventory::class, $bag);
+
+        $item = new Item();
+        $item->setName('Plastron de fer');
+        $item->setSlug('iron-chestplate');
+        $item->setType(Item::TYPE_GEAR_PIECE);
+        $item->setMateriaSlots($declaredSlots);
+
+        $piece = new PlayerItem();
+        (new \ReflectionProperty(PlayerItem::class, 'id'))->setValue($piece, 101);
+        $piece->setGenericItem($item);
+        $piece->setInventory($bag);
+        $piece->setGear(0);
+        $piece->setBoundToPlayerId($boundTo);
+        for ($i = 0; $i < $openSlots; ++$i) {
+            $piece->getSlots()->add(new \App\Entity\App\Slot());
+        }
+
+        return $piece;
+    }
+
+    /**
+     * @return list<PlayerItem>
+     */
+    private function createServiceCrystals(Player $owner, int $count, Purity $band): array
+    {
+        $bag = $owner->getInventories()->first();
+        self::assertInstanceOf(Inventory::class, $bag);
+
+        $crystals = $this->createMaterials($owner, array_fill(0, $count, 'ore-amethyst-crystal'));
+        foreach ($crystals as $crystal) {
+            $crystal->setPurity($band);
+            // Le cote inverse de la relation : `setInventory()` ne synchronise
+            // pas la collection du sac, et `collectServiceCrystals()` itere
+            // precisement dessus.
+            $bag->addItem($crystal);
+        }
+
+        return $crystals;
+    }
 }

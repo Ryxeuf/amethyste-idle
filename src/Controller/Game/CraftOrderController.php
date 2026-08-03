@@ -60,6 +60,9 @@ class CraftOrderController extends AbstractController
             'craft' => $craft,
             'crafts' => array_keys(Item::CRAFT_TOOL_TYPES),
             'orders' => $this->orderRepository->findOpenInRegion($region, '' !== $craft ? $craft : null),
+            // ECO-28 : la section des services, a part — la piece du client
+            // ne se filtre pas par metier de recette.
+            'serviceOrders' => $this->orderRepository->findOpenServiceInRegion($region),
         ]);
     }
 
@@ -137,9 +140,13 @@ class CraftOrderController extends AbstractController
                 return $this->redirectToRoute('app_game_craft_order_workshop');
             }
 
+            // ECO-28 : un service rend la piece du client, pas un objet neuf.
+            $delivered = $order->isService()
+                ? $order->getTargetItem()?->getGenericItem()->getName() ?? 'piece'
+                : $order->getRecipe()?->getResult()->getName() ?? '';
             $this->addFlash('success', sprintf(
                 'Commande livree : %s remis a %s, %d Gils encaisses (%d de taxe de region).',
-                $order->getRecipe()->getResult()->getName(),
+                $delivered,
                 $order->getRequester()->getName(),
                 $settlement->sellerRevenue,
                 $settlement->taxAmount,
@@ -202,6 +209,11 @@ class CraftOrderController extends AbstractController
             // ECO-23 : exiger une bande donne au prospecteur un **client**, pas
             // seulement un marche.
             'purities' => Purity::ordered(),
+            // ECO-28 : les pieces du sac qu'un sertissage peut encore ouvrir,
+            // et le compte d'amethystite Pure disponible.
+            'serviceablePieces' => $this->serviceablePieces(),
+            'pureCrystals' => $this->countPureCrystals(),
+            'serviceCrystalCost' => CraftOrderManager::SERVICE_CRYSTAL_COST,
         ]);
     }
 
@@ -269,6 +281,107 @@ class CraftOrderController extends AbstractController
         }
 
         return $this->redirectToRoute('app_game_craft_order_mine');
+    }
+
+    /**
+     * ECO-28 : deposer une commande de **service** — le sertissage d'une piece.
+     */
+    #[Route('/service/new', name: 'app_game_craft_order_create_service', methods: ['POST'])]
+    public function createService(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('craft_order_create_service', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        $target = null;
+        $targetId = $request->request->getInt('target_item_id');
+        foreach ($this->playerHelper->getBagInventory()->getItems() as $playerItem) {
+            if ($playerItem->getId() === $targetId) {
+                $target = $playerItem;
+                break;
+            }
+        }
+        if (null === $target) {
+            $this->addFlash('error', 'Cette piece est introuvable dans votre sac.');
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        $targetName = trim((string) $request->request->get('target_crafter', ''));
+        $targetCrafter = null;
+        if ('' !== $targetName) {
+            $targetCrafter = $this->entityManager->getRepository(Player::class)->findOneBy(['name' => $targetName]);
+            if (!$targetCrafter instanceof Player) {
+                $this->addFlash('error', sprintf('Aucun personnage nomme « %s ».', $targetName));
+
+                return $this->redirectToRoute('app_game_craft_order_new');
+            }
+        }
+
+        try {
+            $this->orderManager->createServiceOrder(
+                $player,
+                $target,
+                $request->request->getInt('commission'),
+                $targetCrafter,
+            );
+            $this->addFlash('success', 'Commande de sertissage deposee : la piece, l\'amethystite et la commission sont bloquees jusqu\'a la livraison.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        return $this->redirectToRoute('app_game_craft_order_mine');
+    }
+
+    /**
+     * Les pieces du sac qu'un sertissage peut encore ouvrir : equipement
+     * desequipe dont la forme declare plus d'emplacements que la piece n'en
+     * porte. La liaison n'exclut rien — c'est le canal fait pour elle.
+     *
+     * @return list<\App\Entity\App\PlayerItem>
+     */
+    private function serviceablePieces(): array
+    {
+        $pieces = [];
+        foreach ($this->playerHelper->getBagInventory()->getItems() as $playerItem) {
+            $generic = $playerItem->getGenericItem();
+            if (!$generic->isGear() || 0 !== $playerItem->getGear()) {
+                continue;
+            }
+            if ($playerItem->getSlots()->count() >= $generic->getMateriaSlots()) {
+                continue;
+            }
+            $pieces[] = $playerItem;
+        }
+
+        return $pieces;
+    }
+
+    private function countPureCrystals(): int
+    {
+        $count = 0;
+        foreach ($this->playerHelper->getBagInventory()->getItems() as $playerItem) {
+            if ('ore-amethyst-crystal' !== $playerItem->getGenericItem()->getSlug() || !$playerItem->isExchangeable()) {
+                continue;
+            }
+            $purity = $playerItem->getPurity();
+            if (null !== $purity && $purity->isAtLeast(Purity::Pur)) {
+                ++$count;
+            }
+        }
+
+        return $count;
     }
 
     #[Route('/{id}/claim', name: 'app_game_craft_order_claim', methods: ['POST'], requirements: ['id' => '\d+'])]
