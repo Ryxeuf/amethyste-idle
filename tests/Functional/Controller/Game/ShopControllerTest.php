@@ -9,6 +9,9 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\Game\Item;
+use App\Enum\Purity;
+use App\GameEngine\Economy\PurityDefinitionLoader;
+use App\GameEngine\Economy\PurityPricer;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
@@ -66,6 +69,10 @@ class ShopControllerTest extends TestCase
             new GameMasterPolicy(),
             $this->hostileConsequences,
             new CrystalBuybackFloor($this->hostileConsequences),
+            // MET-01 : le vrai service sur le vrai fichier — un lot sans bande
+            // garde exactement le prix d'avant le jalon, les cas bandes lisent
+            // l'echelle actee.
+            new PurityPricer(new PurityDefinitionLoader(\dirname(__DIR__, 4))),
             $this->shadowsMarket,
             $this->createMock(ShadowsRumors::class),
             $this->createMock(\App\GameEngine\Reputation\ShadowsSmuggling::class),
@@ -281,6 +288,27 @@ class ShopControllerTest extends TestCase
         $response = $this->controller->sell(1, $this->createSellRequest());
 
         $this->assertEquals(200, $response->getStatusCode(), 'Le plancher se ferme ; la vente, jamais.');
+    }
+
+    /**
+     * MET-01 — le rachat porte la bande : un lot parfait rend 9 fois le taux
+     * commun (30 % de 15 = 4, puis x9 = 36), au guichet ordinaire.
+     */
+    public function testSellAPerfectLotGetsNineTimesTheCommonRate(): void
+    {
+        $player = $this->createPlayerMock(0);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $playerItem = $this->createCrystalPlayerItem();
+        $playerItem->method('getPurity')->willReturn(Purity::Parfait);
+
+        $this->setupSellRepositories($this->createPnjMock([]), $playerItem);
+
+        $player->expects($this->once())->method('addGils')->with(36);
+
+        $response = $this->controller->sell(1, $this->createSellRequest());
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     private function createFoundryCounter(): Pnj&MockObject
