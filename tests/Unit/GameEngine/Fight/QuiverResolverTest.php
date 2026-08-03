@@ -37,6 +37,12 @@ class QuiverResolverTest extends TestCase
     private function player(?int $capacity): Player
     {
         $player = new Player();
+        // La reserve est indexee par joueur dans les metadonnees du combat : un
+        // personnage en combat est toujours persiste, donc toujours identifie.
+        // `Player` n'ayant pas de mutateur d'identifiant, on le pose par
+        // reflexion — le meme geste que les autres tests unitaires du depot.
+        $id = new \ReflectionProperty(Player::class, 'id');
+        $id->setValue($player, 7);
 
         if (null === $capacity) {
             return $player;
