@@ -21,11 +21,12 @@ use Psr\Log\LoggerInterface;
 class HousingManager
 {
     /**
-     * Zones ou l'on peut acquerir un terrain.
-     *
-     * Une liste explicite plutot qu'un drapeau sur `Zone` : le lotissement est
-     * une decision de contenu, et la garder ici evite qu'une zone devienne
-     * residentielle par accident en editant sa configuration.
+     * Le plancher residentiel : les zones ou l'on achete SANS condition de
+     * rang (FOY-18). Le Quartier des Jardins n'a pas de foyer du tout (bati
+     * sur la Voute) — il ne peut pas etre une regle de rang, il est une
+     * garantie : quoi qu'il arrive aux foyers, on peut toujours se loger la.
+     * Le reste du lotissement est desormais une regle — tout foyer Hameau+
+     * est residentiel, a capacite par rang (ResidentialParcels).
      */
     public const RESIDENTIAL_ZONE_SLUGS = ['quartier-des-jardins'];
 
@@ -43,6 +44,7 @@ class HousingManager
         private readonly PlayerHouseRepository $houseRepository,
         private readonly LoggerInterface $logger,
         private readonly InventoryHelper $inventoryHelper,
+        private readonly ResidentialParcels $residentialParcels,
     ) {
     }
 
@@ -53,7 +55,10 @@ class HousingManager
 
     public function isResidential(Zone $zone): bool
     {
-        return \in_array($zone->getSlug(), self::RESIDENTIAL_ZONE_SLUGS, true);
+        // FOY-18 : le plancher (les Jardins, sans condition), puis la regle —
+        // tout foyer au rang de Hameau ou plus est residentiel.
+        return \in_array($zone->getSlug(), self::RESIDENTIAL_ZONE_SLUGS, true)
+            || $this->residentialParcels->isRankResidential($zone);
     }
 
     /**
@@ -71,6 +76,14 @@ class HousingManager
 
         if (!$this->isResidential($zone)) {
             throw new \InvalidArgumentException('Aucun terrain n\'est a vendre dans cette zone.');
+        }
+
+        // FOY-18 : la capacite par rang ne gate que l'ouverture de NOUVELLES
+        // parcelles — jamais une expulsion (decision A). Le plancher des
+        // Jardins n'est pas soumis a la capacite : c'est sa definition.
+        if (!\in_array($zone->getSlug(), self::RESIDENTIAL_ZONE_SLUGS, true)
+            && !$this->residentialParcels->canOpenParcel($zone)) {
+            throw new \InvalidArgumentException('Toutes les parcelles de ce foyer sont prises — la croissance du foyer en rouvrira.');
         }
 
         if ($player->getCurrentZone()?->getId() !== $zone->getId()) {

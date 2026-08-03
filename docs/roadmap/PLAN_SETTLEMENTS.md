@@ -405,16 +405,34 @@ Phase 5 (tests)      : FOY-16  (parallélisable)
 > tâche 129 / Sprint 11 — `HouseFurnishing` reste minimal, le style payant `HouseStyle`
 > en tient lieu) sera à jalonner **avec ou après FOY-20**.
 
-### FOY-18 — Parcelles résidentielles par rang (M | ★★★ | HAUTE)
+### FOY-18 — Parcelles résidentielles par rang (M | ★★★ | HAUTE) ✅
 > §12.6 b. `HousingManager::RESIDENTIAL_ZONE_SLUGS` (constante, une zone) devient une
-> règle : tout foyer Hameau+ est résidentiel, à capacité par rang.
-- [ ] Capacités par rang en config (`settlements.yaml` : Hameau ~8, Bourg ~20, Cité ~40,
-      Métropole ~80 à W = 1, mises à l'échelle par W)
-- [ ] **Jamais d'expulsion** : la régression ferme l'ouverture de nouvelles parcelles,
-      les demeures existantes restent (décision A, testée)
-- [ ] Le Quartier des Jardins reste résidentiel inconditionnel (le plancher)
-- [ ] Restitution : parcelles libres visibles sur l'écran de zone (bloc foyer)
-- [ ] Tests : capacité par rang, échelle W, non-expulsion, plancher
+> règle : tout foyer Hameau+ est résidentiel, à capacité par rang. **Livré le 2026-08-03.**
+- [x] Capacités par rang en config (`settlements.yaml` bloc `housing.parcels_per_rank` :
+      Hameau 8, Bourg 20, Cité 40, Métropole 80 à W = 1, mises à l'échelle par W via la
+      même primitive que les seuils de rang — `max(1, round(cap × W))`). Le chargeur
+      refuse une capacité qui ne croît pas avec le rang, et un rang sous Hameau (« on ne
+      s'installe pas dans ce qui peut disparaître ») ; le bloc est optionnel (absent =
+      règle inerte) ; le vocabulaire gelé du contrat accueille `housing` — un acte
+      délibéré, comme le test l'exige. La règle vit dans `ResidentialParcels`
+      (`isRankResidential` / `scaledCapacity` / `panel` / `canOpenParcel`)
+- [x] **Jamais d'expulsion** : la capacité ne gate que `canOpenParcel` — l'achat d'une
+      NOUVELLE parcelle (`HousingManager::buyLand`). Une régression de rang **ou une
+      contraction de W** peut laisser plus de demeures que de parcelles : `free` s'écrase
+      à zéro, rien d'autre ne se passe — aucun chemin du service ne touche une demeure
+      existante, la borne tient par construction (décision A, testée)
+- [x] Le Quartier des Jardins reste résidentiel inconditionnel : il n'a **pas de foyer du
+      tout** (`without_settlement`, bâti sur la Voûte) — il ne peut pas être une règle de
+      rang, il est une garantie, tenue par le plancher `RESIDENTIAL_ZONE_SLUGS` de
+      `HousingManager`, hors capacité
+- [x] Restitution : `SettlementPanelBuilder` expose `housing` (capacité/prises/libres),
+      l'écran de zone l'affiche dans le bloc foyer (`game.zone.settlement.parcels`,
+      trans FR/EN) ; `PlayerHouseRepository::countInZone` en COUNT dédié (le plafond de
+      50 de `findInZone` aurait sous-compté une Métropole)
+- [x] Tests : capacité par rang (sur le fichier livré), échelle W (×2 et contraction
+      ×0,5), non-expulsion (20 demeures sur 8 parcelles : rien ne bouge), plancher
+      (les Jardins ignorent la capacité), Campement/Ruine ne logent pas, foyer plein
+      refuse l'achat, refus du chargeur (croissance, sous-Hameau, rang inconnu)
 
 ### FOY-19 — Le loyer politique (S | ★★ | HAUTE)
 > §12.6 c. Le même canal que la taxe HV (GCC-11/ECO-04).

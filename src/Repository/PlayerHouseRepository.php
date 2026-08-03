@@ -54,4 +54,18 @@ class PlayerHouseRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Le nombre de demeures d'une zone (FOY-18) — un COUNT dedie : reutiliser
+     * `findInZone` sous-compterait une Metropole a cause de son plafond de 50.
+     */
+    public function countInZone(Zone $zone): int
+    {
+        return (int) $this->createQueryBuilder('h')
+            ->select('COUNT(h.id)')
+            ->where('h.zone = :zone')
+            ->setParameter('zone', $zone)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

@@ -286,9 +286,9 @@ class SettlementPlanContractTest extends TestCase
     public function testTheDeclarativeVocabularyIsFrozen(): void
     {
         $expected = [
-            'anti_exploit', 'crue', 'decay', 'doctrine', 'never_gated', 'paleness', 'ranks',
-            'regression', 'restoration', 'sediment', 'seed', 'services', 'type', 'weekly_work',
-            'without_settlement', 'workshop',
+            'anti_exploit', 'crue', 'decay', 'doctrine', 'housing', 'never_gated', 'paleness',
+            'ranks', 'regression', 'restoration', 'sediment', 'seed', 'services', 'type',
+            'weekly_work', 'without_settlement', 'workshop',
         ];
 
         $actual = array_keys($this->shipped());
