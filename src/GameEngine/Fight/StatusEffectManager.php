@@ -76,25 +76,41 @@ class StatusEffectManager
     /**
      * La chance d'application, emprise et sauvegarde comprises (ARC-03b).
      *
-     * Elle reste bornee a [1, 100] : un statut dont l'application deviendrait
-     * certaine ou impossible cesserait d'etre un jet, et la fonction de controle
-     * n'aurait plus de risque a prendre.
+     * **Le plancher ne s'applique qu'a ce que les leviers deplacent.** Un statut
+     * qu'aucun levier ne touche garde exactement la chance que sa fiche declare,
+     * **y compris zero** : un `chance: 0` est un « jamais » voulu par l'auteur
+     * (les gestes qui portent un statut sans jamais l'appliquer d'eux-memes),
+     * pas un jet a arrondir. Une premiere redaction bornait a [1, 100] sans
+     * distinction et transformait ce « jamais » en 1 % — une valeur de jeu
+     * changee en silence, que seul un tirage sur cent revelait.
+     *
+     * Quand un levier joue, en revanche, le resultat reste borne : `grip` ne
+     * rend pas une application certaine et `ward` ne la rend pas impossible,
+     * sans quoi la fonction de controle n'aurait plus de risque a prendre.
      */
     private function effectiveChance(StatusEffect $effect, ?CombatLeverEffects $casterLevers, ?CombatLeverEffects $targetLevers): int
     {
-        $chance = (float) $effect->getChance();
+        $declared = $effect->getChance();
 
-        if ($casterLevers !== null && !$casterLevers->isEmpty()) {
+        $caster = $casterLevers !== null && !$casterLevers->isEmpty();
+        $target = $targetLevers !== null && !$targetLevers->isEmpty();
+        if (!$caster && !$target) {
+            return $declared;
+        }
+
+        $chance = (float) $declared;
+        if ($caster) {
             $chance *= $casterLevers->multiplierFor(CombatLever::Grip, $this->leverScale);
         }
-        if ($targetLevers !== null && !$targetLevers->isEmpty()) {
+        if ($target) {
             // `ward` porte un taux positif : il **resiste**, donc on divise
             // l'effet au lieu de le multiplier. Lui donner un taux negatif
             // aurait rendu « +10 % de sauvegarde » illisible dans un arbre.
             $chance /= $targetLevers->multiplierFor(CombatLever::Ward, $this->leverScale);
         }
 
-        return max(1, min(100, (int) round($chance)));
+        // Le plancher suit la valeur declaree : un « jamais » reste un jamais.
+        return max(min(1, $declared), min(100, (int) round($chance)));
     }
 
     /**
