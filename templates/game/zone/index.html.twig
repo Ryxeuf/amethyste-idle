@@ -1057,6 +1057,14 @@
                     </div>
                 </div>
             {% endif %}
+
+            {# WIK-03 — le lien contextuel : l'ecran de zone renvoie a sa page
+               du wiki. Une regle publique se lit ou l'on joue. #}
+            <p class="ds-hint mt-4 text-center">
+                <a href="{{ path('app_wiki_page', {section: '03-le-monde', page: 'zones-et-voyage'}) }}" class="underline">
+                    {{ 'game.wiki.context.zone'|trans }}
+                </a>
+            </p>
         </div>
     </div>
 </div>

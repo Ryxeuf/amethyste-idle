@@ -8,6 +8,12 @@
     <div class="mb-8">
         <h1 class="ds-title mb-2">Artisanat</h1>
         <p class="ds-body">Fabriquez des objets a partir de materiaux recoltes.</p>
+        {# WIK-03 — le lien contextuel vers la page artisanats du wiki #}
+        <p class="ds-hint mt-1">
+            <a href="{{ path('app_wiki_page', {section: '04-produire', page: 'artisanats'}) }}" class="underline">
+                {{ 'game.wiki.context.craft'|trans }}
+            </a>
+        </p>
     </div>
 
     {# Messages flash #}
