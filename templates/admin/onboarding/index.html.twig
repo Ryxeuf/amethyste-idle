@@ -75,9 +75,9 @@
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
             <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">E-mail vérifié à J+7</p>
             <p class="text-2xl font-bold text-gray-100 mt-1">{{ _self.share(funnel.verifiedShare) }}</p>
-            <p class="text-xs text-amber-500/80 mt-1">
-                Dispositif non branché (ONB-02/04) : cet indicateur reste à 0 % tant que
-                la vérification d'e-mail n'existe pas.
+            <p class="text-xs text-gray-500 mt-1">
+                Depuis ONB-04, la porte est posée : l'indicateur mesure des clics réels.
+                Les comptes antérieurs sont vérifiés d'office — aucun blocage rétroactif.
             </p>
         </div>
         {% for days, count in funnel.stillActive %}
