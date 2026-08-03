@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Le calendrier est-il reellement consomme apres un deploiement ?
- * (tache 134, jalon F.0)
+ * (tache 134, jalon F.0).
  *
  * `ScheduledCommandTest` garde le **contenu** du calendrier : toute commande y
  * est planifiee ou declaree manuelle. Il ne dit rien de ce qui l'execute — et
