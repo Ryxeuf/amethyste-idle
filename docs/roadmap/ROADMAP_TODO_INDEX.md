@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-08-02 (**point global doc↔code** : ONB 17/20 — restent ONB-02/04, 07b, 20b-b ; MAT 8/8 ✅ ; BES 6/6 ✅ ; OBJ 8/8 ✅ ; RET 10/10 ✅ avec la vague 4 ; WIK livre ✅ ; DON 2/6 (DON-01/02 livres) ; rang 17 (grain + seuils × W) livre ; restes ZON-26b + ZON-41 livres ; **front acte : MET-01 → ONB-02/04 → DON-03→06 → ARC**) ; 2026-07-29 (**ouverture du plan Onboarding ONB-01→15** — le jeu n'avait aucune porte d'entree : cf. [PLAN_ONBOARDING.md](PLAN_ONBOARDING.md)) ; 2026-07-29 (**point global doc↔code** : DOM 8/8 complet, ZON-30→36 livres, FAC ouvert 1/10, FOY 17/17 + vague 2 FOY-18→21 ouverte, RET 7/7) ; 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
+> Derniere mise a jour : 2026-08-03 (**MET-01 livre** en avance de phase — la bande de purete porte un prix (×1/×1,8/×3,5/×9 dans `purity.yaml`, `PurityPricer`), applique au rachat PNJ, au prix de reference HV, a l'estimation d'inventaire et a la valeur des materiaux d'une commande ; ligne DON du tableau realignee sur le reel : **plan donjons 6/6 termine le 2026-08-02**) ; 2026-08-02 (**point global doc↔code** : ONB 17/20 — restent ONB-02/04, 07b, 20b-b ; MAT 8/8 ✅ ; BES 6/6 ✅ ; OBJ 8/8 ✅ ; RET 10/10 ✅ avec la vague 4 ; WIK livre ✅ ; DON 2/6 (DON-01/02 livres) ; rang 17 (grain + seuils × W) livre ; restes ZON-26b + ZON-41 livres ; **front acte : MET-01 → ONB-02/04 → DON-03→06 → ARC**) ; 2026-07-29 (**ouverture du plan Onboarding ONB-01→15** — le jeu n'avait aucune porte d'entree : cf. [PLAN_ONBOARDING.md](PLAN_ONBOARDING.md)) ; 2026-07-29 (**point global doc↔code** : DOM 8/8 complet, ZON-30→36 livres, FAC ouvert 1/10, FOY 17/17 + vague 2 FOY-18→21 ouverte, RET 7/7) ; 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
 > **PIVOT PBBG (juillet 2026)** : le jeu a abandonne la carte en tuiles au profit d'un monde en graphe de zones (energie, time-gating reel). Decision et equivalences : [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md) ; bilan de campagne : [docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md).
 
 ---
@@ -42,9 +42,9 @@
 | Plan Materia (MAT-01→08) | 8/8 | ✅ Termine (2026-08-02) — la chaine competence → materia → sort est reparee, invariants en CI |
 | Plan Bestiaire (BES-01→06) | 6/6 | ✅ Termine (2026-08-02) — tier × rank, zones.yaml source unique, faille du milieu refermee |
 | Plan Objets (OBJ-01→08) | 8/8 | ✅ Termine (2026-08-02) — taxonomie, equipement neutre, emplacements progressifs, outils, invariants en CI |
-| **Plan Donjons (DON-01→06)** | **2/6** | **En cours (2026-08-02), front actuel** — DON-01 (modele unique) et DON-02 (le combat rend le build pertinent, livre selon le pont assume tranche au debrief : la melee garde l'attaque de base jusqu'a ARC-02, dette documentee) ; restent DON-03→06 |
+| Plan Donjons (DON-01→06) | 6/6 | ✅ Termine (2026-08-02) — modele unique, combat de build, trois etapes dans la faune du palier, butin indexe, un donjon par palier T1-T4, 8 invariants en CI (pont assume : la melee garde l'attaque de base jusqu'a ARC-02, dette documentee) |
 | Plan Archetypes (ARC-01→19) | 0/19 | A ouvrir — prerequis externes (MAT-01/03, BES-01) livres |
-| Plan Metiers (MET-01→11) | 0/11 | A ouvrir, apres ou avec ARC — **MET-01 (valeur marchande de la purete) se livre en avance de phase (decide le 2026-08-02)**, correctif economique autonome |
+| Plan Metiers (MET-01→11) | 1/11 | **MET-01 livre (2026-08-03)** en avance de phase comme decide le 2026-08-02 (valeur marchande de la purete : ×1/×1,8/×3,5/×9 dans `purity.yaml`, `PurityPricer` seul traducteur) ; la suite s'ouvre apres ou avec ARC |
 | Plan Wiki (WIK-01→03) | 3/3 | ✅ Termine (2026-07-31) — `/wiki` public, contrat d'entretien en CI ; liens contextuels au fil de l'eau |
 | Plan Repertoire (REP-01→06) | 0/6 | A faire (l'Autel d'eveil, apres FAC-04) |
 | **Plan Economie joueur (ECO)** | Pistes A→E, G, H completes | Reste ECO-28 (Piste F 3/4) et la Piste I ECO-32→35 (caravanes) |
@@ -61,10 +61,11 @@
 > ou « quelqu'un compte sur moi » vaut mieux qu'ajouter du contenu au mois 6.
 >
 > **Front acte au debrief du 2026-08-02** — ordre d'execution immediat :
-> **MET-01** (correctif economique en avance de phase) → **ONB-02 puis ONB-04**
-> (le mailer, bloquant du playtest — code d'abord, DSN ensuite) → **DON-03→06**
-> (pont assume sur les sorts, la melee attend ARC-02 ; DON-01/02 livres en chemin) → **ouverture d'ARC**.
-> Les restes (ONB-07b, ONB-20b-b, OBJ-05→08, DOM-09/10) s'intercalent au fil de l'eau.
+> **MET-01 ✅** (correctif economique en avance de phase, livre le 2026-08-03) →
+> **ONB-02 puis ONB-04** (le mailer, bloquant du playtest — code d'abord, DSN ensuite) →
+> **DON-03→06 ✅** (plan donjons complet le 2026-08-02 ; pont assume sur les sorts, la
+> melee attend ARC-02) → **ouverture d'ARC**.
+> Les restes (ONB-07b, DOM-09/10) s'intercalent au fil de l'eau.
 >
 > **Cap de sortie (2026-08-02)** : un **playtest ferme** s'ouvre quand **ONB-02/04
 > ET DON-03** sont livres (compte sur, boucle de combat qui tient — DON-02 est livre —, Nexus jouable).

@@ -32,7 +32,7 @@
                          data-item-desc="{{ gi.description }}"
                          data-item-rarity="{{ gi.rarity }}"
                          data-item-kind="material"
-                         data-item-value="{{ gi.price ?? 0 }}">
+                         data-item-value="{{ purity_unit_value(item) }}">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-lg flex items-center justify-center mb-1.5
                             {% if gi.rarity == 'amethyst' %}bg-fuchsia-900/40 text-fuchsia-400
                             {% elseif gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400

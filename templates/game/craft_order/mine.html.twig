@@ -28,7 +28,7 @@
                                     {{ order.status.label }}
                                     {% if order.crafter %}· artisan : {{ order.crafter.name }}
                                     {% elseif order.direct %}· adressee a {{ order.targetCrafter.name }}{% endif %}
-                                    · {{ order.materials|length }} materiau{{ order.materials|length > 1 ? 'x' : '' }} bloque{{ order.materials|length > 1 ? 's' : '' }}
+                                    · {{ order.materials|length }} materiau{{ order.materials|length > 1 ? 'x' : '' }} bloque{{ order.materials|length > 1 ? 's' : '' }} (val. {{ purity_lots_value(order.materials)|number_format(0, ',', ' ') }} G)
                                     · expire le {{ order.expiresAt|date('d/m H:i') }}
                                 </p>
                             </div>

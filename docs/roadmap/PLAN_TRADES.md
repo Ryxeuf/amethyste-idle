@@ -36,7 +36,7 @@ Trois conséquences qui structurent le plan :
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| MET-01 | **La bande de pureté porte un prix** (×1 / ×1,8 / ×3,5 / ×9) | M | ∅ — **bloquant** |
+| MET-01 ✅ | **La bande de pureté porte un prix** (×1 / ×1,8 / ×3,5 / ×9) | M | ∅ — **bloquant** |
 | MET-02 | `yield` et `purity` deviennent deux leviers distincts | S | ∅ |
 | MET-03 | Le vocabulaire fermé des 9 leviers de métier, avec plafonds | **L** | ← MET-02 |
 | MET-04 | La porte de palier : 175 portes deviennent ~72 | M | ← OBJ, ZON |
@@ -60,7 +60,16 @@ n'existe pas.
 
 ## Piste A — Débloquer l'arbitrage
 
-### MET-01 — La bande de pureté porte un prix — **bloquant** (M)
+### MET-01 — La bande de pureté porte un prix — **bloquant** (M) ✅
+
+> **Livré le 2026-08-03.** L'échelle vit dans `purity.yaml`
+> (`market.band_multipliers`), lue par `PurityPricer` — le seul endroit qui
+> traduit une bande en prix. Appliquée au rachat PNJ (y compris plancher de la
+> Fonderie et receleur, la bande après la règle du guichet pour garder le
+> rapport de 9 exact), au prix de référence du formulaire de vente HV, à
+> l'estimation d'inventaire (matériaux, banque, équipement) et à la valeur des
+> matériaux bloqués d'une commande de craft (tableau + mes commandes).
+> Contrat tenu par `PurityPricerTest`.
 
 > **Décision (2026-08-02) : livraison en avance de phase.** MET-01 est un
 > correctif économique autonome — il se livre **tout de suite**, sans attendre

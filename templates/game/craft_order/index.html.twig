@@ -59,6 +59,10 @@
                                         · <span class="ds-seal {{ order.minPurity.sealClass }}">{{ ('game.purity.band.' ~ order.minPurity.value)|trans }}</span>
                                     {% endif %}
                                     · demandee par {{ order.requester.name }}
+                                    {# MET-01 : la valeur des materiaux bloques, chacun a sa
+                                       bande. L'artisan voit ce que la commande engage, pas
+                                       seulement ce qu'elle paie. #}
+                                    · materiaux : {{ purity_lots_value(order.materials)|number_format(0, ',', ' ') }} G
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 shrink-0">
