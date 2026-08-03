@@ -58,6 +58,21 @@
     "email_placeholder": "you@email.com"
   },
   "game": {
+    "foundry": {
+      "contract": {
+        "title": "Contract of the week",
+        "offer": "The Foundry buys %volume% × %item% for %gils% gils and %essence% essence. Guaranteed price, always under the market.",
+        "deliver": "Honour the contract",
+        "delivered": "Contract honoured this week.",
+        "error": {
+          "tier": "Contracts open at the Friendly tier with the Foundry.",
+          "hostile": "The Foundry will not deal with you. Its grudge is repaid in deeds.",
+          "delivered": "You have already honoured this week’s contract.",
+          "elsewhere": "The contract is handed in at the Foundry counter, in the Deep Mines.",
+          "missing": "You are short on volume: the Foundry pays on full delivery, never in part."
+        }
+      }
+    },
     "materia": {
       "convert": {
         "melt": "Melt",

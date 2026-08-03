@@ -21,7 +21,7 @@
 | FAC-02 ✅ | Les gestes nourrissent la réputation | S | ← FAC-01 |
 | FAC-03 ✅ | Hostile à conséquences | S | ← FAC-01 |
 | FAC-04 ✅ | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
-| FAC-05 | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
+| FAC-05 ✅ | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
 | FAC-06 | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
 | FAC-07 | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
 | FAC-08 | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
@@ -142,13 +142,31 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       (04a testé : crochets pointés sur le slug semé, plancher borné bas/haut par la
       donnée réelle, fermeture Hostile, comptoir déclaré et marchand)
 
-### FAC-05 — Contrats d'approvisionnement (S | ★★ | HAUTE)
+### FAC-05 — Contrats d'approvisionnement (S | ★★ | HAUTE) ✅
 > §12.2 complément. Prix garanti **toujours sous le marché** — le miroir inverse du
 > receleur. Rotation du lundi (RET-01 ✅, point de rotation unique).
-> Prérequis : ← FAC-04, foyers utiles mais non bloquants
-- [ ] Contrats hebdomadaires déclaratifs (matière, volume, prix, paiement gils + essence)
-- [ ] Garde-fou : prix contractuel < médiane HV de la matière (vérifié au tirage)
-- [ ] Tests : rotation, garde-fou de prix, paiement mixte
+> Prérequis : ← FAC-04, foyers utiles mais non bloquants — **livré le 2026-08-02**
+- [x] Contrats hebdomadaires déclaratifs (`config/game/foundry_contracts.yaml` : matière,
+      volume, prix unitaire, essence — paiement mixte obligatoire, le loader refuse une
+      essence nulle) ; un contrat global par semaine (`FoundryContract`, clé de semaine
+      unique), tiré par `crc32(weekKey)` via `WeekKey` (le point de rotation unique de
+      RET-01, `GameEngine/Reputation` ajouté au périmètre du contrat de plan) ; rejouer la
+      rotation n'est jamais un reroll ; commande `app:weekly-foundry-contract:rotate` au
+      lundi minute 8, tirage paresseux à la lecture en filet (le calendrier n'a pas de
+      worker) ; accès au palier Ami, fermé aux Hostiles de la maison (un contrat optionnel
+      est un privilège) ; remise au comptoir des Mines, une fois par joueur et par semaine
+      (contrainte unique (contrat, joueur)) ; consommation du moins pur au plus pur
+      (`InventoryHelper`, ECO-21), jamais payée en partie ; affiche sur la carte Fonderie
+      de l'écran des factions
+- [x] Garde-fou : prix contractuel **strictement sous** la médiane HV de la matière
+      (`AuctionTransactionRepository::medianUnitPriceForSlug`, ventes conclues sur 7 jours,
+      médiane — pas moyenne — des prix unitaires), vérifié au tirage ; marché muet → repli
+      sur le prix d'item (même doctrine que le plancher du cristal) ; la référence lue est
+      **figée sur la ligne** (`referencePrice`), vérifiable après coup
+- [x] Tests : rotation (déterminisme, clé RET-01, jamais un reroll), garde-fou de prix
+      (rognage sous la médiane, repli marché muet), paiement mixte (gils + essence, pool
+      sans essence refusé), blockers (palier, Hostile, déjà honoré, mauvais guichet,
+      volume manquant), livraison partielle jamais payée
 
 ## Piste C — Les Ruelles
 

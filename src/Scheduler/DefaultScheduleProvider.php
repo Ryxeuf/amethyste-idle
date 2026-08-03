@@ -74,6 +74,10 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // WeeklyOutcrop : le filon qui rend un cran plus haut cette
                 // semaine (RET-06). Personne n'en est informe — c'est le point.
                 RecurringMessage::cron('6 0 * * 1', new RunCommandMessage('app:weekly-outcrop:rotate')),
+                // FoundryContract : l'affiche de la Fonderie (FAC-05). Apres
+                // le marche de la semaine ecoulee : le garde-fou de prix lit
+                // la mediane HV au tirage.
+                RecurringMessage::cron('8 0 * * 1', new RunCommandMessage('app:weekly-foundry-contract:rotate')),
 
                 // --- Cloture quotidienne ------------------------------------
                 // DailyQuest : rotation des quêtes quotidiennes

@@ -63,6 +63,10 @@ class RetentionPlanContractTest extends TestCase
             // c'est precisement l'ecran ou une serie continue se
             // reintroduirait « parce que c'est standard ».
             $this->root() . '/src/GameEngine/Player',
+            // FAC-05 : le contrat de la Fonderie est une brique hebdomadaire
+            // qui vit chez les factions — les interdits du plan (format de
+            // semaine unique, jamais de serie) le suivent la-bas.
+            $this->root() . '/src/GameEngine/Reputation',
             $this->root() . '/src/Entity/App',
             $this->root() . '/src/Command',
         ];
