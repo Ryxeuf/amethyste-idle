@@ -31,7 +31,7 @@
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
 | ARC-09 | Tests du plan (les 45 invariants) | S | ‖ |
-| ARC-10 | Le plafond global de points — **tranché : suppression** | S | ∅ |
+| ARC-10 ✅ | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 | ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
@@ -246,17 +246,26 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Exclusivité : chaque arbre ouvre au moins un accord que nul autre n'ouvre
 - [ ] Règle 9 étendue au chemin des techniques ; aucun passif plat restant
 
-### ARC-10 — Le plafond global de points (S | ★★ | MOYENNE)
+### ARC-10 — Le plafond global de points (S | ★★ | MOYENNE) ✅
+
+> **Livré le 2026-08-03.** `MAX_TOTAL_SKILL_POINTS`, le motif de refus
+> `global_cap`, ses deux traductions, la jauge « X/500 » de l'écran des arbres,
+> la clé `maxTotalPoints` des charges utiles (web et API v1) et la validation
+> de preset ont disparu **ensemble** — un seul de ces restes aurait suffi à
+> réintroduire la borne. Le total investi reste affiché : c'est une information
+> sur le personnage, jamais un maximum. L'amendement canonique était déjà écrit
+> dans GAME_DOMAINS §1 (2026-07-31) ; le code le rattrape, et la note dit
+> désormais que c'est effectif.
 > GAME_ARCHETYPES §11.2. `MAX_TOTAL_SKILL_POINTS = 500` contredit « le savoir n'est jamais
 > borné » (GAME_DOMAINS §1) — et un seul arbre en consomme 465.
 > **Tranché le 2026-07-31 : le plafond est supprimé.**
-- [ ] Retirer `MAX_TOTAL_SKILL_POINTS`, le motif de refus `global_cap`, ses traductions
+- [x] Retirer `MAX_TOTAL_SKILL_POINTS`, le motif de refus `global_cap`, ses traductions
       FR/EN et le test qui l'exerce
-- [ ] **Écrire dans GAME_DOMAINS §1 pourquoi** — sinon il reviendra : les trois bornes
+- [x] **Écrire dans GAME_DOMAINS §1 pourquoi** — sinon il reviendra : les trois bornes
       réelles sont l'énergie (rythme), le build (expression, DOM-02) et la spécialisation
       ou le patronage (identité). Un plafond de points ne borne que le temps de jeu, la
       seule chose que ce jeu a décidé de ne jamais punir
-- [ ] Test : aucun refus d'acquisition ne dépend d'un total de points tous domaines
+- [x] Test : aucun refus d'acquisition ne dépend d'un total de points tous domaines
       confondus
 
 ### ARC-11 — L'intention, la portée, et la loi du dépôt (M | ★★★ | HAUTE)

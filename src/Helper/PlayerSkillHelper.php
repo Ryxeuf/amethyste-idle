@@ -8,12 +8,25 @@ use App\GameEngine\Progression\DomainAccessManager;
 
 class PlayerSkillHelper
 {
-    public const int MAX_TOTAL_SKILL_POINTS = 500;
+    /**
+     * Il n'y a **pas** de plafond global de points (ARC-10).
+     *
+     * `MAX_TOTAL_SKILL_POINTS = 500` a vecu ici, et il contredisait la premiere
+     * ligne de la doctrine — « le savoir n'est jamais borne » (GAME_DOMAINS
+     * § 1). La mesure l'a rendu intenable : **un seul arbre en consommait 465**
+     * (l'Assassin de GAME_TREE_ANATOMY en coute 515), donc un joueur qui
+     * finissait son premier arbre ne pouvait plus rien apprendre nulle part.
+     *
+     * Les trois bornes reelles sont ailleurs, et aucune ne compte des points :
+     * l'**energie** borne le rythme, le **build** borne l'expression (DOM-02 —
+     * ce qu'on porte decide ce qui s'exprime), la **specialisation** et le
+     * **patronage** bornent l'identite. Un plafond de points ne bornait que le
+     * temps de jeu — la seule chose que ce jeu a decide de ne jamais punir.
+     */
 
     /** Motifs de refus, utilises comme suffixe de cle de traduction. */
     public const REFUSAL_NO_PLAYER = 'no_player';
     public const REFUSAL_ALREADY_ACQUIRED = 'already_acquired';
-    public const REFUSAL_GLOBAL_CAP = 'global_cap';
     public const REFUSAL_NOT_ENOUGH_XP = 'not_enough_xp';
     public const REFUSAL_MISSING_REQUIREMENTS = 'missing_requirements';
     /**
@@ -92,11 +105,6 @@ class PlayerSkillHelper
         // domaine reste libre pour tous.
         if (!$this->domainAccessManager->isSkillReachable($player, $skill)) {
             return self::REFUSAL_DOMAIN_CLOSED;
-        }
-
-        // Limite globale multi-domaine
-        if ($this->getTotalUsedPoints($player) + $skill->getRequiredPoints() > self::MAX_TOTAL_SKILL_POINTS) {
-            return self::REFUSAL_GLOBAL_CAP;
         }
 
         // Multi-domaine : il faut assez de points dans AU MOINS UN des domaines.

@@ -770,7 +770,6 @@
         "refused": {
           "no_player": "No active character.",
           "already_acquired": "You already have this skill.",
-          "global_cap": "You have reached the 500 skill point cap.",
           "not_enough_xp": "Not enough domain experience.",
           "missing_requirements": "You are missing a prerequisite for this skill.",
           "other_branch": "This node belongs to the tree's other branch. Change branch at the workbench to reach it.",
@@ -810,7 +809,8 @@
         },
         "none_open_title": "No tree is open to you yet.",
         "none_open_hint": "A tree opens when you read its parchment. The catalogue says which ones exist and where to find them."
-      }
+      },
+      "points_invested": "Points invested"
     },
     "domains": {
       "experience": {

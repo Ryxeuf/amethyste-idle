@@ -107,16 +107,13 @@
                 </button>
             {% endif %}
         </div>
+        {# ARC-10 — il n'y a plus de plafond global, donc plus de jauge : une
+           jauge sans maximum ne mesure rien. Le total investi reste affiche,
+           parce que c'est une information (ce que le personnage a appris),
+           jamais une borne. #}
         <div class="flex items-center gap-3">
-            <span class="ds-label shrink-0">Points</span>
-            <div class="ds-meter flex-1">
-                {% set pct = maxTotalPoints > 0 ? (totalUsedPoints / maxTotalPoints * 100) : 0 %}
-                <div class="ds-meter__fill {{ pct >= 100 ? 'ds-meter__fill--hp' : '' }}"
-                     style="width: {{ pct > 100 ? 100 : pct }}%"></div>
-            </div>
-            <span class="ds-num shrink-0 {{ totalUsedPoints >= maxTotalPoints ? 'ds-num--loss' : '' }}">
-                {{ totalUsedPoints }}/{{ maxTotalPoints }}
-            </span>
+            <span class="ds-label shrink-0">{{ 'game.skills.points_invested'|trans }}</span>
+            <span class="ds-num shrink-0">{{ totalUsedPoints }}</span>
         </div>
     </div>
 

@@ -5,7 +5,6 @@ namespace App\GameEngine\Progression;
 use App\Entity\App\BuildPreset;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
-use App\Helper\PlayerSkillHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class BuildPresetManager
@@ -92,16 +91,10 @@ class BuildPresetManager
             $skills[] = $skill;
         }
 
-        // Calculer le cout total et vérifier les domaines
-        $totalCost = 0;
-        foreach ($skills as $skill) {
-            $totalCost += $skill->getRequiredPoints();
-        }
-
-        if ($totalCost > PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS) {
-            return ['success' => false, 'message' => 'Ce preset dépasse la limite de points de compétence.'];
-        }
-
+        // ARC-10 : aucun refus ne depend d'un total tous domaines confondus.
+        // La seule question qui vaille est celle d'apres — le joueur a-t-il
+        // l'experience **dans les domaines concernes** ? C'est la borne reelle,
+        // et elle est par arbre.
         // Vérifier que le joueur a assez d'XP dans les domaines concernés
         if (!$this->hasEnoughDomainXp($player, $skills)) {
             return ['success' => false, 'message' => 'XP insuffisante dans un ou plusieurs domaines pour ce preset.'];

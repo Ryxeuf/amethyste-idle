@@ -46,7 +46,10 @@ layout visuel, pas de la génération de contenu.
 > **build** borne l'expression (DOM-02), la **spécialisation** et le **patronage** bornent
 > l'identité. Un plafond de points ne bornait que le **temps de jeu** — la seule chose que
 > ce jeu a décidé de ne jamais punir (GAME_PROGRESSION §5). C'est consigné ici pour qu'on
-> ne le réintroduise pas par commodité. Jalon : **ARC-10**.
+> ne le réintroduise pas par commodité. Jalon : **ARC-10** — **livré le 2026-08-03** : la
+constante, le motif de refus `global_cap`, ses deux traductions, la jauge « X/500 » de
+l'écran des arbres et la validation de preset ont disparu ensemble, et un test interdit
+désormais qu'un refus dépende d'un total tous domaines confondus.
 
 Formule canonique : **« on peut virtuellement savoir tout faire, mais on ne fait qu'une
 seule chose à la fois. »** Les seules exclusions du jeu sont sociales et réversibles à

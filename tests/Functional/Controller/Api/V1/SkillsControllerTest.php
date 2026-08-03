@@ -52,7 +52,11 @@ class SkillsControllerTest extends WebTestCase
             $this->assertArrayHasKey($section, $data);
         }
 
-        $this->assertSame(500, $data['points']['maxTotalPoints']);
+        // ARC-10 : le plafond global a disparu, donc la charge utile ne
+        // l'annonce plus. Le total investi reste — c'est une information sur
+        // le personnage, jamais une borne.
+        $this->assertArrayHasKey('totalUsedPoints', $data['points']);
+        $this->assertArrayNotHasKey('maxTotalPoints', $data['points']);
         $this->assertIsArray($data['presets']['items']);
 
         if ($data['domains'] !== []) {
