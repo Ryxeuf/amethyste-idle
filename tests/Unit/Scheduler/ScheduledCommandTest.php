@@ -14,12 +14,13 @@ use PHPUnit\Framework\TestCase;
  * 2. **sept** commandes manifestement recurrentes — expiration d'encheres et de
  *    commandes (qui **rendent de l'escrow**), loyers, restock PNJ, respawn de
  *    recolte, vagues d'invasion — n'etaient declarees nulle part ;
- * 3. et rien ne consomme le transport du scheduler, ce que le point 1 prouve :
+ * 3. et rien ne consommait le transport du scheduler, ce que le point 1 prouve :
  *    un consommateur aurait leve « Command not defined » toutes les 60 secondes
  *    depuis le pivot.
  *
- * Ce test traite les deux premiers. Le troisieme est un probleme de deploiement,
- * documente dans `docs/LOAD_TESTING_BOTTLENECKS.md` § jalon F.
+ * Ce test traite les deux premiers. Le troisieme etait un probleme de
+ * deploiement : il est resolu par le service `worker` de `compose.yaml`, et
+ * garde par `SchedulerWorkerDeploymentTest`.
  *
  * La regle : toute commande est **planifiee**, ou **declaree manuelle** avec sa
  * raison. Pas de troisieme cas, et surtout pas celui du silence.
@@ -33,7 +34,7 @@ class ScheduledCommandTest extends TestCase
      */
     private const MANUAL = [
         'app:avatar:inventory' => 'outil d\'inventaire des sprites, lance a la demande',
-        'app:economy:rent-backlog-reset' => 'operation ponctuelle, a lancer une fois avant de brancher le worker (F.0)',
+        'app:economy:rent-backlog-reset' => 'operation d\'exploitation, lancee par l\'entrypoint du worker avant chaque consommation du calendrier (F.0) — pas une tache planifiee',
         'app:balance:report' => 'rapport d\'equilibrage, lu par un humain',
         'app:fixtures:load-selective' => 'outil de developpement',
         'app:game:validate' => 'controle de coherence, lance par la CI',

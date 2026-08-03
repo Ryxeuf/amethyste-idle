@@ -1,17 +1,24 @@
+# Environnement partage par le conteneur web et le worker de taches recurrentes.
+# Un fragment plutot qu'un copier-coller : le worker execute les memes commandes
+# que le web (loyers, saisons, Mercure), une variable qui diverge s'y verrait
+# comme une tache qui echoue en silence une fois par jour.
+x-app-environment: &app_environment
+  DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-amethyste}?serverVersion=${POSTGRES_VERSION:-17}&charset=${POSTGRES_CHARSET:-utf8}
+  MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
+  MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}/.well-known/mercure}
+  MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+  MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+  MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+  SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+  STABILITY: ${STABILITY:-stable}
+
 services:
   php: &php_base
     image: ${IMAGES_PREFIX:-}app-php
     restart: unless-stopped
     environment:
+      <<: *app_environment
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
-      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-amethyste}?serverVersion=${POSTGRES_VERSION:-17}&charset=${POSTGRES_CHARSET:-utf8}
-      MERCURE_URL: ${CADDY_MERCURE_URL:-http://php/.well-known/mercure}
-      MERCURE_PUBLIC_URL: ${CADDY_MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}/.well-known/mercure}
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
-      STABILITY: ${STABILITY:-stable}
       SYMFONY_TRUSTED_PROXIES: REMOTE_ADDR
       SYMFONY_TRUSTED_HEADERS: x-forwarded-for,x-forwarded-host,x-forwarded-proto,x-forwarded-port
     volumes:
@@ -50,6 +57,54 @@ services:
       - "traefik.http.routers.amethyste-api.middlewares=secure-headers@file"
     depends_on:
       database:
+        condition: service_healthy
+
+  # Worker des taches recurrentes — le consommateur du calendrier
+  # (`src/Scheduler/DefaultScheduleProvider.php`), jalon F.0 de la tache 134.
+  #
+  # Sans lui, `symfony/scheduler` publie dans le vide : aucune enchere n'expire
+  # (donc aucun escrow n'est rendu), aucune boutique PNJ ne se reapprovisionne,
+  # aucun filon ne respawne, aucun loyer n'est preleve, aucune semaine ne tourne.
+  worker:
+    image: ${IMAGES_PREFIX:-}app-php
+    restart: unless-stopped
+    # Piege n° 2 : l'entrypoint du web rejoue migrations, cache et assets pour
+    # tout argv commencant par `php` ou `bin/console`. Celui-ci ne fait ni l'un
+    # ni l'autre — il attend, efface l'arriere de loyers, puis consomme.
+    entrypoint: ["scheduler-entrypoint"]
+    # Piege n° 3 : **exactement une** replique tant que le calendrier n'a pas de
+    # verrou (jalon F.1). A deux, chaque tache se declenche deux fois — loyers
+    # preleves en double, recompenses de saison versees en double, et un releve
+    # de masse monetaire par replique et par jour.
+    # Ne jamais lancer `docker compose up --scale worker=N` avec N > 1.
+    deploy:
+      replicas: 1
+    environment:
+      <<: *app_environment
+    # Le HEALTHCHECK herite de l'image interroge l'admin Caddy sur :2019 — le
+    # worker ne sert pas de HTTP, il serait donc *toujours* malsain et
+    # `docker compose up --wait` echouerait a chaque deploiement. On le remplace
+    # par une vraie sonde de vivacite : PID 1 est le `messenger:consume` exec'e.
+    healthcheck:
+      test: ["CMD-SHELL", "tr '\\0' '\\n' < /proc/1/cmdline | grep -q messenger:consume"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      # Large : le worker a son propre volume `var/`, donc un cache de prod a
+      # fabriquer a chaque recreation de conteneur, avant meme d'attendre les
+      # migrations et d'effacer l'arriere de loyers.
+      start_period: 300s
+    networks:
+      # Pas de `traefik-network`, et surtout pas d'etiquette Traefik : le worker
+      # n'est joignable de l'exterieur par aucune route.
+      - internal
+    depends_on:
+      database:
+        condition: service_healthy
+      # Le web est proprietaire des migrations : sa sonde de sante ne passe au
+      # vert qu'une fois son entrypoint termine. C'est ce qui garantit que la
+      # premiere tache planifiee ne tape pas sur un schema d'avant-deploiement.
+      php:
         condition: service_healthy
 
   database:

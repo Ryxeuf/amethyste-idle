@@ -11,19 +11,35 @@ use Symfony\Component\Scheduler\ScheduleProviderInterface;
 /**
  * Taches recurrentes du jeu.
  *
- * > **Attention (audit jalon F, tache 134)** : ce calendrier n'est **consomme
- * > par aucun processus**. `symfony/scheduler` publie ses messages sur un
- * > transport `scheduler_default` qu'il faut consommer avec
- * > `messenger:consume scheduler_default` — et aucun worker de ce type n'existe
- * > dans `compose.yaml`, `compose.prod.yaml`, le `Dockerfile` ni l'entrypoint.
- * >
- * > La preuve est dans ce fichier meme : `api:mob:move` y etait planifiee toutes
- * > les minutes alors que **la commande a ete supprimee par ZON-21**. Un
- * > consommateur aurait leve « Command not defined » toutes les 60 secondes
- * > depuis le pivot. Personne ne l'a vu.
- * >
- * > Tant que ce worker n'existe pas, tout ce fichier est declaratif. Voir
- * > `docs/LOAD_TESTING_BOTTLENECKS.md` § jalon F.
+ * ## Qui consomme ce calendrier
+ *
+ * `symfony/scheduler` publie ses messages sur un transport `scheduler_default`,
+ * qu'il faut consommer. C'est le role du service Docker **`worker`**
+ * (`compose.yaml`), lance par `frankenphp/scheduler-entrypoint.sh` :
+ * `messenger:consume scheduler_default`.
+ *
+ * Ce fichier a ete **declaratif pendant des mois**, faute de ce consommateur —
+ * et la preuve etait dans ce fichier meme : `api:mob:move` y etait planifiee
+ * toutes les minutes alors que **la commande avait ete supprimee par ZON-21**.
+ * Un consommateur aurait leve « Command not defined » toutes les 60 secondes
+ * depuis le pivot. Personne ne l'a vu. C'est ce que garde desormais
+ * `tests/Unit/Scheduler/ScheduledCommandTest.php`.
+ *
+ * ## Trois contraintes a connaitre avant de toucher a ce calendrier
+ *
+ * 1. **Une seule replique du worker.** Le calendrier n'a pas de verrou
+ *    (`Schedule::lock()` n'est pas appele, `symfony/lock` n'est pas installe —
+ *    jalon F.1). A deux repliques, chaque tache se declenche deux fois : loyers
+ *    preleves en double, recompenses de saison versees en double.
+ *    `compose.yaml` fige `deploy.replicas: 1`, et un test le verifie.
+ * 2. **Rien n'est rejoue.** Le calendrier est sans etat (`stateful()` n'est pas
+ *    appele) : un declenchement tombe pendant un redemarrage du worker est
+ *    perdu, jamais rattrape. C'est voulu — un loyer saute vaut mieux qu'un
+ *    loyer preleve deux fois.
+ * 3. **Une commande ajoutee ici tourne vraiment.** Ce n'est plus une
+ *    declaration d'intention : verifier son cout et son idempotence.
+ *
+ * Voir `docs/LOAD_TESTING_BOTTLENECKS.md` § jalon F.
  */
 #[AsSchedule]
 class DefaultScheduleProvider implements ScheduleProviderInterface

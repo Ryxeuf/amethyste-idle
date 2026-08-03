@@ -177,4 +177,89 @@ class RentBacklogResetterTest extends TestCase
         $this->assertSame(0, $report->houseCount);
         $this->assertSame(0, $report->shopCount);
     }
+
+    /**
+     * Le seuil epargne le retard du jour.
+     *
+     * C'est ce qui rend l'appel automatique possible. L'entrypoint du worker
+     * efface l'arriere a **chaque** demarrage ; sans seuil, un redemarrage a
+     * 00 h 10 annulerait une echeance tombee a 00 h 00 que la tache de 00 h 15
+     * s'appretait a prelever — le loyer ne rentrerait jamais.
+     */
+    public function testAThresholdSpareTheRentThatIsMerelyDueToday(): void
+    {
+        $now = new \DateTimeImmutable('2026-07-27 00:10:00');
+        $house = $this->house('2026-07-27 00:00:00');
+        $shop = $this->shop('2026-07-26 00:00:00');
+        $this->given([$house], [$shop]);
+
+        $report = $this->resetter->reset($now, 2);
+
+        $this->assertTrue($report->isEmpty());
+        $this->assertEquals(new \DateTimeImmutable('2026-07-27 00:00:00'), $house->getRentDueAt());
+        $this->assertEquals(new \DateTimeImmutable('2026-07-26 00:00:00'), $shop->getRentDueAt());
+    }
+
+    /**
+     * Le seuil laisse passer l'arriere qu'aucune panne courte n'explique.
+     *
+     * Deux periodes, c'est quatorze jours : en regime normal le planificateur
+     * preleve tous les jours, donc un tel retard ne peut venir que d'une
+     * interruption longue. C'est la dette que personne n'a contractee.
+     */
+    public function testAThresholdStillClearsALongInterruption(): void
+    {
+        $now = new \DateTimeImmutable('2026-07-27 00:00:00');
+        $house = $this->house('2026-01-01 00:00:00');
+        $this->given([$house], []);
+
+        $report = $this->resetter->reset($now, 2);
+
+        $this->assertSame(1, $report->houseCount);
+        $this->assertEquals(
+            $now->modify(sprintf('+%d days', PlayerHouse::RENT_PERIOD_DAYS)),
+            $house->getRentDueAt(),
+        );
+    }
+
+    /**
+     * La frontiere du seuil est exacte.
+     *
+     * A quatorze jours pile on est a deux periodes : la ligne est effacee. A
+     * treize, non. Une inegalite inversee ici ferait exactement l'un des deux
+     * degats qu'on cherche a eviter, selon le sens de l'erreur.
+     */
+    public function testTheThresholdBoundaryIsInclusive(): void
+    {
+        $now = new \DateTimeImmutable('2026-07-27 00:00:00');
+        $thirteenDays = $this->house('2026-07-14 00:00:00');
+        $fourteenDays = $this->house('2026-07-13 00:00:00');
+        $this->given([$thirteenDays, $fourteenDays], []);
+
+        $report = $this->resetter->inspect($now, 2);
+
+        $this->assertSame(1, $report->houseCount);
+        $this->assertSame(2, $report->worstHousePeriods);
+    }
+
+    /**
+     * Sans seuil, rien ne change.
+     *
+     * Le defaut vaut zero : lancee a la main, la commande efface tout l'arriere
+     * echu, comme avant l'ajout du seuil.
+     */
+    public function testTheDefaultThresholdClearsEverythingOverdue(): void
+    {
+        $now = new \DateTimeImmutable('2026-07-27 00:00:00');
+        $house = $this->house('2026-07-26 23:00:00');
+        $this->given([$house], []);
+
+        $report = $this->resetter->reset($now);
+
+        $this->assertSame(1, $report->houseCount);
+        $this->assertEquals(
+            $now->modify(sprintf('+%d days', PlayerHouse::RENT_PERIOD_DAYS)),
+            $house->getRentDueAt(),
+        );
+    }
 }

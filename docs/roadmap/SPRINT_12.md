@@ -38,9 +38,16 @@
       arriere que personne n'a contracte (`extendRent()` repart de l'echeance precedente, et une
       execution ne rattrape qu'une periode). `app:economy:rent-backlog-reset` efface cet arriere,
       et le mode d'emploi documente les trois pieges (arriere, entrypoint, nombre de repliques).
-- [ ] **F.0 — ajouter le service `worker`** a `compose.prod.yaml` (changement d'infrastructure,
-      **non testable sans Docker** et le CD deploie automatiquement sur `main` — a appliquer par
-      l'exploitant en suivant le mode d'emploi)
+- [x] **F.0 — le service `worker` est livre** ✅ (2026-08-03) — le calendrier est consomme. Service
+      a **replique unique** dans `compose.yaml` (+ image de prod dans `compose.prod.yaml`, montage
+      des sources en dev), entrypoint dedie `frankenphp/scheduler-entrypoint.sh` qui n'emprunte pas
+      celui du web (donc ne rejoue ni migrations ni assets), arriere de loyers efface a chaque
+      demarrage avec un **seuil de 2 periodes** — sans lui l'appel automatique annulerait le loyer
+      du jour —, sonde de sante propre (la sonde HTTP heritee aurait fait echouer **chaque**
+      deploiement), et `scripts/deploy.sh` releve le worker apres les migrations puis verifie que
+      le calendrier est reellement consomme. 12 assertions en CI (`SchedulerWorkerDeploymentTest`).
+      Reste a constater apres 24 h de production : un seul releve de masse monetaire, un seul
+      prelevement de loyer.
 - [ ] **Jalon Z — passe de mesure sur le profil zone** (prerequis : etalonner les 4 scenarios realignes)
 - [ ] **Objectif : 200 joueurs simultanes sans degradation** (mesure de validation finale)
 
