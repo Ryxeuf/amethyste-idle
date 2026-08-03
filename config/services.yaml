@@ -117,6 +117,11 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # FAC-06 : le systeme propre des Ruelles — approche, receleur, rumeurs.
+    App\GameEngine\Reputation\ShadowsMarketCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # ONB-09 : ce que le catalogue dit de chaque arbre — deux phrases, et pas
     # une de plus. Le fichier n'a aucun champ pour les nœuds ni les valeurs :
     # une donnee qui n'existe pas ne fuit pas.

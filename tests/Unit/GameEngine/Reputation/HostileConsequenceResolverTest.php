@@ -112,6 +112,22 @@ class HostileConsequenceResolverTest extends TestCase
     }
 
     /**
+     * FAC-06 : les rumeurs ne sont empoisonnees que pour les Hostiles de la
+     * Confrerie — le crochet poisoned_rumors de FAC-03 prend vie.
+     */
+    public function testRumorsArePoisonedOnlyForBrotherhoodHostiles(): void
+    {
+        $ombres = $this->faction('ombres');
+        $hostile = new Player();
+        $neutral = new Player();
+
+        $resolver = $this->resolver([$ombres], [$this->playerFaction($hostile, $ombres, -10)]);
+
+        self::assertTrue($resolver->areRumorsPoisoned($hostile));
+        self::assertFalse($resolver->areRumorsPoisoned($neutral), 'A un client en regle, jamais le mensonge.');
+    }
+
+    /**
      * FAC-04b : le Cercle refuse de lire pour ses Hostiles, et pour eux
      * seuls — le crochet materia_reading_refused de FAC-03 prend vie.
      */

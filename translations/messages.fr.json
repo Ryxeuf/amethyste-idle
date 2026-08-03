@@ -107,6 +107,23 @@
         }
       }
     },
+    "shadows": {
+      "rumor": {
+        "offer": "Le veilleur baisse la voix : une rumeur, pour %price% gils.",
+        "buy": "Acheter la rumeur",
+        "outcrop": "On murmure qu’un affleurement s’est ouvert : %zone%, au filon %vein%. Cette semaine seulement.",
+        "signature": "On dit que la bande tire haut du côté de %zone% — surtout la nuit.",
+        "rested_vein": "Un filon repose à pleine vitalité : %vein%, dans %zone%. Personne n’y a touché.",
+        "silence": "Le réseau n’a rien entendu cette semaine. Gardez votre monnaie la prochaine fois.",
+        "error": {
+          "counter": "Personne ici ne vend ce genre de chose.",
+          "gils": "L’information a un prix, et votre bourse ne le couvre pas."
+        }
+      },
+      "fence": {
+        "sold": "Le lot est passé sous le comptoir : %gils% gils, hors taxe. La Confrérie prend sa coupe."
+      }
+    },
     "shop": {
       "hostile_surcharge": "Les Marchands n'ont pas oublié vos gestes : +%percent% % sur tous les prix. La boutique vous sert, mais elle vous fait payer."
     },

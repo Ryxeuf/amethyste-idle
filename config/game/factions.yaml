@@ -159,6 +159,42 @@ hostile:
         mages:
             -   type: 'materia_reading_refused'
 
+# --- Les Ruelles (FAC-06) ----------------------------------------------------
+# GAME_WORLD § 12.4 : « on ne la trouve pas : c'est elle qui vous trouve. » La
+# Confrerie (slug herite `ombres`, le canon vit dans le libelle) est invisible
+# dans l'ecran des factions jusqu'au premier contact — et le premier contact se
+# gagne par le geste qualifiant : explorer la nuit, plusieurs fois. Ses agents
+# ont des metiers honnetes : Tancrede, veilleur de nuit du Fanal ; Kolm,
+# porteur de lanterne des Mines.
+ruelles:
+    # L'entree differee : au bout de ce nombre d'explorations nocturnes, un
+    # mot est glisse — la faction apparait, a Neutre. Jamais avant.
+    approach:
+        night_explorations: 8
+
+    # Le receleur : vendre hors taxe de cite, contre une coupe qui va a la
+    # Confrerie. Les trois garde-fous du canon, testes :
+    # - la coupe est TOUJOURS superieure a la taxe max de cite (10 %) — en
+    #   gils, le receleur est perdant face au HV ; ses avantages sont
+    #   politiques et pratiques, jamais un canal de masse
+    # - le plafond de lots par semaine et par joueur — la Confrerie n'aime
+    #   pas les gros volumes, ca se voit
+    # - l'acces au palier Ami : le receleur ne travaille pas avec des inconnus
+    fence:
+        cut_percent: 15
+        weekly_lot_cap: 5
+        required_tier: 'ami'
+        counter_pnj_slugs:
+            - 'village-veilleur-tancrede'
+            - 'mines-porteur-de-lanterne-kolm'
+
+    # Les rumeurs : l'information est une marchandise. Une rumeur dit ou la
+    # bande tire haut, quel filon repose, ou l'Affleurement s'est ouvert.
+    # Hostile chez la Confrerie : les rumeurs qu'on vous vend sont fausses
+    # (poisoned_rumors, FAC-03) — elle ne vous attaque pas, elle vous ment.
+    rumors:
+        price_gils: 40
+
 # --- Le patronage ------------------------------------------------------------
 # GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent un
 # patronage — on porte les couleurs d'une seule faction a la fois (changeable

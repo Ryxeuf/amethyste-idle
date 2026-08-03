@@ -703,8 +703,8 @@ class GuildController extends AbstractController
         }
 
         $ratePercent = (int) $request->request->get('rate', 0);
-        if ($ratePercent < 1 || $ratePercent > 10) {
-            return new JsonResponse(['error' => 'Le taux de taxe doit etre entre 1% et 10%.'], Response::HTTP_BAD_REQUEST);
+        if ($ratePercent < 1 || $ratePercent > Region::MAX_TAX_RATE_PERCENT) {
+            return new JsonResponse(['error' => sprintf('Le taux de taxe doit etre entre 1%% et %d%%.', Region::MAX_TAX_RATE_PERCENT)], Response::HTTP_BAD_REQUEST);
         }
 
         $region->setTaxRate(sprintf('0.%04d', $ratePercent * 100));

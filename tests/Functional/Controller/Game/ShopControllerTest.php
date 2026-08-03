@@ -14,6 +14,9 @@ use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
 use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
+use App\GameEngine\Reputation\ReputationManager;
+use App\GameEngine\Reputation\ShadowsMarket;
+use App\GameEngine\Reputation\ShadowsRumors;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use App\Helper\PlayerHelper;
@@ -25,6 +28,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ShopControllerTest extends TestCase
 {
@@ -34,6 +38,7 @@ class ShopControllerTest extends TestCase
     private RegionBonusProvider&MockObject $regionBonusProvider;
     private PlayerRenownDiscountProvider $renownDiscountProvider;
     private HostileConsequenceResolver&MockObject $hostileConsequences;
+    private ShadowsMarket&MockObject $shadowsMarket;
     private ShopController $controller;
 
     protected function setUp(): void
@@ -46,6 +51,11 @@ class ShopControllerTest extends TestCase
         // Par defaut, pas de surcharge (le mock rend 0) : les cas FAC-03 la
         // configurent explicitement.
         $this->hostileConsequences = $this->createMock(HostileConsequenceResolver::class);
+        // FAC-06 : par defaut le receleur refuse (le mock rend null) — la
+        // vente retombe sur le rachat commun, comme un guichet ordinaire.
+        $this->shadowsMarket = $this->createMock(ShadowsMarket::class);
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(fn (string $key): string => $key);
 
         $this->controller = new ShopController(
             $this->playerHelper,
@@ -56,6 +66,10 @@ class ShopControllerTest extends TestCase
             new GameMasterPolicy(),
             $this->hostileConsequences,
             new CrystalBuybackFloor($this->hostileConsequences),
+            $this->shadowsMarket,
+            $this->createMock(ShadowsRumors::class),
+            $this->createMock(ReputationManager::class),
+            $translator,
         );
 
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);

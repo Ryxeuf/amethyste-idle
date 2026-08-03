@@ -23,6 +23,7 @@ class FactionsController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly \App\GameEngine\Reputation\FactionVisibility $factionVisibility,
     ) {
     }
 
@@ -54,7 +55,10 @@ class FactionsController extends AbstractController
         }
 
         $factions = [];
-        foreach ($this->entityManager->getRepository(Faction::class)->findAll() as $faction) {
+        // FAC-06 : meme filtre que l'ecran — la Confrerie est invisible avant
+        // le premier contact, sur toutes les surfaces.
+        $allFactions = $this->entityManager->getRepository(Faction::class)->findAll();
+        foreach ($this->factionVisibility->visibleFor($player, $allFactions) as $faction) {
             $playerFaction = $playerFactionMap[$faction->getId()] ?? null;
 
             $factions[] = [

@@ -68,7 +68,7 @@ class ExploreServiceTest extends TestCase
         $lootEntityManager->method('getRepository')->willReturn($emptyRepository);
         $materiaLootTable = new MateriaLootTable($lootEntityManager);
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->mobRepository, $this->fightHandler, $this->journalRepository, $this->gameTimeService, new ActionYieldResolver(), $materiaLootTable) extends ExploreService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->mobRepository, $this->fightHandler, $this->journalRepository, $this->gameTimeService, new ActionYieldResolver(), $materiaLootTable, $this->createMock(\App\GameEngine\Reputation\ShadowsApproach::class)) extends ExploreService {
             /** @var list<int> */
             public array $rolls = [];
             private int $rollIndex = 0;

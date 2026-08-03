@@ -92,6 +92,21 @@ class HostileConsequenceResolver
     }
 
     /**
+     * FAC-06 : les rumeurs qu'on vend a un Hostile de la Confrerie sont
+     * fausses — le crochet `poisoned_rumors` de FAC-03 prend vie. Elle ne
+     * vous attaque pas, elle vous ment : jamais un refus, jamais la boucle
+     * cœur — une fausse piste coute du temps, pas un droit.
+     */
+    public function areRumorsPoisoned(Player $player): bool
+    {
+        if (!$this->catalog->hasConsequence('ombres', 'poisoned_rumors')) {
+            return false;
+        }
+
+        return $this->isHostileToward($player, 'ombres');
+    }
+
+    /**
      * Hostile = ligne de reputation strictement negative. Une faction pas
      * encore semee, ou jamais rencontree, ne rend jamais Hostile.
      */
