@@ -10,7 +10,6 @@ use App\Entity\Game\Faction;
 use App\Entity\Game\Item;
 use App\Enum\Purity;
 use App\Enum\ReputationTier;
-use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -40,7 +39,6 @@ class CounterfeitService
         private readonly EntityManagerInterface $entityManager,
         private readonly ShadowsMarketCatalog $catalog,
         private readonly InventoryHelper $inventoryHelper,
-        private readonly PlayerEffectiveStatsCalculator $effectiveStats,
     ) {
     }
 
@@ -110,9 +108,13 @@ class CounterfeitService
      * Trouble (plus les eclats — la matiere de la main du faussaire), et le
      * contrecoup frappe le lanceur. Rend les messages de combat.
      *
+     * La vie max effective vient de l'appelant : le calculateur de stats
+     * traverse l'enchantement puis l'artisanat, et l'artisanat a besoin de ce
+     * service (la main du faussaire) — l'injecter ici bouclerait le conteneur.
+     *
      * @return list<string>
      */
-    public function betray(Player $player, PlayerItem $materia, ?Slot $slot): array
+    public function betray(Player $player, PlayerItem $materia, ?Slot $slot, int $effectiveMaxLife): array
     {
         $name = $materia->getGenericItem()->getName();
 
@@ -126,7 +128,7 @@ class CounterfeitService
         $this->grantItem($player, self::SHARDS_SLUG, null);
 
         $backlash = max(1, intdiv(
-            $this->effectiveStats->getEffectiveMaxLife($player) * $this->catalog->counterfeitBacklashPercent(),
+            $effectiveMaxLife * $this->catalog->counterfeitBacklashPercent(),
             100,
         ));
         $player->setLife(max(0, $player->getLife() - $backlash));

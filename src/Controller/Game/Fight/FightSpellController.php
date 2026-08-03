@@ -272,7 +272,12 @@ class FightSpellController extends AbstractController
             }
         } elseif ($betrayed) {
             $messages[] = sprintf('%s échoue !', $spell->getName());
-            $messages = array_merge($messages, $this->counterfeitService->betray($player, $materiaEntry['materia'], $materiaEntry['slot']));
+            $messages = array_merge($messages, $this->counterfeitService->betray(
+                $player,
+                $materiaEntry['materia'],
+                $materiaEntry['slot'],
+                $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($player),
+            ));
             $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), false);
         } else {
             $messages[] = sprintf('%s a raté !', $spell->getName());

@@ -9,7 +9,6 @@ use App\Entity\App\Slot;
 use App\Entity\Game\Faction;
 use App\Entity\Game\Item;
 use App\Enum\Purity;
-use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\GameEngine\Reputation\CounterfeitService;
 use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\GameEngine\Reputation\ShadowsMarketCatalog;
@@ -32,7 +31,6 @@ class CounterfeitServiceTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
     private InventoryHelper&MockObject $inventoryHelper;
-    private PlayerEffectiveStatsCalculator&MockObject $effectiveStats;
     private ?PlayerFaction $line = null;
     private ?Faction $faction = null;
 
@@ -48,8 +46,6 @@ class CounterfeitServiceTest extends TestCase
                 $this->granted[] = $item;
             },
         );
-        $this->effectiveStats = $this->createMock(PlayerEffectiveStatsCalculator::class);
-        $this->effectiveStats->method('getEffectiveMaxLife')->willReturn(200);
         $this->faction = (new Faction())->setSlug('ombres')->setName('Confrérie des Ruelles');
     }
 
@@ -83,18 +79,17 @@ class CounterfeitServiceTest extends TestCase
         $catalog = new ShadowsMarketCatalog(\dirname(__DIR__, 4));
 
         if (null === $fixedRoll) {
-            return new CounterfeitService($this->entityManager, $catalog, $this->inventoryHelper, $this->effectiveStats);
+            return new CounterfeitService($this->entityManager, $catalog, $this->inventoryHelper);
         }
 
-        return new class($this->entityManager, $catalog, $this->inventoryHelper, $this->effectiveStats, $fixedRoll) extends CounterfeitService {
+        return new class($this->entityManager, $catalog, $this->inventoryHelper, $fixedRoll) extends CounterfeitService {
             public function __construct(
                 EntityManagerInterface $em,
                 ShadowsMarketCatalog $catalog,
                 InventoryHelper $inventoryHelper,
-                PlayerEffectiveStatsCalculator $stats,
                 private readonly int $fixedRoll,
             ) {
-                parent::__construct($em, $catalog, $inventoryHelper, $stats);
+                parent::__construct($em, $catalog, $inventoryHelper);
             }
 
             protected function roll(int $min, int $max): int
@@ -176,7 +171,7 @@ class CounterfeitServiceTest extends TestCase
 
         $this->entityManager->expects(self::once())->method('remove')->with($materia);
 
-        $messages = $this->service()->betray($player, $materia, $slot);
+        $messages = $this->service()->betray($player, $materia, $slot, 200);
 
         self::assertNull($slot->getItemSet(), 'La materia brisee quitte son emplacement.');
         self::assertSame(80 - 50, $player->getLife(), 'Le contrecoup : 25 % de 200 PV de vie max effective.');
