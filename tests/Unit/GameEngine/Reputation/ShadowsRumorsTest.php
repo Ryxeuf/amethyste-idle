@@ -55,15 +55,7 @@ class ShadowsRumorsTest extends TestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('getRepository')->willReturn($zoneRepository);
 
-        return new class(
-            $entityManager,
-            new ShadowsMarketCatalog(\dirname(__DIR__, 4)),
-            $this->approach,
-            $this->hostileConsequences,
-            $outcropRepository,
-            $this->createMock(PurityDrawer::class),
-            $this->createMock(GatherService::class),
-        ) extends ShadowsRumors {
+        return new class($entityManager, new ShadowsMarketCatalog(\dirname(__DIR__, 4)), $this->approach, $this->hostileConsequences, $outcropRepository, $this->createMock(PurityDrawer::class), $this->createMock(GatherService::class)) extends ShadowsRumors {
             protected function roll(int $max): int
             {
                 // La rumeur d'Affleurement, et la premiere zone candidate au

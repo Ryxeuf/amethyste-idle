@@ -273,8 +273,9 @@ class ShopController extends AbstractController
         // FAC-06 — le receleur : au guichet des Ruelles, la nuit, un vendeur
         // Ami passe un lot au marche gris — prix moins la coupe de la
         // Confrerie, hors taxe de cite. Le refus (plafond, palier, jour) ne
-        // ferme jamais la vente : le repli est le rachat commun.
-        $fencePrice = $this->shadowsMarket->fencePriceFor($pnj, $item, $player, !$playerItem->isBound());
+        // ferme jamais la vente : le repli est le rachat commun. L'objet est
+        // echangeable ici : la garde de liaison ci-dessus a deja refuse.
+        $fencePrice = $this->shadowsMarket->fencePriceFor($pnj, $item, $player, true);
         $isFenceSale = null !== $fencePrice && $fencePrice > $sellPrice;
         if ($isFenceSale) {
             $sellPrice = $fencePrice;
