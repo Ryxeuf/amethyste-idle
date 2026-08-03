@@ -385,6 +385,9 @@ class EconomyInvariantTest extends TestCase
             $crystal->setGenericItem($item);
             $crystal->setInventory($bag);
             $crystal->setPurity(Purity::Pur);
+            // Le cote inverse : la collection du sac est ce que le manager
+            // itere pour collecter les amethystites.
+            $bag->addItem($crystal);
         }
     }
 }

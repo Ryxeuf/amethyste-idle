@@ -1345,9 +1345,16 @@ class CraftOrderManagerTest extends TestCase
      */
     private function createServiceCrystals(Player $owner, int $count, Purity $band): array
     {
+        $bag = $owner->getInventories()->first();
+        self::assertInstanceOf(Inventory::class, $bag);
+
         $crystals = $this->createMaterials($owner, array_fill(0, $count, 'ore-amethyst-crystal'));
         foreach ($crystals as $crystal) {
             $crystal->setPurity($band);
+            // Le cote inverse de la relation : `setInventory()` ne synchronise
+            // pas la collection du sac, et `collectServiceCrystals()` itere
+            // precisement dessus.
+            $bag->addItem($crystal);
         }
 
         return $crystals;
