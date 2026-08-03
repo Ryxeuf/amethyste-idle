@@ -268,6 +268,20 @@ class Player implements CharacterInterface
     private ?\DateTimeImmutable $lifeUpdatedAt = null;
 
     /**
+     * Ancre de regeneration des PM hors combat (ARC-04a).
+     *
+     * Meme mecanique que `lifeUpdatedAt`, et c'est la symetrie qui compte :
+     * *les PV paient les coups recus, les PM paient les gestes faits, et les
+     * deux se rechargent en temps reel*. Avant ce jalon les PM ne revenaient
+     * qu'en lancant des sorts — c'est-a-dire en depensant ce qu'on cherchait a
+     * recuperer.
+     *
+     * null = jamais calcule.
+     */
+    #[ORM\Column(name: 'energy_updated_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $energyUpdatedAt = null;
+
+    /**
      * Suspension d'acces aux canaux d'echange entre joueurs (ECO-16b).
      *
      * Sanction **proportionnee** : le bannissement de compte existe deja mais
@@ -740,6 +754,16 @@ class Player implements CharacterInterface
     public function setLifeUpdatedAt(?\DateTimeImmutable $lifeUpdatedAt): void
     {
         $this->lifeUpdatedAt = $lifeUpdatedAt;
+    }
+
+    public function getEnergyUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->energyUpdatedAt;
+    }
+
+    public function setEnergyUpdatedAt(?\DateTimeImmutable $energyUpdatedAt): void
+    {
+        $this->energyUpdatedAt = $energyUpdatedAt;
     }
 
     public function getLastCoordinates(): string
