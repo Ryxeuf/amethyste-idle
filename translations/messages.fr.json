@@ -770,7 +770,6 @@
         "refused": {
           "no_player": "Aucun personnage actif.",
           "already_acquired": "Vous possédez déjà cette compétence.",
-          "global_cap": "Limite de 500 points de compétence atteinte.",
           "not_enough_xp": "Points d'expérience de domaine insuffisants.",
           "missing_requirements": "Il vous manque un prérequis pour cette compétence.",
           "other_branch": "Ce nœud appartient à l'autre branche de l'arbre. Changez de branche à l'établi pour y accéder.",
@@ -810,7 +809,8 @@
         },
         "none_open_title": "Aucun arbre ne vous est encore ouvert.",
         "none_open_hint": "Un arbre s'ouvre en lisant son parchemin. Le catalogue dit lesquels existent et où les trouver."
-      }
+      },
+      "points_invested": "Points investis"
     },
     "domains": {
       "experience": {

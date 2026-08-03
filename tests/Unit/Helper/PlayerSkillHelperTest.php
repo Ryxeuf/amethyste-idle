@@ -26,7 +26,7 @@ class PlayerSkillHelperTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->playerDomainHelper = $this->createMock(PlayerDomainHelper::class);
         // ONB-08 : par defaut l'arbre est ouvert. Ces cas parlent des points,
-        // des prerequis et du plafond — pas de la porte d'entree, qui a son
+        // des prerequis — pas de la porte d'entree, qui a son
         // propre test plus bas.
         $this->domainAccessManager = $this->createMock(DomainAccessManager::class);
         $this->domainAccessManager->method('isSkillReachable')->willReturn(true);
@@ -71,12 +71,13 @@ class PlayerSkillHelperTest extends TestCase
         $this->assertSame(0, $this->helper->getTotalUsedPoints($player));
     }
 
-    public function testCanAcquireSkillUnderLimit(): void
+    public function testCanAcquireSkillWithEnoughDomainExperience(): void
     {
         $domain = $this->createDomain(1);
         $skill = $this->createSkill('fireball', 50, [$domain]);
 
-        // 400 used + 50 cost = 450 <= 500 max → OK
+        // Ce qui decide, c'est l'experience disponible **dans le domaine** du
+        // nœud (100 pour 50 demandes) — jamais un total (ARC-10).
         $player = $this->createPlayerWithUsedExperience([200, 200]);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->playerDomainHelper->method('getAvailableDomainExperience')->willReturn(100);
@@ -84,30 +85,18 @@ class PlayerSkillHelperTest extends TestCase
         $this->assertTrue($this->helper->canAcquireSkill($skill));
     }
 
-    public function testCanAcquireSkillAtExactLimit(): void
+    public function testAlreadyHeavilyInvestedPlayerKeepsLearning(): void
     {
         $domain = $this->createDomain(1);
         $skill = $this->createSkill('fireball', 50, [$domain]);
 
-        // 450 used + 50 cost = 500 = 500 max → OK
+        // 450 points deja investis ailleurs : sans plafond global, cela ne
+        // pese sur rien (ARC-10).
         $player = $this->createPlayerWithUsedExperience([250, 200]);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->playerDomainHelper->method('getAvailableDomainExperience')->willReturn(100);
 
         $this->assertTrue($this->helper->canAcquireSkill($skill));
-    }
-
-    public function testCanAcquireSkillOverLimitReturnsFalse(): void
-    {
-        $domain = $this->createDomain(1);
-        $skill = $this->createSkill('fireball', 50, [$domain]);
-
-        // 460 used + 50 cost = 510 > 500 max → blocked
-        $player = $this->createPlayerWithUsedExperience([260, 200]);
-        $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->playerDomainHelper->method('getAvailableDomainExperience')->willReturn(100);
-
-        $this->assertFalse($this->helper->canAcquireSkill($skill));
     }
 
     public function testCanAcquireSkillAlreadyAcquiredReturnsFalse(): void
@@ -195,9 +184,46 @@ class PlayerSkillHelperTest extends TestCase
         $this->assertFalse($this->helper->canAcquireSkill($skill));
     }
 
-    public function testMaxTotalSkillPointsConstant(): void
+    /**
+     * ARC-10 — **aucun refus ne depend d'un total tous domaines confondus.**
+     *
+     * Le plafond de 500 points contredisait la premiere ligne de la doctrine
+     * (« le savoir n'est jamais borne », GAME_DOMAINS § 1), et la mesure l'a
+     * rendu intenable : un seul arbre en consommait 465. Le test verifie ce
+     * qui compte — un joueur qui a deja beaucoup investi ailleurs apprend
+     * quand meme, des lors qu'il a l'experience **dans le domaine du nœud**.
+     */
+    public function testNoRefusalDependsOnATotalAcrossDomains(): void
     {
-        $this->assertSame(500, PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS);
+        $domain = $this->createDomain(1);
+        $skill = $this->createSkill('fireball', 10, [$domain]);
+
+        // Un personnage qui a deja investi 900 points ailleurs — bien au-dela
+        // de l'ancien plafond — et qui a l'experience voulue dans ce domaine.
+        $player = $this->createPlayerWithUsedExperience([500, 400]);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerDomainHelper->method('getAvailableDomainExperience')->willReturn(100);
+
+        $this->assertNull($this->helper->refusalFor($skill), 'Le total tous domaines confondus ne refuse plus rien.');
+        $this->assertTrue($this->helper->canAcquireSkill($skill));
+    }
+
+    /**
+     * Le motif de refus lui-meme a disparu : une constante laissee derriere
+     * finirait par etre relue, et sa cle de traduction par etre reaffichee.
+     */
+    public function testTheGlobalCapRefusalNoLongerExists(): void
+    {
+        $this->assertFalse(
+            \defined(PlayerSkillHelper::class . '::MAX_TOTAL_SKILL_POINTS'),
+            'Le plafond global est supprime (ARC-10).',
+        );
+        $this->assertFalse(\defined(PlayerSkillHelper::class . '::REFUSAL_GLOBAL_CAP'));
+
+        foreach (['fr', 'en'] as $locale) {
+            $catalog = (string) file_get_contents(\dirname(__DIR__, 3) . '/translations/messages.' . $locale . '.json');
+            $this->assertStringNotContainsString('global_cap', $catalog);
+        }
     }
 
     /**

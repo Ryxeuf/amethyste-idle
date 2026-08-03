@@ -68,7 +68,6 @@ class SkillTreePayloadBuilder
             'points' => [
                 'skillCount' => $player->getSkills()->count(),
                 'totalUsedPoints' => $this->skillHelper->getTotalUsedPoints($player),
-                'maxTotalPoints' => PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS,
             ],
             'presets' => [
                 'items' => $presets,

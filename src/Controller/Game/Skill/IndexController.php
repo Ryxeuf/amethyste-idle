@@ -72,7 +72,6 @@ class IndexController extends AbstractController
             'playerGils' => $player ? $player->getGils() : 0,
             'skillCount' => $player ? $player->getSkills()->count() : 0,
             'totalUsedPoints' => $player ? $this->skillHelper->getTotalUsedPoints($player) : 0,
-            'maxTotalPoints' => PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS,
             'presets' => $player ? $this->presetManager->getPresets($player) : [],
             'canSavePreset' => $player ? $this->presetManager->canSave($player) : false,
             'maxPresets' => BuildPresetManager::MAX_PRESETS_PER_PLAYER,
