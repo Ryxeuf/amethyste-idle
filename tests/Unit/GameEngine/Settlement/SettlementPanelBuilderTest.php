@@ -345,6 +345,9 @@ class SettlementPanelBuilderTest extends TestCase
             $this->crueQuota(),
             $this->vassalage(),
             $worldScale,
+            // FOY-18 : les parcelles ont leur propre test — ici, le mock rend
+            // null (un rang qui ne loge pas), l'etat le plus neutre.
+            $this->createMock(\App\GameEngine\Housing\ResidentialParcels::class),
         );
     }
 

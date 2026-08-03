@@ -45,6 +45,7 @@ class SettlementPanelBuilder
         private readonly CrueQuotaService $crueQuota,
         private readonly VassalageService $vassalage,
         private readonly WorldScaleService $worldScale,
+        private readonly \App\GameEngine\Housing\ResidentialParcels $residentialParcels,
     ) {
     }
 
@@ -62,7 +63,8 @@ class SettlementPanelBuilder
      *     contribution: int,
      *     guildContribution: int,
      *     ebbing: bool,
-     *     highestRank: SettlementRank
+     *     highestRank: SettlementRank,
+     *     housing: ?array{capacity: int, taken: int, free: int}
      * }|null `null` quand la zone n'a pas de foyer — ce n'est pas une anomalie
      */
     public function build(Zone $zone, ?Player $player = null): ?array
@@ -124,6 +126,10 @@ class SettlementPanelBuilder
             // etre une surprise.
             'ebbing' => $settlement->getHighestRank()->level() > $rank->level(),
             'highestRank' => $settlement->getHighestRank(),
+            // FOY-18 : les parcelles residentielles du rang — `null` si le
+            // rang ne loge pas (Ruine, Campement). `free` peut etre a zero
+            // avec plus de demeures que de parcelles : rien n'expulse.
+            'housing' => $this->residentialParcels->panel($zone),
         ];
     }
 

@@ -22,6 +22,7 @@ final class HousingManagerTest extends TestCase
     private EntityManagerInterface&MockObject $em;
     private PlayerHouseRepository&MockObject $houseRepository;
     private InventoryHelper&MockObject $inventoryHelper;
+    private \App\GameEngine\Housing\ResidentialParcels&MockObject $residentialParcels;
     private HousingManager $manager;
 
     /** @var list<object> */
@@ -42,7 +43,11 @@ final class HousingManagerTest extends TestCase
         // tests HOU-05, et seuls ceux d'ECO-30 posent un necessaire.
         $this->inventoryHelper->method('removeItemBySlug')->willReturn(0);
 
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper);
+        // FOY-18 : par defaut, aucun rang ne loge — les cas de parcelles le
+        // configurent explicitement. Le plancher des Jardins n'en depend pas.
+        $this->residentialParcels = $this->createMock(\App\GameEngine\Housing\ResidentialParcels::class);
+
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper, $this->residentialParcels);
     }
 
     /**
@@ -55,7 +60,7 @@ final class HousingManagerTest extends TestCase
             ->with(HousingManager::FURNISHING_KIT_SLUG, 1)
             ->willReturn(1);
 
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper);
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels);
     }
 
     public function testBuyingLandCostsTheLandPriceAndBuildsTheHouse(): void
@@ -117,6 +122,54 @@ final class HousingManagerTest extends TestCase
         $this->expectExceptionMessage('Aucun terrain');
 
         $this->manager->buyLand($player, $wilderness, 'En pleine foret');
+    }
+
+    /**
+     * FOY-18 : un foyer au rang de Hameau ou plus vend des parcelles — la
+     * liste explicite est devenue une regle.
+     */
+    public function testARankedSettlementSellsParcels(): void
+    {
+        $hamlet = $this->zone('foret-des-murmures');
+        $player = $this->playerIn($hamlet, 999_999);
+        $this->residentialParcels->method('isRankResidential')->willReturn(true);
+        $this->residentialParcels->method('canOpenParcel')->willReturn(true);
+
+        $house = $this->manager->buyLand($player, $hamlet, 'Sous les murmures');
+
+        self::assertSame($hamlet, $house->getZone());
+    }
+
+    /**
+     * FOY-18 : la capacite ne gate que l'ouverture — un foyer plein refuse la
+     * nouvelle parcelle, et rien d'autre ne se passe (jamais d'expulsion).
+     */
+    public function testAFullSettlementRefusesANewParcel(): void
+    {
+        $hamlet = $this->zone('foret-des-murmures');
+        $player = $this->playerIn($hamlet, 999_999);
+        $this->residentialParcels->method('isRankResidential')->willReturn(true);
+        $this->residentialParcels->method('canOpenParcel')->willReturn(false);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Toutes les parcelles');
+
+        $this->manager->buyLand($player, $hamlet, 'Trop tard');
+    }
+
+    /**
+     * FOY-18 : le plancher des Jardins n'est jamais soumis a la capacite —
+     * quoi qu'il arrive aux foyers, on peut toujours se loger la.
+     */
+    public function testTheGardensFloorIgnoresCapacity(): void
+    {
+        $gardens = $this->residentialZone();
+        $player = $this->playerIn($gardens, 999_999);
+        $this->residentialParcels->method('canOpenParcel')->willReturn(false);
+
+        $house = $this->manager->buyLand($player, $gardens, 'Sous la Voute');
+
+        self::assertSame($gardens, $house->getZone());
     }
 
     public function testASecondHouseIsRefused(): void
@@ -313,7 +366,7 @@ final class HousingManagerTest extends TestCase
     {
         $inventoryHelper = $this->createMock(InventoryHelper::class);
         $inventoryHelper->expects(self::never())->method('removeItemBySlug');
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper);
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels);
 
         $player = $this->playerIn($this->residentialZone(), 10_000);
         $house = $this->ownedHouse($player);

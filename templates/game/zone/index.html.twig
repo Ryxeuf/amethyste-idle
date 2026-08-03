@@ -274,6 +274,18 @@
                             </p>
                         {% endif %}
 
+                        {# FOY-18 — les parcelles residentielles du rang. `free` peut #}
+                        {# etre a zero avec plus de demeures que de parcelles : rien #}
+                        {# n'expulse, la capacite ne gate que les nouvelles. #}
+                        {% if settlement.housing %}
+                            <p class="ds-hint mt-1">
+                                {{ 'game.zone.settlement.parcels'|trans({
+                                    '%free%': settlement.housing.free,
+                                    '%capacity%': settlement.housing.capacity,
+                                }) }}
+                            </p>
+                        {% endif %}
+
                         {% if settlement.next %}
                             <div class="ds-meter mt-2">
                                 <div class="ds-meter__fill" style="width: {{ settlement.next.progress }}%"></div>

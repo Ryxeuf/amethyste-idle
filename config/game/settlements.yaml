@@ -222,6 +222,22 @@ crue:
         city: 120
         metropolis: 300
 
+# Le logement (FOY-18). GAME_WORLD § 12.6 b : tout foyer au rang de Hameau ou
+# plus est residentiel, a capacite par rang — calibree a W = 1 et mise a
+# l'echelle par le facteur de monde, comme les seuils de rang (jamais les
+# taux). Ruine et Campement ne logent pas : on ne s'installe pas dans ce qui
+# peut disparaitre. La capacite ne gate que l'ouverture de NOUVELLES
+# parcelles : une regression de rang, ou une contraction du monde, ne
+# deloge personne — jamais d'expulsion (decision A). Le Quartier des
+# Jardins n'apparait pas ici : il n'a pas de foyer, il a une garantie
+# (le plancher, tenu par HousingManager).
+housing:
+    parcels_per_rank:
+        hamlet: 8
+        town: 20
+        city: 40
+        metropolis: 80
+
 # Chantier de la semaine (RET-05). A la maniere de la Restauration d'Ishgard :
 # la maree dit **ou va** la ville, le chantier dit **ce qu'elle attend cette
 # semaine**. C'est ce qui donne une voix au foyer — jusqu'ici il encaissait le

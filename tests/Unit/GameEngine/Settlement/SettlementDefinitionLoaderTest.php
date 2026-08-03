@@ -208,6 +208,55 @@ class SettlementDefinitionLoaderTest extends TestCase
     }
 
     /**
+     * FOY-18 : le bloc logement est optionnel — absent, aucun rang ne loge et
+     * la regle est inerte (le plancher des Jardins vit ailleurs).
+     */
+    public function testTheHousingBlockIsOptional(): void
+    {
+        $housing = $this->loader->normalize($this->validRaw())['housing'];
+
+        self::assertSame([], $housing['parcels_per_rank']);
+    }
+
+    /**
+     * FOY-18 : la capacite croit avec le rang — un Bourg qui logerait moins
+     * qu'un Hameau inverserait l'echelle sans que rien ne le dise.
+     */
+    public function testHousingCapacityMustIncreaseWithRank(): void
+    {
+        $raw = $this->validRaw();
+        $raw['housing'] = ['parcels_per_rank' => ['hamlet' => 8, 'town' => 8]];
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/must increase/');
+        $this->loader->normalize($raw);
+    }
+
+    /**
+     * FOY-18 : on ne s'installe pas dans ce qui peut disparaitre — un
+     * Campement qui loge est refuse au chargement.
+     */
+    public function testHousingBelowHamletIsRejected(): void
+    {
+        $raw = $this->validRaw();
+        $raw['housing'] = ['parcels_per_rank' => ['camp' => 4, 'hamlet' => 8]];
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/below hamlet/');
+        $this->loader->normalize($raw);
+    }
+
+    public function testHousingWithAnUnknownRankIsRejected(): void
+    {
+        $raw = $this->validRaw();
+        $raw['housing'] = ['parcels_per_rank' => ['citadelle' => 8]];
+
+        $this->expectException(SettlementDefinitionException::class);
+        $this->expectExceptionMessageMatches('/does not name a settlement rank/');
+        $this->loader->normalize($raw);
+    }
+
+    /**
      * Le defaut que ce chargeur existe pour attraper : une **ligne muette**. Une
      * zone qui nomme une ligne inconnue continuerait de fonctionner, n'accorderait
      * jamais son bonus, et personne ne s'en apercevrait avant de se demander

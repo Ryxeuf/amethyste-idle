@@ -56,6 +56,7 @@ class SettlementDefinitionLoader
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
+     *     housing: array{parcels_per_rank: array<string, int>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
@@ -106,6 +107,7 @@ class SettlementDefinitionLoader
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
+     *     housing: array{parcels_per_rank: array<string, int>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
@@ -145,6 +147,7 @@ class SettlementDefinitionLoader
             'workshop' => $this->normalizeWorkshop($raw['workshop'] ?? [], $source),
             'weekly_work' => $this->normalizeWeeklyWork($raw['weekly_work'] ?? [], $source),
             'crue' => $this->normalizeCrue($raw['crue'] ?? [], $source),
+            'housing' => $this->normalizeHousing($raw['housing'] ?? [], $source),
             'seed' => $this->normalizeSeed($raw['seed'] ?? [], $source),
             'without_settlement' => $this->normalizeWithout($raw['without_settlement'] ?? [], $source),
             'paleness' => $paleness,
@@ -478,6 +481,60 @@ class SettlementDefinitionLoader
             'targets' => $targets,
             'rank_multipliers' => $multipliers,
         ];
+    }
+
+    /**
+     * Le logement par rang (FOY-18) : la capacite de parcelles de chaque
+     * rang, croissante avec le rang — un Bourg qui logerait moins qu'un
+     * Hameau inverserait l'echelle sans que rien ne le dise. Le bloc est
+     * optionnel (absent = aucun rang ne loge, la regle est inerte), mais des
+     * qu'un rang loge, Ruine et Campement sont refuses : on ne s'installe
+     * pas dans ce qui peut disparaitre.
+     *
+     * @return array{parcels_per_rank: array<string, int>}
+     */
+    private function normalizeHousing(mixed $housing, string $source): array
+    {
+        if (!\is_array($housing)) {
+            throw new SettlementDefinitionException(sprintf('"housing" must be a mapping in "%s".', $source));
+        }
+
+        $declared = $housing['parcels_per_rank'] ?? [];
+        if (!\is_array($declared)) {
+            throw new SettlementDefinitionException(sprintf('"housing.parcels_per_rank" must be a mapping in "%s".', $source));
+        }
+
+        foreach (array_keys($declared) as $key) {
+            $rank = SettlementRank::tryFrom((string) $key);
+            if (null === $rank) {
+                throw new SettlementDefinitionException(sprintf('"housing.parcels_per_rank.%s" does not name a settlement rank in "%s".', $key, $source));
+            }
+            if (!$rank->isAtLeast(SettlementRank::Hamlet)) {
+                throw new SettlementDefinitionException(sprintf('"housing.parcels_per_rank.%s" is below hamlet in "%s": one does not settle in what can vanish.', $key, $source));
+            }
+        }
+
+        $capacities = [];
+        $previous = 0;
+        foreach (SettlementRank::ordered() as $rank) {
+            $value = $declared[$rank->value] ?? null;
+            if ($value === null) {
+                continue;
+            }
+            if (!is_numeric($value) || (int) $value < 1) {
+                throw new SettlementDefinitionException(sprintf('"housing.parcels_per_rank.%s" must be a positive integer in "%s".', $rank->value, $source));
+            }
+
+            $value = (int) $value;
+            if ($value <= $previous) {
+                throw new SettlementDefinitionException(sprintf('"housing.parcels_per_rank" must increase with rank: "%s" (%d) is not above the previous (%d) in "%s".', $rank->value, $value, $previous, $source));
+            }
+
+            $capacities[$rank->value] = $value;
+            $previous = $value;
+        }
+
+        return ['parcels_per_rank' => $capacities];
     }
 
     /**
