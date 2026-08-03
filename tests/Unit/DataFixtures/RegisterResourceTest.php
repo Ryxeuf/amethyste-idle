@@ -18,10 +18,10 @@ use PHPUnit\Framework\TestCase;
  * | Melee — reprise en tours (`cooldown`) | 0 | 1 | 2 | 3 | 4 |
  * | Distance — munitions (`ammoCost`)   | 1 | 2 | 3 | 4 | 5 |
  *
- * **La ligne distance attend ARC-04b** : `ammoCost` n'existe pas encore, et le
- * carquois est une piece d'equipement a ecrire. Les gestes de tir qui coutent
- * quelque chose gardent donc leur cout en PM, ce que ce fichier constate au lieu
- * de le taire — une liste nommee qui ne peut que retrecir, comme celle d'ARC-08.
+ * **Les trois lignes sont livrees** : les sorts depuis toujours, la melee par
+ * ARC-04a, le tir par ARC-04b. La liste d'attente que ce fichier portait est
+ * donc vide, et le test qui la tenait verifie desormais l'inverse — aucun geste
+ * de tir ne facture plus de PM.
  */
 class RegisterResourceTest extends TestCase
 {
@@ -33,20 +33,11 @@ class RegisterResourceTest extends TestCase
     private const MELEE_COOLDOWNS = [1 => 0, 2 => 1, 3 => 2, 4 => 3, 5 => 4];
 
     /**
-     * Les gestes de tir qui facturent encore des PM, faute de munitions.
+     * La grille de munitions du tir, par palier de geste.
      *
-     * Elle vaut aveu, pas permission : ARC-04b la vide en creant `ammoCost` et
-     * le carquois. Le test verifie qu'elle est **exacte** — une entree n'y
-     * survit pas a sa conversion.
-     *
-     * @var list<string>
+     * @var array<int, int>
      */
-    private const AWAITING_ARC_04B = [
-        'arrow-rain',
-        'critical-shot',
-        'piercing-arrow',
-        'precise-shot',
-    ];
+    private const RANGED_AMMO = [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5];
 
     /**
      * Le seul sort livre qui porte une reprise sous le palier 3.
@@ -87,6 +78,7 @@ class RegisterResourceTest extends TestCase
                 'level' => preg_match("/'level' => (\d+)/", $block, $m) === 1 ? (int) $m[1] : 1,
                 'energy' => preg_match("/'energyCost' => (\d+)/", $block, $m) === 1 ? (int) $m[1] : 0,
                 'cooldown' => preg_match("/'cooldown' => (\d+)/", $block, $m) === 1 ? (int) $m[1] : 0,
+                'ammo' => preg_match("/'ammoCost' => (\d+)/", $block, $m) === 1 ? (int) $m[1] : 0,
             ];
         }
 
@@ -161,25 +153,50 @@ class RegisterResourceTest extends TestCase
     }
 
     /**
-     * La liste d'attente d'ARC-04b est exacte, donc condamnee a retrecir.
+     * Aucun geste de tir ne facture de PM, et chacun paie ses munitions.
+     *
+     * C'est la meme regle que pour la melee, appliquee au troisieme registre —
+     * et c'est ce qui fait qu'un archer n'est pas « un mage avec un arc ».
      */
-    public function testTheRangedWaitingListIsAccurate(): void
+    public function testEveryRangedGesturePaysInAmmunition(): void
     {
-        $billing = [];
+        $offenders = [];
         foreach ($this->gestures() as $slug => $gesture) {
-            if ($gesture['register'] === 'ranged' && $gesture['energy'] > 0) {
-                $billing[] = $slug;
+            if ($gesture['register'] !== 'ranged') {
+                continue;
+            }
+
+            if ($gesture['energy'] > 0) {
+                $offenders[] = sprintf('%s facture %d PM', $slug, $gesture['energy']);
+            }
+
+            $expected = self::RANGED_AMMO[$gesture['level']] ?? null;
+            self::assertNotNull($expected, sprintf('Le geste "%s" est de palier %d : la grille ne connait que 1 a 5.', $slug, $gesture['level']));
+
+            if ($gesture['ammo'] !== $expected) {
+                $offenders[] = sprintf('%s (palier %d : %d munitions au lieu de %d)', $slug, $gesture['level'], $gesture['ammo'], $expected);
             }
         }
 
-        sort($billing);
+        self::assertSame([], $offenders, 'Ces gestes de tir ne paient pas la ressource de leur registre.');
+    }
 
-        self::assertSame(
-            self::AWAITING_ARC_04B,
-            $billing,
-            'La liste d\'attente d\'ARC-04b ne decrit plus la realite : un geste de tir y est reste apres sa conversion, '
-            . 'ou un geste converti facture de nouveau des PM.',
-        );
+    /**
+     * Seul le registre distance consomme des munitions.
+     *
+     * Un sort ou une technique de melee qui en consommerait facturerait deux
+     * ressources, ce que la premiere regle du canon interdit.
+     */
+    public function testNothingButRangedConsumesAmmunition(): void
+    {
+        $offenders = [];
+        foreach ($this->gestures() as $slug => $gesture) {
+            if ($gesture['register'] !== 'ranged' && $gesture['ammo'] > 0) {
+                $offenders[] = sprintf('%s (%s)', $slug, $gesture['register']);
+            }
+        }
+
+        self::assertSame([], $offenders, 'Ces gestes consomment des munitions sans etre des gestes de tir.');
     }
 
     /**

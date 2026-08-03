@@ -27,6 +27,8 @@ class SpellFixtures extends Fixture
             $spell->setCritical($data['critical'] ?? 5);
             $spell->setEnergyCost($data['energyCost'] ?? 0);
             $spell->setCooldown($data['cooldown'] ?? null);
+            // ARC-04b : la ressource du registre distance.
+            $spell->setAmmoCost($data['ammoCost'] ?? 0);
             $spell->setStatusEffectSlug($data['statusEffectSlug'] ?? null);
             $spell->setAoeTargets($data['aoeTargets'] ?? 1);
             $spell->setLevel($data['level'] ?? 1);
@@ -1161,6 +1163,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Ruée d\'air',
                 'description' => 'Permet de se déplacer rapidement sur un coussin d\'air',
                 'hit' => 100,
+                'energyCost' => 0,
+                'ammoCost' => 1,
                 'level' => 1,
             ],
             'air_slash' => [
@@ -1172,6 +1176,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Tranchant aérien',
                 'description' => 'Une lame d\'air comprimé qui tranche l\'ennemi',
                 'hit' => 85,
+                'energyCost' => 0,
+                'ammoCost' => 3,
                 'level' => 3,
             ],
             'cyclone' => [
@@ -1253,6 +1259,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Point de pression',
                 'description' => 'Concentre l\'air sur un point précis pour causer des dégâts internes',
                 'hit' => 90,
+                'energyCost' => 0,
+                'ammoCost' => 2,
                 'level' => 2,
             ],
             'wind_scythe' => [
@@ -1585,8 +1593,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Tir précis',
                 'description' => 'Un tir soigneusement ajusté qui touche à coup sûr',
                 'hit' => 100,
-                'energyCost' => 4,
+                'energyCost' => 0,
                 'critical' => 12,
+                'ammoCost' => 1,
                 'level' => 1,
             ],
             'arrow_rain' => [
@@ -1598,8 +1607,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Pluie de flèches',
                 'description' => 'Une pluie de flèches qui s\'abat sur la zone',
                 'hit' => 80,
-                'energyCost' => 12,
+                'energyCost' => 0,
                 'aoeTargets' => 0,
+                'ammoCost' => 3,
                 'level' => 3,
             ],
             'critical_shot' => [
@@ -1611,8 +1621,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Tir critique',
                 'description' => 'Un tir visant les points faibles de l\'ennemi',
                 'hit' => 85,
-                'energyCost' => 10,
+                'energyCost' => 0,
                 'critical' => 25,
+                'ammoCost' => 3,
                 'level' => 3,
             ],
             'piercing_arrow' => [
@@ -1624,9 +1635,10 @@ class SpellFixtures extends Fixture
                 'name' => 'Flèche perforante',
                 'description' => 'Une flèche qui transperce les armures les plus solides',
                 'hit' => 80,
-                'energyCost' => 18,
+                'energyCost' => 0,
                 'cooldown' => 3,
                 'critical' => 15,
+                'ammoCost' => 5,
                 'level' => 5,
             ],
 

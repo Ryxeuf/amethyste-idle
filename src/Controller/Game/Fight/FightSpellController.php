@@ -16,6 +16,7 @@ use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\LinkedMateriaResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Fight\QuiverResolver;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
@@ -52,6 +53,7 @@ class FightSpellController extends AbstractController
         private readonly DamageMultiplierNormalizer $damageMultiplierNormalizer,
         private readonly CounterfeitService $counterfeitService,
         private readonly CombatLeverScale $leverScale,
+        private readonly QuiverResolver $quiverResolver,
     ) {
     }
 
@@ -140,10 +142,20 @@ class FightSpellController extends AbstractController
             return new JsonResponse(['error' => "Sort en recharge ($remaining tours restants)", 'success' => false]);
         }
 
+        // ARC-04b : la ressource du registre distance. Le refus precede la
+        // consommation des PM — un geste refuse ne doit rien couter, et un
+        // carquois vide n'est jamais un mur : l'attaque d'arme reste gratuite
+        // (regle 10) et tout geste a `ammoCost` nul passe.
+        if (!$this->quiverResolver->canAfford($fight, $player, $spell)) {
+            return new JsonResponse(['error' => 'Carquois vide', 'success' => false]);
+        }
+
         // Check energy
         if (!$this->combatSkillResolver->consumeEnergy($player, $spell)) {
             return new JsonResponse(['error' => 'Énergie insuffisante', 'success' => false]);
         }
+
+        $this->quiverResolver->consume($fight, $player, $spell);
 
         // Find target
         $target = $this->findTarget($fight, (int) $data['targetId'], $data['targetType']);

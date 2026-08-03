@@ -25,7 +25,7 @@
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
 | ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
 | ARC-03 ✅ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
-| ARC-04 ◐ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
+| ARC-04 ✅ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
 | ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
@@ -222,7 +222,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : somme = 50 pb par arbre ; règle des 80/20 ; aucun passif plat sur un nœud de
       domaine de combat *(ARC-03b — ils supposent des nœuds convertis)*
 
-### ARC-04 — Les ressources par registre (M → 2 sous-phases | ★★ | HAUTE) ◐
+### ARC-04 — Les ressources par registre (M → 2 sous-phases | ★★ | HAUTE) ✅
 
 > **Découpé (règle 8) : ARC-04a les deux registres qui ont déjà un modèle, ARC-04b
 > le carquois.** La mêlée paie en tours (`Spell::cooldown` existe et est appliqué) et
@@ -250,44 +250,63 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > façons de changer une valeur de jeu vivante. Le cas est **nommé et vérifié exact**
 > dans le contrat, pour qu'un second ne s'ajoute pas en silence.
 >
-> **ARC-04b — reste à faire** : le carquois, `ammoCost`, la prime de munition, la
-> capacité de carquois, et la conversion des 4 gestes de tir qui facturent encore des PM
-> (liste nommée dans `RegisterResourceTest`).
+> **ARC-04b — livré le 2026-08-03.** `Spell::ammoCost` (grille 1/2/3/4/5 par palier) et
+> `Item::ammoCapacity` : le geste déclare ce qu'il consomme, le carquois ce qu'il porte.
+> Les **7 gestes de tir** passent à `energyCost: 0` et paient en munitions — les trois
+> registres ont désormais chacun leur ressource, et la liste d'attente d'ARC-04a est vide.
+> La consommation vit dans le **combat** et jamais sur l'objet : le carquois *se vide dans
+> la rencontre et se ramasse après*, ce qui rend la ressource intra-rencontre comme les PM
+> et rend impossible qu'un joueur soit durablement désarmé faute de courses. Découvert au
+> passage : `gear_location: 'ammo'` existait sur les deux carquois depuis leur création
+> mais **sans bit d'équipement** — un carquois ne pouvait pas être porté (même défaut que
+> la hache avant OBJ-05) ; `PlayerItem::GEAR_AMMO` le répare.
+>
+> **La prime de munition tombe d'elle-même, et c'est une conséquence à noter** : elle
+> existait pour compenser les 90 à 230 gils/jour d'un archer face à un pyromancien qui ne
+> paie rien. L'arbitrage du §9 septies ayant supprimé le coût récurrent, il n'y a plus
+> rien à compenser — la prime, la calibration du prix contre le revenu du jour et la
+> recette de flèches en lot deviennent **sans objet**, pas « reportées ».
+>
+> **Ce que le carquois ne fait pas : porter l'élément.** Correction du §9 quater — une
+> munition qui porterait l'élément seule produirait, avec une flèche ordinaire, une action
+> **sans élément**, donc hors de la case du domaine, donc **sans aucun passif d'arbre**.
+> L'élément vient de la matéria ; la munition élémentaire le *remplacera* et reste à
+> écrire.
 > GAME_ARCHETYPES §2. Trois registres qui coûtent la même chose ne sont qu'un registre.
-- [ ] **Le carquois, pas les munitions** (arbitrage rendu au §9 septies) : **aucun coût
-      récurrent en gils**. Le carquois est une **pièce d'équipement durable** (charpentier),
-      possédée en plusieurs exemplaires — un par élément —, exactement comme un mage possède
-      plusieurs matéria. Il **se vide dans la rencontre et se ramasse après** : la ressource
-      du registre distance devient **intra-rencontre**, comme les PM
+- [x] **Le carquois, pas les munitions** (arbitrage rendu au §9 septies) : **aucun coût
+      récurrent en gils** *(ARC-04b)*. Pièce durable (`Item::ammoCapacity`), portée dans
+      l'emplacement `ammo` — qui existait en donnée mais n'avait **aucun bit d'équipement**,
+      donc aucun carquois ne pouvait être porté. Il **se vide dans la rencontre et se ramasse
+      après** : la consommation vit dans le `Fight`, jamais sur l'objet
 - [x] **La régénération des PM hors combat** — le curseur qui décide de tout l'équilibre
       solo (BALANCE §24.2, ouvert depuis 2026-07-29) *(ARC-04a)*. `ManaRegenManager`
       calqué sur `LifeRegenManager`, curseur en paramètre `zone.mana.regen_seconds`
       (défaut 6 s contre 12 s/PV), ancre posée à la sortie de chaque combat. Symétrie
       tenue : *les PV paient les coups reçus, les PM paient les gestes faits, et les deux
       se rechargent en temps réel*
-- [ ] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater).
-      Une première rédaction le faisait porter par la munition seule : une flèche ordinaire
-      produisait alors une action **sans élément**, donc hors de la case du domaine, donc
-      **sans aucun passif d'arbre**. Le filet de sécurité éteignait l'archétype
-- [ ] **La prime de munition** : mesuré, sans elle l'archer paie **90 à 230 gils par jour**
-      pour **+1,8 %** de dégâts face à un pyromancien qui ne paie rien. Prime fixe, indexée
-      sur le palier, jamais cumulative — un choix d'allocation, pas un axe de progression
-- [ ] **La capacité de carquois** : sans elle, `wind` — **18 % du budget d'un arbre** — rend
-      **12 gils par jour**. Avec elle, 13,5 % d'un carquois de 20 valent 2,7 tirs de plus
-      par rencontre, et la contrainte ne mord que sur les **longues** rencontres
-- [ ] **Le prix se calibre contre le revenu quotidien**, jamais contre la valeur du geste :
-      ~10 % du revenu du jour pour l'ordinaire, ~25 % un jour où l'archer choisit
-      l'élémentaire. Repère actuel : un coffre d'exploration rend 2 à 12 gils (BALANCE §10)
+- [x] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater)
+      *(ARC-04b — la moitié qui compte : le carquois ne porte pas l'élément, donc aucun tir
+      ne sort de la case de son domaine. La munition élémentaire reste à écrire)*
+- [x] ~~**La prime de munition**~~ **sans objet** *(ARC-04b)* : elle compensait un coût
+      récurrent en gils que l'arbitrage du §9 septies a supprimé. Plus de coût, plus rien à
+      compenser
+- [x] **La capacité de carquois** *(ARC-04b)* : déclarée par la pièce (20 pour le carquois
+      de cuir, 30 pour le renforcé), donc `wind` a de quoi mordre — la contrainte ne se fait
+      sentir que sur les **longues** rencontres, ce qui est l'intention
+- [x] ~~**Le prix se calibre contre le revenu quotidien**~~ **sans objet** *(ARC-04b)* : la
+      munition ordinaire n'a plus de prix. La question renaîtra avec la munition
+      **élémentaire**, qui elle s'achètera
 - [x] **Temps de reprise** : `Spell::cooldown` branché sur les techniques de mêlée
       *(ARC-04a)* — grille 0/1/2/3/4 par palier, et `energyCost: 0` : un geste ne facture
       que la ressource de son registre (GAME_MATERIA §2.3 bis)
 - [x] Les PM restent la ressource des sorts, inchangés *(ARC-04a)*
-- [ ] Croise ECO : les flèches en lot sont une branche du **charpentier** (DOM-06) — le
-      débouché existe déjà, il n'y a pas de recette à inventer
+- [x] ~~Croise ECO : les flèches en lot~~ **sans objet** *(ARC-04b)* : il n'y a pas de
+      flèches à fabriquer. Les deux carquois existent déjà comme recettes de tanneur
 - [x] Tests : aucune technique de mêlée sans reprise au-delà du geste d'entrée, aucune qui
       facture des PM, la grille suivie palier par palier *(ARC-04a, `RegisterResourceTest`)*
-- [ ] Tests : un archer sans munition élémentaire garde un geste jouable (jamais un mur)
-      *(ARC-04b)*
+- [x] Tests : un carquois vide n'est **jamais un mur** — l'attaque d'arme reste gratuite et
+      tout geste sans munition passe ; la réserve se vide dans la rencontre et repart pleine
+      à la suivante *(ARC-04b, `QuiverResolverTest`)*
 
 ### ARC-05 — L'ancre d'échelle (L | ★★★ | HAUTE)
 > GAME_ARCHETYPES §6.4. Les gestes valent 1 à 12 points ; les monstres ont 11 à 3 200 PV.
