@@ -8,6 +8,8 @@ parameters:
     default_locale: 'fr'
     app.version: '0.6.0-alpha'
     app.max_players_per_user: 1
+    # ONB-02 : l'adresse d'expedition des e-mails du jeu (decision 2026-08-02).
+    app.mailer_from: 'no-reply@amethyste.best'
 
 services:
     # default configuration for services in *this* file

@@ -55,7 +55,32 @@
     "no_account": "Pas encore de compte ?",
     "register_link": "Inscrivez-vous",
     "subtitle": "Entrez vos identifiants pour accéder au jeu.",
-    "email_placeholder": "votre@email.com"
+    "email_placeholder": "votre@email.com",
+    "forgot_password": "Mot de passe oublié ?",
+    "reset": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Indiquez l'adresse de votre compte : un lien de réinitialisation vous sera envoyé.",
+      "submit": "Envoyer le lien",
+      "request_sent": "Si cette adresse a un compte, un lien de réinitialisation vient de partir. Il est valable une heure — pensez au dossier indésirable.",
+      "back_to_login": "Retour à la connexion",
+      "new_password_title": "Nouveau mot de passe",
+      "new_password_subtitle": "Choisissez votre nouveau mot de passe. Toutes vos sessions ouvertes seront déconnectées.",
+      "new_password": "Nouveau mot de passe",
+      "confirm": "Réinitialiser",
+      "done": "Mot de passe réinitialisé. Connectez-vous avec le nouveau.",
+      "invalid_token": "Ce lien de réinitialisation n'est plus valable. Demandez-en un nouveau.",
+      "invalid_csrf": "La session a expiré, réessayez.",
+      "rate_limited": "Trop de demandes. Réessayez dans une heure.",
+      "password_too_short": "Ce mot de passe est trop court.",
+      "email": {
+        "subject": "Améthyste — réinitialiser votre mot de passe",
+        "title": "Réinitialiser votre mot de passe",
+        "intro": "Quelqu'un — vous, espérons-le — a demandé à réinitialiser le mot de passe de votre compte. Un clic suffit pour en choisir un nouveau.",
+        "action": "Choisir un nouveau mot de passe",
+        "expiry": "Ce lien est valable une heure, et ne sert qu'une fois.",
+        "ignore": "Si vous n'avez rien demandé, ignorez ce message : votre mot de passe reste inchangé."
+      }
+    }
   },
   "game": {
     "craft_order": {

@@ -21,12 +21,12 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **17/20 livrés + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **18/20 livrés (ONB-02 le 2026-08-03) + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a. Restent ONB-04 (← ONB-02 ✅) et ONB-07b.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
 | ONB-01 ✅ | Inscription — le compte peut naître (ferme D1) | M | ★★★ |
-| ONB-02 | Mailer + mot de passe oublié (ferme D2) | M | ★★★ |
+| ONB-02 ✅ | Mailer + mot de passe oublié (ferme D2) | M | ★★★ |
 | ONB-03 ✅ | Durcissement de la connexion (ferme D3) | S | ★★★ |
 | ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
 | ONB-05 ✅ | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
@@ -120,7 +120,19 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] **Au passage** : `User::setEmail()` normalise l'adresse (minuscule + trim), sans quoi
       l'unicité ne tient pas et ONB-02 viserait le mauvais compte
 
-### ONB-02 — Mailer et mot de passe oublié (M | ★★★ | CRITIQUE)
+### ONB-02 — Mailer et mot de passe oublié (M | ★★★ | CRITIQUE) ✅
+
+> **Livré le 2026-08-03.** `symfony/mailer` + bridge `symfony/brevo-mailer` au
+> manifeste, `MAILER_DSN` en env (`null://null` en dev et en test — le DSN Brevo
+> se branche en prod par l'opérateur, cf. `config/packages/mailer.yaml`),
+> expéditeur `app.mailer_from` = `no-reply@amethyste.best`. Le flux vit dans
+> `PasswordResetManager` (jeton sélecteur+vérificateur, seul le sha256 du
+> vérificateur en base, 1 h, un seul actif par compte — index unique sur
+> `user_id`, consommé dans le flush du nouveau hachage), deux limiteurs sur le
+> modèle du login (par adresse visée, par IP), réponse identique que le compte
+> existe ou non, e-mails FR au ton du jeu avec repli texte, invalidation des
+> sessions par le changement de hachage (`ContextListener`). Contrat tenu par
+> `PasswordResetManagerTest`.
 > Ferme **D2** : perdre son mot de passe revient à perdre son personnage, son inventaire, sa
 > guilde et sa place dans un foyer.
 > Prérequis : ← ONB-01
@@ -131,12 +143,12 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 > d'amethyste.best — à la main de l'opérateur). **Séquencement : le code d'abord** —
 > le jalon se livre complet et testé avec `MAILER_DSN` en env (`null://` en test),
 > le branchement prod se fait quand le compte Brevo et le DNS sont opérationnels.
-- [ ] Installer `symfony/mailer` **dans Docker** (règle 1) ; `MAILER_DSN` en env, `null://` en test
-- [ ] Demande : **réponse identique** que le compte existe ou non ; limiteur de débit
-- [ ] Jeton à usage unique, **1 heure**, un seul actif par compte, stocké haché
-- [ ] Réinitialisation + **invalidation de toutes les sessions**
-- [ ] Gabarits d'e-mail au ton du jeu, en français, avec repli texte
-- [ ] Tests : jeton expiré, rejoué, compte inexistant (réponse constante), invalidation
+- [x] Installer `symfony/mailer` **dans Docker** (règle 1) ; `MAILER_DSN` en env, `null://` en test
+- [x] Demande : **réponse identique** que le compte existe ou non ; limiteur de débit
+- [x] Jeton à usage unique, **1 heure**, un seul actif par compte, stocké haché
+- [x] Réinitialisation + **invalidation de toutes les sessions**
+- [x] Gabarits d'e-mail au ton du jeu, en français, avec repli texte
+- [x] Tests : jeton expiré, rejoué, compte inexistant (réponse constante), invalidation
 
 ### ONB-03 — Durcissement de la connexion (S | ★★★ | CRITIQUE) — ✅ LIVRÉ 2026-07-29
 > Ferme **D3**. Aucun garde-fou sur le firewall, et `isBanned` n'était lu nulle part.

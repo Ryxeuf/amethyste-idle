@@ -26,6 +26,22 @@ framework:
             interval: '15 minutes'
             lock_factory: null
 
+        # Mot de passe oublie (ONB-02), sur le modele du login : une borne par
+        # adresse visee (on ne bombarde pas la boite d'un joueur), une par IP
+        # (on ne sonde pas l'annuaire depuis une machine). Le refus est un 429
+        # visible, jamais un faux succes.
+        password_reset_local:
+            policy: 'sliding_window'
+            limit: 3
+            interval: '1 hour'
+            lock_factory: null
+
+        password_reset_global:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 hour'
+            lock_factory: null
+
         # Combat actions: 5 req/s per player
         game_fight:
             policy: 'sliding_window'
