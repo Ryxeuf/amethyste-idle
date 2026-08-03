@@ -24,7 +24,7 @@
 |------|----------|--------|-------------|
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
 | ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
-| ARC-03 | Les leviers : les passifs deviennent des pourcentages bornés | **L** | ← ARC-01 |
+| ARC-03 ◐ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
 | ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
 | ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
@@ -150,21 +150,50 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       registre (invariant 7), avec la **liste d'attente d'ARC-08** nommée et vérifiée
       exacte — elle ne peut que rétrécir
 
-### ARC-03 — Les leviers (L | ★★★ | CRITIQUE)
+### ARC-03 — Les leviers (L → 2 sous-phases | ★★★ | CRITIQUE) ◐
+
+> **Découpé (règle 8) : ARC-03a le vocabulaire, ARC-03b la formule.** Le jalon touche
+> le vocabulaire, quatre consommateurs du moteur de combat et la place de chaque
+> levier dans la formule — trop pour une passe. Le vocabulaire se livre seul, ne
+> change **aucune valeur de jeu**, et débloque la formule.
+>
+> **ARC-03a — livré le 2026-08-03.** `CombatLever` (les 15 valeurs du canon,
+> vocabulaire fermé) + `Skill::levers` (`(levier, points, condition ?)`, `NULL`
+> tant qu'un nœud n'est pas converti — les colonnes plates restent la source
+> jusqu'à ARC-07/08). Les taux de change et les plafonds vivent en **données**
+> (`config/game/combat_levers.yaml`) parce que §0.2 prévient qu'aucun nombre du
+> canon n'est définitif et qu'ARC-17 les rejouera. `CombatLeverScale` est le
+> **convertisseur unique** — l'autre moitié de la règle qui rend l'équilibrage
+> vérifiable —, `SkillLeverReader` le point de passage unique du vocabulaire
+> fermé, et `CombatLeverDefinitionLoader` refuse à la lecture : deux leviers à la
+> **même place dans la formule** (le critère d'admission), une entrée hors
+> vocabulaire, un taux nul, ou un levier lisible dans deux registres sur trois
+> (l'écart n° 13 pris à la racine). `thrift` et `wind` lisent la ressource de
+> leur registre, et eux seuls ; `life` et `recovery` restent hors de la double
+> borne. Contrat tenu par `CombatLeverTest`.
+>
+> **ARC-03b — reste à faire** : la consommation dans la formule.
 > GAME_ARCHETYPES §4. Le refactor central : cinq entiers plats → **quinze** leviers en
 > pourcentage, avec taux de change et plafonds.
-- [ ] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
-      `(levier, points de budget, condition ?)` remplaçant `damage`/`heal`/`hit`/`critical`/`life`
-- [ ] **Une place et une seule par levier dans la formule** — `DamageCalculator`,
-      `CriticalCalculator`, `FightCalculator` (le jet de touche), `StatusEffectManager` consomment chacun
-      les leviers qui les concernent, et le taux de change vit dans **un seul** convertisseur
-- [ ] `thrift` et `wind` se convertissent selon la **ressource du registre** (§4, note 1)
-- [ ] `life` et `recovery` restent hors de la double borne (décision DOM-01, inchangée),
-      en pourcentage des PV de base
-- [ ] **`dodge` avant tout calcul, `guard` après résistance** : deux places distinctes dans
-      la formule — c'est ce qui distingue le cuir de la plaque autrement que par un chiffre
-- [ ] Tests : plafond par levier ; somme = 50 pb par arbre ; règle des 80/20 ; aucun passif
-      plat sur un nœud de domaine de combat
+- [x] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
+      `(levier, points de budget, condition ?)` destinée à remplacer
+      `damage`/`heal`/`hit`/`critical`/`life` *(ARC-03a)*
+- [x] **Une place et une seule par levier dans la formule** — déclarée en données et
+      **refusée à la lecture** si deux leviers la partagent ; le taux de change vit dans
+      **un seul** convertisseur *(ARC-03a)*
+- [x] `thrift` et `wind` se convertissent selon la **ressource du registre** (§4, note 1),
+      et un levier lisible dans deux registres sur trois est refusé *(ARC-03a)*
+- [x] `life` et `recovery` restent hors de la double borne (décision DOM-01, inchangée),
+      en pourcentage des PV de base *(ARC-03a)*
+- [x] **`dodge` avant tout calcul, `guard` après résistance** : deux places distinctes,
+      verrouillées par un test — c'est ce qui distingue le cuir de la plaque autrement que
+      par un chiffre *(ARC-03a ; leur consommation est ARC-03b)*
+- [ ] `DamageCalculator`, `CriticalCalculator`, `FightCalculator` (le jet de touche) et
+      `StatusEffectManager` consomment chacun les leviers qui les concernent *(ARC-03b)*
+- [x] Tests : plafond par levier ; vocabulaire fermé ; un levier accordé deux fois par un
+      nœud refusé *(ARC-03a)*
+- [ ] Tests : somme = 50 pb par arbre ; règle des 80/20 ; aucun passif plat sur un nœud de
+      domaine de combat *(ARC-03b — ils supposent des nœuds convertis)*
 
 ### ARC-04 — Les ressources par registre (M | ★★ | HAUTE)
 > GAME_ARCHETYPES §2. Trois registres qui coûtent la même chose ne sont qu'un registre.

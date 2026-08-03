@@ -137,6 +137,14 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # ARC-03 : le vocabulaire ferme des leviers, et le convertisseur unique.
+    # Les taux de change et les plafonds vivent en donnees parce que le canon
+    # previent qu'aucun de ses nombres n'est definitif (GAME_ARCHETYPES § 0.2) —
+    # le simulateur d'ARC-17 les rejouera.
+    App\GameEngine\Progression\CombatLeverDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # DOM-04 : le seul respec payant du jeu (GAME_DOMAINS § 6). Ce qu'on paie
     # n'est pas d'avoir change d'avis sur un bonus, c'est d'avoir change
     # d'identite — le respec de points ordinaire reste doux.
