@@ -49,7 +49,7 @@ class SpellRegisterTest extends TestCase
     }
 
     /**
-     * **Le genre de la materia suit le registre du geste qu'elle porte.**
+     * Le genre de la materia suit le registre du geste qu'elle porte.
      *
      * C'est ce qui fait qu'un emplacement de technique cesse d'etre un mur
      * sans porte (DOM-03) : une piece de plaque peut enfin declarer ce
