@@ -45,7 +45,7 @@ class QuiverResolver
     {
         foreach ($player->getInventories() as $inventory) {
             foreach ($inventory->getItems() as $playerItem) {
-                if (!$playerItem instanceof PlayerItem || PlayerItem::GEAR_AMMO !== $playerItem->getGear()) {
+                if (PlayerItem::GEAR_AMMO !== $playerItem->getGear()) {
                     continue;
                 }
 
