@@ -4,6 +4,7 @@ namespace App\Entity\Game;
 
 use App\Entity\App\DomainExperience;
 use App\Enum\CombatRegister;
+use App\Enum\DomainRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -73,6 +74,21 @@ class Domain
      */
     #[ORM\Column(name: 'combat_register', type: 'string', length: 20, nullable: true, enumType: CombatRegister::class)]
     private ?CombatRegister $register = null;
+
+    /**
+     * La fonction du domaine — le **troisieme axe** (ARC-01).
+     *
+     * GAME_ARCHETYPES § 1 : element et registre font une case, mais trois
+     * arbres d'eau x sorts l'occupaient sans que rien ne dise en quoi ils
+     * different. La fonction dit ce que l'arbre **fait** au combat, donc quels
+     * leviers il a le droit d'acheter (§ 5) — c'est une contrainte d'auteur,
+     * jamais une classe affichee au joueur.
+     *
+     * `null` suit exactement `register` : un domaine hors combat n'a pas de
+     * fonction. Les deux vont ensemble, et un test le verifie.
+     */
+    #[ORM\Column(name: 'combat_role', type: 'string', length: 20, nullable: true, enumType: DomainRole::class)]
+    private ?DomainRole $role = null;
 
     #[ORM\OneToMany(targetEntity: DomainExperience::class, mappedBy: 'domain')]
     private $playerExperiences;
@@ -284,6 +300,18 @@ class Domain
     public function setRegister(?CombatRegister $register): self
     {
         $this->register = $register;
+
+        return $this;
+    }
+
+    public function getRole(): ?DomainRole
+    {
+        return $this->role;
+    }
+
+    public function setRole(?DomainRole $role): self
+    {
+        $this->role = $role;
 
         return $this;
     }

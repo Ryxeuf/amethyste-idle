@@ -1,0 +1,91 @@
+# =============================================================================
+# Les quatre fonctions et leurs palettes (ARC-01)
+# =============================================================================
+# GAME_ARCHETYPES § 5 : une fonction, c'est **une promesse au joueur, un cout
+# structurel, et quatre leviers**. La palette est la partie normative — elle
+# borne l'auteur, et c'est tout ce qu'elle fait.
+#
+# **Pourquoi en configuration et pas dans le code.** Un plafond, un levier de
+# palette ou une exigence d'intention se recalibre ; le simulateur d'ARC-17
+# rejouera ces valeurs. Les mettre dans une classe obligerait a toucher au
+# moteur pour deplacer un chiffre — exactement ce que GAME_ARCHETYPES § 0.2
+# annonce : **aucun nombre du canon n'est une valeur de jeu definitive**, tous
+# seront recalcules.
+#
+# **Ce fichier ne declare aucun effet.** Les leviers eux-memes (leur place dans
+# la formule, leur taux de change) appartiennent a ARC-03 ; ici on ne dit que
+# **qui a le droit d'acheter quoi**.
+# =============================================================================
+
+# Le budget d'un arbre et la regle des 80/20 (§ 5, § 6.3), en donnees plutot
+# qu'en code : un test les lit, personne ne les recopie.
+budget:
+    # Points de budget qu'un arbre repartit sur ses passifs.
+    total: 50
+    # Au moins 40 des 50 dans la palette de sa fonction.
+    min_in_palette: 40
+    # Au plus 10 hors palette — et sur **un seul** levier etranger : c'est la
+    # « teinte », ce qui fait que deux arbres de meme fonction ne se confondent
+    # pas. A 10 pb au maximum, une teinte peut viser le principal d'une autre
+    # fonction sans jamais en attraper l'identite.
+    max_off_palette: 10
+    max_off_palette_levers: 1
+
+# Ce que le capstone consomme sur le levier principal (§ 7.1). Sert au calcul
+# de la **palette effective** (§ 5.0) : ce qui reste achetable ailleurs, c'est
+# le plafond du principal moins cette valeur.
+capstone_cost: 14
+
+roles:
+    assault:
+        promise: "Je finis le combat avant qu'il ne devienne un probleme."
+        # Un cout structurel vide signifierait que l'archetype n'est pas fini
+        # (§ 10.1, etape 1) — le chargeur le refuse.
+        structural_cost: "La fragilite et la ressource : un assaut rate est un combat perdu."
+        # Le principal en premier. Il est **exclusif** : aucun autre role ne
+        # peut le porter comme principal.
+        primary: power
+        primary_cap: 20
+        secondary: [critical, critical_power, pierce, tempo]
+        # § 5.1 — ce que les accords de l'arbre doivent porter. Les deux lois
+        # transverses (au moins un `damage`, au moins un non-`damage`) ne sont
+        # pas ici : elles valent pour les 24 arbres, donc elles vivent dans le
+        # contrat de test, pas dans une palette.
+        intents:
+            damage: 3
+
+    control:
+        promise: "Je decide de qui joue, et quand."
+        structural_cost: "La mise en place : ses premiers tours ne tuent pas."
+        primary: grip
+        primary_cap: 20
+        secondary: [hit, thrift, tempo, pierce]
+        intents:
+            hinder: 2
+            damage: 1
+
+    upkeep:
+        promise: "Je ne perds pas le combat que les autres perdent au tour 8."
+        structural_cost: "La lenteur : ses combats sont plus longs."
+        primary: mending
+        primary_cap: 20
+        secondary: [recovery, wind, thrift, ward]
+        intents:
+            # « soin ou protection » : le contrat de test lit les deux ensemble.
+            heal_or_protect: 2
+            group_scoped: 1
+
+    bulwark:
+        promise: "Rien ne me casse, rien ne me rate."
+        structural_cost: "Le plafond : il ne fera jamais le gros chiffre."
+        primary: guard
+        # 15 et non 20 : `guard` a une efficacite **hyperbolique** (§ 4.1), et
+        # la mitigation d'un tank vient de son armure, pas de son arbre
+        # (§ 13.4). Consequence assumee (§ 5.0) : le capstone consommant 14, il
+        # ne reste **1 pb**, c'est-a-dire rien — un arbre d'encaisse achete
+        # `guard` a son sommet ou jamais, et repartit ses quatre autres leviers.
+        primary_cap: 15
+        secondary: [dodge, life, ward, hit]
+        intents:
+            protect: 2
+            ally_or_group_scoped: 1
