@@ -21,7 +21,7 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **19/20 livrés (ONB-02 et ONB-04 le 2026-08-03) + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a. Reste ONB-07b. La piste A est complète : le seuil du playtest fermé (ONB-02/04 + DON-03) est atteint.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **19/20 livrés (ONB-02 et ONB-04 le 2026-08-03) + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a. Reste ONB-07b (**2/4 capacités livrées**, 2 bloquées par un substrat absent — réexamen daté du 2026-08-03). La piste A est complète : le seuil du playtest fermé (ONB-02/04 + DON-03) est atteint.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
@@ -32,7 +32,7 @@
 | ONB-05 ✅ | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
-| ONB-07b | Les quatre capacités branchées (1/4 livré ; **3 bloquées**, voir le jalon) | M | ★★ |
+| ONB-07b ◐ | Les quatre capacités branchées (**2/4 livrés** — Orc, Humain ; 2 bloquées, réexaminées le 2026-08-03) | M | ★★ |
 | ONB-08 ✅ | L'accès à un arbre : le parchemin l'ouvre (modèle) | M | ★★★ |
 | ONB-09 ✅ | Le catalogue des 32 arbres, et l'arbre ouvert (écran) | M | ★★★ |
 | ONB-10 ✅ | Les cinq récoltes dans le périmètre de l'acte I (ferme D11) | M | ★★★ |
@@ -247,8 +247,17 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
   - [x] Écran du peuple : la capacité remplace les puces de statistiques
   - [x] Tests : chaque peuple porte **exactement une** capacité ; une capacité n'expose
         **aucun chiffre** ; les quatre peuples naissent avec des statistiques identiques
-- **ONB-07b — reste à faire** : brancher les quatre capacités sur leurs écrans (zone,
-  exploration, bestiaire, catalogue de ressources)
+- **ONB-07b — 2/4 livrés (Orc, Humain) ; 2 blocages tiennent au réexamen du 2026-08-03.**
+  Les substrats livrés depuis le constat (MAT-01 l'élément des monstres, MET-01 la valeur
+  marchande de la bande, BES le bestiaire tier × rank) **ne lèvent ni l'un ni l'autre** :
+  - **Nain** — MET-01 a donné un *prix* à la bande, pas un *déterminisme*. La pureté reste
+    tirée à la récolte (`PurityDrawer::draw()`) : il n'existe toujours aucune « bande du
+    filon » à lire d'avance. Le blocage reste une **décision de conception** (rendre le tirage
+    déterministe par état de filon, ce qui touche ECO-21/22) — non tranchée, donc non codée.
+  - **Elfe** — vérifié au 2026-08-03 : `PlayerVisitedZone` et `PlayerVisitedRegion` portent des
+    *zones visitées*, pas le **repérage cumulatif** de GAME_ZONE_ACTIONS. Aucune entité de
+    découverte de filon ni de monstre par joueur n'existe. La capacité rendrait toujours
+    quelque chose qui n'a nulle part où être rangé : elle suit la reprise de l'écran de zone.
 - [ ] Implémenter les quatre capacités, sous la règle « elle touche ce qu'on **sait**, jamais
       ce qu'on **produit** » :
   - [ ] **Nain — Lire la pierre** : la bande de pureté d'un filon est lisible **avant** la
@@ -268,14 +277,16 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
         suit la reprise de l'écran de zone, elle ne la précède pas.
   - [x] **Orc — Le flair** ✅ : élément et faiblesse d'un monstre lisibles **dès la première
         rencontre**, sans attendre le palier de bestiaire
-  - [ ] **Humain — Les usages** : sur tout objet, les recettes qui le consomment et les PNJ qui
-        l'achètent, sans l'avoir découvert (s'appuie sur `PlayerResourceCatalog`)
-        🚧 **Bloqué — l'écran ne montre pas ce qu'il faudrait avancer.** Le palier
-        `TIER_RECIPES` (25 récoltes) existe et son **badge** s'affiche, mais
-        `templates/game/catalog/index.html.twig` n'a **aucun bloc de détail** pour les recettes
-        ni pour les acheteurs — seuls l'élément/valeur (palier 1) et le titre de spécialiste
-        (palier 3) sont rendus. Avancer la lecture d'un contenu qui n'est jamais affiché ne
-        changerait qu'une couleur de pastille. Construire le bloc d'abord.
+  - [x] **Humain — Les usages** ✅ (2026-08-03) : le bloc « À quoi ça sert » existe enfin
+        (`ResourceUsesReader` : les recettes qui consomment la matière avec leur métier et leur
+        quantité, les marchands qui la vendent, le rachat au taux commun), et la capacité en
+        **avance la lecture** — l'Humain le voit sans les 25 récoltes du palier `TIER_RECIPES`,
+        signalé par une pastille. Le blocage constaté était d'implémentation (« construire le
+        bloc d'abord ») et non de conception : il a été levé en construisant le bloc.
+        *Micro-choix noté :* « les PNJ qui l'achètent » n'existe pas en données — `Pnj::shopItems`
+        liste ce qu'un marchand **vend**, et tout marchand rachète tout au taux commun. Le versant
+        marchand est donc « où en trouver » + « ce que le guichet en donne » (dérivé de MET-01),
+        la seule information qui discrimine.
 - [ ] Écran du peuple : qui vous êtes, d'où vous venez, **et ce que vous voyez**. Jamais un
       métier, une destination ni des arbres (A8)
 - [ ] Tests : aucune capacité ne modifie dégâts, PV, rendement, coût, nombre d'actions ni prix ;

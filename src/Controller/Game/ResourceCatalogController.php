@@ -3,6 +3,9 @@
 namespace App\Controller\Game;
 
 use App\Entity\Game\Item;
+use App\GameEngine\Progression\ResourceUsesReader;
+use App\GameEngine\Race\RaceCapability;
+use App\GameEngine\Race\RaceCapabilityResolver;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerResourceCatalogRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +23,8 @@ class ResourceCatalogController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerResourceCatalogRepository $catalogRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ResourceUsesReader $usesReader,
+        private readonly RaceCapabilityResolver $capabilities,
     ) {
     }
 
@@ -43,12 +48,27 @@ class ResourceCatalogController extends AbstractController
             ->getSingleScalarResult();
         $totalCollected = $this->catalogRepository->getTotalCollected($player);
 
+        // ONB-07b — Humain, « Les usages » : la capacite **avance la lecture**
+        // d'un palier que tout le monde finit par atteindre (25 recoltes). Elle
+        // ne cree aucune donnee, ne change aucun rendement et n'ouvre aucun
+        // contenu : le Nain qui recolte 25 fois voit exactement la meme chose.
+        $hasTheUses = $this->capabilities->playerHas($player, RaceCapability::TheUses);
+
+        $uses = [];
+        foreach ($entries as $entry) {
+            if ($hasTheUses || $entry->hasRecipesRevealed()) {
+                $uses[$entry->getItem()->getSlug()] = $this->usesReader->forItem($entry->getItem());
+            }
+        }
+
         return $this->render('game/catalog/index.html.twig', [
             'player' => $player,
             'entries' => $entries,
             'totalResources' => (int) $totalResources,
             'discoveredCount' => \count($entries),
             'totalCollected' => $totalCollected,
+            'uses' => $uses,
+            'usesByCapability' => $hasTheUses,
         ]);
     }
 }

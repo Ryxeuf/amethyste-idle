@@ -1043,7 +1043,15 @@
       "type_plant": "Plant",
       "type_resource": "Resource",
       "type_stuff": "Material",
-      "type_food": "Food"
+      "type_food": "Food",
+      "uses": {
+        "title": "What it is for",
+        "by_capability": "The Uses",
+        "no_recipe": "No known recipe consumes it yet.",
+        "more": "and %count% more recipe(s)",
+        "buyback": "Common buyback: %price% G",
+        "sold_by": "sold by %names%"
+      }
     },
     "mount": {
       "title": "Mount catalog",
