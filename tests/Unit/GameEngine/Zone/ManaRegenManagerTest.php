@@ -39,6 +39,10 @@ class ManaRegenManagerTest extends TestCase
         $player = new Player();
         $player->setMaxEnergy($maxEnergy);
         $player->setEnergy($energy);
+        // `isDead()` lit les PV : un personnage sans vie declaree n'est pas
+        // « vivant par defaut », il est illisible.
+        $player->setMaxLife(100);
+        $player->setLife(100);
 
         return $player;
     }
