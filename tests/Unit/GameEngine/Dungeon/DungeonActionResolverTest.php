@@ -5,11 +5,11 @@ namespace App\Tests\Unit\GameEngine\Dungeon;
 use App\Entity\App\Player;
 use App\Entity\Game\Spell;
 use App\GameEngine\Dungeon\DungeonActionResolver;
-use App\GameEngine\Progression\CombatLeverDefinitionLoader;
-use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
