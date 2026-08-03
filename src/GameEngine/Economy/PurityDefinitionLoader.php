@@ -31,7 +31,7 @@ class PurityDefinitionLoader
     }
 
     /**
-     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}, signatures: array<string, array{weight_shift: int, night_weight_shift: int}>}
+     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}, market: array{band_multipliers: array<string, float>}, signatures: array<string, array{weight_shift: int, night_weight_shift: int}>}
      *
      * @throws PurityDefinitionException si le fichier est absent, illisible ou invalide
      */
@@ -59,7 +59,7 @@ class PurityDefinitionLoader
     /**
      * @param array<array-key, mixed> $raw
      *
-     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}, signatures: array<string, array{weight_shift: int, night_weight_shift: int}>}
+     * @return array{scope: array{slug_prefixes: list<string>, excluded_slugs: list<string>, included_slugs: list<string>}, draw: array{base_weights: array<string, int>, vitality_ceilings: list<array{at_least: float, band: Purity}>, skill_weight_per_point: int, skill_weight_cap: int}, market: array{band_multipliers: array<string, float>}, signatures: array<string, array{weight_shift: int, night_weight_shift: int}>}
      */
     public function normalize(array $raw, string $source = '<array>'): array
     {
@@ -94,8 +94,55 @@ class PurityDefinitionLoader
                 'included_slugs' => $included,
             ],
             'draw' => $this->normalizeDraw($raw['draw'] ?? null, $source),
+            'market' => $this->normalizeMarket($raw['market'] ?? null, $source),
             'signatures' => $this->normalizeSignatures($raw['signatures'] ?? [], $source),
         ];
+    }
+
+    /**
+     * La valeur marchande de la bande (MET-01).
+     *
+     * La section est **obligatoire**, comme le tirage : une bande sans prix est
+     * exactement le defaut que le jalon corrige (GAME_TRADES § 3.2 — une valeur
+     * d'usage, jamais une valeur d'echange), et son absence doit faire rougir
+     * la CI plutot que de rendre la branche Preserver dominee en silence.
+     *
+     * Deux refus structurels :
+     * - une **bande sans multiplicateur** prierait le code de choisir un defaut,
+     *   et le choix differerait selon l'appelant ;
+     * - une **echelle qui redescend** ferait payer une bande haute moins cher
+     *   qu'une basse — la fourche Extraire/Preserver reposerait alors sur un
+     *   prix qui contredit le tirage.
+     *
+     * @return array{band_multipliers: array<string, float>}
+     */
+    private function normalizeMarket(mixed $market, string $source): array
+    {
+        if (!\is_array($market)) {
+            throw new PurityDefinitionException(sprintf('Purity config "%s" must declare "market".', $source));
+        }
+
+        $rawMultipliers = $market['band_multipliers'] ?? null;
+        if (!\is_array($rawMultipliers)) {
+            throw new PurityDefinitionException(sprintf('"market.band_multipliers" must be a mapping in "%s".', $source));
+        }
+
+        $multipliers = [];
+        $previous = null;
+        foreach (Purity::ordered() as $band) {
+            $multiplier = $rawMultipliers[$band->value] ?? null;
+            if (!is_numeric($multiplier) || (float) $multiplier <= 0) {
+                throw new PurityDefinitionException(sprintf('Band "%s" needs a positive multiplier in "market.band_multipliers" of "%s".', $band->value, $source));
+            }
+            $multiplier = (float) $multiplier;
+            if ($previous !== null && $multiplier < $previous) {
+                throw new PurityDefinitionException(sprintf('"market.band_multipliers" must not descend: band "%s" is cheaper than the band below it in "%s".', $band->value, $source));
+            }
+            $previous = $multiplier;
+            $multipliers[$band->value] = $multiplier;
+        }
+
+        return ['band_multipliers' => $multipliers];
     }
 
     /**

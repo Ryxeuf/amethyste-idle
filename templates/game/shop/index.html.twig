@@ -177,7 +177,9 @@
                                     <span class="ds-row__meta">({{ playerItem.genericItem.type }})</span>
                                 </div>
                                 <div class="flex items-center gap-3 ml-3">
-                                    <span class="ds-num whitespace-nowrap">{{ max(1, (playerItem.genericItem.price * 0.3)|round) }} G</span>
+                                    {# MET-01 : le prix affiche est celui de la bande du lot, #}
+                                    {# calcule par le meme service que le guichet.            #}
+                                    <span class="ds-num whitespace-nowrap">{{ purity_buyback_value(playerItem) }} G</span>
                                     <button onclick="sellItem({{ playerItem.id }}, '{{ playerItem.genericItem.name }}', {{ pnj.id }})"
                                             class="ds-btn ds-btn--secondary ds-btn--sm touch-target">
                                         Vendre

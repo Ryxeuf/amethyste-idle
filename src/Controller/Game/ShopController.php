@@ -7,6 +7,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
 use App\Enum\PlayerRenownTier;
+use App\GameEngine\Economy\PurityPricer;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
@@ -38,6 +39,7 @@ class ShopController extends AbstractController
         private readonly GameMasterPolicy $gameMasterPolicy,
         private readonly HostileConsequenceResolver $hostileConsequences,
         private readonly CrystalBuybackFloor $buybackFloor,
+        private readonly PurityPricer $purityPricer,
         private readonly ShadowsMarket $shadowsMarket,
         private readonly ShadowsRumors $shadowsRumors,
         private readonly ShadowsSmuggling $shadowsSmuggling,
@@ -271,16 +273,19 @@ class ShopController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // Sell price = 30% of buy price
-        $sellPrice = max(1, (int) (($item->getPrice() ?? 0) * 0.3));
+        // MET-01 — le rachat commun (30 % du prix de reference) porte la bande
+        // du lot : un parfait vaut 9 fois le trouble de la meme matiere, au
+        // guichet comme a l'ecran.
+        $sellPrice = $this->purityPricer->buybackValueOf($playerItem);
 
         // FAC-04a — le plancher d'achat du cristal : au comptoir de la
         // Fonderie, l'amethystite a un prix garanti, jamais inferieur au taux
-        // commun. Miroir du plancher T1 (ECO-02), cote vente.
+        // commun. Miroir du plancher T1 (ECO-02), cote vente. La garantie est
+        // celle d'un lot trouble ; la bande la porte avec elle (MET-01).
         $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
         $floor = null !== $pnj ? $this->buybackFloor->floorFor($pnj, $item, $player) : null;
         if (null !== $floor) {
-            $sellPrice = max($sellPrice, $floor);
+            $sellPrice = max($sellPrice, $this->purityPricer->apply($floor, $playerItem->getPurity()));
         }
 
         // FAC-06 — le receleur : au guichet des Ruelles, la nuit, un vendeur
@@ -288,7 +293,12 @@ class ShopController extends AbstractController
         // Confrerie, hors taxe de cite. Le refus (plafond, palier, jour) ne
         // ferme jamais la vente : le repli est le rachat commun. L'objet est
         // echangeable ici : la garde de liaison ci-dessus a deja refuse.
+        // La coupe se prend sur le prix de reference ; la bande s'applique
+        // ensuite (MET-01), pour que le rapport entre bandes reste exact.
         $fencePrice = $this->shadowsMarket->fencePriceFor($pnj, $item, $player, true);
+        if (null !== $fencePrice) {
+            $fencePrice = max(1, $this->purityPricer->apply($fencePrice, $playerItem->getPurity()));
+        }
         $isFenceSale = null !== $fencePrice && $fencePrice > $sellPrice;
         if ($isFenceSale) {
             $sellPrice = $fencePrice;

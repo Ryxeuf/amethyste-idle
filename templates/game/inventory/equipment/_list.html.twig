@@ -556,7 +556,7 @@
      data-item-tier="{{ gi.toolTier }}"
      data-item-durability="{{ item.currentDurability ?? gi.durability }}"
      data-item-durability-max="{{ gi.durability }}"
-     data-item-value="{{ gi.price ?? 0 }}"
+     data-item-value="{{ purity_unit_value(item) }}"
      {% if not canEquip %}data-item-lock="{{ toolState }}"{% endif %}>
     <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 bg-amber-900/50 text-amber-400">
         {{ _self.tool_icon(gi.toolType) }}
@@ -617,7 +617,7 @@
      data-item-materia-total="{{ gi.materiaSlots }}"
      data-item-materia-filled="0"
      data-item-kind="gear"
-     data-item-value="{{ gi.price ?? 0 }}"
+     data-item-value="{{ purity_unit_value(item) }}"
      {% if not canEquip %}data-item-lock="locked_skill_gear"{% endif %}
      {% if eqItem is not null %}
      data-item-eq-name="{{ eqItem.genericItem.name }}"

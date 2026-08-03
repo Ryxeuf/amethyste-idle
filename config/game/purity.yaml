@@ -35,6 +35,31 @@ scope:
     included_slugs: []
 
 # =============================================================================
+# Valeur marchande de la bande (MET-01)
+# =============================================================================
+# Le constat de GAME_TRADES § 3.2 : la bande avait une valeur d'usage
+# (PurityChain la propage, CraftOrderManager l'exige) et aucune valeur
+# d'echange. Un joueur qui investissait dans la qualite produisait moins
+# d'objets pour le meme argent — la branche Preserver etait strictement
+# dominee avant d'exister.
+#
+# L'echelle est super-lineaire volontairement : elle doit rendre le pur
+# *interessant* et le parfait *deraisonnable a ignorer*. Le x9 n'est pas un
+# chiffre de puissance — c'est la rarete de base (1 % des tirages) traduite
+# en prix.
+#
+# Le multiplicateur s'applique au prix de reference de la matiere, partout ou
+# un prix se calcule : rachat PNJ, prix de reference de l'hotel des ventes,
+# estimation d'inventaire, valeur d'une commande de craft. Il se lit via
+# `PurityPricer`, jamais en dur dans un appelant.
+market:
+    band_multipliers:
+        trouble: 1
+        clair: 1.8
+        pur: 3.5
+        parfait: 9
+
+# =============================================================================
 # Tirage de la bande a la recolte (ECO-22)
 # =============================================================================
 # D'ou vient la bande. C'est ici que le savoir du prospecteur prend une valeur

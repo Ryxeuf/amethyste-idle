@@ -56,7 +56,7 @@
                                     <input type="radio" name="player_item_id" value="{{ playerItem.id }}"
                                            class="text-purple-500 focus:ring-purple-500 bg-gray-700 border-gray-600"
                                            {% if selectedItemId == playerItem.id %}checked{% endif %}
-                                           onchange="updateSellPreview({{ item.price ?? 0 }}, '{{ item.name|e('js') }}')">
+                                           onchange="updateSellPreview({{ purity_unit_value(playerItem) }}, '{{ item.name|e('js') }}')">
                                     <div class="flex-1 min-w-0">
                                         <span class="text-sm {% if rarityEnum %}{{ rarityEnum.cssClass }}{% else %}text-white{% endif %}">
                                             {{ item.name }}
@@ -65,8 +65,9 @@
                                             <span class="px-1 py-0.5 rounded text-[9px] {{ rarityEnum.bgClass }} ml-1">{{ rarityEnum.label }}</span>
                                         {% endif %}
                                     </div>
+                                    {# MET-01 : la valeur de reference porte la bande du lot. #}
                                     {% if item.price %}
-                                        <span class="text-gray-500 text-[10px]">Val. {{ item.price }} G</span>
+                                        <span class="text-gray-500 text-[10px]">Val. {{ purity_unit_value(playerItem) }} G</span>
                                     {% endif %}
                                 </label>
                             {% endfor %}
