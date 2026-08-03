@@ -808,10 +808,26 @@ class Item
      * materia de sort. Ajouter une colonne aurait permis de la contredire — une
      * materia declaree « technique » et porteuse d'un sort n'aurait eu aucun
      * comportement defini.
+     *
+     * **ARC-02 — le genre suit le registre du geste porte.** La derivation
+     * lisait auparavant la seule presence d'un sort, donc toute materia sans
+     * geste tombait en « technique » par defaut — ce qui etait faux dans les
+     * deux sens : une materia vide n'est pas une technique, et une materia
+     * portant un geste de melee etait annoncee « sort ». Le registre repond
+     * maintenant a la question, et la materia en **herite** comme elle herite
+     * de l'element.
+     *
+     * Une materia sans geste reste `Free` : elle n'exige rien de la piece qui
+     * l'accueille, ce qui est le comportement d'avant le jalon pour tout ce
+     * qui n'a pas d'accord.
      */
     public function getMateriaKind(): MateriaSlotType
     {
-        return $this->spell !== null ? MateriaSlotType::Spell : MateriaSlotType::Technique;
+        if ($this->spell === null) {
+            return MateriaSlotType::Free;
+        }
+
+        return $this->spell->isTechnique() ? MateriaSlotType::Technique : MateriaSlotType::Spell;
     }
 
     public function getMateriaSlotConfig(): array

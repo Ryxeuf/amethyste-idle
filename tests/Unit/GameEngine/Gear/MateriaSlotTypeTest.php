@@ -6,6 +6,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
+use App\Enum\CombatRegister;
 use App\Enum\MateriaSlotType;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\MateriaSlotTypeException;
@@ -69,14 +70,26 @@ class MateriaSlotTypeTest extends TestCase
      *
      * Le declarer aurait permis de la contredire — une materia dite
      * « technique » et porteuse d'un sort n'aurait eu aucun comportement defini.
+     *
+     * **ARC-02 — la derivation lit desormais le registre du geste.** Elle
+     * lisait la seule *presence* d'un sort, ce qui rangeait en « technique »
+     * tout ce qui n'en portait pas : une materia vide n'en est pourtant pas
+     * une. Elle est maintenant `Free` — elle n'exige rien de la piece qui
+     * l'accueille — et le genre suit le registre pour tout le reste.
      */
     public function testAMateriaKindIsDerivedFromWhatItGrants(): void
     {
         $spellMateria = new Item();
         $spellMateria->setSpell(new Spell());
 
+        $technique = new Spell();
+        $technique->setRegister(CombatRegister::Melee);
+        $techniqueMateria = new Item();
+        $techniqueMateria->setSpell($technique);
+
         self::assertSame(MateriaSlotType::Spell, $spellMateria->getMateriaKind());
-        self::assertSame(MateriaSlotType::Technique, (new Item())->getMateriaKind());
+        self::assertSame(MateriaSlotType::Technique, $techniqueMateria->getMateriaKind());
+        self::assertSame(MateriaSlotType::Free, (new Item())->getMateriaKind());
     }
 
     // =====================================================================

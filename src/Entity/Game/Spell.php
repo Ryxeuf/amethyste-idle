@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\CombatRegister;
 use App\Enum\Element;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -348,6 +349,50 @@ class Spell
     public function setLevel(int $level): void
     {
         $this->level = $level;
+    }
+
+    /**
+     * Le registre du geste — sorts, melee ou distance (ARC-02).
+     *
+     * GAME_ARCHETYPES § 3 : **le geste d'arme est une materia**. Avant ce
+     * jalon, les 200 accords promis par les arbres n'ouvraient que des
+     * **sorts** — un arbre de melee ou de distance n'ouvrait donc que des
+     * sorts, et ses passifs, bornes a son registre, ne s'appliquaient a aucune
+     * action existante : *un arbre d'archer etait un arbre de mage avec un arc*.
+     *
+     * Le registre se declare ici et la materia en **herite**, exactement comme
+     * elle herite deja de l'element. C'est ce qui fait qu'un emplacement de
+     * technique cesse d'etre un mur sans porte (DOM-03).
+     *
+     * `Spell` par defaut : les gestes livres avant ce jalon sont tous des
+     * sorts, et la colonne le dit sans qu'on ait a les reprendre un par un.
+     */
+    #[ORM\Column(name: 'combat_register', type: 'string', length: 20, options: ['default' => 'spell'], enumType: CombatRegister::class)]
+    private CombatRegister $register = CombatRegister::Spell;
+
+    public function getRegister(): CombatRegister
+    {
+        return $this->register;
+    }
+
+    public function setRegister(CombatRegister $register): self
+    {
+        $this->register = $register;
+
+        return $this;
+    }
+
+    /**
+     * Ce geste est-il une **technique** — un geste d'arme plutot qu'un sort ?
+     *
+     * La question se pose telle quelle a plusieurs endroits (le genre de la
+     * materia qui le porte, l'emplacement qui l'accepte), et la reponse derive
+     * du registre : tout ce qui n'est pas du registre des sorts est un geste
+     * d'arme, qu'on l'abatte ou qu'on le decoche.
+     */
+    public function isTechnique(): bool
+    {
+        return $this->register !== CombatRegister::Spell;
     }
 
     public function getValueType(): string
