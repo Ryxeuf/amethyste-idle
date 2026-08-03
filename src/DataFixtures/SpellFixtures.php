@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Game\Spell;
+use App\Enum\CombatRegister;
 use App\Enum\Element;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -30,6 +31,10 @@ class SpellFixtures extends Fixture
             $spell->setAoeTargets($data['aoeTargets'] ?? 1);
             $spell->setLevel($data['level'] ?? 1);
             $spell->setValueType($data['valueType'] ?? 'fixed');
+            // ARC-02 : le geste declare son registre, et la materia en herite.
+            // Tout ce qui est livre ici est un **sort** ; les techniques
+            // (melee, distance) arrivent avec les arbres qui les ouvrent.
+            $spell->setRegister($data['register'] ?? CombatRegister::Spell);
             $spell->setCreatedAt(new \DateTime());
             $spell->setUpdatedAt(new \DateTime());
 

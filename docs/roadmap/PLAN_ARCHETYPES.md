@@ -23,7 +23,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
-| ARC-02 | Le registre du geste + premières matéria de technique | M | ← MAT-01, MAT-03 |
+| ARC-02 ◐ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
 | ARC-03 | Les leviers : les passifs deviennent des pourcentages bornés | **L** | ← ARC-01 |
 | ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
 | ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
@@ -92,10 +92,32 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       combat a une fonction ; toute palette a cinq leviers ; deux palettes ne partagent
       jamais un levier principal, ni plus de deux secondaires
 
-### ARC-02 — Le registre du geste, et les matéria de technique (M | ★★★ | CRITIQUE)
+### ARC-02 — Le registre du geste, et les matéria de technique (M → 2 sous-phases | ★★★ | CRITIQUE) ◐
+
+> **Découpé (règle 8) : ARC-02a le modèle, ARC-02b le contenu.** Le jalon touche
+> 254 gestes livrés, un lot de techniques à écrire et le typage de 178 pièces —
+> trop pour une passe. Le modèle se livre seul, ne casse rien, et débloque le
+> contenu.
+>
+> **ARC-02a — livré le 2026-08-03.** `Spell::register` (`CombatRegister`, le
+> vocabulaire que les domaines parlent déjà depuis DOM-01), `spell` par défaut
+> — les 254 gestes livrés sont des sorts, et la valeur par défaut le dit sans
+> qu'on les reprenne un par un. La matéria en **hérite** : `getMateriaKind()`
+> lisait la seule *présence* d'un sort et rangeait donc en « technique » tout
+> ce qui n'en portait pas ; elle lit maintenant le registre, et une matéria
+> sans geste devient `Free` — elle n'exige rien de la pièce qui l'accueille.
+> Contrat tenu par `SpellRegisterTest`.
+>
+> **ARC-02b — reste à faire** : le lot de techniques (les 5 accords des arbres
+> Soldat et Archer du §9, dérivés selon GAME_MATERIA §2.1), le typage
+> plaque → `technique` / cuir → mixte, et le retournement du test de DOM-03
+> (`testNoPieceDeclaresASocketNothingCanFill` : il interdit aujourd'hui une
+> pièce typée `technique`, il vérifiera qu'aucun emplacement n'est un mur sans
+> porte). Plus les deux invariants qui en dépendent — toute matéria a un
+> registre, tout arbre ouvre au moins un geste du sien.
 > GAME_ARCHETYPES §3. **Le prérequis dont deux archétypes sur quatre dépendent** : sans
 > technique, un arbre de mêlée ou de distance ne qualifie aucune action.
-- [ ] `Spell::register` (sorts / mêlée / distance), hérité par la matéria comme l'élément
+- [x] `Spell::register` (sorts / mêlée / distance), hérité par la matéria comme l'élément *(ARC-02a)*
 - [ ] Un premier lot de **matéria de technique** — les 5 accords des arbres Soldat et
       Archer du §9, dérivés selon la grille de GAME_MATERIA §2.1
 - [ ] Lever le report de **DOM-03** : plaque → `technique`, cuir → mixte. Le test qui
