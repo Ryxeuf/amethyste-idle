@@ -10,6 +10,8 @@ use App\Entity\App\PlayerStatusEffect;
 use App\Entity\Game\StatusEffect;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -55,7 +57,7 @@ class StatusEffectManagerTest extends TestCase
             static fn (Player $p) => $p->getMaxLife()
         );
 
-        $this->manager = new StatusEffectManager($this->entityManager, $this->combatLogger, $this->playerEffectiveStatsCalculator);
+        $this->manager = new StatusEffectManager($this->entityManager, $this->combatLogger, $this->playerEffectiveStatsCalculator, $this->leverScale());
     }
 
     /**
@@ -856,5 +858,14 @@ class StatusEffectManagerTest extends TestCase
             ->with($this->isInstanceOf(FightStatusEffect::class));
 
         $this->manager->loadPersistentEffectsIntoFight($this->fight, $player);
+    }
+
+    /**
+     * Le convertisseur de leviers reel (ARC-03b) — sans levier, le jet
+     * d'application est exactement celui d'avant.
+     */
+    private function leverScale(): CombatLeverScale
+    {
+        return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));
     }
 }

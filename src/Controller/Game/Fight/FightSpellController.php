@@ -19,6 +19,7 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\GameEngine\Reputation\CounterfeitService;
 use App\Helper\GearHelper;
@@ -50,6 +51,7 @@ class FightSpellController extends AbstractController
         private readonly FightTurnPublisher $fightTurnPublisher,
         private readonly DamageMultiplierNormalizer $damageMultiplierNormalizer,
         private readonly CounterfeitService $counterfeitService,
+        private readonly CombatLeverScale $leverScale,
     ) {
     }
 
@@ -158,6 +160,10 @@ class FightSpellController extends AbstractController
         // ajoutait ses degats a un sort d'eau, et le build n'avait plus de sens.
         $bonuses = $this->combatSkillResolver->getCombatBonuses($player, CombatScope::ofSpell($spell));
 
+        // ARC-03b — les leviers du geste, bornes par la meme case que les
+        // statistiques plates, et convertis une seule fois pour toute l'action.
+        $levers = $this->combatSkillResolver->getLeverEffects($player, CombatScope::ofSpell($spell), $spell->getRegister());
+
         // Apply enchantment bonuses from equipped items
         $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($player);
         foreach (['damage', 'heal', 'hit', 'critical'] as $stat) {
@@ -195,6 +201,7 @@ class FightSpellController extends AbstractController
             'damage' => $bonuses['damage'],
             'heal' => $bonuses['heal'],
             'critical' => $bonuses['critical'],
+            'levers' => $levers,
             'fight' => $fight,
         ];
 
@@ -222,7 +229,7 @@ class FightSpellController extends AbstractController
         }
 
         // Apply the spell
-        $hit = FightCalculator::hasAttackHit($spell->getHit() + $bonuses['hit']);
+        $hit = FightCalculator::hasAttackHitWithLevers($spell->getHit() + $bonuses['hit'], $levers, $this->leverScale);
         $messages = $statusMessages;
 
         // FAC-07 — la trahison : une contrefacon marche neuf fois et trahit a

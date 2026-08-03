@@ -16,6 +16,8 @@ use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\GameEngine\World\WeatherService;
@@ -63,6 +65,7 @@ class SpellApplicatorTest extends TestCase
             new CriticalCalculator(),
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
+            $this->leverScale(),
         );
     }
 
@@ -277,6 +280,7 @@ class SpellApplicatorTest extends TestCase
             new CriticalCalculator(),
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
+            $this->leverScale(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -325,6 +329,7 @@ class SpellApplicatorTest extends TestCase
             new CriticalCalculator(),
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
+            $this->leverScale(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -373,6 +378,7 @@ class SpellApplicatorTest extends TestCase
             new CriticalCalculator(),
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
+            $this->leverScale(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -419,6 +425,7 @@ class SpellApplicatorTest extends TestCase
             new CriticalCalculator(),
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
+            $this->leverScale(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -596,5 +603,17 @@ class SpellApplicatorTest extends TestCase
         $messages = $this->spellApplicator->apply($spell, $sender, $target);
 
         $this->assertIsArray($messages);
+    }
+
+    /**
+     * Le convertisseur de leviers reel (ARC-03b).
+     *
+     * Aucun nœud ne porte de levier a ce jour : le porteur est vide, donc le
+     * calcul est exactement celui d'avant. C'est precisement ce que les tests
+     * de ce fichier verifient encore, et c'est voulu.
+     */
+    private function leverScale(): CombatLeverScale
+    {
+        return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));
     }
 }

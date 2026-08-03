@@ -4,8 +4,10 @@ namespace App\GameEngine\Dungeon;
 
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\Enum\CombatLever;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Progression\CombatLeverScale;
 
 /**
  * L'action reelle d'un membre en donjon (DON-02).
@@ -30,6 +32,7 @@ class DungeonActionResolver
     public function __construct(
         private readonly CombatCapacityResolver $capacityResolver,
         private readonly CombatSkillResolver $skillResolver,
+        private readonly CombatLeverScale $leverScale,
     ) {
     }
 
@@ -41,17 +44,25 @@ class DungeonActionResolver
         $bonuses = $this->skillResolver->getCombatBonuses($player);
         $skillDamage = max(0, $bonuses['damage']);
 
+        // ARC-03b — `power` vaut dans un donjon ce qu'il vaut en zone.
+        //
+        // Le donjon calcule son degat a part (DON-02) : sans cette ligne, un
+        // arbre converti aux leviers serait pertinent en zone et muet en
+        // donjon, ce qui est exactement le genre d'ecart qu'on ne remarque
+        // qu'une fois le contenu ecrit.
+        $power = $this->skillResolver->getLeverEffects($player)->multiplierFor(CombatLever::Power, $this->leverScale);
+
         if (null !== $spellSlug && '' !== $spellSlug) {
             $entry = $this->capacityResolver->findMateriaSpell($player, $spellSlug);
             if (null !== $entry && !$entry['locked'] && (int) ($entry['spell']->getDamage() ?? 0) > 0) {
                 $damage = (int) $entry['spell']->getDamage() + $skillDamage;
-                $damage = (int) round($damage * $this->capacityResolver->getElementMatchDamageMultiplier($entry['slot'], $entry['materia']));
+                $damage = (int) round($damage * $this->capacityResolver->getElementMatchDamageMultiplier($entry['slot'], $entry['materia']) * $power);
 
                 return ['damage' => max(1, $damage), 'spellSlug' => $spellSlug];
             }
         }
 
-        return ['damage' => max(1, $this->weaponDamage($player) + $skillDamage), 'spellSlug' => null];
+        return ['damage' => max(1, (int) round(($this->weaponDamage($player) + $skillDamage) * $power)), 'spellSlug' => null];
     }
 
     /**

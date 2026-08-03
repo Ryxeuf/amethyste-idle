@@ -5,6 +5,9 @@ namespace App\GameEngine\Fight\Calculator;
 use App\Entity\App\Mob;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Spell;
+use App\Enum\CombatLever;
+use App\GameEngine\Fight\CombatLeverEffects;
+use App\GameEngine\Progression\CombatLeverScale;
 
 class DamageCalculator
 {
@@ -51,17 +54,96 @@ class DamageCalculator
     }
 
     /**
+     * `power` — les degats du geste (ARC-03b).
+     *
+     * Multiplicatif sur la valeur de base, et c'est tout l'objet du jalon : un
+     * `damage: +1` plat valait +50 % sur un geste a 2 degats et +8 % sur un
+     * geste a 12. Le meme nœud vaut desormais la meme chose partout.
+     */
+    public function applyPower(int $damage, CombatLeverEffects $levers, CombatLeverScale $scale): int
+    {
+        if ($damage <= 0 || $levers->isEmpty()) {
+            return $damage;
+        }
+
+        return max(0, (int) round($damage * $levers->multiplierFor(CombatLever::Power, $scale)));
+    }
+
+    /**
+     * `mending` — le soin rendu (ARC-03b).
+     */
+    public function applyMending(int $heal, CombatLeverEffects $levers, CombatLeverScale $scale): int
+    {
+        if ($heal <= 0 || $levers->isEmpty()) {
+            return $heal;
+        }
+
+        return max(0, (int) round($heal * $levers->multiplierFor(CombatLever::Mending, $scale)));
+    }
+
+    /**
+     * `guard` — les degats subis, **apres** la resistance (ARC-03b).
+     *
+     * La place est la moitie de la decision : reduire avant la resistance
+     * ferait dependre la garde de l'element de l'attaquant, alors qu'une armure
+     * ne trie pas ce qu'elle encaisse. Les leviers lus ici sont ceux de la
+     * **cible**, jamais ceux de l'attaquant.
+     */
+    public function applyGuard(int $damage, CombatLeverEffects $targetLevers, CombatLeverScale $scale): int
+    {
+        if ($damage <= 0 || $targetLevers->isEmpty()) {
+            return $damage;
+        }
+
+        return max(0, (int) round($damage * $targetLevers->multiplierFor(CombatLever::Guard, $scale)));
+    }
+
+    /**
+     * `dodge` — eviter entierement, **avant** tout calcul de degats (ARC-03b).
+     *
+     * Binaire et volatil la ou `guard` est continu et fiable : c'est ce qui les
+     * rend tous deux necessaires, et ce qui distingue une armure de cuir d'une
+     * armure de plaque autrement que par un chiffre (GAME_ARCHETYPES § 4).
+     */
+    public function isDodged(CombatLeverEffects $targetLevers, CombatLeverScale $scale): bool
+    {
+        if ($targetLevers->isEmpty()) {
+            return false;
+        }
+
+        $chance = $targetLevers->pointsFor(CombatLever::Dodge, $scale);
+        if ($chance <= 0.0) {
+            return false;
+        }
+
+        try {
+            return random_int(0, 9999) < (int) round($chance * 100);
+        } catch (\Exception) {
+            return false;
+        }
+    }
+
+    /**
      * Applique la resistance elementaire d'un mob sur les degats.
+     *
+     * `pierce` s'applique **ici**, et avant la resistance : il en ignore une
+     * part, il ne multiplie pas ce qui en sort — sans quoi il ferait double
+     * emploi avec `power` et deux leviers occuperaient la meme place.
      *
      * @return array{damage: int, resisted: bool, weak: bool}
      */
-    public function applyElementalResistance(int $damage, Spell $spell, CharacterInterface $target): array
+    public function applyElementalResistance(int $damage, Spell $spell, CharacterInterface $target, float $piercePoints = 0.0): array
     {
         $resisted = false;
         $weak = false;
 
         if ($damage > 0 && $target instanceof Mob) {
             $resistance = $target->getMonster()->getElementalResistance($spell->getElement()->value);
+            // La penetration ne retourne jamais une resistance en faiblesse :
+            // ignorer plus que ce qui existe, c'est ignorer tout.
+            if ($piercePoints > 0.0 && $resistance > 0.0) {
+                $resistance = max(0.0, $resistance - $piercePoints / 100.0);
+            }
             if ($resistance !== 0.0) {
                 $damage = (int) round($damage * (1.0 - $resistance));
                 $damage = max(0, $damage);
