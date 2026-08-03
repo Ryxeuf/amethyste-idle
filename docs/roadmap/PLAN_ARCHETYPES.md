@@ -26,7 +26,7 @@
 | ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
 | ARC-03 ✅ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
 | ARC-04 ✅ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
-| ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
+| ARC-05 ◐ | L'ancre d'échelle : la durée d'un combat en tours | **L** → 2 sous-phases | ← BES-01 |
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
@@ -308,12 +308,41 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       tout geste sans munition passe ; la réserve se vide dans la rencontre et repart pleine
       à la suivante *(ARC-04b, `QuiverResolverTest`)*
 
-### ARC-05 — L'ancre d'échelle (L | ★★★ | HAUTE)
+### ARC-05 — L'ancre d'échelle (L → 2 sous-phases | ★★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-05a l'instrument, ARC-05b la recalibration.** *On ne
+> recalibre pas ce qu'on ne mesure pas* — et le jalon demande justement de toucher
+> 253 gestes et 65 monstres. La règle et sa mesure se livrent seules, sans déplacer
+> une valeur.
+>
+> **ARC-05a — livré le 2026-08-03.** `EncounterAnchor` pose la règle du §6.4 et la
+> rend **calculable** : *un geste de palier n retire ~25 % des PV d'un adversaire
+> commun de palier n*, plus les bandes de durée (commun 3-5, élite 6-10, boss 12-20).
+> La cible se **dérive du gabarit du bestiaire** (BES-02) au lieu de vivre dans une
+> table — recalibrer les PV d'un monstre déplace automatiquement ce qu'un geste doit
+> valoir, et les deux ne peuvent pas diverger en silence. Un test fait l'aller-retour :
+> un geste à la cible nettoie un commun en **4 tours**, au milieu de sa bande — la
+> règle et les bandes disent bien la même chose.
+>
+> **L'écart est chiffré, et il est large** : sur le dégât médian par palier, les gestes
+> livrés retirent **×4 (m1), ×6 (m2), ×7,6 (m3), ×12,5 (m4), ×9,4 (m5)** de moins que
+> la règle n'exige. C'est le « les gestes valent 1 à 12, les monstres ont 11 à 3 200 »
+> du canon, enfin mesuré. La base de référence entre en CI comme **cliquet** : l'écart
+> peut se réduire librement, il ne peut plus s'aggraver en silence — et personne ne peut
+> ajouter un geste sous-calibré sans le voir.
+>
+> **ARC-05b — reste à faire** : ramener l'écart vers 1 (les valeurs de gestes et les PV
+> de monstre, conjointement), la seconde ancre du §9 ter (le coût d'une rencontre en
+> ressource rapporté au budget du jour), l'ancre de fonction, le palier des accords, et
+> l'arbitrage sur la valeur de la vitesse. **À croiser avec ARC-17** : le canon (§0.2)
+> prévient que la recalibration passe par `app:balance:simulate`, jamais par une
+> relecture à la main.
 > GAME_ARCHETYPES §6.4. Les gestes valent 1 à 12 points ; les monstres ont 11 à 3 200 PV.
 > Des pourcentages posés sur des nombres qui n'ont pas de rapport entre eux ne veulent rien
 > dire.
-- [ ] Fixer la **durée cible en tours** (commun 3-5, élite 6-10, boss 12-20) et en dériver
-      les valeurs, plutôt que l'inverse
+- [x] Fixer la **durée cible en tours** (commun 3-5, élite 6-10, boss 12-20) et en dériver
+      les valeurs, plutôt que l'inverse *(ARC-05a — la règle est posée et calculable ;
+      appliquer les valeurs est ARC-05b)*
 - [ ] **La seconde ancre** (correction du §9 ter) : le **coût d'une rencontre en ressource,
       rapporté au budget du jour**. Mesuré, un Soldat et un Guérisseur tiennent onze tours
       tous les deux et sortent avec une barre comparable — mais l'un n'a rien dépensé et
@@ -322,8 +351,9 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       une **journée**, pas un combat
 - [ ] Calibrer en consequence la **régénération des PM hors combat** — chantier deja ouvert
       en BALANCE §24.2, et qui n'avait pas d'archetype a servir
-- [ ] Règle unique : *un geste de palier n retire ~25 % des PV d'un adversaire commun de
-      palier n*
+- [x] Règle unique : *un geste de palier n retire ~25 % des PV d'un adversaire commun de
+      palier n* *(ARC-05a — dérivée du gabarit BES-02, jamais d'une table ; l'écart mesuré
+      est de ×4 à ×12,5 et entre en CI comme cliquet)*
 - [ ] Recalibrage conjoint des PV de monstre (croise **BES-01**, le gabarit `tier × rank`)
       et des valeurs de gestes
 - [ ] Tests : un **simulateur de combat** en test — la durée moyenne par palier, pas un
