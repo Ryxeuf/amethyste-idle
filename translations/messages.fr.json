@@ -1043,7 +1043,15 @@
       "type_plant": "Plante",
       "type_resource": "Ressource",
       "type_stuff": "Matériau",
-      "type_food": "Nourriture"
+      "type_food": "Nourriture",
+      "uses": {
+        "title": "À quoi ça sert",
+        "by_capability": "Les usages",
+        "no_recipe": "Aucune recette connue ne la consomme pour l'instant.",
+        "more": "et %count% autre(s) recette(s)",
+        "buyback": "Rachat courant : %price% G",
+        "sold_by": "vendue par %names%"
+      }
     },
     "mount": {
       "title": "Catalogue des montures",

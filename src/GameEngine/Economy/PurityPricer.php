@@ -3,6 +3,7 @@
 namespace App\GameEngine\Economy;
 
 use App\Entity\App\PlayerItem;
+use App\Entity\Game\Item;
 use App\Enum\Purity;
 
 /**
@@ -82,9 +83,25 @@ class PurityPricer
      */
     public function buybackValueOf(PlayerItem $lot): int
     {
-        $base = max(1, (int) (($lot->getGenericItem()->getPrice() ?? 0) * self::BUYBACK_RATE));
+        return max(1, $this->apply(
+            $this->referenceBuybackValue($lot->getGenericItem()),
+            $lot->getPurity(),
+        ));
+    }
 
-        return max(1, $this->apply($base, $lot->getPurity()));
+    /**
+     * Le rachat d'une matiere **sans lot en main** : le taux commun applique
+     * au prix de reference, sans bande.
+     *
+     * Sert la ou l'on parle d'une matiere en general plutot que d'un lot
+     * precis — le catalogue de ressources (ONB-07b) dit ce qu'elle rend au
+     * guichet, jamais ce que rendra le lot qu'on n'a pas encore. Le taux vit
+     * ici et nulle part ailleurs : deux endroits qui l'appliqueraient
+     * finiraient par diverger d'un arrondi.
+     */
+    public function referenceBuybackValue(Item $item): int
+    {
+        return max(1, (int) (($item->getPrice() ?? 0) * self::BUYBACK_RATE));
     }
 
     /**

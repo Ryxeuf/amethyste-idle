@@ -82,6 +82,30 @@ class PurityPricerTest extends TestCase
     }
 
     /**
+     * Le rachat d'une matiere **sans lot en main** : le taux commun seul,
+     * sans bande. C'est ce que le catalogue de ressources affiche (ONB-07b),
+     * et le taux ne vit qu'ici — deux endroits qui l'appliqueraient
+     * finiraient par diverger d'un arrondi.
+     */
+    public function testTheReferenceBuybackIsTheCommonRateWithoutAnyBand(): void
+    {
+        $pricer = $this->shippedPricer();
+
+        $item = new Item();
+        $item->setSlug('ore-copper');
+        $item->setPrice(15);
+
+        self::assertSame(4, $pricer->referenceBuybackValue($item));
+        self::assertSame($pricer->buybackValueOf($this->lot(15, Purity::Trouble)), $pricer->referenceBuybackValue($item));
+
+        // Plancher a 1 : une matiere sans prix ne rend jamais zero.
+        $free = new Item();
+        $free->setSlug('ore-cheap');
+        $free->setPrice(0);
+        self::assertSame(1, $pricer->referenceBuybackValue($free));
+    }
+
+    /**
      * Un lot sans bande se rachete exactement comme avant le jalon : le
      * plancher a 1 gil et la troncature a 30 % ne bougent pas.
      */

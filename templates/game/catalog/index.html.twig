@@ -109,6 +109,46 @@
                                 </div>
                             {% endif %}
 
+                            {# ONB-07b — les usages (palier 2), et ce que l'Humain lit d'avance.
+                               Le badge « recettes » existait sans que rien ne s'affiche : le
+                               palier se gagnait et ne montrait rien. #}
+                            {% set itemUses = uses[item.slug] ?? null %}
+                            {% if itemUses %}
+                                <div class="mt-2 pt-2 border-t border-gray-600">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] text-gray-500">{{ 'game.catalog.uses.title'|trans }}</span>
+                                        {% if usesByCapability and not entry.recipesRevealed %}
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-indigo-900/60 border border-indigo-700 text-indigo-300">
+                                                {{ 'game.catalog.uses.by_capability'|trans }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if itemUses.recipes is not empty %}
+                                        <ul class="mt-1 space-y-0.5">
+                                            {% for use in itemUses.recipes|slice(0, 6) %}
+                                                <li class="text-xs text-gray-300">
+                                                    {{ use.recipe.result.name }}
+                                                    <span class="text-gray-500">({{ use.recipe.craft }}, ×{{ use.quantity }})</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% if itemUses.recipes|length > 6 %}
+                                            <p class="text-[10px] text-gray-500 mt-0.5">{{ 'game.catalog.uses.more'|trans({'%count%': itemUses.recipes|length - 6}) }}</p>
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="text-xs text-gray-500 mt-1">{{ 'game.catalog.uses.no_recipe'|trans }}</p>
+                                    {% endif %}
+
+                                    <p class="text-[10px] text-gray-500 mt-1.5">
+                                        {{ 'game.catalog.uses.buyback'|trans({'%price%': itemUses.buybackValue}) }}
+                                        {% if itemUses.sellers is not empty %}
+                                            · {{ 'game.catalog.uses.sold_by'|trans({'%names%': itemUses.sellers|slice(0, 3)|map(p => p.name)|join(', ')}) }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            {% endif %}
+
                             {# Specialist title (tier 3) #}
                             {% if entry.specialistTitle %}
                                 <div class="mt-2 pt-2 border-t border-gray-600">
