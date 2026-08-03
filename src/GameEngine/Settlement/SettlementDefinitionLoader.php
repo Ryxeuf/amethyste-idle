@@ -56,6 +56,7 @@ class SettlementDefinitionLoader
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
+     *     housing: array{parcels_per_rank: array<string, int>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
@@ -106,6 +107,7 @@ class SettlementDefinitionLoader
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
+     *     housing: array{parcels_per_rank: array<string, int>},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
@@ -482,11 +484,6 @@ class SettlementDefinitionLoader
     }
 
     /**
-     * Les quotas de la Crue (FOY-08).
-     *
-     * @return array<string, int> rang => actifs requis par foyer de ce rang ou plus
-     */
-    /**
      * Le logement par rang (FOY-18) : la capacite de parcelles de chaque
      * rang, croissante avec le rang — un Bourg qui logerait moins qu'un
      * Hameau inverserait l'echelle sans que rien ne le dise. Le bloc est
@@ -540,6 +537,11 @@ class SettlementDefinitionLoader
         return ['parcels_per_rank' => $capacities];
     }
 
+    /**
+     * Les quotas de la Crue (FOY-08).
+     *
+     * @return array<string, int> rang => actifs requis par foyer de ce rang ou plus
+     */
     private function normalizeCrue(mixed $crue, string $source): array
     {
         if (!\is_array($crue)) {

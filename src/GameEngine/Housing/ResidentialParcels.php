@@ -36,8 +36,8 @@ class ResidentialParcels
     }
 
     /**
-     * Cette zone est-elle residentielle par son rang ? (Le plancher des
-     * Jardins ne passe pas ici : il n'a pas de foyer, il a une garantie.)
+     * Cette zone est-elle residentielle par son rang ? Le plancher des
+     * Jardins ne passe pas ici : il n'a pas de foyer, il a une garantie.
      */
     public function isRankResidential(Zone $zone): bool
     {
