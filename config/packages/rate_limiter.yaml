@@ -42,6 +42,15 @@ framework:
             interval: '1 hour'
             lock_factory: null
 
+        # Renvoi du lien de verification (ONB-04) : chaque clic est un e-mail
+        # sortant. Trois par heure et par compte — assez pour un dossier spam
+        # recalcitrant, trop peu pour faire du guichet un canon a courrier.
+        email_verification_resend:
+            policy: 'sliding_window'
+            limit: 3
+            interval: '1 hour'
+            lock_factory: null
+
         # Combat actions: 5 req/s per player
         game_fight:
             policy: 'sliding_window'

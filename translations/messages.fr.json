@@ -80,6 +80,44 @@
         "expiry": "Ce lien est valable une heure, et ne sert qu'une fois.",
         "ignore": "Si vous n'avez rien demandé, ignorez ce message : votre mot de passe reste inchangé."
       }
+    },
+    "verification": {
+      "title": "Vérifier votre adresse",
+      "subtitle": "Le jeu entier vous est ouvert. Vérifier votre adresse ouvre ce qui touche les autres joueurs.",
+      "locked_intro": "Encore fermé, le temps d'un clic dans votre boîte aux lettres :",
+      "why": "Pourquoi cette porte : ce que vous faites là touche d'autres joueurs et les foyers du monde. Un clic suffit, et elle ne se referme jamais.",
+      "resend": "Renvoyer le lien",
+      "resent": "Un nouveau lien vient de partir. Il est valable 48 heures.",
+      "resend_rate_limited": "Trop de renvois. Réessayez dans une heure.",
+      "invalid_token": "Ce lien de vérification n'est plus valable. Renvoyez-en un depuis l'écran de vérification.",
+      "done": "Adresse vérifiée : tout est ouvert. Bon jeu !",
+      "already_done": "Votre adresse est déjà vérifiée — tout est ouvert.",
+      "back_to_game": "Retour au jeu",
+      "locked": "Vérifiez votre adresse e-mail pour utiliser cette fonction.",
+      "hub_line": "Votre adresse n'est pas encore vérifiée — le marché, les guildes et le chat attendent.",
+      "hub_link": "Vérifier maintenant",
+      "channel": {
+        "chat": "Le chat de zone et le chat global",
+        "auction": "L'hôtel des ventes (achat et vente)",
+        "shop": "L'échoppe et le commerce entre joueurs",
+        "guild": "Les guildes",
+        "party": "Les groupes",
+        "dungeon": "Les donjons",
+        "messages": "Les messages privés",
+        "friends": "Les demandes d'ami",
+        "commission": "La livraison des commissions aux foyers"
+      },
+      "email": {
+        "subject": "Améthyste — vérifiez votre adresse",
+        "reminder_subject": "Améthyste — votre adresse attend toujours un clic",
+        "title": "Vérifier votre adresse",
+        "intro": "Bienvenue ! Votre compte est né et le jeu entier vous est ouvert. Un clic ci-dessous, et le marché, les guildes et le chat s'ouvrent aussi.",
+        "reminder_intro": "Votre compte joue déjà — mais le marché, les guildes et le chat attendent toujours un clic. Le voici à nouveau.",
+        "action": "Vérifier mon adresse",
+        "what_it_opens": "La vérification ouvre le chat, l'hôtel des ventes, les guildes, les groupes, les donjons, les messages et la livraison des commissions. Le reste du jeu ne l'a jamais attendue.",
+        "ignore": "Si vous n'avez pas créé de compte, ignorez ce message."
+      },
+      "check_spam": "Rien reçu ? Regardez le dossier indésirable — le lien reste valable 48 heures."
     }
   },
   "game": {

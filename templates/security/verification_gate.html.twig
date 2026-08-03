@@ -1,0 +1,52 @@
+{# ONB-04 — l'ecran de porte de la verification.
+
+   Le blocage se lit comme une porte, jamais comme une panne : ce qui est
+   verrouille, pourquoi, et « renvoyer le lien ». L'ecran sert aussi d'etat
+   « deja verifie » pour qui y arrive par un vieux lien. #}
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'security.verification.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-lg">
+        <div class="ds-card">
+            <h1 class="ds-title">{{ 'security.verification.title'|trans }}</h1>
+
+            {% for message in app.flashes('error') %}
+                <div class="ds-banner ds-banner--loss my-4">{{ message|trans }}</div>
+            {% endfor %}
+            {% for message in app.flashes('success') %}
+                <div class="ds-banner ds-banner--gain my-4">{{ message|trans }}</div>
+            {% endfor %}
+
+            {% if verified %}
+                <div class="ds-panel my-4">
+                    <p class="text-sm text-ink">{{ 'security.verification.already_done'|trans }}</p>
+                </div>
+                <a href="{{ path('app_game') }}" class="ds-btn ds-btn--primary w-full">{{ 'security.verification.back_to_game'|trans }}</a>
+            {% else %}
+                <p class="ds-hint mt-1 mb-4">{{ 'security.verification.subtitle'|trans }}</p>
+
+                <div class="ds-panel mb-4">
+                    <p class="text-sm text-ink mb-2">{{ 'security.verification.locked_intro'|trans }}</p>
+                    <ul class="text-sm text-ink space-y-1">
+                        {% for channel, label in channels %}
+                            <li class="{{ from == channel ? 'font-semibold' : '' }}">— {{ label|trans }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="ds-hint mt-3">{{ 'security.verification.why'|trans }}</p>
+                </div>
+
+                {# Une seule action primaire par ecran. #}
+                <form method="post" action="{{ path('app_verification_resend') }}" data-turbo="false">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('verification_resend') }}">
+                    <button type="submit" class="ds-btn ds-btn--primary w-full">{{ 'security.verification.resend'|trans }}</button>
+                </form>
+
+                <p class="ds-hint text-center mt-4">{{ 'security.verification.check_spam'|trans }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

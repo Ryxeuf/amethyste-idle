@@ -80,6 +80,44 @@
         "expiry": "This link is valid for one hour, and works only once.",
         "ignore": "If you did not ask for anything, ignore this message: your password stays unchanged."
       }
+    },
+    "verification": {
+      "title": "Verify your address",
+      "subtitle": "The whole game is open to you. Verifying your address opens what touches other players.",
+      "locked_intro": "Still closed, until one click in your mailbox:",
+      "why": "Why this gate: what you do there touches other players and the world's settlements. One click is enough, and it never closes again.",
+      "resend": "Resend the link",
+      "resent": "A new link is on its way. It is valid for 48 hours.",
+      "resend_rate_limited": "Too many resends. Try again in an hour.",
+      "invalid_token": "This verification link is no longer valid. Resend one from the verification screen.",
+      "done": "Address verified: everything is open. Enjoy!",
+      "already_done": "Your address is already verified — everything is open.",
+      "back_to_game": "Back to the game",
+      "locked": "Verify your e-mail address to use this feature.",
+      "hub_line": "Your address is not verified yet — the market, guilds and chat are waiting.",
+      "hub_link": "Verify now",
+      "channel": {
+        "chat": "Zone chat and global chat",
+        "auction": "The auction house (buying and selling)",
+        "shop": "Player shops and direct trade",
+        "guild": "Guilds",
+        "party": "Parties",
+        "dungeon": "Dungeons",
+        "messages": "Private messages",
+        "friends": "Friend requests",
+        "commission": "Delivering commissions to settlements"
+      },
+      "email": {
+        "subject": "Amethyste — verify your address",
+        "reminder_subject": "Amethyste — your address is still waiting for a click",
+        "title": "Verify your address",
+        "intro": "Welcome! Your account is born and the whole game is open to you. One click below, and the market, guilds and chat open too.",
+        "reminder_intro": "Your account is already playing — but the market, guilds and chat are still waiting for a click. Here it is again.",
+        "action": "Verify my address",
+        "what_it_opens": "Verification opens chat, the auction house, guilds, parties, dungeons, messages and commission delivery. The rest of the game never waited for it.",
+        "ignore": "If you did not create an account, ignore this message."
+      },
+      "check_spam": "Nothing received? Check your spam folder — the link stays valid for 48 hours."
     }
   },
   "game": {

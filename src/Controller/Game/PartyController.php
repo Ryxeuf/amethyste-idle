@@ -7,6 +7,7 @@ use App\Entity\App\PartyMember;
 use App\Entity\App\Player;
 use App\GameEngine\Party\PartyManager;
 use App\Helper\PlayerHelper;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -42,6 +43,7 @@ class PartyController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'party')]
     #[Route('/create', name: 'app_game_party_create', methods: ['POST'])]
     public function create(): Response
     {
@@ -60,6 +62,7 @@ class PartyController extends AbstractController
         }
     }
 
+    #[RequiresVerifiedEmail(channel: 'party')]
     #[Route('/invite/{playerId}', name: 'app_game_party_invite', methods: ['POST'])]
     public function invite(int $playerId): Response
     {
@@ -83,6 +86,7 @@ class PartyController extends AbstractController
         }
     }
 
+    #[RequiresVerifiedEmail(channel: 'party')]
     #[Route('/invitation/{id}/accept', name: 'app_game_party_accept', methods: ['POST'])]
     public function acceptInvitation(int $id): Response
     {

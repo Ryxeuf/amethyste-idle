@@ -4,6 +4,7 @@ namespace App\Controller\Security;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Security\EmailVerificationManager;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +35,7 @@ class RegistrationController extends AbstractController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly Security $security,
         private readonly RateLimiterFactoryInterface $registrationLimiter,
+        private readonly EmailVerificationManager $verificationManager,
     ) {
     }
 
@@ -68,6 +70,12 @@ class RegistrationController extends AbstractController
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
+
+            // ONB-04 : le lien de verification part tout de suite — mais le
+            // compte est pleinement jouable sans lui (decision A1). Un envoi
+            // qui echoue n'empeche rien : « renvoyer le lien » et les rappels
+            // J+1/J+3 reessaieront.
+            $this->verificationManager->sendVerification($user);
 
             $this->security->login($user, LoginFormAuthenticator::class, 'main');
 

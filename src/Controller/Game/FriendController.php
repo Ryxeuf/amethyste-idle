@@ -6,6 +6,7 @@ use App\Entity\App\Friendship;
 use App\Entity\App\Player;
 use App\GameEngine\Social\FriendshipManager;
 use App\Helper\PlayerHelper;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,6 +65,7 @@ class FriendController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'friends')]
     #[Route('/request/{id}', name: 'app_game_friends_request', methods: ['POST'])]
     public function sendRequest(int $id, Request $request): Response
     {
@@ -96,6 +98,7 @@ class FriendController extends AbstractController
         return $this->redirectToRoute('app_game_friends');
     }
 
+    #[RequiresVerifiedEmail(channel: 'friends')]
     #[Route('/accept/{id}', name: 'app_game_friends_accept', methods: ['POST'])]
     public function accept(int $id): Response
     {

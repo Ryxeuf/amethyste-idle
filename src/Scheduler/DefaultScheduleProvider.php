@@ -58,6 +58,12 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // plancher T1 anti cold-start d'ECO-02.
                 RecurringMessage::cron('0 * * * *', new RunCommandMessage('app:shop:restock')),
 
+                // --- Compte -------------------------------------------------
+                // Rappels de verification d'e-mail (ONB-04) : J+1, J+3, puis
+                // silence. Une fois par jour suffit — le compteur sur le
+                // compte rend la commande idempotente a l'echelle du jour.
+                RecurringMessage::cron('30 9 * * *', new RunCommandMessage('app:verification:remind')),
+
                 // --- Cloture hebdomadaire -----------------------------------
                 // WeeklyChallenge : clôt la semaine de défis écoulée et ouvre
                 // la suivante (RET-01). **Avant** la chaîne de minuit : la

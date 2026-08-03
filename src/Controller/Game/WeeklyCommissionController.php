@@ -6,6 +6,7 @@ use App\Enum\WeeklyCommissionReward;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Retention\WeeklyCommissionException;
 use App\Helper\PlayerHelper;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,7 @@ class WeeklyCommissionController extends AbstractController
     ) {
     }
 
+    #[RequiresVerifiedEmail(channel: 'commission')]
     #[Route('/game/commission/deliver', name: 'app_game_commission_deliver', methods: ['POST'])]
     public function deliver(Request $request): Response
     {

@@ -11,6 +11,7 @@ use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Helper\PlayerHelper;
 use App\Repository\AuctionListingRepository;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -143,6 +144,7 @@ class AuctionController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'auction')]
     #[Route('/sell', name: 'app_game_auction_sell_submit', methods: ['POST'])]
     public function sell(Request $request): Response
     {
@@ -198,6 +200,7 @@ class AuctionController extends AbstractController
         return $this->redirectToRoute('app_game_auction_my_listings');
     }
 
+    #[RequiresVerifiedEmail(channel: 'auction')]
     #[Route('/bid/{id}', name: 'app_game_auction_bid', methods: ['POST'])]
     public function bid(int $id, Request $request): Response
     {
@@ -233,6 +236,7 @@ class AuctionController extends AbstractController
         return $this->redirectToRoute('app_game_auction');
     }
 
+    #[RequiresVerifiedEmail(channel: 'auction')]
     #[Route('/buy/{id}', name: 'app_game_auction_buy', methods: ['POST'])]
     public function buy(int $id, Request $request): Response
     {
