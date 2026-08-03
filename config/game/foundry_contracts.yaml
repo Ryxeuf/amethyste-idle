@@ -1,0 +1,36 @@
+# =============================================================================
+# Les contrats d'approvisionnement de la Fonderie (FAC-05)
+# =============================================================================
+# GAME_WORLD § 12.2 : « chaque semaine, la Fonderie publie des contrats : gros
+# volumes de matieres communes (minerai, hetre) a prix **garanti mais toujours
+# sous le marche**. » Le garde-fou est l'inverse exact du receleur : le
+# receleur prend *plus* que la taxe max pour ne jamais renverser le HV ; la
+# Fonderie paie *moins* que le marche pour ne jamais le remplacer. Ses
+# avantages : zero friction, regularite, paiement mixte gils + essence.
+#
+# Un contrat par semaine, tire au lundi (rotation RET-01, cle de semaine
+# unique) par `crc32(weekKey)` — deterministe, et rejouer la rotation n'est
+# jamais un reroll. Le prix declare ici est un prix **unitaire plafonne** : au
+# tirage, il est ramene sous la reference du marche (mediane HV des ventes
+# conclues, ou prix d'item si le marche est muet) si la donnee l'exige.
+#
+# `essence` est le versement fixe du contrat honore — le seul robinet
+# d'essence avec la fonte (FAC-04b), et comme elle : jamais une monnaie
+# d'objets.
+contracts:
+    -   item: 'ore-copper'
+        volume: 50
+        gils_per_unit: 3
+        essence: 4
+    -   item: 'ore-tin'
+        volume: 45
+        gils_per_unit: 4
+        essence: 4
+    -   item: 'ore-iron'
+        volume: 40
+        gils_per_unit: 6
+        essence: 5
+    -   item: 'wood-beech'
+        volume: 60
+        gils_per_unit: 2
+        essence: 4

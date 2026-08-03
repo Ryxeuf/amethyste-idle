@@ -34,6 +34,48 @@ class AuctionTransactionRepository extends ServiceEntityRepository
     }
 
     /**
+     * La mediane des prix **unitaires** des ventes conclues d'une matiere
+     * (FAC-05). Les ventes conclues, jamais les annonces : une annonce est un
+     * espoir, une transaction est un prix.
+     *
+     * La mediane plutot que la moyenne — `findPriceOutliers` montre pourquoi :
+     * une seule vente aberrante deplace une moyenne, pas une mediane. Rend
+     * `null` sur un marche muet (aucune vente dans la fenetre) : l'appelant
+     * choisit sa reference de repli.
+     */
+    public function medianUnitPriceForSlug(string $slug, \DateTimeImmutable $since): ?int
+    {
+        $rows = $this->createQueryBuilder('t')
+            ->select('l.pricePerUnit AS unitPrice')
+            ->join('t.listing', 'l')
+            ->join('l.playerItem', 'pi')
+            ->join('pi.genericItem', 'gi')
+            ->where('t.purchasedAt >= :since')
+            ->andWhere('gi.slug = :slug')
+            ->setParameter('since', $since)
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getScalarResult();
+
+        $prices = array_map(static fn (array $row): int => (int) $row['unitPrice'], $rows);
+        if ([] === $prices) {
+            return null;
+        }
+
+        sort($prices);
+        $count = \count($prices);
+        $middle = intdiv($count, 2);
+
+        // Effectif pair : la moyenne des deux valeurs centrales, arrondie au
+        // gil — la mediane d'un marche se paie en monnaie entiere.
+        if (0 === $count % 2) {
+            return (int) round(($prices[$middle - 1] + $prices[$middle]) / 2);
+        }
+
+        return $prices[$middle];
+    }
+
+    /**
      * @return AuctionTransaction[]
      */
     public function findRecent(int $limit = 50): array

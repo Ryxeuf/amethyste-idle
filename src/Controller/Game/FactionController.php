@@ -6,6 +6,8 @@ use App\Entity\App\PlayerFaction;
 use App\Entity\Game\Faction;
 use App\Entity\Game\FactionReward;
 use App\GameEngine\Reputation\FactionTensionCatalog;
+use App\GameEngine\Reputation\FoundryContractException;
+use App\GameEngine\Reputation\FoundryContractManager;
 use App\GameEngine\Reputation\PatronageException;
 use App\GameEngine\Reputation\PatronageService;
 use App\Helper\PlayerHelper;
@@ -14,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/game/factions')]
 class FactionController extends AbstractController
@@ -23,6 +26,8 @@ class FactionController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly FactionTensionCatalog $tensionCatalog,
         private readonly PatronageService $patronageService,
+        private readonly FoundryContractManager $foundryContractManager,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -51,6 +56,11 @@ class FactionController extends AbstractController
             $rewardsByFaction[$factionId][] = $reward;
         }
 
+        // FAC-05 — l'affiche de la semaine sur la carte de la Fonderie. La
+        // lecture tire paresseusement le contrat s'il manque : une affiche
+        // absente un lundi matin serait un silence.
+        $foundryContract = $this->foundryContractManager->current();
+
         return $this->render('game/factions/index.html.twig', [
             'factions' => $factions,
             'playerFactionMap' => $playerFactionMap,
@@ -61,7 +71,44 @@ class FactionController extends AbstractController
             'patronageTier' => $this->tensionCatalog->patronageTier(),
             'tensionTier' => $this->tensionCatalog->beyondTier(),
             'tensionPercent' => $this->tensionCatalog->offsetPercent(),
+            'foundryContract' => $foundryContract,
+            'foundryContractItem' => $this->entityManager->getRepository(\App\Entity\Game\Item::class)
+                ->findOneBy(['slug' => $foundryContract->getItemSlug()]),
+            'foundryContractBlocker' => $this->foundryContractManager->blocker($player, $foundryContract),
+            'foundryContractDelivered' => null !== $this->foundryContractManager->fulfillmentOf($player, $foundryContract),
         ]);
+    }
+
+    /**
+     * Honorer le contrat d'approvisionnement de la semaine (FAC-05).
+     */
+    #[Route('/foundry-contract/deliver', name: 'app_game_factions_foundry_deliver', methods: ['POST'])]
+    public function deliverFoundryContract(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('foundry_contract', (string) $request->request->get('_token'))) {
+            $this->addFlash('warning', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('app_game_factions');
+        }
+
+        try {
+            $result = $this->foundryContractManager->deliver($player);
+        } catch (FoundryContractException $e) {
+            $this->addFlash('warning', $this->translator->trans($e->getMessage()));
+
+            return $this->redirectToRoute('app_game_factions');
+        }
+
+        $this->addFlash('success', sprintf('Contrat honore : +%d gils, +%d essence.', $result['gils'], $result['essence']));
+
+        return $this->redirectToRoute('app_game_factions');
     }
 
     /**

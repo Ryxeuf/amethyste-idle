@@ -58,6 +58,21 @@
     "email_placeholder": "votre@email.com"
   },
   "game": {
+    "foundry": {
+      "contract": {
+        "title": "Contrat de la semaine",
+        "offer": "La Fonderie achète %volume% × %item% pour %gils% gils et %essence% essence. Prix garanti, toujours sous le marché.",
+        "deliver": "Honorer le contrat",
+        "delivered": "Contrat honoré cette semaine.",
+        "error": {
+          "tier": "Les contrats s’ouvrent au palier Ami de la Fonderie.",
+          "hostile": "La Fonderie ne traite pas avec vous. Sa rancune se paie en gestes.",
+          "delivered": "Vous avez déjà honoré le contrat de cette semaine.",
+          "elsewhere": "Le contrat se remet au comptoir de la Fonderie, aux Mines Profondes.",
+          "missing": "Il vous manque du volume : la Fonderie paie à la livraison complète, jamais en partie."
+        }
+      }
+    },
     "materia": {
       "convert": {
         "melt": "Fondre",
