@@ -15,6 +15,7 @@ use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Reputation\CounterfeitService;
 use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
