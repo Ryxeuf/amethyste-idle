@@ -133,6 +133,35 @@
           "not_seen": "Nothing to defuse here.",
           "socketed": "Remove it from its slot before dismantling it."
         }
+      },
+      "smuggling": {
+        "offer": "A bundle awaits a discreet carrier: %gils% gils on delivery, at the other counter, by night.",
+        "accept": "Take the bundle",
+        "accepted": "The bundle is yours: %cargo%. Deliver it to the other counter, by night, quietly.",
+        "in_transit": "A bundle travels with you: %cargo%.",
+        "deliver": "Deliver the bundle",
+        "delivered": "Delivered without a word: +%gils% gils.",
+        "error": {
+          "counter": "Nothing for you here.",
+          "daylight": "Not in broad daylight. Come back at night.",
+          "tier": "The Brotherhood does not trust bundles to strangers.",
+          "active": "One bundle at a time — deliver the one you carry first.",
+          "cap": "Enough for this week: large volumes get noticed.",
+          "none": "No bundle to deliver.",
+          "elsewhere": "This bundle is delivered at the other counter."
+        }
+      },
+      "placement": {
+        "offer": "The contact takes counterfeits. Well paid — at your own risk.",
+        "place": "Place %name%",
+        "sold": "Moved to a collector who asks no questions: +%gils% gils.",
+        "caught": "Seized! The fine drops (−%fine% gils), and the Order looks at you differently.",
+        "error": {
+          "counter": "Nothing for you here.",
+          "daylight": "Not in broad daylight. Come back at night.",
+          "tier": "The contact does not work with strangers.",
+          "item": "Nothing to place here."
+        }
       }
     },
     "shop": {

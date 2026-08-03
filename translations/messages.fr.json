@@ -133,6 +133,35 @@
           "not_seen": "Rien à désamorcer ici.",
           "socketed": "Retirez-la de son emplacement avant de la démonter."
         }
+      },
+      "smuggling": {
+        "offer": "Un ballot attend un porteur discret : %gils% gils à la livraison, à l’autre guichet, de nuit.",
+        "accept": "Prendre le ballot",
+        "accepted": "Le ballot est à vous : %cargo%. À livrer à l’autre guichet, de nuit, sans bruit.",
+        "in_transit": "Un ballot voyage avec vous : %cargo%.",
+        "deliver": "Livrer le ballot",
+        "delivered": "Livraison faite, sans un mot : +%gils% gils.",
+        "error": {
+          "counter": "Rien pour vous ici.",
+          "daylight": "Pas en plein jour. Revenez à la nuit.",
+          "tier": "La Confrérie ne confie pas ses ballots aux inconnus.",
+          "active": "Un seul ballot à la fois — livrez d’abord celui que vous portez.",
+          "cap": "Assez pour cette semaine : les gros volumes se voient.",
+          "none": "Aucun ballot à livrer.",
+          "elsewhere": "Ce ballot se livre à l’autre guichet."
+        }
+      },
+      "placement": {
+        "offer": "Le contact prend les faux. Bien payés — à vos risques.",
+        "place": "Placer %name%",
+        "sold": "Écoulé chez un collectionneur peu curieux : +%gils% gils.",
+        "caught": "Saisie ! L’amende tombe (−%fine% gils), et l’Ordre vous regarde autrement.",
+        "error": {
+          "counter": "Rien pour vous ici.",
+          "daylight": "Pas en plein jour. Revenez à la nuit.",
+          "tier": "Le contact ne travaille pas avec des inconnus.",
+          "item": "Rien à placer ici."
+        }
       }
     },
     "shop": {

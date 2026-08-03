@@ -13,6 +13,7 @@ use App\Event\Zone\ZoneVisitedEvent;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
+use App\GameEngine\Reputation\ShadowsSmuggling;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -34,6 +35,7 @@ class ZoneTravelService
         private readonly MountTravelSpeed $mountTravelSpeed,
         private readonly GameMasterPolicy $gameMasterPolicy,
         private readonly HostileConsequenceResolver $hostileConsequences,
+        private readonly ShadowsSmuggling $shadowsSmuggling,
     ) {
     }
 
@@ -100,6 +102,15 @@ class ZoneTravelService
                 // surcharge boutique.
                 $seconds = intdiv($seconds * (100 + $surcharge) + 99, 100);
             }
+        }
+
+        // FAC-08 — la fouille aux portes : un ballot de contrebande en transit
+        // peut etre confisque a l'entree d'une zone a foyer Bastion. Le
+        // contrat, jamais l'inventaire — et jamais un refus de voyage : on
+        // entre quand meme, deleste et decote. Inerte tant qu'aucun foyer n'a
+        // bascule Bastion.
+        if (!$isGameMaster) {
+            $this->shadowsSmuggling->inspectAtGates($player, $connection->getToZone());
         }
 
         // ONB-10 — le **premier voyage est offert**, une seule fois.

@@ -59,6 +59,30 @@ class ShadowsMarketCatalogTest extends TestCase
     }
 
     /**
+     * FAC-08 : la contrebande et le placement livres — le risque est le
+     * systeme (jamais 0, jamais 100), la capacite est petite par definition,
+     * et le placement bat strictement le receleur : c'est sa raison d'etre.
+     */
+    public function testTheShippedContrabandBlocksMatchTheCanon(): void
+    {
+        $catalog = $this->catalog();
+
+        self::assertSame(ReputationTier::Ami, $catalog->smugglingRequiredTier());
+        self::assertGreaterThanOrEqual(1, $catalog->smugglingWeeklyCap());
+        self::assertGreaterThan(0, $catalog->smugglingRewardGils());
+        self::assertGreaterThanOrEqual(1, $catalog->smugglingSearchChancePercent());
+        self::assertLessThanOrEqual(99, $catalog->smugglingSearchChancePercent());
+        self::assertGreaterThan(0, $catalog->smugglingCaughtPenalty());
+        self::assertNotEmpty($catalog->smugglingCargoLabels());
+
+        self::assertSame(ReputationTier::Ami, $catalog->placementRequiredTier());
+        self::assertGreaterThan(100 - $catalog->fenceCutPercent(), $catalog->placementRewardPercent(), 'Le placement paie strictement mieux que le receleur — le risque est ce qui l\'equilibre.');
+        self::assertGreaterThanOrEqual(1, $catalog->placementSearchChancePercent());
+        self::assertGreaterThanOrEqual(0, $catalog->placementFineGils());
+        self::assertGreaterThan(0, $catalog->placementCaughtPenalty());
+    }
+
+    /**
      * La recette de la main du faussaire existe dans les donnees : un slug
      * fantome ferait un gate qui ne garde rien, en silence.
      */
@@ -181,6 +205,34 @@ class ShadowsMarketCatalogTest extends TestCase
     }
 
     /**
+     * FAC-08 : une fouille certaine (100 %) tuerait le canal, une fouille
+     * nulle en ferait un revenu gratuit — le risque EST le systeme.
+     */
+    public function testACertainSearchIsRefused(): void
+    {
+        $ruelles = $this->validRuelles([]);
+        $ruelles['smuggling']['search_chance_percent'] = 100;
+
+        $this->expectException(FactionTensionDefinitionException::class);
+
+        $this->catalog()->normalize(['ruelles' => $ruelles]);
+    }
+
+    /**
+     * FAC-08 : un placement qui ne bat pas le receleur n'a aucune raison
+     * d'exister — le loader refuse un tarif domine.
+     */
+    public function testAPlacementBelowTheFencePayoutIsRefused(): void
+    {
+        $ruelles = $this->validRuelles([]);
+        $ruelles['placement']['reward_percent'] = 85;
+
+        $this->expectException(FactionTensionDefinitionException::class);
+
+        $this->catalog()->normalize(['ruelles' => $ruelles]);
+    }
+
+    /**
      * Un bloc ruelles valide, dont le test mute une seule cle : le refus
      * observe vient bien de la cle mutee, jamais d'un voisin.
      *
@@ -204,6 +256,21 @@ class ShadowsMarketCatalogTest extends TestCase
                 'defuse_tier' => 'revere',
                 'forge_tier' => 'revere',
                 'forge_recipe_slug' => 'recipe-forgers-hand',
+            ],
+            'smuggling' => [
+                'required_tier' => 'ami',
+                'weekly_cap' => 3,
+                'reward_gils' => 120,
+                'search_chance_percent' => 35,
+                'caught_reputation_penalty' => 200,
+                'cargo_labels' => ['un ballot'],
+            ],
+            'placement' => [
+                'required_tier' => 'ami',
+                'reward_percent' => 120,
+                'search_chance_percent' => 25,
+                'fine_gils' => 60,
+                'caught_reputation_penalty' => 200,
             ],
         ];
     }

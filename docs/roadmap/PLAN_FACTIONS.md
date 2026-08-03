@@ -24,7 +24,7 @@
 | FAC-05 ✅ | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
 | FAC-06 ✅ | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
 | FAC-07 ✅ | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
-| FAC-08 | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
+| FAC-08 ✅ | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
 | FAC-09 | Échelles latérales + les cinq portes | L → par maison | ← FAC-01→03 |
 | FAC-10 | Tests du plan | S | ‖ |
 
@@ -242,14 +242,40 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       (palier, composants, sertie refusée), verrous (HV ×2, échoppe, coffre), butin
       (chance du catalogue), gate de recette inerte sans faction semée
 
-### FAC-08 — Contrebande & placements (M | ★★ | MOYENNE)
+### FAC-08 — Contrebande & placements (M | ★★ | MOYENNE) ✅
 > §12.4 d. Le système propre de la Confrérie — créé avec elle, pas dérivé des caravanes.
-> Prérequis : ← FAC-06, FAC-07 ; les fouilles exigent les types de foyer (FOY-03)
-- [ ] Contrats de contrebande : cargaison de nuit, capacité réduite, confiscation possible
-      à la fouille (la cargaison du contrat, jamais l'inventaire)
-- [ ] Contrats de placement : écouler des contrefaçons via les contacts PNJ — gains,
-      risque, décote Chevaliers
-- [ ] Tests : fenêtre nocturne, confiscation bornée, décote au placement raté
+> **Livré le 2026-08-03.** Prérequis : ← FAC-06 ✅, FAC-07 ✅ ; les fouilles exigent les
+> types de foyer (FOY-03 ✅ — le type est dynamique : la fouille est un crochet inerte
+> tant qu'aucun foyer n'a basculé Bastion, et mord seule le jour où l'un bascule)
+- [x] **Contrats de contrebande** (`SmugglingContract`, migration
+      `Version20260803FSmuggling`) : un ballot pris au guichet des Ruelles **la nuit**
+      (phase mécanique, pas l'horaire du PNJ — Kolm est ouvert 24h/24), à livrer à
+      **l'autre guichet** (le Fanal ↔ les Mines), Ami+ requis. **La cargaison vit dans le
+      contrat, jamais dans l'inventaire** : la confiscation est bornée par construction.
+      Capacité réduite = un seul ballot à la fois + plafond hebdo (`WeekKey`, 3/semaine).
+      Prime figée à l'acceptation (120 gils), versée à la livraison, qui nourrit la
+      Confrérie (route `grey_market_sale`). **La fouille aux portes** : au départ d'un
+      voyage vers une zone à foyer **Bastion** (`ZoneTravelService` →
+      `ShadowsSmuggling::inspectAtGates`), tirage 35 % → le contrat passe `confiscated`,
+      la décote Chevaliers tombe (−200, peut faire basculer Hostile — se faire prendre
+      EST le geste opposé), le journal le grave — et le voyage part quand même, délesté :
+      jamais un refus
+- [x] **Contrats de placement** (`ShadowsPlacement`) : écouler une contrefaçon **vue**
+      (identifiée ou percée par l'œil, ni sertie ni portée) via le contact, la nuit,
+      Ami+. Rémunérateur : **120 % du prix** contre 85 % au receleur — le chargeur
+      **refuse** un tarif qui ne bat pas strictement le receleur, c'est sa raison d'être.
+      Risque 25 % : saisie (l'objet quitte le monde), amende (60 gils, jamais au-delà de
+      la bourse), décote Chevaliers (−200). Dans les deux issues l'objet disparaît — le
+      placement est le **seul débouché** d'une contrefaçon (FAC-07). Config complète dans
+      `factions.yaml` blocs `ruelles.smuggling`/`ruelles.placement`, refus du chargeur sur
+      le risque (jamais 0, jamais 100), UI au comptoir (`/game/shop`), CSRF sur les trois
+      routes
+- [x] Tests : fenêtre nocturne (accepter/placer refusés le jour), confiscation bornée
+      (seul le contrat change, Bastion seul fouille, tirage au-dessus passe, pas de
+      contrat pas de fouille), décote au placement raté (et jamais au succès), le plafond
+      hebdo, la livraison au bon guichet seulement, le tarif du placement bat le receleur
+      (invariant du chargeur + test), `ZoneTravelServiceTest` (le départ interroge les
+      portes)
 
 ## Piste D — Les échelles
 

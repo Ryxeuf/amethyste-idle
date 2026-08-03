@@ -26,6 +26,7 @@ class ZoneTravelServiceTest extends TestCase
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private HostileConsequenceResolver&MockObject $hostileConsequences;
+    private \App\GameEngine\Reputation\ShadowsSmuggling&MockObject $shadowsSmuggling;
     private ZoneTravelService $service;
 
     protected function setUp(): void
@@ -36,7 +37,10 @@ class ZoneTravelServiceTest extends TestCase
         // Par defaut, aucun surcout : le mock rend 0. Les cas FAC-03 le
         // configurent explicitement.
         $this->hostileConsequences = $this->createMock(HostileConsequenceResolver::class);
-        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy(), $this->hostileConsequences);
+        // FAC-08 : la fouille aux portes est muette par defaut — les cas de
+        // contrebande la configurent explicitement.
+        $this->shadowsSmuggling = $this->createMock(\App\GameEngine\Reputation\ShadowsSmuggling::class);
+        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy(), $this->hostileConsequences, $this->shadowsSmuggling);
     }
 
     private function buildZone(string $slug): Zone
@@ -103,6 +107,24 @@ class ZoneTravelServiceTest extends TestCase
         $arrivesAt = $this->service->startTravel($player, new ZoneConnection($vallons, $foret, 300));
 
         self::assertEqualsWithDelta(time() + 300, $arrivesAt->getTimestamp(), 2);
+    }
+
+    /**
+     * FAC-08 — la fouille aux portes : chaque depart interroge la contrebande
+     * vers la zone d'arrivee. Le service decide seul (ballot en transit,
+     * foyer Bastion, tirage) — le voyage, lui, part dans tous les cas.
+     */
+    public function testTravelInspectsTheGatesForSmuggledCargo(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('bastion');
+        $player = $this->buildPlayerIn($from);
+
+        $this->shadowsSmuggling->expects(self::once())
+            ->method('inspectAtGates')
+            ->with($player, $to);
+
+        $this->service->startTravel($player, new ZoneConnection($from, $to, 300));
     }
 
     /**
