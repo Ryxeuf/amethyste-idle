@@ -23,7 +23,7 @@
 | FAC-04 ✅ | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
 | FAC-05 ✅ | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
 | FAC-06 ✅ | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
-| FAC-07 | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
+| FAC-07 ✅ | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
 | FAC-08 | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
 | FAC-09 | Échelles latérales + les cinq portes | L → par maison | ← FAC-01→03 |
 | FAC-10 | Tests du plan | S | ‖ |
@@ -201,17 +201,44 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       trois garde-fous du receleur (+ couverture fermée, guichet ordinaire, objet lié),
       rumeur vraie/fausse (+ bourse vide, inconnus), horaires de Tancrède, guichets réels
 
-### FAC-07 — La contrefaçon (M | ★★★ | HAUTE)
-> §12.4. Neuf fois, puis la dixième.
-> Prérequis : ← FAC-06
-- [ ] `PlayerItem` : flag `counterfeit` + état non-identifié (marché gris et butin
-      uniquement — jamais entre joueurs)
-- [ ] Trahison : compteur caché 8-12 tiré à la création ; échec du sort + contrecoup +
-      bris en améthyste Trouble
-- [ ] Œil du faussaire (Honoré), désamorçage (Révéré), main du faussaire (recette Révéré)
-- [ ] **Canaux verrouillés, testés** : HV refuse ; échange direct affiche « Contrefaçon » ;
-      un joueur ne peut jamais tromper un joueur
-- [ ] Tests : trahison, identification, les verrous de canaux
+### FAC-07 — La contrefaçon (M | ★★★ | HAUTE) ✅
+> §12.4. Neuf fois, puis la dixième. **Livré le 2026-08-03.**
+> Prérequis : ← FAC-06 ✅
+- [x] `PlayerItem` : flag `counterfeit` + compteur caché `counterfeit_charges` + état
+      `counterfeit_identified` (migration `Version20260803ECounterfeit`). L'état
+      non-identifié n'existe que sur le **butin** (`LootGenerator` tire la chance du
+      catalogue — 4 % du butin de matéria sort contrefait, indiscernable) — jamais entre
+      joueurs. Le bloc `ruelles.counterfeit` de `factions.yaml` porte toute la config
+      (fourchette 8-12, contrecoup 25 % de la vie max, paliers, recette), refusée au
+      chargement si incohérente (min < 2 = un piège, pas une trahison)
+- [x] **Trahison** : compteur tiré à la création (`CounterfeitService::mark`), décrémenté
+      à chaque lancement dans `FightSpellController` ; à zéro le sort **échoue** (le tour
+      est perdu, le monstre joue), le **contrecoup** frappe le lanceur (25 % de la vie max
+      effective), la matéria **se brise** — elle quitte son emplacement et laisse une
+      améthystite **Trouble** + des **éclats de matéria** (`materia-shards`, la matière
+      première de la main du faussaire)
+- [x] **Œil du faussaire** (Honoré) : passif — l'inventaire matéria montre le badge rouge
+      sur toute contrefaçon vue (identifiée, ou percée par le palier), et casse le
+      groupement pour qu'un bouton puisse la désigner. **Désamorçage** (Révéré) : route
+      `/game/inventory/materia/defuse/{id}` — démonte une contrefaçon **vue** en
+      améthystite Trouble + essence ; désamorcer une authentique répond le refus neutre
+      « rien à désamorcer » (ne révèle rien, ne coûte rien). **Main du faussaire**
+      (recette Révéré) : `recipe-forgers-hand` (joaillier 5 — 3 améthystites + 2 éclats
+      → une contrefaçon **identifiée**, le faussaire connaît son œuvre) ; le gate est le
+      palier Révéré des Ruelles tenu par `CraftingManager::isRecipeUnlocked`, jamais un
+      arbre. Débouché : les contrats de placement (FAC-08) — jamais un joueur
+- [x] **Canaux verrouillés, testés** : le HV refuse (les **deux** entrées —
+      `createListing` et `createAuctionListing` — plus le filtre du formulaire) ;
+      l'échoppe joueur refuse (`ShopManager::stock` + filtre d'écran) ; le coffre de
+      guilde refuse (`GuildVaultManager::deposit`) ; la commande d'artisan refuse
+      (`CraftOrderManager::createServiceOrder`). *L'échange direct joueur-joueur n'existe
+      pas encore dans le code (SPRINT_09) — le jour où il naît, le badge « Contrefaçon »
+      y est obligatoire, et FAC-10 re-testera l'invariant.* Le receleur, lui, l'accepte :
+      un PNJ n'est pas un joueur, c'est le canon
+- [x] Tests : trahison (compteur, bris, contrecoup, une authentique ne trahit jamais),
+      œil/identification (Honoré, l'œuvre du faussaire, refus muet), désamorçage
+      (palier, composants, sertie refusée), verrous (HV ×2, échoppe, coffre), butin
+      (chance du catalogue), gate de recette inerte sans faction semée
 
 ### FAC-08 — Contrebande & placements (M | ★★ | MOYENNE)
 > §12.4 d. Le système propre de la Confrérie — créé avec elle, pas dérivé des caravanes.

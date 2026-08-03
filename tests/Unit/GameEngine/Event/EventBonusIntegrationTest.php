@@ -81,6 +81,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createMock(CraftJobRepository::class),
             $this->createMock(SettlementWorkshopBonus::class),
             $this->createMock(PurityChain::class),
+            $this->createMock(\App\GameEngine\Reputation\CounterfeitService::class),
         );
 
         $result = $craftingManager->craft($player, $recipe);
@@ -139,6 +140,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createMock(CraftJobRepository::class),
             $this->createMock(SettlementWorkshopBonus::class),
             $this->createMock(PurityChain::class),
+            $this->createMock(\App\GameEngine\Reputation\CounterfeitService::class),
         );
 
         $result = $manager->craft($player, $recipe);

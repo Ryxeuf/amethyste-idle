@@ -20,6 +20,7 @@ use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
+use App\GameEngine\Reputation\CounterfeitService;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,6 +49,7 @@ class FightSpellController extends AbstractController
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly FightTurnPublisher $fightTurnPublisher,
         private readonly DamageMultiplierNormalizer $damageMultiplierNormalizer,
+        private readonly CounterfeitService $counterfeitService,
     ) {
     }
 
@@ -223,6 +225,15 @@ class FightSpellController extends AbstractController
         $hit = FightCalculator::hasAttackHit($spell->getHit() + $bonuses['hit']);
         $messages = $statusMessages;
 
+        // FAC-07 — la trahison : une contrefacon marche neuf fois et trahit a
+        // la dixieme. Le compteur cache se decremente a chaque lancement ; au
+        // declenchement, le sort echoue au pire moment — le tour est perdu,
+        // le contrecoup frappe, la materia se brise, et le monstre joue.
+        $betrayed = $this->counterfeitService->consumeCharge($materiaEntry['materia']);
+        if ($betrayed) {
+            $hit = false;
+        }
+
         $isCritical = false;
         $damageDealt = 0;
         $healAmount = 0;
@@ -259,6 +270,10 @@ class FightSpellController extends AbstractController
                 $messages[] = sprintf('Synergie %s activée !', $synergyData['label']);
                 $this->combatLogger->logSynergy($fight, $synergyData['label']);
             }
+        } elseif ($betrayed) {
+            $messages[] = sprintf('%s échoue !', $spell->getName());
+            $messages = array_merge($messages, $this->counterfeitService->betray($player, $materiaEntry['materia'], $materiaEntry['slot']));
+            $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), false);
         } else {
             $messages[] = sprintf('%s a raté !', $spell->getName());
             $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), false);

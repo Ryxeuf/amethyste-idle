@@ -306,7 +306,9 @@ class PlayerShopController extends AbstractController
                 continue;
             }
             foreach ($inventory->getItems() as $item) {
-                if ($item->isExchangeable()) {
+                // FAC-07 : l'echoppe vend a des joueurs — une contrefacon ne
+                // s'y expose jamais, le verrou metier est dans ShopManager.
+                if ($item->isExchangeable() && !$item->isCounterfeit()) {
                     $items[] = $item;
                 }
             }

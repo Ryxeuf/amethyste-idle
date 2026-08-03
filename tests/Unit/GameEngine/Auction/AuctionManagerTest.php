@@ -93,6 +93,42 @@ class AuctionManagerTest extends TestCase
         $this->manager->createListing($seller, $item, 100, 1);
     }
 
+    /**
+     * FAC-07 : le HV refuse toute contrefacon, identifiee ou non — la borne
+     * absolue du canon : un joueur ne peut jamais tromper un autre joueur.
+     */
+    public function testCreateListingRefusesACounterfeit(): void
+    {
+        $seller = $this->createPlayer(1, 1000);
+        $item = $this->createPlayerItem();
+        $item->setCounterfeit(true);
+
+        $this->em->expects($this->never())->method('persist');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('contrefacon');
+
+        $this->manager->createListing($seller, $item, 100, 1);
+    }
+
+    /**
+     * FAC-07 : la seconde entree du HV (l'enchere) est verrouillee aussi —
+     * deux portes, le meme videur.
+     */
+    public function testCreateAuctionListingRefusesACounterfeit(): void
+    {
+        $seller = $this->createPlayer(1, 1000);
+        $item = $this->createPlayerItem();
+        $item->setCounterfeit(true);
+
+        $this->em->expects($this->never())->method('persist');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('contrefacon');
+
+        $this->manager->createAuctionListing($seller, $item, 100);
+    }
+
     public function testCreateListingWithRegionTax(): void
     {
         $region = new Region();

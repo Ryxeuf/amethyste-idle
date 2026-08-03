@@ -122,6 +122,17 @@
       },
       "fence": {
         "sold": "Le lot est passé sous le comptoir : %gils% gils, hors taxe. La Confrérie prend sa coupe."
+      },
+      "counterfeit": {
+        "badge": "Contrefaçon",
+        "defuse": "Désamorcer",
+        "defuse_confirm": "Démonter cette contrefaçon en améthystite trouble et en essence ?",
+        "defused": "La contrefaçon est démontée proprement : une améthystite trouble, et %essence% essence.",
+        "error": {
+          "tier": "Le désamorçage est un savoir des Ruelles — il se gagne.",
+          "not_seen": "Rien à désamorcer ici.",
+          "socketed": "Retirez-la de son emplacement avant de la démonter."
+        }
       }
     },
     "shop": {

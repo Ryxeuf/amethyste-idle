@@ -292,6 +292,20 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
             ],
+            // FAC-07 : ce que laisse une materia brisee par sa trahison, avec
+            // l'amethyste Trouble. Matiere premiere de la main du faussaire —
+            // la contrefacon se fabrique avec les restes d'une contrefacon.
+            'materia_shards' => [
+                'name' => 'Éclats de matéria',
+                'name_translations' => ['en' => 'Materia Shards'],
+                'description' => 'Les restes d\'une matéria brisée. Le cristal ne chante plus, mais un faussaire sait quoi en faire.',
+                'type' => 'resource',
+                'slug' => 'materia-shards',
+                'price' => 8,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+            ],
             'life_domain_parchment' => [
                 'name' => 'Apprentissage des soins',
                 'name_translations' => ['en' => 'Healing Apprenticeship'],

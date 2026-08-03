@@ -122,6 +122,17 @@
       },
       "fence": {
         "sold": "The lot went under the counter: %gils% gils, tax-free. The Brotherhood takes its cut."
+      },
+      "counterfeit": {
+        "badge": "Counterfeit",
+        "defuse": "Defuse",
+        "defuse_confirm": "Dismantle this counterfeit into cloudy amethystite and essence?",
+        "defused": "The counterfeit is cleanly dismantled: one cloudy amethystite, and %essence% essence.",
+        "error": {
+          "tier": "Defusing is Alleys knowledge — it is earned.",
+          "not_seen": "Nothing to defuse here.",
+          "socketed": "Remove it from its slot before dismantling it."
+        }
       }
     },
     "shop": {

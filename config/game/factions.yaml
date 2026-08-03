@@ -195,6 +195,37 @@ ruelles:
     rumors:
         price_gils: 40
 
+    # La contrefacon (FAC-07) : « une contrefacon marche neuf fois et vous
+    # trahit a la dixieme. » Le compteur est tire a la creation dans la
+    # fourchette ci-dessous — jamais montre. L'etat non identifie n'existe que
+    # sur le butin et le marche gris : entre joueurs, tous les canaux sont
+    # verrouilles (HV, echoppe, coffre de guilde, commande d'artisan) — un
+    # joueur ne trompe JAMAIS un autre joueur, c'est la borne absolue.
+    counterfeit:
+        # La fourchette du compteur cache. Le minimum reste >= 2 : une
+        # contrefacon qui trahit au premier geste ne serait pas une trahison,
+        # ce serait un piege — le canon veut qu'elle MARCHE, longtemps.
+        charges_min: 8
+        charges_max: 12
+        # La part du butin de materia qui sort contrefaite, non identifiee.
+        # C'est l'unique source involontaire du monde — et la raison d'etre
+        # de l'œil du faussaire.
+        loot_chance_percent: 4
+        # Le contrecoup de la trahison, en pourcentage de la vie max du
+        # lanceur : le prix du faux geste, douloureux, jamais une execution.
+        backlash_percent_max_life: 25
+        # L'essence rendue par le desamorcage (avec l'amethyste Trouble) :
+        # demonter proprement vaut mieux que laisser trahir.
+        defuse_essence: 3
+        # Les trois capacites de l'echelle (GAME_WORLD § 12.4) : l'œil voit,
+        # le desamorcage demonte, la main fabrique.
+        eye_tier: 'honore'
+        defuse_tier: 'revere'
+        forge_tier: 'revere'
+        # La recette de la main du faussaire — gate par le palier ci-dessus,
+        # jamais par un arbre : ce savoir ne s'apprend qu'aux Ruelles.
+        forge_recipe_slug: 'recipe-forgers-hand'
+
 # --- Le patronage ------------------------------------------------------------
 # GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent un
 # patronage — on porte les couleurs d'une seule faction a la fois (changeable
