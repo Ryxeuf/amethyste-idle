@@ -60,8 +60,9 @@ class ResourceUsesReader
             'sellers' => $this->sellersBySlug()[$slug] ?? [],
             // Le rachat commun porte la bande (MET-01) ; sans lot en main, la
             // valeur affichee est celle du prix de reference — ce que rend un
-            // lot ordinaire, jamais une promesse sur la bande a venir.
-            'buybackValue' => max(1, (int) (($item->getPrice() ?? 0) * PurityPricer::BUYBACK_RATE)),
+            // lot ordinaire, jamais une promesse sur la bande a venir. Le taux
+            // vit dans le pricier, jamais ici.
+            'buybackValue' => $this->purityPricer->referenceBuybackValue($item),
         ];
     }
 
