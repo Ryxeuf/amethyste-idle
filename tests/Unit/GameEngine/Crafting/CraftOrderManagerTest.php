@@ -1314,7 +1314,7 @@ class CraftOrderManagerTest extends TestCase
     }
 
     /**
-     * @return \App\Entity\App\PlayerItem une piece d'equipement du sac
+     * @return PlayerItem une piece d'equipement du sac
      */
     private function createServicePiece(Player $owner, int $declaredSlots, int $openSlots = 0, ?int $boundTo = null): PlayerItem
     {

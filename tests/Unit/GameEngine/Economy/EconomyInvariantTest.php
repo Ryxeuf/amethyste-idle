@@ -2,7 +2,6 @@
 
 namespace App\Tests\Unit\GameEngine\Economy;
 
-use App\Entity\App\CraftOrder;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
@@ -389,4 +388,3 @@ class EconomyInvariantTest extends TestCase
         }
     }
 }
-
