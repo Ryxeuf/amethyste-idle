@@ -28,6 +28,16 @@ services:
       - host.docker.internal:host-gateway
     tty: true
 
+  # Worker des taches recurrentes (jalon F.0). L'image de dev ne contient aucune
+  # source — elles arrivent par le montage `.:/app`, exactement comme pour le
+  # conteneur web. Sans ce volume, le worker n'aurait meme pas de `bin/console`.
+  worker:
+    volumes:
+      - .:/app
+    environment:
+      SYMFONY_VERSION: "${SYMFONY_VERSION:-^7.4}"
+      XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+
   database:
     ports:
       - "32768:5432"

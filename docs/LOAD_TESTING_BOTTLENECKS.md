@@ -297,78 +297,134 @@ en environnement Docker.
 L'audit du 2026-07-26 a inspecte le depot pour chacun des points ci-dessous. Il en ressort
 **cinq obstacles verifies**, dont un qui precede tous les autres.
 
-#### F.0 — Le calendrier des taches n'est consomme par personne ⛔ **bloquant, et anterieur au scaling**
+#### F.0 — Le calendrier des taches n'etait consomme par personne ✅ **livre (2026-08-03)**
 
-`symfony/scheduler` publie ses messages sur un transport `scheduler_default` qu'il faut
-consommer avec `messenger:consume scheduler_default`. **Aucun processus de ce type n'existe** :
-ni dans `compose.yaml`, ni dans `compose.prod.yaml`, ni dans le `Dockerfile`, ni dans
-`frankenphp/docker-entrypoint.sh`. `config/packages/messenger.yaml` declare
-`transports: []`, et il n'y a pas de cron systeme dans le depot.
+**Le constat (audit du 2026-07-26).** `symfony/scheduler` publie ses messages sur un transport
+`scheduler_default` qu'il faut consommer avec `messenger:consume scheduler_default`. **Aucun
+processus de ce type n'existait** : ni dans `compose.yaml`, ni dans `compose.prod.yaml`, ni dans
+le `Dockerfile`, ni dans `frankenphp/docker-entrypoint.sh`. `config/packages/messenger.yaml`
+declare `transports: []`, et il n'y avait pas de cron systeme dans le depot.
 
 **La preuve** : `DefaultScheduleProvider` planifiait `api:mob:move` **toutes les minutes**
 alors que la commande a ete supprimee par ZON-21. Un consommateur aurait leve
 « Command not defined » toutes les 60 secondes depuis le pivot. Personne ne l'a vu.
 
-Consequence : aucune tache recurrente ne tourne. Ni l'expiration des encheres et des commandes
+Consequence : aucune tache recurrente ne tournait. Ni l'expiration des encheres et des commandes
 — qui **rendent de l'escrow** —, ni les loyers, ni le restock des boutiques PNJ (le plancher T1
 d'ECO-02), ni le respawn des filons, ni les saisons, ni le releve de masse monetaire d'ECO-15.
 
-> Ce point n'est pas un probleme de scaling : c'est un probleme de production. Il est place ici
-> parce que l'audit du jalon F l'a decouvert, et parce que **multiplier des instances qui
+> Ce point n'etait pas un probleme de scaling : c'etait un probleme de production. Il est place
+> ici parce que l'audit du jalon F l'a decouvert, et parce que **multiplier des instances qui
 > executent zero tache planifiee ne produit rien**.
 
-#### Mode d'emploi de l'activation
+**Ce qui est livre.** Un service Docker `worker` (`compose.yaml`), a **une seule replique**,
+lance par un entrypoint dedie (`frankenphp/scheduler-entrypoint.sh`) qui attend la base, attend
+la fin des migrations du conteneur web, efface l'arriere de loyers, puis consomme le transport.
+Le service n'a **aucune etiquette Traefik**, reste sur le reseau `internal`, et remplace la sonde
+de sante HTTP heritee de l'image par une sonde de vivacite du processus.
 
-L'activation n'est pas qu'un service a ajouter : deux pieges la rendent dangereuse telle quelle.
+L'activation ne demande **aucune etape manuelle** : `scripts/deploy.sh` releve le worker apres
+les migrations et verifie que le calendrier est effectivement consomme, en le disant fort si ce
+n'est pas le cas. Le cablage entier est garde en CI par
+`tests/Unit/Scheduler/SchedulerWorkerDeploymentTest.php` (12 assertions, sans Docker).
+
+#### Mode d'emploi de l'activation — et comment chaque piege est desamorce
+
+L'activation n'etait pas qu'un service a ajouter : quatre pieges la rendaient dangereuse telle
+quelle. Ils sont tous tenus par du code versionne, et non par une procedure a suivre.
 
 **Piege 1 — l'arriere de loyers.** `PlayerHouse::extendRent()` et `ShopRentService::extend()`
 avancent l'echeance de sept jours **a partir de l'echeance precedente**, pas a partir de
 maintenant, et chaque execution ne rattrape **qu'une periode**. Comme `app:house:rent` et
-`app:shop:rent` n'ont jamais tourne, toutes les echeances sont dans le passe : brancher le
-planificateur tel quel prelevererait **une semaine de loyer par jour** a chaque proprietaire
+`app:shop:rent` n'avaient jamais tourne, toutes les echeances etaient dans le passe : brancher le
+planificateur tel quel aurait preleve **une semaine de loyer par jour** a chaque proprietaire
 jusqu'a rattrapage — un mois de prelevements quotidiens pour six mois d'arriere, puis mise en
 sommeil des demeures et fermeture des echoppes insolvables.
 
-Personne n'a contracte cette dette. Elle s'efface **avant** de brancher le worker :
+Personne n'avait contracte cette dette. L'entrypoint du worker l'efface **avant** toute
+consommation, a chaque demarrage :
+
+```sh
+php bin/console app:economy:rent-backlog-reset --min-periods=2
+```
+
+Le seuil est ce qui rend l'appel automatique possible. Sans lui, un redemarrage a 00 h 10
+annulerait une echeance tombee a 00 h 00 que la tache de 00 h 15 s'appretait a prelever : le
+loyer ne rentrerait **jamais**. Avec `--min-periods=2`, seul un retard d'au moins quatorze jours
+est efface — en regime normal le planificateur preleve tous les jours, donc la commande ne trouve
+rien. Un tel retard ne peut venir que d'une interruption longue, c'est-a-dire exactement de la
+dette que personne n'a contractee.
+
+Lancee a la main sans option, la commande garde son comportement d'origine (tout l'arriere echu) :
 
 ```bash
 docker compose exec php php bin/console app:economy:rent-backlog-reset --dry-run  # mesurer
 docker compose exec php php bin/console app:economy:rent-backlog-reset            # effacer
 ```
 
-La commande est idempotente : relancee sur une base assainie, elle ne trouve rien et n'ecrit rien.
-
 **Piege 2 — l'entrypoint.** `frankenphp/docker-entrypoint.sh` declenche son bloc d'installation
 pour tout `$1` valant `frankenphp`, `php` ou `bin/console` : migrations Doctrine, `cache:clear`,
 `cache:warmup`, `tailwind:build`, `asset-map:compile`. Un worker lance par
 `command: php bin/console messenger:consume …` **rejouerait donc les migrations en concurrence avec
-le conteneur web**, et refarait les assets a chaque redemarrage horaire. Le service worker doit
-court-circuiter l'entrypoint (`entrypoint: ["php"]`) ou passer par un script dedie.
+le conteneur web**, et refarait les assets a chaque redemarrage.
+
+Le service passe donc par `frankenphp/scheduler-entrypoint.sh`, installe dans l'image sous
+`/usr/local/bin/scheduler-entrypoint` — **hors de `/app`**, parce que le stage de prod fait
+`rm -Rf frankenphp/`. Il ne migre pas et ne compile aucun asset : il *attend* que le conteneur
+web ait fini (`depends_on: php: service_healthy`, plus une verification de
+`doctrine:migrations:up-to-date`), efface l'arriere, puis consomme.
 
 **Piege 3 — le nombre de repliques.** Tant que F.1 (verrou de calendrier) n'est pas fait,
-**exactement une** replique du worker, quel que soit le nombre de repliques web.
+**exactement une** replique du worker, quel que soit le nombre de repliques web. `compose.yaml`
+fige `deploy.replicas: 1` et un test le verifie. **Ne jamais lancer
+`docker compose up --scale worker=N` avec N > 1** : c'est le seul chemin qui contourne encore la
+contrainte, et ses degats sont economiques et irreversibles.
 
-- [ ] Lancer `app:economy:rent-backlog-reset` (piege 1)
-- [ ] Ajouter un service `worker` a `compose.prod.yaml`, entrypoint court-circuite (piege 2)
-- [ ] **Exactement une** replique de ce worker (piege 3)
-- [ ] Verifier apres 24 h : un seul releve `gils_supply_snapshot`, un seul prelevement de loyer
+**Piege 4 — la sonde de sante heritee** (trouve a l'implementation). L'image porte
+`HEALTHCHECK curl -f http://localhost:2019/metrics`, l'admin de Caddy. Le worker ne sert pas de
+HTTP : sans remplacement il serait **toujours** declare malsain, et `docker compose up --wait`
+ferait echouer **chaque deploiement du site**. La sonde est donc remplacee par une vivacite de
+processus (`/proc/1/cmdline` contient `messenger:consume`), ce qui a l'avantage de verifier la
+bonne chose : non pas que le conteneur tourne, mais que le calendrier est consomme.
 
-> **Non livre par la campagne** : le service `worker` lui-meme. Le CD deploie automatiquement sur
-> `main` ; une definition de service non testee — variable d'environnement manquante, entrypoint
-> mal court-circuite, etiquette Traefik heritee par megarde — partirait donc **directement en
-> production**. Cette etape demande Docker sous la main. Le reste (mesure, effacement de l'arriere,
-> garde-fous) est livre et teste.
+- [x] Effacer l'arriere de loyers (piege 1) — automatique, seuil a 2 periodes
+- [x] Service `worker` dans `compose.yaml` + `compose.prod.yaml`, entrypoint dedie (piege 2)
+- [x] **Exactement une** replique de ce worker (piege 3)
+- [x] Sonde de sante propre au worker (piege 4)
+- [x] `scripts/deploy.sh` releve le worker apres migrations et verifie la consommation
+- [x] Garde-fou CI : `tests/Unit/Scheduler/SchedulerWorkerDeploymentTest.php`
+- [ ] Verifier apres 24 h en production : un seul releve `gils_supply_snapshot`, un seul
+      prelevement de loyer, un restock horaire, les encheres echues rendues
 
-#### F.1 — Le calendrier n'a pas de verrou
+**Ce que le premier demarrage va faire, et qu'il faut regarder.** Le monde est fige depuis des
+mois : le premier tour de calendrier va expirer d'un coup toutes les encheres et commandes de
+craft echues (donc **rendre l'escrow** correspondant), reapprovisionner les boutiques PNJ, et
+liberer les filons. C'est voulu et sain, mais c'est un evenement economique visible par les
+joueurs. La rotation hebdomadaire, elle, attendra le lundi suivant : rien n'est rejoue.
 
-`Schedule::lock()` n'est pas appele, et `symfony/lock` n'est meme pas une dependance. Des qu'un
-consommateur existera **sur N repliques**, chaque tache se declenchera **N fois**. Les degats
-sont economiques et irreversibles : recompenses de saison versees N fois, loyers preleves N fois,
-et N releves de masse monetaire par jour — ce qui fausserait la tendance d'ECO-15 elle-meme.
+```bash
+docker compose -f compose.yaml -f compose.prod.yaml logs -f worker
+docker compose -f compose.yaml -f compose.prod.yaml exec php \
+  php bin/console app:economy:rent-backlog-reset --dry-run   # doit rester vide
+```
 
-- [ ] `composer require symfony/lock`, puis `->lock($lockFactory->createLock('scheduler'))`
-- [ ] Alternative si le worker reste en replique unique : documenter la contrainte **et** la
-      faire respecter par le deploiement, plutot que par convention
+#### F.1 — Le calendrier n'a pas de verrou ⚠️ **desormais la seule chose qui separe du scaling**
+
+`Schedule::lock()` n'est pas appele, et `symfony/lock` n'est meme pas une dependance. Maintenant
+qu'un consommateur existe, **c'est le point qui interdit la deuxieme replique** : chaque tache se
+declencherait **N fois**. Les degats sont economiques et irreversibles : recompenses de saison
+versees N fois, loyers preleves N fois, et N releves de masse monetaire par jour — ce qui
+fausserait la tendance d'ECO-15 elle-meme.
+
+En attendant, la contrainte est tenue par le deploiement plutot que par convention :
+`deploy.replicas: 1` dans `compose.yaml`, verifie en CI par `SchedulerWorkerDeploymentTest`. Cela
+couvre le chemin nominal (`scripts/deploy.sh`, le CD) ; cela ne couvre **pas** un
+`docker compose up --scale worker=2` tape a la main.
+
+- [ ] `composer require symfony/lock`, puis `->lock($lockFactory->createLock('scheduler'))` — avec
+      un store **partage** (`DoctrineDbalStore` sur la base, ou Redis une fois le jalon A fait) :
+      un verrou de fichier serait local au conteneur et ne verrouillerait rien entre repliques
+- [x] Contrainte de replique unique tenue par le deploiement et verifiee en CI
 
 #### F.2 — Les sessions sont sur disque local
 
@@ -405,15 +461,20 @@ paralleles sans qu'aucune erreur ne soit levee.
 - [ ] Re-run **les 4 scenarios** a 200 VUs avec 2 repliques, compare a la baseline mono-instance
 
 **Gain attendu** : capacite lineaire avec le nombre de repliques. Conditionne par les jalons A-E
-— sinon on duplique des goulots au lieu d'augmenter la capacite. Et conditionne, avant tout,
-par **F.0** : rien de tout cela n'a de sens tant qu'aucune tache planifiee ne s'execute.
+— sinon on duplique des goulots au lieu d'augmenter la capacite. **F.0 est livre** : les taches
+planifiees s'executent, ce qui rend le reste du jalon F pertinent pour la premiere fois.
 
-**Garde-fou livre** : `tests/Unit/Scheduler/ScheduledCommandTest.php` — toute commande est
-planifiee ou declaree manuelle, et toute commande planifiee existe. Les sept commandes
-recurrentes qui n'etaient declarees nulle part (`app:auction:expire`, `app:craft-order:expire`,
-`app:harvest:respawn`, `app:shop:restock`, `app:house:rent`, `app:shop:rent`,
-`app:invasion:tick`) sont desormais dans le calendrier — **inertes tant que F.0 n'est pas fait**,
-actives des qu'il l'est.
+**Garde-fous livres** :
+
+- `tests/Unit/Scheduler/ScheduledCommandTest.php` — toute commande est planifiee ou declaree
+  manuelle, et toute commande planifiee existe. Les sept commandes recurrentes qui n'etaient
+  declarees nulle part (`app:auction:expire`, `app:craft-order:expire`, `app:harvest:respawn`,
+  `app:shop:restock`, `app:house:rent`, `app:shop:rent`, `app:invasion:tick`) sont dans le
+  calendrier — et desormais **actives**.
+- `tests/Unit/Scheduler/SchedulerWorkerDeploymentTest.php` — le cablage de deploiement : un
+  service consomme bien `scheduler_default`, l'arriere est efface avant (et seulement avec un
+  seuil), l'entrypoint ne rejoue ni migrations ni assets et est installe dans l'image, replique
+  unique, aucune route publique, sonde de sante remplacee, et le calendrier reste sans etat.
 
 ---
 
@@ -445,7 +506,7 @@ dans `docs/audits/` avec date, configuration, resume k6.
 | **C — Cache + indexes `/metrics`** | **✅ Termine** | 3a (indexes Player/Mob) + 3b (cache TTL 10s) + 3d (partial index Fight) |
 | **D — Indexes composites + refactor map** | **✅ Termine**, puis **sans objet** (ZON-24) | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) + 3f (cloture analytique : `idx_player_map_coords` non actionable car coords sont une string filtree en PHP). Les endpoints `/api/map/*` qui motivaient ce jalon ont disparu avec ZON-21 ; seul `idx_mob_alive_map` reste utile. |
 | E — Hardening Mercure | ⏳ A faire | — |
-| **F — Scaling horizontal** | 🔍 **Audit fait** (2026-07-26) | 5 obstacles verifies (F.0 a F.4). **F.0 est bloquant et anterieur au scaling** : aucun processus ne consomme le calendrier des taches, donc aucune tache recurrente ne tourne. Garde-fou `ScheduledCommandTest` livre. |
+| **F — Scaling horizontal** | 🔍 Audit fait (2026-07-26), **F.0 livre** (2026-08-03) | 5 obstacles verifies (F.0 a F.4). **F.0 etait bloquant et anterieur au scaling** : aucun processus ne consommait le calendrier des taches, donc aucune tache recurrente ne tournait. **Resolu** : service `worker` a replique unique (`compose.yaml`), entrypoint dedie, arriere de loyers efface au demarrage, verification dans `scripts/deploy.sh`. Garde-fous `ScheduledCommandTest` + `SchedulerWorkerDeploymentTest`. Restent F.1 a F.4 pour le scaling proprement dit — **F.1 (verrou) est ce qui interdit la 2e replique**. |
 | **Z — Passe de mesure sur le profil zone** | ⏳ **A faire, prerequis de l'objectif 200 joueurs** | Scenarios realignes par ZON-24 ; aucun run n'a encore ete effectue sur le profil zone. |
 
 ### Roadmap a venir

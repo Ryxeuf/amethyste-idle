@@ -334,6 +334,19 @@ jobs:
             && echo "OK: app.js present" \
             || (echo "FAIL: app.js missing from image" && exit 1)
 
+      # Le stage de prod fait `rm -Rf frankenphp/` : un entrypoint reste dans
+      # les sources ne survit pas au build. `SchedulerWorkerDeploymentTest`
+      # verifie la ligne `COPY` du Dockerfile ; seule l'image construite prouve
+      # que le fichier est bien la, et executable. Sans lui, le service `worker`
+      # meurt sur un « executable file not found » — apres deploiement, en
+      # production, et le monde se refige en silence.
+      - name: Smoke test — verify scheduler worker entrypoint
+        run: |
+          docker run --rm ghcr.io/${{ env.IMAGE_NAME }}:ci-${{ github.sha }} \
+            test -x /usr/local/bin/scheduler-entrypoint \
+            && echo "OK: scheduler-entrypoint present and executable" \
+            || (echo "FAIL: scheduler-entrypoint missing from image" && exit 1)
+
   # ---------------------------------------------------------------------------
   # 6. Verdict unique — cible ideale pour une regle de protection de branche
   # ---------------------------------------------------------------------------

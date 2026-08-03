@@ -68,6 +68,10 @@ RUN install-php-extensions pdo_pgsql
 
 COPY --link frankenphp/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
 COPY --link --chmod=755 frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+# Entrypoint du worker de taches recurrentes (jalon F.0). Installe hors de /app
+# comme celui du web : le stage de prod fait `rm -Rf frankenphp/`, un script
+# laisse dans les sources ne survivrait pas au build.
+COPY --link --chmod=755 frankenphp/scheduler-entrypoint.sh /usr/local/bin/scheduler-entrypoint
 COPY --link frankenphp/Caddyfile /etc/caddy/Caddyfile
 
 ENTRYPOINT ["docker-entrypoint"]
