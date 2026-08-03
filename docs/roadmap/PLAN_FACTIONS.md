@@ -223,10 +223,12 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       `/game/inventory/materia/defuse/{id}` — démonte une contrefaçon **vue** en
       améthystite Trouble + essence ; désamorcer une authentique répond le refus neutre
       « rien à désamorcer » (ne révèle rien, ne coûte rien). **Main du faussaire**
-      (recette Révéré) : `recipe-forgers-hand` (joaillier 5 — 3 améthystites + 2 éclats
+      (recette Révéré) : `recipe-forgers-hand` (joaillier 2 — 3 améthystites + 2 éclats
       → une contrefaçon **identifiée**, le faussaire connaît son œuvre) ; le gate est le
       palier Révéré des Ruelles tenu par `CraftingManager::isRecipeUnlocked`, jamais un
-      arbre. Débouché : les contrats de placement (FAC-08) — jamais un joueur
+      arbre (exemption déclarée dans `SkillRecipeConsistencyTest`). Les éclats se brisent
+      en combat ou s'achètent au guichet de Tancrède, la nuit. Débouché : les contrats de
+      placement (FAC-08) — jamais un joueur
 - [x] **Canaux verrouillés, testés** : le HV refuse (les **deux** entrées —
       `createListing` et `createAuctionListing` — plus le filtre du formulaire) ;
       l'échoppe joueur refuse (`ShopManager::stock` + filtre d'écran) ; le coffre de

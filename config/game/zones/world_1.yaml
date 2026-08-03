@@ -200,7 +200,10 @@ zones:
               class_type: guard
               life: 60
               greeting: "Dors si tu peux. Moi, je compte les heures jusqu'a l'aube — et je vends de quoi les tenir."
-              shop_items: [beer-pint, bread, grilled-meat]
+              # FAC-07 : les eclats de materia — la Confrerie fournit ses
+              # faussaires, la nuit, sous le comptoir. L'autre source est le
+              # bris d'une contrefacon en combat.
+              shop_items: [beer-pint, bread, grilled-meat, materia-shards]
               # Horaire a cheval sur minuit : `Pnj::isShopOpen` traite le cas
               # `opens_at > closes_at` comme une plage nocturne (20h -> 6h).
               # FAC-06 : le commentaire promettait l'horaire sans le poser —

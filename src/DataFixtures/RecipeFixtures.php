@@ -1112,7 +1112,11 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'La main du faussaire',
                 'slug' => 'recipe-forgers-hand',
                 'craft' => 'joaillier',
-                'required_level' => 5,
+                // Niveau 2 : le vrai gardien est le palier Revere des Ruelles,
+                // pas le metier — et une recette >= 3 devrait consommer un
+                // produit d'artisanat (ProductionChainTest), ce que la
+                // contrefacon ne fait pas : elle se fabrique avec des restes.
+                'required_level' => 2,
                 'ingredients' => [
                     ['slug' => 'ore-amethyst-crystal', 'quantity' => 3],
                     ['slug' => 'materia-shards', 'quantity' => 2],

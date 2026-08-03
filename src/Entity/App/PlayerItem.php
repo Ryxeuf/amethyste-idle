@@ -114,7 +114,7 @@ class PlayerItem
      * Slot dans lequel est serti l'item (materia).
      */
     #[ORM\OneToOne(targetEntity: Slot::class, mappedBy: 'item_set')]
-    private ?Slot $slotSet;
+    private ?Slot $slotSet = null;
 
     /**
      * Inventaire du joueur dans lequel se trouve cet item.

@@ -44,9 +44,11 @@ authentiques). Le **desamorcage** (Revere) demonte une contrefacon vue en Troubl
 (route `/game/inventory/materia/defuse/{id}`) ; desamorcer une authentique repond le refus
 neutre « rien a desamorcer » — il ne revele rien, il ne coute rien, et il protege
 l'authentique du demontage accidentel. La **main du faussaire** (Revere) est une recette
-(`recipe-forgers-hand`, joaillier 5 : 3 amethystites + 2 eclats → une contrefacon
+(`recipe-forgers-hand`, joaillier 2 : 3 amethystites + 2 eclats → une contrefacon
 **identifiee**, le faussaire connait son œuvre) — le gate est le palier des Ruelles tenu par
-`CraftingManager::isRecipeUnlocked`, jamais un arbre : ce savoir ne s'apprend qu'aux Ruelles.
+`CraftingManager::isRecipeUnlocked`, jamais un arbre : ce savoir ne s'apprend qu'aux Ruelles
+(exemption declaree dans `SkillRecipeConsistencyTest`). Les eclats s'achetent aussi au
+guichet de Tancrede, la nuit — la Confrerie fournit ses faussaires.
 Son debouche attend FAC-08 (les contrats de placement) : jamais un joueur.
 
 **Les canaux verrouilles.** Le HV refuse par ses **deux** entrees (`createListing` et

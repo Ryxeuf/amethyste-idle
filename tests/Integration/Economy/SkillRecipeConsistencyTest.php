@@ -59,12 +59,15 @@ final class SkillRecipeConsistencyTest extends AbstractIntegrationTestCase
     /**
      * Recettes livrees qu'aucun skill ne debloque.
      *
-     * **La liste est vide** : `recipe-poison-vial`, seule rescapee apres
-     * ECO-18, a rejoint le nœud « Concentration alchimique ».
+     * `recipe-poison-vial`, seule rescapee apres ECO-18, a rejoint le nœud
+     * « Concentration alchimique ». La main du faussaire (FAC-07) est ici
+     * **par conception** : son gardien est le palier Revere des Ruelles
+     * (CraftingManager::isRecipeUnlocked via CounterfeitService), jamais un
+     * arbre — ce savoir ne s'apprend pas, il se gagne.
      *
      * @var list<string>
      */
-    private const RECIPES_WITHOUT_TREE_NODE = [];
+    private const RECIPES_WITHOUT_TREE_NODE = ['recipe-forgers-hand'];
 
     public function testEverySkillCitesAnExistingRecipe(): void
     {
