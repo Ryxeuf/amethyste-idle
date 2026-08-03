@@ -2048,6 +2048,13 @@
       "common": "Common",
       "elite": "Elite",
       "boss": "Boss"
+    },
+    "wiki": {
+      "context": {
+        "zone": "Understanding zones and travel — the wiki",
+        "materia": "Understanding materia — the wiki",
+        "craft": "Understanding crafts — the wiki"
+      }
     }
   },
   "common": {

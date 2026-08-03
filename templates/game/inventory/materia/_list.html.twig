@@ -24,6 +24,13 @@
             </div>
         {% endif %}
 
+        {# WIK-03 — le lien contextuel vers la page materia du wiki #}
+        <p class="text-[10px] sm:text-xs text-gray-500 mb-3">
+            <a href="{{ path('app_wiki_page', {section: '02-devenir', page: 'materia'}) }}" class="underline" target="_top">
+                {{ 'game.wiki.context.materia'|trans }}
+            </a>
+        </p>
+
         {% if materias is empty %}
             <div class="text-center text-gray-600 py-8 sm:py-10">
                 <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 rounded-full bg-gray-800/50 flex items-center justify-center">

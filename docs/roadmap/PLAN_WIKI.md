@@ -23,7 +23,7 @@ Le wiki décrit le jeu tel qu'il est, pas la roadmap.
 |---|---|---|---|
 | WIK-01 | Le contenu — 7 chapitres, ~20 pages sous `docs/wiki/` | L | ✅ livré le 2026-07-29 |
 | WIK-02 ✅ | Le contrôleur public `/wiki` | M | **livré le 2026-07-31** |
-| WIK-03 ◐ | L'accès depuis le site + le contrat d'entretien | S | **entrée publique et contrat livrés** ; liens contextuels au fil des écrans |
+| WIK-03 ✅ | L'accès depuis le site + le contrat d'entretien | S | **complet** — entrée publique, contrat, et les trois liens contextuels (2026-08-03) |
 
 ### WIK-01 — Le contenu ✅ (L)
 > Livré le 2026-07-29. Les 7 chapitres : Commencer (le monde, créer son personnage,
@@ -49,14 +49,17 @@ Le wiki décrit le jeu tel qu'il est, pas la roadmap.
 > consultée rarement ne justifient pas un invalidateur de plus à tenir juste.
 
 
-### WIK-03 — L'accès et le contrat d'entretien ◐ (S | ★★)
-> **Livré le 2026-07-31** : l'entrée publique et la moitié vérifiable du contrat.
-> **Restent les liens contextuels**, à poser au fil des reprises d'écrans.
+### WIK-03 — L'accès et le contrat d'entretien ✅ (S | ★★)
+> **Livré le 2026-07-31** (entrée publique + moitié vérifiable du contrat), **complété le
+> 2026-08-03** : les trois liens contextuels sont posés.
 - [x] Entrée « Règles & savoir » dans la navigation du site public, **hors du bloc
       `app.user`** : les règles se lisent avant de jouer, et un wiki derrière
       l'authentification ne sert qu'à ceux qui n'en ont déjà plus besoin
-- [ ] Liens contextuels : l'écran de zone renvoie à la page zones-et-voyage, l'inventaire
-      à materia, l'écran de craft à artisanats (progressif, au fil des reprises d'écrans)
+- [x] Liens contextuels : l'écran de zone renvoie à `03-le-monde/zones-et-voyage`,
+      l'inventaire matéria à `02-devenir/materia`, l'écran de craft à
+      `04-produire/artisanats` — clés `game.wiki.context.*` (FR/EN), le même patron que
+      les encarts coach d'ONB-17b (« une règle publique se lit où l'on joue »). Les
+      reprises d'écrans futures pourront en ajouter, la base est posée
 - [x] **Contrat d'entretien**, dans sa moitié vérifiable : un test refuse que le wiki nomme
       un système acté mais non livré (caravanes, Répertoire des gestes). La liste est courte
       et chaque entrée se justifie par un jalon ouvert ; **le jour où l'un est livré, son
