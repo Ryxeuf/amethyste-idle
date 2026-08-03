@@ -112,6 +112,22 @@ class HostileConsequenceResolverTest extends TestCase
     }
 
     /**
+     * FAC-04b : le Cercle refuse de lire pour ses Hostiles, et pour eux
+     * seuls — le crochet materia_reading_refused de FAC-03 prend vie.
+     */
+    public function testReadingIsRefusedOnlyToCircleHostiles(): void
+    {
+        $mages = $this->faction('mages');
+        $hostile = new Player();
+        $neutral = new Player();
+
+        $resolver = $this->resolver([$mages], [$this->playerFaction($hostile, $mages, -50)]);
+
+        self::assertTrue($resolver->isMateriaReadingRefused($hostile));
+        self::assertFalse($resolver->isMateriaReadingRefused($neutral));
+    }
+
+    /**
      * FAC-04a : la Fonderie est semee, le crochet buyback_floor_closed prend
      * vie — le plancher se ferme aux Hostiles, et a eux seuls.
      */

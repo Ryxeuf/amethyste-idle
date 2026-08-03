@@ -20,7 +20,7 @@
 | FAC-01 ✅ | Tension par paires + patronage exclusif | M | ∅ |
 | FAC-02 ✅ | Les gestes nourrissent la réputation | S | ← FAC-01 |
 | FAC-03 ✅ | Hostile à conséquences | S | ← FAC-01 |
-| FAC-04 | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
+| FAC-04 ✅ | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
 | FAC-05 | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
 | FAC-06 | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
 | FAC-07 | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
@@ -110,7 +110,7 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
 
 ## Piste B — La Fonderie
 
-### FAC-04 — La Fonderie : faction, fondre/lire, essence (L | ★★★ | CRITIQUE)
+### FAC-04 — La Fonderie : faction, fondre/lire, essence (L | ★★★ | CRITIQUE) ✅
 > §12.2. Le geste doctrinal quotidien. Découper en **04a** (faction + fixtures + boutique
 > + plancher de rachat) et **04b** (conversion fondre/lire sur `PlayerItem` matéria,
 > essence en monnaie de services, gains Codex/accord côté lecture).
@@ -123,10 +123,22 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       (`CrystalBuybackFloor` : l'améthystite rend 9 gils garantis au comptoir au lieu du
       taux commun de 30 %, miroir du plancher T1 d'ECO-02 — fermé aux Hostiles, la vente
       au taux commun restant toujours ouverte)
-- [ ] 04b : action fondre (gils + essence) / lire (Codex + réputation Lecteurs + accord),
-      essence dépensable **uniquement en services** ; chaque lecture versée au Répertoire
-      (crochet no-op tant que le Répertoire n'est pas jalonné)
-- [ ] Tests : conversion à deux destinataires, essence non échangeable, crochet Répertoire
+- [x] 04b ✅ (**livré le 2026-08-02**) : `MateriaConversionService` — **fondre** rend gils
+      (taux commun 30 %, jamais un meilleur prix : l'essence et la réputation font la
+      différence) + **essence** (1/palier, colonne `player.essence`, migration) et nourrit
+      la Fonderie (route `materia_melt` FAC-02) ; **lire** inscrit — page de Codex par flux
+      (`UNLOCK_MATERIA_READ`, 8 entrées, une par élément), réputation du Cercle
+      (`materia_read`), progrès d'accord dans **l'arbre qui enseigne** la materia (jamais
+      dérivé de l'élément — doctrine `ActOneMateriaGranter`, 2 pts/palier) — et la lecture
+      se refuse aux Hostiles du Cercle (`materia_reading_refused`, FAC-03 prend vie), la
+      fonte jamais. Deux boutons sur l'écran materia, confirmation, solde d'essence affiché.
+      Essence dépensable **uniquement en services** : l'invariant se tient par l'absence de
+      chemin d'achat, figée par `EssenceServiceOnlyTest` (liste blanche des dépensiers) ;
+      chaque lecture versée au Répertoire via `MateriaReadEvent` (crochet sans abonné tant
+      que REP n'est pas jalonné — le Programme du Cercle écoutera au même endroit)
+- [x] Tests : conversion à deux destinataires, essence non échangeable (canaux marchands +
+      liste blanche), crochet Répertoire, lecture refusée sans rien consommer, la fonte
+      reste ouverte aux Hostiles du Cercle, chaque flux a sa page de Codex
       (04a testé : crochets pointés sur le slug semé, plancher borné bas/haut par la
       donnée réelle, fermeture Hostile, comptoir déclaré et marchand)
 
