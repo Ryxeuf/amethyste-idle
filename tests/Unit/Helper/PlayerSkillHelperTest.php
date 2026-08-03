@@ -185,7 +185,7 @@ class PlayerSkillHelperTest extends TestCase
     }
 
     /**
-     * ARC-10 — **aucun refus ne depend d'un total tous domaines confondus.**
+     * ARC-10 — aucun refus ne depend d'un total tous domaines confondus.
      *
      * Le plafond de 500 points contredisait la premiere ligne de la doctrine
      * (« le savoir n'est jamais borne », GAME_DOMAINS § 1), et la mesure l'a
