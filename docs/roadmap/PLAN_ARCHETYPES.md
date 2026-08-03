@@ -25,7 +25,7 @@
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
 | ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
 | ARC-03 ✅ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
-| ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
+| ARC-04 ◐ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
 | ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
@@ -222,19 +222,49 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : somme = 50 pb par arbre ; règle des 80/20 ; aucun passif plat sur un nœud de
       domaine de combat *(ARC-03b — ils supposent des nœuds convertis)*
 
-### ARC-04 — Les ressources par registre (M | ★★ | HAUTE)
+### ARC-04 — Les ressources par registre (M → 2 sous-phases | ★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-04a les deux registres qui ont déjà un modèle, ARC-04b
+> le carquois.** La mêlée paie en tours (`Spell::cooldown` existe et est appliqué) et
+> les sorts paient en PM (`Player::energy` existe) : ces deux-là se livrent sans créer
+> une seule pièce d'équipement. Le registre distance demande `ammoCost`, un carquois
+> à écrire, une recette de charpentier et une prime — c'est un autre chantier.
+>
+> **ARC-04a — livré le 2026-08-03.** *La mêlée cesse de payer en PM.* Les 10 techniques
+> du Soldat (ARC-02b) passent à `energyCost: 0` et prennent la **reprise de leur palier**
+> (grille 0/1/2/3/4 de GAME_MATERIA §2.3 bis, lue sur `shadow-dance` et non inventée) —
+> *un guerrier cesse d'être « un mage qui tape »*, et c'est vérifiable en une lecture.
+> Plus **la régénération des PM hors combat**, le curseur ouvert depuis 2026-07-29
+> (BALANCE §24.2) : avant ce jalon les PM ne revenaient qu'en **lançant un sort**, donc
+> en dépensant ce qu'on cherchait à récupérer, et hors combat rien ne remontait jamais.
+> `ManaRegenManager` est calqué sur `LifeRegenManager` — paresseux, en temps réel, ancré
+> à la sortie de chaque combat —, avec son curseur en paramètre (`zone.mana.regen_seconds`,
+> défaut **6 s**, la moitié des PV : un pool de PM se vide en une rencontre quand une
+> barre de vie tient plusieurs combats). La symétrie du canon est rétablie : *les PV
+> paient les coups reçus, les PM paient les gestes faits, et les deux se rechargent en
+> temps réel*.
+>
+> **Un constat, pas un arbitrage** : `stone-shield` est un sort de **palier 2** qui porte
+> une reprise, ce que la règle 3 de §2.3 bis n'autorise qu'à partir du palier 3. Le
+> corriger demande de choisir entre le rendre spammable et monter son palier — deux
+> façons de changer une valeur de jeu vivante. Le cas est **nommé et vérifié exact**
+> dans le contrat, pour qu'un second ne s'ajoute pas en silence.
+>
+> **ARC-04b — reste à faire** : le carquois, `ammoCost`, la prime de munition, la
+> capacité de carquois, et la conversion des 4 gestes de tir qui facturent encore des PM
+> (liste nommée dans `RegisterResourceTest`).
 > GAME_ARCHETYPES §2. Trois registres qui coûtent la même chose ne sont qu'un registre.
 - [ ] **Le carquois, pas les munitions** (arbitrage rendu au §9 septies) : **aucun coût
       récurrent en gils**. Le carquois est une **pièce d'équipement durable** (charpentier),
       possédée en plusieurs exemplaires — un par élément —, exactement comme un mage possède
       plusieurs matéria. Il **se vide dans la rencontre et se ramasse après** : la ressource
       du registre distance devient **intra-rencontre**, comme les PM
-- [ ] **La régénération des PM hors combat** — le curseur qui décide de tout l'équilibre
-      solo, et qui n'existe pas (BALANCE §24.2, ouvert depuis 2026-07-29). Mesuré : sans
-      lui le guérisseur paie **14 minutes** d'attente par jour quand les autres en paient
-      99 à 142 ; avec un curseur calibré (~6 s/point contre 12 s/PV), les six builds se
-      tiennent entre **99 et 179 minutes**. Symétrie à tenir : *les PV paient les coups
-      reçus, les PM paient les gestes faits, et les deux se rechargent en temps réel*
+- [x] **La régénération des PM hors combat** — le curseur qui décide de tout l'équilibre
+      solo (BALANCE §24.2, ouvert depuis 2026-07-29) *(ARC-04a)*. `ManaRegenManager`
+      calqué sur `LifeRegenManager`, curseur en paramètre `zone.mana.regen_seconds`
+      (défaut 6 s contre 12 s/PV), ancre posée à la sortie de chaque combat. Symétrie
+      tenue : *les PV paient les coups reçus, les PM paient les gestes faits, et les deux
+      se rechargent en temps réel*
 - [ ] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater).
       Une première rédaction le faisait porter par la munition seule : une flèche ordinaire
       produisait alors une action **sans élément**, donc hors de la case du domaine, donc
@@ -248,13 +278,16 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] **Le prix se calibre contre le revenu quotidien**, jamais contre la valeur du geste :
       ~10 % du revenu du jour pour l'ordinaire, ~25 % un jour où l'archer choisit
       l'élémentaire. Repère actuel : un coffre d'exploration rend 2 à 12 gils (BALANCE §10)
-- [ ] **Temps de reprise** : `Spell::cooldown` (déjà au modèle, sans consommateur) branché
-      sur les techniques de mêlée
-- [ ] Les PM restent la ressource des sorts, inchangés
+- [x] **Temps de reprise** : `Spell::cooldown` branché sur les techniques de mêlée
+      *(ARC-04a)* — grille 0/1/2/3/4 par palier, et `energyCost: 0` : un geste ne facture
+      que la ressource de son registre (GAME_MATERIA §2.3 bis)
+- [x] Les PM restent la ressource des sorts, inchangés *(ARC-04a)*
 - [ ] Croise ECO : les flèches en lot sont une branche du **charpentier** (DOM-06) — le
       débouché existe déjà, il n'y a pas de recette à inventer
-- [ ] Tests : un archer sans munition élémentaire garde un geste jouable (jamais un mur) ;
-      aucune technique de mêlée sans reprise au-delà du geste d'entrée
+- [x] Tests : aucune technique de mêlée sans reprise au-delà du geste d'entrée, aucune qui
+      facture des PM, la grille suivie palier par palier *(ARC-04a, `RegisterResourceTest`)*
+- [ ] Tests : un archer sans munition élémentaire garde un geste jouable (jamais un mur)
+      *(ARC-04b)*
 
 ### ARC-05 — L'ancre d'échelle (L | ★★★ | HAUTE)
 > GAME_ARCHETYPES §6.4. Les gestes valent 1 à 12 points ; les monstres ont 11 à 3 200 PV.

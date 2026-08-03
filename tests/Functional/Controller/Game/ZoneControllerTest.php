@@ -30,6 +30,7 @@ use App\GameEngine\Zone\GatherResult;
 use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\HuntService;
 use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
@@ -75,6 +76,7 @@ class ZoneControllerTest extends TestCase
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
     private ActionEnergyManager&MockObject $actionEnergyManager;
     private LifeRegenManager&MockObject $lifeRegenManager;
+    private ManaRegenManager&MockObject $manaRegenManager;
     private ExploreService&MockObject $exploreService;
     private HuntService&MockObject $huntService;
     private GatherService&MockObject $gatherService;
@@ -133,6 +135,7 @@ class ZoneControllerTest extends TestCase
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
         $this->lifeRegenManager = $this->createMock(LifeRegenManager::class);
+        $this->manaRegenManager = $this->createMock(ManaRegenManager::class);
         $this->exploreService = $this->createMock(ExploreService::class);
         $this->exploreService->method('getExploreCost')->willReturn(5);
         $this->huntService = $this->createMock(HuntService::class);
@@ -180,6 +183,7 @@ class ZoneControllerTest extends TestCase
             $this->visitedZoneRepository,
             $this->actionEnergyManager,
             $this->lifeRegenManager,
+            $this->manaRegenManager,
             $this->exploreService,
             $this->huntService,
             $this->gatherService,

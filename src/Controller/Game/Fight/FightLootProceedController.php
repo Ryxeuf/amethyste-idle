@@ -8,6 +8,7 @@ use App\Event\Fight\FightLootedEvent;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +29,7 @@ class FightLootProceedController extends AbstractController
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly InventoryHelper $inventoryHelper,
         private readonly LifeRegenManager $lifeRegenManager,
+        private readonly ManaRegenManager $manaRegenManager,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
@@ -81,6 +83,7 @@ class FightLootProceedController extends AbstractController
         // suivie du butin etait le seul chemin de sortie qui l'omettait : les PV
         // perdus se regeneraient d'un coup au prochain rafraichissement.
         $this->lifeRegenManager->anchor($player);
+        $this->manaRegenManager->anchor($player);
         $this->entityManager->persist($player);
         $fight->removePlayer($player);
 
@@ -105,6 +108,7 @@ class FightLootProceedController extends AbstractController
         foreach ($fight->getPlayers() as $remainingPlayer) {
             $remainingPlayer->setFight(null);
             $this->lifeRegenManager->anchor($remainingPlayer);
+            $this->manaRegenManager->anchor($remainingPlayer);
             $this->entityManager->persist($remainingPlayer);
         }
 

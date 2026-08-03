@@ -14,6 +14,7 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,6 +44,7 @@ class FightFleeControllerTest extends TestCase
 
         $combatLogArchiver = $this->createMock(CombatLogArchiver::class);
         $lifeRegenManager = $this->createMock(LifeRegenManager::class);
+        $manaRegenManager = $this->createMock(ManaRegenManager::class);
 
         $this->controller = new FightFleeController(
             $this->playerHelper,
@@ -55,6 +57,7 @@ class FightFleeControllerTest extends TestCase
             $fightTurnPublisher,
             $eventDispatcher,
             $lifeRegenManager,
+            $manaRegenManager,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

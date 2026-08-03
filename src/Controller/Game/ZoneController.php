@@ -33,6 +33,7 @@ use App\GameEngine\Zone\ExploreService;
 use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\HuntService;
 use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
@@ -77,6 +78,7 @@ class ZoneController extends AbstractController
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly ActionEnergyManager $actionEnergyManager,
         private readonly LifeRegenManager $lifeRegenManager,
+        private readonly ManaRegenManager $manaRegenManager,
         private readonly ExploreService $exploreService,
         private readonly HuntService $huntService,
         private readonly GatherService $gatherService,
@@ -117,6 +119,9 @@ class ZoneController extends AbstractController
 
         // Regeneration paresseuse des PV hors combat (ZON-12).
         $this->lifeRegenManager->refresh($player, true);
+        // ARC-04a : les PM se rechargent en temps reel comme les PV — meme
+        // mecanique paresseuse, meme point de lecture.
+        $this->manaRegenManager->refresh($player, true);
 
         // Resolution paresseuse d'une expedition terminee (ZON-13) : notifie une
         // seule fois (in-game + Mercure si connecte).
