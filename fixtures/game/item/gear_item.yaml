@@ -573,6 +573,7 @@ App\Entity\Game\Item:
     rarity: 'common'
     protection: 1
     materia_slots: 2
+    ammo_capacity: 20
     level: 6
     space: 2
   hardened_quiver (extends item):
@@ -586,6 +587,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 3
     materia_slots: 3
+    ammo_capacity: 30
     level: 14
     space: 2
   dragon_vest (extends item):

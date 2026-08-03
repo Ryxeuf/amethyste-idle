@@ -20,6 +20,7 @@ use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Fight\QuiverResolver;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
@@ -97,6 +98,7 @@ class FightSpellControllerTest extends TestCase
             new DamageMultiplierNormalizer(),
             $this->createMock(\App\GameEngine\Reputation\CounterfeitService::class),
             new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 5))),
+            new QuiverResolver(),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

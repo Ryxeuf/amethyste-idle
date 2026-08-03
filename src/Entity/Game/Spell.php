@@ -65,6 +65,22 @@ class Spell
     #[ORM\Column(name: 'cooldown', type: 'integer', nullable: true)]
     private ?int $cooldown = null;
 
+    /**
+     * Ce que le geste coute en munitions (ARC-04b).
+     *
+     * La ressource du registre **distance**, comme les PM sont celle des sorts
+     * et la reprise celle de la melee (GAME_MATERIA § 2.3 bis). Elle se compte
+     * **dans la rencontre** : le carquois se vide en combat et se ramasse
+     * apres, si bien qu'un archer ne paie jamais un gil pour tirer — arbitrage
+     * du § 9 septies, *aucun archetype ne porte un cout recurrent en gils que
+     * les autres n'ont pas*.
+     *
+     * `0` pour tout ce qui n'est pas un geste de tir : un sort ne consomme pas
+     * de fleche, et un geste ne facture que la ressource de son registre.
+     */
+    #[ORM\Column(name: 'ammo_cost', type: 'integer', options: ['default' => 0])]
+    private int $ammoCost = 0;
+
     #[ORM\Column(name: 'energy_cost', type: 'integer', options: ['default' => 0])]
     private int $energyCost = 0;
 
@@ -304,6 +320,16 @@ class Spell
     public function setCooldown(?int $cooldown): void
     {
         $this->cooldown = $cooldown;
+    }
+
+    public function getAmmoCost(): int
+    {
+        return $this->ammoCost;
+    }
+
+    public function setAmmoCost(int $ammoCost): void
+    {
+        $this->ammoCost = max(0, $ammoCost);
     }
 
     public function getEnergyCost(): int

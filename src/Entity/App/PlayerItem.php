@@ -27,6 +27,11 @@ class PlayerItem
     public const GEAR_RING_1 = 0b1000000000; // 512
     public const GEAR_RING_2 = 0b10000000000; // 1024
     public const GEAR_SHOULDER = 0b100000000000; // 2048
+    // ARC-04b : l'emplacement du carquois. `gear_location: 'ammo'` existait sur
+    // deux pieces depuis leur creation, mais sans bit d'equipement : un carquois
+    // ne pouvait pas etre porte, donc la ressource du registre distance n'avait
+    // nulle part ou se lire. Meme defaut que la hache avant OBJ-05.
+    public const GEAR_AMMO = 0b1000000000000000000000000; // 16777216
 
     // Tool slots (craft & gathering)
     public const GEAR_TOOL_PICKAXE = 0b1000000000000; // 4096
@@ -58,6 +63,7 @@ class PlayerItem
         self::GEAR_RING_1,
         self::GEAR_RING_2,
         self::GEAR_SHOULDER,
+        self::GEAR_AMMO,
     ];
 
     public const TOOL_GEARS = [
