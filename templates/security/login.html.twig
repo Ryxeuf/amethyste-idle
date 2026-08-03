@@ -20,6 +20,11 @@
                 <div class="ds-banner ds-banner--loss mb-4">{{ message }}</div>
             {% endfor %}
 
+            {# ONB-02 : la reinitialisation reussie atterrit ici. #}
+            {% for message in app.flashes('success') %}
+                <div class="ds-banner ds-banner--gain mb-4">{{ message|trans }}</div>
+            {% endfor %}
+
             {% if error %}
                 <div class="ds-banner ds-banner--loss mb-4">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
             {% endif %}
@@ -47,10 +52,14 @@
                            placeholder="••••••••" autocomplete="current-password" required>
                 </div>
 
-                <label for="rememberMe" class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" name="_remember_me" id="rememberMe" class="w-4 h-4 accent-brand">
-                    <span class="text-sm text-ink">{{ 'security.remember_me'|trans }}</span>
-                </label>
+                <div class="flex items-center justify-between">
+                    <label for="rememberMe" class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" name="_remember_me" id="rememberMe" class="w-4 h-4 accent-brand">
+                        <span class="text-sm text-ink">{{ 'security.remember_me'|trans }}</span>
+                    </label>
+                    {# ONB-02 : perdre son mot de passe ne doit plus rien couter. #}
+                    <a href="{{ path('app_forgot_password') }}" class="ds-hint underline">{{ 'security.forgot_password'|trans }}</a>
+                </div>
 
                 {# Une seule action primaire par ecran. #}
                 <button type="submit" class="ds-btn ds-btn--primary w-full">{{ 'security.login'|trans }}</button>

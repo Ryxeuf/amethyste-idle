@@ -1,0 +1,14 @@
+# ONB-02 — le mailer (decision du 2026-08-02).
+#
+# Le DSN vit en env, jamais ici : `null://null` par defaut (dev comme test —
+# rien ne part d'une machine de developpement), le DSN Brevo se branche en
+# prod par l'operateur quand le compte et le DNS (SPF/DKIM) sont operationnels.
+#
+#   MAILER_DSN=brevo+api://CLE@default        (bridge symfony/brevo-mailer)
+#   MAILER_DSN=brevo+smtp://LOGIN:CLE@default (repli SMTP du meme fournisseur)
+#
+# L'adresse d'expedition est un parametre applicatif (`app.mailer_from`,
+# services.yaml) : elle fait partie de l'identite du jeu, pas de l'infra.
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'

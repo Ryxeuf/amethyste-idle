@@ -55,7 +55,32 @@
     "no_account": "No account yet?",
     "register_link": "Register",
     "subtitle": "Enter your credentials to reach the game.",
-    "email_placeholder": "you@email.com"
+    "email_placeholder": "you@email.com",
+    "forgot_password": "Forgot your password?",
+    "reset": {
+      "title": "Forgot password",
+      "subtitle": "Enter your account's address: a reset link will be sent to you.",
+      "submit": "Send the link",
+      "request_sent": "If this address has an account, a reset link is on its way. It is valid for one hour — check your spam folder.",
+      "back_to_login": "Back to login",
+      "new_password_title": "New password",
+      "new_password_subtitle": "Choose your new password. All your open sessions will be logged out.",
+      "new_password": "New password",
+      "confirm": "Reset",
+      "done": "Password reset. Log in with the new one.",
+      "invalid_token": "This reset link is no longer valid. Request a new one.",
+      "invalid_csrf": "The session expired, try again.",
+      "rate_limited": "Too many requests. Try again in an hour.",
+      "password_too_short": "This password is too short.",
+      "email": {
+        "subject": "Amethyste — reset your password",
+        "title": "Reset your password",
+        "intro": "Someone — hopefully you — asked to reset your account's password. One click is enough to choose a new one.",
+        "action": "Choose a new password",
+        "expiry": "This link is valid for one hour, and works only once.",
+        "ignore": "If you did not ask for anything, ignore this message: your password stays unchanged."
+      }
+    }
   },
   "game": {
     "craft_order": {
