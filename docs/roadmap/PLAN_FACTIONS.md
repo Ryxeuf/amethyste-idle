@@ -22,7 +22,7 @@
 | FAC-03 ✅ | Hostile à conséquences | S | ← FAC-01 |
 | FAC-04 ✅ | La Fonderie : faction + fondre/lire + essence | L → 2 sous-phases | ∅ |
 | FAC-05 ✅ | Contrats d'approvisionnement (Fonderie) | S | ← FAC-04, RET-01 ✅ |
-| FAC-06 | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
+| FAC-06 ✅ | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
 | FAC-07 | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
 | FAC-08 | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
 | FAC-09 | Échelles latérales + les cinq portes | L → par maison | ← FAC-01→03 |
@@ -170,22 +170,36 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
 
 ## Piste C — Les Ruelles
 
-### FAC-06 — L'approche, le receleur, les rumeurs (M | ★★★ | HAUTE)
+### FAC-06 — L'approche, le receleur, les rumeurs (M | ★★★ | HAUTE) ✅
 > §12.4. La faction invisible jusqu'au premier contact.
-> Prérequis : ← FAC-01
-- [ ] Entrée différée : gestes qualifiants (nuits d'exploration, étal nocturne,
-      contrefaçon découverte) → chaîne nocturne de 3-4 étapes → la faction apparaît.
-      Façades : Tancrède (le Fanal), Kolm (Mines) — PNJ existants, seconde vie
-- [ ] **Receleur** : vente hors taxe, coupe 15 % (toujours > taxe max de cité, 10 %),
-      plafond ~5 lots/semaine/joueur, accès Ami+ — les trois garde-fous en config
-- [ ] **Rumeurs** : achat d'informations (bandes hautes, filons reposés, Affleurement) ;
-      Hostile = rumeurs empoisonnées (FAC-03)
-- [ ] **Renommage du libellé** « Confrérie des Ombres » → « Confrérie des Ruelles »
-      (name + traductions, slug `ombres` inchangé) — porté par **ZON-39** (PLAN_ZONES) ;
-      si ZON-39 n'est pas passé avant ce jalon, le faire ici. Aujourd'hui le canon
-      « les Ruelles » n'apparaît **nulle part côté joueur**, alors que le commentaire de
-      `factions.yaml` promet « le canon vit dans le libellé »
-- [ ] Tests : invisibilité avant contact, les trois garde-fous du receleur, rumeur vraie/fausse
+> Prérequis : ← FAC-01 — **livré le 2026-08-02**
+- [x] Entrée différée : le geste qualifiant (explorations **nocturnes**, seuil en config)
+      → un mot glissé au journal → la faction apparaît **à Neutre** (la ligne de réputation
+      naît à zéro : découvrir n'est pas un geste qui nourrit). Invisible avant sur toutes
+      les surfaces (écran + API, `FactionVisibility` — l'axe des Chevaliers se calcule sur
+      la liste complète pour ne pas basculer « hors tension » à tort). Façade : Tancrède
+      (le Fanal) — **ses horaires 20h-6h sont enfin posés** (le commentaire les promettait,
+      l'échoppe était ouverte 24h/24) ; Kolm (Mines) en second guichet. *La chaîne
+      narrative de 3-4 étapes est condensée dans le geste qualifiant + le mot glissé — la
+      quête scénarisée reste ouvrable avec FAC-09e*
+- [x] **Receleur** : vente hors taxe au guichet d'un agent, aux heures de sa couverture —
+      prix d'item moins la coupe (15 %, **strictement > taxe max de cité** : la borne 10 %
+      extraite en `Region::MAX_TAX_RATE_PERCENT`, le loader refuse une coupe ≤), plafond
+      5 lots/semaine/joueur (`PlayerWeeklyFenceSale`, clé de semaine RET-01), accès Ami+ —
+      les trois garde-fous en config (`factions.yaml` bloc `ruelles`), refusés au
+      chargement s'ils manquent ; le refus ne ferme jamais la vente (repli au rachat
+      commun) ; un objet lié ne passe jamais sous le comptoir ; chaque lot nourrit la
+      Confrérie (route `grey_market_sale` de FAC-02 — le crochet prend vie)
+- [x] **Rumeurs** : achat d'informations au guichet (l'Affleurement de la semaine RET-06 —
+      zone + filon, la bande qui tire haut — signatures ZON-32 exposées, le filon le plus
+      reposé — stock effectif) ; le réseau ne parle pas aux inconnus (même refus neutre) ;
+      **Hostile = rumeurs empoisonnées** (le crochet `poisoned_rumors` de FAC-03 prend
+      vie : même forme, même prix, une zone qui n'est jamais la bonne)
+- [x] **Renommage du libellé** — fait par ZON-39, vérifié : `FactionFixtures` dit
+      « Confrérie des Ruelles »
+- [x] Tests : invisibilité avant contact (+ apparition à Neutre, jamais deux fois), les
+      trois garde-fous du receleur (+ couverture fermée, guichet ordinaire, objet lié),
+      rumeur vraie/fausse (+ bourse vide, inconnus), horaires de Tancrède, guichets réels
 
 ### FAC-07 — La contrefaçon (M | ★★★ | HAUTE)
 > §12.4. Neuf fois, puis la dixième.

@@ -107,6 +107,23 @@
         }
       }
     },
+    "shadows": {
+      "rumor": {
+        "offer": "The watchman lowers his voice: a rumor, for %price% gils.",
+        "buy": "Buy the rumor",
+        "outcrop": "They whisper an outcrop has opened: %zone%, at the %vein% vein. This week only.",
+        "signature": "Word is the band pulls high around %zone% — especially at night.",
+        "rested_vein": "A vein rests at full vitality: %vein%, in %zone%. No one has touched it.",
+        "silence": "The network heard nothing this week. Keep your coin next time.",
+        "error": {
+          "counter": "No one here sells that kind of thing.",
+          "gils": "Information has a price, and your purse does not cover it."
+        }
+      },
+      "fence": {
+        "sold": "The lot went under the counter: %gils% gils, tax-free. The Brotherhood takes its cut."
+      }
+    },
     "shop": {
       "hostile_surcharge": "The Merchants have not forgotten your deeds: +%percent%% on every price. The shop still serves you, but it makes you pay."
     },

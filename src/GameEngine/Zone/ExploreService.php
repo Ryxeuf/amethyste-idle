@@ -56,6 +56,7 @@ class ExploreService
         private readonly GameTimeService $gameTimeService,
         private readonly ActionYieldResolver $yieldResolver,
         private readonly MateriaLootTable $materiaLootTable,
+        private readonly \App\GameEngine\Reputation\ShadowsApproach $shadowsApproach,
     ) {
     }
 
@@ -114,6 +115,18 @@ class ExploreService
         $this->actionEnergyManager->spend($player, $this->getExploreCost(), false);
 
         $result = $this->resolveEvent($player, $zone, $this->drawEvent($zone));
+
+        // FAC-06 — l'approche des Ruelles : chaque exploration de nuit compte,
+        // et au seuil un mot est glisse. La Confrerie ne se trouve pas, c'est
+        // elle qui vous trouve.
+        if (GameTimeService::PHASE_NIGHT === $this->gameTimeService->getPhase()
+            && $this->shadowsApproach->recordNightExploration($player)) {
+            $this->addJournalEntry(
+                $player,
+                'Un inconnu vous a glisse un mot dans la nuit : la Confrerie des Ruelles sait qui vous etes. Passez voir Tancrede, au Fanal.',
+                ['zone' => $zone->getSlug(), 'event' => 'shadows_approach'],
+            );
+        }
 
         $this->entityManager->flush();
         $this->journalRepository->enforceEntryLimit($player);

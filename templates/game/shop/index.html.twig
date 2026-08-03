@@ -52,6 +52,20 @@
             </div>
         {% endif %}
 
+        {% if shadowsRumorAvailable is defined and shadowsRumorAvailable %}
+            {# FAC-06 — le reseau d'oreilles : visible apres le premier contact
+               seulement. La vente au receleur passe par l'onglet vendre, aux
+               heures du guichet. #}
+            <div class="ds-banner mb-4 flex items-center justify-between gap-3">
+                <p class="text-xs">{{ 'game.shadows.rumor.offer'|trans({'%price%': shadowsRumorPrice}) }}</p>
+                <form method="post" action="{{ path('app_game_shop_rumor', {id: pnj.id}) }}">
+                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-violet-800 hover:bg-violet-700 text-ink-on transition-colors">
+                        {{ 'game.shadows.rumor.buy'|trans }}
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {# Buy section #}
             <div>

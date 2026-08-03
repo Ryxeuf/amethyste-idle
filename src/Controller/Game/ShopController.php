@@ -12,6 +12,9 @@ use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
 use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
+use App\GameEngine\Reputation\ShadowsMarket;
+use App\GameEngine\Reputation\ShadowsMarketException;
+use App\GameEngine\Reputation\ShadowsRumors;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,6 +36,10 @@ class ShopController extends AbstractController
         private readonly GameMasterPolicy $gameMasterPolicy,
         private readonly HostileConsequenceResolver $hostileConsequences,
         private readonly CrystalBuybackFloor $buybackFloor,
+        private readonly ShadowsMarket $shadowsMarket,
+        private readonly ShadowsRumors $shadowsRumors,
+        private readonly \App\GameEngine\Reputation\ReputationManager $reputationManager,
+        private readonly \Symfony\Contracts\Translation\TranslatorInterface $translator,
     ) {
     }
 
@@ -82,6 +89,10 @@ class ShopController extends AbstractController
             'totalDiscount' => $totalDiscount,
             'hostileSurcharge' => $hostileSurcharge,
             'renownTier' => PlayerRenownTier::fromScore($player->getRenownScore()),
+            // FAC-06 : le guichet des Ruelles ne se montre qu'apres le premier
+            // contact — avant, l'echoppe est une echoppe.
+            'shadowsRumorAvailable' => null !== $player && $this->shadowsRumors->isAvailableFor($player, $pnj),
+            'shadowsRumorPrice' => $this->shadowsRumors->priceGils(),
         ]);
     }
 
@@ -259,16 +270,68 @@ class ShopController extends AbstractController
             $sellPrice = max($sellPrice, $floor);
         }
 
+        // FAC-06 — le receleur : au guichet des Ruelles, la nuit, un vendeur
+        // Ami passe un lot au marche gris — prix moins la coupe de la
+        // Confrerie, hors taxe de cite. Le refus (plafond, palier, jour) ne
+        // ferme jamais la vente : le repli est le rachat commun.
+        $fencePrice = $this->shadowsMarket->fencePriceFor($pnj, $item, $player, !$playerItem->isBound());
+        $isFenceSale = null !== $fencePrice && $fencePrice > $sellPrice;
+        if ($isFenceSale) {
+            $sellPrice = $fencePrice;
+        }
+
         $player->addGils($sellPrice);
         $this->entityManager->remove($playerItem);
         $this->entityManager->persist($player);
+
+        if ($isFenceSale) {
+            // Le lot compte apres la vente reussie, jamais avant — et le geste
+            // nourrit la Confrerie (route grey_market_sale, FAC-02).
+            $this->shadowsMarket->recordFenceSale($player);
+        }
+
         $this->entityManager->flush();
+
+        if ($isFenceSale) {
+            $this->reputationManager->grantGestureReputation($player, 'grey_market_sale');
+        }
 
         return new JsonResponse([
             'success' => true,
-            'message' => sprintf('Vous avez vendu %s pour %d Gils.', $item->getName(), $sellPrice),
+            'message' => $isFenceSale
+                ? $this->translator->trans('game.shadows.fence.sold', ['%gils%' => $sellPrice])
+                : sprintf('Vous avez vendu %s pour %d Gils.', $item->getName(), $sellPrice),
             'gils' => $player->getGils(),
         ]);
+    }
+
+    /**
+     * FAC-06 — acheter une rumeur au guichet des Ruelles. L'information est
+     * une marchandise ; a un Hostile de la Confrerie, elle est fausse.
+     */
+    #[Route('/{id}/rumor', name: 'app_game_shop_rumor', methods: ['POST'])]
+    public function rumor(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player || !$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
+
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        if (!$pnj || !$this->isReachableFrom($pnj, $player)) {
+            return new JsonResponse(['error' => 'Boutique introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $rumor = $this->shadowsRumors->buy($player, $pnj);
+            $this->addFlash('success', $this->translator->trans($rumor['key'], $rumor['params']));
+        } catch (ShadowsMarketException $e) {
+            $this->addFlash('error', $this->translator->trans($e->getMessage()));
+        }
+
+        return $this->redirectToRoute('app_game_shop', ['id' => $id]);
     }
 
     /**

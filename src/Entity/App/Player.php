@@ -346,6 +346,14 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'essence', type: 'integer', options: ['default' => 0])]
     private int $essence = 0;
 
+    /**
+     * FAC-06 : le compteur d'explorations nocturnes — le geste qualifiant de
+     * l'approche des Ruelles. Il ne sert qu'avant le premier contact : la
+     * ligne de reputation creee, il cesse de compter.
+     */
+    #[ORM\Column(name: 'night_explorations', type: 'integer', options: ['default' => 0])]
+    private int $nightExplorations = 0;
+
     #[ORM\Column(name: 'respec_count', type: 'integer', options: ['default' => 0])]
     private int $respecCount = 0;
 
@@ -1038,6 +1046,16 @@ class Player implements CharacterInterface
         $this->essence -= $amount;
 
         return true;
+    }
+
+    public function getNightExplorations(): int
+    {
+        return $this->nightExplorations;
+    }
+
+    public function incrementNightExplorations(): void
+    {
+        ++$this->nightExplorations;
     }
 
     public function getRespecCount(): int

@@ -310,9 +310,14 @@ class PurityDrawer
     /**
      * Les signatures de zone, memoisees (ZON-32).
      *
+     * Publique depuis FAC-06 : la rumeur des Ruelles vend « ou la bande tire
+     * haut », et relire `purity.yaml` depuis un second lecteur dupliquerait la
+     * source. La signature deplace les poids, jamais le plafond — une rumeur
+     * dit « tire haut », pas « garantit du Pur ».
+     *
      * @return array<string, array{weight_shift: int, night_weight_shift: int}>
      */
-    private function signatures(): array
+    public function signatures(): array
     {
         if ($this->signatures === null) {
             $this->signatures = $this->loader->load()['signatures'];

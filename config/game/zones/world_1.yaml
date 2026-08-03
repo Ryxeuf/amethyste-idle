@@ -203,6 +203,11 @@ zones:
               shop_items: [beer-pint, bread, grilled-meat]
               # Horaire a cheval sur minuit : `Pnj::isShopOpen` traite le cas
               # `opens_at > closes_at` comme une plage nocturne (20h -> 6h).
+              # FAC-06 : le commentaire promettait l'horaire sans le poser —
+              # l'echoppe etait ouverte 24h/24. Tancrede est un veilleur de
+              # nuit, et le guichet du receleur suit sa couverture.
+              opens_at: 20
+              closes_at: 6
             # MAT-04 — le plancher du jour 1. Les materia d'entree (m1) ouvertes
             # a 0 point par les 24 arbres de combat sont achetables ici, au prix
             # de la grille (GAME_MATERIA §2.3) : le plancher T1 PNJ etendu au

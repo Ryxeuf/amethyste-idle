@@ -11,6 +11,13 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Table(name: 'region')]
 class Region
 {
+    /**
+     * La borne haute de la taxe de cite (ECO-04, bornes 1-10 %). Extraite en
+     * constante par FAC-06 : la coupe du receleur doit rester STRICTEMENT
+     * au-dessus, et un invariant ne peut pas s'accrocher a un litteral.
+     */
+    public const MAX_TAX_RATE_PERCENT = 10;
+
     use TimestampableEntity;
 
     #[ORM\Id]

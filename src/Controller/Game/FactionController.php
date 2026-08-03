@@ -28,6 +28,7 @@ class FactionController extends AbstractController
         private readonly PatronageService $patronageService,
         private readonly FoundryContractManager $foundryContractManager,
         private readonly TranslatorInterface $translator,
+        private readonly \App\GameEngine\Reputation\FactionVisibility $factionVisibility,
     ) {
     }
 
@@ -41,7 +42,11 @@ class FactionController extends AbstractController
             return $this->redirectToRoute('app_game');
         }
 
-        $factions = $this->entityManager->getRepository(Faction::class)->findAll();
+        $allFactions = $this->entityManager->getRepository(Faction::class)->findAll();
+        // FAC-06 : la Confrerie des Ruelles est invisible jusqu'au premier
+        // contact. Le filtre ne touche que la liste rendue — l'axe se calcule
+        // sur la liste complete, sans quoi l'Ordre passerait « hors tension ».
+        $factions = $this->factionVisibility->visibleFor($player, $allFactions);
 
         $playerFactions = $this->entityManager->getRepository(PlayerFaction::class)->findBy(['player' => $player]);
         $playerFactionMap = [];
@@ -66,7 +71,7 @@ class FactionController extends AbstractController
             'playerFactionMap' => $playerFactionMap,
             'rewardsByFaction' => $rewardsByFaction,
             'player' => $player,
-            'axisByFaction' => $this->axisByFaction($factions),
+            'axisByFaction' => $this->axisByFaction($allFactions),
             'patron' => $player->getPatronFaction(),
             'patronageTier' => $this->tensionCatalog->patronageTier(),
             'tensionTier' => $this->tensionCatalog->beyondTier(),
