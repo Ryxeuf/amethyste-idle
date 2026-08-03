@@ -38,6 +38,7 @@ class GilsSupplyCoverageTest extends TestCase
         'tax_gils' => 'ShopSaleLog : journal d\'une taxe deja prelevee',
         'net_gils' => 'ShopSaleLog : journal d\'un net deja verse',
         'gils_reward' => 'GuildQuest : recompense promise, pas encore versee',
+        'gils_per_unit' => 'FoundryContract : prix affiche du contrat de la semaine (FAC-05), verse dans une bourse a la livraison',
         'player_gils' => 'GilsSupplySnapshot : le releve lui-meme',
         'guild_gils' => 'GilsSupplySnapshot : le releve lui-meme',
         'shop_gils' => 'GilsSupplySnapshot : le releve lui-meme',
