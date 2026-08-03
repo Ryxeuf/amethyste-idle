@@ -58,6 +58,24 @@
     "email_placeholder": "votre@email.com"
   },
   "game": {
+    "materia": {
+      "convert": {
+        "melt": "Fondre",
+        "read_action": "Lire",
+        "melt_confirm": "Fondre cette materia ? Elle disparaîtra définitivement — la Fonderie rend des gils et de l’essence.",
+        "read_confirm": "Lire cette materia ? Elle sera consumée — le Cercle inscrit ce qu’elle portait, pour toujours.",
+        "melted": "La Fonderie a fondu la materia : +%gils% gils, +%essence% essence.",
+        "read": "Le Cercle a lu la materia : +%points% points d’accord dans l’arbre qui l’enseigne.",
+        "codex_unlocked": "Une page du Codex s’est ouverte.",
+        "essence_balance": "Essence : %essence% — la monnaie des services de la Fonderie.",
+        "error": {
+          "not_found": "Cette materia est introuvable dans votre inventaire.",
+          "not_materia": "Cet objet n’est pas une materia.",
+          "socketed": "Cette materia est sertie : retirez-la avant de la convertir.",
+          "reading_refused": "Le Cercle refuse de lire pour vous. Il reste la fonte, ou le stock."
+        }
+      }
+    },
     "shop": {
       "hostile_surcharge": "Les Marchands n'ont pas oublié vos gestes : +%percent% % sur tous les prix. La boutique vous sert, mais elle vous fait payer."
     },

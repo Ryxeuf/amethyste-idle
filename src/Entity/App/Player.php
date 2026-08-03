@@ -336,6 +336,16 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'gils', type: 'integer', options: ['default' => 0])]
     private int $gils = 0;
 
+    /**
+     * FAC-04b : l'essence — le carburant de la commodite, rendu par la fonte
+     * d'une materia (GAME_WORLD 12.2). Depensable **uniquement en services**
+     * (reparations, entretien, accelerations) : l'invariant se tient par
+     * l'absence de tout chemin d'achat d'objet en essence, et un test de
+     * contrat le verifie.
+     */
+    #[ORM\Column(name: 'essence', type: 'integer', options: ['default' => 0])]
+    private int $essence = 0;
+
     #[ORM\Column(name: 'respec_count', type: 'integer', options: ['default' => 0])]
     private int $respecCount = 0;
 
@@ -1006,6 +1016,26 @@ class Player implements CharacterInterface
             return false;
         }
         $this->gils -= $amount;
+
+        return true;
+    }
+
+    public function getEssence(): int
+    {
+        return $this->essence;
+    }
+
+    public function addEssence(int $amount): void
+    {
+        $this->essence += max(0, $amount);
+    }
+
+    public function removeEssence(int $amount): bool
+    {
+        if ($this->essence < $amount) {
+            return false;
+        }
+        $this->essence -= $amount;
 
         return true;
     }

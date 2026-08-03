@@ -52,6 +52,8 @@ class MateriaController extends AbstractController
 
         return $this->render('game/inventory/materia/_list.html.twig', [
             'materias' => $materias,
+            // FAC-04b : le solde d'essence s'affiche la ou on la gagne.
+            'essence' => $this->playerHelper->getPlayer()?->getEssence() ?? 0,
         ]);
     }
 }

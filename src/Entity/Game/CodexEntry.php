@@ -30,6 +30,9 @@ class CodexEntry
     public const UNLOCK_BOSS_KILL = 'boss_kill';
     public const UNLOCK_ARC_COMPLETED = 'arc_completed';
     public const UNLOCK_MANUAL = 'manual';
+    // FAC-04b : lire une materia inscrit ce qu'elle portait. La cle est
+    // l'element du flux lu — la premiere lecture de chaque flux ouvre sa page.
+    public const UNLOCK_MATERIA_READ = 'materia_read';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

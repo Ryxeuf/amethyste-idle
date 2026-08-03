@@ -58,6 +58,24 @@
     "email_placeholder": "you@email.com"
   },
   "game": {
+    "materia": {
+      "convert": {
+        "melt": "Melt",
+        "read_action": "Read",
+        "melt_confirm": "Melt this materia? It will be gone for good — the Foundry pays gils and essence.",
+        "read_confirm": "Read this materia? It will be consumed — the Circle inscribes what it held, forever.",
+        "melted": "The Foundry melted the materia: +%gils% gils, +%essence% essence.",
+        "read": "The Circle read the materia: +%points% accord points in the tree that teaches it.",
+        "codex_unlocked": "A Codex page has opened.",
+        "essence_balance": "Essence: %essence% — the currency of Foundry services.",
+        "error": {
+          "not_found": "That materia is nowhere in your inventory.",
+          "not_materia": "This item is not a materia.",
+          "socketed": "This materia is socketed: remove it before converting it.",
+          "reading_refused": "The Circle refuses to read for you. There is still the melt, or the shelf."
+        }
+      }
+    },
     "shop": {
       "hostile_surcharge": "The Merchants have not forgotten your deeds: +%percent%% on every price. The shop still serves you, but it makes you pay."
     },

@@ -77,6 +77,21 @@ class HostileConsequenceResolver
     }
 
     /**
+     * FAC-04b : le Cercle refuse de lire pour un Hostile — il reste la fonte,
+     * ou le stock (GAME_WORLD § 12.5). C'est le crochet
+     * `materia_reading_refused` de FAC-03 qui prend vie ; un refus de
+     * privilege, jamais un droit — la materia se sertit et se fond toujours.
+     */
+    public function isMateriaReadingRefused(Player $player): bool
+    {
+        if (!$this->catalog->hasConsequence('mages', 'materia_reading_refused')) {
+            return false;
+        }
+
+        return $this->isHostileToward($player, 'mages');
+    }
+
+    /**
      * Hostile = ligne de reputation strictement negative. Une faction pas
      * encore semee, ou jamais rencontree, ne rend jamais Hostile.
      */

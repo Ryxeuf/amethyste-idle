@@ -18,6 +18,12 @@
             {% endif %}
         </div>
 
+        {% if essence is defined and essence > 0 %}
+            <div class="text-[10px] sm:text-xs text-amber-400 mb-3">
+                {{ 'game.materia.convert.essence_balance'|trans({'%essence%': essence}) }}
+            </div>
+        {% endif %}
+
         {% if materias is empty %}
             <div class="text-center text-gray-600 py-8 sm:py-10">
                 <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 rounded-full bg-gray-800/50 flex items-center justify-center">
@@ -60,6 +66,21 @@
                             {% else %}bg-green-900/30 text-green-400{% endif %}">
                             {{ item.element }}
                         </span>
+                        {# FAC-04b — fondre ou lire : un choix definitif par materia #}
+                        <div class="flex flex-col gap-1 shrink-0">
+                            <form method="post" action="{{ path('app_game_inventory_materia_melt', {id: item.id}) }}" data-turbo="false"
+                                  onsubmit="return confirm('{{ 'game.materia.convert.melt_confirm'|trans|e('js') }}');">
+                                <button type="submit" class="text-[9px] px-1.5 py-0.5 rounded bg-orange-900/30 text-orange-400 hover:bg-orange-900/50 w-full">
+                                    {{ 'game.materia.convert.melt'|trans }}
+                                </button>
+                            </form>
+                            <form method="post" action="{{ path('app_game_inventory_materia_read', {id: item.id}) }}" data-turbo="false"
+                                  onsubmit="return confirm('{{ 'game.materia.convert.read_confirm'|trans|e('js') }}');">
+                                <button type="submit" class="text-[9px] px-1.5 py-0.5 rounded bg-sky-900/30 text-sky-400 hover:bg-sky-900/50 w-full">
+                                    {{ 'game.materia.convert.read_action'|trans }}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
