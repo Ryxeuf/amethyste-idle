@@ -50,6 +50,12 @@ class GuildVaultManager
             throw new \InvalidArgumentException('Cet objet est lié à votre personnage.');
         }
 
+        // FAC-07 : le coffre est un canal entre joueurs — une contrefaçon n'y
+        // entre jamais, identifiée ou non. Un joueur ne trompe pas sa guilde.
+        if ($playerItem->isCounterfeit()) {
+            throw new \InvalidArgumentException('Une contrefaçon ne passe pas dans le coffre de guilde.');
+        }
+
         $guild = $membership->getGuild();
         $vault = $this->getOrCreateVault($guild);
 

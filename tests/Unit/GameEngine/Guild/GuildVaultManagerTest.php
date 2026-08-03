@@ -100,6 +100,27 @@ class GuildVaultManagerTest extends TestCase
         $this->vaultManager->deposit($player, $playerItem);
     }
 
+    /**
+     * FAC-07 : le coffre est un canal entre joueurs — une contrefacon n'y
+     * entre jamais, identifiee ou non.
+     */
+    public function testDepositCounterfeitFails(): void
+    {
+        $player = $this->createPlayer(1);
+        $guild = $this->createGuildWithVault();
+        $membership = $this->createMembership($guild, $player, GuildRank::Member);
+        $inventory = $this->createBag($player);
+        $playerItem = $this->createPlayerItem($inventory);
+        $playerItem->setCounterfeit(true);
+
+        $this->guildManager->method('getPlayerMembership')->willReturn($membership);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('contrefaçon');
+
+        $this->vaultManager->deposit($player, $playerItem);
+    }
+
     public function testDepositVaultFullFails(): void
     {
         $player = $this->createPlayer(1);

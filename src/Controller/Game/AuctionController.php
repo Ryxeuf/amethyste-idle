@@ -124,7 +124,9 @@ class AuctionController extends AbstractController
         $bag = $this->playerHelper->getBagInventory();
         $sellableItems = [];
         foreach ($bag->getItems() as $playerItem) {
-            if ($playerItem->isExchangeable()) {
+            // FAC-07 : une contrefacon ne s'affiche meme pas dans le
+            // formulaire — le service la refuserait de toute facon.
+            if ($playerItem->isExchangeable() && !$playerItem->isCounterfeit()) {
                 $sellableItems[] = $playerItem;
             }
         }

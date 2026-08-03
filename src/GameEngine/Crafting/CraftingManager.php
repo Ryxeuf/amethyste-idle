@@ -15,6 +15,7 @@ use App\GameEngine\Economy\PurityChain;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\Reputation\CounterfeitService;
 use App\GameEngine\Settlement\SettlementWorkshopBonus;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -38,6 +39,7 @@ class CraftingManager
         private readonly CraftJobRepository $craftJobRepository,
         private readonly SettlementWorkshopBonus $workshopBonus,
         private readonly PurityChain $purityChain,
+        private readonly CounterfeitService $counterfeitService,
     ) {
     }
 
@@ -80,6 +82,14 @@ class CraftingManager
     public function isRecipeUnlocked(Player $player, Recipe $recipe): bool
     {
         if ($this->getCraftingLevel($player, $recipe->getCraft()) < $recipe->getRequiredLevel()) {
+            return false;
+        }
+
+        // FAC-07 : la main du faussaire ne s'apprend qu'aux Ruelles — le
+        // palier Revere, jamais un arbre. Le gate vaut pour l'affichage ET
+        // l'execution, les deux chemins passent ici.
+        if ($this->counterfeitService->isForgeRecipe($recipe->getSlug())
+            && !$this->counterfeitService->canForge($player)) {
             return false;
         }
 
@@ -383,6 +393,12 @@ class CraftingManager
             // ECO-26 : la bande vient de la matiere, la qualite du savoir-faire.
             // Les deux se posent ici, et ne se confondent jamais.
             $playerItem->setPurity($job->getPurity());
+            // FAC-07 : la main du faussaire produit une contrefacon —
+            // identifiee, le faussaire connait son œuvre. Son seul debouche
+            // est un contact PNJ : tous les canaux joueurs la refusent.
+            if ($this->counterfeitService->isForgeRecipe($recipe->getSlug())) {
+                $this->counterfeitService->mark($playerItem, true);
+            }
             $this->inventoryHelper->addItem($playerItem, false);
         }
 
@@ -511,6 +527,10 @@ class CraftingManager
             // affichee une fois dans le message de retour, puis perdue.
             $playerItem->setCraftQuality($finalQuality);
             $playerItem->setPurity($purity);
+            // FAC-07 : la main du faussaire, chemin immediat (experimentation).
+            if ($this->counterfeitService->isForgeRecipe($recipe->getSlug())) {
+                $this->counterfeitService->mark($playerItem, true);
+            }
             $this->inventoryHelper->addItem($playerItem, false);
             $lastPlayerItem = $playerItem;
         }

@@ -153,6 +153,12 @@ class ShopManager
             throw new \InvalidArgumentException('Cet objet est lie a son proprietaire et ne peut pas etre vendu.');
         }
 
+        // FAC-07 : l'echoppe vend a des joueurs — une contrefacon n'y entre
+        // jamais, identifiee ou non. Un joueur ne trompe jamais un joueur.
+        if ($playerItem->isCounterfeit()) {
+            throw new \InvalidArgumentException('Une contrefacon ne se met pas en vitrine.');
+        }
+
         $inventory = $playerItem->getInventory();
         if (null === $inventory || $inventory->getPlayer()->getId() !== $player->getId()) {
             throw new \InvalidArgumentException('Cet objet n\'est pas dans votre inventaire.');

@@ -114,7 +114,7 @@ class PlayerItem
      * Slot dans lequel est serti l'item (materia).
      */
     #[ORM\OneToOne(targetEntity: Slot::class, mappedBy: 'item_set')]
-    private ?Slot $slotSet;
+    private ?Slot $slotSet = null;
 
     /**
      * Inventaire du joueur dans lequel se trouve cet item.
@@ -197,6 +197,33 @@ class PlayerItem
      */
     #[ORM\Column(name: 'purity', type: 'string', length: 20, nullable: true, enumType: Purity::class)]
     private ?Purity $purity = null;
+
+    /**
+     * Contrefacon des Ruelles (FAC-07).
+     *
+     * « Une contrefacon marche neuf fois et vous trahit a la dixieme »
+     * (GAME_WORLD § 12.4). Le flag ne circule que par le marche gris et le
+     * butin — jamais entre joueurs : le HV la refuse, l'echoppe la refuse,
+     * le coffre de guilde la refuse. Un joueur ne trompe jamais un joueur.
+     */
+    #[ORM\Column(name: 'counterfeit', type: 'boolean', options: ['default' => false])]
+    private bool $counterfeit = false;
+
+    /**
+     * Le compteur cache de la trahison : tire a la creation (8-12), decremente
+     * a chaque lancement, et **jamais montre au joueur** — ni en Twig, ni en
+     * JSON. A zero, le sort echoue, le contrecoup frappe, la materia se brise.
+     */
+    #[ORM\Column(name: 'counterfeit_charges', type: 'integer', nullable: true)]
+    private ?int $counterfeitCharges = null;
+
+    /**
+     * L'etat identifie : le faussaire connait son œuvre, l'œil du faussaire
+     * (Honore) voit celle des autres. Non identifiee, la contrefacon est
+     * indiscernable — c'est sa definition.
+     */
+    #[ORM\Column(name: 'counterfeit_identified', type: 'boolean', options: ['default' => false])]
+    private bool $counterfeitIdentified = false;
 
     public function __construct()
     {
@@ -409,6 +436,42 @@ class PlayerItem
     public function setPurity(?Purity $purity): void
     {
         $this->purity = $purity;
+    }
+
+    public function isCounterfeit(): bool
+    {
+        return $this->counterfeit;
+    }
+
+    public function setCounterfeit(bool $counterfeit): self
+    {
+        $this->counterfeit = $counterfeit;
+
+        return $this;
+    }
+
+    public function getCounterfeitCharges(): ?int
+    {
+        return $this->counterfeitCharges;
+    }
+
+    public function setCounterfeitCharges(?int $charges): self
+    {
+        $this->counterfeitCharges = $charges;
+
+        return $this;
+    }
+
+    public function isCounterfeitIdentified(): bool
+    {
+        return $this->counterfeitIdentified;
+    }
+
+    public function setCounterfeitIdentified(bool $identified): self
+    {
+        $this->counterfeitIdentified = $identified;
+
+        return $this;
     }
 
     /**

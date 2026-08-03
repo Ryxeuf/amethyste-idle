@@ -195,6 +195,12 @@ class CraftOrderManager
             throw new \InvalidArgumentException('Retirez la piece avant de la confier : on ne sertit pas un equipement porte.');
         }
 
+        // FAC-07 : la commande passe l'objet entre les mains d'un autre joueur
+        // — une contrefacon n'y entre jamais.
+        if ($target->isCounterfeit()) {
+            throw new \InvalidArgumentException('Une contrefacon ne se confie pas a un artisan.');
+        }
+
         if (!$target->getGenericItem()->isGear()) {
             throw new \InvalidArgumentException('Le sertissage ne travaille que les pieces d\'equipement.');
         }

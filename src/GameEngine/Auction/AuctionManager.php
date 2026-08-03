@@ -76,6 +76,12 @@ class AuctionManager
             throw new \InvalidArgumentException('Cet objet est lie a son proprietaire et ne peut pas etre mis en vente.');
         }
 
+        // FAC-07 : le HV refuse toute contrefacon — identifiee ou non. La
+        // borne absolue du canon : un joueur ne trompe jamais un autre joueur.
+        if ($playerItem->isCounterfeit()) {
+            throw new \InvalidArgumentException('L\'expertise de l\'hotel des ventes refuse cet objet : c\'est une contrefacon.');
+        }
+
         $this->gameMasterPolicy->assertMayTrade($seller);
         $this->assertNotSuspended($seller);
         $this->validatePriceLimits($playerItem, $pricePerUnit);
@@ -247,6 +253,12 @@ class AuctionManager
 
         if ($quantity < 1) {
             throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
+        }
+
+        // FAC-07 : meme refus que la vente directe — les deux entrees du HV
+        // sont verrouillees, pas une seule.
+        if ($playerItem->isCounterfeit()) {
+            throw new \InvalidArgumentException('L\'expertise de l\'hotel des ventes refuse cet objet : c\'est une contrefacon.');
         }
 
         $this->gameMasterPolicy->assertMayTrade($seller);

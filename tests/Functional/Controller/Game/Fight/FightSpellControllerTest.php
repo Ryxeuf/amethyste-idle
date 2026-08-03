@@ -87,6 +87,7 @@ class FightSpellControllerTest extends TestCase
             $this->playerEffectiveStatsCalculator,
             $fightTurnPublisher,
             new DamageMultiplierNormalizer(),
+            $this->createMock(\App\GameEngine\Reputation\CounterfeitService::class),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

@@ -7,6 +7,7 @@ use App\Entity\App\PlayerItem;
 use App\Event\Fight\MobDeadEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Materia\MateriaLootTable;
+use App\GameEngine\Reputation\CounterfeitService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -16,6 +17,7 @@ class LootGenerator implements EventSubscriberInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly GameEventBonusProvider $gameEventBonusProvider,
         private readonly MateriaLootTable $materiaLootTable,
+        private readonly CounterfeitService $counterfeitService,
     ) {
     }
 
@@ -105,6 +107,10 @@ class LootGenerator implements EventSubscriberInterface
             $item = new PlayerItem();
             $item->setMob($mob);
             $item->setGenericItem($materia);
+            // FAC-07 : une part du butin sort contrefaite, non identifiee —
+            // l'unique source involontaire du monde, et la raison d'etre de
+            // l'œil du faussaire. Indiscernable jusqu'a la trahison.
+            $this->counterfeitService->maybeMarkLoot($item);
             if ($isCoopLoot) {
                 $item->setBoundToPlayerId($coopPlayerIds[$roundRobinIndex % count($coopPlayerIds)]);
                 ++$roundRobinIndex;

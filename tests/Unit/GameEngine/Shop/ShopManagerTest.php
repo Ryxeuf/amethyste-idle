@@ -187,6 +187,23 @@ class ShopManagerTest extends TestCase
         $this->manager->stock($player, $shop, $item, 1, 100);
     }
 
+    /**
+     * FAC-07 : l'echoppe vend a des joueurs — une contrefacon n'y entre
+     * jamais. Le canon est une borne absolue : un joueur ne trompe jamais un
+     * joueur, meme sans le savoir.
+     */
+    public function testACounterfeitCannotBeStocked(): void
+    {
+        $player = $this->player();
+        $shop = $this->shopOf($player, $this->zone());
+
+        $item = new PlayerItem();
+        $item->setCounterfeit(true);
+
+        $this->expectExceptionMessage('contrefacon');
+        $this->manager->stock($player, $shop, $item, 1, 100);
+    }
+
     public function testStockingMovesTheItemIntoEscrow(): void
     {
         $player = $this->player();

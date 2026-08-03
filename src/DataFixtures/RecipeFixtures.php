@@ -1102,6 +1102,31 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Sertit une améthystite sombre dans une monture de sombracier.',
                 'name_translations' => ['en' => 'Amethyst Ring'],
             ],
+            // FAC-07 — la main du faussaire (GAME_WORLD § 12.4) : améthyste
+            // Trouble + éclats d'une matéria brisée → une contrefaçon. Le
+            // gate n'est PAS un arbre : le palier Révéré des Ruelles, tenu par
+            // CraftingManager::isRecipeUnlocked via CounterfeitService. Le
+            // résultat sort marqué contrefait (identifié — le faussaire
+            // connaît son œuvre) ; son seul débouché est un contact PNJ.
+            'recipe_forgers_hand' => [
+                'name' => 'La main du faussaire',
+                'slug' => 'recipe-forgers-hand',
+                'craft' => 'joaillier',
+                // Niveau 2 : le vrai gardien est le palier Revere des Ruelles,
+                // pas le metier — et une recette >= 3 devrait consommer un
+                // produit d'artisanat (ProductionChainTest), ce que la
+                // contrefacon ne fait pas : elle se fabrique avec des restes.
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'ore-amethyst-crystal', 'quantity' => 3],
+                    ['slug' => 'materia-shards', 'quantity' => 2],
+                ],
+                'result_ref' => 'materia_fire_ball',
+                'crafting_time' => 20,
+                'xp_reward' => 30,
+                'description' => 'Un cristal trouble, des éclats, et un geste appris dans les Ruelles. Ce qui en sort chante juste — neuf fois.',
+                'name_translations' => ['en' => 'The Forger\'s Hand'],
+            ],
             'recipe_cut_gem_rare' => [
                 'name' => 'Taille de gemme rare',
                 'slug' => 'recipe-cut-gem-rare',
@@ -2076,6 +2101,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
         return [
             ItemFixtures::class,
             GameItemFixtures::class,
+            // FAC-07 : la main du faussaire produit une materia du catalogue
+            // derive — la reference `materia_fire_ball` doit exister avant.
+            MateriaCatalogFixtures::class,
         ];
     }
 }
