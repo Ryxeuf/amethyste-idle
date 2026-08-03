@@ -116,7 +116,8 @@
         "action": "Verify my address",
         "what_it_opens": "Verification opens chat, the auction house, guilds, parties, dungeons, messages and commission delivery. The rest of the game never waited for it.",
         "ignore": "If you did not create an account, ignore this message."
-      }
+      },
+      "check_spam": "Nothing received? Check your spam folder — the link stays valid for 48 hours."
     }
   },
   "game": {

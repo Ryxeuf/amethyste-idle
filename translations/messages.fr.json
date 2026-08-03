@@ -116,7 +116,8 @@
         "action": "Vérifier mon adresse",
         "what_it_opens": "La vérification ouvre le chat, l'hôtel des ventes, les guildes, les groupes, les donjons, les messages et la livraison des commissions. Le reste du jeu ne l'a jamais attendue.",
         "ignore": "Si vous n'avez pas créé de compte, ignorez ce message."
-      }
+      },
+      "check_spam": "Rien reçu ? Regardez le dossier indésirable — le lien reste valable 48 heures."
     }
   },
   "game": {
