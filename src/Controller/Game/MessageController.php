@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PrivateMessage;
 use App\Helper\PlayerHelper;
 use App\Repository\PrivateMessageRepository;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -94,6 +95,7 @@ class MessageController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'messages')]
     #[Route('/send', name: 'send', methods: ['POST'])]
     public function send(Request $request): Response
     {

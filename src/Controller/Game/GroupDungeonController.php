@@ -7,6 +7,7 @@ use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonException;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\Helper\PlayerHelper;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,6 +58,7 @@ class GroupDungeonController extends AbstractController
         return $this->redirectToRoute('app_game_zone');
     }
 
+    #[RequiresVerifiedEmail(channel: 'dungeon')]
     #[Route('/game/zone/dungeon/launch/{id}', name: 'app_game_zone_dungeon_launch', methods: ['POST'])]
     public function launch(int $id, Request $request): Response
     {

@@ -21,14 +21,14 @@
 
 ## Vue d'ensemble
 
-**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **18/20 livrés (ONB-02 le 2026-08-03) + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a. Restent ONB-04 (← ONB-02 ✅) et ONB-07b.**
+**20 jalons** (**ONB-01** à **ONB-20**) organisés en 5 pistes. **19/20 livrés (ONB-02 et ONB-04 le 2026-08-03) + ONB-12a + ONB-20a + ONB-20b-a + ONB-07a. Reste ONB-07b. La piste A est complète : le seuil du playtest fermé (ONB-02/04 + DON-03) est atteint.**
 
 | Code | Sujet (résumé) | Taille | Priorité |
 |------|----------------|--------|----------|
 | ONB-01 ✅ | Inscription — le compte peut naître (ferme D1) | M | ★★★ |
 | ONB-02 ✅ | Mailer + mot de passe oublié (ferme D2) | M | ★★★ |
 | ONB-03 ✅ | Durcissement de la connexion (ferme D3) | S | ★★★ |
-| ONB-04 | Vérification d'e-mail différée et sa porte | M | ★★★ |
+| ONB-04 ✅ | Vérification d'e-mail différée et sa porte | M | ★★★ |
 | ONB-05 ✅ | Le tunnel en 4 pas — coquille et fil narratif | M | ★★★ |
 | ONB-06 ✅ | Le nom : unicité robuste et immédiate (ferme D9) | S | ★★★ |
 | ONB-07a ✅ | Les statistiques de peuple disparaissent, la capacité est déclarée (ferme D12) | S | ★★ |
@@ -168,17 +168,31 @@ compte, le récupérer, et traverser l'acte I sans buter sur une quête morte.
 - [x] Tests : message unique par cause d'échec, banni refusé, session bannie fermée,
       chemins de sortie laissés ouverts, redirection par état
 
-### ONB-04 — La vérification différée et sa porte (M | ★★★ | HAUTE)
+### ONB-04 — La vérification différée et sa porte (M | ★★★ | HAUTE) ✅
 > Décision A1 (cadrage §3.2).
-> Prérequis : ← ONB-02
-- [ ] E-mail de vérification, jeton renvoyable ; `emailVerifiedAt` posé au clic
-- [ ] **Un seul point de décision** — un `EmailVerificationGate` consulté par toutes les portes
-- [ ] Portes fermées : chat, hôtel des ventes (achat **et** vente), échoppe, don, guilde,
+> Prérequis : ← ONB-02 ✅
+
+> **Livré le 2026-08-03.** `EmailVerificationGate` est le point de décision
+> unique (personne d'autre ne lit `emailVerifiedAt` — loi tenue par
+> `EmailVerificationContractTest`) ; les portes sont déclarées par l'attribut
+> `#[RequiresVerifiedEmail(channel)]` et aiguillées par un listener (JSON →
+> 403 explicite, navigation → écran de porte `/game/verification` : ce qui est
+> verrouillé, pourquoi, « renvoyer le lien » limité à 3/h). Jeton même
+> anatomie qu'ONB-02 (haché, un actif par compte) mais 48 h. Rappels J+1/J+3
+> par `app:verification:remind` (jeton frais, compteur sur le compte, puis
+> silence) + une ligne au hub via la porte. **Aucun blocage rétroactif** : la
+> migration marque vérifiés tous les comptes d'avant elle. Pas de porte
+> « don d'objet » : aucun canal de don direct n'existe hors admin (le
+> commerce entre joueurs passe par l'échoppe et l'HV, tous deux fermés).
+
+- [x] E-mail de vérification, jeton renvoyable ; `emailVerifiedAt` posé au clic
+- [x] **Un seul point de décision** — un `EmailVerificationGate` consulté par toutes les portes
+- [x] Portes fermées : chat, hôtel des ventes (achat **et** vente), échoppe, don, guilde,
       groupe, donjon, messages privés, amis, **livraison d'une commission à un foyer**
-- [ ] Écran de porte : ce qui est verrouillé, pourquoi, « renvoyer le lien »
-- [ ] Rappel : une ligne au hub, e-mail à J+1 et J+3, puis silence
-- [ ] **Aucun blocage rétroactif**
-- [ ] Tests : chaque porte, jeton rejoué, absence d'effet rétroactif, test de contrat sur le
+- [x] Écran de porte : ce qui est verrouillé, pourquoi, « renvoyer le lien »
+- [x] Rappel : une ligne au hub, e-mail à J+1 et J+3, puis silence
+- [x] **Aucun blocage rétroactif**
+- [x] Tests : chaque porte, jeton rejoué, absence d'effet rétroactif, test de contrat sur le
       point de décision unique
 
 ---

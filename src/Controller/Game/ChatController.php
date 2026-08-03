@@ -9,6 +9,7 @@ use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Social\ChatCommandHandler;
 use App\GameEngine\Social\ChatManager;
 use App\Helper\PlayerHelper;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -56,6 +57,7 @@ class ChatController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'chat')]
     #[Route('/send', name: 'send', methods: ['POST'])]
     public function send(Request $request): JsonResponse
     {

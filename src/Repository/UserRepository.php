@@ -24,6 +24,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * Les comptes dont le rappel de verification n° `$stage` est du (ONB-04) :
+     * jamais verifies, pas bannis, ayant recu exactement `$stage - 1` rappels,
+     * et plus vieux que le seuil du palier. Les references a l'etat de
+     * verification restent dans le sous-systeme (contrat du point unique).
+     *
+     * @return list<User>
+     */
+    public function findDueForVerificationReminder(int $stage, \DateTimeImmutable $threshold): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.emailVerifiedAt IS NULL')
+            ->andWhere('u.isBanned = false')
+            ->andWhere('u.verificationReminderCount = :already')
+            ->andWhere('u.createdAt <= :threshold')
+            ->setParameter('already', $stage - 1)
+            ->setParameter('threshold', $threshold)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(User $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);

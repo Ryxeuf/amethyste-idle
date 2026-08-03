@@ -5,6 +5,7 @@ namespace App\Controller\Api\V1;
 use App\Api\ApiResponse;
 use App\Api\LegacyResponseEnveloper;
 use App\Controller\Game\ChatController as LegacyChatController;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +30,7 @@ class ChatController extends AbstractController
     ) {
     }
 
+    #[RequiresVerifiedEmail(channel: 'chat')]
     #[Route('/send', name: 'api_v1_chat_send', methods: ['POST'])]
     public function send(Request $request): JsonResponse
     {

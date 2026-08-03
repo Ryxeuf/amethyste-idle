@@ -65,6 +65,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $emailVerifiedAt = null;
 
     /**
+     * Rappels de verification deja envoyes (ONB-04) : J+1, puis J+3, puis
+     * silence. Le compteur vit sur le compte et non sur le jeton, parce que
+     * chaque rappel regenere un jeton frais — la ligne, elle, est remplacee.
+     */
+    #[ORM\Column(type: 'smallint', options: ['default' => 0])]
+    private int $verificationReminderCount = 0;
+
+    /**
      * @var Player[]|ArrayCollection
      */
     #[ORM\OneToMany(targetEntity: Player::class, mappedBy: 'user')]
@@ -236,5 +244,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isEmailVerified(): bool
     {
         return $this->emailVerifiedAt !== null;
+    }
+
+    public function getVerificationReminderCount(): int
+    {
+        return $this->verificationReminderCount;
+    }
+
+    public function setVerificationReminderCount(int $verificationReminderCount): static
+    {
+        $this->verificationReminderCount = $verificationReminderCount;
+
+        return $this;
     }
 }

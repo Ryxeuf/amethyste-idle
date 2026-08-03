@@ -18,6 +18,7 @@ use App\Helper\PlayerHelper;
 use App\Repository\CrafterReputationRepository;
 use App\Repository\ShopListingRepository;
 use App\Repository\ShopSaleLogRepository;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -140,6 +141,7 @@ class PlayerShopController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/open', name: 'app_game_player_shop_open', methods: ['POST'])]
     public function open(Request $request): Response
     {
@@ -150,6 +152,7 @@ class PlayerShopController extends AbstractController
         });
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/sign', name: 'app_game_player_shop_sign', methods: ['POST'])]
     public function sign(Request $request): Response
     {
@@ -160,6 +163,7 @@ class PlayerShopController extends AbstractController
         });
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/stock', name: 'app_game_player_shop_stock', methods: ['POST'])]
     public function stock(Request $request): Response
     {
@@ -191,6 +195,7 @@ class PlayerShopController extends AbstractController
         });
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/listing/{id}/buy', name: 'app_game_player_shop_buy', methods: ['POST'], requirements: ['id' => '\\d+'])]
     public function buy(ShopListing $listing, Request $request): Response
     {
@@ -203,6 +208,7 @@ class PlayerShopController extends AbstractController
         }, 'app_game_player_shop_visit', ['id' => $shopId]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/vault', name: 'app_game_player_shop_vault', methods: ['POST'])]
     public function vault(Request $request): Response
     {
@@ -211,6 +217,7 @@ class PlayerShopController extends AbstractController
         });
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/rent', name: 'app_game_player_shop_rent', methods: ['POST'])]
     public function rent(Request $request): Response
     {
@@ -222,6 +229,7 @@ class PlayerShopController extends AbstractController
         });
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/stall', name: 'app_game_player_shop_stall', methods: ['POST'])]
     public function stall(Request $request): Response
     {
@@ -232,6 +240,7 @@ class PlayerShopController extends AbstractController
         });
     }
 
+    #[RequiresVerifiedEmail(channel: 'shop')]
     #[Route('/shutters', name: 'app_game_player_shop_shutters', methods: ['POST'])]
     public function shutters(Request $request): Response
     {

@@ -22,6 +22,7 @@ use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Guild\WeeklyChallengeReader;
 use App\Helper\PlayerHelper;
+use App\Security\Attribute\RequiresVerifiedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -84,6 +85,7 @@ class GuildController extends AbstractController
         ]);
     }
 
+    #[RequiresVerifiedEmail(channel: 'guild')]
     #[Route('/create', name: 'app_game_guild_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
@@ -112,6 +114,7 @@ class GuildController extends AbstractController
         }
     }
 
+    #[RequiresVerifiedEmail(channel: 'guild')]
     #[Route('/invite/{playerId}', name: 'app_game_guild_invite', methods: ['POST'])]
     public function invite(int $playerId): Response
     {
@@ -135,6 +138,7 @@ class GuildController extends AbstractController
         }
     }
 
+    #[RequiresVerifiedEmail(channel: 'guild')]
     #[Route('/invitation/{id}/accept', name: 'app_game_guild_accept', methods: ['POST'])]
     public function acceptInvitation(int $id): Response
     {

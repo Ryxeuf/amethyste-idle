@@ -37,6 +37,15 @@
 
 <div class="game-page space-y-4 sm:space-y-6">
 
+    {# ONB-04 : la ligne de rappel — une ligne, jamais une modale. Elle passe
+       par la porte (email_verification_pending), jamais par User direct. #}
+    {% if email_verification_pending() %}
+        <p class="ds-hint">
+            {{ 'security.verification.hub_line'|trans }}
+            <a href="{{ path('app_verification_gate') }}" class="underline">{{ 'security.verification.hub_link'|trans }}</a>
+        </p>
+    {% endif %}
+
     {# ===== 1. LA REPRISE — l'unique action primaire de l'ecran ===== #}
     <div class="game-card">
         <div class="game-card-body">
