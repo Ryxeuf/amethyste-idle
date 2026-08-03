@@ -22,7 +22,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| ARC-01 | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
+| ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
 | ARC-02 | Le registre du geste + premières matéria de technique | M | ← MAT-01, MAT-03 |
 | ARC-03 | Les leviers : les passifs deviennent des pourcentages bornés | **L** | ← ARC-01 |
 | ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
@@ -62,19 +62,33 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 
 ---
 
-### ARC-01 — La fonction, troisième axe (S | ★★★ | CRITIQUE)
+### ARC-01 — La fonction, troisième axe (S | ★★★ | CRITIQUE) ✅
+
+> **Livré le 2026-08-03 — le chantier ARC est ouvert.** `DomainRole`
+> (assault / control / upkeep / bulwark) + `Domain::role` nullable comme
+> `register` (un domaine hors combat n'a pas de fonction), migration
+> idempotente, et les **24 domaines de combat rangés selon la grille du §10**
+> (10 assaut · 7 contrôle · 4 entretien · 3 encaisse). Les palettes vivent dans
+> `config/game/domain_roles.yaml` — cinq leviers par fonction dont un principal
+> exclusif, plafonds 20/20/20 et **15 pour `guard`**, palette d'intentions du
+> §5.1, budget et règle des 80/20 **en données**. `DomainRoleDefinitionLoader`
+> refuse à la lecture une palette incomplète, un principal partagé, un coût
+> structurel vide, un 80/20 qui ne ferme pas, ou deux palettes partageant plus
+> de deux secondaires ; il **calcule** la palette effective (§5.0) au lieu de
+> la lire. Contrat tenu par `DomainRoleTest`, y compris l'invariant qui compte :
+> la fonction ne s'affiche **nulle part** — c'est une contrainte d'auteur.
 > GAME_ARCHETYPES §1 et §5. Trois arbres d'eau × sorts occupent la même case : rien, dans
 > le modèle, ne dit en quoi ils diffèrent.
-- [ ] `DomainRole` (assaut / contrôle / entretien / encaisse) + `Domain::role`, avec
+- [x] `DomainRole` (assaut / contrôle / entretien / encaisse) + `Domain::role`, avec
       migration ; les 24 domaines de combat rangés selon la grille du §10
-- [ ] Les **palettes** en configuration (`config/game/domain_roles.yaml`) : **cinq leviers**
+- [x] Les **palettes** en configuration (`config/game/domain_roles.yaml`) : **cinq leviers**
       par fonction dont un **principal exclusif** (`power`/`grip`/`mending`/`guard`), plus la
       **palette d'intentions** (§5.1) ; la règle des 80/20 exprimée en données, pas en code
-- [ ] Plafonds des principaux à **20** (`power`, `mending`, `grip`), `guard` à **15**
+- [x] Plafonds des principaux à **20** (`power`, `mending`, `grip`), `guard` à **15**
       (correction du §9 quinquies : à 18, le capstone consommant 14 pb, un arbre de contrôle
       ne pouvait acheter son levier principal nulle part ailleurs qu'à son sommet)
-- [ ] Aucun affichage joueur : la fonction est une contrainte d'auteur, pas une classe
-- [ ] Tests : aucun triplet (élément, registre, fonction) en double ; tout domaine de
+- [x] Aucun affichage joueur : la fonction est une contrainte d'auteur, pas une classe
+- [x] Tests : aucun triplet (élément, registre, fonction) en double ; tout domaine de
       combat a une fonction ; toute palette a cinq leviers ; deux palettes ne partagent
       jamais un levier principal, ni plus de deux secondaires
 
