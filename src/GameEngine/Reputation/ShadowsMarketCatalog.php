@@ -39,7 +39,18 @@ class ShadowsMarketCatalog
      *   counterfeit_eye_tier: ReputationTier,
      *   counterfeit_defuse_tier: ReputationTier,
      *   counterfeit_forge_tier: ReputationTier,
-     *   counterfeit_forge_recipe_slug: string
+     *   counterfeit_forge_recipe_slug: string,
+     *   smuggling_required_tier: ReputationTier,
+     *   smuggling_weekly_cap: int,
+     *   smuggling_reward_gils: int,
+     *   smuggling_search_chance_percent: int,
+     *   smuggling_caught_penalty: int,
+     *   smuggling_cargo_labels: list<string>,
+     *   placement_required_tier: ReputationTier,
+     *   placement_reward_percent: int,
+     *   placement_search_chance_percent: int,
+     *   placement_fine_gils: int,
+     *   placement_caught_penalty: int
      * }|null
      */
     private ?array $definition = null;
@@ -137,6 +148,64 @@ class ShadowsMarketCatalog
         return $this->definition()['counterfeit_forge_recipe_slug'];
     }
 
+    public function smugglingRequiredTier(): ReputationTier
+    {
+        return $this->definition()['smuggling_required_tier'];
+    }
+
+    public function smugglingWeeklyCap(): int
+    {
+        return $this->definition()['smuggling_weekly_cap'];
+    }
+
+    public function smugglingRewardGils(): int
+    {
+        return $this->definition()['smuggling_reward_gils'];
+    }
+
+    public function smugglingSearchChancePercent(): int
+    {
+        return $this->definition()['smuggling_search_chance_percent'];
+    }
+
+    public function smugglingCaughtPenalty(): int
+    {
+        return $this->definition()['smuggling_caught_penalty'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function smugglingCargoLabels(): array
+    {
+        return $this->definition()['smuggling_cargo_labels'];
+    }
+
+    public function placementRequiredTier(): ReputationTier
+    {
+        return $this->definition()['placement_required_tier'];
+    }
+
+    public function placementRewardPercent(): int
+    {
+        return $this->definition()['placement_reward_percent'];
+    }
+
+    public function placementSearchChancePercent(): int
+    {
+        return $this->definition()['placement_search_chance_percent'];
+    }
+
+    public function placementFineGils(): int
+    {
+        return $this->definition()['placement_fine_gils'];
+    }
+
+    public function placementCaughtPenalty(): int
+    {
+        return $this->definition()['placement_caught_penalty'];
+    }
+
     /**
      * @return array{
      *   night_explorations: int,
@@ -153,7 +222,18 @@ class ShadowsMarketCatalog
      *   counterfeit_eye_tier: ReputationTier,
      *   counterfeit_defuse_tier: ReputationTier,
      *   counterfeit_forge_tier: ReputationTier,
-     *   counterfeit_forge_recipe_slug: string
+     *   counterfeit_forge_recipe_slug: string,
+     *   smuggling_required_tier: ReputationTier,
+     *   smuggling_weekly_cap: int,
+     *   smuggling_reward_gils: int,
+     *   smuggling_search_chance_percent: int,
+     *   smuggling_caught_penalty: int,
+     *   smuggling_cargo_labels: list<string>,
+     *   placement_required_tier: ReputationTier,
+     *   placement_reward_percent: int,
+     *   placement_search_chance_percent: int,
+     *   placement_fine_gils: int,
+     *   placement_caught_penalty: int
      * }
      */
     private function definition(): array
@@ -181,7 +261,18 @@ class ShadowsMarketCatalog
      *   counterfeit_eye_tier: ReputationTier,
      *   counterfeit_defuse_tier: ReputationTier,
      *   counterfeit_forge_tier: ReputationTier,
-     *   counterfeit_forge_recipe_slug: string
+     *   counterfeit_forge_recipe_slug: string,
+     *   smuggling_required_tier: ReputationTier,
+     *   smuggling_weekly_cap: int,
+     *   smuggling_reward_gils: int,
+     *   smuggling_search_chance_percent: int,
+     *   smuggling_caught_penalty: int,
+     *   smuggling_cargo_labels: list<string>,
+     *   placement_required_tier: ReputationTier,
+     *   placement_reward_percent: int,
+     *   placement_search_chance_percent: int,
+     *   placement_fine_gils: int,
+     *   placement_caught_penalty: int
      * }
      *
      * @throws FactionTensionDefinitionException
@@ -223,7 +314,18 @@ class ShadowsMarketCatalog
      *   counterfeit_eye_tier: ReputationTier,
      *   counterfeit_defuse_tier: ReputationTier,
      *   counterfeit_forge_tier: ReputationTier,
-     *   counterfeit_forge_recipe_slug: string
+     *   counterfeit_forge_recipe_slug: string,
+     *   smuggling_required_tier: ReputationTier,
+     *   smuggling_weekly_cap: int,
+     *   smuggling_reward_gils: int,
+     *   smuggling_search_chance_percent: int,
+     *   smuggling_caught_penalty: int,
+     *   smuggling_cargo_labels: list<string>,
+     *   placement_required_tier: ReputationTier,
+     *   placement_reward_percent: int,
+     *   placement_search_chance_percent: int,
+     *   placement_fine_gils: int,
+     *   placement_caught_penalty: int
      * }
      */
     public function normalize(array $raw, string $source = '<array>'): array
@@ -327,6 +429,81 @@ class ShadowsMarketCatalog
             throw new FactionTensionDefinitionException(sprintf('The counterfeit forge recipe of "%s" must name a recipe slug.', $source));
         }
 
+        $smuggling = $ruelles['smuggling'] ?? null;
+        if (!\is_array($smuggling)) {
+            throw new FactionTensionDefinitionException(sprintf('The ruelles block of "%s" must declare a "smuggling" mapping.', $source));
+        }
+
+        $smugglingTier = \is_string($smuggling['required_tier'] ?? null) ? ReputationTier::tryFrom($smuggling['required_tier']) : null;
+        if (null === $smugglingTier) {
+            throw new FactionTensionDefinitionException(sprintf('The smuggling tier of "%s" does not name a reputation tier.', $source));
+        }
+
+        $smugglingCap = $smuggling['weekly_cap'] ?? null;
+        if (!\is_int($smugglingCap) || $smugglingCap < 1) {
+            throw new FactionTensionDefinitionException(sprintf('The smuggling weekly cap of "%s" must be a positive integer.', $source));
+        }
+
+        $smugglingReward = $smuggling['reward_gils'] ?? null;
+        if (!\is_int($smugglingReward) || $smugglingReward < 1) {
+            throw new FactionTensionDefinitionException(sprintf('The smuggling reward of "%s" must be a positive integer.', $source));
+        }
+
+        $smugglingChance = $smuggling['search_chance_percent'] ?? null;
+        if (!\is_int($smugglingChance) || $smugglingChance < 1 || $smugglingChance > 99) {
+            // Jamais 0 (sans risque, un revenu gratuit), jamais 100 (une
+            // saisie certaine tuerait le canal) : le risque EST le systeme.
+            throw new FactionTensionDefinitionException(sprintf('The smuggling search chance of "%s" must be between 1 and 99.', $source));
+        }
+
+        $smugglingPenalty = $smuggling['caught_reputation_penalty'] ?? null;
+        if (!\is_int($smugglingPenalty) || $smugglingPenalty < 1) {
+            throw new FactionTensionDefinitionException(sprintf('The smuggling caught penalty of "%s" must be a positive integer.', $source));
+        }
+
+        $cargoLabels = [];
+        foreach ((array) ($smuggling['cargo_labels'] ?? []) as $label) {
+            if (!\is_string($label) || trim($label) === '') {
+                throw new FactionTensionDefinitionException(sprintf('Smuggling cargo labels of "%s" must be strings.', $source));
+            }
+            $cargoLabels[] = $label;
+        }
+        if ([] === $cargoLabels) {
+            throw new FactionTensionDefinitionException(sprintf('The smuggling of "%s" needs at least one cargo label.', $source));
+        }
+
+        $placement = $ruelles['placement'] ?? null;
+        if (!\is_array($placement)) {
+            throw new FactionTensionDefinitionException(sprintf('The ruelles block of "%s" must declare a "placement" mapping.', $source));
+        }
+
+        $placementTier = \is_string($placement['required_tier'] ?? null) ? ReputationTier::tryFrom($placement['required_tier']) : null;
+        if (null === $placementTier) {
+            throw new FactionTensionDefinitionException(sprintf('The placement tier of "%s" does not name a reputation tier.', $source));
+        }
+
+        $placementReward = $placement['reward_percent'] ?? null;
+        if (!\is_int($placementReward) || $placementReward <= 100 - $cut) {
+            // Le placement doit battre le receleur, strictement : c'est sa
+            // raison d'etre, et le risque est ce qui l'equilibre.
+            throw new FactionTensionDefinitionException(sprintf('The placement reward of "%s" must stay strictly above the fence payout (%d %%).', $source, 100 - $cut));
+        }
+
+        $placementChance = $placement['search_chance_percent'] ?? null;
+        if (!\is_int($placementChance) || $placementChance < 1 || $placementChance > 99) {
+            throw new FactionTensionDefinitionException(sprintf('The placement search chance of "%s" must be between 1 and 99.', $source));
+        }
+
+        $placementFine = $placement['fine_gils'] ?? null;
+        if (!\is_int($placementFine) || $placementFine < 0) {
+            throw new FactionTensionDefinitionException(sprintf('The placement fine of "%s" must be a non-negative integer.', $source));
+        }
+
+        $placementPenalty = $placement['caught_reputation_penalty'] ?? null;
+        if (!\is_int($placementPenalty) || $placementPenalty < 1) {
+            throw new FactionTensionDefinitionException(sprintf('The placement caught penalty of "%s" must be a positive integer.', $source));
+        }
+
         return [
             'night_explorations' => $threshold,
             'cut_percent' => $cut,
@@ -343,6 +520,17 @@ class ShadowsMarketCatalog
             'counterfeit_defuse_tier' => $tiers['defuse_tier'],
             'counterfeit_forge_tier' => $tiers['forge_tier'],
             'counterfeit_forge_recipe_slug' => $forgeRecipeSlug,
+            'smuggling_required_tier' => $smugglingTier,
+            'smuggling_weekly_cap' => $smugglingCap,
+            'smuggling_reward_gils' => $smugglingReward,
+            'smuggling_search_chance_percent' => $smugglingChance,
+            'smuggling_caught_penalty' => $smugglingPenalty,
+            'smuggling_cargo_labels' => $cargoLabels,
+            'placement_required_tier' => $placementTier,
+            'placement_reward_percent' => $placementReward,
+            'placement_search_chance_percent' => $placementChance,
+            'placement_fine_gils' => $placementFine,
+            'placement_caught_penalty' => $placementPenalty,
         ];
     }
 }

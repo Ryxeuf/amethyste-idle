@@ -14,7 +14,9 @@ use App\GameEngine\Reputation\CrystalBuybackFloor;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\Reputation\ShadowsMarket;
 use App\GameEngine\Reputation\ShadowsMarketException;
+use App\GameEngine\Reputation\ShadowsPlacement;
 use App\GameEngine\Reputation\ShadowsRumors;
+use App\GameEngine\Reputation\ShadowsSmuggling;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,6 +40,8 @@ class ShopController extends AbstractController
         private readonly CrystalBuybackFloor $buybackFloor,
         private readonly ShadowsMarket $shadowsMarket,
         private readonly ShadowsRumors $shadowsRumors,
+        private readonly ShadowsSmuggling $shadowsSmuggling,
+        private readonly ShadowsPlacement $shadowsPlacement,
         private readonly \App\GameEngine\Reputation\ReputationManager $reputationManager,
         private readonly \Symfony\Contracts\Translation\TranslatorInterface $translator,
     ) {
@@ -93,6 +97,15 @@ class ShopController extends AbstractController
             // contact — avant, l'echoppe est une echoppe.
             'shadowsRumorAvailable' => null !== $player && $this->shadowsRumors->isAvailableFor($player, $pnj),
             'shadowsRumorPrice' => $this->shadowsRumors->priceGils(),
+            // FAC-08 : la contrebande et le placement — la nuit, au guichet,
+            // apres le premier contact. Le bouton n'apparait que si le geste
+            // peut reussir ; le blocker dit pourquoi sinon.
+            'shadowsSmugglingAvailable' => null !== $player && $this->shadowsSmuggling->isAvailableFor($player, $pnj),
+            'shadowsSmugglingContract' => null !== $player ? $this->shadowsSmuggling->activeContract($player) : null,
+            'shadowsSmugglingAcceptBlocker' => null !== $player ? $this->shadowsSmuggling->acceptBlocker($player, $pnj) : 'game.shadows.smuggling.error.counter',
+            'shadowsSmugglingDeliverBlocker' => null !== $player ? $this->shadowsSmuggling->deliverBlocker($player, $pnj) : 'game.shadows.smuggling.error.counter',
+            'shadowsSmugglingReward' => $this->shadowsSmuggling->rewardGils(),
+            'shadowsPlacementItems' => null !== $player ? $this->shadowsPlacement->placeableItems($player, $pnj) : [],
         ]);
     }
 
@@ -328,6 +341,126 @@ class ShopController extends AbstractController
         try {
             $rumor = $this->shadowsRumors->buy($player, $pnj);
             $this->addFlash('success', $this->translator->trans($rumor['key'], $rumor['params']));
+        } catch (ShadowsMarketException $e) {
+            $this->addFlash('error', $this->translator->trans($e->getMessage()));
+        }
+
+        return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+    }
+
+    /**
+     * FAC-08 — prendre un ballot de contrebande au guichet. La destination
+     * est l'autre guichet de la Confrerie, la cargaison vit dans le contrat.
+     */
+    #[Route('/{id}/smuggle/accept', name: 'app_game_shop_smuggle_accept', methods: ['POST'])]
+    public function smuggleAccept(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player || !$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
+        if (!$this->isCsrfTokenValid('shadows_smuggle', (string) $request->request->get('_token'))) {
+            return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+        }
+
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        if (!$pnj || !$this->isReachableFrom($pnj, $player)) {
+            return new JsonResponse(['error' => 'Boutique introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $contract = $this->shadowsSmuggling->accept($player, $pnj);
+            $this->addFlash('success', $this->translator->trans('game.shadows.smuggling.accepted', [
+                '%cargo%' => $contract->getCargoLabel(),
+            ]));
+        } catch (ShadowsMarketException $e) {
+            $this->addFlash('error', $this->translator->trans($e->getMessage()));
+        }
+
+        return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+    }
+
+    /**
+     * FAC-08 — livrer le ballot a l'autre guichet, de nuit.
+     */
+    #[Route('/{id}/smuggle/deliver', name: 'app_game_shop_smuggle_deliver', methods: ['POST'])]
+    public function smuggleDeliver(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player || !$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
+        if (!$this->isCsrfTokenValid('shadows_smuggle', (string) $request->request->get('_token'))) {
+            return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+        }
+
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        if (!$pnj || !$this->isReachableFrom($pnj, $player)) {
+            return new JsonResponse(['error' => 'Boutique introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $gils = $this->shadowsSmuggling->deliver($player, $pnj);
+            $this->addFlash('success', $this->translator->trans('game.shadows.smuggling.delivered', [
+                '%gils%' => $gils,
+            ]));
+        } catch (ShadowsMarketException $e) {
+            $this->addFlash('error', $this->translator->trans($e->getMessage()));
+        }
+
+        return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+    }
+
+    /**
+     * FAC-08 — placer une contrefacon via le contact. Deux issues, jamais de
+     * retour : ecoulee, ou saisie (amende + decote Chevaliers).
+     */
+    #[Route('/{id}/place/{itemId}', name: 'app_game_shop_place', methods: ['POST'])]
+    public function placeCounterfeit(int $id, int $itemId, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player || !$this->gameMasterPolicy->canTrade($player)) {
+            return new JsonResponse(['error' => GameMasterPolicy::REASON_TRADE], Response::HTTP_FORBIDDEN);
+        }
+        if (!$this->isCsrfTokenValid('shadows_place', (string) $request->request->get('_token'))) {
+            return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+        }
+
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        if (!$pnj || !$this->isReachableFrom($pnj, $player)) {
+            return new JsonResponse(['error' => 'Boutique introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $item = null;
+        foreach ($this->playerHelper->getMateriaInventory()->getItems() as $candidate) {
+            if ($candidate->getId() === $itemId) {
+                $item = $candidate;
+                break;
+            }
+        }
+        if (null === $item) {
+            $this->addFlash('error', $this->translator->trans('game.shadows.placement.error.item'));
+
+            return $this->redirectToRoute('app_game_shop', ['id' => $id]);
+        }
+
+        try {
+            $result = $this->shadowsPlacement->place($player, $pnj, $item);
+            if ($result['caught']) {
+                $this->addFlash('warning', $this->translator->trans('game.shadows.placement.caught', [
+                    '%fine%' => abs($result['gils']),
+                ]));
+            } else {
+                $this->addFlash('success', $this->translator->trans('game.shadows.placement.sold', [
+                    '%gils%' => $result['gils'],
+                ]));
+            }
         } catch (ShadowsMarketException $e) {
             $this->addFlash('error', $this->translator->trans($e->getMessage()));
         }

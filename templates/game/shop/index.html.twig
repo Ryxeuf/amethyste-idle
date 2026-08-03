@@ -66,6 +66,52 @@
             </div>
         {% endif %}
 
+        {% if shadowsSmugglingAvailable is defined and shadowsSmugglingAvailable %}
+            {# FAC-08 — la contrebande : un ballot d'un guichet a l'autre, de
+               nuit. La cargaison vit dans le contrat, jamais dans le sac. #}
+            <div class="ds-banner mb-4 flex items-center justify-between gap-3">
+                {% if shadowsSmugglingContract is not null and shadowsSmugglingContract.inTransit %}
+                    <p class="text-xs">{{ 'game.shadows.smuggling.in_transit'|trans({'%cargo%': shadowsSmugglingContract.cargoLabel}) }}</p>
+                    {% if shadowsSmugglingDeliverBlocker is null %}
+                        <form method="post" action="{{ path('app_game_shop_smuggle_deliver', {id: pnj.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('shadows_smuggle') }}">
+                            <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-violet-800 hover:bg-violet-700 text-ink-on transition-colors">
+                                {{ 'game.shadows.smuggling.deliver'|trans }}
+                            </button>
+                        </form>
+                    {% endif %}
+                {% elseif shadowsSmugglingAcceptBlocker is null %}
+                    <p class="text-xs">{{ 'game.shadows.smuggling.offer'|trans({'%gils%': shadowsSmugglingReward}) }}</p>
+                    <form method="post" action="{{ path('app_game_shop_smuggle_accept', {id: pnj.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('shadows_smuggle') }}">
+                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-violet-800 hover:bg-violet-700 text-ink-on transition-colors">
+                            {{ 'game.shadows.smuggling.accept'|trans }}
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-xs">{{ shadowsSmugglingAcceptBlocker|trans }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if shadowsPlacementItems is defined and shadowsPlacementItems is not empty %}
+            {# FAC-08 — le placement : ecouler un faux via le contact. Bien
+               paye, a vos risques — saisie, amende, et l'Ordre s'en souvient. #}
+            <div class="ds-banner mb-4">
+                <p class="text-xs mb-2">{{ 'game.shadows.placement.offer'|trans }}</p>
+                <div class="flex flex-wrap gap-2">
+                    {% for item in shadowsPlacementItems %}
+                        <form method="post" action="{{ path('app_game_shop_place', {id: pnj.id, itemId: item.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('shadows_place') }}">
+                            <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-red-900/60 hover:bg-red-800/60 text-ink-on transition-colors">
+                                {{ 'game.shadows.placement.place'|trans({'%name%': item.genericItem.name}) }}
+                            </button>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {# Buy section #}
             <div>

@@ -226,6 +226,42 @@ ruelles:
         # jamais par un arbre : ce savoir ne s'apprend qu'aux Ruelles.
         forge_recipe_slug: 'recipe-forgers-hand'
 
+    # La contrebande (FAC-08) : livrer discretement une cargaison de nuit,
+    # d'un guichet a l'autre — moins de capacite qu'une caravane, pas
+    # d'escorte, et la fouille aux portes d'un Bastion peut confisquer LE
+    # CONTRAT, jamais l'inventaire. Se faire prendre decote les Chevaliers,
+    # immediatement et fortement (GAME_WORLD § 12.5, la rigueur).
+    smuggling:
+        required_tier: 'ami'
+        # Un seul ballot a la fois, et peu par semaine : « moins de
+        # capacite » est la definition du canal, pas un reglage.
+        weekly_cap: 3
+        reward_gils: 120
+        # La chance de fouille a l'entree d'une zone a foyer Bastion, avec
+        # un ballot en transit. Jamais 0 (sans risque, la contrebande serait
+        # un revenu gratuit), jamais 100 (une saisie certaine tuerait le
+        # canal). Crochet inerte tant qu'aucun foyer n'a bascule Bastion.
+        search_chance_percent: 35
+        caught_reputation_penalty: 200
+        # Ce que disent les etiquettes des ballots — de la fiction, jamais
+        # des objets : la cargaison n'existe que par le contrat.
+        cargo_labels:
+            - 'un ballot de soie qui ne passe pas la douane'
+            - 'une caisse de flacons sans etiquette'
+            - 'un rouleau de cartes que personne ne devrait avoir'
+            - 'un coffret scelle qui tinte doucement'
+
+    # Le placement (FAC-08) : ecouler une contrefacon VUE par un contact de
+    # la Confrerie — remunerateur (strictement mieux que le receleur, c'est
+    # sa raison d'etre), mais chaque placement risque la fouille :
+    # confiscation, amende, et la meme decote Chevaliers.
+    placement:
+        required_tier: 'ami'
+        reward_percent: 120
+        search_chance_percent: 25
+        fine_gils: 60
+        caught_reputation_penalty: 200
+
 # --- Le patronage ------------------------------------------------------------
 # GAME_WORLD § 6.4 c : « les bonus de statistiques des paliers deviennent un
 # patronage — on porte les couleurs d'une seule faction a la fois (changeable

@@ -68,6 +68,8 @@ class ShopControllerTest extends TestCase
             new CrystalBuybackFloor($this->hostileConsequences),
             $this->shadowsMarket,
             $this->createMock(ShadowsRumors::class),
+            $this->createMock(\App\GameEngine\Reputation\ShadowsSmuggling::class),
+            $this->createMock(\App\GameEngine\Reputation\ShadowsPlacement::class),
             $this->createMock(ReputationManager::class),
             $translator,
         );
