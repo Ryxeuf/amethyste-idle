@@ -112,13 +112,7 @@ class DomainRoleDefinitionLoader
         // palette plus ce qui est tolere dehors vaut exactement le budget.
         // Sinon l'auteur dispose de points que personne n'a decides.
         if ($minInPalette + $maxOffPalette !== $total) {
-            throw new DomainRoleDefinitionException(sprintf(
-                'The 80/20 rule does not close in "%s": %d in palette + %d outside must equal the %d point budget.',
-                $source,
-                $minInPalette,
-                $maxOffPalette,
-                $total,
-            ));
+            throw new DomainRoleDefinitionException(sprintf('The 80/20 rule does not close in "%s": %d in palette + %d outside must equal the %d point budget.', $source, $minInPalette, $maxOffPalette, $total));
         }
 
         return [
@@ -155,12 +149,7 @@ class DomainRoleDefinitionLoader
             $secondary = $this->leverList($entry['secondary'] ?? null, $role->value . '.secondary', $source);
 
             if (\count($secondary) !== 4) {
-                throw new DomainRoleDefinitionException(sprintf(
-                    'Function "%s" declares %d secondary levers in "%s": a palette is one primary and four secondaries.',
-                    $role->value,
-                    \count($secondary),
-                    $source,
-                ));
+                throw new DomainRoleDefinitionException(sprintf('Function "%s" declares %d secondary levers in "%s": a palette is one primary and four secondaries.', $role->value, \count($secondary), $source));
             }
 
             if (\in_array($primary, $secondary, true)) {
@@ -168,13 +157,7 @@ class DomainRoleDefinitionLoader
             }
 
             if (isset($primaries[$primary])) {
-                throw new DomainRoleDefinitionException(sprintf(
-                    'Lever "%s" is the primary of both "%s" and "%s" in "%s": a primary is exclusive.',
-                    $primary,
-                    $primaries[$primary],
-                    $role->value,
-                    $source,
-                ));
+                throw new DomainRoleDefinitionException(sprintf('Lever "%s" is the primary of both "%s" and "%s" in "%s": a primary is exclusive.', $primary, $primaries[$primary], $role->value, $source));
             }
             $primaries[$primary] = $role->value;
 
@@ -207,14 +190,7 @@ class DomainRoleDefinitionLoader
                 $shared = array_values(array_intersect($roles[$left]['secondary'], $roles[$right]['secondary']));
 
                 if (\count($shared) > 2) {
-                    throw new DomainRoleDefinitionException(sprintf(
-                        'Functions "%s" and "%s" share %d secondary levers (%s) in "%s": two is the most two palettes may have in common.',
-                        $left,
-                        $right,
-                        \count($shared),
-                        implode(', ', $shared),
-                        $source,
-                    ));
+                    throw new DomainRoleDefinitionException(sprintf('Functions "%s" and "%s" share %d secondary levers (%s) in "%s": two is the most two palettes may have in common.', $left, $right, \count($shared), implode(', ', $shared), $source));
                 }
 
                 // Le principal de l'un peut etre le secondaire de l'autre — une
