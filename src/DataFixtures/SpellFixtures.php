@@ -768,6 +768,7 @@ class SpellFixtures extends Fixture
             ],
             'sharp_blade' => [
                 'slug' => 'sharp-blade',
+                'register' => CombatRegister::Melee,
                 'damage' => 1,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -790,6 +791,7 @@ class SpellFixtures extends Fixture
             ],
             'iron_fist' => [
                 'slug' => 'iron-fist',
+                'register' => CombatRegister::Melee,
                 'damage' => 3,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -802,6 +804,7 @@ class SpellFixtures extends Fixture
             ],
             'blade_dance' => [
                 'slug' => 'blade-dance',
+                'register' => CombatRegister::Melee,
                 'damage' => 6,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -826,6 +829,7 @@ class SpellFixtures extends Fixture
             ],
             'razor_edge' => [
                 'slug' => 'razor-edge',
+                'register' => CombatRegister::Melee,
                 'damage' => 7,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -856,6 +860,7 @@ class SpellFixtures extends Fixture
             ],
             'iron_maiden' => [
                 'slug' => 'iron-maiden',
+                'register' => CombatRegister::Melee,
                 'damage' => 8,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -896,6 +901,7 @@ class SpellFixtures extends Fixture
             ],
             'silver_bolt' => [
                 'slug' => 'silver-bolt',
+                'register' => CombatRegister::Melee,
                 'damage' => 6,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -906,6 +912,7 @@ class SpellFixtures extends Fixture
             ],
             'crushing_weight' => [
                 'slug' => 'crushing-weight',
+                'register' => CombatRegister::Melee,
                 'damage' => 7,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -1138,6 +1145,7 @@ class SpellFixtures extends Fixture
             ],
             'air_dash' => [
                 'slug' => 'air-dash',
+                'register' => CombatRegister::Ranged,
                 'damage' => 1,
                 'element' => Element::Air,
                 'heal' => 1,
@@ -1148,6 +1156,7 @@ class SpellFixtures extends Fixture
             ],
             'air_slash' => [
                 'slug' => 'air-slash',
+                'register' => CombatRegister::Ranged,
                 'damage' => 5,
                 'element' => Element::Air,
                 'heal' => null,
@@ -1228,6 +1237,7 @@ class SpellFixtures extends Fixture
             ],
             'pressure_point' => [
                 'slug' => 'pressure-point',
+                'register' => CombatRegister::Ranged,
                 'damage' => 4,
                 'element' => Element::Air,
                 'heal' => null,
@@ -1559,6 +1569,7 @@ class SpellFixtures extends Fixture
             // Sorts spécifiques — Archer (air/physique distance)
             'precise_shot' => [
                 'slug' => 'precise-shot',
+                'register' => CombatRegister::Ranged,
                 'damage' => 2,
                 'element' => Element::Air,
                 'heal' => null,
@@ -1571,6 +1582,7 @@ class SpellFixtures extends Fixture
             ],
             'arrow_rain' => [
                 'slug' => 'arrow-rain',
+                'register' => CombatRegister::Ranged,
                 'damage' => 4,
                 'element' => Element::Air,
                 'heal' => null,
@@ -1583,6 +1595,7 @@ class SpellFixtures extends Fixture
             ],
             'critical_shot' => [
                 'slug' => 'critical-shot',
+                'register' => CombatRegister::Ranged,
                 'damage' => 6,
                 'element' => Element::Air,
                 'heal' => null,
@@ -1595,6 +1608,7 @@ class SpellFixtures extends Fixture
             ],
             'piercing_arrow' => [
                 'slug' => 'piercing-arrow',
+                'register' => CombatRegister::Ranged,
                 'damage' => 8,
                 'element' => Element::Air,
                 'heal' => null,
@@ -2273,6 +2287,7 @@ class SpellFixtures extends Fixture
             // Métal — Riposte d'acier
             'steel_riposte' => [
                 'slug' => 'steel-riposte',
+                'register' => CombatRegister::Melee,
                 'damage' => 3,
                 'element' => Element::Metal,
                 'heal' => 2,
@@ -2912,6 +2927,7 @@ class SpellFixtures extends Fixture
             // Métal — 3 sorts (synergies : Feu→Forge, Lumière→Lame sacrée)
             'steel_barrage' => [
                 'slug' => 'steel-barrage',
+                'register' => CombatRegister::Melee,
                 'damage' => 3,
                 'element' => Element::Metal,
                 'heal' => null,
@@ -2937,6 +2953,7 @@ class SpellFixtures extends Fixture
             ],
             'titanium_crush' => [
                 'slug' => 'titanium-crush',
+                'register' => CombatRegister::Melee,
                 'damage' => 7,
                 'element' => Element::Metal,
                 'heal' => null,

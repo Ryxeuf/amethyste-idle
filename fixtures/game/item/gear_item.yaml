@@ -174,6 +174,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 8
     materia_slots: 2
+    materia_slot_type: 'technique'
     level: 8
     space: 3
   iron_greaves (extends item):
@@ -188,6 +189,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 6
     materia_slots: 2
+    materia_slot_type: 'technique'
     level: 8
     space: 2
   iron_boots (extends item):
@@ -257,6 +259,7 @@ App\Entity\Game\Item:
     rarity: 'rare'
     protection: 12
     materia_slots: 3
+    materia_slot_type: 'technique'
     level: 15
     space: 2
   mithril_cuirass (extends item):
@@ -271,6 +274,7 @@ App\Entity\Game\Item:
     rarity: 'rare'
     protection: 14
     materia_slots: 3
+    materia_slot_type: 'technique'
     level: 15
     space: 3
   mithril_greaves (extends item):
@@ -285,6 +289,7 @@ App\Entity\Game\Item:
     rarity: 'rare'
     protection: 10
     materia_slots: 3
+    materia_slot_type: 'technique'
     level: 15
     space: 2
   mithril_sabatons (extends item):
@@ -524,6 +529,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 8
     materia_slots: 2
+    materia_slot_type: 'technique'
     level: 12
     space: 3
   steel_plate (extends item):
@@ -538,6 +544,7 @@ App\Entity\Game\Item:
     rarity: 'uncommon'
     protection: 11
     materia_slots: 3
+    materia_slot_type: 'technique'
     level: 14
     space: 4
   heavy_steel_plate (extends item):
@@ -552,6 +559,7 @@ App\Entity\Game\Item:
     rarity: 'rare'
     protection: 18
     materia_slots: 3
+    materia_slot_type: 'technique'
     level: 22
     space: 5
   leather_quiver (extends item):

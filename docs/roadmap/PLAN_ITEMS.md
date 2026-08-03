@@ -158,13 +158,15 @@ de données répare un bug d'inventaire visible. OBJ-03/04 est le morceau de fon
 - [x] **Type dérivé de la famille — versant Spell** : les armes de lanceur
       au-dessus du palier d'entrée rejoignent le tissu (`t2-staff`,
       `t3-staff`, `guardian-thorn-staff` → `Spell`). **Le versant
-      `Technique` (mêlée, tir, plaque, cuir mixte) est une dette sur ARC** :
-      aucune matéria de technique n'existe (« le geste d'arme devient une
-      matéria » est ARC-01→10), et
-      `MateriaSlotTypingTest::testNoPieceDeclaresASocketNothingCanFill`
-      interdit — à raison — un emplacement que rien ne peut remplir. Typer
-      la plaque aujourd'hui murerait 95 % du vestiaire contre la seule
-      famille de matéria livrée
+      `Technique` (mêlée, tir, plaque, cuir mixte) était une dette sur ARC** :
+      aucune matéria de technique n'existait, et le test interdisait — à
+      raison — un emplacement que rien ne peut remplir. **Dette soldée par
+      ARC-02b** (2026-08-03) : les gestes d'arme déclarent leur registre, la
+      matéria en hérite, et les 12 armes de mêlée/tir de la grille neutre plus
+      les 8 pièces de plaque au-dessus du palier d'entrée sont typées
+      `Technique`. Le cuir reste `Free` : « 1 `Spell`, le reste `Technique` »
+      est une règle **par emplacement**, et `materiaSlotType` est porté par la
+      pièce (cf. ARC-02b)
 - [x] Cohérence avec `domain_catalog.yaml` : le versant livré est exactement
       ce qu'il annonce (« Bâtons, baguettes et tissu »)
 - [x] Tests : progression vérifiée sur 100 % du vestiaire, lanceurs typés,
