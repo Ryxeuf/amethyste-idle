@@ -9,6 +9,17 @@ services:
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
 
+  # Worker des taches recurrentes (jalon F.0). Meme image que le web —
+  # volontairement aucun `build:` ici : deux services qui construisent la meme
+  # etiquette se marchent dessus. Le `depends_on: php` de `compose.yaml` garantit
+  # que l'image est presente quand le worker demarre.
+  worker:
+    image: ghcr.io/ryxeuf/amethyste-idle:latest
+    environment:
+      APP_SECRET: ${APP_SECRET:-e454dd0213910bb338128f1a8306c1caa01114e1c30748e3882eb72ba4c117e7}
+      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
+
 networks:
   traefik-network:
     name: traefik-network

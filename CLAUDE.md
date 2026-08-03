@@ -90,6 +90,10 @@ docker compose exec php php bin/console doctrine:fixtures:load
 # Zones (modele PBBG — seedees depuis config/game/zones/*.yaml)
 docker compose exec php php bin/console app:zone:import
 
+# Planificateur de taches (service `worker`, jalon F.0)
+docker compose logs -f worker                    # ce que le calendrier vient d'executer
+docker compose restart worker                    # relever le planificateur
+
 # PostgreSQL direct
 docker compose exec database psql -U app -d amethyste
 ```
@@ -123,6 +127,16 @@ assets/
   styles/images/        # Sprites
 scripts/                # Scripts deploy, fixtures, etc.
 ```
+
+> **Note jalon F.0 (planificateur)** : les taches recurrentes du jeu vivent dans
+> `src/Scheduler/DefaultScheduleProvider.php` et sont consommees par le service Docker
+> **`worker`** (`compose.yaml`), lance par `frankenphp/scheduler-entrypoint.sh` —
+> **jamais** par l'entrypoint du web, qui rejouerait les migrations et les assets.
+> Trois regles : **une seule replique** (le calendrier n'a pas de verrou, jalon F.1 —
+> ne jamais faire `--scale worker=N`), **rien n'est rejoue** (calendrier sans etat : un
+> declenchement manque pendant un redemarrage est perdu, pas rattrape), et **une commande
+> ajoutee au calendrier tourne vraiment** — verifier son cout et son idempotence.
+> Garde-fous : `tests/Unit/Scheduler/{ScheduledCommandTest,SchedulerWorkerDeploymentTest}.php`.
 
 > **Note ZON-21** : le code carte navigable (rendu PixiJS, pathfinding Dijkstra,
 > `PlayerMoveProcessor`, endpoints `/api/map/*`, editeur de carte admin, moteur
