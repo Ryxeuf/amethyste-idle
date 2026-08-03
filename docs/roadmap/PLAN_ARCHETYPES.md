@@ -23,7 +23,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
-| ARC-02 ◐ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
+| ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
 | ARC-03 | Les leviers : les passifs deviennent des pourcentages bornés | **L** | ← ARC-01 |
 | ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
 | ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
@@ -92,7 +92,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       combat a une fonction ; toute palette a cinq leviers ; deux palettes ne partagent
       jamais un levier principal, ni plus de deux secondaires
 
-### ARC-02 — Le registre du geste, et les matéria de technique (M → 2 sous-phases | ★★★ | CRITIQUE) ◐
+### ARC-02 — Le registre du geste, et les matéria de technique (M → 2 sous-phases | ★★★ | CRITIQUE) ✅
 
 > **Découpé (règle 8) : ARC-02a le modèle, ARC-02b le contenu.** Le jalon touche
 > 254 gestes livrés, un lot de techniques à écrire et le typage de 178 pièces —
@@ -108,26 +108,47 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > sans geste devient `Free` — elle n'exige rien de la pièce qui l'accueille.
 > Contrat tenu par `SpellRegisterTest`.
 >
-> **ARC-02b — reste à faire** : le lot de techniques (les 5 accords des arbres
-> Soldat et Archer du §9, dérivés selon GAME_MATERIA §2.1), le typage
-> plaque → `technique` / cuir → mixte, et le retournement du test de DOM-03
-> (`testNoPieceDeclaresASocketNothingCanFill` : il interdit aujourd'hui une
-> pièce typée `technique`, il vérifiera qu'aucun emplacement n'est un mur sans
-> porte). Plus les deux invariants qui en dépendent — toute matéria a un
-> registre, tout arbre ouvre au moins un geste du sien.
+> **ARC-02b — livré le 2026-08-03.** Les **17 accords exclusifs** des deux arbres
+> patrons du §9 déclarent leur registre — 10 en mêlée pour le Soldat, 7 en tir pour
+> l'Archer — et **les matéria de technique en découlent sans qu'on en écrive une
+> seule** : `MateriaCatalogFixtures` dérive le catalogue des nœuds (MAT-03), donc
+> reclasser le geste reclasse la matéria. Le report de **DOM-03** est levé sur la
+> moitié que le modèle sait dire : les **12 armes de mêlée et de tir** de la grille
+> neutre et les **8 pièces de plaque** au-dessus du palier d'entrée sont typées
+> `technique` — *la famille décide, jamais la pièce*, exactement comme OBJ-04 l'a
+> fait pour les lanceurs. Le test de DOM-03 change de sens sans changer d'intention
+> (`testNoSocketIsAWallWithoutADoor` : pour chaque genre d'emplacement livré, il
+> existe au moins une matéria sertissable), et les deux invariants entrent en CI
+> (`CombatRegisterCoverageTest`).
+>
+> **Deux décisions d'implémentation, notées ici parce qu'elles se lisent mal dans
+> un diff.** (1) **Le cuir reste `Free`** : « 1 `Spell`, le reste `Technique` »
+> (GAME_ITEMS §3.4) est la seule des six lignes du canon qui soit une règle **par
+> emplacement**, et `materiaSlotType` est porté par la *pièce* — donc par tous ses
+> emplacements à la fois. `Free` est l'approximation honnête (le cuir accepte les
+> deux genres) ; ce qui manque est le **plafond**, pas la polyvalence. Un test
+> nommé (`testLeatherKeepsBothDoorsOpen`) empêche la fausse réparation, qui
+> supprimerait silencieusement la moitié de la règle. **La question ouverte** :
+> typer par emplacement demande `Slot::materiaSlotType` *et* un provisionnement
+> général des `Slot` — aujourd'hui ils ne naissent que des fixtures et d'ECO-28.
+> (2) **Le palier d'entrée reste libre des deux côtés** : `iron-chainmail`
+> (niveau 4, 1 emplacement) n'est pas typé, par la même règle que le lin — sinon
+> un débutant en cotte de mailles découvrirait que sa première matéria ne se
+> sertit pas.
 > GAME_ARCHETYPES §3. **Le prérequis dont deux archétypes sur quatre dépendent** : sans
 > technique, un arbre de mêlée ou de distance ne qualifie aucune action.
 - [x] `Spell::register` (sorts / mêlée / distance), hérité par la matéria comme l'élément *(ARC-02a)*
-- [ ] Un premier lot de **matéria de technique** — les 5 accords des arbres Soldat et
-      Archer du §9, dérivés selon la grille de GAME_MATERIA §2.1
-- [ ] Lever le report de **DOM-03** : plaque → `technique`, cuir → mixte. Le test qui
-      interdit aujourd'hui une pièce typée `technique` change de sens : il vérifie
-      désormais qu'aucun emplacement n'est un mur sans porte (il existe au moins une
-      matéria sertissable pour chaque type d'emplacement livré)
-- [ ] La règle 9 reste intacte : l'arbre accorde, il ne donne pas — un test le verrouille
+- [x] Un premier lot de **matéria de technique** — les accords des arbres Soldat et
+      Archer du §9, dérivés selon la grille de GAME_MATERIA §2.1 *(ARC-02b)*
+- [x] Lever le report de **DOM-03** : plaque → `technique` (le cuir attend un typage par
+      emplacement, cf. l'encadré). Le test qui interdisait une pièce typée `technique`
+      change de sens : il vérifie désormais qu'aucun emplacement n'est un mur sans
+      porte (il existe au moins une matéria sertissable pour chaque type d'emplacement livré)
+- [x] La règle 9 reste intacte : l'arbre accorde, il ne donne pas — un test le verrouille
       sur le nouveau chemin
-- [ ] Tests : toute matéria a un registre ; tout arbre ouvre au moins un geste de son
-      registre (invariant 7)
+- [x] Tests : toute matéria a un registre ; tout arbre ouvre au moins un geste de son
+      registre (invariant 7), avec la **liste d'attente d'ARC-08** nommée et vérifiée
+      exacte — elle ne peut que rétrécir
 
 ### ARC-03 — Les leviers (L | ★★★ | CRITIQUE)
 > GAME_ARCHETYPES §4. Le refactor central : cinq entiers plats → **quinze** leviers en
@@ -248,6 +269,15 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       la fonction d'un arbre plutôt que ses chiffres quand deux voisins se recouvrent
 - [ ] Les arbres non nourris restent **jouables sans être des chantiers de contenu**
       (GAME_PROGRESSION §6b)
+- [ ] **Vider la liste d'attente d'ARC-02b** : `CombatRegisterCoverageTest::AWAITING_ARC_08`
+      nomme les **11 arbres d'arme** dont aucun accord ne déclare encore son registre —
+      leurs passifs, bornés à la mêlée ou au tir, ne s'appliquent donc à aucune action.
+      Le test vérifie que la liste est **exacte** : elle ne peut que rétrécir, et le jour
+      où elle est vide, l'invariant 7 tient sans exception. *Nuance mesurée en ARC-02b :
+      le Chevalier n'y figure déjà plus, parce qu'il partage des accords avec le Soldat —
+      convertir un arbre patron sert ses voisins de registre.* Les **39 gestes ambigus**
+      (ouverts par des arbres de registres différents, ex. `magnetic-pull` : Soldat mêlée
+      + Ingénieur tir) demandent un arbitrage par geste, pas une conversion mécanique
 
 ### ARC-09 — Tests du plan (S | ★★ | HAUTE)
 > ‖ au fil des jalons. Les 45 invariants de GAME_ARCHETYPES §12.

@@ -14,8 +14,9 @@ use PHPUnit\Framework\TestCase;
  *    que soit la tenue. Le palier d'entree reste donc libre.
  * 2. **Aucun emplacement mort** — un emplacement de technique dans un monde sans
  *    materia de technique est pire qu'un emplacement libre : il occupe une case
- *    du build et n'accepte rien. Tant que le genre n'existe pas, aucune piece
- *    ne doit le declarer.
+ *    du build et n'accepte rien. Depuis ARC-02b les techniques existent, donc le
+ *    garde-fou change de sens sans changer d'intention : pour chaque genre
+ *    d'emplacement livre, il doit exister au moins une materia sertissable.
  * 3. **Le typage sert a quelque chose** — un enum livre sans une seule piece
  *    typee serait un parametre que personne ne lit.
  */
@@ -49,13 +50,65 @@ class MateriaSlotTypingTest extends TestCase
     /**
      * OBJ-04 — les armes de lanceur au-dessus du palier d'entree portent des
      * emplacements de sort (GAME_ITEMS §3.4 : « lanceur et tissu → Spell »).
-     * Le versant Technique de la derivation (melee, tir, plaque, cuir mixte)
-     * attend les materia de technique (ARC) — le test
-     * `testNoPieceDeclaresASocketNothingCanFill` dit pourquoi.
      *
      * @var list<string>
      */
     private const LAUNCHER_TYPED = ['t2-staff', 't3-staff', 'guardian-thorn-staff'];
+
+    /**
+     * ARC-02b — le versant Technique de la derivation, ouvert par les
+     * premieres materia de technique.
+     *
+     * GAME_ITEMS §3.4 : « armes de melee et de tir → Technique », « armure de
+     * plaque → Technique ». Comme pour les lanceurs, **la famille decide** :
+     * la grille neutre porte le typage par famille d'arme, la ligne de plaque
+     * par famille d'armure — jamais piece par piece.
+     *
+     * Le palier d'entree en est exclu par la meme regle que le lin : une piece
+     * de niveau <= 4 reste libre, sinon un debutant en cotte de mailles de fer
+     * decouvrirait que sa premiere materia ne se sertit pas.
+     *
+     * @var list<string>
+     */
+    private const TECHNIQUE_TYPED = [
+        // Les six familles d'armes de melee et de tir de la grille neutre.
+        't2-axe', 't2-bow', 't2-crossbow', 't2-dagger', 't2-lance', 't2-sword',
+        't3-axe', 't3-bow', 't3-crossbow', 't3-dagger', 't3-lance', 't3-sword',
+        // La ligne de plaque au-dessus du palier d'entree.
+        'iron-chestplate', 'iron-greaves',
+        'mithril-helm', 'mithril-cuirass', 'mithril-greaves',
+        'steel-chainmail', 'steel-plate', 'heavy-steel-plate',
+    ];
+
+    /**
+     * Le cuir, et ce que le modele ne sait pas encore dire.
+     *
+     * GAME_ITEMS §3.4 range le cuir a part : « 1 `Spell`, le reste
+     * `Technique` » — le cuir paie sa polyvalence par un emplacement de moins
+     * de chaque cote. Or `materiaSlotType` est porte par la **piece**, donc par
+     * tous ses emplacements a la fois : la regle du cuir est la seule des six
+     * lignes du canon qui demande un typage **par emplacement**, et `Slot` n'en
+     * porte pas.
+     *
+     * Le cuir reste donc `free`, qui est l'approximation honnete de « mixte »
+     * dans le modele actuel : il accepte les deux genres. Ce qui manque est le
+     * **plafond** (au plus un emplacement de sort), pas la polyvalence.
+     *
+     * Ce test existe pour empecher la fausse reparation : typer le cuir
+     * `technique` en bloc supprimerait silencieusement la moitie de la regle.
+     *
+     * @var list<string>
+     */
+    private const LEATHER = [
+        'leather-gloves',
+        'leather-belt',
+        'leather-shoulders',
+        'leather-pants',
+        'exotic-leather-vest',
+        'leather-boots',
+        'leather-hat',
+        'leather-helmet',
+    ];
 
     private function root(): string
     {
@@ -148,22 +201,67 @@ class MateriaSlotTypingTest extends TestCase
     }
 
     /**
-     * Aucune piece ne declare un emplacement de technique.
+     * Aucun emplacement n'est un mur sans porte.
      *
-     * Aucune materia de technique n'existe : un tel emplacement n'accepterait
-     * rien. Il occuperait une case du build en refusant tout ce qu'on peut lui
-     * presenter — un mur sans porte, et un mur qu'aucun message n'expliquerait.
+     * Le test disait l'inverse jusqu'a ARC-02 : il **interdisait** une piece
+     * typee `technique`, parce qu'aucune materia de technique n'existait — un
+     * tel emplacement aurait occupe une case du build en refusant tout ce
+     * qu'on peut lui presenter.
+     *
+     * Les techniques existent (ARC-02b : les gestes des arbres Soldat et
+     * Archer declarent leur registre, et la materia en herite). Le test change
+     * donc de sens sans changer d'intention : **pour chaque type
+     * d'emplacement livre, il doit exister au moins une materia sertissable.**
+     * C'est la meme loi, verifiee dans l'autre sens.
      */
-    public function testNoPieceDeclaresASocketNothingCanFill(): void
+    public function testNoSocketIsAWallWithoutADoor(): void
     {
-        $offenders = array_keys(array_filter($this->slotTypes(), static fn (string $type): bool => $type === 'technique'));
+        $declared = array_unique(array_values($this->slotTypes()));
+        $fillable = $this->materiaKindsInFixtures();
 
-        self::assertSame(
-            [],
-            $offenders,
-            'Ces pieces declarent un emplacement de technique alors qu\'aucune materia de technique n\'existe : '
-            . 'elles portent un emplacement que rien ne peut remplir.',
-        );
+        foreach ($declared as $type) {
+            if ($type === 'free') {
+                // Un emplacement libre accepte tout : il ne peut pas etre un mur.
+                continue;
+            }
+
+            self::assertContains(
+                $type,
+                $fillable,
+                sprintf(
+                    'Des pieces declarent un emplacement « %s » alors qu\'aucune materia de ce genre n\'existe : '
+                    . 'elles portent un emplacement que rien ne peut remplir.',
+                    $type,
+                ),
+            );
+        }
+    }
+
+    /**
+     * Les genres de materia que les donnees livrent reellement.
+     *
+     * Le genre se **derive** du registre du geste porte (ARC-02a) : un geste
+     * de melee ou de distance donne une materia de technique, un sort donne
+     * une materia de sort. On lit donc les registres declares par les gestes,
+     * jamais une colonne de genre — qui pourrait mentir.
+     *
+     * @return list<string>
+     */
+    private function materiaKindsInFixtures(): array
+    {
+        $spells = (string) file_get_contents($this->root() . '/src/DataFixtures/SpellFixtures.php');
+
+        $kinds = [];
+        // Tout geste livre est un sort par defaut ; ceux qui declarent un
+        // registre d'arme donnent des materia de technique.
+        if (str_contains($spells, "'slug' => '")) {
+            $kinds[] = 'spell';
+        }
+        if (preg_match('/CombatRegister::(Melee|Ranged)/', $spells) === 1) {
+            $kinds[] = 'technique';
+        }
+
+        return $kinds;
     }
 
     /**
@@ -183,6 +281,51 @@ class MateriaSlotTypingTest extends TestCase
         }
 
         self::assertSame([], $wrong, 'Ces armes de lanceur ne portent plus d\'emplacement de sort (OBJ-04).');
+    }
+
+    /**
+     * ARC-02b — le versant Technique du typage entre en service.
+     *
+     * Il attendait les materia de technique : un emplacement qui n'accepte
+     * qu'un genre inexistant est pire qu'un emplacement libre. Les gestes des
+     * arbres Soldat et Archer declarent desormais leur registre, donc la moitie
+     * du vestiaire que le canon nomme peut enfin dire ce qu'elle accepte.
+     */
+    public function testTheWeaponAndPlateLinesCarryTechniqueSockets(): void
+    {
+        $types = $this->slotTypes();
+
+        $wrong = [];
+        foreach (self::TECHNIQUE_TYPED as $slug) {
+            self::assertArrayHasKey($slug, $types, sprintf('La piece "%s" a disparu.', $slug));
+            if ($types[$slug] !== 'technique') {
+                $wrong[] = $slug;
+            }
+        }
+
+        self::assertSame([], $wrong, 'Ces armes de melee/tir ou ces pieces de plaque ne portent plus d\'emplacement de technique (GAME_ITEMS §3.4).');
+    }
+
+    /**
+     * Le cuir reste libre tant que le modele ne sait pas typer un emplacement.
+     *
+     * Voir la constante `LEATHER` : « 1 Spell, le reste Technique » est une
+     * regle **par emplacement**, et `materiaSlotType` est porte par la piece.
+     * Le typer en bloc perdrait la moitie de la regle sans que rien ne le dise.
+     */
+    public function testLeatherKeepsBothDoorsOpen(): void
+    {
+        $types = $this->slotTypes();
+
+        $typed = [];
+        foreach (self::LEATHER as $slug) {
+            self::assertArrayHasKey($slug, $types, sprintf('La piece "%s" a disparu.', $slug));
+            if ($types[$slug] !== 'free') {
+                $typed[] = $slug;
+            }
+        }
+
+        self::assertSame([], $typed, 'Le cuir a ete type en bloc : la moitie de la regle du canon (« 1 Spell, le reste Technique ») a disparu en silence.');
     }
 
     /**
