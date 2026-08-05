@@ -4,6 +4,9 @@ namespace App\Entity\Game;
 
 use App\Enum\CombatRegister;
 use App\Enum\Element;
+use App\Enum\SpellIntent;
+use App\Enum\SpellScope;
+use App\GameEngine\Fight\SpellIntentDeriver;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -434,5 +437,81 @@ class Spell
     public function isPercent(): bool
     {
         return $this->valueType === self::VALUE_TYPE_PERCENT;
+    }
+
+    /**
+     * Ce que le geste fait (ARC-11a, GAME_ARCHETYPES § 3.1).
+     *
+     * **Nullable, et derivable** : la colonne porte la decision d'auteur quand
+     * il y en a une, et reste vide quand la donnee suffit a la dire. C'est
+     * `SpellIntentDeriver` qui repond alors — la meme facon de faire que la
+     * materia derivee de son sort (MAT-02) ou les stats derivees du gabarit
+     * (BES-02). Ecrire 253 valeurs a la main aurait ete 253 occasions de se
+     * tromper.
+     */
+    #[ORM\Column(name: 'intent', type: 'string', length: 20, nullable: true, enumType: SpellIntent::class)]
+    private ?SpellIntent $intent = null;
+
+    /**
+     * Qui le geste touche (ARC-11a).
+     *
+     * La portee `Group` ne se derive **jamais** : elle est une decision
+     * d'auteur, et c'est ici qu'elle s'ecrit.
+     */
+    #[ORM\Column(name: 'scope', type: 'string', length: 20, nullable: true, enumType: SpellScope::class)]
+    private ?SpellScope $scope = null;
+
+    /**
+     * L'intention declaree, sans repli — `null` dit « rien n'a ete decide ».
+     */
+    public function getIntent(): ?SpellIntent
+    {
+        return $this->intent;
+    }
+
+    public function setIntent(?SpellIntent $intent): self
+    {
+        $this->intent = $intent;
+
+        return $this;
+    }
+
+    public function getScope(): ?SpellScope
+    {
+        return $this->scope;
+    }
+
+    public function setScope(?SpellScope $scope): self
+    {
+        $this->scope = $scope;
+
+        return $this;
+    }
+
+    /**
+     * L'intention du geste : celle qu'on a declaree, sinon celle qu'il montre.
+     *
+     * `$statusEffectType` est passe par l'appelant plutot que resolu ici :
+     * l'entite ne connait de son effet que le slug, et lui donner un depot
+     * pour aller chercher le type ferait d'un objet de donnees un service.
+     */
+    public function resolveIntent(?string $statusEffectType = null): ?SpellIntent
+    {
+        return $this->intent ?? SpellIntentDeriver::deriveIntent(
+            $this->damage,
+            $this->heal,
+            $statusEffectType,
+        );
+    }
+
+    /**
+     * La portee du geste : celle qu'on a declaree, sinon celle qu'il montre.
+     */
+    public function resolveScope(?string $statusEffectType = null): ?SpellScope
+    {
+        return $this->scope ?? SpellIntentDeriver::deriveScope(
+            $this->resolveIntent($statusEffectType),
+            $this->aoeTargets,
+        );
     }
 }
