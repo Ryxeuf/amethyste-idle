@@ -185,6 +185,12 @@ jobs:
       # `docker compose up --wait` ne dit qu'une chose quand le conteneur ne
       # demarre pas : « container ... is unhealthy ». La raison est dans les
       # logs du conteneur, sur le serveur, ou personne n'ira la chercher.
+      #
+      # Ce diagnostic ne regardait que `php`. Le 2026-08-03, cinq deploiements
+      # d'affilee ont echoue sur « container amethyste-idle-worker-1 is
+      # unhealthy » — et la CI n'a jamais affiche une seule ligne du worker :
+      # la cause de l'echec etait le seul service que le diagnostic ignorait.
+      # Il boucle donc desormais sur les trois services.
       - name: Diagnostic en cas d'echec
         if: failure()
         run: |
@@ -196,16 +202,22 @@ jobs:
           echo "===================== etat des conteneurs ====================="
           $COMPOSE ps -a
 
-          echo ""
-          echo "===================== derniers logs php ======================="
-          $COMPOSE logs --no-color --tail=150 php
+          for service in php worker database; do
+            echo ""
+            echo "================= derniers logs ${service} ================="
+            $COMPOSE logs --no-color --tail=150 "${service}" 2>&1 || echo "(aucun log pour ${service})"
 
-          echo ""
-          echo "===================== sonde de sante =========================="
-          CID="$($COMPOSE ps -aq php | head -n1)"
-          if [ -n "$CID" ]; then
-            docker inspect --format '{{json .State}}' "$CID"
-          fi
+            echo ""
+            echo "================= sonde de sante ${service} ================"
+            CID="$($COMPOSE ps -aq "${service}" | head -n1)"
+            if [ -n "$CID" ]; then
+              # `.State.Health.Log` porte la sortie des dernieres sondes : c'est
+              # la seule chose qui explique un « is unhealthy ».
+              docker inspect --format '{{json .State}}' "$CID"
+            else
+              echo "(aucun conteneur pour ${service})"
+            fi
+          done
           REMOTE_SCRIPT
 
       - name: Verify deployment

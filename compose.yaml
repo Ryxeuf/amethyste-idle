@@ -85,6 +85,14 @@ services:
     # worker ne sert pas de HTTP, il serait donc *toujours* malsain et
     # `docker compose up --wait` echouerait a chaque deploiement. On le remplace
     # par une vraie sonde de vivacite : PID 1 est le `messenger:consume` exec'e.
+    #
+    # Cette sonde dit « le calendrier est consomme », pas « le conteneur tourne » :
+    # elle est donc **fausse pendant tout le demarrage** (purge du cache, attente
+    # de la base, attente des migrations, arriere de loyers), et un worker qui
+    # meurt en boucle se declare malsain en quelques secondes. C'est voulu, et
+    # c'est pourquoi `scripts/deploy.sh` ne met **jamais** le deploiement du site
+    # en attente de ce service (jalon F.0b : un planificateur en panne ne doit pas
+    # empecher le jeu d'etre mis a jour — il doit se voir, pas tout arreter).
     healthcheck:
       test: ["CMD-SHELL", "tr '\\0' '\\n' < /proc/1/cmdline | grep -q messenger:consume"]
       interval: 15s

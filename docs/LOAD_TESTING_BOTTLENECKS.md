@@ -387,6 +387,10 @@ ferait echouer **chaque deploiement du site**. La sonde est donc remplacee par u
 processus (`/proc/1/cmdline` contient `messenger:consume`), ce qui a l'avantage de verifier la
 bonne chose : non pas que le conteneur tourne, mais que le calendrier est consomme.
 
+> Le desamorcage etait incomplet : la sonde a beau etre juste, elle reste **fausse pendant tout le
+> demarrage** du worker et vire au rouge des qu'il meurt. Tant que le `--wait` du deploiement la
+> lisait, un planificateur en panne emportait la mise a jour du site avec lui. Voir **F.0b**.
+
 - [x] Effacer l'arriere de loyers (piege 1) — automatique, seuil a 2 periodes
 - [x] Service `worker` dans `compose.yaml` + `compose.prod.yaml`, entrypoint dedie (piege 2)
 - [x] **Exactement une** replique de ce worker (piege 3)
@@ -407,6 +411,65 @@ docker compose -f compose.yaml -f compose.prod.yaml logs -f worker
 docker compose -f compose.yaml -f compose.prod.yaml exec php \
   php bin/console app:economy:rent-backlog-reset --dry-run   # doit rester vide
 ```
+
+#### F.0b — Le planificateur faisait echouer le deploiement du site ✅ **corrige (2026-08-03)**
+
+**Ce qui s'est passe.** Le worker de F.0 a ete livre un lundi matin ; les **cinq releases
+suivantes ont echoue**, toutes sur la meme ligne :
+
+```
+container amethyste-idle-worker-1 is unhealthy
+Error: Process completed with exit code 1
+```
+
+`docker compose up --wait` ne sait dire que ca. La cause vivait dans les logs du worker, sur le
+serveur — et le pas « Diagnostic en cas d'echec » de `deploy.yml` ne collectait que ceux de
+`php`. **Le seul service que le diagnostic ignorait etait celui qui echouait.** Cinq deploiements
+ont donc echoue sans produire une seule ligne exploitable.
+
+**Trois defauts de process, pas un bug de code.**
+
+1. **Le deploiement du site attendait le planificateur, qui attend le deploiement.** L'entrypoint
+   du worker attend `doctrine:migrations:up-to-date` — or `scripts/deploy.sh` joue les migrations
+   a l'etape **3**, et le `up -d --wait` sans argument de l'etape **1** attendait deja le worker.
+   Pire que l'interblocage : la sonde du worker signifiant « le calendrier est consomme », elle
+   est fausse pendant tout son demarrage, et un worker qui meurt se declare malsain en quelques
+   secondes. Un planificateur en panne empechait donc de mettre le jeu a jour — avant la page de
+   maintenance, avant les migrations, avant les assets. **Le site n'a pas besoin du planificateur
+   pour servir une page.**
+2. **Le worker n'avait jamais tourne ailleurs qu'en production.** Les 12 assertions de F.0 lisent
+   des fichiers ; le smoke test de la CI verifiait que `/usr/local/bin/scheduler-entrypoint`
+   existe et est executable. Aucun test n'avait jamais **demarre le conteneur**. Sa premiere
+   execution a eu lieu en production.
+3. **Le cache du worker survit a son image.** `VOLUME /app/var/` (Dockerfile) donne au worker un
+   volume anonyme conserve d'un conteneur a l'autre : une image neuve demarre sur le conteneur DI
+   compile par l'image precedente. Un service renomme entre deux versions et le premier
+   `bin/console` part en erreur fatale — sans recours, puisque `cache:clear` doit booter le noyau
+   pour s'executer. L'entrypoint du web desamorce ce piege depuis toujours (« var/ est un volume
+   Docker ») ; celui du worker ne le faisait pas.
+
+**Ce qui est livre.**
+
+- `scripts/deploy.sh` : le `--wait` ne porte plus que sur `database` et `php` (etape 1). Le worker
+  est releve a l'etape 6, **sans `--wait`**, puis verifie pendant 180 s. S'il ne consomme pas, le
+  script publie `ps -a` et 200 lignes de logs du worker, puis sort en erreur **a la fin** — site
+  deploye, maintenance levee, echec visible. `--scheduler-optional` degrade en avertissement.
+- `frankenphp/scheduler-entrypoint.sh` : purge de `var/cache/prod` **avant le premier appel PHP**
+  (le seul moment ou l'on peut sortir d'un cache empoisonne), reaffichage de la vraie erreur quand
+  une attente expire, et `fatal()` qui temporise avant de rendre la main — sans quoi une erreur
+  permanente devient une boucle de redemarrage qui detruit ses propres logs.
+- `.github/workflows/ci.yml` : un smoke test **demarre reellement le worker** contre une base
+  jetable et attend qu'il atteigne `messenger:consume`. C'est le seul endroit ou une erreur fatale
+  au boot, un transport introuvable ou une commande absente se voient avant le deploiement.
+- `.github/workflows/deploy.yml` : le diagnostic d'echec boucle sur `php`, `worker` et `database`
+  — logs **et** `.State.Health.Log`, qui porte la sortie des dernieres sondes.
+- `SchedulerWorkerDeploymentTest` gagne 5 invariants : le rollout du site ne nomme jamais le worker
+  dans un `--wait` (et aucun `--wait` n'est nu), le deploiement publie les logs du worker, la purge
+  precede le premier `bin/console`, un arret fatal temporise, la CI demarre le worker.
+
+> La lecon tient en une phrase : **un service qu'aucun test ne demarre est un service dont la
+> premiere execution a lieu en production** — et s'il est branche a un `--wait`, sa premiere
+> execution emporte le deploiement avec elle.
 
 #### F.1 — Le calendrier n'a pas de verrou ⚠️ **desormais la seule chose qui separe du scaling**
 

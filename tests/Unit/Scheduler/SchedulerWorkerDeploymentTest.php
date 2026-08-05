@@ -120,6 +120,65 @@ class SchedulerWorkerDeploymentTest extends TestCase
     }
 
     /**
+     * Le paquet cron est une dependance de production, pas une suggestion.
+     *
+     * `RecurringMessage::cron()` delegue a `CronExpressionTrigger`, qui **leve**
+     * si `dragonmantank/cron-expression` est absent. Or `symfony/scheduler` ne le
+     * declare qu'en `require-dev` : rien ne le tirait. Le calendrier n'ayant eu
+     * aucun consommateur jusqu'a F.0, personne ne pouvait s'en apercevoir —
+     * l'exception ne se leve qu'au premier `getSchedule()`, c'est-a-dire au
+     * premier tick d'un `messenger:consume`.
+     *
+     * L'image de production installe avec `--no-dev` : le paquet doit donc etre
+     * dans `require` **et** dans la section `packages` du lock. Le smoke test
+     * Docker le verifie aussi, mais quatre minutes plus tard.
+     */
+    public function testTheCronPackageIsARuntimeDependency(): void
+    {
+        $provider = $this->read('src/Scheduler/DefaultScheduleProvider.php');
+
+        if (!str_contains($provider, 'RecurringMessage::cron(')) {
+            $this->markTestSkipped('Le calendrier n\'utilise plus d\'expression cron.');
+        }
+
+        /** @var array{require?: array<string, string>} $composer */
+        $composer = json_decode($this->read('composer.json'), true);
+
+        $this->assertArrayHasKey(
+            'dragonmantank/cron-expression',
+            $composer['require'] ?? [],
+            'Un calendrier en expressions cron exige ce paquet en production : sans lui, le worker meurt au premier tick.',
+        );
+
+        /** @var array{packages?: list<array{name: string, autoload?: array<string, array<string, string>>}>} $lock */
+        $lock = json_decode($this->read('composer.lock'), true);
+        $locked = null;
+
+        foreach ($lock['packages'] ?? [] as $package) {
+            if ('dragonmantank/cron-expression' === $package['name']) {
+                $locked = $package;
+                break;
+            }
+        }
+
+        $this->assertNotNull(
+            $locked,
+            'Le paquet doit etre dans « packages » du lock : l\'image de prod installe avec --no-dev.',
+        );
+
+        // Le prefixe PSR-4 est verifie parce qu'il s'est deja trompe : un
+        // « Cron\\ » de trop et Composer indexe les classes sous un nom que
+        // personne ne cherche. Le paquet est alors installe, la classmap
+        // autoritaire plus grosse de quatre entrees, et `class_exists()` faux —
+        // exactement le symptome d'un paquet absent.
+        $this->assertSame(
+            ['Cron\\' => 'src/Cron/'],
+            $locked['autoload']['psr-4'] ?? null,
+            'Le prefixe PSR-4 du paquet cron est errone : les classes seront indexees sous un mauvais nom.',
+        );
+    }
+
+    /**
      * Piege n° 1 — l'arriere de loyers est efface avant toute consommation.
      *
      * `extendRent()` repart de l'echeance precedente et ne rattrape qu'une
@@ -301,11 +360,150 @@ class SchedulerWorkerDeploymentTest extends TestCase
     {
         $deploy = $this->read('scripts/deploy.sh');
 
-        $this->assertStringContainsString('up -d --wait worker', $deploy, 'Le deploiement doit relever le worker.');
+        $this->assertStringContainsString('up -d worker', $deploy, 'Le deploiement doit relever le worker.');
         $this->assertStringContainsString(
             'messenger:consume',
             $deploy,
             'Le deploiement doit verifier que le calendrier est consomme, pas seulement que le conteneur tourne.',
+        );
+    }
+
+    /**
+     * Le deploiement du site n'attend jamais le planificateur (jalon F.0b).
+     *
+     * C'est la panne du 2026-08-03, et elle etait circulaire : le worker attend
+     * dans son entrypoint les migrations que `deploy.sh` joue a l'etape 3, mais
+     * `up -d --wait` sans argument mettait l'etape 1 en attente du worker. Pire
+     * que l'interblocage : sa sonde signifiant « le calendrier est consomme »,
+     * un worker qui meurt se declare malsain en quelques secondes et **fait
+     * echouer le deploiement du jeu** — avant la page de maintenance, avant les
+     * migrations, avant les assets. Cinq releases ont ete perdues ainsi.
+     *
+     * Le site n'a pas besoin du planificateur pour servir une page. L'echec du
+     * worker doit se voir (il est verifie, journalise, et sort en erreur a la
+     * fin), jamais empecher la mise a jour.
+     */
+    public function testTheSiteRolloutNeverWaitsForTheScheduler(): void
+    {
+        $waits = [];
+
+        foreach (explode("\n", $this->read('scripts/deploy.sh')) as $line) {
+            if (str_starts_with(ltrim($line), '#') || !str_contains($line, '--wait')) {
+                continue;
+            }
+
+            $waits[] = $line;
+            $this->assertStringNotContainsString(
+                'worker',
+                $line,
+                "Le deploiement du site ne doit jamais bloquer sur le worker :\n" . trim($line),
+            );
+        }
+
+        $this->assertNotEmpty($waits, 'Le deploiement doit toujours attendre que le site soit sain.');
+
+        foreach ($waits as $line) {
+            $this->assertMatchesRegularExpression(
+                '/--wait\s+\S/',
+                $line,
+                "Un `--wait` sans service nomme attend **tous** les services, worker compris :\n" . trim($line),
+            );
+        }
+    }
+
+    /**
+     * Un planificateur qui ne repart pas laisse ses logs dans la sortie.
+     *
+     * « container amethyste-idle-worker-1 is unhealthy » est tout ce que
+     * `docker compose up --wait` sait dire. La raison vit dans les logs du
+     * conteneur, sur le serveur, ou personne ne va la lire — c'est pour ca que
+     * la panne a survecu a cinq deploiements.
+     */
+    public function testTheDeployScriptPublishesTheWorkerLogsOnFailure(): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/logs[^\n]*worker/',
+            $this->read('scripts/deploy.sh'),
+            'Le deploiement doit afficher les logs du worker quand il ne consomme pas.',
+        );
+
+        $this->assertMatchesRegularExpression(
+            '/for service in [^\n]*worker/',
+            $this->read('.github/workflows/deploy.yml'),
+            'Le diagnostic de la CI doit couvrir le worker — c\'etait le seul service qu\'il ignorait.',
+        );
+    }
+
+    /**
+     * Le cache herite du deploiement precedent est purge avant tout PHP.
+     *
+     * `VOLUME /app/var/` donne au worker un volume anonyme qui **survit a la
+     * recreation du conteneur** : une image neuve demarre donc sur le conteneur
+     * DI compile par l'image d'avant. Un service renomme entre deux versions, et
+     * le premier `bin/console` part en erreur fatale — sans recours, puisque
+     * `cache:clear` a besoin de booter le noyau pour s'executer. Seul un
+     * `rm -rf` sort de la, et seulement s'il precede le premier appel PHP.
+     */
+    public function testTheStaleCacheIsPurgedBeforeTheFirstConsoleCall(): void
+    {
+        $entrypoint = $this->schedulerEntrypointCode();
+
+        $purge = strpos($entrypoint, 'rm -rf');
+        $firstConsoleCall = strpos($entrypoint, 'dbal:run-sql');
+
+        $this->assertNotFalse($purge, 'Le worker doit purger le cache herite du deploiement precedent.');
+        $this->assertNotFalse($firstConsoleCall);
+        $this->assertLessThan(
+            $firstConsoleCall,
+            $purge,
+            'La purge doit preceder le premier `bin/console` : apres, il est trop tard pour un cache empoisonne.',
+        );
+        $this->assertMatchesRegularExpression(
+            '#rm -rf [^\n]*var/cache#',
+            $entrypoint,
+            'La purge ne doit porter que sur le cache.',
+        );
+    }
+
+    /**
+     * Un demarrage impossible temporise au lieu de boucler.
+     *
+     * `restart: unless-stopped` releve le conteneur aussitot : sortir dans la
+     * seconde transforme une erreur permanente en boucle de redemarrage qui noie
+     * ses propres logs — c'est-a-dire qui detruit la seule trace exploitable.
+     */
+    public function testAnImpossibleStartupBacksOffBeforeExiting(): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/sleep\s+[^\n]+\n\s*exit 1/',
+            $this->schedulerEntrypointCode(),
+            'Un arret fatal du worker doit temporiser avant de rendre la main a Docker.',
+        );
+    }
+
+    /**
+     * La CI demarre le worker pour de vrai.
+     *
+     * Tous les tests de cette classe lisent des fichiers ; aucun ne prouve qu'un
+     * processus vit. Le worker a donc ete execute pour la premiere fois **en
+     * production**, ou il est mort — cinq fois. Le smoke test de `ci.yml` lui
+     * donne une base et le laisse aller au bout de son entrypoint : c'est le
+     * seul endroit ou une erreur fatale au boot, un transport introuvable ou une
+     * commande absente se voient avant le deploiement.
+     */
+    public function testTheCiActuallyBootsTheWorker(): void
+    {
+        $ci = $this->read('.github/workflows/ci.yml');
+
+        $this->assertStringContainsString(
+            '--entrypoint scheduler-entrypoint',
+            $ci,
+            'La CI doit lancer un conteneur avec l\'entrypoint reel du worker.',
+        );
+        $this->assertStringContainsString(
+            'messenger:consume',
+            $ci,
+            'La CI doit attendre que le worker atteigne la consommation du calendrier.',
         );
     }
 
