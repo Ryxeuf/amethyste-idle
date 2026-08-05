@@ -1620,6 +1620,28 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    complet : regen des PM entre et pendant les combats, couts des sorts par palier,
    duree moyenne d'un combat en tours, et l'interaction avec les passifs de cout des
    arbres (point 1). A instrumenter en jeu.
+   ◐ **Le curseur des PM a sa reponse le 2026-08-05 (ARC-05b)** ; le reste du chantier
+   reste ouvert. La question posee ici — *un chasseur est-il borne par ses PM avant son
+   energie d'action ?* — se retourne : **la vraie question est de savoir ce qui arrive
+   quand il ne l'est pas**. `DailyAnchor` (GAME_ARCHETYPES § 6.4, seconde ancre) convertit
+   une journee dans la seule monnaie commune aux quatre fonctions — **le temps d'attente**
+   — et mesure l'ecart entre elles. Sur le releve du canon (§ 9 septies.2), rejoue a la
+   minute pres sur les curseurs livres :
+
+   | | Ecart d'attente entre les cinq builds calibres |
+   |---|---:|
+   | `zone.mana.regen_seconds` = 6 (livre, ARC-04a) | **x1,81** — dans la borne de x2,0 |
+   | PM gratuits (avant ARC-04a) | **x10,14** — le guerisseur paie 14 mn, le Mur 142 |
+
+   Autrement dit : **sans ce curseur, l'entretien joue plusieurs fois plus de contenu que
+   les trois autres fonctions**, et aucun levier ne peut le rattraper. Le curseur n'est pas
+   un confort, c'est ce qui tient l'ancre de fonction (GAME_ARCHETYPES § 9 sexies,
+   correction 16). La valeur exacte (6 s contre 12 s pour un PV) se recalibrera comme tout
+   le reste (§ 0.2 du canon) ; **l'ordre entre les deux curseurs, non** — on fait beaucoup
+   plus de gestes qu'on ne recoit de coups. Restent ouverts : les **couts des sorts par
+   palier**, la **duree moyenne d'un combat en tours** et les **passifs de cout** — tous
+   trois attendent le simulateur `app:balance:simulate` (ARC-17), le canon prevenant qu'on
+   ne recalibrera pas a la main.
 
 3. **Seuils de foyer × facteur de monde `W` — arbitrage a trancher** (§24.3, constat
    d'audit du 2026-07-29). La doc promet a trois endroits que les seuils de rang d'un
