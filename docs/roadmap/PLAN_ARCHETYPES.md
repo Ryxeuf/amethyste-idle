@@ -308,12 +308,20 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       tout geste sans munition passe ; la réserve se vide dans la rencontre et repart pleine
       à la suivante *(ARC-04b, `QuiverResolverTest`)*
 
-### ARC-05 — L'ancre d'échelle (L → 2 sous-phases | ★★★ | HAUTE) ◐
+### ARC-05 — L'ancre d'échelle (L → 3 sous-phases | ★★★ | HAUTE) ◐
 
-> **Découpé (règle 8) : ARC-05a l'instrument, ARC-05b la recalibration.** *On ne
-> recalibre pas ce qu'on ne mesure pas* — et le jalon demande justement de toucher
-> 253 gestes et 65 monstres. La règle et sa mesure se livrent seules, sans déplacer
-> une valeur.
+> **Découpé (règle 8) : ARC-05a l'instrument, ARC-05b la seconde ancre, ARC-05c la
+> recalibration.** *On ne recalibre pas ce qu'on ne mesure pas* — et le jalon demande
+> justement de toucher 253 gestes et 65 monstres. Les règles et leurs mesures se
+> livrent seules, sans déplacer une valeur ; ARC-05c déplace les valeurs, et le canon
+> (§0.2) prévient que ce passage-là se fait **par le simulateur d'ARC-17, jamais par
+> une relecture à la main**. D'où la troisième coupe, décidée le 2026-08-05 : ARC-05b
+> ne pouvait pas attendre ARC-17, et ARC-17 ne pouvait pas se juger sans l'ancre que
+> ARC-05b lui donne.
+>
+> GAME_ARCHETYPES §6.4. Les gestes valent 1 à 12 points ; les monstres ont 11 à 3 200 PV.
+> Des pourcentages posés sur des nombres qui n'ont pas de rapport entre eux ne veulent rien
+> dire.
 >
 > **ARC-05a — livré le 2026-08-03.** `EncounterAnchor` pose la règle du §6.4 et la
 > rend **calculable** : *un geste de palier n retire ~25 % des PV d'un adversaire
@@ -331,50 +339,87 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > peut se réduire librement, il ne peut plus s'aggraver en silence — et personne ne peut
 > ajouter un geste sous-calibré sans le voir.
 >
-> **ARC-05b — reste à faire** : ramener l'écart vers 1 (les valeurs de gestes et les PV
-> de monstre, conjointement), la seconde ancre du §9 ter (le coût d'une rencontre en
-> ressource rapporté au budget du jour), l'ancre de fonction, le palier des accords, et
-> l'arbitrage sur la valeur de la vitesse. **À croiser avec ARC-17** : le canon (§0.2)
-> prévient que la recalibration passe par `app:balance:simulate`, jamais par une
-> relecture à la main.
-> GAME_ARCHETYPES §6.4. Les gestes valent 1 à 12 points ; les monstres ont 11 à 3 200 PV.
-> Des pourcentages posés sur des nombres qui n'ont pas de rapport entre eux ne veulent rien
-> dire.
+> **ARC-05b — livré le 2026-08-05.** La seconde moitié de l'ancre, celle que le §9 ter
+> réclamait : *un archétype ne se juge pas sur un combat, il se juge sur la journée que
+> la barre d'énergie autorise*. `DailyAnchor` convertit une journée dans la **seule
+> monnaie commune** — du temps — et rend calculables les trois choses qui manquaient :
+> le budget de rencontres qu'une journée autorise (dérivé des curseurs livrés : 240
+> points d'énergie, un tiers au combat, une chasse à 5 → **les « ~16 combats » du canon
+> se calculent au lieu d'être posés**), l'attente quotidienne d'un build (PV à 12 s, PM
+> à 6 s), et **l'ancre de fonction** (correction 16) comme un juge appelable — le seul
+> invariant qui ne se vérifie pas sur un archétype isolé.
+>
+> **Le résultat du jalon, et il n'était pas acquis : le curseur des PM est ce qui tient
+> l'ancre de fonction.** Rejoué sur le relevé du §9 septies.2, l'instrument retrouve la
+> colonne du canon **à la minute près** sur les six builds. Les cinq calibrés s'étalent
+> alors de x1,81 — dans la borne de x2,0. **À PM gratuits, l'écart passe à x10,1** : le
+> guérisseur paie 14 minutes quand le Mur en paie 142, et joue plusieurs fois plus de
+> contenu que tout le monde. `zone.mana.regen_seconds` cesse d'être un confort posé par
+> ARC-04a : c'est ce qui met l'entretien sur la même ligne que les trois autres. Réponse
+> à **BALANCE §24.2**, ouvert depuis le 2026-07-29.
+>
+> Plus la **correction 14** (`AccordTierRule`) : l'assaut ouvre ses gestes au palier
+> plein, contrôle / entretien / encaisse un cran en dessous, le palier d'entrée jamais
+> raboté (la règle du jour 1 de GAME_MATERIA §3 s'y oppose). *La différence passe par
+> les gestes, pas par les pourcentages.*
+>
+> **ARC-05c — reste à faire** : ramener l'écart vers 1, c'est-à-dire déplacer les
+> valeurs — les dégâts des gestes et les PV de monstre, conjointement. **À livrer avec
+> ou après ARC-17** : le canon (§0.2) prévient que la recalibration passe par
+> `app:balance:simulate`, jamais par une relecture à la main, et l'ancre de fonction
+> livrée ici est précisément le seuil que le simulateur aura à tenir.
 - [x] Fixer la **durée cible en tours** (commun 3-5, élite 6-10, boss 12-20) et en dériver
       les valeurs, plutôt que l'inverse *(ARC-05a — la règle est posée et calculable ;
       appliquer les valeurs est ARC-05b)*
-- [ ] **La seconde ancre** (correction du §9 ter) : le **coût d'une rencontre en ressource,
+- [x] **La seconde ancre** (correction du §9 ter) : le **coût d'une rencontre en ressource,
       rapporté au budget du jour**. Mesuré, un Soldat et un Guérisseur tiennent onze tours
       tous les deux et sortent avec une barre comparable — mais l'un n'a rien dépensé et
       l'autre a vidé 108 PM sur 120. Sur les ~16 combats d'une journée, ils n'ont rien à
       voir. C'est cette ancre qui donne leur sens à `thrift` et `wind` : ils agrandissent
-      une **journée**, pas un combat
-- [ ] Calibrer en consequence la **régénération des PM hors combat** — chantier deja ouvert
-      en BALANCE §24.2, et qui n'avait pas d'archetype a servir
+      une **journée**, pas un combat *(ARC-05b, `DailyAnchor` — la journée convertie en
+      temps d'attente ; les « ~16 combats » se **dérivent** des curseurs livrés au lieu
+      d'être posés)*
+- [x] Calibrer en consequence la **régénération des PM hors combat** — chantier deja ouvert
+      en BALANCE §24.2, et qui n'avait pas d'archetype a servir *(ARC-05b — le curseur
+      livré par ARC-04a reçoit sa justification chiffrée : sans lui l'écart d'attente
+      passe de x1,81 à **x10,1**. C'est lui qui tient l'ancre de fonction)*
 - [x] Règle unique : *un geste de palier n retire ~25 % des PV d'un adversaire commun de
       palier n* *(ARC-05a — dérivée du gabarit BES-02, jamais d'une table ; l'écart mesuré
       est de ×4 à ×12,5 et entre en CI comme cliquet)*
 - [ ] Recalibrage conjoint des PV de monstre (croise **BES-01**, le gabarit `tier × rank`)
-      et des valeurs de gestes
+      et des valeurs de gestes *(**ARC-05c**, avec ou après ARC-17)*
 - [ ] Tests : un **simulateur de combat** en test — la durée moyenne par palier, pas un
       tableau de valeurs relu à la main. C'est la seule forme de test qui attrape une
-      régression d'équilibrage
+      régression d'équilibrage *(**ARC-17**)*
 - [ ] **Il doit produire la table croisée du §9 sexies**, pas des durées isolées : c'est
       la comparaison des six builds qui a revele le desequilibre, aucun exercice individuel
-      ne pouvait le voir
-- [ ] **L'ancre de fonction** (§9 sexies.3) : a arbre complet et equipement egal, les quatre
+      ne pouvait le voir *(**ARC-17**)*
+- [x] **L'ancre de fonction** (§9 sexies.3) : a arbre complet et equipement egal, les quatre
       fonctions enchainent le meme nombre de rencontres par jour et en sortent dans un etat
-      comparable. Ce qui diffère, c'est **comment on paie**
-- [ ] **Le palier des accords suit la fonction** : assaut au palier plein, controle /
+      comparable. Ce qui diffère, c'est **comment on paie** *(ARC-05b — posée comme un
+      **rapport** (x2,0 au plus, du simple au double) et non comme une minute : c'est ce
+      que §0.2 range parmi les nombres qui survivent à une recalibration.
+      `DailyAnchor::isWithinFunctionAnchor()` est le juge qu'ARC-17 appellera sur sa table)*
+- [x] **Le palier des accords suit la fonction** : assaut au palier plein, controle /
       entretien / encaisse un palier en dessous (~ −25 %). Mesuré : ramène l'ecart de
       « 9 tours contre 11 » à « 7 tours contre 11-14 », sans qu'aucun levier ne bouge
-- [ ] **Trancher la valeur de la vitesse** (§9 sexies.4) — une chasse coute 5 points
+      *(ARC-05b, `AccordTierRule` — un cran et un seul, et le palier d'entrée jamais
+      raboté : la règle du jour 1 de GAME_MATERIA §3 s'y oppose. L'**application** aux
+      arbres se fait à leur écriture, ARC-07 puis ARC-08)*
+- [x] **Trancher la valeur de la vitesse** (§9 sexies.4) — une chasse coute 5 points
       d'energie quel que soit le nombre de tours, donc tuer vite ne rapporte **rien** en
       solo. Option recommandee : les **rencontres à fenêtre** (un boss se termine en 12-20
       tours ou pas du tout). Consequence a porter dans GAME_DUNGEONS et GAME_BESTIARY : un
       boss doit avoir assez de PV pour qu'un archetype lent n'en vienne pas a bout
-- [ ] Consigner le résultat dans [../BALANCE.md](../BALANCE.md) (§4 est aujourd'hui
-      aspirationnel : les fixtures ne le suivent pas)
+      *(**tranché le 2026-08-02** dans GAME_ARCHETYPES §9 sexies.4 : option A adoptée,
+      **ciblée élites / boss / étapes de donjon, jamais le tout-venant**. Les bandes de
+      durée sont livrées depuis ARC-05a (`EncounterAnchor::TURN_BANDS`) ; **poser la
+      fenêtre comme une règle de rencontre est du contenu**, à brancher sur DON-03 et le
+      rang Elite/Boss du bestiaire — reporté là où il s'écrit, pas dans le moteur ARC)*
+- [x] Consigner le résultat dans [../BALANCE.md](../BALANCE.md) (§4 est aujourd'hui
+      aspirationnel : les fixtures ne le suivent pas) *(ARC-05b — §24.2 reçoit sa réponse
+      pour le curseur des PM ; le reste du chantier (coûts des sorts par palier, durée
+      moyenne en tours) reste ouvert et attend ARC-17)*
 
 ### ARC-06 — L'échelle de coût et le gain de points (M | ★★ | HAUTE)
 > GAME_ARCHETYPES §6.2. Un arbre coûte 465 points pour un plafond global de 500.
