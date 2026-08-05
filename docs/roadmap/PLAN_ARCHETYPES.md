@@ -421,15 +421,86 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       pour le curseur des PM ; le reste du chantier (coûts des sorts par palier, durée
       moyenne en tours) reste ouvert et attend ARC-17)*
 
-### ARC-06 — L'échelle de coût et le gain de points (M | ★★ | HAUTE)
+### ARC-06 — L'échelle de coût et le gain de points (M → 2 sous-phases | ★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-06a l'échelle et la table, ARC-06b la distribution.** Le
+> jalon supposait qu'il suffisait d'indexer un gain existant. **Il n'existe pas** :
+> mesuré le 2026-08-05, le combat ne rapporte **aucun point de domaine** — seule la
+> matéria gagne de l'expérience (`MateriaXpGranter`). Poser la table est une chose,
+> créer le canal en est une autre (écouteur, et un reste à conserver puisque la table
+> descend à 0,25) ; les deux se livrent séparément.
+>
+> **ARC-06a — livré le 2026-08-05.** Les 24 arbres de combat portaient **23 valeurs de
+> coût distinctes** (5, 15, 20, 30, 35, 45, 55, 70, 85, 90, 110, 120, 200…), dont cinq
+> seulement sur l'échelle : *deux nœuds à 30 et 35 points ne disent pas deux paliers,
+> ils disent qu'on a dosé à la main — et un dosage ne se calibre pas, il se re-dose.*
+> `SkillCostScale` ferme l'échelle sur le modèle de `CombatLever` (ARC-03a), et **192
+> coûts** rejoignent leur barreau : un coût exprime désormais un **palier**.
+>
+> **Le résultat qui valide la règle : l'arbre de référence du canon tombe pile sur la
+> cible.** Le Pyromancien — celui que le §6.3 déroule comme patron et que le §0.1
+> chiffrait à 465 points — vaut exactement **390** une fois ses nœuds sur l'échelle,
+> sans qu'on ait touché à un seul d'entre eux. L'échelle n'a pas été taillée pour le
+> résultat : elle était déjà là, sous les dosages.
+>
+> Plus **le calendrier, enfin vérifié de bout en bout** (`DomainPointYield`) : la
+> journée vient de `DailyAnchor` (ARC-05b), le total de `SkillCostScale`, et la table
+> du gain fait le pont — aucun des trois n'est recopié. Sur les curseurs livrés,
+> 16 rencontres T2 par jour rendent 8 points, soit **49 jours = 7,0 semaines** pile, ce
+> que le canon annonçait. Et *on ne monte pas un arbre en tapant des rats* devient un
+> chiffre : chasser un palier en dessous **double** le temps (98 jours contre 49).
+>
+> **ARC-06b — ouvert, et BLOQUÉ sur une décision de conception** (2026-08-05). Le
+> travail mécanique est clair : brancher la distribution sur `MobDeadEvent` comme
+> `MateriaXpGranter` (même anti-exploit sur les invocations, même partage en coop),
+> avec le report du reste — la table descend à 0,25 et un compteur qui perd ses restes
+> fait gagner **zéro** point par rencontre à un joueur de palier 1, arrondi après
+> arrondi.
+>
+> **Ce qui manque est en amont : à quel arbre les points vont-ils ?** Les documents
+> fixent le *taux* (T1 0,25 · T2 0,5 · T3 1 · T4 2) et ne disent **nulle part** qui le
+> reçoit. Pour la récolte et l'artisanat la question ne se pose pas — le geste
+> appartient à un métier, et `DomainExperienceEvolver` lit `getDomainBySkillAction()`.
+> Pour le combat il n'y a pas d'équivalent : une rencontre enchaîne plusieurs gestes,
+> venus de matéria que **plusieurs arbres** peuvent avoir ouvertes (ARC-02b a compté
+> **39 gestes ambigus**, ouverts par des arbres de registres différents — `magnetic-pull`
+> est au Soldat en mêlée *et* à l'Ingénieur en tir).
+>
+> Trois questions à trancher, et elles se tiennent :
+>
+> 1. **Le porteur du gain** — le ou les arbres qui ont ouvert la matéria employée ? tous
+>    les arbres ouverts du joueur ? l'arbre de la pièce qui portait la matéria ?
+> 2. **Le partage en cas d'ambiguïté** — un geste ouvert par trois arbres rapporte-t-il
+>    à trois arbres (et un joueur qui les mène tous progresse trois fois plus vite), ou
+>    se divise-t-il (et mener un seul arbre devient le choix optimal) ?
+> 3. **L'attaque d'arme de base**, qui ne vient d'aucune matéria — crédite-t-elle
+>    l'arbre qui enseigne le port de l'arme, ou rien du tout ? *Rien du tout* rendrait un
+>    combat gagné à mains nues stérile ; *l'arbre du port* ferait progresser un arbre
+>    qu'on ne joue pas.
+>
+> Aucune de ces réponses n'est neutre : elles décident si un joueur a intérêt à mener
+> **un** arbre ou **quatre**, ce que GAME_PROGRESSION §1 (« il en mène deux à quatre »)
+> suppose sans le garantir. À trancher avant d'écrire l'écouteur.
 > GAME_ARCHETYPES §6.2. Un arbre coûte 465 points pour un plafond global de 500.
-- [ ] Échelle **0 / 10 / 25 / 50 / 100** (+ 150 dormant) sur les 24 arbres de combat
-- [ ] **Le gain de points suit le palier de l'adversaire** : T1 0,25 · T2 0,5 · T3 1 ·
+- [x] Échelle **0 / 10 / 25 / 50 / 100** (+ 150 dormant) sur les 24 arbres de combat
+      *(ARC-06a — `SkillCostScale`, échelle fermée et refusée à la lecture ; 192 coûts
+      déplacés, 23 valeurs distinctes ramenées à 6)*
+- [x] **Le gain de points suit le palier de l'adversaire** : T1 0,25 · T2 0,5 · T3 1 ·
       T4 2 (paliers de GAME_BESTIARY). On ne monte pas un arbre en tapant des rats
-- [ ] Vérifier le calendrier visé (entrée jour 1 · palier 1 semaine 1 · palier 2
+      *(ARC-06a, `DomainPointYield` — la table est posée, **en quarts de point** pour
+      qu'un joueur de palier 1 ne gagne pas zéro à chaque arrondi. La **distribution**
+      est ARC-06b : elle n'existe pas encore, le combat ne rapportant aucun point)*
+- [x] Vérifier le calendrier visé (entrée jour 1 · palier 1 semaine 1 · palier 2
       semaines 3-4 · palier 3 semaines 6-8 · capstone mois 3) contre le budget d'énergie
-      réel de GAME_PROGRESSION §5
-- [ ] Tests : coût de chaque nœud dans l'échelle ; coût total d'un arbre = 390 points
+      réel de GAME_PROGRESSION §5 *(ARC-06a — vérifié de bout en bout : **49 jours =
+      7,0 semaines** sur de la faune T2, exactement ce que le canon annonce ; T1 en
+      demande le double)*
+- [x] Tests : coût de chaque nœud dans l'échelle ; coût total d'un arbre = 390 points
+      *(ARC-06a — le premier invariant tient sur les 24 arbres ; le second tient sur le
+      Pyromancien et entre en CI comme **cliquet** avec sa liste d'attente nommée : les
+      23 autres arbres valent 240 à 525 points parce qu'il leur manque des **nœuds**,
+      pas des coûts — le gabarit en écrit 18 quand ils en portent 13 à 18. ARC-07 et
+      ARC-08 referment l'écart, qui ne peut plus grandir en silence)*
 
 ### ARC-07 — Les quatre arbres patrons (M | ★★★ | HAUTE)
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),
