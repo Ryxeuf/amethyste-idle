@@ -101,7 +101,7 @@ class SpellIntentDeriverTest extends TestCase
     }
 
     /**
-     * **La portee `Group` ne se derive jamais.**
+     * La portee `Group` ne se derive jamais.
      *
      * Aucune colonne ne pourrait la faire apparaitre : c'est une decision
      * d'auteur, pas une propriete des chiffres. Un soin de groupe et un soin
