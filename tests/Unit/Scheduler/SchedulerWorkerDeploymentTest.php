@@ -120,6 +120,65 @@ class SchedulerWorkerDeploymentTest extends TestCase
     }
 
     /**
+     * Le paquet cron est une dependance de production, pas une suggestion.
+     *
+     * `RecurringMessage::cron()` delegue a `CronExpressionTrigger`, qui **leve**
+     * si `dragonmantank/cron-expression` est absent. Or `symfony/scheduler` ne le
+     * declare qu'en `require-dev` : rien ne le tirait. Le calendrier n'ayant eu
+     * aucun consommateur jusqu'a F.0, personne ne pouvait s'en apercevoir —
+     * l'exception ne se leve qu'au premier `getSchedule()`, c'est-a-dire au
+     * premier tick d'un `messenger:consume`.
+     *
+     * L'image de production installe avec `--no-dev` : le paquet doit donc etre
+     * dans `require` **et** dans la section `packages` du lock. Le smoke test
+     * Docker le verifie aussi, mais quatre minutes plus tard.
+     */
+    public function testTheCronPackageIsARuntimeDependency(): void
+    {
+        $provider = $this->read('src/Scheduler/DefaultScheduleProvider.php');
+
+        if (!str_contains($provider, 'RecurringMessage::cron(')) {
+            $this->markTestSkipped('Le calendrier n\'utilise plus d\'expression cron.');
+        }
+
+        /** @var array{require?: array<string, string>} $composer */
+        $composer = json_decode($this->read('composer.json'), true);
+
+        $this->assertArrayHasKey(
+            'dragonmantank/cron-expression',
+            $composer['require'] ?? [],
+            'Un calendrier en expressions cron exige ce paquet en production : sans lui, le worker meurt au premier tick.',
+        );
+
+        /** @var array{packages?: list<array{name: string, autoload?: array<string, array<string, string>>}>} $lock */
+        $lock = json_decode($this->read('composer.lock'), true);
+        $locked = null;
+
+        foreach ($lock['packages'] ?? [] as $package) {
+            if ('dragonmantank/cron-expression' === $package['name']) {
+                $locked = $package;
+                break;
+            }
+        }
+
+        $this->assertNotNull(
+            $locked,
+            'Le paquet doit etre dans « packages » du lock : l\'image de prod installe avec --no-dev.',
+        );
+
+        // Le prefixe PSR-4 est verifie parce qu'il s'est deja trompe : un
+        // « Cron\\ » de trop et Composer indexe les classes sous un nom que
+        // personne ne cherche. Le paquet est alors installe, la classmap
+        // autoritaire plus grosse de quatre entrees, et `class_exists()` faux —
+        // exactement le symptome d'un paquet absent.
+        $this->assertSame(
+            ['Cron\\' => 'src/Cron/'],
+            $locked['autoload']['psr-4'] ?? null,
+            'Le prefixe PSR-4 du paquet cron est errone : les classes seront indexees sous un mauvais nom.',
+        );
+    }
+
+    /**
      * Piege n° 1 — l'arriere de loyers est efface avant toute consommation.
      *
      * `extendRent()` repart de l'echeance precedente et ne rattrape qu'une
