@@ -702,15 +702,41 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Croise **OBJ** : les familles d'arme et lignes d'armure doivent être lisibles depuis
       l'objet (`EquipmentPortCatalog` les déclare déjà par famille)
 
-### ARC-13 — Les huit marques élémentaires (M | ★★★ | HAUTE)
+### ARC-13 — Les huit marques élémentaires (M → 2 sous-phases | ★★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-13a les marques et leur loi, ARC-13b leur emploi.** Poser les
+> huit marques est une chose ; les faire appliquer par un accord d'entrée de chacun des 24
+> arbres, par les monstres, et les dire au catalogue public en est une autre — cette
+> seconde moitié touche 24 arbres et croise BES.
+>
+> **ARC-13a — livré le 2026-08-05.** Les huit marques existent, et **sept manquaient** : la
+> Brûlure était la seule déjà en base. Trempé, Déséquilibre, Alourdi, Entaille, Traqué,
+> Révélé et Aveuglé sont écrites, chacune sur son élément.
+>
+> **La mark-ness vit dans un catalogue, pas dans le type.** `ElementalMark` dit lequel des
+> statuts est *la marque de son élément* ; le `type` continue de dire ce que l'effet
+> **fait**. Les deux questions sont distinctes, et les mélanger aurait obligé la Brûlure à
+> cesser d'être un DOT pour devenir « une marque » — elle est les deux.
+>
+> **La loi de durée est arithmétique, pas esthétique** (correction du §9 quinquies) : en
+> duel, échanger un de ses tours contre un tour adverse laisse les dégâts subis
+> **rigoureusement identiques** — 101 dans les quatre cas mesurés. Une entrave d'un tour est
+> un nœud mort. D'où `MIN_DURATION = 2`, et l'exception qui la complète : une marque portée
+> par un geste de dégât y échappe, parce que le tour n'a pas été échangé — il a servi deux fois.
+>
+> **ARC-13b — reste à faire** : un des deux accords d'entrée de chaque arbre applique sa
+> marque (c'est ce qui rend le capstone atteignable au jour 1), le côté monstre (croise
+> BES-01), et le catalogue public qui peut enfin dire à quoi sert un élément.
 > GAME_ARCHETYPES §1.1. **Trois pièces déjà écrites du système en dépendent** : le
 > capstone d'assaut (« contre une cible qui porte votre marque »), le levier `grip`
 > (« les statuts appliqués ») et la palette de contrôle (deux accords d'`entrave`).
 > Sans les marques, aucune des trois n'a d'objet.
-- [ ] Une marque par élément — Brûlure, Trempé, Déséquilibre, Alourdi, Entaille,
+- [x] Une marque par élément — Brûlure, Trempé, Déséquilibre, Alourdi, Entaille,
       Traqué, Révélé, Aveuglé — déclarées comme `StatusEffect` et rattachées à `Element`
-- [ ] **Aucune entrave à un tour** (correction du §9 quinquies) : durée ≥ 2 tours, ou marque
-      portée par un geste de dégât. Démonstration : en duel, échanger un de ses tours contre
+      *(ARC-13a — **7 des 8 manquaient** ; `ElementalMark` porte le catalogue, le `type`
+      continue de dire ce que l'effet fait)*
+- [x] **Aucune entrave à un tour** (correction du §9 quinquies) : durée ≥ 2 tours, ou marque
+      portée par un geste de dégât. *(ARC-13a — `MIN_DURATION`, tenu par test sur les 8)* Démonstration : en duel, échanger un de ses tours contre
       un tour adverse laisse les dégâts subis **rigoureusement identiques** (101 dans les
       quatre cas mesurés) — une entrave d'un tour est un nœud mort
 - [ ] **Côté monstre aussi** (correction du §9 ter) : mesuré, **21 monstres sur 65** ont un
@@ -720,10 +746,12 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       **BES-01** (l'élément des monstres, prérequis de MAT-01)
 - [ ] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
       capstone atteignable au jour 1
-- [ ] La marque **se rafraîchit, elle ne se cumule pas** avec elle-même ; deux marques
-      différentes coexistent sans règle spéciale
-- [ ] Les 15 statuts livrés se rangent : ceux qui deviennent des marques, ceux qui restent
-      des effets ordinaires (poison, régénération, bouclier…)
+- [x] La marque **se rafraîchit, elle ne se cumule pas** avec elle-même ; deux marques
+      différentes coexistent sans règle spéciale *(ARC-13a — la règle est écrite dans
+      `ElementalMark` ; le comportement du gestionnaire de statuts est vérifié en ARC-13b)*
+- [x] Les 15 statuts livrés se rangent : ceux qui deviennent des marques, ceux qui restent
+      des effets ordinaires (poison, régénération, bouclier…) *(ARC-13a — seule la Brûlure
+      passe marque ; les 14 autres restent ordinaires, et un test le vérifie)*
 - [ ] Le **catalogue public** (GAME_ONBOARDING §6) peut enfin dire à quoi sert un élément —
       sans jamais donner de valeur
 - [ ] Tests : une marque et une seule par élément ; tout arbre de combat a un accord

@@ -21,6 +21,16 @@ class StatusEffect
     public const TYPE_SHIELD = 'shield';
     public const TYPE_BERSERK = 'berserk';
 
+    /**
+     * La marque d'un element (ARC-13).
+     *
+     * Elle ne dit pas *ce que l'effet fait* comme les huit autres, mais *par
+     * quoi il agit* : une marque pure modifie une statistique et sert de prise
+     * aux passifs d'arbre. La Brulure garde `TYPE_BURN` — elle est un DOT qui
+     * se **trouve** etre la marque du feu, et c'est `ElementalMark` qui le dit.
+     */
+    public const TYPE_MARK = 'mark';
+
     public const TYPES = [
         self::TYPE_POISON,
         self::TYPE_PARALYSIS,
@@ -30,6 +40,7 @@ class StatusEffect
         self::TYPE_REGENERATION,
         self::TYPE_SHIELD,
         self::TYPE_BERSERK,
+        self::TYPE_MARK,
     ];
 
     public const CATEGORY_BUFF = 'buff';
