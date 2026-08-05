@@ -450,10 +450,37 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > que le canon annonçait. Et *on ne monte pas un arbre en tapant des rats* devient un
 > chiffre : chasser un palier en dessous **double** le temps (98 jours contre 49).
 >
-> **ARC-06b — reste à faire** : brancher la distribution sur la mort d'un monstre
-> (`MobDeadEvent`, comme `MateriaXpGranter`), avec le report du reste — la table
-> descend à 0,25 et un compteur qui perd ses restes fait gagner **zéro** point par
-> rencontre à un joueur de palier 1, arrondi après arrondi.
+> **ARC-06b — ouvert, et BLOQUÉ sur une décision de conception** (2026-08-05). Le
+> travail mécanique est clair : brancher la distribution sur `MobDeadEvent` comme
+> `MateriaXpGranter` (même anti-exploit sur les invocations, même partage en coop),
+> avec le report du reste — la table descend à 0,25 et un compteur qui perd ses restes
+> fait gagner **zéro** point par rencontre à un joueur de palier 1, arrondi après
+> arrondi.
+>
+> **Ce qui manque est en amont : à quel arbre les points vont-ils ?** Les documents
+> fixent le *taux* (T1 0,25 · T2 0,5 · T3 1 · T4 2) et ne disent **nulle part** qui le
+> reçoit. Pour la récolte et l'artisanat la question ne se pose pas — le geste
+> appartient à un métier, et `DomainExperienceEvolver` lit `getDomainBySkillAction()`.
+> Pour le combat il n'y a pas d'équivalent : une rencontre enchaîne plusieurs gestes,
+> venus de matéria que **plusieurs arbres** peuvent avoir ouvertes (ARC-02b a compté
+> **39 gestes ambigus**, ouverts par des arbres de registres différents — `magnetic-pull`
+> est au Soldat en mêlée *et* à l'Ingénieur en tir).
+>
+> Trois questions à trancher, et elles se tiennent :
+>
+> 1. **Le porteur du gain** — le ou les arbres qui ont ouvert la matéria employée ? tous
+>    les arbres ouverts du joueur ? l'arbre de la pièce qui portait la matéria ?
+> 2. **Le partage en cas d'ambiguïté** — un geste ouvert par trois arbres rapporte-t-il
+>    à trois arbres (et un joueur qui les mène tous progresse trois fois plus vite), ou
+>    se divise-t-il (et mener un seul arbre devient le choix optimal) ?
+> 3. **L'attaque d'arme de base**, qui ne vient d'aucune matéria — crédite-t-elle
+>    l'arbre qui enseigne le port de l'arme, ou rien du tout ? *Rien du tout* rendrait un
+>    combat gagné à mains nues stérile ; *l'arbre du port* ferait progresser un arbre
+>    qu'on ne joue pas.
+>
+> Aucune de ces réponses n'est neutre : elles décident si un joueur a intérêt à mener
+> **un** arbre ou **quatre**, ce que GAME_PROGRESSION §1 (« il en mène deux à quatre »)
+> suppose sans le garantir. À trancher avant d'écrire l'écouteur.
 > GAME_ARCHETYPES §6.2. Un arbre coûte 465 points pour un plafond global de 500.
 - [x] Échelle **0 / 10 / 25 / 50 / 100** (+ 150 dormant) sur les 24 arbres de combat
       *(ARC-06a — `SkillCostScale`, échelle fermée et refusée à la lecture ; 192 coûts
