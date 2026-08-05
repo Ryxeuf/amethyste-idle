@@ -11,6 +11,9 @@ use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
+use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Progression\SynergyCalculator;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -123,7 +126,7 @@ class CombatSkillResolverBuildTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn($carried);
 
-        return new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver, $this->neutralPatronage());
+        return new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale());
     }
 
     private function skill(
@@ -176,5 +179,21 @@ class CombatSkillResolverBuildTest extends TestCase
         );
 
         return $patronage;
+    }
+
+    /**
+     * Le lecteur de leviers reel, sur la configuration reelle (ARC-03b).
+     *
+     * Un double rendrait le test aveugle a la seule chose qui compte ici : les
+     * leviers suivent la meme borne que les statistiques plates.
+     */
+    private function leverScale(): CombatLeverScale
+    {
+        return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));
+    }
+
+    private function leverReader(): SkillLeverReader
+    {
+        return new SkillLeverReader($this->leverScale());
     }
 }

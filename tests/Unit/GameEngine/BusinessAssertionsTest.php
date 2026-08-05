@@ -12,12 +12,16 @@ use App\Entity\Game\StatusEffect;
 use App\Enum\Element;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
+use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use App\GameEngine\World\WeatherService;
@@ -51,6 +55,7 @@ class BusinessAssertionsTest extends TestCase
             $combatLogger,
             $em,
             $this->trainingTranslator(),
+            $this->neutralSkillResolver(),
         );
 
         $monster = new Monster();
@@ -90,6 +95,7 @@ class BusinessAssertionsTest extends TestCase
             $combatLogger,
             $em,
             $this->trainingTranslator(),
+            $this->neutralSkillResolver(),
         );
 
         $mob = new Mob();
@@ -133,6 +139,7 @@ class BusinessAssertionsTest extends TestCase
             new CriticalCalculator(),
             new WeatherService(new GameTimeService(new StaticUtcDayCycleFactorProvider(1.0))),
             $playerStatsCalc,
+            $this->leverScale(),
         );
 
         $spell = new Spell();
@@ -209,6 +216,7 @@ class BusinessAssertionsTest extends TestCase
             $em,
             $this->createMock(CombatLogger::class),
             $this->createMock(PlayerEffectiveStatsCalculator::class),
+            $this->leverScale(),
         );
 
         $manager->processStartOfTurn($fight, $player);
@@ -284,5 +292,27 @@ class BusinessAssertionsTest extends TestCase
         $translator->method('trans')->willReturnArgument(0);
 
         return $translator;
+    }
+
+    /**
+     * Le convertisseur de leviers reel (ARC-03b) — porteur vide, calcul inchange.
+     */
+    private function leverScale(): CombatLeverScale
+    {
+        return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 3)));
+    }
+
+    /**
+     * Un resolveur sans levier (ARC-03b).
+     *
+     * Ces tests portent sur l'action du monstre, pas sur les leviers de sa
+     * cible : un porteur vide laisse le calcul exactement ou il etait.
+     */
+    private function neutralSkillResolver(): CombatSkillResolver
+    {
+        $resolver = $this->createMock(CombatSkillResolver::class);
+        $resolver->method('getLeverEffects')->willReturn(CombatLeverEffects::none());
+
+        return $resolver;
     }
 }

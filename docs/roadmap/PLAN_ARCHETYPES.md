@@ -24,9 +24,9 @@
 |------|----------|--------|-------------|
 | ARC-01 ✅ | La fonction, troisième axe du domaine (`Domain::role` + palettes) | S | ∅ |
 | ARC-02 ✅ | Le registre du geste + premières matéria de technique | M → 2 sous-phases | ← MAT-01, MAT-03 |
-| ARC-03 | Les leviers : les passifs deviennent des pourcentages bornés | **L** | ← ARC-01 |
-| ARC-04 | Les ressources par registre (munitions, temps de reprise) | M | ← ARC-02 |
-| ARC-05 | L'ancre d'échelle : la durée d'un combat en tours | **L** | ← BES-01 |
+| ARC-03 ✅ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
+| ARC-04 ✅ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
+| ARC-05 ◐ | L'ancre d'échelle : la durée d'un combat en tours | **L** → 2 sous-phases | ← BES-01 |
 | ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
@@ -150,103 +150,357 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       registre (invariant 7), avec la **liste d'attente d'ARC-08** nommée et vérifiée
       exacte — elle ne peut que rétrécir
 
-### ARC-03 — Les leviers (L | ★★★ | CRITIQUE)
+### ARC-03 — Les leviers (L → 2 sous-phases | ★★★ | CRITIQUE) ✅
+
+> **Découpé (règle 8) : ARC-03a le vocabulaire, ARC-03b la formule.** Le jalon touche
+> le vocabulaire, quatre consommateurs du moteur de combat et la place de chaque
+> levier dans la formule — trop pour une passe. Le vocabulaire se livre seul, ne
+> change **aucune valeur de jeu**, et débloque la formule.
+>
+> **ARC-03a — livré le 2026-08-03.** `CombatLever` (les 15 valeurs du canon,
+> vocabulaire fermé) + `Skill::levers` (`(levier, points, condition ?)`, `NULL`
+> tant qu'un nœud n'est pas converti — les colonnes plates restent la source
+> jusqu'à ARC-07/08). Les taux de change et les plafonds vivent en **données**
+> (`config/game/combat_levers.yaml`) parce que §0.2 prévient qu'aucun nombre du
+> canon n'est définitif et qu'ARC-17 les rejouera. `CombatLeverScale` est le
+> **convertisseur unique** — l'autre moitié de la règle qui rend l'équilibrage
+> vérifiable —, `SkillLeverReader` le point de passage unique du vocabulaire
+> fermé, et `CombatLeverDefinitionLoader` refuse à la lecture : deux leviers à la
+> **même place dans la formule** (le critère d'admission), une entrée hors
+> vocabulaire, un taux nul, ou un levier lisible dans deux registres sur trois
+> (l'écart n° 13 pris à la racine). `thrift` et `wind` lisent la ressource de
+> leur registre, et eux seuls ; `life` et `recovery` restent hors de la double
+> borne. Contrat tenu par `CombatLeverTest`.
+>
+> **ARC-03b — livré le 2026-08-03.** Les leviers entrent dans la formule, et chacun
+> **à la place que le canon lui donne** : `power`/`mending` multiplient la valeur de
+> base, `critical` s'ajoute au taux et `critical_power` au seul multiplicateur de
+> critique, `hit` s'ajoute au jet de touche, `pierce` **ignore une part de la
+> résistance avant elle**, `guard` réduit **après** elle, `dodge` évite **avant tout
+> calcul**, `life` porte sur les PV de base, et `grip`/`ward` se croisent sur le
+> **jet d'application** d'un statut — l'un l'augmente et prolonge, l'autre y résiste.
+> `CombatLeverEffects` est le porteur qui traverse le calcul ; il refuse de lire un
+> levier **dans la mauvaise unité** (un taux de critique lu comme un multiplicateur
+> donnerait un chiffre plausible et faux), et `CombatSkillResolver::getCombatLevers()`
+> les somme sous la **même borne** que les statistiques plates — sauf `life` et
+> `recovery`, que le canon place hors double borne et qui précèdent donc la borne.
+> Deux porteurs et non un : les leviers offensifs sont ceux de l'attaquant, les
+> défensifs ceux de la cible. **Aucune valeur de jeu ne change** — aucun nœud ne porte
+> de levier, donc tout porteur est vide et le moteur calcule exactement comme avant,
+> ce qu'un test nommé verrouille.
+>
+> **Quatre leviers restent sans consommateur, et c'est une dépendance, pas un oubli** :
+> `thrift` et `wind` portent sur la **ressource du registre**, qui n'existe pas encore
+> (**ARC-04** : PM, temps de reprise, munitions) ; `recovery` demande un crochet de
+> fin de tour et `tempo` un ordre d'initiative, qu'aucun système ne porte aujourd'hui.
+> Les brancher sur une ressource inventée aurait été pire que de les laisser lisibles
+> et inertes.
 > GAME_ARCHETYPES §4. Le refactor central : cinq entiers plats → **quinze** leviers en
 > pourcentage, avec taux de change et plafonds.
-- [ ] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
-      `(levier, points de budget, condition ?)` remplaçant `damage`/`heal`/`hit`/`critical`/`life`
-- [ ] **Une place et une seule par levier dans la formule** — `DamageCalculator`,
-      `CriticalCalculator`, `FightCalculator` (le jet de touche), `StatusEffectManager` consomment chacun
-      les leviers qui les concernent, et le taux de change vit dans **un seul** convertisseur
-- [ ] `thrift` et `wind` se convertissent selon la **ressource du registre** (§4, note 1)
-- [ ] `life` et `recovery` restent hors de la double borne (décision DOM-01, inchangée),
-      en pourcentage des PV de base
-- [ ] **`dodge` avant tout calcul, `guard` après résistance** : deux places distinctes dans
-      la formule — c'est ce qui distingue le cuir de la plaque autrement que par un chiffre
-- [ ] Tests : plafond par levier ; somme = 50 pb par arbre ; règle des 80/20 ; aucun passif
-      plat sur un nœud de domaine de combat
+- [x] `CombatLever` (15 valeurs, dont `dodge` et `recovery`) + `Skill::levers` : une liste
+      `(levier, points de budget, condition ?)` destinée à remplacer
+      `damage`/`heal`/`hit`/`critical`/`life` *(ARC-03a)*
+- [x] **Une place et une seule par levier dans la formule** — déclarée en données et
+      **refusée à la lecture** si deux leviers la partagent ; le taux de change vit dans
+      **un seul** convertisseur *(ARC-03a)*
+- [x] `thrift` et `wind` se convertissent selon la **ressource du registre** (§4, note 1),
+      et un levier lisible dans deux registres sur trois est refusé *(ARC-03a)*
+- [x] `life` et `recovery` restent hors de la double borne (décision DOM-01, inchangée),
+      en pourcentage des PV de base *(ARC-03a)*
+- [x] **`dodge` avant tout calcul, `guard` après résistance** : deux places distinctes,
+      verrouillées par un test — c'est ce qui distingue le cuir de la plaque autrement que
+      par un chiffre *(ARC-03a ; leur consommation est ARC-03b)*
+- [x] `DamageCalculator`, `CriticalCalculator`, `FightCalculator` (le jet de touche) et
+      `StatusEffectManager` consomment chacun les leviers qui les concernent *(ARC-03b)* —
+      plus `PlayerEffectiveStatsCalculator` pour `life` et `DungeonActionResolver` pour
+      `power`, sans quoi un arbre converti serait pertinent en zone et muet en donjon
+- [ ] `thrift` et `wind` dans la formule : ils portent sur la **ressource du registre**,
+      qui n'existe pas encore — reporté à **ARC-04** ; `recovery` (crochet de fin de tour)
+      et `tempo` (ordre d'initiative) attendent le système correspondant
+- [x] Tests : plafond par levier ; vocabulaire fermé ; un levier accordé deux fois par un
+      nœud refusé *(ARC-03a)*
+- [ ] Tests : somme = 50 pb par arbre ; règle des 80/20 ; aucun passif plat sur un nœud de
+      domaine de combat *(ARC-03b — ils supposent des nœuds convertis)*
 
-### ARC-04 — Les ressources par registre (M | ★★ | HAUTE)
+### ARC-04 — Les ressources par registre (M → 2 sous-phases | ★★ | HAUTE) ✅
+
+> **Découpé (règle 8) : ARC-04a les deux registres qui ont déjà un modèle, ARC-04b
+> le carquois.** La mêlée paie en tours (`Spell::cooldown` existe et est appliqué) et
+> les sorts paient en PM (`Player::energy` existe) : ces deux-là se livrent sans créer
+> une seule pièce d'équipement. Le registre distance demande `ammoCost`, un carquois
+> à écrire, une recette de charpentier et une prime — c'est un autre chantier.
+>
+> **ARC-04a — livré le 2026-08-03.** *La mêlée cesse de payer en PM.* Les 10 techniques
+> du Soldat (ARC-02b) passent à `energyCost: 0` et prennent la **reprise de leur palier**
+> (grille 0/1/2/3/4 de GAME_MATERIA §2.3 bis, lue sur `shadow-dance` et non inventée) —
+> *un guerrier cesse d'être « un mage qui tape »*, et c'est vérifiable en une lecture.
+> Plus **la régénération des PM hors combat**, le curseur ouvert depuis 2026-07-29
+> (BALANCE §24.2) : avant ce jalon les PM ne revenaient qu'en **lançant un sort**, donc
+> en dépensant ce qu'on cherchait à récupérer, et hors combat rien ne remontait jamais.
+> `ManaRegenManager` est calqué sur `LifeRegenManager` — paresseux, en temps réel, ancré
+> à la sortie de chaque combat —, avec son curseur en paramètre (`zone.mana.regen_seconds`,
+> défaut **6 s**, la moitié des PV : un pool de PM se vide en une rencontre quand une
+> barre de vie tient plusieurs combats). La symétrie du canon est rétablie : *les PV
+> paient les coups reçus, les PM paient les gestes faits, et les deux se rechargent en
+> temps réel*.
+>
+> **Un constat, pas un arbitrage** : `stone-shield` est un sort de **palier 2** qui porte
+> une reprise, ce que la règle 3 de §2.3 bis n'autorise qu'à partir du palier 3. Le
+> corriger demande de choisir entre le rendre spammable et monter son palier — deux
+> façons de changer une valeur de jeu vivante. Le cas est **nommé et vérifié exact**
+> dans le contrat, pour qu'un second ne s'ajoute pas en silence.
+>
+> **ARC-04b — livré le 2026-08-03.** `Spell::ammoCost` (grille 1/2/3/4/5 par palier) et
+> `Item::ammoCapacity` : le geste déclare ce qu'il consomme, le carquois ce qu'il porte.
+> Les **7 gestes de tir** passent à `energyCost: 0` et paient en munitions — les trois
+> registres ont désormais chacun leur ressource, et la liste d'attente d'ARC-04a est vide.
+> La consommation vit dans le **combat** et jamais sur l'objet : le carquois *se vide dans
+> la rencontre et se ramasse après*, ce qui rend la ressource intra-rencontre comme les PM
+> et rend impossible qu'un joueur soit durablement désarmé faute de courses. Découvert au
+> passage : `gear_location: 'ammo'` existait sur les deux carquois depuis leur création
+> mais **sans bit d'équipement** — un carquois ne pouvait pas être porté (même défaut que
+> la hache avant OBJ-05) ; `PlayerItem::GEAR_AMMO` le répare.
+>
+> **La prime de munition tombe d'elle-même, et c'est une conséquence à noter** : elle
+> existait pour compenser les 90 à 230 gils/jour d'un archer face à un pyromancien qui ne
+> paie rien. L'arbitrage du §9 septies ayant supprimé le coût récurrent, il n'y a plus
+> rien à compenser — la prime, la calibration du prix contre le revenu du jour et la
+> recette de flèches en lot deviennent **sans objet**, pas « reportées ».
+>
+> **Ce que le carquois ne fait pas : porter l'élément.** Correction du §9 quater — une
+> munition qui porterait l'élément seule produirait, avec une flèche ordinaire, une action
+> **sans élément**, donc hors de la case du domaine, donc **sans aucun passif d'arbre**.
+> L'élément vient de la matéria ; la munition élémentaire le *remplacera* et reste à
+> écrire.
 > GAME_ARCHETYPES §2. Trois registres qui coûtent la même chose ne sont qu'un registre.
-- [ ] **Le carquois, pas les munitions** (arbitrage rendu au §9 septies) : **aucun coût
-      récurrent en gils**. Le carquois est une **pièce d'équipement durable** (charpentier),
-      possédée en plusieurs exemplaires — un par élément —, exactement comme un mage possède
-      plusieurs matéria. Il **se vide dans la rencontre et se ramasse après** : la ressource
-      du registre distance devient **intra-rencontre**, comme les PM
-- [ ] **La régénération des PM hors combat** — le curseur qui décide de tout l'équilibre
-      solo, et qui n'existe pas (BALANCE §24.2, ouvert depuis 2026-07-29). Mesuré : sans
-      lui le guérisseur paie **14 minutes** d'attente par jour quand les autres en paient
-      99 à 142 ; avec un curseur calibré (~6 s/point contre 12 s/PV), les six builds se
-      tiennent entre **99 et 179 minutes**. Symétrie à tenir : *les PV paient les coups
-      reçus, les PM paient les gestes faits, et les deux se rechargent en temps réel*
-- [ ] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater).
-      Une première rédaction le faisait porter par la munition seule : une flèche ordinaire
-      produisait alors une action **sans élément**, donc hors de la case du domaine, donc
-      **sans aucun passif d'arbre**. Le filet de sécurité éteignait l'archétype
-- [ ] **La prime de munition** : mesuré, sans elle l'archer paie **90 à 230 gils par jour**
-      pour **+1,8 %** de dégâts face à un pyromancien qui ne paie rien. Prime fixe, indexée
-      sur le palier, jamais cumulative — un choix d'allocation, pas un axe de progression
-- [ ] **La capacité de carquois** : sans elle, `wind` — **18 % du budget d'un arbre** — rend
-      **12 gils par jour**. Avec elle, 13,5 % d'un carquois de 20 valent 2,7 tirs de plus
-      par rencontre, et la contrainte ne mord que sur les **longues** rencontres
-- [ ] **Le prix se calibre contre le revenu quotidien**, jamais contre la valeur du geste :
-      ~10 % du revenu du jour pour l'ordinaire, ~25 % un jour où l'archer choisit
-      l'élémentaire. Repère actuel : un coffre d'exploration rend 2 à 12 gils (BALANCE §10)
-- [ ] **Temps de reprise** : `Spell::cooldown` (déjà au modèle, sans consommateur) branché
-      sur les techniques de mêlée
-- [ ] Les PM restent la ressource des sorts, inchangés
-- [ ] Croise ECO : les flèches en lot sont une branche du **charpentier** (DOM-06) — le
-      débouché existe déjà, il n'y a pas de recette à inventer
-- [ ] Tests : un archer sans munition élémentaire garde un geste jouable (jamais un mur) ;
-      aucune technique de mêlée sans reprise au-delà du geste d'entrée
+- [x] **Le carquois, pas les munitions** (arbitrage rendu au §9 septies) : **aucun coût
+      récurrent en gils** *(ARC-04b)*. Pièce durable (`Item::ammoCapacity`), portée dans
+      l'emplacement `ammo` — qui existait en donnée mais n'avait **aucun bit d'équipement**,
+      donc aucun carquois ne pouvait être porté. Il **se vide dans la rencontre et se ramasse
+      après** : la consommation vit dans le `Fight`, jamais sur l'objet
+- [x] **La régénération des PM hors combat** — le curseur qui décide de tout l'équilibre
+      solo (BALANCE §24.2, ouvert depuis 2026-07-29) *(ARC-04a)*. `ManaRegenManager`
+      calqué sur `LifeRegenManager`, curseur en paramètre `zone.mana.regen_seconds`
+      (défaut 6 s contre 12 s/PV), ancre posée à la sortie de chaque combat. Symétrie
+      tenue : *les PV paient les coups reçus, les PM paient les gestes faits, et les deux
+      se rechargent en temps réel*
+- [x] **L'élément vient de la matéria, la munition le remplace** (correction du §9 quater)
+      *(ARC-04b — la moitié qui compte : le carquois ne porte pas l'élément, donc aucun tir
+      ne sort de la case de son domaine. La munition élémentaire reste à écrire)*
+- [x] ~~**La prime de munition**~~ **sans objet** *(ARC-04b)* : elle compensait un coût
+      récurrent en gils que l'arbitrage du §9 septies a supprimé. Plus de coût, plus rien à
+      compenser
+- [x] **La capacité de carquois** *(ARC-04b)* : déclarée par la pièce (20 pour le carquois
+      de cuir, 30 pour le renforcé), donc `wind` a de quoi mordre — la contrainte ne se fait
+      sentir que sur les **longues** rencontres, ce qui est l'intention
+- [x] ~~**Le prix se calibre contre le revenu quotidien**~~ **sans objet** *(ARC-04b)* : la
+      munition ordinaire n'a plus de prix. La question renaîtra avec la munition
+      **élémentaire**, qui elle s'achètera
+- [x] **Temps de reprise** : `Spell::cooldown` branché sur les techniques de mêlée
+      *(ARC-04a)* — grille 0/1/2/3/4 par palier, et `energyCost: 0` : un geste ne facture
+      que la ressource de son registre (GAME_MATERIA §2.3 bis)
+- [x] Les PM restent la ressource des sorts, inchangés *(ARC-04a)*
+- [x] ~~Croise ECO : les flèches en lot~~ **sans objet** *(ARC-04b)* : il n'y a pas de
+      flèches à fabriquer. Les deux carquois existent déjà comme recettes de tanneur
+- [x] Tests : aucune technique de mêlée sans reprise au-delà du geste d'entrée, aucune qui
+      facture des PM, la grille suivie palier par palier *(ARC-04a, `RegisterResourceTest`)*
+- [x] Tests : un carquois vide n'est **jamais un mur** — l'attaque d'arme reste gratuite et
+      tout geste sans munition passe ; la réserve se vide dans la rencontre et repart pleine
+      à la suivante *(ARC-04b, `QuiverResolverTest`)*
 
-### ARC-05 — L'ancre d'échelle (L | ★★★ | HAUTE)
+### ARC-05 — L'ancre d'échelle (L → 3 sous-phases | ★★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-05a l'instrument, ARC-05b la seconde ancre, ARC-05c la
+> recalibration.** *On ne recalibre pas ce qu'on ne mesure pas* — et le jalon demande
+> justement de toucher 253 gestes et 65 monstres. Les règles et leurs mesures se
+> livrent seules, sans déplacer une valeur ; ARC-05c déplace les valeurs, et le canon
+> (§0.2) prévient que ce passage-là se fait **par le simulateur d'ARC-17, jamais par
+> une relecture à la main**. D'où la troisième coupe, décidée le 2026-08-05 : ARC-05b
+> ne pouvait pas attendre ARC-17, et ARC-17 ne pouvait pas se juger sans l'ancre que
+> ARC-05b lui donne.
+>
 > GAME_ARCHETYPES §6.4. Les gestes valent 1 à 12 points ; les monstres ont 11 à 3 200 PV.
 > Des pourcentages posés sur des nombres qui n'ont pas de rapport entre eux ne veulent rien
 > dire.
-- [ ] Fixer la **durée cible en tours** (commun 3-5, élite 6-10, boss 12-20) et en dériver
-      les valeurs, plutôt que l'inverse
-- [ ] **La seconde ancre** (correction du §9 ter) : le **coût d'une rencontre en ressource,
+>
+> **ARC-05a — livré le 2026-08-03.** `EncounterAnchor` pose la règle du §6.4 et la
+> rend **calculable** : *un geste de palier n retire ~25 % des PV d'un adversaire
+> commun de palier n*, plus les bandes de durée (commun 3-5, élite 6-10, boss 12-20).
+> La cible se **dérive du gabarit du bestiaire** (BES-02) au lieu de vivre dans une
+> table — recalibrer les PV d'un monstre déplace automatiquement ce qu'un geste doit
+> valoir, et les deux ne peuvent pas diverger en silence. Un test fait l'aller-retour :
+> un geste à la cible nettoie un commun en **4 tours**, au milieu de sa bande — la
+> règle et les bandes disent bien la même chose.
+>
+> **L'écart est chiffré, et il est large** : sur le dégât médian par palier, les gestes
+> livrés retirent **×4 (m1), ×6 (m2), ×7,6 (m3), ×12,5 (m4), ×9,4 (m5)** de moins que
+> la règle n'exige. C'est le « les gestes valent 1 à 12, les monstres ont 11 à 3 200 »
+> du canon, enfin mesuré. La base de référence entre en CI comme **cliquet** : l'écart
+> peut se réduire librement, il ne peut plus s'aggraver en silence — et personne ne peut
+> ajouter un geste sous-calibré sans le voir.
+>
+> **ARC-05b — livré le 2026-08-05.** La seconde moitié de l'ancre, celle que le §9 ter
+> réclamait : *un archétype ne se juge pas sur un combat, il se juge sur la journée que
+> la barre d'énergie autorise*. `DailyAnchor` convertit une journée dans la **seule
+> monnaie commune** — du temps — et rend calculables les trois choses qui manquaient :
+> le budget de rencontres qu'une journée autorise (dérivé des curseurs livrés : 240
+> points d'énergie, un tiers au combat, une chasse à 5 → **les « ~16 combats » du canon
+> se calculent au lieu d'être posés**), l'attente quotidienne d'un build (PV à 12 s, PM
+> à 6 s), et **l'ancre de fonction** (correction 16) comme un juge appelable — le seul
+> invariant qui ne se vérifie pas sur un archétype isolé.
+>
+> **Le résultat du jalon, et il n'était pas acquis : le curseur des PM est ce qui tient
+> l'ancre de fonction.** Rejoué sur le relevé du §9 septies.2, l'instrument retrouve la
+> colonne du canon **à la minute près** sur les six builds. Les cinq calibrés s'étalent
+> alors de x1,81 — dans la borne de x2,0. **À PM gratuits, l'écart passe à x10,1** : le
+> guérisseur paie 14 minutes quand le Mur en paie 142, et joue plusieurs fois plus de
+> contenu que tout le monde. `zone.mana.regen_seconds` cesse d'être un confort posé par
+> ARC-04a : c'est ce qui met l'entretien sur la même ligne que les trois autres. Réponse
+> à **BALANCE §24.2**, ouvert depuis le 2026-07-29.
+>
+> Plus la **correction 14** (`AccordTierRule`) : l'assaut ouvre ses gestes au palier
+> plein, contrôle / entretien / encaisse un cran en dessous, le palier d'entrée jamais
+> raboté (la règle du jour 1 de GAME_MATERIA §3 s'y oppose). *La différence passe par
+> les gestes, pas par les pourcentages.*
+>
+> **ARC-05c — reste à faire** : ramener l'écart vers 1, c'est-à-dire déplacer les
+> valeurs — les dégâts des gestes et les PV de monstre, conjointement. **À livrer avec
+> ou après ARC-17** : le canon (§0.2) prévient que la recalibration passe par
+> `app:balance:simulate`, jamais par une relecture à la main, et l'ancre de fonction
+> livrée ici est précisément le seuil que le simulateur aura à tenir.
+- [x] Fixer la **durée cible en tours** (commun 3-5, élite 6-10, boss 12-20) et en dériver
+      les valeurs, plutôt que l'inverse *(ARC-05a — la règle est posée et calculable ;
+      appliquer les valeurs est ARC-05b)*
+- [x] **La seconde ancre** (correction du §9 ter) : le **coût d'une rencontre en ressource,
       rapporté au budget du jour**. Mesuré, un Soldat et un Guérisseur tiennent onze tours
       tous les deux et sortent avec une barre comparable — mais l'un n'a rien dépensé et
       l'autre a vidé 108 PM sur 120. Sur les ~16 combats d'une journée, ils n'ont rien à
       voir. C'est cette ancre qui donne leur sens à `thrift` et `wind` : ils agrandissent
-      une **journée**, pas un combat
-- [ ] Calibrer en consequence la **régénération des PM hors combat** — chantier deja ouvert
-      en BALANCE §24.2, et qui n'avait pas d'archetype a servir
-- [ ] Règle unique : *un geste de palier n retire ~25 % des PV d'un adversaire commun de
-      palier n*
+      une **journée**, pas un combat *(ARC-05b, `DailyAnchor` — la journée convertie en
+      temps d'attente ; les « ~16 combats » se **dérivent** des curseurs livrés au lieu
+      d'être posés)*
+- [x] Calibrer en consequence la **régénération des PM hors combat** — chantier deja ouvert
+      en BALANCE §24.2, et qui n'avait pas d'archetype a servir *(ARC-05b — le curseur
+      livré par ARC-04a reçoit sa justification chiffrée : sans lui l'écart d'attente
+      passe de x1,81 à **x10,1**. C'est lui qui tient l'ancre de fonction)*
+- [x] Règle unique : *un geste de palier n retire ~25 % des PV d'un adversaire commun de
+      palier n* *(ARC-05a — dérivée du gabarit BES-02, jamais d'une table ; l'écart mesuré
+      est de ×4 à ×12,5 et entre en CI comme cliquet)*
 - [ ] Recalibrage conjoint des PV de monstre (croise **BES-01**, le gabarit `tier × rank`)
-      et des valeurs de gestes
+      et des valeurs de gestes *(**ARC-05c**, avec ou après ARC-17)*
 - [ ] Tests : un **simulateur de combat** en test — la durée moyenne par palier, pas un
       tableau de valeurs relu à la main. C'est la seule forme de test qui attrape une
-      régression d'équilibrage
+      régression d'équilibrage *(**ARC-17**)*
 - [ ] **Il doit produire la table croisée du §9 sexies**, pas des durées isolées : c'est
       la comparaison des six builds qui a revele le desequilibre, aucun exercice individuel
-      ne pouvait le voir
-- [ ] **L'ancre de fonction** (§9 sexies.3) : a arbre complet et equipement egal, les quatre
+      ne pouvait le voir *(**ARC-17**)*
+- [x] **L'ancre de fonction** (§9 sexies.3) : a arbre complet et equipement egal, les quatre
       fonctions enchainent le meme nombre de rencontres par jour et en sortent dans un etat
-      comparable. Ce qui diffère, c'est **comment on paie**
-- [ ] **Le palier des accords suit la fonction** : assaut au palier plein, controle /
+      comparable. Ce qui diffère, c'est **comment on paie** *(ARC-05b — posée comme un
+      **rapport** (x2,0 au plus, du simple au double) et non comme une minute : c'est ce
+      que §0.2 range parmi les nombres qui survivent à une recalibration.
+      `DailyAnchor::isWithinFunctionAnchor()` est le juge qu'ARC-17 appellera sur sa table)*
+- [x] **Le palier des accords suit la fonction** : assaut au palier plein, controle /
       entretien / encaisse un palier en dessous (~ −25 %). Mesuré : ramène l'ecart de
       « 9 tours contre 11 » à « 7 tours contre 11-14 », sans qu'aucun levier ne bouge
-- [ ] **Trancher la valeur de la vitesse** (§9 sexies.4) — une chasse coute 5 points
+      *(ARC-05b, `AccordTierRule` — un cran et un seul, et le palier d'entrée jamais
+      raboté : la règle du jour 1 de GAME_MATERIA §3 s'y oppose. L'**application** aux
+      arbres se fait à leur écriture, ARC-07 puis ARC-08)*
+- [x] **Trancher la valeur de la vitesse** (§9 sexies.4) — une chasse coute 5 points
       d'energie quel que soit le nombre de tours, donc tuer vite ne rapporte **rien** en
       solo. Option recommandee : les **rencontres à fenêtre** (un boss se termine en 12-20
       tours ou pas du tout). Consequence a porter dans GAME_DUNGEONS et GAME_BESTIARY : un
       boss doit avoir assez de PV pour qu'un archetype lent n'en vienne pas a bout
-- [ ] Consigner le résultat dans [../BALANCE.md](../BALANCE.md) (§4 est aujourd'hui
-      aspirationnel : les fixtures ne le suivent pas)
+      *(**tranché le 2026-08-02** dans GAME_ARCHETYPES §9 sexies.4 : option A adoptée,
+      **ciblée élites / boss / étapes de donjon, jamais le tout-venant**. Les bandes de
+      durée sont livrées depuis ARC-05a (`EncounterAnchor::TURN_BANDS`) ; **poser la
+      fenêtre comme une règle de rencontre est du contenu**, à brancher sur DON-03 et le
+      rang Elite/Boss du bestiaire — reporté là où il s'écrit, pas dans le moteur ARC)*
+- [x] Consigner le résultat dans [../BALANCE.md](../BALANCE.md) (§4 est aujourd'hui
+      aspirationnel : les fixtures ne le suivent pas) *(ARC-05b — §24.2 reçoit sa réponse
+      pour le curseur des PM ; le reste du chantier (coûts des sorts par palier, durée
+      moyenne en tours) reste ouvert et attend ARC-17)*
 
-### ARC-06 — L'échelle de coût et le gain de points (M | ★★ | HAUTE)
+### ARC-06 — L'échelle de coût et le gain de points (M → 2 sous-phases | ★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-06a l'échelle et la table, ARC-06b la distribution.** Le
+> jalon supposait qu'il suffisait d'indexer un gain existant. **Il n'existe pas** :
+> mesuré le 2026-08-05, le combat ne rapporte **aucun point de domaine** — seule la
+> matéria gagne de l'expérience (`MateriaXpGranter`). Poser la table est une chose,
+> créer le canal en est une autre (écouteur, et un reste à conserver puisque la table
+> descend à 0,25) ; les deux se livrent séparément.
+>
+> **ARC-06a — livré le 2026-08-05.** Les 24 arbres de combat portaient **23 valeurs de
+> coût distinctes** (5, 15, 20, 30, 35, 45, 55, 70, 85, 90, 110, 120, 200…), dont cinq
+> seulement sur l'échelle : *deux nœuds à 30 et 35 points ne disent pas deux paliers,
+> ils disent qu'on a dosé à la main — et un dosage ne se calibre pas, il se re-dose.*
+> `SkillCostScale` ferme l'échelle sur le modèle de `CombatLever` (ARC-03a), et **192
+> coûts** rejoignent leur barreau : un coût exprime désormais un **palier**.
+>
+> **Le résultat qui valide la règle : l'arbre de référence du canon tombe pile sur la
+> cible.** Le Pyromancien — celui que le §6.3 déroule comme patron et que le §0.1
+> chiffrait à 465 points — vaut exactement **390** une fois ses nœuds sur l'échelle,
+> sans qu'on ait touché à un seul d'entre eux. L'échelle n'a pas été taillée pour le
+> résultat : elle était déjà là, sous les dosages.
+>
+> Plus **le calendrier, enfin vérifié de bout en bout** (`DomainPointYield`) : la
+> journée vient de `DailyAnchor` (ARC-05b), le total de `SkillCostScale`, et la table
+> du gain fait le pont — aucun des trois n'est recopié. Sur les curseurs livrés,
+> 16 rencontres T2 par jour rendent 8 points, soit **49 jours = 7,0 semaines** pile, ce
+> que le canon annonçait. Et *on ne monte pas un arbre en tapant des rats* devient un
+> chiffre : chasser un palier en dessous **double** le temps (98 jours contre 49).
+>
+> **ARC-06b — ouvert, et BLOQUÉ sur une décision de conception** (2026-08-05). Le
+> travail mécanique est clair : brancher la distribution sur `MobDeadEvent` comme
+> `MateriaXpGranter` (même anti-exploit sur les invocations, même partage en coop),
+> avec le report du reste — la table descend à 0,25 et un compteur qui perd ses restes
+> fait gagner **zéro** point par rencontre à un joueur de palier 1, arrondi après
+> arrondi.
+>
+> **Ce qui manque est en amont : à quel arbre les points vont-ils ?** Les documents
+> fixent le *taux* (T1 0,25 · T2 0,5 · T3 1 · T4 2) et ne disent **nulle part** qui le
+> reçoit. Pour la récolte et l'artisanat la question ne se pose pas — le geste
+> appartient à un métier, et `DomainExperienceEvolver` lit `getDomainBySkillAction()`.
+> Pour le combat il n'y a pas d'équivalent : une rencontre enchaîne plusieurs gestes,
+> venus de matéria que **plusieurs arbres** peuvent avoir ouvertes (ARC-02b a compté
+> **39 gestes ambigus**, ouverts par des arbres de registres différents — `magnetic-pull`
+> est au Soldat en mêlée *et* à l'Ingénieur en tir).
+>
+> Trois questions à trancher, et elles se tiennent :
+>
+> 1. **Le porteur du gain** — le ou les arbres qui ont ouvert la matéria employée ? tous
+>    les arbres ouverts du joueur ? l'arbre de la pièce qui portait la matéria ?
+> 2. **Le partage en cas d'ambiguïté** — un geste ouvert par trois arbres rapporte-t-il
+>    à trois arbres (et un joueur qui les mène tous progresse trois fois plus vite), ou
+>    se divise-t-il (et mener un seul arbre devient le choix optimal) ?
+> 3. **L'attaque d'arme de base**, qui ne vient d'aucune matéria — crédite-t-elle
+>    l'arbre qui enseigne le port de l'arme, ou rien du tout ? *Rien du tout* rendrait un
+>    combat gagné à mains nues stérile ; *l'arbre du port* ferait progresser un arbre
+>    qu'on ne joue pas.
+>
+> Aucune de ces réponses n'est neutre : elles décident si un joueur a intérêt à mener
+> **un** arbre ou **quatre**, ce que GAME_PROGRESSION §1 (« il en mène deux à quatre »)
+> suppose sans le garantir. À trancher avant d'écrire l'écouteur.
 > GAME_ARCHETYPES §6.2. Un arbre coûte 465 points pour un plafond global de 500.
-- [ ] Échelle **0 / 10 / 25 / 50 / 100** (+ 150 dormant) sur les 24 arbres de combat
-- [ ] **Le gain de points suit le palier de l'adversaire** : T1 0,25 · T2 0,5 · T3 1 ·
+- [x] Échelle **0 / 10 / 25 / 50 / 100** (+ 150 dormant) sur les 24 arbres de combat
+      *(ARC-06a — `SkillCostScale`, échelle fermée et refusée à la lecture ; 192 coûts
+      déplacés, 23 valeurs distinctes ramenées à 6)*
+- [x] **Le gain de points suit le palier de l'adversaire** : T1 0,25 · T2 0,5 · T3 1 ·
       T4 2 (paliers de GAME_BESTIARY). On ne monte pas un arbre en tapant des rats
-- [ ] Vérifier le calendrier visé (entrée jour 1 · palier 1 semaine 1 · palier 2
+      *(ARC-06a, `DomainPointYield` — la table est posée, **en quarts de point** pour
+      qu'un joueur de palier 1 ne gagne pas zéro à chaque arrondi. La **distribution**
+      est ARC-06b : elle n'existe pas encore, le combat ne rapportant aucun point)*
+- [x] Vérifier le calendrier visé (entrée jour 1 · palier 1 semaine 1 · palier 2
       semaines 3-4 · palier 3 semaines 6-8 · capstone mois 3) contre le budget d'énergie
-      réel de GAME_PROGRESSION §5
-- [ ] Tests : coût de chaque nœud dans l'échelle ; coût total d'un arbre = 390 points
+      réel de GAME_PROGRESSION §5 *(ARC-06a — vérifié de bout en bout : **49 jours =
+      7,0 semaines** sur de la faune T2, exactement ce que le canon annonce ; T1 en
+      demande le double)*
+- [x] Tests : coût de chaque nœud dans l'échelle ; coût total d'un arbre = 390 points
+      *(ARC-06a — le premier invariant tient sur les 24 arbres ; le second tient sur le
+      Pyromancien et entre en CI comme **cliquet** avec sa liste d'attente nommée : les
+      23 autres arbres valent 240 à 525 points parce qu'il leur manque des **nœuds**,
+      pas des coûts — le gabarit en écrit 18 quand ils en portent 13 à 18. ARC-07 et
+      ARC-08 referment l'écart, qui ne peut plus grandir en silence)*
 
 ### ARC-07 — Les quatre arbres patrons (M | ★★★ | HAUTE)
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),

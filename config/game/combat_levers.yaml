@@ -1,0 +1,187 @@
+# =============================================================================
+# Le vocabulaire ferme des leviers de combat (ARC-03)
+# =============================================================================
+# GAME_ARCHETYPES § 4. Quinze leviers en pourcentage remplacent les cinq
+# statistiques plates. Chaque entree dit trois choses, et rien d'autre :
+#
+#   - `place`  : ou le levier s'applique dans la formule de combat. C'est le
+#                **critere d'admission** du canon — *un levier occupe une place
+#                qu'aucun autre n'occupe*. Deux leviers a la meme place seraient
+#                un seul levier, et le chargeur les refuse.
+#   - `per_point` : ce qu'un point de budget achete, dans l'unite declaree.
+#   - `cap`    : ce qu'un seul arbre peut investir sur ce levier.
+#
+# **Pourquoi en configuration.** GAME_ARCHETYPES § 0.2 : *aucun nombre du canon
+# n'est une valeur de jeu definitive*. Les taux de change et les plafonds ci-
+# dessous sont des reperes calcules a la main, que le simulateur d'ARC-17
+# rejouera sur les vraies donnees. Les mettre dans une classe obligerait a
+# toucher au moteur pour deplacer un chiffre.
+#
+# **Ce fichier ne dit pas qui a le droit d'acheter quoi** : les palettes par
+# fonction vivent dans `domain_roles.yaml` (ARC-01). Ici on ne decrit que ce
+# qu'un levier fait quand on l'achete.
+# =============================================================================
+
+# Unites employees ci-dessous :
+#   percent           — multiplicatif sur une valeur de base (+1,0 % par pb)
+#   point             — additif sur un taux, en points de pourcentage
+#   percent_of_max    — additif, exprime en pourcentage des PV maximum
+#   resource_per_turn — additif, en unites de la ressource par tour
+levers:
+    # --- Ce qu'on inflige --------------------------------------------------
+    power:
+        place: damage.base_multiplier
+        unit: percent
+        per_point: 1.0
+        cap: 20
+        # « Borne » = soumis a la double borne element x registre (DOM-01).
+        bounded: true
+
+    mending:
+        place: heal.base_multiplier
+        unit: percent
+        per_point: 1.0
+        cap: 20
+        bounded: true
+
+    critical:
+        # Deja un taux : l'exprimer en pourcentage d'un pourcentage serait
+        # illisible (§ 4.2). Il reste donc additif, en points.
+        place: critical.rate
+        unit: point
+        per_point: 0.5
+        cap: 12
+        bounded: true
+
+    critical_power:
+        place: critical.multiplier
+        unit: percent
+        per_point: 1.5
+        cap: 15
+        bounded: true
+
+    hit:
+        place: hit.rate
+        unit: point
+        per_point: 0.5
+        cap: 10
+        bounded: true
+
+    pierce:
+        # **Avant** la resistance de la cible — c'est ce qui le distingue de
+        # `power`, qui multiplie ce qui en sort.
+        place: resistance.ignored
+        unit: point
+        per_point: 0.7
+        cap: 12
+        bounded: true
+
+    # --- Ce que le geste coute (§ 2 : chaque registre a sa ressource) -------
+    #
+    # `thrift` et `wind` portent sur la **ressource du registre**, pas sur les
+    # PM par principe : un levier, une intention, trois lectures. C'est la
+    # seule raison pour laquelle un levier declare `by_register`.
+    thrift:
+        place: resource.cost
+        cap: 15
+        bounded: true
+        by_register:
+            spell:
+                unit: percent
+                per_point: -0.6
+                resource: mana
+            melee:
+                unit: percent
+                per_point: -0.6
+                resource: recovery_time
+            ranged:
+                unit: percent
+                per_point: -0.6
+                resource: ammunition
+
+    wind:
+        place: resource.regen
+        cap: 12
+        bounded: true
+        by_register:
+            spell:
+                unit: resource_per_turn
+                per_point: 0.1
+                resource: mana
+            # Lecture melee tranchee le 2026-08-01 (ecart n° 13 de
+            # GAME_TREE_ANATOMY § 14.5) : elle manquait, et avec elle un levier
+            # sur cinq etait inaccessible aux huit arbres de melee. `wind` fait
+            # ce qu'il fait partout — **rendre de la ressource** — sous la seule
+            # forme que la melee autorise : le geste reste disponible.
+            # Raccourcir la reprise est deja ce que fait `thrift`.
+            melee:
+                unit: point
+                per_point: 1.0
+                resource: recovery_time
+            ranged:
+                unit: point
+                per_point: 1.5
+                resource: ammunition
+
+    # --- Ce qu'on encaisse --------------------------------------------------
+    guard:
+        # **Apres** la resistance. Efficacite hyperbolique sur la survie
+        # effective (−10 % de degats subis = +11 % de PV effectifs ; −50 % =
+        # +100 %) : c'est le levier qui casse un jeu quand son plafond est
+        # haut. D'ou 15, la ou les autres principaux plafonnent a 20.
+        place: damage_taken.multiplier
+        unit: percent
+        per_point: -0.6
+        cap: 15
+        bounded: true
+
+    dodge:
+        # **Avant** tout calcul de degats, et binaire : rien de commun avec
+        # `guard` sinon l'intention. Le couple est ce qui separe le cuir de la
+        # plaque autrement que par un chiffre.
+        place: damage_taken.avoid
+        unit: point
+        per_point: 0.35
+        cap: 12
+        bounded: true
+
+    life:
+        # Hors de la double borne (§ 4.2, decision DOM-01 inchangee) : les
+        # points de vie ne sont pas un geste, et les borner ferait varier la
+        # barre de vie d'un tour a l'autre selon le geste choisi.
+        place: hp.max
+        unit: percent
+        per_point: 1.5
+        cap: 20
+        bounded: false
+
+    recovery:
+        # Suit `life` hors borne, pour la meme raison : une regeneration qui
+        # s'allumerait selon le sort du tour serait illisible.
+        place: hp.end_of_turn
+        unit: percent_of_max
+        per_point: 0.25
+        cap: 12
+        bounded: false
+
+    # --- Ce qui tient ou resiste --------------------------------------------
+    grip:
+        place: status.applied
+        unit: percent
+        per_point: 1.2
+        cap: 20
+        bounded: true
+
+    ward:
+        place: status.resisted
+        unit: percent
+        per_point: 1.0
+        cap: 15
+        bounded: true
+
+    tempo:
+        place: speed.initiative
+        unit: percent
+        per_point: 1.0
+        cap: 12
+        bounded: true

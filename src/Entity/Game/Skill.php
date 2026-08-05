@@ -71,6 +71,25 @@ class Skill
     private $life = 0;
 
     /**
+     * Les leviers accordes par ce nœud (ARC-03).
+     *
+     * GAME_ARCHETYPES § 4 : les cinq entiers plats ci-dessus sont
+     * ineequilibrables — `damage: +1` vaut +50 % sur un geste a 2 degats et
+     * +8 % sur un geste a 12. Ils cedent la place a quinze leviers en
+     * pourcentage, payes en points de budget, sous plafond par levier et
+     * budget de 50 points par arbre.
+     *
+     * `null` tant qu'un nœud n'a pas ete converti : les colonnes plates restent
+     * la source pendant la migration de contenu (ARC-07 pour les quatre arbres
+     * patrons, ARC-08 pour les vingt autres). C'est ce qui permet de livrer le
+     * vocabulaire sans toucher a une seule valeur de jeu.
+     *
+     * @var array<array-key, mixed>|null
+     */
+    #[ORM\Column(name: 'levers', type: 'json', nullable: true)]
+    private ?array $levers = null;
+
+    /**
      * Le nœud est pose mais ne s'apprend pas encore (DOM-07).
      *
      * GAME_DOMAINS § 8 : chaque arbre de combat porte un **accord reserve**,
@@ -420,5 +439,31 @@ class Skill
     public function setActions(?array $actions): void
     {
         $this->actions = $actions;
+    }
+
+    /**
+     * Les leviers que ce nœud accorde (ARC-03).
+     *
+     * Liste d'entrees `{lever, points, condition ?}`. La colonne est du JSON,
+     * donc elle accepte n'importe quoi : c'est `SkillLeverReader` qui tient le
+     * vocabulaire ferme et les plafonds. L'entite se contente de stocker — la
+     * meme repartition que `actions`, dont le contenu est lu ailleurs.
+     *
+     * Un tableau vide veut dire « ce nœud n'est pas un passif » : une porte, un
+     * accord de materia ou un echelon de port n'accordent aucun levier.
+     *
+     * @return array<array-key, mixed>
+     */
+    public function getLevers(): array
+    {
+        return $this->levers ?? [];
+    }
+
+    /**
+     * @param array<array-key, mixed>|null $levers
+     */
+    public function setLevers(?array $levers): void
+    {
+        $this->levers = $levers;
     }
 }

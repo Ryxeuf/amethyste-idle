@@ -16,9 +16,11 @@ use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\LinkedMateriaResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Fight\QuiverResolver;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\GameEngine\Reputation\CounterfeitService;
 use App\Helper\GearHelper;
@@ -50,6 +52,8 @@ class FightSpellController extends AbstractController
         private readonly FightTurnPublisher $fightTurnPublisher,
         private readonly DamageMultiplierNormalizer $damageMultiplierNormalizer,
         private readonly CounterfeitService $counterfeitService,
+        private readonly CombatLeverScale $leverScale,
+        private readonly QuiverResolver $quiverResolver,
     ) {
     }
 
@@ -138,10 +142,20 @@ class FightSpellController extends AbstractController
             return new JsonResponse(['error' => "Sort en recharge ($remaining tours restants)", 'success' => false]);
         }
 
+        // ARC-04b : la ressource du registre distance. Le refus precede la
+        // consommation des PM — un geste refuse ne doit rien couter, et un
+        // carquois vide n'est jamais un mur : l'attaque d'arme reste gratuite
+        // (regle 10) et tout geste a `ammoCost` nul passe.
+        if (!$this->quiverResolver->canAfford($fight, $player, $spell)) {
+            return new JsonResponse(['error' => 'Carquois vide', 'success' => false]);
+        }
+
         // Check energy
         if (!$this->combatSkillResolver->consumeEnergy($player, $spell)) {
             return new JsonResponse(['error' => 'Énergie insuffisante', 'success' => false]);
         }
+
+        $this->quiverResolver->consume($fight, $player, $spell);
 
         // Find target
         $target = $this->findTarget($fight, (int) $data['targetId'], $data['targetType']);
@@ -157,6 +171,10 @@ class FightSpellController extends AbstractController
         // « sorts ». Sans cette portee, l'arbre du berserker (feu x melee)
         // ajoutait ses degats a un sort d'eau, et le build n'avait plus de sens.
         $bonuses = $this->combatSkillResolver->getCombatBonuses($player, CombatScope::ofSpell($spell));
+
+        // ARC-03b — les leviers du geste, bornes par la meme case que les
+        // statistiques plates, et convertis une seule fois pour toute l'action.
+        $levers = $this->combatSkillResolver->getLeverEffects($player, CombatScope::ofSpell($spell), $spell->getRegister());
 
         // Apply enchantment bonuses from equipped items
         $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($player);
@@ -195,6 +213,7 @@ class FightSpellController extends AbstractController
             'damage' => $bonuses['damage'],
             'heal' => $bonuses['heal'],
             'critical' => $bonuses['critical'],
+            'levers' => $levers,
             'fight' => $fight,
         ];
 
@@ -222,7 +241,7 @@ class FightSpellController extends AbstractController
         }
 
         // Apply the spell
-        $hit = FightCalculator::hasAttackHit($spell->getHit() + $bonuses['hit']);
+        $hit = FightCalculator::hasAttackHitWithLevers($spell->getHit() + $bonuses['hit'], $levers, $this->leverScale);
         $messages = $statusMessages;
 
         // FAC-07 — la trahison : une contrefacon marche neuf fois et trahit a

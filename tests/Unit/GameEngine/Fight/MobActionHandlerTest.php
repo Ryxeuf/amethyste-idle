@@ -8,7 +8,9 @@ use App\Entity\App\Player;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use App\Event\Fight\ActionEvent;
+use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\Handler\MobActionHandlerInterface;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
@@ -56,6 +58,7 @@ class MobActionHandlerTest extends TestCase
             $this->combatLogger,
             $this->entityManager,
             $this->trainingTranslator(),
+            $this->neutralSkillResolver(),
         );
     }
 
@@ -412,5 +415,19 @@ class MobActionHandlerTest extends TestCase
         $translator->method('trans')->willReturnArgument(0);
 
         return $translator;
+    }
+
+    /**
+     * Un resolveur sans levier (ARC-03b).
+     *
+     * Ces tests portent sur l'action du monstre, pas sur les leviers de sa
+     * cible : un porteur vide laisse le calcul exactement ou il etait.
+     */
+    private function neutralSkillResolver(): CombatSkillResolver
+    {
+        $resolver = $this->createMock(CombatSkillResolver::class);
+        $resolver->method('getLeverEffects')->willReturn(CombatLeverEffects::none());
+
+        return $resolver;
     }
 }

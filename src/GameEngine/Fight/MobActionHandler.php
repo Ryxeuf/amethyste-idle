@@ -4,6 +4,7 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
+use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
@@ -31,6 +32,7 @@ class MobActionHandler
         private readonly CombatLogger $combatLogger,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
+        private readonly CombatSkillResolver $skillResolver,
     ) {
     }
 
@@ -140,7 +142,19 @@ class MobActionHandler
         }
 
         if (FightCalculator::hasAttackHit($mob->getMonster()->getHit())) {
-            $spellMessages = $this->spellApplicator->apply($spell, $mob, $target, ['fight' => $fight]);
+            // ARC-03b — les leviers **defensifs** de la cible (`guard`, `dodge`).
+            //
+            // Lus sans portee, et c'est la regle existante et non une exception :
+            // « la borne s'applique la ou un geste a lieu » (DOM-01). Celui qui
+            // encaisse ne fait pas de geste — le borner par l'element du monstre
+            // qui le frappe reviendrait a faire dependre son armure de ce qu'on
+            // lui envoie.
+            $options = ['fight' => $fight];
+            if ($target instanceof Player) {
+                $options['targetLevers'] = $this->skillResolver->getLeverEffects($target);
+            }
+
+            $spellMessages = $this->spellApplicator->apply($spell, $mob, $target, $options);
             $result['messages'][] = sprintf('%s utilise %s !', $mob->getName(), $spell->getName());
             $result['messages'] = array_merge($result['messages'], $spellMessages);
             $this->combatLogger->logSpell($fight, $mob, $target, $spell->getName(), true);

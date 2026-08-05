@@ -317,6 +317,18 @@ class Item
     #[ORM\Column(name: 'materia_slot_type', type: 'string', length: 20, nullable: true, enumType: MateriaSlotType::class)]
     private ?MateriaSlotType $materiaSlotType = null;
 
+    /**
+     * Ce que le carquois porte de munitions dans une rencontre (ARC-04b).
+     *
+     * `null` partout ailleurs : c'est la piece qui declare sa capacite, comme
+     * elle declare ses emplacements de materia. Le carquois est une piece
+     * **durable** — il ne se consomme pas, il se vide et se ramasse (§ 9
+     * septies) —, ce qui est exactement pourquoi la capacite ne passe pas par
+     * `nbUsages`, qui detruit l'objet a zero.
+     */
+    #[ORM\Column(name: 'ammo_capacity', type: 'integer', nullable: true)]
+    private ?int $ammoCapacity = null;
+
     #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
     private bool $isCosmetic = false;
 
@@ -799,6 +811,16 @@ class Item
     public function setMateriaSlotType(?MateriaSlotType $type): void
     {
         $this->materiaSlotType = $type;
+    }
+
+    public function getAmmoCapacity(): ?int
+    {
+        return $this->ammoCapacity;
+    }
+
+    public function setAmmoCapacity(?int $ammoCapacity): void
+    {
+        $this->ammoCapacity = null !== $ammoCapacity ? max(0, $ammoCapacity) : null;
     }
 
     /**

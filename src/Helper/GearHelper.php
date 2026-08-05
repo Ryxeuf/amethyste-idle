@@ -125,6 +125,7 @@ class GearHelper
             Item::GEAR_LOCATION_RING_1, Item::GEAR_LOCATION_FINGER => PlayerItem::GEAR_RING_1,
             Item::GEAR_LOCATION_RING_2 => PlayerItem::GEAR_RING_2,
             Item::GEAR_LOCATION_SHOULDER => PlayerItem::GEAR_SHOULDER,
+            Item::GEAR_LOCATION_AMMO => PlayerItem::GEAR_AMMO,
             'tool_pickaxe' => PlayerItem::GEAR_TOOL_PICKAXE,
             'tool_sickle' => PlayerItem::GEAR_TOOL_SICKLE,
             'tool_fishing_rod' => PlayerItem::GEAR_TOOL_FISHING_ROD,

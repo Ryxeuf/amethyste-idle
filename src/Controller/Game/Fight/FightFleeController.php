@@ -10,6 +10,7 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,6 +33,7 @@ class FightFleeController extends AbstractController
         private readonly FightTurnPublisher $fightTurnPublisher,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LifeRegenManager $lifeRegenManager,
+        private readonly ManaRegenManager $manaRegenManager,
     ) {
     }
 
@@ -99,6 +101,7 @@ class FightFleeController extends AbstractController
             $player->setFight(null);
             // Ancre la regen des PV a la sortie de combat (ZON-12).
             $this->lifeRegenManager->anchor($player);
+            $this->manaRegenManager->anchor($player);
             $fight->removePlayer($player);
 
             if ($isWorldBoss || $isCoop) {

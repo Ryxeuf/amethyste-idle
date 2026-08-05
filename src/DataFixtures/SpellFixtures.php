@@ -27,6 +27,8 @@ class SpellFixtures extends Fixture
             $spell->setCritical($data['critical'] ?? 5);
             $spell->setEnergyCost($data['energyCost'] ?? 0);
             $spell->setCooldown($data['cooldown'] ?? null);
+            // ARC-04b : la ressource du registre distance.
+            $spell->setAmmoCost($data['ammoCost'] ?? 0);
             $spell->setStatusEffectSlug($data['statusEffectSlug'] ?? null);
             $spell->setAoeTargets($data['aoeTargets'] ?? 1);
             $spell->setLevel($data['level'] ?? 1);
@@ -775,7 +777,7 @@ class SpellFixtures extends Fixture
                 'name' => 'Frappe puissante',
                 'description' => 'Une frappe puissante avec une lame tranchante',
                 'hit' => 95,
-                'energyCost' => 4,
+                'energyCost' => 0,
                 'critical' => 10,
                 'level' => 1,
             ],
@@ -798,8 +800,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Charge',
                 'description' => 'Une charge brutale avec un poing de fer',
                 'hit' => 90,
-                'energyCost' => 8,
+                'energyCost' => 0,
                 'critical' => 12,
+                'cooldown' => 1,
                 'level' => 2,
             ],
             'blade_dance' => [
@@ -811,8 +814,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Tourbillon d\'epee',
                 'description' => 'Un tourbillon devastateur de lames qui frappe tous les ennemis',
                 'hit' => 85,
-                'energyCost' => 15,
-                'cooldown' => 2,
+                'energyCost' => 0,
+                'cooldown' => 3,
                 'critical' => 15,
                 'aoeTargets' => 0,
                 'level' => 4,
@@ -836,6 +839,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Lame rasoir',
                 'description' => 'Une lame si fine qu\'elle coupe presque tout',
                 'hit' => 80,
+                'energyCost' => 0,
+                'cooldown' => 3,
                 'level' => 4,
             ],
             'metal_skin' => [
@@ -867,6 +872,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Vierge de fer',
                 'description' => 'Emprisonne l\'ennemi dans une cage de pointes métalliques',
                 'hit' => 75,
+                'energyCost' => 0,
+                'cooldown' => 4,
                 'level' => 5,
             ],
             'chain_lightning' => [
@@ -908,6 +915,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Carreau d\'argent',
                 'description' => 'Un projectile d\'argent pur qui transperce les défenses',
                 'hit' => 85,
+                'energyCost' => 0,
+                'cooldown' => 2,
                 'level' => 3,
             ],
             'crushing_weight' => [
@@ -919,6 +928,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Poids écrasant',
                 'description' => 'Une masse métallique qui s\'abat sur l\'ennemi',
                 'hit' => 80,
+                'energyCost' => 0,
+                'cooldown' => 3,
                 'level' => 4,
             ],
             'magnetic_pull' => [
@@ -1152,6 +1163,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Ruée d\'air',
                 'description' => 'Permet de se déplacer rapidement sur un coussin d\'air',
                 'hit' => 100,
+                'energyCost' => 0,
+                'ammoCost' => 1,
                 'level' => 1,
             ],
             'air_slash' => [
@@ -1163,6 +1176,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Tranchant aérien',
                 'description' => 'Une lame d\'air comprimé qui tranche l\'ennemi',
                 'hit' => 85,
+                'energyCost' => 0,
+                'ammoCost' => 3,
                 'level' => 3,
             ],
             'cyclone' => [
@@ -1244,6 +1259,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Point de pression',
                 'description' => 'Concentre l\'air sur un point précis pour causer des dégâts internes',
                 'hit' => 90,
+                'energyCost' => 0,
+                'ammoCost' => 2,
                 'level' => 2,
             ],
             'wind_scythe' => [
@@ -1576,8 +1593,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Tir précis',
                 'description' => 'Un tir soigneusement ajusté qui touche à coup sûr',
                 'hit' => 100,
-                'energyCost' => 4,
+                'energyCost' => 0,
                 'critical' => 12,
+                'ammoCost' => 1,
                 'level' => 1,
             ],
             'arrow_rain' => [
@@ -1589,8 +1607,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Pluie de flèches',
                 'description' => 'Une pluie de flèches qui s\'abat sur la zone',
                 'hit' => 80,
-                'energyCost' => 12,
+                'energyCost' => 0,
                 'aoeTargets' => 0,
+                'ammoCost' => 3,
                 'level' => 3,
             ],
             'critical_shot' => [
@@ -1602,8 +1621,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Tir critique',
                 'description' => 'Un tir visant les points faibles de l\'ennemi',
                 'hit' => 85,
-                'energyCost' => 10,
+                'energyCost' => 0,
                 'critical' => 25,
+                'ammoCost' => 3,
                 'level' => 3,
             ],
             'piercing_arrow' => [
@@ -1615,9 +1635,10 @@ class SpellFixtures extends Fixture
                 'name' => 'Flèche perforante',
                 'description' => 'Une flèche qui transperce les armures les plus solides',
                 'hit' => 80,
-                'energyCost' => 18,
+                'energyCost' => 0,
                 'cooldown' => 3,
                 'critical' => 15,
+                'ammoCost' => 5,
                 'level' => 5,
             ],
 
@@ -2294,7 +2315,8 @@ class SpellFixtures extends Fixture
                 'name' => 'Riposte d\'acier',
                 'description' => 'Une contre-attaque métallique qui blesse et protège',
                 'hit' => 95,
-                'energyCost' => 8,
+                'energyCost' => 0,
+                'cooldown' => 1,
                 'level' => 2,
             ],
             // Bête — Morsure sauvage
@@ -2934,8 +2956,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Barrage d\'acier',
                 'description' => 'Une rafale de projectiles métalliques à haute vélocité',
                 'hit' => 90,
-                'energyCost' => 6,
+                'energyCost' => 0,
                 'critical' => 12,
+                'cooldown' => 1,
                 'level' => 2,
             ],
             'shrapnel_blast' => [
@@ -2960,7 +2983,7 @@ class SpellFixtures extends Fixture
                 'name' => 'Écrasement de titane',
                 'description' => 'Un poing de titane s\'abat avec une force colossale sur la cible',
                 'hit' => 80,
-                'energyCost' => 18,
+                'energyCost' => 0,
                 'cooldown' => 3,
                 'critical' => 15,
                 'level' => 4,

@@ -7,6 +7,7 @@ use App\GameEngine\Retention\WeeklyRecapService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
@@ -37,6 +38,7 @@ class IndexController extends AbstractController
         private readonly ZoneTravelService $zoneTravelService,
         private readonly ActionEnergyManager $actionEnergyManager,
         private readonly LifeRegenManager $lifeRegenManager,
+        private readonly ManaRegenManager $manaRegenManager,
         private readonly ExpeditionService $expeditionService,
         // En dernier : une dependance nouvelle s'ajoute en queue, jamais au
         // milieu — un service insere entre deux autres decalerait sans un mot
@@ -57,6 +59,7 @@ class IndexController extends AbstractController
         $this->zoneTravelService->settleArrival($player);
         $this->actionEnergyManager->refresh($player, true);
         $this->lifeRegenManager->refresh($player, true);
+        $this->manaRegenManager->refresh($player, true);
         $this->expeditionService->settle($player);
 
         // Un joueur sans position en recoit une ici : le hub est le premier

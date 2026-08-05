@@ -166,6 +166,12 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                     $item->setMateriaSlotType(MateriaSlotType::tryFrom((string) $data['materia_slot_type']));
                 }
 
+                // ARC-04b : la piece declare ce qu'elle porte de munitions dans
+                // une rencontre. Absent = ce n'est pas un carquois.
+                if (isset($data['ammo_capacity'])) {
+                    $item->setAmmoCapacity((int) $data['ammo_capacity']);
+                }
+
                 // ZON-36 : meme derivation que dans les fixtures PHP, et depuis
                 // la meme table. Deux chemins de chargement qui repondraient
                 // differemment donneraient au minerai de cuivre une affinite

@@ -6,7 +6,10 @@ use App\Entity\App\Player;
 use App\Entity\Game\Spell;
 use App\GameEngine\Dungeon\DungeonActionResolver;
 use App\GameEngine\Fight\CombatCapacityResolver;
+use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Progression\CombatLeverDefinitionLoader;
+use App\GameEngine\Progression\CombatLeverScale;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -29,9 +32,12 @@ class DungeonActionResolverTest extends TestCase
     {
         $this->capacities = $this->createMock(CombatCapacityResolver::class);
         $this->skills = $this->createMock(CombatSkillResolver::class);
+        // ARC-03b : `CombatLeverEffects` est `final readonly`, donc PHPUnit ne
+        // sait pas en fabriquer un double — le stub est explicite.
+        $this->skills->method('getLeverEffects')->willReturn(CombatLeverEffects::none());
         $this->skills->method('getCombatBonuses')->willReturnCallback(fn (): array => $this->bonuses);
 
-        $this->resolver = new DungeonActionResolver($this->capacities, $this->skills);
+        $this->resolver = new DungeonActionResolver($this->capacities, $this->skills, $this->leverScale());
     }
 
     private function spell(int $damage): Spell
@@ -107,5 +113,13 @@ class DungeonActionResolverTest extends TestCase
         $action = $this->resolver->resolve(new Player(), 'fire-ball');
 
         $this->assertSame(['damage' => 1, 'spellSlug' => null], $action);
+    }
+
+    /**
+     * Le convertisseur de leviers reel (ARC-03b) — porteur vide, degat inchange.
+     */
+    private function leverScale(): CombatLeverScale
+    {
+        return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));
     }
 }
