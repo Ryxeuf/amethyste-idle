@@ -133,7 +133,7 @@ class DailyAnchorTest extends TestCase
     }
 
     /**
-     * **Sans le curseur des PM, l'ancre de fonction ne tient pas.**
+     * Sans le curseur des PM, l'ancre de fonction ne tient pas.
      *
      * C'est le resultat du jalon, et la justification chiffree de
      * `zone.mana.regen_seconds`. Tant que les PM sont gratuits, le guerisseur

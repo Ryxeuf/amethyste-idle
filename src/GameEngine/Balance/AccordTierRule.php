@@ -31,7 +31,7 @@ use App\Enum\DomainRole;
  *
  * **Ce que la regle ne fait pas** : elle ne retire aucun geste a personne. Un
  * arbre de controle ouvre les memes accords, au meme endroit de son calendrier
- * — il les ouvre a un palier de matiera en dessous. La chaine
+ * — il les ouvre a un palier de materia en dessous. La chaine
  * competence → materia → sort (GAME_MATERIA) reste intacte : c'est le
  * `unlock` qui vise `m2` au lieu de `m3`, rien d'autre.
  *
@@ -41,7 +41,7 @@ use App\Enum\DomainRole;
  */
 final class AccordTierRule
 {
-    /** Le palier de matéria le plus bas qu'un accord puisse ouvrir. */
+    /** Le palier de materia le plus bas qu'un accord puisse ouvrir. */
     public const FLOOR = 1;
 
     /**
