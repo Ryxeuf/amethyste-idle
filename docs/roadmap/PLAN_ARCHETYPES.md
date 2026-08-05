@@ -574,14 +574,52 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [x] Test : aucun refus d'acquisition ne dépend d'un total de points tous domaines
       confondus
 
-### ARC-11 — L'intention, la portée, et la loi du dépôt (M | ★★★ | HAUTE)
+### ARC-11 — L'intention, la portée, et la loi du dépôt (M → 2 sous-phases | ★★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-11a le vocabulaire, ARC-11b la loi du dépôt.** Le jalon
+> tient deux choses de nature différente — deux étiquettes sur le geste, et une
+> mécanique de durée qui change le combat de groupe. La première se livre sans
+> déplacer une valeur ; la seconde touche la résolution de tour.
+>
+> **ARC-11a — livré le 2026-08-05.** `SpellIntent` (dégât / soin / protection /
+> amélioration / entrave) et `SpellScope` (soi / un allié / le groupe / une cible /
+> plusieurs cibles) existent, et `Spell` les porte.
+>
+> **Les deux colonnes sont nullables, et c'est la décision du jalon** : elles portent la
+> décision d'auteur quand il y en a une, et restent vides quand la donnée suffit à dire
+> l'intention. `SpellIntentDeriver` répond alors — et ce qui rend la dérivation légitime
+> est mesuré : **les huit types de `StatusEffect` se rangent sans reste** dans les cinq
+> intentions (poison/paralysie/brûlure/gel/silence → entrave, régénération → soin,
+> bouclier → protection, berserk → amélioration). Une table qui laisserait des restes
+> dirait qu'on invente une distinction ; celle-ci ne fait que nommer celle que la donnée
+> portait déjà. Écrire 253 valeurs à la main aurait été 253 occasions de se tromper, et
+> le dépôt dérive partout ailleurs (matéria depuis le sort, stats depuis le gabarit,
+> cible depuis le bestiaire).
+>
+> **L'ordre des questions porte une règle** : le dégât se lit avant l'effet de statut,
+> donc *un geste qui blesse **et** marque reste un geste de dégât*. C'est ce que le §1.1
+> exige — une marque doit être portée par un geste de dégât, sans quoi une entrave d'un
+> tour serait arithmétiquement nulle en duel (§9 quinquies). Le classer en « entrave »
+> l'aurait sorti de la palette de l'assaut, qui est pourtant celui qui le lance.
+>
+> **Et `scope: le groupe` ne se dérive jamais.** Aucune colonne ne pourrait le faire
+> apparaître : un soin de groupe et un soin d'allié ont exactement les mêmes valeurs. Ce
+> qui les sépare est une décision d'auteur, et la durée qu'ARC-11b y attache.
+>
+> **ARC-11b — reste à faire** : la loi du dépôt elle-même. Un geste de portée `Group`
+> pose une **durée** qui court que le lanceur soit connecté ou non ; toute `protection`
+> porte une durée quelle que soit sa portée ; la durée se compte **en tours de la
+> rencontre** ; la durée **étale** la valeur sans l'augmenter ; et le garde-fou —
+> aucun rôle n'est nécessaire.
 > GAME_ARCHETYPES §3.1 et §7 bis. **Ce jalon décide si le donjon de groupe a un sens.**
 > Le combat de groupe est semi-synchrone (`GroupDungeonCombatService` : un joueur actif à
 > la fois, 45 s par tour, tour d'un absent résolu tout seul) — un soin **réactif** y est
 > une mécanique morte.
-- [ ] `SpellIntent` (dégât / soin / protection / amélioration / entrave) et `SpellScope`
+- [x] `SpellIntent` (dégât / soin / protection / amélioration / entrave) et `SpellScope`
       (soi / un allié / le groupe / une cible / plusieurs cibles) sur `Spell`, hérités par
-      la matéria
+      la matéria *(ARC-11a — colonnes **nullables** avec repli de dérivation
+      (`SpellIntentDeriver`) : les 8 types de `StatusEffect` se rangent sans reste dans
+      les 5 intentions. Aucune valeur de jeu ne bouge — les colonnes naissent vides)*
 - [ ] Les leviers visent par **intention** : `mending` ne touche que `soin`, `grip` que
       l'`entrave`. Une fois sur le geste, jamais quinze fois dans quinze formules
 - [ ] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
