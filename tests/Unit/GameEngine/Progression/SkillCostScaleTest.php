@@ -193,6 +193,38 @@ class SkillCostScaleTest extends TestCase
     }
 
     /**
+     * Les nœuds **generes** sont sur l'echelle eux aussi.
+     *
+     * Deux fabriques ecrivent un cout hors des arbres : les echelons superieurs
+     * de port d'armure (ONB-20b, un nœud par famille x par arbre qui l'enseigne)
+     * et l'accord dormant de DOM-07. Ils appartiennent aux memes arbres et se
+     * paient de la meme bourse — les lire seulement dans le corps des arbres
+     * aurait laisse un angle mort, et un angle mort dans un invariant vaut
+     * moins que pas d'invariant.
+     */
+    public function testTheGeneratedNodesSitOnTheScaleToo(): void
+    {
+        $source = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/Game/SkillFixtures.php');
+
+        preg_match_all("/'points' => (\d+)/", $source, $ports);
+        self::assertNotEmpty($ports[1], 'Les echelons de port ne declarent plus leur cout ici.');
+
+        foreach ($ports[1] as $points) {
+            self::assertTrue(
+                SkillCostScale::isOnScale((int) $points),
+                sprintf('Un echelon de port coute %s points, hors echelle.', $points),
+            );
+        }
+
+        preg_match(
+            "/'requiredPoints' => (\d+),\s*\n\s*'domain' => \\\$domain,\s*\n\s*'dormant' => true,/",
+            $source,
+            $dormant,
+        );
+        self::assertSame((string) SkillCostScale::DORMANT, $dormant[1] ?? null);
+    }
+
+    /**
      * Aucun arbre ne s'eloigne de la cible.
      *
      * **C'est le cliquet du jalon.** Les 23 autres arbres n'y sont pas encore,
