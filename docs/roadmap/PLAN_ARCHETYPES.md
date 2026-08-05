@@ -646,16 +646,49 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : aucun geste `le groupe` instantané ; palette d'intentions tenue par arbre ;
       tout arbre ouvre au moins un `dégât` et au moins un non-`dégât`
 
-### ARC-12 — Les passifs conditionnels d'équipement (M | ★★★ | HAUTE)
+### ARC-12 — Les passifs conditionnels d'équipement (M → 2 sous-phases | ★★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : ARC-12a le vocabulaire et le prix, ARC-12b l'écran.** Le modèle
+> et l'interface n'ont ni le même risque ni le même rythme ; le premier se teste seul.
+>
+> **ARC-12a — livré le 2026-08-05.** `LeverGrant` portait une condition depuis ARC-03a en
+> annonçant que *ce qu'elle vaut est ARC-12* — jusqu'ici « une chaîne que rien n'interprète ».
+> Elle a désormais un **vocabulaire fermé** (`SkillCondition`) et un prix. **Aucune
+> migration** : la colonne existe depuis ARC-03a, et **aucun nœud livré ne porte encore de
+> condition** — le jalon pose la grammaire avant qu'il y ait quoi que ce soit à relire.
+>
+> La grammaire tient les garde-fous **par construction** plutôt que par relecture : seuls
+> `weapon:` et `armor:` prennent un sujet, si bien que `rarity:epic` et `item:excalibur`
+> sont refusés à la lecture — *la famille, jamais la pièce ni la rareté* (garde-fou 4). Et
+> une condition inconnue est **refusée**, jamais corrigée en silence : un passif conditionné
+> à une chaîne mal orthographiée serait **toujours inactif**, et un bonus silencieusement
+> mort est le pire des défauts — il se lit comme un choix de build.
+>
+> **La correction du §9 bis est le cœur du jalon, et elle vaut 43 % de puissance.** Le §4.3
+> accorde ×2,0 au combat *parce que la condition peut manquer* ; une condition vraie plus
+> des deux tiers du temps ne manque pas. D'où **deux listes** de conditions de combat :
+> les fréquentes (`target_marked` — la marque de son propre élément est posée dès le tour 1
+> par un accord **gratuit** —, `took_hit_last_turn`, `in_melee_range`) payées ×1,4 comme un
+> build, et celles qui peuvent réellement manquer, payées ×2,0. Un test le dit sans détour :
+> **deux conditions de même nature n'ont pas le même prix**. Les fréquences définitives sont
+> à ARC-17 ; ce qui est figé, c'est la règle et l'obligation de déclarer de quel côté on tombe.
+>
+> **ARC-12b — reste à faire** : l'écran des arbres dit ce qu'un nœud rapporterait *si la
+> condition était remplie*, et ce qu'il faudrait porter. Plus le croisement OBJ (valider
+> les familles contre `EquipmentPortCatalog`) et l'application des multiplicateurs au
+> budget dans `SkillLeverReader`.
 > GAME_ARCHETYPES §4.3. C'est ce qui fait que **l'équipement est le build** au lieu d'être
 > un total — la promesse de GAME_DOMAINS §3, qui n'avait jamais eu de quoi la tenir.
-- [ ] `SkillCondition` sur un nœud passif : famille d'arme, ligne d'armure, bouclier porté,
+- [x] `SkillCondition` sur un nœud passif : famille d'arme, ligne d'armure, bouclier porté,
       main gauche libre, deux armes — plus les conditions de combat déjà utilisées par les
-      capstones
-- [ ] **Multiplicateurs d'effet** : ×1,0 sans condition, **×1,4** condition de build,
+      capstones *(ARC-12a — vocabulaire fermé, refusé à la lecture ; les capstones n'en
+      portaient encore aucune, la liste de combat est donc **posée** et non reprise)*
+- [x] **Multiplicateurs d'effet** : ×1,0 sans condition, **×1,4** condition de build,
       **×2,0** condition de combat. Le budget compte l'effet **moyen**, pas l'effet affiché ;
-      les plafonds restent exprimés en points de budget et ne bougent pas
-- [ ] **Le multiplicateur suit la fréquence mesurée, pas la famille** (correction du
+      les plafonds restent exprimés en points de budget et ne bougent pas *(ARC-12a — le
+      multiplicateur est porté par la condition ; l'appliquer au budget dans
+      `SkillLeverReader` est ARC-12b)*
+- [x] **Le multiplicateur suit la fréquence mesurée, pas la famille** (correction du
       §9 bis) : une condition de combat vraie plus des deux tiers du temps se paie ×1,4.
       « Vous avez encaissé au tour précédent » est vraie dès le tour 2 pour qui se bat au
       contact — c'est le simulateur d'ARC-05 qui la mesure, pas l'auteur qui l'estime
