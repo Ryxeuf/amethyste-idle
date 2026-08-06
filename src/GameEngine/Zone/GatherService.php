@@ -399,6 +399,10 @@ class GatherService
      * L'ancre n'avance **pas** jusqu'a `now` : elle avance du temps exactement
      * consomme par les unites rendues. Sans cela, chaque lecture jetterait la
      * fraction en cours et un filon souvent consulte ne repousserait jamais.
+     * Exception — et c'est la borne qui manquait : des que le filon atteint sa
+     * capacite, le temps en trop **deborde** et l'ancre revient a `now`. Un
+     * filon plein qui capitaliserait sa repousse rembourserait toute recolte
+     * ulterieure, et n'aurait donc jamais l'air de s'entamer.
      *
      * @param \DateTimeImmutable|null $anchor derniere conversion temps -> unites
      *
@@ -427,9 +431,27 @@ class GatherService
         }
 
         $granted = min($units, $capacity - $stock);
+        $refilled = $stock + $granted;
+
+        // Un filon **plein ne met rien de cote**. `capacity` est un tampon
+        // (GAME_WORLD §3.5), pas un compteur : le temps ecoule au-dela de ce
+        // qu'il fallait pour le remplir deborde et se perd, comme l'eau d'un
+        // bassin plein.
+        //
+        // Sans cette borne, le report du reliquat s'appliquait aussi au temps
+        // ecrete par la capacite, et l'ancre restait indefiniment dans le
+        // passe : un filon laisse plein trois jours accumulait trois jours de
+        // repousse en credit. La premiere recolte l'entamait bien en base,
+        // puis la lecture suivante la remboursait aussitot sur le credit — le
+        // carre de thym du Fanal affichait 72/72 apres chaque recolte, et il
+        // aurait fallu ~220 recoltes pour epuiser la reserve. Le filon voisin,
+        // lui, se vidait normalement : son credit avait deja ete consomme.
+        if ($refilled >= $capacity) {
+            return ['stock' => $capacity, 'anchor' => $now];
+        }
 
         return [
-            'stock' => $stock + $granted,
+            'stock' => $refilled,
             // Le reliquat se reporte : on n'avance que du temps facture.
             'anchor' => $anchor->modify(sprintf('+%d seconds', (int) round($granted * $secondsPerUnit))),
         ];
