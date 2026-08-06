@@ -675,10 +675,48 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > **Le Soldat sort de trois cliquets d'un coup** : « ne sait que frapper » (8 → 7), et ses
 > deux écarts de palette (14 → 12).
 >
+> **ARC-07d — livré le 2026-08-06. ARC-07 est clos.** L'Archer (air × distance × assaut,
+> *« la Portée »*), et **le seul des quatre dont la ressource est matérielle** : il ne paie ni
+> en PM ni en tours, il paie en munitions, et sa courbe est une **cadence décroissante** là où
+> le Pyromancien a un pic et le Soldat un plateau. Trois différences structurelles avec le
+> Pyromancien malgré la fonction partagée, et **aucune numérique** — ce que le §9.5 exige de
+> tout couple d'arbres de même fonction.
+>
+> **Aucun sort neuf, et c'est le seul des quatre dans ce cas** : les 7 gestes de registre
+> `Ranged` livrés couvrent exactement les 6 accords du gabarit plus le dormant. Le Pyromancien
+> avait dû créer le Brasier, le Guérisseur les deux Marées, le Soldat trois protections.
+>
+> **Les deux branches tombent sur 50 pb, et c'est le plafond qui les a écrites** : le Guet
+> (`power` 17 · `critical` 9 · `critical_power` **15** · `tempo` 9) et la Volée (`power` 17 ·
+> `critical` 9 · `critical_power` 6 · `pierce` 9 · `wind` 9 en teinte). `critical_power`
+> plafonne à 15 et le Guet y est **pile**, donc un troisième nœud de critique est impossible
+> dans cet arbre et la Volée est **obligée** de chercher ailleurs. Même mécanique que le
+> `guard` à 15 du Soldat : *le plafond produit l'opposition, on ne la dose pas.* La teinte
+> `wind` est la seule du jeu qui porte sur la **ressource** — et depuis que le §9 septies a
+> retiré aux munitions leur coût en gils, elle ne rend pas de l'argent, elle rend des tours de
+> tir dans le combat où l'on est.
+>
+> **Un défaut trouvé en écrivant l'arbre, et antérieur au jalon** : trois accords de l'Archer
+> — `air-current`, `wind-scythe`, `vacuum-blade` — sont de registre **`Spell`**. C'est le
+> `magnetic-pull` du Soldat dans un autre arbre. Ils partent, et **aucune matéria ne perd son
+> canal** : le Foudromancien ouvre les deux premiers, le Vagabond le troisième.
+>
+> **Le Tir entravant garde ses dégâts et déclare son intention.** Le canon le veut en
+> `entrave` (§9.4) quand le §1.1 veut qu'une marque soit portée par un geste qui **blesse** ;
+> les deux tiennent ensemble parce que *l'intention est une décision d'auteur et le dégât une
+> donnée*, et l'invariant d'ARC-13b-a vérifie le second, jamais la première. Conséquence
+> assumée plutôt que masquée : par `LeverIntentLaw`, le `power` de l'arbre **n'amplifie pas ce
+> geste**. On ne le joue pas pour tuer, on le joue pour le Déséquilibre — qui allume le
+> capstone dès le tour 2, gratuitement.
+>
+> **L'Archer sort de « ne sait que frapper » (7 → 6)** et rejoint les arbres tenus au gabarit
+> (3 → **4**).
+>
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),
 > Archer (assaut/distance) — un par fonction, trois registres.
-- [ ] Les quatre arbres écrits au gabarit : 15 nœuds, 5 accords, 7 passifs, 2 échelons de
-      port, 1 dormant *(ARC-07a/b/c — **3/4** : le Pyromancien, le Guérisseur et le Soldat. Les échelons de port ne sont pas
+- [x] Les quatre arbres écrits au gabarit : 15 nœuds, 5 accords, 7 passifs, 2 échelons de
+      port, 1 dormant *(ARC-07a/b/c/d — **4/4** : le Pyromancien, le Guérisseur, le Soldat et
+      l'Archer. Les échelons de port ne sont pas
       écrits ici : ils sont générés et partagés (ONB-20b), et le canon les range hors budget)*
 - [ ] Les accords choisis **par rôle dans le combat**, jamais par niveau de sort
 - [ ] Les capstones conditionnels, condition atteignable au tour 2 avec les seuls accords
