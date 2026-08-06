@@ -70,6 +70,28 @@ class CombatBranchCatalog
     }
 
     /**
+     * La cle de l'arbre qui porte ce libelle.
+     *
+     * **Le projet a deux identifiants de domaine, et c'est la source d'erreur
+     * a laquelle ce jalon s'est heurte** : la cle de fixture est anglaise
+     * (`pyromancy`, celle qu'`equipment_ports.yaml` emploie deja) quand
+     * `Domain::getSlug()` derive du titre francais (`pyromancien`). Le
+     * catalogue garde la cle anglaise, comme ses voisins, et fait le pont par
+     * le **libelle** — qui **est** le titre du domaine, et qu'un test verifie
+     * arbre par arbre pour que le pont ne casse pas en silence.
+     */
+    public function keyForLabel(string $label): ?string
+    {
+        foreach ($this->trees() as $key => $tree) {
+            if ($tree['label'] === $label) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return array<string, array{label: string, description: string, accord: string}>
      */
     public function branchesOf(string $tree): array
