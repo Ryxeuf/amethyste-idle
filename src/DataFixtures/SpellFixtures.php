@@ -76,6 +76,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Un sort de flammèche',
                 'hit' => 90,
                 'level' => 1,
+                'statusEffectSlug' => 'burn',
             ],
             'flamer' => [
                 'slug' => 'flamer',
@@ -214,6 +215,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Un bouclier de braises qui protège et brûle les attaquants',
                 'hit' => 100,
                 'level' => 2,
+                'statusEffectSlug' => 'burn',
             ],
             'fire_whip' => [
                 'slug' => 'fire-whip',
@@ -303,6 +305,7 @@ class SpellFixtures extends Fixture
                 'hit' => 95,
                 'energyCost' => 6,
                 'level' => 2,
+                'statusEffectSlug' => 'revealed',
             ],
             'vitality_surge' => [
                 'slug' => 'vitality-surge',
@@ -419,6 +422,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Un sort de châtiment',
                 'hit' => 90,
                 'level' => 1,
+                'statusEffectSlug' => 'blinded',
             ],
             'soul_drain' => [
                 'slug' => 'soul-drain',
@@ -430,6 +434,7 @@ class SpellFixtures extends Fixture
                 'hit' => 85,
                 'energyCost' => 6,
                 'level' => 2,
+                'statusEffectSlug' => 'blinded',
             ],
             'death_touch' => [
                 'slug' => 'death-touch',
@@ -672,6 +677,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Un bouclier de terre qui protège et contre-attaque',
                 'hit' => 100,
                 'level' => 2,
+                'statusEffectSlug' => 'weighed-down',
             ],
             'crystal_spear' => [
                 'slug' => 'crystal-spear',
@@ -692,6 +698,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Transforme le sol en sables mouvants qui engloutissent l\'ennemi',
                 'hit' => 95,
                 'level' => 1,
+                'statusEffectSlug' => 'weighed-down',
             ],
             'stone_wall' => [
                 'slug' => 'stone-wall',
@@ -941,6 +948,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Attire violemment les objets métalliques vers l\'ennemi',
                 'hit' => 95,
                 'level' => 1,
+                'statusEffectSlug' => 'gash',
             ],
 
             // Sorts de nature
@@ -954,6 +962,7 @@ class SpellFixtures extends Fixture
                 'hit' => 90,
                 'energyCost' => 4,
                 'level' => 1,
+                'statusEffectSlug' => 'hunted',
             ],
             'thorn_burst' => [
                 'slug' => 'thorn-burst',
@@ -1041,6 +1050,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Une morsure qui injecte un venin puissant',
                 'hit' => 90,
                 'level' => 2,
+                'statusEffectSlug' => 'hunted',
             ],
             'wild_growth' => [
                 'slug' => 'wild-growth',
@@ -1071,6 +1081,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Un bouclier d\'épines qui protège et blesse les attaquants',
                 'hit' => 100,
                 'level' => 2,
+                'statusEffectSlug' => 'hunted',
             ],
             'toxic_spores' => [
                 'slug' => 'toxic-spores',
@@ -1153,6 +1164,7 @@ class SpellFixtures extends Fixture
                 'description' => 'Une puissante bourrasque qui repousse l\'ennemi',
                 'hit' => 95,
                 'level' => 1,
+                'statusEffectSlug' => 'off-balance',
             ],
             'air_dash' => [
                 'slug' => 'air-dash',
@@ -1305,6 +1317,7 @@ class SpellFixtures extends Fixture
                 'hit' => 90,
                 'energyCost' => 4,
                 'level' => 1,
+                'statusEffectSlug' => 'soaked',
             ],
             'tidal_wave' => [
                 'slug' => 'tidal-wave',
@@ -1479,6 +1492,7 @@ class SpellFixtures extends Fixture
                 'description' => 'La marée monte et soigne les alliés tout en repoussant les ennemis',
                 'hit' => 95,
                 'level' => 2,
+                'statusEffectSlug' => 'soaked',
             ],
 
             // Sorts spécifiques — Berserker (feu/physique)
@@ -1493,6 +1507,7 @@ class SpellFixtures extends Fixture
                 'energyCost' => 6,
                 'critical' => 15,
                 'level' => 2,
+                'statusEffectSlug' => 'burn',
             ],
             'berserk_charge' => [
                 'slug' => 'berserk-charge',
@@ -1597,6 +1612,7 @@ class SpellFixtures extends Fixture
                 'critical' => 12,
                 'ammoCost' => 1,
                 'level' => 1,
+                'statusEffectSlug' => 'off-balance',
             ],
             'arrow_rain' => [
                 'slug' => 'arrow-rain',
@@ -1653,6 +1669,7 @@ class SpellFixtures extends Fixture
                 'hit' => 100,
                 'energyCost' => 3,
                 'level' => 1,
+                'statusEffectSlug' => 'gash',
             ],
             'riposte' => [
                 'slug' => 'riposte',
@@ -1814,6 +1831,7 @@ class SpellFixtures extends Fixture
                 'hit' => 90,
                 'energyCost' => 6,
                 'level' => 2,
+                'statusEffectSlug' => 'revealed',
             ],
             'light_aura' => [
                 'slug' => 'light-aura',
@@ -1917,6 +1935,7 @@ class SpellFixtures extends Fixture
                 'energyCost' => 5,
                 'critical' => 20,
                 'level' => 2,
+                'statusEffectSlug' => 'blinded',
             ],
             'deadly_strike' => [
                 'slug' => 'deadly-strike',
