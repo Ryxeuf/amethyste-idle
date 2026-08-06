@@ -13,6 +13,8 @@ use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Progression\CombatGestureCase;
+use App\GameEngine\Progression\CombatGestureLedger;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,6 +37,8 @@ class FightAttackController extends AbstractController
         private readonly EnchantmentManager $enchantmentManager,
         private readonly FightTurnPublisher $fightTurnPublisher,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly CombatGestureCase $gestureCase,
+        private readonly CombatGestureLedger $gestureLedger,
     ) {
     }
 
@@ -158,6 +162,13 @@ class FightAttackController extends AbstractController
      */
     private function doPlayerAttack(Player $player, CharacterInterface $target, Fight $fight): array
     {
+        // ARC-06b — la case creditee se decide **au geste**, pas a la mort du
+        // monstre : `MobDeadEvent` ne porte que le monstre, et il est
+        // dispatche quelques lignes plus bas. L'attaque d'arme ne vient
+        // d'aucune materia, donc d'aucune case : elle credite l'arbre ou le
+        // joueur a appris a porter cette arme, et rien a mains nues.
+        $this->gestureLedger->record($fight, $player, $this->gestureCase->forWeaponAttack($player));
+
         $messages = [];
         $hit = FightCalculator::hasAttackHit($player->getHit());
         $damage = 0;

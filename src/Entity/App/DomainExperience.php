@@ -3,6 +3,7 @@
 namespace App\Entity\App;
 
 use App\Entity\Game\Domain;
+use App\GameEngine\Progression\DomainPointYield;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -30,6 +31,21 @@ class DomainExperience
      */
     #[ORM\Column(name: 'used_experience', type: 'integer', options: ['default' => 0])]
     private $usedExperience = 0;
+
+    /**
+     * Le reste, en quarts de point (ARC-06b).
+     *
+     * La table du gain descend a 0,25 (`DomainPointYield`), et un compteur qui
+     * perd ses restes est un compteur qui ment : un joueur de palier 1
+     * gagnerait **zero** point par rencontre, arrondi apres arrondi. Ce champ
+     * porte ce qui n'a pas encore fait un point entier — il vaut donc toujours
+     * 0, 1, 2 ou 3, et `addQuarters()` est le seul a l'ecrire.
+     *
+     * Il n'est jamais montre au joueur : ce qui se lit est le point, le quart
+     * n'est que la facon dont il se gagne.
+     */
+    #[ORM\Column(name: 'experience_quarters', type: 'integer', options: ['default' => 0])]
+    private int $experienceQuarters = 0;
 
     /**
      * Dégâts additionnels pour le domain.
@@ -66,6 +82,38 @@ class DomainExperience
     public function getAvailableExperience(): int
     {
         return $this->getTotalExperience() - $this->getUsedExperience();
+    }
+
+    public function getExperienceQuarters(): int
+    {
+        return $this->experienceQuarters;
+    }
+
+    public function setExperienceQuarters(int $experienceQuarters): void
+    {
+        $this->experienceQuarters = $experienceQuarters;
+    }
+
+    /**
+     * Crediter un gain exprime en quarts de point, et retenir le reste.
+     *
+     * Retourne les points **entiers** effectivement gagnes — zero est une
+     * reponse normale, et c'est tout l'interet : quatre rencontres de palier 1
+     * font un point, aucune n'en fait un quart de point perdu.
+     */
+    public function addQuarters(int $quarters): int
+    {
+        if ($quarters <= 0) {
+            return 0;
+        }
+
+        $carried = $this->experienceQuarters + $quarters;
+        $points = intdiv($carried, DomainPointYield::QUARTERS_PER_POINT);
+
+        $this->experienceQuarters = $carried % DomainPointYield::QUARTERS_PER_POINT;
+        $this->totalExperience += $points;
+
+        return $points;
     }
 
     /**

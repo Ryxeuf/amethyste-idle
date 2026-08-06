@@ -10,6 +10,8 @@ use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Progression\CombatGestureCase;
+use App\GameEngine\Progression\CombatGestureLedger;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -46,6 +48,11 @@ class FightAttackControllerTest extends TestCase
 
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
+        // ARC-06b : le geste retient sa case avant que le monstre ne meure.
+        // Un resolveur muet laisse le combat exactement ou il etait.
+        $gestureCase = $this->createMock(CombatGestureCase::class);
+        $gestureCase->method('forWeaponAttack')->willReturn(null);
+
         $this->controller = new FightAttackController(
             $this->playerHelper,
             $this->mobActionHandler,
@@ -55,6 +62,8 @@ class FightAttackControllerTest extends TestCase
             $enchantmentManager,
             $fightTurnPublisher,
             $eventDispatcher,
+            $gestureCase,
+            new CombatGestureLedger(),
         );
 
         // Stub the container for security checks
