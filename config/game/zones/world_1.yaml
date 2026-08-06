@@ -44,6 +44,15 @@
 #                                   jamais une erreur : les douze bandeaux arrivent un par un.
 #     enabled                       (optionnel, defaut true)
 #     source_map                    nom de la Map TMX d'origine (legacy, optionnel)
+#     source_map_primary            (optionnel, defaut false) cette zone est LA zone de sa
+#                                   carte d'origine. Obligatoire des que deux zones activees
+#                                   partagent la meme `source_map` — l'import REFUSE le
+#                                   fichier sinon, et refuse aussi deux revendications.
+#                                   C'est ce drapeau qui repond a « a quelle zone appartient
+#                                   une entite qui ne connait que sa carte ? » (PNJ de
+#                                   fixtures, mob, calque, joueur d'avant le pivot). Sans lui,
+#                                   la reponse etait l'ordre physique des lignes, donc un
+#                                   ordre qui bouge a chaque import.
 #     explore:                      table de rencontres / loot (optionnel -> defauts service)
 #       weights: { mob, chest, harvest, pnj, nothing }
 #       chest_gils_min / chest_gils_max
@@ -135,6 +144,15 @@ zones:
         map_shape: '50,43 58,39 66,45 67,56 58,62 50,59 46,50'
         enabled: true
         source_map: 'Le Fanal'
+        # La carte « Le Fanal » porte deux zones (celle-ci et le Quartier des
+        # Jardins). Une entite qui ne connait que sa carte — les habitants poses
+        # par les fixtures, les mobs, les calques, un joueur d'avant le pivot —
+        # atterrit ici, et non dans le lotissement.
+        #
+        # Sans cette ligne, le choix revenait a l'ordre physique des lignes en
+        # base : c'est ainsi que la maitresse d'armes s'est retrouvee dans le
+        # Quartier des Jardins, donc absente de l'ecran ou l'acte I l'envoie.
+        source_map_primary: true
         explore:
             # Ce qu'on trouve en flanant dans un village, ce sont des gens. Sans
             # bloc `explore`, la zone tombait sur les defauts du service (mob 50

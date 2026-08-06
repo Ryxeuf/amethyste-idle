@@ -127,6 +127,26 @@ class Zone
     #[ORM\JoinColumn(name: 'source_map_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Map $sourceMap = null;
 
+    /**
+     * Cette zone est-elle la zone **principale** de sa carte d'origine ?
+     *
+     * Le lien zone -> carte est un « plusieurs vers un » assume : le Fanal et
+     * son Quartier des Jardins partagent la meme carte, et `Dungeon::$zone` le
+     * documente depuis DON-01. Le lien **inverse** — a quelle zone appartient
+     * une entite qui ne connait que sa carte ? — n'avait, lui, aucune reponse
+     * definie : `ZoneRepository::findEnabledBySourceMap()` prenait la premiere
+     * ligne rendue par PostgreSQL, c'est-a-dire l'ordre physique, c'est-a-dire
+     * un ordre qui change des qu'une zone est mise a jour.
+     *
+     * Consequence vecue : les habitants du Fanal poses par les fixtures — dont
+     * la maitresse d'armes, premiere porte de la chaine de l'acte I — sont
+     * partis dans le Quartier des Jardins. Rien n'a casse, aucune erreur n'a ete
+     * levee : l'ecran de zone liste **strictement** par zone, donc ils ont
+     * simplement cesse d'exister la ou le tutoriel envoie les chercher.
+     */
+    #[ORM\Column(name: 'source_map_primary', type: 'boolean', options: ['default' => false])]
+    private bool $sourceMapPrimary = false;
+
     /** @var Collection<int, ZoneConnection> */
     #[ORM\OneToMany(targetEntity: ZoneConnection::class, mappedBy: 'fromZone')]
     private Collection $connections;
@@ -440,6 +460,18 @@ class Zone
     public function setSourceMap(?Map $sourceMap): self
     {
         $this->sourceMap = $sourceMap;
+
+        return $this;
+    }
+
+    public function isSourceMapPrimary(): bool
+    {
+        return $this->sourceMapPrimary;
+    }
+
+    public function setSourceMapPrimary(bool $sourceMapPrimary): self
+    {
+        $this->sourceMapPrimary = $sourceMapPrimary;
 
         return $this;
     }

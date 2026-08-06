@@ -32,6 +32,7 @@ class ZoneImporter
      */
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly WorldEntityZoneBackfiller $backfiller,
         private readonly string $publicDir = '',
     ) {
     }
@@ -73,6 +74,17 @@ class ZoneImporter
 
         if (!$dryRun) {
             $this->entityManager->flush();
+
+            // Les entites de monde qui n'etaient pas rattachables jusqu'ici le
+            // deviennent **maintenant** : `source_map_id` vient d'etre ecrit.
+            //
+            // Sans ce rattrapage, un PNJ pose par une fixture avant l'existence
+            // de sa zone restait a `zone_id = NULL` indefiniment — le seul
+            // backfill ecrit etait celui de `Version20260724WorldEntitiesZone`,
+            // et une migration ne se rejoue pas. L'ecran de zone listant
+            // **strictement** par zone, l'entite n'etait pas mal placee : elle
+            // avait disparu du jeu, sans qu'aucune erreur ne soit levee.
+            $report->entitiesReattached = array_sum($this->backfiller->backfill());
         }
 
         return $report;
@@ -138,6 +150,7 @@ class ZoneImporter
         $zone->setGatherConfig($gather);
 
         $zone->setSourceMap($this->resolveSourceMap($data['source_map'] ?? null, $slug, $report));
+        $zone->setSourceMapPrimary((bool) ($data['source_map_primary'] ?? false));
 
         if (!$dryRun) {
             $this->entityManager->persist($zone);

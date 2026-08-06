@@ -15,6 +15,13 @@ class ZoneImportReport
     public int $pnjsCreated = 0;
     public int $pnjsUpdated = 0;
 
+    /**
+     * Entites de monde (joueur, mob, PNJ, calque) rattachees a leur zone au
+     * passage — celles que leur carte rendait rattachables sans qu'aucune
+     * commande ne l'ait jamais fait.
+     */
+    public int $entitiesReattached = 0;
+
     /** @var list<string> */
     public array $warnings = [];
 

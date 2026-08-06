@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\GameEngine\Zone\WorldEntityZoneBackfiller;
 use App\GameEngine\Zone\ZoneImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -19,6 +20,7 @@ class ZoneImporterTest extends TestCase
     private EntityRepository&MockObject $connectionRepository;
     private EntityRepository&MockObject $mapRepository;
     private EntityRepository&MockObject $pnjRepository;
+    private WorldEntityZoneBackfiller&MockObject $backfiller;
     private ZoneImporter $importer;
 
     /** @var list<object> */
@@ -44,12 +46,78 @@ class ZoneImporterTest extends TestCase
             $this->persisted[] = $entity;
         });
 
-        $this->importer = new class($this->entityManager) extends ZoneImporter {
+        $this->backfiller = $this->createMock(WorldEntityZoneBackfiller::class);
+        $this->backfiller->method('backfill')->willReturn([]);
+
+        $this->importer = new class($this->entityManager, $this->backfiller) extends ZoneImporter {
             protected function now(): \DateTime
             {
                 return new \DateTime('2026-07-24 00:00:00');
             }
         };
+    }
+
+    /**
+     * L'import rattache les entites de monde restees orphelines.
+     *
+     * C'est **ici** que le rattrapage doit vivre : `source_map_id` vient d'etre
+     * ecrit, donc c'est le premier instant ou une entite posee avant sa zone
+     * devient rattachable. Le seul autre backfill jamais ecrit etait celui de
+     * `Version20260724WorldEntitiesZone`, et une migration ne se rejoue pas —
+     * un PNJ orphelin l'etait donc a vie, invisible sans qu'aucune erreur ne
+     * soit levee.
+     */
+    public function testImportReattachesOrphanWorldEntities(): void
+    {
+        $this->zoneRepository->method('findOneBy')->willReturn(null);
+        $this->mapRepository->method('findOneBy')->willReturn(null);
+
+        $backfiller = $this->createMock(WorldEntityZoneBackfiller::class);
+        $backfiller->expects(self::once())->method('backfill')->willReturn(['pnj' => 7, 'mob' => 3]);
+
+        $importer = new class($this->entityManager, $backfiller) extends ZoneImporter {
+            protected function now(): \DateTime
+            {
+                return new \DateTime('2026-07-24 00:00:00');
+            }
+        };
+
+        $report = $importer->import([
+            'zones' => [$this->zoneData('village', 'Village', 'city', true)],
+            'connections' => [],
+        ]);
+
+        self::assertSame(10, $report->entitiesReattached);
+    }
+
+    /**
+     * Un dry-run n'ecrit rien — pas meme un rattachement.
+     *
+     * Le backfill est un `UPDATE` direct, hors unite de travail Doctrine : sans
+     * cette garde, `--dry-run` modifierait la base tout en annoncant le
+     * contraire, ce qui est pire qu'une commande qui ecrit.
+     */
+    public function testDryRunReattachesNothing(): void
+    {
+        $this->zoneRepository->method('findOneBy')->willReturn(null);
+        $this->mapRepository->method('findOneBy')->willReturn(null);
+
+        $backfiller = $this->createMock(WorldEntityZoneBackfiller::class);
+        $backfiller->expects(self::never())->method('backfill');
+
+        $importer = new class($this->entityManager, $backfiller) extends ZoneImporter {
+            protected function now(): \DateTime
+            {
+                return new \DateTime('2026-07-24 00:00:00');
+            }
+        };
+
+        $report = $importer->import([
+            'zones' => [$this->zoneData('village', 'Village', 'city', true)],
+            'connections' => [],
+        ], dryRun: true);
+
+        self::assertSame(0, $report->entitiesReattached);
     }
 
     public function testImportCreatesZonesAndBidirectionalConnections(): void

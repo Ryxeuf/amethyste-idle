@@ -63,6 +63,21 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 		if [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
 			php bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 		fi
+
+		# Rattachement des entites de monde a leur zone (pivot PBBG, ZON-04).
+		#
+		# Le backfill de `Version20260724WorldEntitiesZone` est un one-shot : il
+		# n'a rattache que ce qui etait rattachable **a la minute ou il a tourne**.
+		# Une entite persistee avant que sa zone n'ait de carte d'origine — et
+		# `app:zone:import` est une commande manuelle, jouee apres les migrations —
+		# restait a `zone_id = NULL` pour toujours. L'ecran de zone listant
+		# strictement par zone, elle disparaissait du jeu en silence : c'est ainsi
+		# que la maitresse d'armes du Fanal, premiere porte de l'acte I, s'est
+		# retrouvee injoignable.
+		#
+		# La commande est idempotente et ne touche que les colonnes a NULL.
+		# `|| true` : un demarrage de conteneur ne doit jamais tomber sur un audit.
+		php bin/console app:zone:audit --fix --no-interaction || true
 	fi
 
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
