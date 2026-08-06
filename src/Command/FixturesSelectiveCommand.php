@@ -28,6 +28,10 @@ class FixturesSelectiveCommand extends Command
         'skills' => ['Game\\SkillFixtures'],
         'domains' => ['DomainFixtures'],
         'mobs' => ['DungeonMobFixtures'],
+        // La selection se fait par **suffixe** de nom de classe : « PnjFixtures »
+        // attrape donc aussi `VillageHubPnjFixtures`, `MinesPnjFixtures` et
+        // leurs semblables. C'est voulu, et ca merite d'etre dit — la liste se
+        // lit comme une enumeration exacte alors qu'elle est un motif.
         'pnjs' => ['PnjFixtures'],
         'quests' => ['QuestFixtures', 'PlayerQuestFixtures'],
         'maps' => ['MapFixtures', 'AreaFixtures', 'ObjectLayerFixtures'],

@@ -24,10 +24,25 @@ class ZoneRepository extends ServiceEntityRepository
 
     /**
      * Zone rattachee a une carte TMX d'origine (transition pivot PBBG, ZON-03).
+     *
+     * **L'ordre est la correction.** Plusieurs zones peuvent partager une carte
+     * — le Fanal et son Quartier des Jardins —, et ce `findOneBy` n'en nommait
+     * aucune : PostgreSQL rendait la premiere ligne venue, c'est-a-dire l'ordre
+     * physique, c'est-a-dire un ordre qui bouge des qu'une zone est mise a jour
+     * (donc a chaque `app:zone:import`). Les habitants du Fanal poses par les
+     * fixtures sont ainsi partis dans le lotissement voisin, et l'ecran de zone
+     * listant strictement par zone, ils ont disparu du jeu sans qu'une seule
+     * erreur ne soit levee.
+     *
+     * `sourceMapPrimary` tranche ; `id` reste en second critere pour que le
+     * resultat soit stable meme sur une base qui n'a pas encore ete reimportee.
      */
     public function findEnabledBySourceMap(Map $map): ?Zone
     {
-        return $this->findOneBy(['sourceMap' => $map, 'enabled' => true]);
+        return $this->findOneBy(
+            ['sourceMap' => $map, 'enabled' => true],
+            ['sourceMapPrimary' => 'DESC', 'id' => 'ASC'],
+        );
     }
 
     /**

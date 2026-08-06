@@ -61,6 +61,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ZoneController extends AbstractController
 {
+    /**
+     * Nombre maximum d'habitants listes dans une zone.
+     *
+     * Le Fanal en compte quinze, et c'est de loin la zone la plus peuplee du
+     * monde livre : le plafond n'est pas une regle de jeu, c'est un garde-fou
+     * contre une requete qui deraperait.
+     */
+    private const MAX_PNJS_LISTED = 60;
+
     private const POI_TYPES = [
         ObjectLayer::TYPE_HARVEST_SPOT,
         ObjectLayer::TYPE_FORGE,
@@ -257,9 +266,15 @@ class ZoneController extends AbstractController
             // Une vitrine invisible ne sert a rien — et l'achat exige d'etre
             // sur place, donc c'est ici qu'elle doit apparaitre.
             'shopsPresent' => $this->playerShopRepository->findOpenInZone($zone),
+            // Le plafond etait a 20, et le tri est alphabetique : au Fanal, la
+            // maitresse d'armes s'appelle Ysold. Un habitant tombe donc hors
+            // liste par la seule vertu de son initiale — et personne ne peut le
+            // deviner, puisqu'une liste tronquee ressemble a une liste complete.
+            // Le plafond reste (une zone ne doit pas pouvoir noyer l'ecran),
+            // mais au-dessus de ce que la plus peuplee des zones porte.
             'pnjsPresent' => $this->entityManager
                 ->getRepository(Pnj::class)
-                ->findBy(['zone' => $zone], ['name' => 'ASC'], 20),
+                ->findBy(['zone' => $zone], ['name' => 'ASC'], self::MAX_PNJS_LISTED),
             // Heure in-game : conditionne l'ouverture des boutiques PNJ.
             'gameHour' => $this->gameTimeService->getHour(),
             'phase' => $this->gameTimeService->getPhase(),

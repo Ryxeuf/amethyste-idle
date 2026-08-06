@@ -39,8 +39,8 @@ class ScheduledCommandTest extends TestCase
         'app:fixtures:load-selective' => 'outil de developpement',
         'app:game:validate' => 'controle de coherence, lance par la CI',
         'app:player:backfill-zone' => 'reparation ponctuelle des joueurs sans zone, a lancer une fois apres deploiement',
-        'app:zone:audit' => 'audit ponctuel du rattachement de zone',
-        'app:zone:import' => 'import du graphe de zones, lance a chaque changement de YAML',
+        'app:zone:audit' => 'rattachement des entites de monde a leur zone, joue par le deploiement et l\'entrypoint apres les migrations — pas une tache planifiee',
+        'app:zone:import' => 'import du graphe de zones, joue par le deploiement apres les migrations et a la main a chaque changement de YAML',
     ];
 
     private function projectDir(): string

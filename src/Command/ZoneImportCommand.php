@@ -71,6 +71,15 @@ class ZoneImportCommand extends Command
         if ($dryRun) {
             $io->note('Dry-run : aucune ecriture en base.');
         } else {
+            // Le chiffre merite d'etre dit : une entite rattachee ici est une
+            // entite qui avait **disparu** de l'ecran de zone, silencieusement.
+            if ($report->entitiesReattached > 0) {
+                $io->text(sprintf(
+                    '%d entite(s) de monde orpheline(s) rattachee(s) a leur zone (voir app:zone:audit).',
+                    $report->entitiesReattached,
+                ));
+            }
+
             $io->success(sprintf(
                 '%d zone(s), %d liaison(s), %d creature(s) et %d PNJ synchronises.',
                 $report->zonesTouched(),

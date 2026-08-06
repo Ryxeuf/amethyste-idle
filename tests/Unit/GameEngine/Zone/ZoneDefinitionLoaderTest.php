@@ -603,4 +603,102 @@ class ZoneDefinitionLoaderTest extends TestCase
             self::assertArrayHasKey($slug, $connected, sprintf('La zone "%s" n\'est reliee a aucune autre.', $slug));
         }
     }
+
+    /**
+     * Une carte partagee sans zone principale est refusee.
+     *
+     * Le defaut ne se voit pas en jouant : rien ne casse, des habitants
+     * changent simplement de zone — et l'ecran de zone listant strictement par
+     * zone, ils disparaissent. La donnee doit donc le refuser a la lecture.
+     */
+    public function testSharedSourceMapWithoutPrimaryIsRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->expectExceptionMessageMatches('/shared by 2 enabled zones/');
+
+        $this->loader->normalize([
+            'zones' => [
+                'village' => ['name' => 'Village', 'source_map' => 'Le Fanal'],
+                'jardins' => ['name' => 'Jardins', 'source_map' => 'Le Fanal'],
+            ],
+        ]);
+    }
+
+    /**
+     * Deux zones ne peuvent pas revendiquer la meme carte.
+     *
+     * Sans quoi la designation ne designe rien, et l'on retombe sur l'ordre
+     * physique des lignes.
+     */
+    public function testTwoPrimaryZonesOnTheSameSourceMapAreRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->expectExceptionMessageMatches('/claimed as primary by several zones/');
+
+        $this->loader->normalize([
+            'zones' => [
+                'village' => ['name' => 'Village', 'source_map' => 'Le Fanal', 'source_map_primary' => true],
+                'jardins' => ['name' => 'Jardins', 'source_map' => 'Le Fanal', 'source_map_primary' => true],
+            ],
+        ]);
+    }
+
+    /**
+     * Le partage reste permis — il est simplement tranche.
+     */
+    public function testSharedSourceMapWithOneDeclaredPrimaryIsAccepted(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'village' => ['name' => 'Village', 'source_map' => 'Le Fanal', 'source_map_primary' => true],
+                'jardins' => ['name' => 'Jardins', 'source_map' => 'Le Fanal'],
+            ],
+        ]);
+
+        self::assertTrue($result['zones'][0]['source_map_primary']);
+        self::assertFalse($result['zones'][1]['source_map_primary']);
+    }
+
+    /**
+     * Une zone seule sur sa carte n'a rien a declarer.
+     *
+     * Exiger le drapeau partout ferait payer a onze cartes le defaut d'une
+     * seule — et un drapeau qu'on pose par obligation cesse de vouloir dire
+     * quelque chose.
+     */
+    public function testSoleZoneOnItsSourceMapNeedsNoDeclaration(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'foret' => ['name' => 'Forêt', 'source_map' => 'Forêt des Murmures'],
+            ],
+        ]);
+
+        self::assertFalse($result['zones'][0]['source_map_primary']);
+    }
+
+    /**
+     * Le monde livre tranche chacune de ses cartes partagees.
+     *
+     * La loi porte sur le fichier reel : c'est lui qui portait le defaut, et
+     * c'est lui qu'une zone ajoutee demain peut casser a nouveau.
+     */
+    public function testShippedWorldOneResolvesEverySharedSourceMap(): void
+    {
+        $loader = new ZoneDefinitionLoader(\dirname(__DIR__, 4));
+
+        // `loadFile` leve si une carte partagee ne designe pas sa zone
+        // principale : l'absence d'exception **est** l'assertion.
+        $result = $loader->loadFile($loader->defaultFile());
+
+        $primaries = array_filter(
+            $result['zones'],
+            static fn (array $zone): bool => true === $zone['source_map_primary'],
+        );
+
+        self::assertNotEmpty(
+            $primaries,
+            'Aucune zone principale declaree : la loi ne verifierait rien si le monde cessait de partager une carte.',
+        );
+    }
 }

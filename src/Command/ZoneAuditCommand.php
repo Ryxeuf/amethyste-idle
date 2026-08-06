@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\GameEngine\Zone\WorldEntityZoneBackfiller;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,15 +16,22 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class ZoneAuditCommand extends Command
 {
-    private const TABLES = [
-        'joueurs' => 'player',
-        'mobs' => 'mob',
-        'pnjs' => 'pnj',
-        'object layers' => 'object_layer',
+    /**
+     * Libelles d'affichage. Les tables et leurs colonnes vivent dans
+     * `WorldEntityZoneBackfiller` : le SQL de rattachement est partage avec
+     * `app:zone:import`, et deux copies auraient divergé au premier ajout.
+     *
+     * @var array<string, string>
+     */
+    private const LABELS = [
+        'player' => 'joueurs',
+        'mob' => 'mobs',
+        'pnj' => 'pnjs',
+        'object_layer' => 'object layers',
     ];
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        private readonly WorldEntityZoneBackfiller $backfiller,
     ) {
         parent::__construct();
     }
@@ -37,55 +44,46 @@ class ZoneAuditCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $fix = (bool) $input->getOption('fix');
-        $connection = $this->entityManager->getConnection();
 
-        $zoneColumn = ['player' => 'current_zone_id'];
-        $orphanTotal = 0;
-        $rows = [];
-
-        foreach (self::TABLES as $label => $table) {
-            $column = $zoneColumn[$table] ?? 'zone_id';
-
-            if ($fix) {
-                $fixed = $connection->executeStatement(sprintf(
-                    'UPDATE %1$s t SET %2$s = z.id FROM zone z WHERE z.source_map_id = t.map_id AND z.enabled = TRUE AND t.%2$s IS NULL',
-                    $table,
-                    $column
-                ));
-                if ($fixed > 0) {
-                    $io->text(sprintf('Backfill %s : %d entite(s) rattachee(s).', $label, $fixed));
-                }
+        if ((bool) $input->getOption('fix')) {
+            foreach ($this->backfiller->backfill() as $table => $rows) {
+                $io->text(sprintf('Backfill %s : %d entite(s) rattachee(s).', self::LABELS[$table] ?? $table, $rows));
             }
-
-            /** @var array{total: int, with_zone: int, orphans: int, off_graph: int} $stats */
-            $stats = $connection->fetchAssociative(sprintf(
-                <<<'SQL'
-                SELECT
-                    COUNT(*) AS total,
-                    COUNT(t.%2$s) AS with_zone,
-                    COUNT(*) FILTER (WHERE t.%2$s IS NULL AND z.id IS NOT NULL) AS orphans,
-                    COUNT(*) FILTER (WHERE t.%2$s IS NULL AND z.id IS NULL) AS off_graph
-                FROM %1$s t
-                LEFT JOIN zone z ON z.source_map_id = t.map_id AND z.enabled = TRUE
-                SQL,
-                $table,
-                $column
-            ));
-
-            $orphanTotal += (int) $stats['orphans'];
-            $rows[] = [$label, $stats['total'], $stats['with_zone'], $stats['orphans'], $stats['off_graph']];
         }
 
-        $io->table(['Entite', 'Total', 'Avec zone', 'Orphelines (carte zonee)', 'Hors graphe (donjon/test)'], $rows);
+        $rows = [];
+        $broken = 0;
+        foreach ($this->backfiller->stats() as $table => $stats) {
+            $broken += $stats['orphans'] + $stats['misplaced'];
+            $rows[] = [
+                self::LABELS[$table] ?? $table,
+                $stats['total'],
+                $stats['with_zone'],
+                $stats['orphans'],
+                $stats['misplaced'],
+                $stats['off_graph'],
+            ];
+        }
 
-        if ($orphanTotal > 0) {
-            $io->error(sprintf('%d entite(s) orpheline(s) : leur carte a une zone mais elles n\'y sont pas rattachees. Relancer avec --fix.', $orphanTotal));
+        $io->table(
+            ['Entite', 'Total', 'Avec zone', 'Orphelines (carte zonee)', 'Egarees (autre zone de sa carte)', 'Hors graphe (donjon/test)'],
+            $rows,
+        );
+
+        if ($broken > 0) {
+            $io->error(sprintf(
+                "%d entite(s) mal rattachee(s).\n"
+                . "  Orpheline : sa carte a une zone, elle n'y est pas rattachee.\n"
+                . "  Egaree    : elle est dans une autre zone de sa propre carte — le cas d'une carte partagee,\n"
+                . "              ou la zone principale n'etait pas designee (voir `source_map_primary`).\n"
+                . 'Relancer avec --fix.',
+                $broken,
+            ));
 
             return Command::FAILURE;
         }
 
-        $io->success('Aucune entite orpheline : toutes les entites sur une carte zonee sont rattachees a leur zone.');
+        $io->success('Aucune entite mal rattachee : toutes les entites sur une carte zonee sont dans la bonne zone.');
 
         return Command::SUCCESS;
     }

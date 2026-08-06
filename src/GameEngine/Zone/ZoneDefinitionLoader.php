@@ -79,9 +79,76 @@ class ZoneDefinitionLoader
             $slugs[$slug] = true;
         }
 
+        $this->assertSourceMapsAreUnambiguous($zones, $source);
+
         $connections = $this->normalizeConnections($raw['connections'] ?? [], $slugs, $source);
 
         return ['zones' => $zones, 'connections' => $connections];
+    }
+
+    /**
+     * Toute carte partagee designe **une** zone principale.
+     *
+     * Une entite heritee ne connait que sa carte (PNJ de fixtures, mob, calque,
+     * joueur d'avant le pivot) : il faut donc pouvoir repondre « a quelle zone
+     * appartient cette carte ? » sans ambiguite. Tant que la question n'avait
+     * pas de reponse declaree, `findEnabledBySourceMap()` prenait la premiere
+     * ligne rendue par PostgreSQL — un ordre qui change des qu'une zone est mise
+     * a jour, c'est-a-dire a chaque import.
+     *
+     * La regle est verifiee **a la lecture** plutot qu'a l'ecriture : le defaut
+     * ne se voit pas en jouant (rien ne casse, des PNJ changent simplement de
+     * zone), et un defaut invisible doit etre refuse par la donnee.
+     *
+     * @param list<array<string, mixed>> $zones
+     */
+    private function assertSourceMapsAreUnambiguous(array $zones, string $source): void
+    {
+        /** @var array<string, list<string>> $byMap */
+        $byMap = [];
+        /** @var array<string, list<string>> $primaries */
+        $primaries = [];
+
+        foreach ($zones as $zone) {
+            $map = $zone['source_map'] ?? null;
+            if (!\is_string($map) || '' === $map || true !== ($zone['enabled'] ?? false)) {
+                continue;
+            }
+
+            $slug = (string) $zone['slug'];
+            $byMap[$map][] = $slug;
+            if (true === ($zone['source_map_primary'] ?? false)) {
+                $primaries[$map][] = $slug;
+            }
+        }
+
+        foreach ($byMap as $map => $slugs) {
+            $declared = $primaries[$map] ?? [];
+
+            if (\count($declared) > 1) {
+                $message = sprintf(
+                    'Source map "%s" is claimed as primary by several zones (%s) in "%s". Exactly one zone may carry "source_map_primary: true".',
+                    $map,
+                    implode(', ', $declared),
+                    $source,
+                );
+
+                throw new ZoneDefinitionException($message);
+            }
+
+            if (\count($slugs) > 1 && [] === $declared) {
+                $message = sprintf(
+                    'Source map "%s" is shared by %d enabled zones (%s) in "%s" and none declares "source_map_primary: true". '
+                    . 'World entities that only know their map would land in an arbitrary one of them.',
+                    $map,
+                    \count($slugs),
+                    implode(', ', $slugs),
+                    $source,
+                );
+
+                throw new ZoneDefinitionException($message);
+            }
+        }
     }
 
     /**
@@ -114,6 +181,22 @@ class ZoneDefinitionLoader
             'tier' => max(0, min(4, (int) ($definition['tier'] ?? 0))),
             'enabled' => (bool) ($definition['enabled'] ?? true),
             'source_map' => \is_string($definition['source_map'] ?? null) ? $definition['source_map'] : null,
+            // Zone **principale** de sa carte d'origine (ZON-04).
+            //
+            // Plusieurs zones peuvent legitimement partager une carte — le
+            // Fanal et son Quartier des Jardins en sont le cas —, et
+            // `Dungeon::$zone` le documente depuis DON-01. Mais la resolution
+            // **inverse**, carte -> zone, restait un `findOneBy` sans ordre :
+            // les entites heritees d'une carte (PNJ de fixtures, mobs, calques)
+            // atterrissaient dans l'une ou l'autre, au gre de l'ordre physique
+            // des lignes. C'est ainsi que la maitresse d'armes du Fanal s'est
+            // retrouvee dans le Quartier des Jardins, donc absente de l'ecran ou
+            // la chaine de l'acte I l'envoie chercher.
+            //
+            // Le drapeau tranche, et il se declare : deviner (« la zone dont le
+            // nom vaut celui de la carte ») ferait dependre le rattachement d'un
+            // texte de fiction, ce que la convention ZON-26b-b refuse deja.
+            'source_map_primary' => (bool) ($definition['source_map_primary'] ?? false),
             // Position sur la carte du monde illustree (ZON-16), en pourcentage
             // 0-100 du cadre ; null = zone non placee (masquee de la carte).
             'map_x' => isset($definition['map_x']) ? (int) $definition['map_x'] : null,

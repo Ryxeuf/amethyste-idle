@@ -182,6 +182,19 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
         // qui attend la reponse depuis la premiere quete.
         $this->pointTalkToAt($acte3Epilogue, 'pnj_15'); // Claire la Sage
 
+        // « L'Herboriste disparue » — le seul objectif du jeu qui portait des
+        // identifiants **ecrits en dur** (16, 19 et 2), c'est-a-dire exactement
+        // ce que la note d'ONB-15 ci-dessus annonce comme condamne. Ils avaient
+        // ete lus comme des rangs 1-based dans la liste des soixante habitants,
+        // quand la colonne `pnj.id` ne promet rien de tel : la quete envoyait
+        // interroger trois inconnus.
+        //
+        // Les trois temoins sont desormais resolus par reference, comme partout
+        // ailleurs, et pointent bien Claire (15), Antoine (18) et Elise (1).
+        /** @var Quest $enqueteHerboriste */
+        $enqueteHerboriste = $this->getReference('quest_enquete_herboriste', Quest::class);
+        $this->pointTalkToEach($enqueteHerboriste, ['pnj_15', 'pnj_18', 'pnj_1']);
+
         $manager->flush();
     }
 
@@ -200,6 +213,32 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
 
         $requirements = $quest->getRequirements();
         $requirements['talk_to'][0]['pnj_id'] = $pnj->getId();
+        $quest->setRequirements($requirements);
+    }
+
+    /**
+     * Recale **tous** les interlocuteurs d'une enquete, dans l'ordre declare.
+     *
+     * Une enquete a plusieurs temoins : recaler le premier et laisser les autres
+     * sur leur valeur d'ecriture donnerait une quete a moitie jouable, ce qui se
+     * diagnostique bien plus mal qu'une quete franchement cassee.
+     *
+     * @param list<string> $pnjReferences
+     */
+    private function pointTalkToEach(Quest $quest, array $pnjReferences): void
+    {
+        $requirements = $quest->getRequirements();
+
+        foreach ($pnjReferences as $index => $reference) {
+            if (!isset($requirements['talk_to'][$index])) {
+                continue;
+            }
+
+            /** @var Pnj $pnj */
+            $pnj = $this->getReference($reference, Pnj::class);
+            $requirements['talk_to'][$index]['pnj_id'] = $pnj->getId();
+        }
+
         $quest->setRequirements($requirements);
     }
 

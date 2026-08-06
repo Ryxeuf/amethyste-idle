@@ -117,6 +117,20 @@ echo ""
 echo "==> 3/7 Migrations de la base de donnees..."
 run_php php /app/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
+# Contenu de monde declaratif : le YAML des zones est la source de verite, et
+# rien ne le rejouait au deploiement — une zone, un filon ou un habitant ajoute
+# en donnee n'atteignait la production que si quelqu'un pensait a lancer la
+# commande a la main. L'import est idempotent et non destructif (upsert par
+# slug, aucune suppression, l'etat runtime n'est pas touche).
+echo "    Import du graphe de zones (declaratif, idempotent)..."
+run_php php /app/bin/console app:zone:import --no-interaction
+
+# Filet : les entites de monde persistees avant l'existence de leur zone (le
+# backfill de Version20260724WorldEntitiesZone est un one-shot) restaient
+# invisibles a jamais, l'ecran de zone listant strictement par zone.
+echo "    Verification du rattachement des entites a leur zone..."
+run_php php /app/bin/console app:zone:audit --fix --no-interaction
+
 echo ""
 echo "==> 4/7 Compilation des assets (Tailwind + AssetMapper)..."
 run_php rm -rf /app/public/assets/

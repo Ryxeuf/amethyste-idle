@@ -201,8 +201,8 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
         // l'etape « guilde » de l'arc etait deja injoignable avant meme les
         // trois objectifs d'exploration repares ici.
         //
-        // On ne deplace que les quatre porteurs de l'arc : basculer les soixante
-        // noierait l'ecran du village (plafonne a 20) et doublerait les roles de
+        // On ne deplace que les porteurs d'une quete : basculer les soixante
+        // noierait l'ecran du village et doublerait les roles de
         // `VillageHubPnjFixtures`.
         //
         // ONB-16 a tranche le doublon restant : le Fanal comptait **deux
@@ -210,7 +210,13 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
         // designent par sa reference (`pnj_0`), on ne debranche pas un donneur —
         // et l'autre poste est devenu la **maitresse d'armes**, le role que la
         // chaine de l'acte I exigeait et qui n'existait pas.
-        $acte1Residents = [0, 7, 15, 18];
+        // Elise (1) rejoint les quatre : « L'Herboriste disparue » envoie
+        // interroger Claire (15), Antoine (18) **et** elle. Les deux premiers
+        // etaient deja au Fanal, elle non — un temoin sur trois vivait donc sur
+        // une carte qu'aucune zone ne prend pour origine, c'est-a-dire nulle
+        // part. Une enquete dont le dernier temoin est introuvable ne se lit pas
+        // comme un bug : elle se lit comme une enigme.
+        $acte1Residents = [0, 1, 7, 15, 18];
 
         // Création de 60 PNJ
         for ($i = 0; $i < 60; ++$i) {
