@@ -1362,7 +1362,30 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       palier de moins) et `condition_widening`, **qui exige d'abord qu'une condition de passif
       soit évaluée quelque part**
 
-### ARC-17 — Le simulateur d'équilibrage (M | ★★★ | HAUTE)
+### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ◐
+> **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation et
+> écrit les scénarios, 17c livre les sorties, les seuils en CI et le rapport daté.
+>
+> **ARC-17a — livré le 2026-08-06.** Le jalon s'ouvre sur un blocage : **quatre des cinq
+> seuils portent sur les dégâts subis**, et rien ne permettait de les mesurer. `MonsterStatTemplate`
+> dérivait la vie, la précision et la vitesse — **et pas ce que le monstre fait**. Les 65 espèces
+> livrées se partagent **17 gestes d'attaque** (1 à quelques points de dégâts), si bien qu'un
+> boss T4 et un commun T1 peuvent porter le même geste et frapper pareil : la vie va de 30 à
+> 2 400 sur la grille (**×80**) quand les dégâts reçus ne bougent pas. *Monter de palier rendait
+> les combats plus longs sans les rendre plus dangereux* — le défaut que la faille du milieu
+> avait produit sur la vie (BES-01), transposé aux dégâts.
+>
+> La grille se **dérive de la vie** (un huitième, puis le rapport de rang) plutôt que de s'écrire :
+> deux tables à la main divergent, une dérivation ne peut pas. Le rapport n'est pas choisi au
+> hasard — il fait tomber le palier 2 sur **9** et **26**, exactement les deux nombres que le
+> §9 octies avait calculés à la main, et un test le verrouille : *une dérivation qui rate sa
+> propre référence ne dérive rien.*
+>
+> Ce qui est figé n'est pas le chiffre mais **le rapport** (§0.2) : une élite frappe près de
+> trois fois un commun de son palier pour moins de deux fois ses PV — l'asymétrie qui fait
+> qu'elle tue un joueur seul. **Aucune valeur de jeu ne bouge**, comme les deux ancres d'ARC-05
+> avant elle, et un test vérifie que la formule de combat ne lit pas encore la dérivation.
+
 > GAME_ARCHETYPES §0.2, §9 sexies et §9 septies. **Mesuré : les arbres ne sont pas
 > équilibrés, et le classement dépend de l'échelle.** Sur un combat le guerrier domine ;
 > sur une journée c'est le guérisseur (70 PV perdus contre 494 à 710), et le tank pur
