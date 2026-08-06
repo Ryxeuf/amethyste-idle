@@ -33,7 +33,7 @@
 | ARC-09 | Tests du plan (les 45 invariants) | S | ‖ |
 | ARC-10 ✅ | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
-| ARC-12 | Les passifs conditionnels d'équipement | M | ← ARC-03 |
+| ARC-12 ✅ | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 | ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
 | ARC-14 | La fourche : une branche exclusive par arbre de combat | S | ← ARC-07 |
 | ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
@@ -746,7 +746,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       pour qu'aucun ne puisse naître instantané, plus le contrat « aucune valeur livrée ne
       bouge »)*
 
-### ARC-12 — Les passifs conditionnels d'équipement (M → 2 sous-phases | ★★★ | HAUTE) ◐
+### ARC-12 — Les passifs conditionnels d'équipement (M → 2 sous-phases | ★★★ | HAUTE) ✅
 
 > **Découpé (règle 8) : ARC-12a le vocabulaire et le prix, ARC-12b l'écran.** Le modèle
 > et l'interface n'ont ni le même risque ni le même rythme ; le premier se teste seul.
@@ -773,10 +773,36 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > **deux conditions de même nature n'ont pas le même prix**. Les fréquences définitives sont
 > à ARC-17 ; ce qui est figé, c'est la règle et l'obligation de déclarer de quel côté on tombe.
 >
-> **ARC-12b — reste à faire** : l'écran des arbres dit ce qu'un nœud rapporterait *si la
-> condition était remplie*, et ce qu'il faudrait porter. Plus le croisement OBJ (valider
-> les familles contre `EquipmentPortCatalog`) et l'application des multiplicateurs au
-> budget dans `SkillLeverReader`.
+> **ARC-12b — livré le 2026-08-06.** Trois choses, et la première n'était pas prévue.
+>
+> **La grammaire n'était pas appliquée.** ARC-12a annonçait qu'une condition inconnue
+> serait « refusée à la lecture » — mais `SkillLeverReader` ne vérifiait que « non vide »,
+> et `SkillCondition::parse()` n'était appelée par personne sur ce chemin. Une chaîne mal
+> orthographiée entrait donc sans bruit et laissait son passif **toujours inactif** :
+> exactement le défaut que la grammaire devait fermer. Le lecteur parse désormais.
+>
+> **Le croisement OBJ**, et il attrape deux erreurs distinctes : une famille qui n'existe
+> pas (`weapon:katana`) et une famille qui existe **du mauvais côté** (`weapon:plate`).
+> L'échelle de port énumère déjà les familles **et** sait les séparer (clé `line`, `armor`
+> par défaut `weapon`) — la relire évite qu'une famille renommée laisse derrière elle un
+> passif mort, et évite surtout d'écrire une seconde table.
+>
+> **Les multiplicateurs, à l'effet et non au budget.** `effectOf()` rend ce qu'un nœud
+> donne *quand sa condition est remplie* ; `averageEffectOf()` rend ce que le budget
+> compte. Les garder séparés est ce qui empêche la confusion que le §4.3 prévient — un
+> arbre qui compterait l'effet affiché dans son budget achèterait sa puissance deux fois.
+> Les plafonds ne bougent pas : ils restent en points de budget.
+>
+> **L'écran** (`SkillLeverPresenter` → `SkillLeverReadout`) dit `+9 % — à la dague`
+> plutôt que `weapon:dagger`, et il affiche l'effet **obtenu** : afficher la moyenne
+> ferait croire qu'un passif conditionnel rend moins qu'il ne rend, et personne ne le
+> prendrait. Les libellés viennent de l'échelle de port, jamais d'une table parallèle.
+> Les conditions de **combat** n'y figurent pas : l'écran dit ce qu'il faut *porter*, et
+> « vous avez encaissé au tour précédent » ne se porte pas.
+>
+> **Aucune valeur de jeu ne bouge** : aucun nœud livré ne porte encore de levier
+> (ARC-03a a posé la colonne, ARC-07/08 l'écrira), donc l'écran n'affiche rien de neuf
+> aujourd'hui — il est prêt, et testé, pour le jour où il y aura quelque chose à lire.
 > GAME_ARCHETYPES §4.3. C'est ce qui fait que **l'équipement est le build** au lieu d'être
 > un total — la promesse de GAME_DOMAINS §3, qui n'avait jamais eu de quoi la tenir.
 - [x] `SkillCondition` sur un nœud passif : famille d'arme, ligne d'armure, bouclier porté,
@@ -786,8 +812,16 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [x] **Multiplicateurs d'effet** : ×1,0 sans condition, **×1,4** condition de build,
       **×2,0** condition de combat. Le budget compte l'effet **moyen**, pas l'effet affiché ;
       les plafonds restent exprimés en points de budget et ne bougent pas *(ARC-12a — le
-      multiplicateur est porté par la condition ; l'appliquer au budget dans
-      `SkillLeverReader` est ARC-12b)*
+      multiplicateur est porté par la condition ; **ARC-12b** l'applique : `effectOf()`
+      rend ce qu'on obtient, `averageEffectOf()` ce que le budget compte, et les garder
+      séparés empêche d'acheter sa puissance deux fois)*
+- [x] **Le croisement OBJ** : les familles validées contre `EquipmentPortCatalog`
+      *(ARC-12b — deux erreurs attrapées, la famille inexistante et la famille du mauvais
+      côté ; plus la grammaire enfin **appliquée** à la lecture, ce qu'ARC-12a annonçait
+      sans que le lecteur le fasse)*
+- [x] **L'écran des arbres** dit ce qu'un nœud rapporterait si la condition était remplie,
+      et ce qu'il faudrait porter *(ARC-12b — `SkillLeverPresenter` : `+9 % — à la dague`,
+      l'effet **obtenu** et non la moyenne ; les libellés viennent de l'échelle de port)*
 - [x] **Le multiplicateur suit la fréquence mesurée, pas la famille** (correction du
       §9 bis) : une condition de combat vraie plus des deux tiers du temps se paie ×1,4.
       « Vous avez encaissé au tour précédent » est vraie dès le tour 2 pour qui se bat au

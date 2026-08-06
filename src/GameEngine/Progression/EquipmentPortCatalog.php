@@ -37,7 +37,7 @@ class EquipmentPortCatalog
     }
 
     /**
-     * @return array<string, array{label: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
+     * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      */
     public function families(): array
     {
@@ -113,7 +113,7 @@ class EquipmentPortCatalog
     }
 
     /**
-     * @return array<string, array{label: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
+     * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      *
      * @throws EquipmentPortDefinitionException
      */
