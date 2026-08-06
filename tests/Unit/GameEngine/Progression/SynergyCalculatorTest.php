@@ -83,30 +83,40 @@ class SynergyCalculatorTest extends TestCase
         $this->assertSame([], $result);
     }
 
-    public function testSynergyBonusesAccumulate(): void
+    /**
+     * Une accointance active elargit ce qui exprime **les deux** domaines.
+     *
+     * L'ancien test de ce nom verifiait que les bonus plats s'additionnaient ;
+     * ARC-16 a supprime les bonus. Ce qui s'accumule desormais, ce sont des
+     * **elargissements**, et la difference est le jalon tout entier : trois
+     * accointances actives ne rendent plus 16 points de degats, elles rendent
+     * a chaque domaine la liste de ses voisins.
+     *
+     * L'elargissement est **symetrique** : une accointance ne designe pas un
+     * beneficiaire, elle relie deux ecoles.
+     */
+    public function testWideningsAccumulateBothWays(): void
     {
         $domainA = $this->createDomain(1);
         $domainB = $this->createDomain(2);
         $domainC = $this->createDomain(3);
 
-        $synergy1 = $this->createSynergy($domainA, $domainB, 50);
-        $synergy2 = $this->createSynergy($domainA, $domainC, 50);
-        $synergy3 = $this->createSynergy($domainB, $domainC, 50);
-
-        $this->mockRepository([$synergy1, $synergy2, $synergy3]);
+        $this->mockRepository([
+            $this->createSynergy($domainA, $domainB, 50),
+            $this->createSynergy($domainA, $domainC, 50),
+            $this->createSynergy($domainB, $domainC, 50),
+        ]);
         $player = $this->createPlayer([
             ['domain' => $domainA, 'xp' => 100],
             ['domain' => $domainB, 'xp' => 80],
             ['domain' => $domainC, 'xp' => 60],
         ]);
 
-        $bonuses = $this->calculator->getSynergyBonuses($player);
+        $widenings = $this->calculator->getExpressionWidenings($player);
 
-        $this->assertSame(16, $bonuses['damage']);
-        $this->assertSame(15, $bonuses['heal']);
-        $this->assertSame(0, $bonuses['hit']);
-        $this->assertSame(0, $bonuses['critical']);
-        $this->assertSame(0, $bonuses['life']);
+        $this->assertSame([2, 3], $widenings[1]);
+        $this->assertSame([1, 3], $widenings[2]);
+        $this->assertSame([1, 2], $widenings[3]);
     }
 
     public function testGetAllSynergiesWithStatusReturnsCorrectFlags(): void
