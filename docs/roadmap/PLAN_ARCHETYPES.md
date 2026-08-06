@@ -35,7 +35,7 @@
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 ✅ | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 | ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
-| ARC-14 ◐ | La fourche : une branche exclusive par arbre de combat | S | **→ ARC-07** |
+| ARC-14 ✅ | La fourche : une branche exclusive par arbre de combat | S | **→ ARC-07** |
 | ARC-15 ✅ | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 | ARC-17 | **Le simulateur d'équilibrage** (`app:balance:simulate`) — l'outil qui remplace les repères calculés à la main | M | ← ARC-05, ARC-07 |
@@ -920,7 +920,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : une marque et une seule par élément ; tout arbre de combat a un accord
       d'entrée qui applique la sienne ; aucune marque ne se cumule avec elle-même
 
-### ARC-14 — La fourche (S → 2 sous-phases | ★★★ | HAUTE) ◐
+### ARC-14 — La fourche (S → 2 sous-phases | ★★★ | HAUTE) ✅
 > GAME_ARCHETYPES §6.1 bis. **Deux pyromanciens finis étaient identiques.** Le mécanisme
 > existe déjà et n'a jamais servi au combat : `actions.specialization.branch`, le motif de
 > refus `other_branch` et le respec de branche payant sont livrés (DOM-04, DOM-06).
@@ -954,11 +954,35 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > pas** : le canon n'en nomme que quatre, et les inventer serait écrire du contenu sans
 > l'avoir instruit — liste nommée en cliquet, c'est le travail d'ARC-08.
 >
-> **ARC-14b — reste à faire** : l'exclusivité au moment d'apprendre (le choix de branche
-> porté par le joueur **par domaine**, le refus `other_branch` réutilisé, le respec payant),
-> et l'écran qui dit ce qu'on renonce avant de choisir.
-- [ ] Palier 3 : **deux branches de deux passifs et d'un accord**, une seule apprenable —
+> **ARC-14b — livré le 2026-08-06.** `PlayerCombatBranch` porte le choix, **une ligne par
+> arbre et jamais une par personnage** — la leçon de DOM-04, où une spécialisation unique
+> fermait à jamais les autres métiers, c'est-à-dire l'exclusivité *entre* arbres que la
+> doctrine interdit. Mener les 24 arbres de combat reste permis ; chacun garde sa fourche,
+> et l'exclusivité est tenue par le **schéma** (contrainte unique `(player, domain)`) plutôt
+> que par du code.
+>
+> `PlayerSkillHelper::matchesChosenBranch()` accepte désormais les deux grammaires : un
+> métier dit `craft`, un arbre de combat dit `domain`. Les séparer plutôt que de tout ranger
+> sous `craft` évite qu'un arbre de combat aille chercher sa branche dans la spécialisation
+> d'un métier. Le refus `other_branch` (DOM-06) est réutilisé tel quel.
+>
+> **Le défaut sur lequel le jalon a buté, et qui vaut d'être noté** : le projet a **deux
+> identifiants de domaine**. La clé de fixture est anglaise (`pyromancy` — celle
+> qu'`equipment_ports.yaml` emploie déjà) quand `Domain::getSlug()` dérive du **titre
+> français** (`pyromancien`). Le catalogue garde la clé anglaise comme ses voisins et fait
+> le pont par le libellé, qui **est** le titre du domaine — et un test le vérifie arbre par
+> arbre, parce que sans lui renommer un arbre casserait sa fourche **en silence** : le
+> catalogue chargerait encore, et la branche deviendrait simplement inchoisissable.
+>
+> `CombatBranchManager::forgoneBy()` dit ce à quoi on renonce, **avec le geste de l'autre
+> branche** : *une fourche dont on ne lit qu'un côté n'est pas un choix, c'est un bouton*.
+>
+> **Aucune valeur de jeu ne bouge** : la table naît vide, et aucun nœud livré ne déclare
+> encore de branche — c'est ARC-07/08 qui les écriront.
+- [x] Palier 3 : **deux branches de deux passifs et d'un accord**, une seule apprenable —
       l'arbre écrit 18 nœuds et 60 pb, le personnage en apprend 15 et en porte 50
+      *(ARC-14a le catalogue et l'arithmétique 540/390, ARC-14b l'exclusivité : une ligne
+      par arbre, tenue par le schéma)*
 - [x] **Chaque branche ouvre son geste**, et c'est ce qui décide si la fourche est un choix
       ou une décoration *(ARC-14a — une branche sans accord est **refusée au chargement** :
       le défaut serait invisible en donnée et fatal en jeu)* : mesuré au §9 bis, deux branches qui ne diffèrent que par leurs

@@ -65,6 +65,7 @@ class Player implements CharacterInterface
         $this->resourceCatalogEntries = new ArrayCollection();
         $this->achievements = new ArrayCollection();
         $this->craftSpecializations = new ArrayCollection();
+        $this->combatBranches = new ArrayCollection();
         $this->domainAccesses = new ArrayCollection();
     }
 
@@ -400,6 +401,20 @@ class Player implements CharacterInterface
      */
     #[ORM\OneToMany(targetEntity: PlayerCraftSpecialization::class, mappedBy: 'player', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $craftSpecializations;
+
+    /**
+     * La branche choisie dans chaque arbre de combat (ARC-14b).
+     *
+     * Meme forme que les metiers, et pour la meme raison : **une ligne par
+     * arbre**, jamais une par personnage. Mener les vingt-quatre arbres reste
+     * permis — le renoncement se joue *dans* l'arbre, jamais entre eux
+     * (GAME_DOMAINS § 1). L'exclusivite est tenue par le schema, contrainte
+     * unique `(player, domain)`.
+     *
+     * @var Collection<int, PlayerCombatBranch>
+     */
+    #[ORM\OneToMany(targetEntity: PlayerCombatBranch::class, mappedBy: 'player', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $combatBranches;
 
     /**
      * Quand le **premier voyage offert** a ete depense (ONB-10).
@@ -1200,6 +1215,39 @@ class Player implements CharacterInterface
     public function getCraftSpecializations(): Collection
     {
         return $this->craftSpecializations;
+    }
+
+    /**
+     * La branche que ce joueur a choisie dans cet arbre (ARC-14b).
+     *
+     * `null` veut dire « pas encore choisie », et c'est un etat normal : la
+     * fourche ne se pose qu'au palier 3, donc un joueur passe l'essentiel de
+     * son arbre sans avoir a trancher.
+     */
+    public function getCombatBranchFor(Domain $domain): ?PlayerCombatBranch
+    {
+        foreach ($this->combatBranches as $choice) {
+            if ($choice->getDomain() === $domain) {
+                return $choice;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, PlayerCombatBranch>
+     */
+    public function getCombatBranches(): Collection
+    {
+        return $this->combatBranches;
+    }
+
+    public function addCombatBranch(PlayerCombatBranch $choice): void
+    {
+        if (!$this->combatBranches->contains($choice)) {
+            $this->combatBranches->add($choice);
+        }
     }
 
     public function addCraftSpecialization(PlayerCraftSpecialization $specialization): void

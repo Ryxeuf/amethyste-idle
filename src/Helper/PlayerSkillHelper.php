@@ -147,18 +147,56 @@ class PlayerSkillHelper
                 continue;
             }
 
-            $craft = (string) ($descriptor['craft'] ?? '');
             $branch = (string) ($descriptor['branch'] ?? '');
-            if ($craft === '' || $branch === '') {
+            if ($branch === '') {
                 continue;
             }
 
-            if ($player->getCraftSpecializationFor($craft)?->getBranch() !== $branch) {
+            // ARC-14b — la fourche de combat suit la meme grammaire que celle
+            // des metiers, et se distingue par ce qu'elle nomme : un metier dit
+            // `craft`, un arbre de combat dit `domain`. Les separer plutot que
+            // de tout ranger sous `craft` evite qu'un arbre de combat aille
+            // chercher sa branche dans la specialisation d'un metier.
+            $craft = (string) ($descriptor['craft'] ?? '');
+            if ($craft !== '') {
+                if ($player->getCraftSpecializationFor($craft)?->getBranch() !== $branch) {
+                    return false;
+                }
+
+                continue;
+            }
+
+            $domain = $this->combatDomainOf($skill, (string) ($descriptor['domain'] ?? ''));
+            if ($domain !== null && $player->getCombatBranchFor($domain)?->getBranch() !== $branch) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * L'arbre dont ce nœud declare la branche (ARC-14b).
+     *
+     * Le nœud nomme son arbre plutot que de le deduire : un nœud de port est
+     * partage par plusieurs arbres (`Skill::domains` est un ManyToMany), et
+     * deduire l'arbre de la premiere entree ferait dependre le refus de l'ordre
+     * de la base. Un `domain` vide ou inconnu **ne refuse rien** — un nœud mal
+     * declare doit se voir en test, jamais bloquer un joueur en silence.
+     */
+    private function combatDomainOf(Skill $skill, string $slug): ?\App\Entity\Game\Domain
+    {
+        if ($slug === '') {
+            return null;
+        }
+
+        foreach ($skill->getDomains() as $domain) {
+            if ($domain->getSlug() === $slug) {
+                return $domain;
+            }
+        }
+
+        return null;
     }
 
     public function getTotalUsedPoints(?Player $player = null): int
