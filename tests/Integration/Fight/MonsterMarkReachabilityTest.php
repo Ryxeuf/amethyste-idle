@@ -48,11 +48,65 @@ class MonsterMarkReachabilityTest extends AbstractIntegrationTestCase
      */
     public function testSomeShippedMonstersActuallyLeaveAMark(): void
     {
+        self::assertGreaterThan(
+            0,
+            \count($this->markingMonsters()),
+            'Aucun monstre livre ne laisse de marque : `ward` reste un levier mort.'
+        );
+    }
+
+    /**
+     * Aucun monstre ne pose la Brulure — c'est un DOT, pas une marque pure.
+     *
+     * **L'ecart que ce jalon a trouve, et qu'il refuse plutot que de le
+     * trancher.** ARC-13a a decide que la mark-ness vit dans un catalogue et
+     * non dans le type : la Brulure est **les deux**, un DOT et la marque du
+     * feu. La poser depuis chaque monstre de feu ne leur donnerait donc pas une
+     * marque, cela leur donnerait des degats sur la duree qu'ils n'avaient pas,
+     * plus les 25 % retires a leur cible par `applyBurnReduction()`. C'est une
+     * decision d'equilibrage, et le § 0.2 interdit de la prendre a la main.
+     *
+     * Consequence mesuree : **les monstres de feu ne marquent pas**, et c'est le
+     * meme ecart qu'ARC-13b-a a laisse ouvert cote joueur — vu depuis l'autre
+     * bord. Il se refermera avec lui.
+     */
+    public function testTheFireMarkIsNeverPosedByAMonster(): void
+    {
+        $burn = $this->em->getRepository(StatusEffect::class)->findOneBy(['slug' => 'burn']);
+        self::assertNotNull($burn);
+        self::assertFalse(MonsterMarkLaw::poses($burn), 'La Brulure est un DOT : la poser serait un choix d\'equilibrage.');
+
+        foreach (ElementalMark::markedElements() as $element) {
+            $slug = ElementalMark::forElement($element);
+            $effect = $this->em->getRepository(StatusEffect::class)->findOneBy(['slug' => $slug]);
+            self::assertNotNull($effect);
+
+            self::assertSame(
+                $element !== Element::Fire,
+                MonsterMarkLaw::poses($effect),
+                sprintf('%s (%s)', $element->value, (string) $slug)
+            );
+        }
+    }
+
+    /**
+     * Les monstres qui laissent une marque, par nom.
+     *
+     * @return array<string, true>
+     */
+    private function markingMonsters(): array
+    {
         $marking = [];
 
         foreach ($this->em->getRepository(Monster::class)->findAll() as $monster) {
             foreach ($this->gesturesOf($monster) as $gesture) {
-                if (MonsterMarkLaw::markFor($monster, $gesture) !== null) {
+                $mark = MonsterMarkLaw::markFor($monster, $gesture);
+                if ($mark === null) {
+                    continue;
+                }
+
+                $effect = $this->em->getRepository(StatusEffect::class)->findOneBy(['slug' => $mark]);
+                if ($effect !== null && MonsterMarkLaw::poses($effect)) {
                     $marking[$monster->getName()] = true;
 
                     break;
@@ -60,11 +114,7 @@ class MonsterMarkReachabilityTest extends AbstractIntegrationTestCase
             }
         }
 
-        self::assertGreaterThan(
-            0,
-            \count($marking),
-            'Aucun monstre livre ne laisse de marque : `ward` reste un levier mort.'
-        );
+        return $marking;
     }
 
     /**

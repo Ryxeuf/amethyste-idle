@@ -956,12 +956,24 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > la marque **est** l'élément du monstre : elle ne peut pas en désigner un autre, et un test
 > le dit plutôt que de le supposer.
 >
-> **Mesure : 63 des 65 monstres marquent désormais** (les 2 exceptions sont les mannequins,
+> **Mesure : 59 des 65 monstres marquent désormais.** Deux exceptions sont les mannequins,
 > d'élément neutre — et `MonsterMarkLaw` les refuse une seconde fois par leur `trainingMode`,
-> parce que la clémence des mannequins se pose à *chaque* chemin plutôt qu'à un seul).
-> `ward` cesse donc d'être un levier mort pour deux palettes sur quatre, et le jet passe par
+> parce que la clémence des mannequins se pose à *chaque* chemin plutôt qu'à un seul.
+> `ward` cesse d'être un levier mort pour deux palettes sur quatre, et le jet passe par
 > `applyStatusEffect()` — là où `grip` et `ward` se croisent — plutôt que par un chemin
 > direct qui contournerait la défense de la cible.
+>
+> **Les quatre autres sont les monstres de feu, et c'est un écart trouvé en chemin.** La
+> loi ne pose qu'une **marque pure** (`TYPE_MARK`). ARC-13a a décidé que *la mark-ness vit
+> dans un catalogue, pas dans le type* — la Brûlure est donc **les deux**, un DOT et la
+> marque du feu —, et la conséquence n'apparaît que de ce côté-ci : poser la marque du feu
+> depuis chaque monstre de feu ne leur donnerait pas une marque, cela leur donnerait **des
+> dégâts sur la durée qu'ils n'avaient pas**, plus les 25 % retirés à leur cible par
+> `applyBurnReduction()`. C'est une décision d'équilibrage, pas de marquage, et le §0.2
+> interdit de la prendre à la main. C'est **le même écart qu'ARC-13b-a a laissé ouvert côté
+> joueur** (séparer la Brûlure-marque de la brûlure-DOT, ou créer un DOT neutre), vu depuis
+> l'autre bord : il se refermera avec lui. Le refus est ce qui garantit la propriété du
+> jalon — **aucune valeur de combat ne bouge**.
 >
 > **Les deux jalons se verrouillent l'un l'autre** : ARC-11b-b a rangé `TYPE_MARK` dans
 > l'intention `entrave`, et `ward` ne qualifie **que** l'entrave. Le porteur des leviers de
@@ -1004,8 +1016,9 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       n'existe que dans un sens est un levier mort pour la moitié des fonctions. Croise
       **BES-01** (l'élément des monstres, prérequis de MAT-01) *(ARC-13b-b — `MonsterMarkLaw` :
       la marque vient de l'**élément du monstre**, jamais de son geste, parce que les gestes
-      des monstres sont partagés. **63 des 65** marquent ; les 2 exceptions sont les
-      mannequins)*
+      des monstres sont partagés. **59 des 65** marquent : 2 mannequins et **4 monstres de
+      feu** en sont exclus, la loi ne posant qu'une marque **pure** — la Brûlure est aussi un
+      DOT, et la poser serait un choix d'équilibrage qu'ARC-17 doit trancher)*
 - [x] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
       capstone atteignable au jour 1 *(ARC-13b-a — **20 des 24**, 19 gestes touchés, aucun
       effet écrasé. Les 4 restants n'ont aucun accord d'entrée qui blesse, donc rien à

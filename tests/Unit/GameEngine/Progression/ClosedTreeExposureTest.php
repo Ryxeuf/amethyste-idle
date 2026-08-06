@@ -25,12 +25,20 @@ class ClosedTreeExposureTest extends TestCase
      *
      * C'est la garantie la plus forte des trois : ce qui n'existe pas ne
      * s'affiche pas par accident.
+     *
+     * **`elementTrace` s'y ajoute (ARC-13b-b)**, et la liste devait bouger
+     * plutot que s'elargir toute seule : c'est exactement le service que ce
+     * test rend. La trace dit ce que l'element **laisse** sur ce qu'il frappe —
+     * elle ne nomme ni nœud, ni valeur, ni prerequis, et le § 6.2 l'autorise
+     * donc. Ce qu'elle **pourrait** laisser fuir, c'est une duree ou un
+     * pourcentage glisse dans la phrase : ce risque-la est tenu ailleurs, par
+     * `DomainCatalogContractTest::testATraceNeverLeaksAValue()`.
      */
     public function testTheCatalogueCardCarriesNothingBeyondWhatItMaySay(): void
     {
         $allowed = [
             'id', 'title', 'element', 'register',
-            'teaches', 'equips',
+            'teaches', 'equips', 'elementTrace',
             'parchmentName', 'parchmentPrice', 'opened',
         ];
 

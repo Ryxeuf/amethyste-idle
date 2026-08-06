@@ -4,6 +4,7 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Entity\Game\StatusEffect;
 
 /**
  * La marque, du cote du monstre (ARC-13b-b).
@@ -81,5 +82,40 @@ final class MonsterMarkLaw
         }
 
         return $mark;
+    }
+
+    /**
+     * La marque est-elle **pure**, c'est-a-dire ne fait-elle que marquer ?
+     *
+     * **Le quatrieme refus, et il ne pouvait pas etre pose plus haut** : il
+     * demande le `StatusEffect` charge, quand `markFor()` ne connait que le
+     * monstre et son geste. Meme raison qu'ARC-11b-b : *on borne la ou chaque
+     * question a sa reponse.*
+     *
+     * ARC-13a a decide que **la mark-ness vit dans un catalogue, pas dans le
+     * type** : le `type` continue de dire ce que l'effet *fait*, et la Brulure
+     * est les deux — un DOT **et** la marque du feu. La consequence n'apparait
+     * que du cote monstre : poser la marque du feu depuis chaque monstre de feu
+     * ne leur donnerait pas une marque, cela leur donnerait **des degats sur la
+     * duree qu'ils n'avaient pas** — plus la reduction de 25 % que
+     * `applyBurnReduction()` inflige a leur cible. C'est une decision
+     * d'equilibrage, pas une decision de marquage, et le § 0.2 interdit de la
+     * prendre a la main : elle appartient a ARC-17.
+     *
+     * D'ou la loi : **le cote monstre ne pose qu'une marque pure.** Les sept
+     * marques ecrites par ARC-13a le sont (`TYPE_MARK`) ; la Brulure ne l'est
+     * pas, et **les 4 monstres de feu sur 65 ne marquent donc pas**. La liste
+     * est nommee plutot que tue — c'est le meme ecart qu'ARC-13b-a a laisse
+     * ouvert cote joueur (*separer la Brulure-marque de la brulure-DOT, ou
+     * creer un DOT neutre*), vu depuis l'autre bord.
+     *
+     * Ce que ce refus garantit, et qui vaut mieux qu'un chiffre : **aucune
+     * valeur de combat ne bouge**. Les sept marques pures portent des
+     * modificateurs que le moteur ne lit pas encore, donc le jalon ajoute une
+     * prise et rien d'autre.
+     */
+    public static function poses(StatusEffect $effect): bool
+    {
+        return $effect->getType() === StatusEffect::TYPE_MARK;
     }
 }

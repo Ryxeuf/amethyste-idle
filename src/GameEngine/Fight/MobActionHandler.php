@@ -211,7 +211,7 @@ class MobActionHandler
         }
 
         $effect = $this->entityManager->getRepository(StatusEffect::class)->findOneBy(['slug' => $mark]);
-        if ($effect === null) {
+        if ($effect === null || !MonsterMarkLaw::poses($effect)) {
             return [];
         }
 

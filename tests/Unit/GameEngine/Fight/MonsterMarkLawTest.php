@@ -4,6 +4,7 @@ namespace App\Tests\Unit\GameEngine\Fight;
 
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Entity\Game\StatusEffect;
 use App\Enum\Element;
 use App\Enum\TrainingMode;
 use App\GameEngine\Fight\ElementalMark;
@@ -99,6 +100,34 @@ class MonsterMarkLawTest extends TestCase
                 $mode->value
             );
         }
+    }
+
+    /**
+     * Le cote monstre ne pose qu'une marque **pure**.
+     *
+     * ARC-13a a decide que la mark-ness vit dans un catalogue et non dans le
+     * type : la Brulure est **les deux**, un DOT et la marque du feu. Poser la
+     * marque du feu depuis chaque monstre de feu ne leur donnerait donc pas une
+     * marque, cela leur donnerait des **degats sur la duree** qu'ils n'avaient
+     * pas — plus les 25 % de degats retires a leur cible par
+     * `applyBurnReduction()`. C'est une decision d'equilibrage, pas de
+     * marquage, et le § 0.2 interdit de la prendre a la main.
+     *
+     * C'est ce refus qui garantit la propriete du jalon : **aucune valeur de
+     * combat ne bouge**.
+     */
+    public function testOnlyAPureMarkIsPosedByAMonster(): void
+    {
+        $pure = new StatusEffect();
+        $pure->setSlug('soaked');
+        $pure->setType(StatusEffect::TYPE_MARK);
+        self::assertTrue(MonsterMarkLaw::poses($pure));
+
+        // La Brulure est la marque du feu **et** un DOT. Elle ne passe pas.
+        $burn = new StatusEffect();
+        $burn->setSlug('burn');
+        $burn->setType(StatusEffect::TYPE_BURN);
+        self::assertFalse(MonsterMarkLaw::poses($burn));
     }
 
     /**
