@@ -3331,140 +3331,236 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // ARCHER (air) — 13 skills, tir a distance et vent
+    // ARCHER (air x distance x assaut) — « la Portee » (ARC-07d)
     // =========================================================================
+
+    /**
+     * L'Archer — air x distance x **assaut**, au gabarit (ARC-07d).
+     *
+     * GAME_ARCHETYPES § 9.4. Le quatrieme et dernier patron, et **le seul des
+     * quatre dont la ressource est materielle** : il ne paie ni en PM ni en
+     * tours, il paie en munitions. Sa promesse est *le meilleur rendement par
+     * tour du jeu — si j'ai prepare le terrain*, et sa courbe est une **cadence
+     * decroissante** la ou le Pyromancien a un pic et le Soldat un plateau.
+     *
+     * **Pourquoi il n'est pas un Pyromancien avec un arc**, alors qu'ils
+     * partagent la fonction : sa ressource depend d'un artisan, son profil
+     * decroit au lieu de s'effondrer, et sa teinte porte sur l'**economie** de
+     * son geste (`wind`, la fleche recuperee) plutot que sur la marque qu'il
+     * laisse. Trois differences structurelles, **aucune numerique** — c'est le
+     * standard que le § 9.5 demande a tout couple d'arbres de meme fonction.
+     *
+     * **Un defaut trouve en ecrivant l'arbre, et anterieur au jalon** : trois
+     * des accords de l'Archer — `air-current`, `wind-scythe`, `vacuum-blade` —
+     * sont de registre **`Spell`**. Un arbre de distance dont les gestes sont
+     * des sorts ne qualifie pas ses propres passifs (invariant 7 d'ARC-02b),
+     * exactement le `magnetic-pull` que le Soldat a rendu a l'Ingenieur. Ils
+     * partent, et **aucune materia ne perd son canal** : le Foudromancien ouvre
+     * les deux premiers, le Vagabond le troisieme.
+     *
+     * **La fourche oppose deux rapports a la munition.** *Le Guet* prepare — un
+     * gros coup, et le droit de le tirer en premier (`tempo`) ; *la Volee*
+     * entretient la cadence — elle perce, et elle **coute moins**, ce qui pour
+     * ce registre veut dire quelque chose de tres concret : moins de fleches
+     * achetees. La teinte `wind` ne vit que dans la Volee.
+     *
+     * **Le capstone tombe pile au plafond**, et c'est la contrainte qui a ecrit
+     * la fourche : `critical_power` plafonne a 15, le Guet en depense 6 en
+     * commun plus 9 — il ne peut pas y avoir un troisieme nœud de critique dans
+     * cet arbre, et c'est ce qui force la Volee a chercher ailleurs.
+     */
     private function getArcherSkills(): array
     {
         $d = 'archer';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : deux techniques ------------------------------
             'archer_apprenti_1' => [
-                'title' => 'Materia : Tir precis',
+                'title' => 'Materia : Tir tendu',
                 'slug' => 'archer-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Tir precis',
-                'requiredPoints' => 0,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'precise-shot']],
-            ],
-            'archer_apprenti_2' => [
-                'title' => 'Materia : Ruee d\'air',
-                'slug' => 'archer-apprenti-2',
-                'description' => 'Permet d\'utiliser la materia Ruee d\'air',
+                'description' => 'Permet d\'utiliser la technique Tir tendu — une munition ordinaire',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'air-dash']],
             ],
+            // **Le plan B du jour 1, et la condition du capstone.** Il porte le
+            // Desequilibre, donc le sommet de l'arbre est atteignable des le
+            // tour 2 avec le seul kit d'entree — un accord d'entree coute
+            // 0 point (GAME_MATERIA § 3), le joueur l'a le jour ou il ouvre
+            // l'arbre. C'est aussi le seul accord non-`degat` de l'arbre
+            // (§ 5.1, loi 2), et il garde ses 2 degats : le § 1.1 veut qu'une
+            // marque soit portee par un geste qui blesse, faute de quoi elle
+            // coute un tour plein pour un tour vole.
+            'archer_apprenti_2' => [
+                'title' => 'Materia : Tir entravant',
+                'slug' => 'archer-apprenti-2',
+                'description' => 'Permet d\'utiliser la technique Tir entravant — elle laisse un Desequilibre',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'precise-shot']],
+            ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) --------------------------------------------
             'archer_rang2_1' => [
-                'title' => 'Oeil de faucon',
+                'title' => 'Souffle court',
                 'slug' => 'archer-rang2-1',
-                'description' => 'Augmente la precision des tirs',
+                'description' => 'On tire entre deux respirations, pas pendant',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 2,
+                'levers' => [['lever' => 'critical', 'points' => 3]],
                 'requirements' => ['archer_apprenti_1'],
             ],
             'archer_rang2_2' => [
-                'title' => 'Fleche aceree',
+                'title' => 'Bras d\'arc',
                 'slug' => 'archer-rang2-2',
-                'description' => 'Augmente les chances de coup critique',
+                'description' => 'Un arc plus dur a bander envoie plus loin',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'critical' => 1,
+                'levers' => [['lever' => 'power', 'points' => 3]],
                 'requirements' => ['archer_apprenti_1'],
             ],
             'archer_rang2_3' => [
-                'title' => 'Materia : Tranchant aerien',
+                'title' => 'Materia : Volee',
                 'slug' => 'archer-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Tranchant aerien',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'air-slash']],
-                'requirements' => ['archer_apprenti_2'],
-            ],
-            'archer_rang2_4' => [
-                'title' => 'Materia : Point de pression',
-                'slug' => 'archer-rang2-4',
-                'description' => 'Permet d\'utiliser la materia Point de pression',
+                'description' => 'Permet d\'utiliser la technique Volee — deux munitions, plusieurs cibles',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'pressure-point']],
                 'requirements' => ['archer_apprenti_2'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) --------------------------------------------
+            // **La condition qui dit ce qu'on porte** : les deux mains a l'arc.
+            // C'est le § 4.3 applique — un passif conditionnel recompense une
+            // tenue reconnaissable, et on voit un archetype a ce qu'il porte
+            // avant meme qu'il agisse.
             'archer_rang3_1' => [
-                'title' => 'Materia : Tir critique',
+                'title' => 'Lecture du vent',
                 'slug' => 'archer-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Tir critique',
+                'description' => 'Les deux mains a l\'arc, on lit ou la fleche va deriver',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'critical-shot']],
-                'requirements' => ['archer_rang2_1', 'archer_rang2_2'],
+                'levers' => [['lever' => 'critical', 'points' => 6, 'condition' => 'offhand_free']],
+                'requirements' => ['archer_rang2_1'],
             ],
             'archer_rang3_2' => [
-                'title' => 'Materia : Courant d\'air',
+                'title' => 'Encoche haute',
                 'slug' => 'archer-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Courant d\'air (degats + soin)',
+                'description' => 'Quand le coup porte, il porte plus haut',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'air-current']],
-                'requirements' => ['archer_rang2_3'],
+                'levers' => [['lever' => 'critical_power', 'points' => 6]],
+                'requirements' => ['archer_rang2_2'],
             ],
             'archer_rang3_3' => [
-                'title' => 'Concentration mortelle',
+                'title' => 'Materia : Fleche de fracture',
                 'slug' => 'archer-rang3-3',
-                'description' => 'Augmente les degats et le critique',
+                'description' => 'Permet d\'utiliser la technique Fleche de fracture — elle ouvre la garde',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'damage' => 1,
-                'critical' => 1,
-                'requirements' => ['archer_rang2_4'],
-            ],
-            'archer_rang3_4' => [
-                'title' => 'Materia : Pluie de fleches',
-                'slug' => 'archer-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Pluie de fleches (AoE)',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'arrow-rain']],
-                'requirements' => ['archer_rang3_1'],
+                'actions' => ['materia' => ['unlock' => 'air-slash']],
+                'requirements' => ['archer_rang2_3'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
-            'archer_rang4_1' => [
-                'title' => 'Materia : Faux de vent',
-                'slug' => 'archer-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Faux de vent',
+            // --- Palier 3 (50 pts) : la fourche --------------------------------
+            'archer_watch_1' => [
+                'title' => 'Œil du faucon',
+                'slug' => 'archer-watch-1',
+                'description' => 'Le coup prepare ne fait pas plus souvent mal : il fait plus mal',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'wind-scythe']],
-                'requirements' => ['archer_rang3_1', 'archer_rang3_2'],
+                'levers' => [['lever' => 'critical_power', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'archer', 'branch' => 'watch']],
+                'requirements' => ['archer_rang3_3'],
             ],
-            'archer_rang4_2' => [
-                'title' => 'Materia : Lame de vide',
-                'slug' => 'archer-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Lame de vide',
+            'archer_watch_2' => [
+                'title' => 'Avantage du guet',
+                'slug' => 'archer-watch-2',
+                'description' => 'Celui qui voit le premier tire le premier',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'vacuum-blade']],
-                'requirements' => ['archer_rang3_3', 'archer_rang3_4'],
+                'levers' => [['lever' => 'tempo', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'archer', 'branch' => 'watch']],
+                'requirements' => ['archer_rang3_3'],
+            ],
+            'archer_volley_1' => [
+                'title' => 'Pointe affutee',
+                'slug' => 'archer-volley-1',
+                'description' => 'Ce qui traverse l\'armure n\'a pas a la depasser',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'archer', 'branch' => 'volley']],
+                'requirements' => ['archer_rang3_3'],
+            ],
+            // **La teinte, et la seule du jeu qui porte sur la ressource.** Le
+            // § 9 septies a retire aux munitions leur cout en gils — le carquois
+            // est une piece durable qui se vide dans la rencontre et se ramasse
+            // apres. `wind` ne rend donc pas de l'argent : il rend des tours de
+            // tir dans le combat ou l'on est, ce qui est precisement ce que la
+            // cadence decroissante coute.
+            'archer_volley_2' => [
+                'title' => 'Trait recupere',
+                'slug' => 'archer-volley-2',
+                'description' => 'Une fleche sur sept ressort intacte, et on la retire',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'wind', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'archer', 'branch' => 'volley']],
+                'requirements' => ['archer_rang3_3'],
+            ],
+            'archer_watch_accord' => [
+                'title' => 'Materia : Tir du faucon',
+                'slug' => 'archer-watch-accord',
+                'description' => 'Permet d\'utiliser la technique Tir du faucon — le gros coup prepare',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'critical-shot'],
+                    ['action' => 'specialization.branch', 'domain' => 'archer', 'branch' => 'watch'],
+                ],
+                'requirements' => ['archer_rang3_3'],
+            ],
+            'archer_volley_accord' => [
+                'title' => 'Materia : Grele',
+                'slug' => 'archer-volley-accord',
+                'description' => 'Permet d\'utiliser la technique Grele — plusieurs cibles, et la moitie des traits revient',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'arrow-rain'],
+                    ['action' => 'specialization.branch', 'domain' => 'archer', 'branch' => 'volley'],
+                ],
+                'requirements' => ['archer_rang3_3'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // --- Capstone (100 pts) --------------------------------------------
+            'archer_capstone' => [
+                'title' => 'Trait dans le vent',
+                'slug' => 'archer-capstone',
+                'description' => 'Contre qui ne tient plus sa ligne, la fleche trouve seule',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'levers' => [['lever' => 'power', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['archer_rang3_3'],
+            ],
+
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1).
             'archer_rang5_1' => [
                 'title' => 'Materia : Fleche perforante',
                 'slug' => 'archer-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Fleche perforante',
+                'description' => 'Permet d\'utiliser la technique Fleche perforante',
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'piercing-arrow']],
-                'requirements' => ['archer_rang4_1', 'archer_rang4_2'],
+                'requirements' => ['archer_rang3_3'],
             ],
 
-            // Maitrise des armes (arcs)
+            // --- Les deux echelons de port ------------------------------------
+            // Ceux de l'arc, declares dans le corps de l'arbre et rattaches
+            // ensuite aux arbres qui l'enseignent (`rewireWeaponPortLadders()`).
+            // Ils ne portent **aucune statistique** : *un echelon est une porte,
+            // jamais une recompense* (ecart 5 de GAME_TREE_ANATOMY).
             'archer_weapon_t2' => [
                 'title' => 'Maitrise de l\'arc (T2)',
                 'slug' => 'archer-weapon-t2',

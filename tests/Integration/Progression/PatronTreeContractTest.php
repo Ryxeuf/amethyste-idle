@@ -28,8 +28,10 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
     /**
      * Les arbres deja ecrits au gabarit.
      *
-     * ARC-07a le Pyromancien, ARC-07b le Guerisseur, ARC-07c le Soldat.
-     * L'Archer suit (ARC-07d), puis les vingt autres (ARC-08).
+     * ARC-07a le Pyromancien, ARC-07b le Guerisseur, ARC-07c le Soldat,
+     * ARC-07d l'Archer — **les quatre patrons du canon sont ecrits**. Les vingt
+     * autres suivent avec ARC-08, et ils n'ont plus de modele a inventer : un
+     * arbre par fonction et un par registre sont desormais en base.
      *
      * @var array<string, string>
      */
@@ -37,6 +39,7 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
         'Pyromancien' => 'pyromancy',
         'Guérisseur' => 'healer',
         'Soldat' => 'soldier',
+        'Archer' => 'archer',
     ];
 
     /**
