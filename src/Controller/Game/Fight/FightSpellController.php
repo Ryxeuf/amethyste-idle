@@ -178,7 +178,14 @@ class FightSpellController extends AbstractController
 
         // ARC-03b — les leviers du geste, bornes par la meme case que les
         // statistiques plates, et convertis une seule fois pour toute l'action.
-        $levers = $this->combatSkillResolver->getLeverEffects($player, CombatScope::ofSpell($spell), $spell->getRegister());
+        //
+        // ARC-11b-b — l'intention du geste ferme la borne : `mending` ne suit
+        // pas une boule de feu, `grip` ne prolonge pas un bouclier. Elle se
+        // resout sans le statut, parce que le statut n'est charge que plus bas
+        // dans `SpellApplicator` ; l'ordre des questions de la derivation fait
+        // que le degat et le soin repondent avant lui, et ce sont les seules
+        // intentions que les 253 gestes livres portent.
+        $levers = $this->combatSkillResolver->getLeverEffects($player, CombatScope::ofSpell($spell), $spell->getRegister(), $spell->resolveIntent());
 
         // Apply enchantment bonuses from equipped items
         $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($player);

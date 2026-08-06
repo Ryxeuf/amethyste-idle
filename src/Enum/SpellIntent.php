@@ -46,10 +46,22 @@ enum SpellIntent: string
      * L'intention que porte un effet de statut, par son type.
      *
      * **La table existe deja, elle n'etait simplement pas lue comme une
-     * intention** : les huit types de `StatusEffect` se rangent sans reste, ce
-     * qui est le signe qu'on nomme une distinction reelle plutot qu'on n'en
-     * invente une. Un type inconnu rend `null` — on ne devine pas l'intention
-     * d'un effet qu'on ne connait pas, on refuse de repondre.
+     * intention** : les types de `StatusEffect` se rangent sans reste, ce qui
+     * est le signe qu'on nomme une distinction reelle plutot qu'on n'en invente
+     * une. Un type inconnu rend `null` — on ne devine pas l'intention d'un
+     * effet qu'on ne connait pas, on refuse de repondre.
+     *
+     * **`TYPE_MARK` ajoute le 2026-08-06 (ARC-11b-b).** ARC-11a avait mesure
+     * *huit* types sans reste ; ARC-13a en a ajoute un **neuvieme** trois
+     * jalons plus tard, et le reste etait la — une marque pure ne se rangeait
+     * nulle part. C'est le genre d'ecart qui ne fait rien du tout jusqu'au jour
+     * ou il fait tout : depuis ARC-11b-b, un geste dont l'intention est
+     * illisible **ne borne aucun levier**, si bien qu'un geste de marque pure
+     * aurait ete le seul du jeu a qualifier les quinze. Une marque est une
+     * `Hinder` a la lettre de ce que cette intention dit — *retirer a
+     * l'adversaire un tour, une option, ou une resistance* : la Trempe fait
+     * agir plus tard, l'Entaille ouvre la garde, l'Aveugle fait viser moins
+     * juste.
      */
     public static function fromStatusEffectType(string $type): ?self
     {
@@ -58,7 +70,8 @@ enum SpellIntent: string
             StatusEffect::TYPE_PARALYSIS,
             StatusEffect::TYPE_BURN,
             StatusEffect::TYPE_FREEZE,
-            StatusEffect::TYPE_SILENCE => self::Hinder,
+            StatusEffect::TYPE_SILENCE,
+            StatusEffect::TYPE_MARK => self::Hinder,
             StatusEffect::TYPE_REGENERATION => self::Heal,
             StatusEffect::TYPE_SHIELD => self::Protection,
             StatusEffect::TYPE_BERSERK => self::Buff,

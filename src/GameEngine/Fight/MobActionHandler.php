@@ -149,9 +149,13 @@ class MobActionHandler
             // encaisse ne fait pas de geste — le borner par l'element du monstre
             // qui le frappe reviendrait a faire dependre son armure de ce qu'on
             // lui envoie.
+            //
+            // ARC-11b-b — l'intention, en revanche, borne : `guard` et `dodge`
+            // repondent a un coup, `ward` a une entrave. C'est celle du geste
+            // **recu**, la seule que celui qui encaisse ait sous les yeux.
             $options = ['fight' => $fight];
             if ($target instanceof Player) {
-                $options['targetLevers'] = $this->skillResolver->getLeverEffects($target);
+                $options['targetLevers'] = $this->skillResolver->getLeverEffects($target, null, null, $spell->resolveIntent());
             }
 
             $spellMessages = $this->spellApplicator->apply($spell, $mob, $target, $options);
