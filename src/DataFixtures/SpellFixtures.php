@@ -824,6 +824,11 @@ class SpellFixtures extends Fixture
                 'energyCost' => 0,
                 'critical' => 10,
                 'level' => 1,
+                // ARC-07c — l'Entaille passe sur un geste de **melee**. Elle
+                // etait portee par `magnetic-pull`, de registre `Spell` : un
+                // arbre de melee dont le geste marque est un sort ne qualifie
+                // pas ses propres passifs (invariant 7, ARC-02b).
+                'statusEffectSlug' => 'gash',
             ],
             'metal_storm' => [
                 'slug' => 'metal-storm',
@@ -834,6 +839,68 @@ class SpellFixtures extends Fixture
                 'description' => 'Une pluie de fragments métalliques acérés',
                 'hit' => 80,
                 'level' => 3,
+            ],
+            // ARC-07c — **les trois premieres protections de melee du jeu.**
+            // Le § 9.3 veut que tous les accords du Soldat soient des
+            // techniques ; il n'en existait aucune qui protege, si bien que
+            // l'archetype d'encaisse n'avait rien a jouer sur son tour
+            // defensif. Elles portent un bouclier, donc elles **se deposent**
+            // (ARC-11b, extension a toute protection) : *un tour paye, trois
+            // tours couverts*. Sans cela, une garde punit l'encaisse de se
+            // defendre — il perd en degats exactement ce qu'il gagne en survie.
+            'garde_haute' => [
+                'slug' => 'garde-haute',
+                'damage' => null,
+                'element' => Element::Metal,
+                'heal' => null,
+                'name' => 'Garde haute',
+                'description' => 'Un tour payé, trois tours couverts',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'statusEffectSlug' => 'shield',
+                'critical' => 0,
+                'level' => 1,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::SelfOnly,
+            ],
+            // **Le depot de l'encaisseur** : une rencontre a PV partages ne se
+            // « prend » pas, elle s'amortit. Ce qui agit sur un **etat** se
+            // multiplie par le nombre d'allies (§ 7 bis).
+            'mur_de_boucliers' => [
+                'slug' => 'mur-de-boucliers',
+                'damage' => null,
+                'element' => Element::Metal,
+                'heal' => null,
+                'name' => 'Mur de boucliers',
+                'description' => 'Une absorption posée sur chaque allié',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 1,
+                'statusEffectSlug' => 'shield',
+                'critical' => 0,
+                'level' => 2,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::Group,
+            ],
+            'rempart' => [
+                'slug' => 'rempart',
+                'damage' => null,
+                'element' => Element::Metal,
+                'heal' => null,
+                'name' => 'Rempart',
+                'description' => 'Ce qu\'on vient chercher en donjon : encaisser pour quatre, et le déposer',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'shield-strong',
+                'critical' => 0,
+                'level' => 4,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::Group,
             ],
             'iron_fist' => [
                 'slug' => 'iron-fist',

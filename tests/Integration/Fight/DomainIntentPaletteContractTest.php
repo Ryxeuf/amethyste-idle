@@ -34,7 +34,7 @@ use App\Tests\Integration\AbstractIntegrationTestCase;
 class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
 {
     /**
-     * Les huit arbres qui n'ouvrent **que** des gestes de degat.
+     * Les sept arbres qui n'ouvrent **que** des gestes de degat.
      *
      * C'est le plan B du test du jour 1 (§ 8.4) qui manque : *le tour ou
      * frapper n'est pas la reponse*. Un arbre qui n'ouvre que des coups n'a
@@ -64,14 +64,13 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
         'Chasseur',
         'Foudromancien',
         'Nécromancien',
-        'Soldat',
         'Sorcier',
     ];
 
     /**
      * Ce que les palettes de `domain_roles.yaml` reclament et n'ont pas.
      *
-     * **Quatorze ecarts, et ils disent tous la meme chose** : aucun geste livre
+     * **Douze ecarts, et ils disent tous la meme chose** : aucun geste livre
      * ne derive vers `entrave`, `protection` ni `amelioration`. Les 253 sorts
      * se rangent en 194 degats et 59 soins, parce que **l'ordre des questions
      * de la derivation** (ARC-11a) fait gagner le degat puis le soin : un
@@ -86,7 +85,10 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      * jour ou un auteur la declare. **ARC-07b l'a fait pour le Guerisseur** —
      * la Maree et la Grande Maree sont les deux premiers gestes de portee
      * collective du jeu, et la loi du depot cesse d'etre ecrite sans objet.
-     * Les trois autres arbres d'entretien attendent ARC-08.
+     * Les trois autres arbres d'entretien attendent ARC-08. **ARC-07c a fait
+     * de meme pour l'encaisse** : le Soldat ouvre le Mur de boucliers et le
+     * Rempart, les premieres **protections de melee** du jeu — sans elles, un
+     * archetype d'encaisse n'avait rien a jouer sur son tour defensif.
      *
      * La liste est un **cliquet** : elle peut retrecir, jamais grandir.
      *
@@ -104,8 +106,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
         'Nécromancien : 0 hinder sur 2',
         'Paladin : 0 protect sur 2',
         'Prêtre : 0 group_scoped sur 1',
-        'Soldat : 0 ally_or_group_scoped sur 1',
-        'Soldat : 0 protect sur 2',
         'Vagabond : 0 hinder sur 2',
     ];
 
