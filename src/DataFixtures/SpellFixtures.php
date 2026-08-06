@@ -1418,6 +1418,52 @@ class SpellFixtures extends Fixture
                 'aoeTargets' => 0,
                 'level' => 4,
             ],
+            // ARC-07b — **les deux premiers gestes de portee `le groupe` du
+            // jeu.** La loi du depot (ARC-11b) etait ecrite, opposable, et sans
+            // objet : aucun geste ne portait `SpellScope::Group`, qui **ne se
+            // derive jamais** (un soin de groupe et un soin d'allie ont
+            // exactement les memes valeurs — ce qui les separe est une decision
+            // d'auteur). Les voici.
+            //
+            // Ils portent un statut de regeneration, et c'est ce qui les rend
+            // deposables : un geste de groupe **instantane** est interdit
+            // (`DepositedGestureContractTest`), parce qu'un soin reactif ne
+            // sert a rien dans un donjon semi-synchrone ou le tour d'un absent
+            // se resout tout seul. *Le soigneur ne soigne pas, il provisionne.*
+            'maree' => [
+                'slug' => 'maree',
+                'damage' => null,
+                'element' => Element::Water,
+                'heal' => 3,
+                'name' => 'Marée',
+                'description' => 'Une provision posée sur tout le groupe, qui court même en votre absence',
+                'hit' => 100,
+                'energyCost' => 14,
+                'statusEffectSlug' => 'regeneration',
+                'critical' => 0,
+                'level' => 2,
+                'intent' => SpellIntent::Heal,
+                'scope' => SpellScope::Group,
+            ],
+            // La branche Maree pousse la meme idee jusqu'a couvrir une
+            // rencontre entiere. La duree **etale** la valeur, elle ne
+            // l'augmente pas (ARC-11b) : allonger un depot achete de la
+            // robustesse a l'absence, jamais de la puissance.
+            'grande_maree' => [
+                'slug' => 'grande-maree',
+                'damage' => null,
+                'element' => Element::Water,
+                'heal' => 5,
+                'name' => 'Grande Marée',
+                'description' => 'Le dépôt qui couvre une rencontre entière',
+                'hit' => 100,
+                'energyCost' => 26,
+                'statusEffectSlug' => 'regeneration-strong',
+                'critical' => 0,
+                'level' => 4,
+                'intent' => SpellIntent::Heal,
+                'scope' => SpellScope::Group,
+            ],
             'water_heal' => [
                 'slug' => 'water-heal',
                 'damage' => null,

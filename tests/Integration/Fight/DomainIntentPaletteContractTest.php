@@ -71,7 +71,7 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
     /**
      * Ce que les palettes de `domain_roles.yaml` reclament et n'ont pas.
      *
-     * **Quinze ecarts, et ils disent tous la meme chose** : aucun geste livre
+     * **Quatorze ecarts, et ils disent tous la meme chose** : aucun geste livre
      * ne derive vers `entrave`, `protection` ni `amelioration`. Les 253 sorts
      * se rangent en 194 degats et 59 soins, parce que **l'ordre des questions
      * de la derivation** (ARC-11a) fait gagner le degat puis le soin : un
@@ -82,8 +82,11 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      * `Spell::intent` qu'ARC-11a a laissee nullable pour exactement cela.
      *
      * De meme pour `group_scoped` : `SpellScope::Group` ne se derive jamais
-     * (ARC-11a), donc aucun des quatre arbres d'entretien ne peut aujourd'hui
-     * tenir sa portee de groupe — la seule qui rende la loi du depot utile.
+     * (ARC-11a), donc un arbre d'entretien ne tient sa portee de groupe que le
+     * jour ou un auteur la declare. **ARC-07b l'a fait pour le Guerisseur** —
+     * la Maree et la Grande Maree sont les deux premiers gestes de portee
+     * collective du jeu, et la loi du depot cesse d'etre ecrite sans objet.
+     * Les trois autres arbres d'entretien attendent ARC-08.
      *
      * La liste est un **cliquet** : elle peut retrecir, jamais grandir.
      *
@@ -95,7 +98,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
         'Druide : 0 group_scoped sur 1',
         'Défenseur : 0 protect sur 2',
         'Gardien : 0 group_scoped sur 1',
-        'Guérisseur : 0 group_scoped sur 1',
         'Géomancien : 0 hinder sur 2',
         'Hydromancien : 0 hinder sur 2',
         'Ingénieur : 0 hinder sur 2',

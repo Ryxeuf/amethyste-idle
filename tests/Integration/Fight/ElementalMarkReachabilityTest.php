@@ -27,7 +27,13 @@ use App\Tests\Integration\AbstractIntegrationTestCase;
 class ElementalMarkReachabilityTest extends AbstractIntegrationTestCase
 {
     /**
-     * Les quatre arbres qui ne peuvent pas encore porter leur marque.
+     * Les trois arbres qui ne peuvent pas encore porter leur marque.
+     *
+     * **Le Guerisseur en est sorti avec ARC-07b**, et la maniere compte : on ne
+     * lui a pas ajoute un geste offensif, on a **remplace** son second accord
+     * d'entree — il portait un soin (`water-heal`), il porte le Jet d'eau, qui
+     * blesse et applique Trempe. Un arbre d'entretien a besoin d'un geste qui
+     * finisse le combat (§ 5.1, loi 1) autant que d'un geste qui le tienne.
      *
      * **Ce n'est pas un oubli, c'est une mesure** : aucun de leurs deux accords
      * d'entree ne fait de degats, et le § 1.1 veut qu'une marque soit portee
@@ -45,7 +51,7 @@ class ElementalMarkReachabilityTest extends AbstractIntegrationTestCase
      *
      * @var list<string>
      */
-    private const WAITING_ON_ARC_08 = ['Gardien', 'Guérisseur', 'Prêtre', 'Vagabond'];
+    private const WAITING_ON_ARC_08 = ['Gardien', 'Prêtre', 'Vagabond'];
 
     /**
      * Tout arbre de combat applique sa marque des son entree — ou figure sur

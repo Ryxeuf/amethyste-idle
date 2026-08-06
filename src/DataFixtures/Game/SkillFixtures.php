@@ -1577,176 +1577,260 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // GUERISSEUR (eau) — 18 skills, soigneur complet
     // =========================================================================
+    /**
+     * Le Guerisseur — eau x sorts x entretien, « le Ressac » (ARC-07b).
+     *
+     * GAME_ARCHETYPES § 9.2. Le second des quatre patrons, et **le premier
+     * arbre du jeu qui depose** : le § 7 bis le dit en une phrase — *le
+     * soigneur ne soigne pas, il provisionne*. Le combat de groupe etant
+     * semi-synchrone (un joueur actif a la fois, le tour d'un absent resolu
+     * tout seul), un soin **reactif** y est une mecanique morte : il n'est pas
+     * la quand l'allie tombe. Ses gestes collectifs posent donc une **duree**
+     * qui court que son lanceur soit connecte ou non.
+     *
+     * **Ce que l'arbre depense**, et les deux branches tombent sur 50 pb :
+     *
+     * | | Ressac | Maree |
+     * |---|---:|---:|
+     * | `mending` 3 + capstone 14 | 17 | 17 |
+     * | `thrift` 3 (+9 Maree) | 3 | 12 |
+     * | `wind` 6 | 6 | 6 |
+     * | `ward` 6 (+9 Maree) | 6 | 15 |
+     * | `recovery` / `guard` *(teinte)* | 9 + 9 | — |
+     * | **Total** | **50** | **50** |
+     *
+     * Palette d'entretien : `mending` (principal) + `recovery`, `wind`,
+     * `thrift`, `ward`. Le Ressac depense **41 pb dans sa palette** et 9 hors —
+     * la teinte `guard`, l'eau qui amortit, et **elle ne vit que dans cette
+     * branche** : le soigneur de donjon n'a pas de main gauche a donner a un
+     * bouclier. Aucun plafond atteint (`mending` 17 <= 20, `ward` 15 <= 15,
+     * `thrift` 12 <= 15, `recovery` 9 <= 12).
+     *
+     * **La Maree est au palier 2, donc les deux branches l'ont** : un
+     * guerisseur sert son groupe quel que soit son choix, et la fourche decide
+     * seulement *jusqu'ou*. C'est ce qui empeche l'archetype de se scinder en
+     * « celui qui sert » et « celui qui ne sert pas ».
+     *
+     * **Deux ecarts au canon, nommes plutot que maquilles** :
+     *
+     *  1. Le § 9.2 donne a la branche Ressac l'accord **Dissipation** —
+     *     *retirer un statut*. Aucune mecanique de dissipation n'existe dans le
+     *     moteur, et en inventer une serait une decision de conception que ce
+     *     jalon n'a pas a prendre. La branche ouvre donc une **protection**
+     *     (`bubble-shield`), qui tient la meme place dans la palette et la meme
+     *     promesse — *tenir seul ce qui tombe maintenant*. La dissipation
+     *     revient avec ARC-18, qui ecrit les formes de geste.
+     *  2. Le capstone se declenche *sous 40 % des PV* au canon ; le vocabulaire
+     *     ferme de `SkillCondition` connait `target_below_quarter_life`. On
+     *     prend celui-la : le § 0.2 range ce seuil parmi les nombres qu'ARC-17
+     *     recalculera, et une condition inventee serait refusee a la lecture.
+     */
     private function getHealerSkills(): array
     {
         $d = 'healer';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) ------------------------------------------------
             'healer_materia_1' => [
-                'title' => 'Materia : Soin mineur',
+                'title' => 'Materia : Soin',
                 'slug' => 'healer-materia-1',
-                'description' => 'Permet d\'utiliser la materia Soin mineur',
+                'description' => 'Permet d\'utiliser la materia Soin — le geste d\'urgence',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'life-heal']],
             ],
+            // **Le second accord d'entree blesse, et c'est le cœur du jalon.**
+            // Il portait un soin ; ARC-13b-a avait donc range le Guerisseur
+            // parmi les quatre arbres incapables de poser leur marque, faute
+            // d'un geste d'entree qui blesse (§ 1.1). Le Jet d'eau applique
+            // **Trempe**, la marque de l'eau — donc la condition du capstone
+            // devient atteignable au tour 2, avec un accord gratuit.
+            //
+            // Et il tient l'autre loi du § 5.1 : *sans un geste offensif, un
+            // combat ne finit jamais*, et l'archetype est injouable seul.
             'healer_apprenti_2' => [
-                'title' => 'Materia : Soin aquatique',
+                'title' => 'Materia : Jet d\'eau',
                 'slug' => 'healer-apprenti-2',
-                'description' => 'Permet d\'utiliser la materia Soin aquatique',
+                'description' => 'Permet d\'utiliser la materia Jet d\'eau — le geste offensif modeste, qui laisse la cible trempee',
                 'requiredPoints' => 0,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'water-heal']],
+                'actions' => ['materia' => ['unlock' => 'water-jet']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) --------------------------------------------
             'healer_heal_1' => [
-                'title' => 'Main guerisseuse',
+                'title' => 'Main sure',
                 'slug' => 'healer-heal-1',
-                'description' => 'Augmente la puissance des soins',
+                'description' => 'Ce qu\'on rend, on le rend mieux',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'heal' => 1,
+                'levers' => [['lever' => 'mending', 'points' => 3]],
                 'requirements' => ['healer_materia_1'],
             ],
             'healer_rang2_2' => [
-                'title' => 'Concentration',
+                'title' => 'Geste econome',
                 'slug' => 'healer-rang2-2',
-                'description' => 'Augmente la precision des soins',
+                'description' => 'Le meme soin, pour moins de mana',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 1,
+                'levers' => [['lever' => 'thrift', 'points' => 3]],
                 'requirements' => ['healer_materia_1'],
             ],
+            // La **provision personnelle** : moins par tour qu'un soin direct,
+            // mais elle court quand on ne joue pas. C'est le premier des deux
+            // temps de l'archetype — *le direct est l'urgence, le depot est la
+            // provision* (§ 7 bis.2 bis).
             'healer_rang2_3' => [
-                'title' => 'Materia : Vague de guerison',
+                'title' => 'Materia : Rosee',
                 'slug' => 'healer-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Vague de guerison',
+                'description' => 'Permet d\'utiliser la materia Rosee — la provision qui court sans vous',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rejuvenation']],
+                'requirements' => ['healer_apprenti_2'],
+            ],
+            'healer_rang2_4' => [
+                'title' => 'Materia : Vague de soin',
+                'slug' => 'healer-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Vague de soin',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'healing-wave']],
                 'requirements' => ['healer_apprenti_2'],
             ],
-            'healer_rang2_4' => [
-                'title' => 'Vitalite',
-                'slug' => 'healer-rang2-4',
-                'description' => 'Augmente les points de vie maximum',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'life' => 3,
-                'requirements' => ['healer_apprenti_2'],
-            ],
 
-            'healer_rang2_5' => [
-                'title' => 'Empathie',
-                'slug' => 'healer-rang2-5',
-                'description' => 'Renforce le lien empathique avec les allies',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'heal' => 1,
-                'life' => 2,
-                'requirements' => ['healer_apprenti_2'],
-            ],
-
-            // Rang 3 (25-50 pts) — 5 skills
-            'healer_materia_2' => [
-                'title' => 'Materia : Regeneration',
-                'slug' => 'healer-materia-2',
-                'description' => 'Permet d\'utiliser la materia Regeneration (HoT)',
+            // --- Palier 2 (25 pts) --------------------------------------------
+            'healer_rang3_2' => [
+                'title' => 'Seconde respiration',
+                'slug' => 'healer-rang3-2',
+                'description' => 'Le mana revient de lui-meme, tour apres tour',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'rejuvenation']],
-                'requirements' => ['healer_heal_1', 'healer_rang2_2'],
+                'levers' => [['lever' => 'wind', 'points' => 6]],
+                'requirements' => ['healer_heal_1'],
             ],
-            'healer_rang3_2' => [
+            'healer_rang3_3' => [
+                'title' => 'Sang-froid',
+                'slug' => 'healer-rang3-3',
+                'description' => 'Ce qu\'on tente de vous imposer prend moins souvent',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'ward', 'points' => 6]],
+                'requirements' => ['healer_rang2_2'],
+            ],
+            // **Le premier geste de portee `le groupe` du jeu.** Il est au
+            // palier 2 et non dans une branche : les deux fourches l'ont, donc
+            // un guerisseur sert son groupe quel que soit son choix. Sans lui,
+            // la loi du depot (ARC-11b) n'aurait toujours aucun geste a
+            // regir — elle etait ecrite, opposable, et sans objet.
+            'healer_materia_2' => [
+                'title' => 'Materia : Maree',
+                'slug' => 'healer-materia-2',
+                'description' => 'Permet d\'utiliser la materia Maree — une provision posee sur tout le groupe',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'maree']],
+                'requirements' => ['healer_rang2_3'],
+            ],
+            'healer_rang3_4' => [
                 'title' => 'Materia : Voile de brume',
-                'slug' => 'healer-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Voile de brume (soin + bouclier)',
+                'slug' => 'healer-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Voile de brume',
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'mist-veil']],
-                'requirements' => ['healer_rang2_3'],
-            ],
-            'healer_rang3_3' => [
-                'title' => 'Materia : Afflux de vitalite',
-                'slug' => 'healer-rang3-3',
-                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
                 'requirements' => ['healer_rang2_4'],
             ],
-            'healer_rang3_4' => [
-                'title' => 'Materia : Bouclier de vie',
-                'slug' => 'healer-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Bouclier de vie',
-                'requiredPoints' => 25,
+
+            // --- Palier 3 (50 pts) : la fourche --------------------------------
+            // *Le Ressac* tient **seul** — il se regenere et amortit, c'est le
+            // soigneur qui n'a besoin de personne. *La Maree* tient **le
+            // groupe** — elle depose plus souvent (`thrift`) et ne se laisse pas
+            // interrompre (`ward`). La fourche oppose donc **deux contextes**,
+            // pas deux dosages (§ 6.1 bis, regle 6).
+            'healer_undertow_1' => [
+                'title' => 'Sourdre',
+                'slug' => 'healer-undertow-1',
+                'description' => 'La vie revient d\'elle-meme, a chaque fin de tour',
+                'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'life-shield']],
+                'levers' => [['lever' => 'recovery', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'guérisseur', 'branch' => 'undertow']],
+                'requirements' => ['healer_materia_2'],
+            ],
+            'healer_undertow_2' => [
+                'title' => 'Ecume',
+                'slug' => 'healer-undertow-2',
+                'description' => 'L\'eau amortit ce qui vous frappe, pour qui garde une main libre',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'guard', 'points' => 9, 'condition' => 'shield']],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'guérisseur', 'branch' => 'undertow']],
+                'requirements' => ['healer_materia_2'],
+            ],
+            'healer_tide_1' => [
+                'title' => 'Litanie',
+                'slug' => 'healer-tide-1',
+                'description' => 'Deposer plus souvent, pour le meme mana',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'guérisseur', 'branch' => 'tide']],
+                'requirements' => ['healer_materia_2'],
+            ],
+            'healer_tide_2' => [
+                'title' => 'Eaux calmes',
+                'slug' => 'healer-tide-2',
+                'description' => 'On ne vous interrompt pas',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'ward', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'guérisseur', 'branch' => 'tide']],
+                'requirements' => ['healer_materia_2'],
+            ],
+            // L'accord de chaque branche (regle 5). Cote Ressac, une
+            // **protection** et non la Dissipation du canon : la dissipation
+            // n'existe pas dans le moteur (voir l'en-tete).
+            'healer_undertow_accord' => [
+                'title' => 'Materia : Bulle protectrice',
+                'slug' => 'healer-undertow-accord',
+                'description' => 'Permet d\'utiliser la materia Bulle protectrice — tenir seul ce qui tombe maintenant',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'bubble-shield'],
+                    ['action' => 'specialization.branch', 'domain' => 'guérisseur', 'branch' => 'undertow'],
+                ],
+                'requirements' => ['healer_materia_2'],
+            ],
+            'healer_tide_accord' => [
+                'title' => 'Materia : Grande Maree',
+                'slug' => 'healer-tide-accord',
+                'description' => 'Permet d\'utiliser la materia Grande Maree — le depot qui couvre une rencontre entiere',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'grande-maree'],
+                    ['action' => 'specialization.branch', 'domain' => 'guérisseur', 'branch' => 'tide'],
+                ],
                 'requirements' => ['healer_materia_2'],
             ],
 
-            'healer_t2_purify' => [
-                'title' => 'Materia : Source purificatrice',
-                'slug' => 'healer-t2-purify',
-                'description' => 'Permet d\'utiliser la materia Source purificatrice — soin + purification',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'purifying-spring']],
-                'requirements' => ['healer_rang3_2', 'healer_rang2_5'],
-            ],
-
-            // Rang 4 (60-100 pts) — 3 skills
-            'healer_materia_3' => [
-                'title' => 'Materia : Benediction divine',
-                'slug' => 'healer-materia-3',
-                'description' => 'Permet d\'utiliser la materia Benediction divine — soin puissant',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
-                'requirements' => ['healer_materia_2', 'healer_rang3_2'],
-            ],
-            'healer_rang4_2' => [
-                'title' => 'Materia : Benediction de l\'ocean',
-                'slug' => 'healer-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Benediction de l\'ocean (regeneration)',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'ocean-blessing']],
-                'requirements' => ['healer_rang3_3', 'healer_rang3_4'],
-            ],
-
-            'healer_rang4_3' => [
-                'title' => 'Devotion totale',
-                'slug' => 'healer-rang4-3',
-                'description' => 'La devotion du guerisseur amplifie tous ses soins',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'heal' => 2,
-                'hit' => 1,
-                'requirements' => ['healer_rang3_3', 'healer_rang3_4'],
-            ],
-
-            // Rang 5 (100-150 pts) — 3 skills
-            'healer_t3_prison' => [
-                'title' => 'Materia : Prison glaciale',
-                'slug' => 'healer-t3-prison',
-                'description' => 'Permet d\'utiliser la materia Prison glaciale — immobilise l\'ennemi',
+            // --- Capstone (100 pts) --------------------------------------------
+            // L'entretien est **la seule fonction dont le capstone garde x2,0**
+            // (§ 7, decision 23) : sa condition peut reellement manquer — il
+            // faut qu'un allie soit deja en danger.
+            'healer_capstone' => [
+                'title' => 'Ressac',
+                'slug' => 'healer-capstone',
+                'description' => 'Plus la cible est basse, plus la vague est haute',
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'glacial-prison']],
-                'requirements' => ['healer_materia_3', 'healer_t2_purify'],
+                'levers' => [['lever' => 'mending', 'points' => 14, 'condition' => 'target_below_quarter_life']],
+                'requirements' => ['healer_materia_2'],
             ],
-            'healer_t3_tide' => [
-                'title' => 'Materia : Maree abyssale',
-                'slug' => 'healer-t3-tide',
-                'description' => 'Permet d\'utiliser la materia Maree abyssale — vague devastatrice',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'abyssal-tide']],
-                'requirements' => ['healer_rang4_2', 'healer_rang4_3'],
-            ],
+
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1).
             'healer_rang5_1' => [
                 'title' => 'Materia : Benediction celeste',
                 'slug' => 'healer-rang5-1',
@@ -1754,14 +1838,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'celestial-blessing']],
-                'requirements' => ['healer_t3_prison', 'healer_t3_tide'],
+                'requirements' => ['healer_rang3_4'],
             ],
         ];
     }
 
-    // =========================================================================
-    // MAREMANCIEN (eau) — 13 skills, maree et support hybride
-    // =========================================================================
     private function getTidecallerSkills(): array
     {
         $d = 'tidecaller';
