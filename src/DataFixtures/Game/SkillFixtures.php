@@ -943,166 +943,247 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // SOLDAT (metal) — 18 skills, DPS CaC combos d'armes
     // =========================================================================
+    /**
+     * Le Soldat — metal x melee x encaisse, « la Ligne » (ARC-07c).
+     *
+     * GAME_ARCHETYPES § 9.3. Le troisieme patron, et **le premier arbre de
+     * melee ecrit au gabarit**. Le canon previent que cet archetype *n'existe
+     * pas sans la decision 1* : sans materia de technique, l'arbre du Soldat
+     * est un jeu de passifs bornes au registre melee qui ne qualifient **aucune
+     * action**, l'attaque de base ne les lisant pas. ARC-02 a livre le
+     * registre ; ce jalon ecrit l'arbre qui s'en sert.
+     *
+     * **Ce que l'arbre depense**, et les deux branches tombent sur 50 pb :
+     *
+     * | | Le Mur | La Ligne mobile |
+     * |---|---:|---:|
+     * | `guard` (capstone) | 14 | 14 |
+     * | `hit` 3 + 6 | 9 | 9 |
+     * | `ward` 3 (+9 Mur) | 12 | 3 |
+     * | `life` 6 (+9 Mur) | 15 | 6 |
+     * | `dodge` / `power` *(teinte)* | — | 9 + 9 |
+     * | **Total** | **50** | **50** |
+     *
+     * `guard` plafonne a **15** et non 20 (§ 5) : son efficacite est
+     * hyperbolique, et *la mitigation d'un tank vient de son armure, pas de son
+     * arbre*. Consequence assumee — le capstone en consommant 14, il ne reste
+     * **1 pb**, c'est-a-dire rien : un arbre d'encaisse achete `guard` a son
+     * sommet ou jamais, et repartit ses quatre autres leviers. C'est la palette
+     * effective du § 5.0, et elle produit toute seule la meilleure fourche
+     * possible pour cette fonction — **eviter ou absorber**.
+     *
+     * **La fourche est la plus parlante des quatre** : *ce n'est pas offensif
+     * contre defensif, c'est en groupe contre seul*. Le Mur encaisse et donne
+     * (PV, sang-froid, et le Rempart qu'on vient chercher en donjon) ; la Ligne
+     * mobile evite et finit (esquive, et une Charge qui regle un combat seul).
+     * Les deux tiennent la fonction *encaisse*.
+     *
+     * **Le capstone dit ce qu'est l'archetype** : le Soldat est le seul dont la
+     * condition ne se *provoque* pas — elle lui arrive. *Il ne decide pas du
+     * combat, il refuse de le perdre.* Et parce qu'« avoir encaisse au tour
+     * precedent » est vrai presque tous les tours au contact, elle est payee
+     * au tarif d'une condition **frequente** (x1,4) — la correction du § 9 bis
+     * que le § 4.3 a rendue generale.
+     *
+     * **Un defaut trouve en ecrivant l'arbre, et il preexiste au jalon** :
+     * l'accord d'entree qui portait l'Entaille etait `magnetic-pull`, de
+     * registre **`Spell`**. Un arbre de melee dont le geste marque est un sort
+     * ne qualifie pas ses propres passifs (l'invariant 7 d'ARC-02b), et le
+     * § 9.3 veut que **tous** les accords du Soldat soient des techniques. La
+     * marque passe donc sur `sharp-blade`, qui est en melee, blesse, et ne
+     * portait aucun effet — le meme choix qu'ARC-13b-a a fait vingt fois.
+     * `magnetic-pull` reste ouvert par l'Ingenieur, a qui son registre convient.
+     */
     private function getSoldierSkills(): array
     {
         $d = 'soldier';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : deux techniques ------------------------------
             'soldier_apprenti_1' => [
-                'title' => 'Materia : Frappe puissante',
+                'title' => 'Materia : Frappe appuyee',
                 'slug' => 'soldier-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Frappe puissante',
+                'description' => 'Permet d\'utiliser la technique Frappe appuyee — elle laisse une Entaille',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'sharp-blade']],
             ],
+            // **Le plan B du jour 1**, et la mise en place du capstone : un tour
+            // paye, trois tours couverts. Le § 9 bis a montre qu'une garde qui
+            // ne couvre que le tour ou elle est jouee **punit l'encaisse de se
+            // defendre** — il perd en degats exactement ce qu'il gagne en
+            // survie. D'ou la loi du depot etendue a toute protection (ARC-11b).
             'soldier_apprenti_2' => [
-                'title' => 'Materia : Attraction magnetique',
+                'title' => 'Materia : Garde haute',
                 'slug' => 'soldier-apprenti-2',
-                'description' => 'Permet d\'utiliser la materia Attraction magnetique',
+                'description' => 'Permet d\'utiliser la technique Garde haute — un tour paye, trois tours couverts',
                 'requiredPoints' => 0,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'magnetic-pull']],
+                'actions' => ['materia' => ['unlock' => 'garde-haute']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) --------------------------------------------
             'soldier_rang2_1' => [
-                'title' => 'Force brute',
+                'title' => 'Œil du drill',
                 'slug' => 'soldier-rang2-1',
-                'description' => 'Augmente les degats physiques',
+                'description' => 'On ne rate pas ce qu\'on a appris a viser',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
+                'levers' => [['lever' => 'hit', 'points' => 3]],
                 'requirements' => ['soldier_apprenti_1'],
             ],
             'soldier_rang2_2' => [
-                'title' => 'Precision martiale',
+                'title' => 'Discipline',
                 'slug' => 'soldier-rang2-2',
-                'description' => 'Augmente la precision des attaques',
+                'description' => 'Ce qu\'on tente de vous imposer prend moins souvent',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 2,
+                'levers' => [['lever' => 'ward', 'points' => 3]],
                 'requirements' => ['soldier_apprenti_1'],
             ],
             'soldier_rang2_3' => [
-                'title' => 'Materia : Charge',
+                'title' => 'Materia : Estoc brisant',
                 'slug' => 'soldier-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Charge',
+                'description' => 'Permet d\'utiliser la technique Estoc brisant — le geste qui perce l\'armure',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'iron-fist']],
                 'requirements' => ['soldier_apprenti_2'],
             ],
-            'soldier_rang2_4' => [
-                'title' => 'Materia : Explosion d\'eclats',
-                'slug' => 'soldier-rang2-4',
-                'description' => 'Permet d\'utiliser la materia Explosion d\'eclats',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'shrapnel-burst']],
-                'requirements' => ['soldier_apprenti_2'],
-            ],
-            'soldier_materia_t2' => [
-                'title' => 'Materia : Riposte d\'acier',
-                'slug' => 'soldier-materia-t2',
-                'description' => 'Permet d\'utiliser la materia Riposte d\'acier (contre-attaque)',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'steel-riposte']],
-                'requirements' => ['soldier_apprenti_1'],
-            ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) --------------------------------------------
             'soldier_rang3_1' => [
-                'title' => 'Materia : Tourbillon d\'epee',
+                'title' => 'Endurance de marche',
                 'slug' => 'soldier-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Tourbillon d\'epee (AoE)',
+                'description' => 'On tient plus longtemps parce qu\'on a marche plus loin',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'blade-dance']],
-                'requirements' => ['soldier_rang2_1', 'soldier_rang2_2'],
-            ],
-            'soldier_rang3_2' => [
-                'title' => 'Materia : Tempete metallique',
-                'slug' => 'soldier-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Tempete metallique',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'metal-storm']],
-                'requirements' => ['soldier_rang2_3'],
+                'levers' => [['lever' => 'life', 'points' => 6]],
+                'requirements' => ['soldier_rang2_1'],
             ],
             'soldier_rang3_3' => [
-                'title' => 'Coups critiques',
+                'title' => 'Garde travaillee',
                 'slug' => 'soldier-rang3-3',
-                'description' => 'Augmente les chances de coup critique',
+                'description' => 'Le bouclier ne sert pas qu\'a encaisser : il ouvre la ligne',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'critical' => 2,
-                'requirements' => ['soldier_rang2_4'],
+                'levers' => [['lever' => 'hit', 'points' => 6, 'condition' => 'shield']],
+                'requirements' => ['soldier_rang2_2'],
             ],
-            'soldier_rang3_4' => [
-                'title' => 'Materia : Carreau d\'argent',
-                'slug' => 'soldier-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Carreau d\'argent',
+            // **Le depot de l'encaisseur.** Une rencontre a PV partages ne se
+            // « prend » pas — elle s'amortit (§ 7 bis) : ce qui agit sur un
+            // **etat** se multiplie par le nombre d'allies, ce qui agit sur une
+            // **action** ne se multiplie pas. Une absorption posee sur chaque
+            // corps est donc ce que l'encaisse apporte a un groupe, et son
+            // attaque ne l'est pas.
+            'soldier_rang3_2' => [
+                'title' => 'Materia : Mur de boucliers',
+                'slug' => 'soldier-rang3-2',
+                'description' => 'Permet d\'utiliser la technique Mur de boucliers — une absorption sur chaque allie',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'silver-bolt']],
-                'requirements' => ['soldier_rang3_1'],
+                'actions' => ['materia' => ['unlock' => 'mur-de-boucliers']],
+                'requirements' => ['soldier_rang2_3'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
-            'soldier_rang4_1' => [
-                'title' => 'Materia : Lame rasoir',
-                'slug' => 'soldier-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Lame rasoir — coupe devastatrice',
+            // --- Palier 3 (50 pts) : la fourche --------------------------------
+            'soldier_wall_1' => [
+                'title' => 'Carcasse',
+                'slug' => 'soldier-wall-1',
+                'description' => 'Il y a simplement plus a traverser',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'razor-edge']],
-                'requirements' => ['soldier_rang3_1', 'soldier_rang3_2'],
+                'levers' => [['lever' => 'life', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'soldat', 'branch' => 'wall']],
+                'requirements' => ['soldier_rang3_2'],
             ],
-            'soldier_rang4_2' => [
-                'title' => 'Materia : Poids ecrasant',
-                'slug' => 'soldier-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Poids ecrasant',
+            'soldier_wall_2' => [
+                'title' => 'Pied ferme',
+                'slug' => 'soldier-wall-2',
+                'description' => 'On ne vous deplace pas, et on ne vous impose rien',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'crushing-weight']],
-                'requirements' => ['soldier_rang3_3', 'soldier_rang3_4'],
+                'levers' => [['lever' => 'ward', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'soldat', 'branch' => 'wall']],
+                'requirements' => ['soldier_rang3_2'],
+            ],
+            'soldier_skirmish_1' => [
+                'title' => 'Jeu de jambes',
+                'slug' => 'soldier-skirmish-1',
+                'description' => 'Ce qu\'on evite n\'est pas reduit : il n\'a pas lieu',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'dodge', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'soldat', 'branch' => 'skirmish']],
+                'requirements' => ['soldier_rang3_2'],
+            ],
+            'soldier_skirmish_2' => [
+                'title' => 'Bras d\'acier',
+                'slug' => 'soldier-skirmish-2',
+                'description' => 'Il faut bien tuer, aussi',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'power', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'soldat', 'branch' => 'skirmish']],
+                'requirements' => ['soldier_rang3_2'],
+            ],
+            'soldier_wall_accord' => [
+                'title' => 'Materia : Rempart',
+                'slug' => 'soldier-wall-accord',
+                'description' => 'Permet d\'utiliser la technique Rempart — ce qu\'on vient chercher en donjon',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'rempart'],
+                    ['action' => 'specialization.branch', 'domain' => 'soldat', 'branch' => 'wall'],
+                ],
+                'requirements' => ['soldier_rang3_2'],
+            ],
+            'soldier_skirmish_accord' => [
+                'title' => 'Materia : Charge d\'acier',
+                'slug' => 'soldier-skirmish-accord',
+                'description' => 'Permet d\'utiliser la technique Charge d\'acier — de quoi finir un combat seul',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'crushing-weight'],
+                    ['action' => 'specialization.branch', 'domain' => 'soldat', 'branch' => 'skirmish'],
+                ],
+                'requirements' => ['soldier_rang3_2'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // --- Capstone (100 pts) --------------------------------------------
+            'soldier_capstone' => [
+                'title' => 'Tenir la ligne',
+                'slug' => 'soldier-capstone',
+                'description' => 'Le coup d\'apres fait moins mal que celui d\'avant',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'levers' => [['lever' => 'guard', 'points' => 14, 'condition' => 'took_hit_last_turn']],
+                'requirements' => ['soldier_rang3_2'],
+            ],
+
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1).
             'soldier_rang5_1' => [
                 'title' => 'Materia : Vierge de fer',
                 'slug' => 'soldier-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Vierge de fer',
+                'description' => 'Permet d\'utiliser la technique Vierge de fer',
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'iron-maiden']],
-                'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
+                'requirements' => ['soldier_rang3_2'],
             ],
 
-            // Tier 2-3 — 2 skills supplementaires (total 18)
-            'soldier_t2_barrage' => [
-                'title' => 'Materia : Barrage d\'acier',
-                'slug' => 'soldier-t2-barrage',
-                'description' => 'Permet d\'utiliser la materia Barrage d\'acier — rafale de projectiles metalliques',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'steel-barrage']],
-                'requirements' => ['soldier_rang3_2', 'soldier_rang3_3'],
-            ],
-            'soldier_t3_titanium' => [
-                'title' => 'Materia : Ecrasement de titane',
-                'slug' => 'soldier-t3-titanium',
-                'description' => 'Permet d\'utiliser la materia Ecrasement de titane — frappe devastatrice',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'titanium-crush']],
-                'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
-            ],
-
-            // Maitrise des armes (epees)
+            // --- Les deux echelons de port ------------------------------------
+            // Ils sont declares **dans** le corps de l'arbre — ce sont ceux de
+            // l'epee, que `equipment_ports.yaml` rattache ensuite aux six arbres
+            // qui l'enseignent (`rewireWeaponPortLadders()`). C'est ce qui fait
+            // tomber le compte des 390 sans le nœud surnumeraire que le
+            // Pyromancien a du garder : ses echelons a lui sont **generes** hors
+            // du corps, parce qu'un arbre de sorts en herite de six.
+            //
+            // Ils ne portent **aucune statistique** : *un echelon est une porte,
+            // jamais une recompense* (ecart 5 de GAME_TREE_ANATOMY).
             'soldier_weapon_t2' => [
                 'title' => 'Maitrise de l\'epee (T2)',
                 'slug' => 'soldier-weapon-t2',
@@ -1122,9 +1203,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    // =========================================================================
-    // CHEVALIER (metal) — 15 skills, tank lourd contre-attaque
-    // =========================================================================
     private function getKnightSkills(): array
     {
         $d = 'knight';

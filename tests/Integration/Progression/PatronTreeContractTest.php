@@ -28,14 +28,15 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
     /**
      * Les arbres deja ecrits au gabarit.
      *
-     * ARC-07a le Pyromancien, ARC-07b le Guerisseur. Le Soldat et l'Archer
-     * suivent (ARC-07c→d), puis les vingt autres (ARC-08).
+     * ARC-07a le Pyromancien, ARC-07b le Guerisseur, ARC-07c le Soldat.
+     * L'Archer suit (ARC-07d), puis les vingt autres (ARC-08).
      *
      * @var array<string, string>
      */
     private const CONVERTED = [
         'Pyromancien' => 'pyromancy',
         'Guérisseur' => 'healer',
+        'Soldat' => 'soldier',
     ];
 
     /**

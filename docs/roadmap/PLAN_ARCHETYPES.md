@@ -647,10 +647,38 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > retirés sont tous ouverts par un autre arbre, donc aucune matéria ne disparaît. La leçon
 > d'ARC-07a a servi — les prérequis ont été vérifiés sur les 561 nœuds avant le push.
 >
+> **ARC-07c — livré le 2026-08-06.** Le Soldat (métal × mêlée × encaisse, *« la Ligne »*),
+> **premier arbre de mêlée écrit au gabarit**. Le canon prévient que cet archétype *n'existe
+> pas sans la décision 1* : sans matéria de technique, ses passifs bornés à la mêlée ne
+> qualifient **aucune action**. ARC-02 a livré le registre ; ce jalon écrit l'arbre qui s'en
+> sert.
+>
+> **Les deux branches tombent sur 50 pb** : le Mur (`guard` 14 · `hit` 9 · `ward` 12 ·
+> `life` 15) et la Ligne mobile (`guard` 14 · `hit` 9 · `ward` 3 · `life` 6 · `dodge` 9 ·
+> `power` 9 en teinte). **La palette effective du §5.0 se vérifie d'elle-même** : `guard`
+> plafonne à 15, le capstone en consomme 14, il ne reste **1 pb** — un arbre d'encaisse
+> achète `guard` à son sommet ou jamais. La contrainte produit toute seule la meilleure
+> fourche possible pour cette fonction : **éviter ou absorber**.
+>
+> **Trois protections de mêlée sont créées — les premières du jeu.** Sans elles, un
+> archétype d'encaisse n'avait rien à jouer sur son tour défensif, et le §9 bis avait montré
+> qu'une garde qui ne couvre que son propre tour *punit l'encaisse de se défendre*. Le Mur de
+> boucliers et le Rempart sont de portée `le groupe` : *une rencontre à PV partagés ne se
+> « prend » pas, elle s'amortit.*
+>
+> **Un défaut trouvé en écrivant l'arbre, et antérieur au jalon** : l'accord d'entrée qui
+> portait l'Entaille était `magnetic-pull`, de registre **`Spell`**. Un arbre de mêlée dont le
+> geste marqué est un sort ne qualifie pas ses propres passifs (invariant 7 d'ARC-02b), et le
+> §9.3 veut que **tous** les accords du Soldat soient des techniques. La marque passe sur
+> `sharp-blade` ; `magnetic-pull` reste ouvert par l'Ingénieur, à qui son registre convient.
+>
+> **Le Soldat sort de trois cliquets d'un coup** : « ne sait que frapper » (8 → 7), et ses
+> deux écarts de palette (14 → 12).
+>
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),
 > Archer (assaut/distance) — un par fonction, trois registres.
 - [ ] Les quatre arbres écrits au gabarit : 15 nœuds, 5 accords, 7 passifs, 2 échelons de
-      port, 1 dormant *(ARC-07a/b — **2/4** : le Pyromancien et le Guérisseur. Les échelons de port ne sont pas
+      port, 1 dormant *(ARC-07a/b/c — **3/4** : le Pyromancien, le Guérisseur et le Soldat. Les échelons de port ne sont pas
       écrits ici : ils sont générés et partagés (ONB-20b), et le canon les range hors budget)*
 - [ ] Les accords choisis **par rôle dans le combat**, jamais par niveau de sort
 - [ ] Les capstones conditionnels, condition atteignable au tour 2 avec les seuls accords
