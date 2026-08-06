@@ -34,17 +34,24 @@ use App\Tests\Integration\AbstractIntegrationTestCase;
 class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
 {
     /**
-     * Les dix arbres qui n'ouvrent **que** des gestes de degat.
+     * Les huit arbres qui n'ouvrent **que** des gestes de degat.
      *
      * C'est le plan B du test du jour 1 (§ 8.4) qui manque : *le tour ou
      * frapper n'est pas la reponse*. Un arbre qui n'ouvre que des coups n'a
      * qu'une seule chose a proposer, et le joueur qui le mene n'a jamais de
      * decision a prendre en combat.
      *
-     * Neuf des dix sont des arbres d'assaut ou de controle en registre
-     * offensif, ce qui rend l'ecart lisible : leurs auteurs ont ecrit ce que
-     * l'archetype fait le plus souvent, et rien d'autre. ARC-07 et ARC-08 leur
-     * ecrivent le second geste.
+     * Ce sont des arbres d'assaut ou de controle en registre offensif, ce qui
+     * rend l'ecart lisible : leurs auteurs ont ecrit ce que l'archetype fait le
+     * plus souvent, et rien d'autre. ARC-07 et ARC-08 leur ecrivent le second
+     * geste.
+     *
+     * **La liste a perdu deux entrees d'un coup avec ARC-07a, et la seconde
+     * n'etait pas prevue** : le Pyromancien declare le Mur de feu en `entrave`
+     * (§ 9.1), et le Mur de feu est aussi ouvert par l'**Artificier**. Un
+     * accord partage se declare une fois et sert ses voisins — c'est le meme
+     * effet qu'ARC-02b avait mesure sur le registre, ou convertir le Soldat
+     * avait sorti le Chevalier de sa liste d'attente.
      *
      * La liste est un **cliquet** : elle peut retrecir, jamais grandir.
      *
@@ -52,13 +59,11 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      */
     private const ONLY_DAMAGE = [
         'Archer',
-        'Artificier',
         'Assassin',
         'Berserker',
         'Chasseur',
         'Foudromancien',
         'Nécromancien',
-        'Pyromancien',
         'Soldat',
         'Sorcier',
     ];
@@ -85,7 +90,7 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      * @var list<string>
      */
     private const WAITING_ON_ARC_07_08 = [
-        'Artificier : 0 hinder sur 2',
+        'Artificier : 1 hinder sur 2',
         'Dompteur : 0 hinder sur 2',
         'Druide : 0 group_scoped sur 1',
         'Défenseur : 0 protect sur 2',

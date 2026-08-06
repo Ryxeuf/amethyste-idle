@@ -28,7 +28,7 @@
 | ARC-04 ✅ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
 | ARC-05 ◐ | L'ancre d'échelle : la durée d'un combat en tours | **L** → 2 sous-phases | ← BES-01 |
 | ARC-06 ✅ | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
-| ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
+| ARC-07 ◐ | Les quatre arbres patrons, écrits au gabarit | **L** → 4 sous-phases | ← ARC-03, 04, 06, **ARC-14** |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
 | ARC-09 | Tests du plan (les 45 invariants) | S | ‖ |
 | ARC-10 ✅ | Le plafond global de points — **tranché : suppression** | S | ∅ |
@@ -564,17 +564,52 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       pas des coûts — le gabarit en écrit 18 quand ils en portent 13 à 18. ARC-07 et
       ARC-08 referment l'écart, qui ne peut plus grandir en silence)*
 
-### ARC-07 — Les quatre arbres patrons (M | ★★★ | HAUTE)
+### ARC-07 — Les quatre arbres patrons (L → 4 sous-phases | ★★★ | HAUTE) ◐
+
+> **Découpé (règle 8) : un arbre par sous-phase.** ARC-07a le Pyromancien, ARC-07b le
+> Guérisseur, ARC-07c le Soldat, ARC-07d l'Archer. Chacun réécrit 15 nœuds, crée les gestes
+> que sa fourche exige et déplace des ratchets — au-delà des ~200 lignes de données que la
+> règle 8 autorise en une passe, et surtout au-delà de ce qu'une seule relecture tient.
+>
+> **ARC-07a — livré le 2026-08-06.** Le Pyromancien (feu × sorts × assaut, *« le Foyer »*)
+> est le **premier arbre du jeu dont les passifs ne sont plus des statistiques plates**.
+> `SkillFixtures` câble enfin la colonne `levers`, vide depuis ARC-03a.
+>
+> **Les deux branches tombent sur 50 pb pile**, sans qu'on ait eu à doser : la Braise
+> (`power` 17 · `critical` 9 · `critical_power` 15 · `grip` 9) et l'Éclat (`power` 17 ·
+> `critical` 9 · `critical_power` 6 · `pierce` 9 · `tempo` 9). Aucun plafond atteint, la
+> teinte `grip` à 9 ≤ 10 sur **un seul** levier, et 41 pb dans la palette d'assaut.
+>
+> **Chaque branche ouvre son geste** (§6.1 bis, règle 5) — le *Brasier* est créé (le feu qui
+> reste, que `grip` allonge), la *Nova de feu* passe sur l'Éclat. Sans cela la fourche serait
+> une décoration : *deux branches qui ne diffèrent que par leurs passifs produisent le même
+> combat, au tour près.*
+>
+> **Un effet de bord non prévu, et il vaut d'être noté** : déclarer le Mur de feu en
+> `entrave` sort **deux** arbres de la liste « ne sait que frapper » — le Pyromancien et
+> l'**Artificier**, qui ouvre le même accord. *Un accord partagé se déclare une fois et sert
+> ses voisins*, exactement comme ARC-02b l'avait mesuré sur le registre. La liste passe de
+> 10 à 8.
+>
+> **Ce qu'ARC-07a ne fait pas, et c'est nommé** : ramener l'arbre à ses 6 accords. Sept
+> accords surnuméraires restent ; les retirer supprimerait leur **matéria**, qui se dérive de
+> l'unlock (MAT-03), et trois fichiers les nomment par référence (`PlayerItemFixtures`,
+> `MateriaFusionManager`, `world_1.yaml`). C'est une chirurgie de catalogue, pas une écriture
+> d'arbre — elle se fera avec les trois autres arbres.
+>
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),
 > Archer (assaut/distance) — un par fonction, trois registres.
 - [ ] Les quatre arbres écrits au gabarit : 15 nœuds, 5 accords, 7 passifs, 2 échelons de
-      port, 1 dormant
+      port, 1 dormant *(ARC-07a — **1/4** : le Pyromancien. Les échelons de port ne sont pas
+      écrits ici : ils sont générés et partagés (ONB-20b), et le canon les range hors budget)*
 - [ ] Les accords choisis **par rôle dans le combat**, jamais par niveau de sort
 - [ ] Les capstones conditionnels, condition atteignable au tour 2 avec les seuls accords
-      d'entrée
+      d'entrée *(ARC-07a — le Foyer entretenu : `power` +14 pb *contre une cible qui brûle*.
+      La Flammèche applique la Brûlure et coûte 0 point, donc la condition est **fréquente**
+      (×1,4) et non rare — l'écart n° 11 tranché par la décision 23)*
 - [ ] Ce sont les 4 domaines de combat **nourris en contenu** (GAME_PROGRESSION §7.1) : le
       contenu matéria, butin et donjon se concentre sur eux
-- [ ] Tests : les 10 invariants du §12 passent sur les quatre
+- [ ] Tests : les 10 invariants du §12 passent sur les quatre *(ARC-07a — `PatronTreeContractTest`, en **cliquet inverse** : la liste des arbres tenus ne peut que grandir)*
 
 ### ARC-08 — Les vingt autres arbres (M | ★★ | MOYENNE)
 > GAME_ARCHETYPES §11.3. Conversion mécanique plutôt que réécriture — le jeu est en pur
