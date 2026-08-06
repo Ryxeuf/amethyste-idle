@@ -5,6 +5,8 @@ namespace App\DataFixtures;
 use App\Entity\Game\Spell;
 use App\Enum\CombatRegister;
 use App\Enum\Element;
+use App\Enum\SpellIntent;
+use App\Enum\SpellScope;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -37,6 +39,11 @@ class SpellFixtures extends Fixture
             // Tout ce qui est livre ici est un **sort** ; les techniques
             // (melee, distance) arrivent avec les arbres qui les ouvrent.
             $spell->setRegister($data['register'] ?? CombatRegister::Spell);
+            // ARC-11a — la decision d'auteur quand il y en a une. Les colonnes
+            // restent nullables : sans declaration, `SpellIntentDeriver`
+            // repond, et la donnee suffit dans 253 cas sur 253.
+            $spell->setIntent($data['intent'] ?? null);
+            $spell->setScope($data['scope'] ?? null);
             $spell->setCreatedAt(new \DateTime());
             $spell->setUpdatedAt(new \DateTime());
 
@@ -118,6 +125,13 @@ class SpellFixtures extends Fixture
                 'aoeTargets' => 0,
                 'level' => 4,
             ],
+            // ARC-07a — l'accord **non-degat** du Pyromancien (§ 5.1, loi 2 :
+            // *le tour ou frapper n'est pas la reponse*). Le § 9.1 le decrit
+            // comme « le geste de temporisation : il ne tue pas, il retient »,
+            // et l'intention doit donc etre **declaree** : la derivation lit le
+            // degat d'abord (ARC-11a), et rendrait `degat` pour un geste dont
+            // ce n'est pas le propos. C'est exactement l'usage que la colonne
+            // nullable de `Spell::intent` attendait.
             'fire_wall' => [
                 'slug' => 'fire-wall',
                 'damage' => 4,
@@ -127,6 +141,29 @@ class SpellFixtures extends Fixture
                 'description' => 'Crée un mur de flammes infranchissable',
                 'hit' => 95,
                 'level' => 2,
+                'aoeTargets' => 2,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Targets,
+            ],
+            // ARC-07a — l'accord de la branche **Braise** (§ 9.1). *Il ne
+            // frappe pas, il reste* : la Brulure est ce qui dure, et `grip` —
+            // la teinte de cette seule branche — l'allonge. Sans un geste par
+            // branche, la fourche serait une decoration : deux branches qui ne
+            // different que par leurs passifs produisent le meme combat, au
+            // tour pres (§ 9 bis).
+            'brasier' => [
+                'slug' => 'brasier',
+                'damage' => 3,
+                'element' => Element::Fire,
+                'heal' => null,
+                'name' => 'Brasier',
+                'description' => 'Un foyer qui ne s\'eteint pas : ce qu\'il touche continue de brûler',
+                'hit' => 90,
+                'energyCost' => 12,
+                'statusEffectSlug' => 'burn',
+                'aoeTargets' => 2,
+                'critical' => 5,
+                'level' => 3,
             ],
             'fire_nova' => [
                 'slug' => 'fire-nova',

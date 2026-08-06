@@ -203,6 +203,26 @@ jobs:
       - name: Run PHPUnit with coverage
         run: vendor/bin/phpunit --testdox --exclude-group e2e --testsuite Unit,Functional,Integration --coverage-clover coverage.xml --coverage-text
 
+      # ---------------------------------------------------------------------
+      # Le rapport de couverture fait ~1700 lignes et s'imprime **apres** la
+      # liste des echecs : quand la suite tombe, la fin du journal ne montre
+      # que de la couverture, et il faut derouler tout le fichier pour lire ce
+      # qui a casse. Sur un journal tronque — une API, un terminal, une
+      # notification —, l'information est simplement perdue.
+      #
+      # On rejoue donc la suite **sans couverture** quand elle echoue : sans
+      # `--coverage-text`, la liste des echecs est la derniere chose imprimee.
+      # L'etape ne coute rien quand tout passe, et rend le diagnostic immediat
+      # quand rien ne va.
+      # ---------------------------------------------------------------------
+      # `--stop-on-*` : PHPUnit imprime encore, **apres** le detail des echecs,
+      # la liste des tests « risques » et des depreciations — assez longue pour
+      # repousser hors de vue ce qu'on est venu lire. S'arreter au premier
+      # defaut met son detail en toute fin de journal, la ou on le cherche.
+      - name: Rejouer les echecs sans couverture (diagnostic)
+        if: failure()
+        run: vendor/bin/phpunit --exclude-group e2e --testsuite Unit,Functional,Integration --no-progress --stop-on-failure --stop-on-error
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v7

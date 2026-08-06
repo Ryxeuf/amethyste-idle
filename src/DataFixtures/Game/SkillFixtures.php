@@ -81,6 +81,16 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 $skill->setDormant((bool) $data['dormant']);
             }
 
+            // ARC-07 — les leviers. La colonne existe depuis ARC-03a et
+            // naissait vide partout ; c'est ici qu'un arbre ecrit au gabarit
+            // cesse de porter des statistiques plates. Le format est celui que
+            // `SkillLeverReader` sait refuser — une liste de
+            // `{lever, points, condition?}` —, et rien n'est valide ici : le
+            // point de passage unique doit rester unique.
+            if (isset($data['levers'])) {
+                $skill->setLevers($data['levers']);
+            }
+
             $manager->persist($skill);
 
             $this->addReference($reference, $skill);
@@ -347,12 +357,61 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // PYROMANCIE (feu) — 15 skills, domaine modele complet
     // =========================================================================
+    /**
+     * Le Pyromancien — feu x sorts x assaut, « le Foyer » (ARC-07a).
+     *
+     * GAME_ARCHETYPES § 9.1. Le **premier des quatre arbres patrons**, et le
+     * premier arbre du jeu dont les passifs ne sont plus des statistiques
+     * plates : *`damage: +1` vaut +50 % sur un geste a 2 degats et +8 % sur un
+     * geste a 12*, donc ineequilibrable. Ils deviennent des leviers en
+     * pourcentage, payes en points de budget.
+     *
+     * **Ce que l'arbre depense**, et il tombe sur ses 50 pb par branche :
+     *
+     * | | Braise | Eclat |
+     * |---|---:|---:|
+     * | `power` 3 + capstone 14 | 17 | 17 |
+     * | `critical` 3 + 6 | 9 | 9 |
+     * | `critical_power` 6 (+9 Braise) | 15 | 6 |
+     * | `grip` *(teinte)* | 9 | — |
+     * | `pierce` / `tempo` | — | 9 + 9 |
+     * | **Total** | **50** | **50** |
+     *
+     * Palette d'assaut : `power` (principal) + `critical`, `critical_power`,
+     * `pierce`, `tempo`. La Braise depense **41 pb dans sa palette** et 9 hors
+     * — la teinte `grip`, sur **un seul** levier, sous le plafond de 10. Aucun
+     * plafond de levier n'est atteint : `power` 17 <= 20, `critical` 9 <= 12,
+     * `critical_power` 15 <= 15.
+     *
+     * **La fourche ouvre un geste par branche** (§ 6.1 bis, regle 5), et c'est
+     * elle qui decide si le choix est reel : *deux branches qui ne different
+     * que par leurs passifs produisent le meme combat, au tour pres.* Le
+     * Brasier **reste** sur le terrain et `grip` l'allonge ; la Nova tombe tout
+     * de suite. La teinte `grip` ne vit que dans la Braise, ce qui fait que les
+     * deux branches ne sont pas deux dosages du meme arbre.
+     *
+     * **Le capstone est atteignable au tour 2 avec le seul kit d'entree** :
+     * Flammeche applique la Brulure, la marque du feu, et l'accord est gratuit
+     * (GAME_MATERIA § 3). `target_marked` est donc une condition **frequente**
+     * (x1,4), pas une condition rare — l'ecart n° 11 que le canon a tranche.
+     *
+     * **Ce que ce jalon ne fait pas, et c'est nomme** : ramener l'arbre a ses
+     * 6 accords. Sept accords surnumeraires restent (Toucher brulant, Flamme du
+     * phenix, Feu, Inferno, Souffle du dragon, Explosion solaire, Eruption
+     * volcanique) ; les retirer supprimerait leur **materia**, qui se derive de
+     * l'unlock (MAT-03), et trois fichiers les nomment par reference —
+     * `PlayerItemFixtures`, `MateriaFusionManager`, `world_1.yaml`. C'est une
+     * chirurgie de catalogue, pas une ecriture d'arbre : **ARC-07b**.
+     */
     private function getPyromancySkills(): array
     {
         $d = 'pyromancy';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // GAME_MATERIA § 3 : exactement deux accords gratuits par arbre.
+            // L'un des deux **applique la marque** (§ 1.1) — sans quoi le
+            // capstone serait conditionne a un geste que le joueur n'a pas.
             'pyro_apprenti_1' => [
                 'title' => 'Materia : Boule de feu',
                 'slug' => 'pyro-apprenti-1',
@@ -370,23 +429,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'flame']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord -------------
+            // Les passifs du palier 1 ne sont **jamais conditionnels**
+            // (§ 6.1) : au jour 1, un joueur n'a pas encore de tenue a
+            // arbitrer, et un bonus qui ne s'allume pas se lit comme un bug.
             'pyro_rang2_1' => [
                 'title' => 'Points faibles',
                 'slug' => 'pyro-rang2-1',
                 'description' => 'Augmente les chances de coup critique',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'critical' => 1,
+                'levers' => [['lever' => 'critical', 'points' => 3]],
                 'requirements' => ['pyro_apprenti_1'],
             ],
             'pyro_rang2_2' => [
-                'title' => 'Efficacite du feu',
+                'title' => 'Souffle d\'attisage',
                 'slug' => 'pyro-rang2-2',
                 'description' => 'Augmente les degats de pyromancie',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
+                'levers' => [['lever' => 'power', 'points' => 3]],
                 'requirements' => ['pyro_apprenti_1'],
             ],
             'pyro_rang2_3' => [
@@ -398,17 +460,29 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'fire-wall']],
                 'requirements' => ['pyro_apprenti_2'],
             ],
-            'pyro_rang2_4' => [
-                'title' => 'Materia : Toucher brulant',
-                'slug' => 'pyro-rang2-4',
-                'description' => 'Permet d\'utiliser la materia Toucher brulant',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'burning-touch']],
-                'requirements' => ['pyro_apprenti_2'],
-            ],
 
-            // Rang 3 (20-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord -------------
+            'pyro_rang3_3' => [
+                'title' => 'Cœur de braise',
+                'slug' => 'pyro-rang3-3',
+                'description' => 'Un critique de feu fait plus mal quand il tombe',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical_power', 'points' => 6]],
+                'requirements' => ['pyro_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est ce
+            // qui fait de l'equipement un build plutot qu'un total. Le budget
+            // compte l'effet **moyen** (6 pb), l'ecran affiche l'effet obtenu.
+            'pyro_rang3_5' => [
+                'title' => 'Chaleur seche',
+                'slug' => 'pyro-rang3-5',
+                'description' => 'Le feu porte plus juste quand rien de lourd ne l\'etouffe',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical', 'points' => 6, 'condition' => 'armor:cloth']],
+                'requirements' => ['pyro_rang2_2'],
+            ],
             'pyro_rang3_1' => [
                 'title' => 'Materia : Pluie de flammes',
                 'slug' => 'pyro-rang3-1',
@@ -418,23 +492,119 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'flame-rain']],
                 'requirements' => ['pyro_rang2_1', 'pyro_rang2_2'],
             ],
+
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // Deux branches de deux passifs **et d'un accord chacune**, dont on
+            // n'apprend qu'une : l'arbre ecrit 60 pb, le personnage en porte
+            // 50. Les prerequis ne traversent jamais la fourche (§ 6.6).
+            //
+            // *La Braise* tient le feu qui **dure**, *l'Eclat* le feu qui
+            // **passe**. Elles ne partagent aucun levier.
+            'pyro_ember_1' => [
+                'title' => 'Braise durable',
+                'slug' => 'pyro-ember-1',
+                'description' => 'Ce que le feu laisse s\'accroche plus longtemps',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'grip', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'pyromancien', 'branch' => 'ember']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+            'pyro_ember_2' => [
+                'title' => 'Souffle de forge',
+                'slug' => 'pyro-ember-2',
+                'description' => 'Quand le critique tombe, il fait le trou',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical_power', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'pyromancien', 'branch' => 'ember']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+            'pyro_flare_1' => [
+                'title' => 'Fonte des ecailles',
+                'slug' => 'pyro-flare-1',
+                'description' => 'Le feu ronge la resistance avant de la traverser',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'pyromancien', 'branch' => 'flare']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+            'pyro_flare_2' => [
+                'title' => 'Depart de feu',
+                'slug' => 'pyro-flare-2',
+                'description' => 'Prendre le tour avant l\'autre',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'tempo', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'pyromancien', 'branch' => 'flare']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+            // L'accord de chaque branche — la regle 5 de § 6.1 bis, et celle
+            // qui decide si la fourche est un choix ou une decoration.
+            'pyro_ember_accord' => [
+                'title' => 'Materia : Brasier',
+                'slug' => 'pyro-ember-accord',
+                'description' => 'Permet d\'utiliser la materia Brasier — le feu qui reste',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'brasier'],
+                    ['action' => 'specialization.branch', 'domain' => 'pyromancien', 'branch' => 'ember'],
+                ],
+                'requirements' => ['pyro_rang3_1'],
+            ],
             'pyro_rang3_2' => [
                 'title' => 'Materia : Nova de feu',
                 'slug' => 'pyro-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Nova de feu',
-                'requiredPoints' => 25,
+                'description' => 'Permet d\'utiliser la materia Nova de feu — le geste de pointe, tout de suite',
+                'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'fire-nova']],
-                'requirements' => ['pyro_rang2_3'],
+                'actions' => [
+                    'materia' => ['unlock' => 'fire-nova'],
+                    ['action' => 'specialization.branch', 'domain' => 'pyromancien', 'branch' => 'flare'],
+                ],
+                'requirements' => ['pyro_rang3_1'],
             ],
-            'pyro_rang3_3' => [
-                'title' => 'Chaude precision',
-                'slug' => 'pyro-rang3-3',
-                'description' => 'Augmente la precision des sorts de feu',
-                'requiredPoints' => 25,
+
+            // --- Capstone (100 pts) ------------------------------------------
+            // Un seul passif, **conditionnel**, 14 pb sur le levier principal.
+            // Sa condition est atteignable au tour 2 avec le seul kit d'entree
+            // (Flammeche applique la Brulure), donc **frequente** : x1,4 et non
+            // x2,0 — la correction de l'ecart n° 11 (§ 7, decision 23).
+            'pyro_capstone' => [
+                'title' => 'Foyer entretenu',
+                'slug' => 'pyro-capstone',
+                'description' => 'Le feu s\'acharne sur ce qui brule deja',
+                'requiredPoints' => 100,
                 'domain' => $d,
-                'hit' => 2,
-                'requirements' => ['pyro_rang2_4'],
+                'levers' => [['lever' => 'power', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+
+            // --- Les deux accords que l'arithmetique reclame -----------------
+            //
+            // Le gabarit compte **quatre** nœuds au palier 1 et quatre au
+            // palier 2, dont un echelon de port ; mais les echelons sont
+            // **generes** hors du corps de l'arbre (ONB-20b), si bien que le
+            // compte des 390 points ne tombe juste que si le corps en declare
+            // quatre. Ces deux accords sont donc ce qui fait tenir
+            // `4x10 + 4x25 + 6x50 + 100 = 540`, dont un personnage paie 390 en
+            // n'apprenant qu'une branche.
+            //
+            // C'est un ecart entre la **table du § 9.1** (qui compte l'echelon
+            // de port parmi les quatre) et l'**arithmetique du § 6.1** : il se
+            // referme le jour ou DOM-09 bornera les nœuds partages, un arbre
+            // de sorts heritant aujourd'hui de **six** echelons generes (baton,
+            // baguette, tissu) la ou le gabarit en veut deux.
+            'pyro_rang2_4' => [
+                'title' => 'Materia : Toucher brulant',
+                'slug' => 'pyro-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Toucher brulant',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'burning-touch']],
+                'requirements' => ['pyro_apprenti_2'],
             ],
             'pyro_rang3_4' => [
                 'title' => 'Materia : Flamme du phenix',
@@ -445,46 +615,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'phoenix-flame']],
                 'requirements' => ['pyro_rang3_1'],
             ],
-            'pyro_t2_flamer' => [
-                'title' => 'Materia : Feu',
-                'slug' => 'pyro-t2-flamer',
-                'description' => 'Permet d\'utiliser la materia Feu — jet de flammes soutenu',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'flamer']],
-                'requirements' => ['pyro_rang3_4'],
-            ],
-
-            // Rang 4 (60-100 pts) — 3 skills
-            'pyro_rang4_1' => [
-                'title' => 'Materia : Inferno',
-                'slug' => 'pyro-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Inferno — devastation totale',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'inferno']],
-                'requirements' => ['pyro_rang3_1', 'pyro_rang3_2'],
-            ],
-            'pyro_rang4_2' => [
-                'title' => 'Materia : Souffle du dragon',
-                'slug' => 'pyro-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Souffle du dragon (AoE)',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'dragon-breath']],
-                'requirements' => ['pyro_rang3_4'],
-            ],
-
-            // Rang 5 (100-150 pts) — 2 skills
-            'pyro_t3_solar' => [
-                'title' => 'Materia : Explosion solaire',
-                'slug' => 'pyro-t3-solar',
-                'description' => 'Permet d\'utiliser la materia Explosion solaire — chaleur qui carbonise',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'solar-burst']],
-                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
-            ],
+            // Son prerequis suit les nœuds retires : il pointait vers deux
+            // accords que ce jalon a supprimes, et **une reference morte fait
+            // tomber tout le chargement des fixtures**, pas seulement ce nœud.
+            // Un seul parent, comme le § 6.6 le demande.
             'pyro_rang5_1' => [
                 'title' => 'Materia : Eruption volcanique',
                 'slug' => 'pyro-rang5-1',
@@ -492,14 +626,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'volcanic-eruption']],
-                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
+                'requirements' => ['pyro_rang3_4'],
             ],
         ];
     }
 
-    // =========================================================================
-    // BERSERKER (feu) — 15 skills, rage et CaC devastateur
-    // =========================================================================
     private function getBerserkerSkills(): array
     {
         $d = 'berserker';
