@@ -1842,6 +1842,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
         ];
     }
+
     private function getTidecallerSkills(): array
     {
         $d = 'tidecaller';
