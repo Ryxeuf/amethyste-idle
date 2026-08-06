@@ -50,7 +50,7 @@ class AccointanceContractTest extends AbstractIntegrationTestCase
     }
 
     /**
-     * **Le moteur de combat n'additionne plus rien d'elles.**
+     * **Le moteur de combat n'additionne plus rien d'elles.**.
      *
      * L'invariant precedent dit qu'une accointance n'a pas de chiffre a donner ;
      * celui-ci dit que le combat ne va pas en chercher un. Les deux ensemble

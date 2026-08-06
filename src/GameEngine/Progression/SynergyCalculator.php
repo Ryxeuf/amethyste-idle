@@ -105,9 +105,6 @@ class SynergyCalculator
 
             $a = $synergy->getDomainA()->getId();
             $b = $synergy->getDomainB()->getId();
-            if ($a === null || $b === null) {
-                continue;
-            }
 
             $widenings[$a][] = $b;
             $widenings[$b][] = $a;

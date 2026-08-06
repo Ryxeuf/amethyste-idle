@@ -61,12 +61,7 @@ class BuildDomainResolver
             return true;
         }
 
-        $id = $domain->getId();
-        if ($id === null) {
-            return false;
-        }
-
-        foreach ($this->synergyCalculator->getExpressionWidenings($player)[$id] ?? [] as $neighbourId) {
+        foreach ($this->synergyCalculator->getExpressionWidenings($player)[$domain->getId()] ?? [] as $neighbourId) {
             $neighbour = $this->domainById($player, $neighbourId);
             if ($neighbour !== null && $this->expressesItself($player, $neighbour)) {
                 return true;

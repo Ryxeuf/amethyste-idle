@@ -11,7 +11,6 @@ use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillLeverReader;
-use App\GameEngine\Progression\SynergyCalculator;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,7 +22,6 @@ class CombatSkillResolverMateriaTest extends TestCase
 
     protected function setUp(): void
     {
-        $synergyCalculator = $this->createMock(SynergyCalculator::class);
         $equipmentSetResolver = $this->createMock(EquipmentSetResolver::class);
         $equipmentSetResolver->method('getSetBonuses')->willReturn([
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0, 'protection' => 0,
@@ -31,7 +29,7 @@ class CombatSkillResolverMateriaTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn(true);
 
-        $this->resolver = new CombatSkillResolver($buildDomainResolver, $synergyCalculator, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale());
+        $this->resolver = new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale());
     }
 
     private function createSkillWithMateriaUnlock(string $spellSlug): Skill&MockObject
