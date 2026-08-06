@@ -858,9 +858,35 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > un nœud mort. D'où `MIN_DURATION = 2`, et l'exception qui la complète : une marque portée
 > par un geste de dégât y échappe, parce que le tour n'a pas été échangé — il a servi deux fois.
 >
-> **ARC-13b — reste à faire** : un des deux accords d'entrée de chaque arbre applique sa
-> marque (c'est ce qui rend le capstone atteignable au jour 1), le côté monstre (croise
-> BES-01), et le catalogue public qui peut enfin dire à quoi sert un élément.
+> **ARC-13b-a — livré le 2026-08-06.** Un des deux accords d'entrée applique désormais la
+> marque de son arbre, sur **20 des 24**. Les accords d'entrée coûtent 0 point
+> (GAME_MATERIA §3) : un joueur les a le jour où il ouvre l'arbre, donc le capstone cesse
+> d'être une promesse conditionnée à un geste qu'il n'a pas. 19 gestes touchés, tous
+> déjà de l'élément de leur arbre et **aucun ne portait d'effet** — rien n'a été écrasé.
+>
+> **Quatre arbres ne peuvent pas encore porter leur marque, et c'est une mesure, pas un
+> oubli** : aucun de leurs deux accords d'entrée ne fait de dégâts, alors que le §1.1
+> veut qu'une marque soit portée par un geste de dégât (sans quoi elle coûte un tour plein
+> pour un tour volé — arithmétiquement nul, §9 quinquies). Trois sont **défendables** :
+> le Gardien (`bulwark`), le Guérisseur et le Prêtre (`upkeep`) n'ont pas d'intention de
+> dégât dans leur palette, et marquer un ennemi avec un soin serait une fiction fausse.
+> **Le quatrième ne l'est pas** : le Vagabond est `control`, et la palette du contrôle
+> *exige* une intention de dégât — son absence de geste offensif à l'entrée est un écart
+> qui lui préexiste, qu'ARC-08 referme en lui écrivant ses nœuds manquants. Liste en
+> **cliquet** : elle peut rétrécir, jamais grandir.
+>
+> **Un défaut antérieur trouvé par l'invariant** : `holy-fire` (lumière),
+> `dark-forge-blast` (métal) et `amethyst-shatter` (ténèbres) portaient déjà `burn` avant
+> qu'ARC-13a n'en fasse la marque du feu. Depuis, **ils allument le capstone d'un
+> Pyromancien** — le capstone d'un arbre s'allume sur le geste d'un autre. Ce n'est pas
+> réparable sans une décision : la Brûlure est volontairement deux choses (un DOT **et**
+> la marque du feu), ces trois gestes veulent le DOT, et il n'existe pas de DOT neutre pour
+> les accueillir. Il faut soit en créer un, soit séparer la Brûlure-marque de la
+> brûlure-DOT. **Question ouverte**, tenue en cliquet nommé.
+>
+> **ARC-13b-b — reste à faire** : le côté monstre (croise BES-01 — 21 monstres sur 65 ont
+> un sort, 9 appliquent un statut, et `ward` est dans deux palettes sur quatre sans rien
+> à quoi résister), et le catalogue public qui peut enfin dire à quoi sert un élément.
 > GAME_ARCHETYPES §1.1. **Trois pièces déjà écrites du système en dépendent** : le
 > capstone d'assaut (« contre une cible qui porte votre marque »), le levier `grip`
 > (« les statuts appliqués ») et la palette de contrôle (deux accords d'`entrave`).
@@ -878,8 +904,11 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       quatre et l'accord de dissipation du Guérisseur n'a rien à dissiper — une marque qui
       n'existe que dans un sens est un levier mort pour la moitié des fonctions. Croise
       **BES-01** (l'élément des monstres, prérequis de MAT-01)
-- [ ] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
-      capstone atteignable au jour 1
+- [x] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
+      capstone atteignable au jour 1 *(ARC-13b-a — **20 des 24**, 19 gestes touchés, aucun
+      effet écrasé. Les 4 restants n'ont aucun accord d'entrée qui blesse, donc rien à
+      quoi accrocher une marque : liste nommée en cliquet, et le Vagabond y révèle un
+      écart de palette antérieur qu'ARC-08 referme)*
 - [x] La marque **se rafraîchit, elle ne se cumule pas** avec elle-même ; deux marques
       différentes coexistent sans règle spéciale *(ARC-13a — la règle est écrite dans
       `ElementalMark` ; le comportement du gestionnaire de statuts est vérifié en ARC-13b)*
