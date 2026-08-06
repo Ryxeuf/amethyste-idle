@@ -52,10 +52,34 @@ class SkillLeverPresenter
                 $this->reader->effectOf($grant, $register),
                 $this->scale->unitOf($grant->lever, $register),
                 $this->requirementOf($grant->condition),
+                $this->pactCostOf($grant, $register),
             );
         }
 
         return $readouts;
+    }
+
+    /**
+     * Le malus du pacte, dit **avant** d'apprendre (ARC-15, regle 6).
+     *
+     * *On assume un choix, on ne se fait pas pieger.* Le net, lui, se lit dans
+     * l'effet du nœud : le joueur voit ce qu'il gagne et ce qu'il perd sur la
+     * meme ligne, ce que le § 8 bis demande.
+     */
+    private function pactCostOf(LeverGrant $grant, ?CombatRegister $register): ?string
+    {
+        if ($grant->pact === null) {
+            return null;
+        }
+
+        $loss = $this->scale->effectOf($grant->pact->lever, $grant->pact->budgetPoints, $register);
+
+        return sprintf(
+            '%s −%s %s',
+            $grant->pact->lever->label(),
+            rtrim(rtrim(number_format($loss, 1, ',', ''), '0'), ','),
+            $this->scale->unitOf($grant->pact->lever, $register),
+        );
     }
 
     /**

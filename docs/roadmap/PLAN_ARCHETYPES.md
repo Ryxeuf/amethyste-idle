@@ -36,7 +36,7 @@
 | ARC-12 ✅ | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 | ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
 | ARC-14 | La fourche : une branche exclusive par arbre de combat | S | ← ARC-07 |
-| ARC-15 | Le pacte : un malus rend du budget | S | ← ARC-03 |
+| ARC-15 ✅ | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 | ARC-17 | **Le simulateur d'équilibrage** (`app:balance:simulate`) — l'outil qui remplace les repères calculés à la main | M | ← ARC-05, ARC-07 |
 | ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | M | ← ARC-11 |
@@ -942,17 +942,45 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       par branche** ; chaque branche tient les 50 pb, la palette et les plafonds ;
       exclusivité et respec payant
 
-### ARC-15 — Le pacte (S | ★★ | MOYENNE)
+### ARC-15 — Le pacte (S | ★★ | MOYENNE) ✅
 > GAME_ARCHETYPES §6.5. La seule mécanique du document qui rende un personnage
 > **mesurablement plus faible** quelque part — sans elle, tous les builds sont des
 > additions.
-- [ ] Un nœud peut porter un **malus** ; sa valeur au taux de change s'ajoute au budget du
+>
+> **Livré le 2026-08-06.** `PactGrant` porte le malus, `LeverGrant` le tient, et le poids
+> d'un nœud se lit désormais **net** : un nœud à 19 pb dont 10 sont rendus pèse **9**, la
+> valeur d'un palier 3 ordinaire. *Le pacte ne change pas ce qu'un arbre pèse, il change sa
+> forme* — et compter le brut aurait fait dépasser ses 50 pb à l'arbre sans qu'il ait rien
+> gagné.
+>
+> **Les six règles se répartissent en deux endroits, et c'est la seule découpe qui tienne** :
+> ce qu'un nœud peut dire de lui-même est refusé **à la lecture** (`SkillLeverReader` — les
+> deux crans et rien entre les deux, jamais son propre levier, le poids qui doit valoir le
+> palier plus le malus), et ce qui ne se voit qu'en regardant l'arbre entier vit dans
+> `PactRule` (un seul pacte, malus hors palette, nœud feuille).
+>
+> **La règle 5 tient toute seule, et c'est le bon signe** : le contrôle de plafond
+> générique s'applique au nœud complet, pacte compris. Conséquence mesurable — un pacte
+> majeur (19 pb) n'entre que sur les quatre leviers plafonnés à 20, donc pas sur `guard`
+> (15). C'est exactement ce que la règle 7 annonce : **un arbre à pacte est un autre arbre**.
+>
+> **Aucune valeur de jeu ne bouge** : aucun nœud livré ne porte de levier, donc aucun ne
+> porte de pacte. La grammaire est posée avant qu'il y ait quoi que ce soit à relire, comme
+> ARC-12a l'avait fait pour les conditions — et le contrat devient mordant le jour où
+> ARC-07/08 écrit le premier pacte.
+- [x] Un nœud peut porter un **malus** ; sa valeur au taux de change s'ajoute au budget du
       nœud. Un arbre porte jusqu'à 60 pb de bonus et 10 pb de malus, somme inchangée
-- [ ] Les **six règles** verrouillées par test : un seul pacte par arbre ; jamais au
+      *(ARC-15 — `netBudgetPoints()` ; grille à deux crans, 5 pb → nœud à 14, 10 pb → 19)*
+- [x] Les **six règles** verrouillées par test : un seul pacte par arbre ; jamais au
       palier 1 ; malus **hors palette** ; permanent, inconditionnel, une seule stat ; nœud
       **feuille** (aucun nœud ne l'exige) ; plafonds par levier toujours tenus
-- [ ] UI : le malus affiché **avant** l'apprentissage, et le net après (§8 bis)
-- [ ] Tests : les six règles ; et qu'aucun pacte ne permette de dépasser un plafond de levier
+      *(ARC-15 — celles du nœud refusées à la lecture, celles de l'arbre dans `PactRule`)*
+- [x] UI : le malus affiché **avant** l'apprentissage, et le net après (§8 bis)
+      *(ARC-15 — `SkillLeverReadout::$pactCost` ; *on assume un choix, on ne se fait pas
+      piéger*)*
+- [x] Tests : les six règles ; et qu'aucun pacte ne permette de dépasser un plafond de levier
+      *(ARC-15 — 15 tests ; le dépassement est refusé **par construction**, le contrôle de
+      plafond s'appliquant au nœud complet)*
 
 ### ARC-16 — Les accointances (M | ★★ | MOYENNE)
 > GAME_ARCHETYPES §9.7. **Constat : les synergies livrées sont une fuite de budget.**

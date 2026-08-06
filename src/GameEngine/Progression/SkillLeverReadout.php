@@ -31,7 +31,21 @@ final readonly class SkillLeverReadout
         public string $unit,
         /** Ce qu'il faut porter, en clair — `null` si le nœud est toujours vrai. */
         public ?string $requirement = null,
+        /**
+         * Le malus du pacte, dit avant d'apprendre (ARC-15, règle 6).
+         *
+         * *On assume un choix, on ne se fait pas piéger.* Un pacte qu'on
+         * découvre après l'avoir appris n'est pas un renoncement, c'est un
+         * piège — et le respec ordinaire suffit à revenir en arrière, mais
+         * encore faut-il avoir su.
+         */
+        public ?string $pactCost = null,
     ) {
+    }
+
+    public function isPact(): bool
+    {
+        return $this->pactCost !== null;
     }
 
     public function isConditional(): bool
