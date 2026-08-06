@@ -35,7 +35,7 @@
 | ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
 | ARC-12 ✅ | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 | ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
-| ARC-14 | La fourche : une branche exclusive par arbre de combat | S | ← ARC-07 |
+| ARC-14 ◐ | La fourche : une branche exclusive par arbre de combat | S | **→ ARC-07** |
 | ARC-15 ✅ | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 | ARC-17 | **Le simulateur d'équilibrage** (`app:balance:simulate`) — l'outil qui remplace les repères calculés à la main | M | ← ARC-05, ARC-07 |
@@ -920,20 +920,55 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Tests : une marque et une seule par élément ; tout arbre de combat a un accord
       d'entrée qui applique la sienne ; aucune marque ne se cumule avec elle-même
 
-### ARC-14 — La fourche (S | ★★★ | HAUTE)
+### ARC-14 — La fourche (S → 2 sous-phases | ★★★ | HAUTE) ◐
 > GAME_ARCHETYPES §6.1 bis. **Deux pyromanciens finis étaient identiques.** Le mécanisme
 > existe déjà et n'a jamais servi au combat : `actions.specialization.branch`, le motif de
 > refus `other_branch` et le respec de branche payant sont livrés (DOM-04, DOM-06).
+>
+> **Découpé (règle 8) : ARC-14a le catalogue, ARC-14b l'exclusivité en jeu.** Déclarer les
+> fourches et les faire respecter au moment d'apprendre n'ont ni le même risque ni le même
+> rythme — la première se teste seule, la seconde touche une entité et le respec.
+>
+> **Le graphe du plan avait la dépendance à l'envers, et c'est chiffrable.** Il donne
+> ARC-07 → ARC-14 ; c'est l'inverse. Le gabarit écrit **18 nœuds**, dont six au palier 3
+> (deux branches de trois) : sans fourche, ils se paient tous et un arbre au gabarit coûte
+> **540** points. Avec la fourche, on en apprend trois et l'arbre retombe exactement sur les
+> **390** de `SkillCostScale`. Écrire les arbres patrons avant la fourche les ferait donc
+> tous échouer au seul invariant de coût qui existe. Un test le dit en deux lignes
+> d'arithmétique plutôt qu'en prose.
+>
+> **ARC-14a — livré le 2026-08-06.** `combat_branches.yaml` + `CombatBranchCatalog`, sur le
+> modèle de `craft_branches.yaml` (DOM-04) — ajouter une fourche est un bloc de
+> configuration, jamais une ligne de code. **Ce qu'il ne partage pas avec lui est la clé** :
+> un métier se choisit par `CraftSpecialization`, un arbre de combat par son domaine ; les
+> mélanger aurait fait porter au personnage une seule spécialisation pour les deux mondes,
+> c'est-à-dire le défaut que DOM-04 avait corrigé.
+>
+> Deux refus au chargement : **trois branches** (un éventail ne se raconte pas) et **une
+> branche sans accord** — ce dernier étant le plus important, puisque le défaut serait
+> *invisible en donnée et fatal en jeu* : mesuré au §9 bis, deux branches qui ne diffèrent
+> que par leurs passifs produisent le même combat au tour près (11 contre 11).
+>
+> **Les quatre fourches du canon sont écrites** (Braise/Éclat, Ressac/Marée, Mur/Ligne
+> mobile, Guet/Volée), avec le geste que chacune ouvre. **Les 20 autres arbres n'en ont
+> pas** : le canon n'en nomme que quatre, et les inventer serait écrire du contenu sans
+> l'avoir instruit — liste nommée en cliquet, c'est le travail d'ARC-08.
+>
+> **ARC-14b — reste à faire** : l'exclusivité au moment d'apprendre (le choix de branche
+> porté par le joueur **par domaine**, le refus `other_branch` réutilisé, le respec payant),
+> et l'écran qui dit ce qu'on renonce avant de choisir.
 - [ ] Palier 3 : **deux branches de deux passifs et d'un accord**, une seule apprenable —
       l'arbre écrit 18 nœuds et 60 pb, le personnage en apprend 15 et en porte 50
-- [ ] **Chaque branche ouvre son geste**, et c'est ce qui décide si la fourche est un choix
-      ou une décoration : mesuré au §9 bis, deux branches qui ne diffèrent que par leurs
+- [x] **Chaque branche ouvre son geste**, et c'est ce qui décide si la fourche est un choix
+      ou une décoration *(ARC-14a — une branche sans accord est **refusée au chargement** :
+      le défaut serait invisible en donnée et fatal en jeu)* : mesuré au §9 bis, deux branches qui ne diffèrent que par leurs
       passifs produisent **le même combat, au tour près** (11 tours contre 11). Avec un
       accord par branche, elles se séparent de deux tours et de deux façons de jouer
 - [ ] Une fourche peut opposer **deux contextes** (seul / en groupe), pas seulement deux
       dosages — c'est la forme la plus forte trouvée (§9.3), et elle n'oblige personne
-- [ ] Les quatre arbres patrons ont leur fourche (§9.1→9.4) : Braise/Éclat,
-      Ressac/Marée, Mur/Ligne mobile, Guet/Volée
+- [x] Les quatre arbres patrons ont leur fourche (§9.1→9.4) : Braise/Éclat,
+      Ressac/Marée, Mur/Ligne mobile, Guet/Volée *(ARC-14a — avec le geste que chacune
+      ouvre ; les 20 autres arbres sont nommés en cliquet pour ARC-08)*
 - [ ] Étendre `craft_branches.yaml` (ou son équivalent combat) aux 24 arbres — le loader
       refuse déjà un arbre à moins de deux branches
 - [ ] UI : les deux branches **comparables avant le choix**, et le prix du respec affiché

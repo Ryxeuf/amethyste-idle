@@ -1,0 +1,89 @@
+# =============================================================================
+# Les fourches des arbres de combat (ARC-14a)
+# =============================================================================
+# GAME_ARCHETYPES § 6.1 bis. **Deux pyromanciens finis etaient identiques.**
+# Le palier 3 d'un arbre ecrit deux branches — deux passifs et un accord
+# chacune — et une seule s'apprend : *l'arbre ecrit 18 nœuds et 60 pb, le
+# personnage en apprend 15 et en porte 50.*
+#
+# C'est cette regle, et elle seule, qui reconcilie les deux nombres du canon :
+# sans fourche, un arbre au gabarit couterait 540 points et non 390. Ce fichier
+# est donc un **prerequis d'ARC-07**, et non sa suite — la dependance que le
+# graphe du plan avait dans l'autre sens.
+#
+# **Chaque branche ouvre son geste**, et c'est ce qui decide si la fourche est
+# un choix ou une decoration : mesure au § 9 bis, deux branches qui ne
+# different que par leurs passifs produisent **le meme combat, au tour pres**
+# (11 tours contre 11). Avec un accord par branche, elles se separent de deux
+# tours et de deux facons de jouer.
+#
+# **Deux branches, jamais trois** — meme regle que les metiers
+# (`craft_branches.yaml`, DOM-04) : le choix doit se raconter en une phrase.
+#
+# Hors perimetre, assume : les **20 autres arbres** n'ont pas de fourche ici.
+# Le canon n'en nomme que quatre (§ 9.1 → 9.4), et inventer les vingt autres
+# serait ecrire du contenu sans l'avoir instruit — c'est le travail d'ARC-08,
+# et `CombatBranchCatalogTest` en tient la liste nommee, en cliquet.
+# =============================================================================
+
+trees:
+    # --- Pyromancien — feu x sorts x assaut (§ 9.1) ----------------------
+    # *La Braise* tient le feu qui **dure**, *l'Eclat* le feu qui **passe**.
+    # La teinte `grip` ne vit que dans la Braise : c'est ce qui fait que les
+    # deux branches ne sont pas deux dosages du meme arbre.
+    pyromancy:
+        label: 'Pyromancien'
+        branches:
+            ember:
+                label: 'La Braise'
+                description: 'Le feu qui dure : des brulures plus tenaces, et un critique qui fait mal quand il tombe.'
+                accord: 'Brasier'
+            flare:
+                label: 'L''Éclat'
+                description: 'Le feu qui passe : il ronge la resistance et frappe le premier.'
+                accord: 'Nova de feu'
+
+    # --- Guerisseur — eau x sorts x entretien (§ 9.2) --------------------
+    # La fourche qui oppose **deux contextes** plutot que deux dosages : le
+    # Ressac repond seul, la Maree provisionne pour quatre.
+    healer:
+        label: 'Guérisseur'
+        branches:
+            undertow:
+                label: 'Le Ressac'
+                description: 'La reponse solitaire : retirer un statut, tenir seul ce qui tombe maintenant.'
+                accord: 'Dissipation'
+            tide:
+                label: 'La Marée'
+                description: 'La provision : un depot qui couvre une rencontre entiere, meme deconnecte.'
+                accord: 'Grande Marée'
+
+    # --- Soldat — metal x melee x encaisse (§ 9.3) -----------------------
+    # *La plus parlante des quatre* : le Mur encaisse et donne, la Ligne
+    # mobile finit les combats seule.
+    soldier:
+        label: 'Soldat'
+        branches:
+            wall:
+                label: 'Le Mur'
+                description: 'Ce qu''on vient chercher en donjon : encaisser pour quatre, et le deposer.'
+                accord: 'Rempart'
+            skirmish:
+                label: 'La Ligne mobile'
+                description: 'De quoi finir un combat seul : esquiver, et frapper fort une fois.'
+                accord: 'Charge d''acier'
+
+    # --- Archer — air x distance x assaut (§ 9.4) ------------------------
+    # La seule fourche ou la teinte porte sur la **ressource** : `wind`
+    # recupere la munition, et la Volee en depense quatre d'un coup.
+    archer:
+        label: 'Archer'
+        branches:
+            watch:
+                label: 'Le Guet'
+                description: 'Le gros coup prepare : viser, attendre, et ne pas manquer.'
+                accord: 'Tir du faucon'
+            volley:
+                label: 'La Volée'
+                description: 'Quatre munitions d''un coup, dont la moitie revient.'
+                accord: 'Grêle'
