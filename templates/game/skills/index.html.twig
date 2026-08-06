@@ -420,7 +420,7 @@
                                                         {# ARC-12b — ce qu'un nœud rapporte, et ce qu'il faut porter pour l'obtenir. #}
                                                         {% for readout in skill.leverReadouts|default([]) %}
                                                             <span class="ds-seal {{ readout.conditional ? 'ds-seal--gain' : '' }}">
-                                                                {{ readout.leverLabel }} {{ readout.formattedEffect }}{% if readout.conditional %} — {{ readout.requirement }}{% endif %}
+                                                                {{ readout.leverLabel }} {{ readout.formattedEffect }}{% if readout.conditional %} — {{ readout.requirement }}{% endif %}{% if readout.pact %} · {{ readout.pactCost }}{% endif %}
                                                             </span>
                                                         {% endfor %}
                                                     </div>

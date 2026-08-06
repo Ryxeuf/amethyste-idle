@@ -24,6 +24,14 @@ use App\Enum\CombatRegister;
  */
 class SkillLeverReader
 {
+    /**
+     * Ce que vaut un passif de palier 3, la grille du § 6.3 (2x3 + 2x6 + 2x9 + 14).
+     *
+     * Le pacte s'y adosse : il **remplace** un passif de fourche, donc le nœud
+     * qui en resulte vaut ce passif plus ce que le malus rend.
+     */
+    private const TIER_THREE_NODE = 9;
+
     public function __construct(
         private readonly CombatLeverScale $scale,
         private readonly EquipmentPortCatalog $portCatalog,
@@ -58,6 +66,64 @@ class SkillLeverReader
     public function averageEffectOf(LeverGrant $grant, ?CombatRegister $register = null): float
     {
         return $this->scale->effectOf($grant->lever, $grant->budgetPoints, $register);
+    }
+
+    /**
+     * Lire le pacte d'un nœud, ou refuser (ARC-15).
+     *
+     * GAME_ARCHETYPES § 6.5. Quatre des six regles se tiennent **ici**, parce
+     * qu'elles portent sur le nœud lui-meme ; les deux autres (un seul pacte
+     * par arbre, au palier 3 seulement, et le nœud feuille) portent sur
+     * l'arbre et vivent dans `PactRule`.
+     *
+     * Le refus le plus important est le dernier : **les plafonds par levier
+     * tiennent toujours**. Le pacte contourne le budget de l'arbre, jamais le
+     * plafond d'un levier — sinon il devient la porte de sortie de tout
+     * l'equilibrage, et il n'y a plus rien a equilibrer.
+     */
+    private function readPact(mixed $raw, CombatLever $lever, int $points, string $source): ?PactGrant
+    {
+        if ($raw === null) {
+            return null;
+        }
+
+        if (!\is_array($raw)) {
+            throw new CombatLeverDefinitionException(sprintf('%s: a pact must be a mapping of a lever and its points.', $source));
+        }
+
+        $name = $raw['lever'] ?? null;
+        $malusLever = \is_string($name) ? CombatLever::tryFrom($name) : null;
+        if ($malusLever === null) {
+            throw new CombatLeverDefinitionException(sprintf('%s: "%s" is not a combat lever. A pact pays in the same closed vocabulary.', $source, \is_string($name) ? $name : get_debug_type($name)));
+        }
+
+        // Regle 3 : une seule statistique, et jamais celle qu'on renforce —
+        // payer sa puissance en puissance serait echanger de la monnaie contre
+        // elle-meme.
+        if ($malusLever === $lever) {
+            throw new CombatLeverDefinitionException(sprintf('%s: "%s" cannot pay for itself. A pact trades one thing for another.', $source, $lever->value));
+        }
+
+        $malusPoints = $raw['points'] ?? null;
+        if (!\is_int($malusPoints) || !\in_array($malusPoints, PactGrant::CRANS, true)) {
+            throw new CombatLeverDefinitionException(sprintf('%s: a pact is worth %s budget points, nothing in between — two neighbouring values would say we dosed by hand, not that we decided.', $source, implode(' or ', PactGrant::CRANS)));
+        }
+
+        // Regle 5 : le plafond du levier tient toujours — et il tient **deja**,
+        // le controle generique de `read()` s'appliquant au nœud complet, pacte
+        // compris. C'est ce qui fait qu'un pacte majeur (19 pb) n'entre que sur
+        // les quatre leviers plafonnes a 20, donc qu'**un arbre a pacte est un
+        // autre arbre** (§ 6.5 regle 7). Le pacte contourne le budget de
+        // l'arbre, jamais le plafond d'un levier.
+
+        // Le nœud doit valoir ce que son cran annonce : un palier 3 (9 pb) plus
+        // le malus. Sinon le pacte ne rend rien — il ajoute.
+        $expected = $malusPoints + self::TIER_THREE_NODE;
+        if ($points !== $expected) {
+            throw new CombatLeverDefinitionException(sprintf('%s: a pact of %d budget points makes a node worth %d, not %d. The pact changes a tree\'s shape, never its weight.', $source, $malusPoints, $expected, $points));
+        }
+
+        return new PactGrant($malusLever, $malusPoints);
     }
 
     /**
@@ -109,7 +175,11 @@ class SkillLeverReader
     {
         $total = 0;
         foreach ($this->grantsOf($skill) as $grant) {
-            $total += $grant->budgetPoints;
+            // ARC-15 — le **net** : un pacte rend au budget ce qu'il prend en
+            // puissance. Compter le brut ferait peser un nœud a pacte deux fois
+            // plus qu'un nœud ordinaire du meme palier, et l'arbre depasserait
+            // ses 50 pb sans avoir rien gagne.
+            $total += $grant->netBudgetPoints();
         }
 
         return $total;
@@ -167,7 +237,7 @@ class SkillLeverReader
                 $this->checkCondition(SkillCondition::parse($condition), $source);
             }
 
-            $grants[] = new LeverGrant($lever, $points, $condition);
+            $grants[] = new LeverGrant($lever, $points, $condition, $this->readPact($entry['pact'] ?? null, $lever, $points, $source));
         }
 
         return $grants;
