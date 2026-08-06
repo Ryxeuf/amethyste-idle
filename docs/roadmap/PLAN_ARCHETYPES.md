@@ -27,7 +27,7 @@
 | ARC-03 ✅ | Les leviers : les passifs deviennent des pourcentages bornés | **L** → 2 sous-phases | ← ARC-01 |
 | ARC-04 ✅ | Les ressources par registre (munitions, temps de reprise) | M → 2 sous-phases | ← ARC-02 |
 | ARC-05 ◐ | L'ancre d'échelle : la durée d'un combat en tours | **L** → 2 sous-phases | ← BES-01 |
-| ARC-06 | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
+| ARC-06 ✅ | L'échelle de coût des arbres, et le gain de points indexé au palier | M | ← BES-01 |
 | ARC-07 | Les quatre arbres patrons, écrits au gabarit | M | ← ARC-03, 04, 06 |
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
 | ARC-09 | Tests du plan (les 45 invariants) | S | ‖ |
@@ -421,7 +421,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       pour le curseur des PM ; le reste du chantier (coûts des sorts par palier, durée
       moyenne en tours) reste ouvert et attend ARC-17)*
 
-### ARC-06 — L'échelle de coût et le gain de points (M → 2 sous-phases | ★★ | HAUTE) ◐
+### ARC-06 — L'échelle de coût et le gain de points (M → 2 sous-phases | ★★ | HAUTE) ✅
 
 > **Découpé (règle 8) : ARC-06a l'échelle et la table, ARC-06b la distribution.** Le
 > jalon supposait qu'il suffisait d'indexer un gain existant. **Il n'existe pas** :
@@ -450,12 +450,48 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > que le canon annonçait. Et *on ne monte pas un arbre en tapant des rats* devient un
 > chiffre : chasser un palier en dessous **double** le temps (98 jours contre 49).
 >
-> **ARC-06b — DÉBLOQUÉ : les trois questions sont tranchées le 2026-08-06** (voir
-> plus bas). Le travail mécanique est clair : brancher la distribution sur
-> `MobDeadEvent` comme `MateriaXpGranter` (même anti-exploit sur les invocations,
-> même partage en coop), avec le report du reste — la table descend à 0,25 et un
-> compteur qui perd ses restes fait gagner **zéro** point par rencontre à un joueur
-> de palier 1, arrondi après arrondi.
+> **ARC-06b — livré le 2026-08-06.** Le combat rapporte enfin des points. Le canal
+> manquait en entier : `DomainPointGranter` écoute `MobDeadEvent` comme
+> `MateriaXpGranter` (invocations exclues, coop partagée avec le même plancher de
+> 1, joueur mort exclu), et le gain passe par le **reste en quarts**
+> (`DomainExperience::addQuarters()`) sans lequel une chasse de palier 1 ne
+> rapporterait jamais rien — cent rencontres T1 valent exactement 25 points, et le
+> test le vérifie plutôt que de le croire.
+>
+> **La case se décide au geste, pas à la mort du monstre** : `MobDeadEvent` ne
+> porte que le monstre. `CombatGestureLedger` fait le pont dans les métadonnées du
+> combat, et sa forme porte la règle — **une entrée par joueur, écrasée à chaque
+> geste**. C'est elle qui interdit la multiplication : enchaîner six gestes de six
+> cases rapporte une fois, dans la case du dernier. Un geste sans case (élément
+> `None`, mains nues) **efface** la ligne, sinon ouvrir au feu puis finir à mains
+> nues garderait le crédit du feu.
+>
+> **Ce que la décision supposait, et que la grille ne tient pas.** Le point 1 dit
+> qu'« un geste désigne une case unique de la grille des 24 arbres ». C'est vrai de
+> la **case**, pas de l'arbre : la fonction (ARC-01) est le troisième axe, et les 24
+> arbres se répartissent sur **18** cases — trois se partagent l'eau × sorts
+> (Hydromancien, Guérisseur, Marémancien), et deux partagent quatre autres cases. Le
+> geste ne porte pas de fonction, et l'intention d'ARC-11a ne la désigne pas non
+> plus : les palettes de `domain_roles.yaml` déclarent des **minimums** (l'assaut
+> exige 3 intentions de dégât, le contrôle 1), pas une partition.
+>
+> On applique donc le départage que la décision a **déjà** rendu pour son point 3,
+> où la même ambiguïté se pose sur les nœuds de port partagés : **le premier arbre
+> ouvert**. Un arbre non ouvert ne reçoit rien — le parchemin reste la porte. L'écart
+> entre en CI comme **cliquet** (`CombatGestureCaseTest`) : une case peut porter
+> moins d'arbres, jamais plus, sans qu'on le voie.
+>
+> **Question ouverte, portée au bilan** : *faut-il que le geste porte une fonction,
+> pour que sa case désigne un arbre sans départage ?* Elle se pose à l'écriture des
+> arbres (ARC-07/08) et se mesure au simulateur (ARC-17). Tant qu'elle n'est pas
+> tranchée, un joueur qui mène deux arbres de la même case crédite toujours le
+> premier ouvert — ce qui est lisible, mais n'est pas un choix.
+>
+> **Hors périmètre, assumé** : le donjon de groupe a son propre modèle de combat
+> (DON-02, `DungeonActionResolver`) et ne dispatche pas `MobDeadEvent` — il ne
+> distribue donc aucun point. Le jalon nomme `MobDeadEvent` explicitement ; brancher
+> le donjon est un jalon à part, et le déclarer ici sans le faire donnerait
+> l'illusion d'une couverture qui n'existe pas.
 >
 > **Ce qui manque est en amont : à quel arbre les points vont-ils ?** Les documents
 > fixent le *taux* (T1 0,25 · T2 0,5 · T3 1 · T4 2) et ne disent **nulle part** qui le
@@ -508,7 +544,14 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       T4 2 (paliers de GAME_BESTIARY). On ne monte pas un arbre en tapant des rats
       *(ARC-06a, `DomainPointYield` — la table est posée, **en quarts de point** pour
       qu'un joueur de palier 1 ne gagne pas zéro à chaque arrondi. La **distribution**
-      est ARC-06b : elle n'existe pas encore, le combat ne rapportant aucun point)*
+      est ARC-06b — livrée : `DomainPointGranter` sur `MobDeadEvent`)*
+- [x] **La distribution** : le gain va en entier à la case du geste joué, un arbre par
+      rencontre et par joueur *(ARC-06b — `CombatGestureCase` lit `Spell::element` +
+      `Spell::register` ; l'attaque d'arme crédite l'arbre du port appris, mains nues
+      rien. `CombatGestureLedger` retient la case **au geste**, `MobDeadEvent` ne
+      portant que le monstre. Le reste vit en quarts sur `DomainExperience` : cent
+      rencontres T1 = 25 points, rien ne se perd. Départage d'une case à plusieurs
+      arbres : le premier ouvert — voir la question ouverte ci-dessus)*
 - [x] Vérifier le calendrier visé (entrée jour 1 · palier 1 semaine 1 · palier 2
       semaines 3-4 · palier 3 semaines 6-8 · capstone mois 3) contre le budget d'énergie
       réel de GAME_PROGRESSION §5 *(ARC-06a — vérifié de bout en bout : **49 jours =

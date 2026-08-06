@@ -24,6 +24,8 @@ use App\GameEngine\Fight\QuiverResolver;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatGestureCase;
+use App\GameEngine\Progression\CombatGestureLedger;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
@@ -80,6 +82,11 @@ class FightSpellControllerTest extends TestCase
 
         $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
 
+        // ARC-06b : la case du geste se retient avant que le sort ne parte.
+        // Un resolveur muet laisse le combat exactement ou il etait.
+        $gestureCase = $this->createMock(CombatGestureCase::class);
+        $gestureCase->method('forSpell')->willReturn(null);
+
         $this->controller = new FightSpellController(
             $this->playerHelper,
             $this->entityManager,
@@ -99,6 +106,8 @@ class FightSpellControllerTest extends TestCase
             $this->createMock(\App\GameEngine\Reputation\CounterfeitService::class),
             new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 5))),
             new QuiverResolver(),
+            $gestureCase,
+            new CombatGestureLedger(),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

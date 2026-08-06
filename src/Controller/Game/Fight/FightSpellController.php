@@ -20,6 +20,8 @@ use App\GameEngine\Fight\QuiverResolver;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Progression\CombatGestureCase;
+use App\GameEngine\Progression\CombatGestureLedger;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\GameEngine\Reputation\CounterfeitService;
@@ -54,6 +56,8 @@ class FightSpellController extends AbstractController
         private readonly CounterfeitService $counterfeitService,
         private readonly CombatLeverScale $leverScale,
         private readonly QuiverResolver $quiverResolver,
+        private readonly CombatGestureCase $gestureCase,
+        private readonly CombatGestureLedger $gestureLedger,
     ) {
     }
 
@@ -252,6 +256,14 @@ class FightSpellController extends AbstractController
         if ($betrayed) {
             $hit = false;
         }
+
+        // ARC-06b — la case du geste, retenue **avant** que le sort ne parte :
+        // c'est `SpellApplicator` qui dispatche `MobDeadEvent`, et l'evenement
+        // ne porte que le monstre. Le geste rate compte comme le geste
+        // reussi : ce qui designe la case est ce qu'on a joue, pas ce qui a
+        // touche — sinon un joueur malchanceux serait credite de l'arbre du
+        // tour precedent.
+        $this->gestureLedger->record($fight, $player, $this->gestureCase->forSpell($player, $spell));
 
         $isCritical = false;
         $damageDealt = 0;
