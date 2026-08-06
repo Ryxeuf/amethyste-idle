@@ -652,6 +652,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
         ];
     }
+
     private function getBerserkerSkills(): array
     {
         $d = 'berserker';

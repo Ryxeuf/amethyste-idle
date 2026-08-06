@@ -38,7 +38,7 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
     ];
 
     /**
-     * **Chaque branche tient exactement le budget de l'arbre.**
+     * **Chaque branche tient exactement le budget de l'arbre.**.
      *
      * C'est l'invariant qui rend l'equilibrage verifiable : *l'arbre ecrit
      * 60 pb, le personnage en porte 50*. Un arbre dont une branche depasserait
