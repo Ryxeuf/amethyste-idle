@@ -165,7 +165,7 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
 
             self::assertSame($roles['capstone_cost'], $capstone->budgetPoints, sprintf('%s : le capstone ne coute pas ce que le canon lui donne.', $title));
             self::assertSame($roles['roles'][$role->value]['primary'], $capstone->lever->value, sprintf('%s : le capstone ne vise pas le levier principal de sa fonction.', $title));
-            self::assertTrue($capstone->hasCondition(), sprintf('%s : un capstone sans condition est un passif ordinaire qui coute cher.', $title));
+            self::assertTrue($capstone->isConditional(), sprintf('%s : un capstone sans condition est un passif ordinaire qui coute cher.', $title));
         }
     }
 
