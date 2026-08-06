@@ -153,3 +153,46 @@ domains:
     tailleur:
         teaches: "À couper et coudre le tissu, pour ceux qui ne portent pas le métal."
         equips: "Aiguilles et ciseaux de tailleur."
+
+# =============================================================================
+# Ce que chaque element **marque** (ARC-13b-b)
+# =============================================================================
+# GAME_ARCHETYPES § 1.1 : chaque element laisse une marque sur ce qu'il frappe,
+# et c'est la prise que les passifs de son arbre savent reconnaitre — le
+# capstone d'assaut se declenche « contre une cible qui porte votre marque »,
+# `grip` porte la duree de ce qu'on applique, et la palette du controle exige
+# deux accords d'entrave.
+#
+# **Une ligne par element, jamais par arbre.** La marque appartient a
+# l'element : la repeter sur les 24 arbres qui le partagent serait 24 occasions
+# de diverger, pour une information identique.
+#
+# **Ce que ces lignes ne disent pas, et ne diront jamais** : combien de tours,
+# quel pourcentage, quelle chance d'application. Le § 6.2 l'interdit, et ce
+# fichier n'a aucun champ pour les accueillir.
+#
+# **Elles ne promettent pas non plus d'effet de combat, et c'est deliberé.** Les
+# marques declarent des modificateurs (`dodge`, `hit`, `guard`, `tempo`) que le
+# moteur ne lit pas encore — `StatusEffectManager::getStatModifiers()` n'a aucun
+# appelant, et les brancher pose deux questions que ce jalon n'a pas a trancher
+# (un `guard: -0.20` retire-t-il vingt points de reduction, ou multiplie-t-il
+# les degats subis par 1,20 ?). Ecrire ici « on esquive moins bien » serait donc
+# mentir, et *le catalogue omet, il ne ment pas*. Ces lignes disent la **trace**
+# que l'element laisse ; ce que cette trace vaut se decouvre en jouant, et le
+# gabarit rappelle une fois qu'une marque est une prise pour les gestes de son
+# element.
+#
+# Le nom de la marque n'est pas ici non plus : il vient du `StatusEffect`, donc
+# de la donnee reelle. Une marque renommee suit toute seule, et le catalogue ne
+# peut pas mentir sur son nom.
+# =============================================================================
+
+elements:
+    fire: "Le feu ne s'arrête pas au geste : ce qu'il a touché continue de brûler."
+    water: "L'eau imprègne, et ce qu'elle a trempé en garde le poids."
+    air: "L'air emporte l'appui, et on ne retrouve pas son aplomb dans le même souffle."
+    earth: "La terre charge ce qu'elle touche d'un poids qui ne tombe pas tout seul."
+    metal: "Le métal ouvre, et une entaille ne se referme pas d'elle-même."
+    beast: "La bête prend la trace de ce qu'elle a mordu, et ne la lâche plus."
+    light: "La lumière révèle, et ce qui est révélé cesse de pouvoir se cacher."
+    dark: "Les ténèbres retirent la cible avant de retirer la vie."

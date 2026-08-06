@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Progression;
 
+use App\Enum\Element;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -17,6 +18,12 @@ use Symfony\Component\Yaml\Yaml;
  * La case element x registre n'est pas relue ici : elle est portee par le
  * domaine depuis DOM-01, et la redeclarer ouvrirait une divergence muette entre
  * l'ecran et le moteur.
+ *
+ * **Une ligne par element s'y ajoute (ARC-13b-b)** : la trace que cet element
+ * laisse sur ce qu'il frappe. Elle est rangee a part des arbres, et non
+ * recopiee sur chacun d'eux, parce que la marque appartient a l'**element** —
+ * 24 arbres partagent 8 marques, et les repeter serait 24 occasions de
+ * diverger pour une information identique.
  */
 class DomainCatalogDescriptions
 {
@@ -24,6 +31,11 @@ class DomainCatalogDescriptions
      * @var array<string, array{teaches: string, equips: string}>|null
      */
     private ?array $entries = null;
+
+    /**
+     * @var array<string, string>|null
+     */
+    private ?array $elements = null;
 
     public function __construct(
         private readonly string $projectDir,
@@ -52,6 +64,26 @@ class DomainCatalogDescriptions
     }
 
     /**
+     * La trace que cet element laisse — une phrase, jamais un chiffre (ARC-13b-b).
+     */
+    public function traceOfElement(?string $element): ?string
+    {
+        if ($element === null) {
+            return null;
+        }
+
+        return $this->elements()[mb_strtolower(trim($element))] ?? null;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function allElements(): array
+    {
+        return $this->elements();
+    }
+
+    /**
      * @return array<string, array{teaches: string, equips: string}>
      */
     private function entries(): array
@@ -64,11 +96,83 @@ class DomainCatalogDescriptions
     }
 
     /**
+     * @return array<string, string>
+     */
+    private function elements(): array
+    {
+        if ($this->elements === null) {
+            $this->elements = $this->loadElements($this->defaultFile());
+        }
+
+        return $this->elements;
+    }
+
+    /**
+     * @return array<string, string>
+     *
+     * @throws DomainCatalogDefinitionException
+     */
+    public function loadElements(string $path): array
+    {
+        return $this->normalizeElements($this->parse($path), $path);
+    }
+
+    /**
+     * Les traces d'element, verifiees comme le reste : par omission.
+     *
+     * **Le bloc est facultatif** — un catalogue sans traces reste un catalogue
+     * valide, et c'est ce qui permet a un test de le charger sans le decrire.
+     * Ce qui ne l'est pas, c'est de le remplir a moitie : une cle qui n'est pas
+     * un element du jeu est refusee, parce qu'une phrase rangee sous `fue`
+     * n'apparaitrait nulle part et personne ne s'en apercevrait.
+     *
+     * @param array<array-key, mixed> $raw
+     *
+     * @return array<string, string>
+     */
+    public function normalizeElements(array $raw, string $source = '<array>'): array
+    {
+        $elements = $raw['elements'] ?? null;
+        if ($elements === null) {
+            return [];
+        }
+
+        if (!\is_array($elements)) {
+            throw new DomainCatalogDefinitionException(sprintf('"elements" must be a mapping in "%s".', $source));
+        }
+
+        $normalized = [];
+        foreach ($elements as $element => $trace) {
+            if (!\is_string($element) || Element::tryFrom(mb_strtolower(trim($element))) === null) {
+                throw new DomainCatalogDefinitionException(sprintf('"%s" is not an element of the game, in "%s".', \is_string($element) ? $element : \gettype($element), $source));
+            }
+
+            if (!\is_string($trace) || trim($trace) === '') {
+                throw new DomainCatalogDefinitionException(sprintf('Element "%s" must say the trace it leaves, in "%s".', $element, $source));
+            }
+
+            $normalized[mb_strtolower(trim($element))] = $trace;
+        }
+
+        return $normalized;
+    }
+
+    /**
      * @return array<string, array{teaches: string, equips: string}>
      *
      * @throws DomainCatalogDefinitionException
      */
     public function load(string $path): array
+    {
+        return $this->normalize($this->parse($path), $path);
+    }
+
+    /**
+     * @return array<array-key, mixed>
+     *
+     * @throws DomainCatalogDefinitionException
+     */
+    private function parse(string $path): array
     {
         if (!is_file($path)) {
             throw new DomainCatalogDefinitionException(sprintf('Domain catalogue not found: "%s".', $path));
@@ -84,7 +188,7 @@ class DomainCatalogDescriptions
             throw new DomainCatalogDefinitionException(sprintf('Domain catalogue "%s" must be a mapping.', $path));
         }
 
-        return $this->normalize($raw, $path);
+        return $raw;
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace App\Tests\Unit\GameEngine\Progression;
 
 use App\Entity\Game\Domain;
+use App\Enum\Element;
+use App\GameEngine\Fight\ElementalMark;
 use App\GameEngine\Progression\DomainCatalogDefinitionException;
 use App\GameEngine\Progression\DomainCatalogDescriptions;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +18,12 @@ use PHPUnit\Framework\TestCase;
  *    absent est un arbre dont personne ne sait qu'il peut s'ouvrir.
  * 2. **Le catalogue omet.** Il n'a aucun champ pour un nœud, une valeur ou un
  *    prerequis, et le loader refuse toute cle inconnue plutot que de l'ignorer.
+ *
+ * ARC-13b-b en ajoute une troisieme, qui tire dans le meme sens que la
+ * deuxieme : **chaque element qui marque dit la trace qu'il laisse, et aucune
+ * trace ne laisse fuir une valeur**. La phrase est le seul endroit du
+ * catalogue ou une duree pourrait passer, puisque le loader n'a pas de champ
+ * pour elle.
  */
 class DomainCatalogContractTest extends TestCase
 {
@@ -97,6 +105,64 @@ class DomainCatalogContractTest extends TestCase
             self::assertNotSame('', trim($entry['teaches']), sprintf('« %s » n\'apprend rien.', $slug));
             self::assertNotSame('', trim($entry['equips']), sprintf('« %s » ne permet de porter rien.', $slug));
         }
+    }
+
+    /**
+     * Loi 3 — chaque element **marque** dit ce qu'il laisse (ARC-13b-b).
+     *
+     * Les huit elements qui portent une marque ont leur phrase, et aucun
+     * element de plus. `wood` n'y figure pas et ne doit pas y figurer : il
+     * n'est l'element d'aucun arbre de combat, donc il ne marque rien — lui
+     * ecrire une trace serait promettre une mecanique qui n'existe pas.
+     */
+    public function testEveryMarkedElementSaysTheTraceItLeaves(): void
+    {
+        $declared = array_keys($this->descriptions()->allElements());
+        sort($declared);
+
+        $marked = array_map(
+            static fn (Element $element): string => $element->value,
+            ElementalMark::markedElements(),
+        );
+        sort($marked);
+
+        self::assertSame($marked, $declared, 'Les traces du catalogue ne recouvrent pas exactement les elements qui marquent.');
+    }
+
+    /**
+     * Une trace ne dit **jamais** de valeur (GAME_ONBOARDING § 6.2).
+     *
+     * Le loader tient la loi par omission — il n'existe aucun champ pour une
+     * durée ou un pourcentage —, mais rien n'empeche d'ecrire « pendant 2 tours »
+     * dans la phrase elle-meme. Ce test ferme cette porte-la : aucun chiffre,
+     * aucun signe de pourcentage, aucun vocabulaire de duree chiffree.
+     */
+    public function testATraceNeverLeaksAValue(): void
+    {
+        $offenders = [];
+
+        foreach ($this->descriptions()->allElements() as $element => $trace) {
+            if (preg_match('/\d|%/u', $trace) === 1) {
+                $offenders[] = sprintf('%s : « %s »', $element, $trace);
+            }
+        }
+
+        self::assertSame([], $offenders, implode("\n", $offenders));
+    }
+
+    /**
+     * Le bloc des traces est **facultatif**, et une cle inconnue est refusee.
+     *
+     * Facultatif, parce qu'un catalogue sans traces reste un catalogue valide ;
+     * strict, parce qu'une phrase rangee sous un element inexistant
+     * n'apparaitrait nulle part et que personne ne s'en apercevrait.
+     */
+    public function testTheLoaderRefusesATraceForSomethingThatIsNotAnElement(): void
+    {
+        self::assertSame([], $this->descriptions()->normalizeElements([]));
+
+        $this->expectException(DomainCatalogDefinitionException::class);
+        $this->descriptions()->normalizeElements(['elements' => ['fue' => 'Une trace.']]);
     }
 
     /**
