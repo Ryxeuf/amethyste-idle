@@ -51,10 +51,6 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'generic_item' => 'materia_flame',
                 'inventory' => 'inventory_materia',
             ],
-            'player_materia_flamer' => [
-                'generic_item' => 'materia_flamer',
-                'inventory' => 'inventory_materia',
-            ],
             'player_materia_flame_rain' => [
                 'generic_item' => 'materia_flame_rain',
                 'inventory' => 'inventory_materia',
@@ -350,7 +346,7 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
 
         // Materias pour Remy
         $remyMateriaItems = [
-            'materia_life_heal', 'materia_fire_ball', 'materia_flame', 'materia_flamer', 'materia_flame_rain',
+            'materia_life_heal', 'materia_fire_ball', 'materia_flame', 'materia_flame_rain',
             'materia_wind_lame', 'materia_stone_throw', 'materia_punishment', 'materia_liana_whip',
             'materia_sharp_blade', 'materia_combustion', 'materia_frost_mist', 'materia_air_chain_lightning',
             'materia_stone_shield', 'materia_steel_riposte', 'materia_savage_bite', 'materia_light_blessing',

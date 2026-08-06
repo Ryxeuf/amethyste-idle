@@ -582,11 +582,21 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['pyro_rang3_1'],
             ],
 
-            // --- Accords surnumeraires (ARC-07b) -----------------------------
-            // Ils depassent les 6 accords du gabarit. Les retirer supprimerait
-            // leur materia, qui se derive de l'unlock (MAT-03), et trois
-            // fichiers les nomment par reference. C'est une chirurgie de
-            // catalogue, pas une ecriture d'arbre.
+            // --- Les deux accords que l'arithmetique reclame -----------------
+            //
+            // Le gabarit compte **quatre** nœuds au palier 1 et quatre au
+            // palier 2, dont un echelon de port ; mais les echelons sont
+            // **generes** hors du corps de l'arbre (ONB-20b), si bien que le
+            // compte des 390 points ne tombe juste que si le corps en declare
+            // quatre. Ces deux accords sont donc ce qui fait tenir
+            // `4x10 + 4x25 + 6x50 + 100 = 540`, dont un personnage paie 390 en
+            // n'apprenant qu'une branche.
+            //
+            // C'est un ecart entre la **table du § 9.1** (qui compte l'echelon
+            // de port parmi les quatre) et l'**arithmetique du § 6.1** : il se
+            // referme le jour ou DOM-09 bornera les nœuds partages, un arbre
+            // de sorts heritant aujourd'hui de **six** echelons generes (baton,
+            // baguette, tissu) la ou le gabarit en veut deux.
             'pyro_rang2_4' => [
                 'title' => 'Materia : Toucher brulant',
                 'slug' => 'pyro-rang2-4',
@@ -604,42 +614,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'phoenix-flame']],
                 'requirements' => ['pyro_rang3_1'],
-            ],
-            'pyro_t2_flamer' => [
-                'title' => 'Materia : Feu',
-                'slug' => 'pyro-t2-flamer',
-                'description' => 'Permet d\'utiliser la materia Feu — jet de flammes soutenu',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'flamer']],
-                'requirements' => ['pyro_rang3_4'],
-            ],
-            'pyro_rang4_1' => [
-                'title' => 'Materia : Inferno',
-                'slug' => 'pyro-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Inferno — devastation totale',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'inferno']],
-                'requirements' => ['pyro_rang3_1'],
-            ],
-            'pyro_rang4_2' => [
-                'title' => 'Materia : Souffle du dragon',
-                'slug' => 'pyro-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Souffle du dragon (AoE)',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'dragon-breath']],
-                'requirements' => ['pyro_rang3_4'],
-            ],
-            'pyro_t3_solar' => [
-                'title' => 'Materia : Explosion solaire',
-                'slug' => 'pyro-t3-solar',
-                'description' => 'Permet d\'utiliser la materia Explosion solaire — chaleur qui carbonise',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'solar-burst']],
-                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
             ],
             'pyro_rang5_1' => [
                 'title' => 'Materia : Eruption volcanique',

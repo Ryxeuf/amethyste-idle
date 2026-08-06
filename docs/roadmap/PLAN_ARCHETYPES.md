@@ -591,11 +591,32 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > ses voisins*, exactement comme ARC-02b l'avait mesuré sur le registre. La liste passe de
 > 10 à 8.
 >
-> **Ce qu'ARC-07a ne fait pas, et c'est nommé** : ramener l'arbre à ses 6 accords. Sept
-> accords surnuméraires restent ; les retirer supprimerait leur **matéria**, qui se dérive de
-> l'unlock (MAT-03), et trois fichiers les nomment par référence (`PlayerItemFixtures`,
-> `MateriaFusionManager`, `world_1.yaml`). C'est une chirurgie de catalogue, pas une écriture
-> d'arbre — elle se fera avec les trois autres arbres.
+> **Ce que la CI a appris au jalon, et qui a changé son périmètre.** L'arbre devait tomber
+> sur **390 points exactement** (`SkillCostScaleTest`, le seul invariant de coût qui existe),
+> et cette contrainte rend la chirurgie d'accords **obligatoire** plutôt que reportable :
+> quatre accords surnuméraires ont dû partir (Feu, Inferno, Souffle du dragon, Explosion
+> solaire) pour que `4×10 + 4×25 + 6×50 + 100 = 540` déclarés retombent sur les **390** qu'un
+> personnage paie.
+>
+> **Et le test devait apprendre la fourche** — ARC-14a l'avait annoncé en chiffres sans que
+> personne n'ait eu à l'appliquer : *sans fourche, un arbre au gabarit coûte 540 points.*
+> Compter les six nœuds du palier 3 ferait échouer **le premier arbre qui obéit au gabarit**,
+> c'est-à-dire punir la conformité. `learnableTotal()` retranche désormais une branche.
+> Défaut trouvé en l'écrivant : une expression régulière qui traverse les frontières de nœud
+> apparie le coût d'un nœud sans branche avec la branche du suivant — elle rendait 100 et 150
+> là où les deux branches valent 150, et *le total tombait juste par accident*.
+>
+> **Deux accords sur quatre survivent ailleurs** : `dragon-breath` est ouvert par un second
+> arbre, et `materia_inferno` n'était plus résolvable depuis MAT-01 (le slug dérivé est
+> `m<n>-inferno`, pas `materia_inferno`) — la fusion air+feu échouait déjà en silence, ce
+> jalon ne fait que le rendre vrai. Seul `PlayerItemFixtures` a dû lâcher `materia_flamer`.
+>
+> **Reste nommé** : l'arbre déclare encore **deux accords de plus** que les 6 du gabarit, et
+> c'est l'arithmétique qui les réclame — les échelons de port sont *générés* hors du corps de
+> l'arbre (ONB-20b), donc le compte des 390 ne tombe juste que si le corps en déclare quatre
+> par palier. C'est un écart entre la **table du §9.1** et l'**arithmétique du §6.1**, qui se
+> referme avec **DOM-09** : un arbre de sorts hérite aujourd'hui de **six** échelons générés
+> (bâton, baguette, tissu) là où le gabarit en veut deux.
 >
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),
 > Archer (assaut/distance) — un par fonction, trois registres.

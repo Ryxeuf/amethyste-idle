@@ -91,11 +91,59 @@ class SkillCostScaleTest extends TestCase
     /**
      * Le total d'un arbre : ce qu'un personnage paie, dormant exclu.
      *
-     * @param list<int> $costs
+     * **La fourche s'y soustrait (ARC-07a)**, et elle devait le faire un jour :
+     * ARC-14a l'avait annonce en chiffres — *sans fourche, un arbre au gabarit
+     * coute 540 points ; avec elle, il retombe sur les 390 de l'echelle.* Un
+     * arbre qui ecrit sa fourche declare donc **six** nœuds au palier 3 et n'en
+     * laisse apprendre que **trois** (§ 6.1 bis). Compter les six ferait echouer
+     * au seul invariant de cout qui existe le premier arbre qui obeit au
+     * gabarit — c'est-a-dire punir la conformite.
+     *
+     * On retranche **une** branche, jamais la moitie des nœuds a 50 : les deux
+     * branches coutent le meme prix par construction, mais le dire en soustrayant
+     * une branche nommee reste vrai le jour ou l'une d'elles portera un pacte.
+     *
+     * @param list<int>          $costs
+     * @param array<string, int> $branchCosts ce que chaque branche declare
      */
-    private function learnableTotal(array $costs): int
+    private function learnableTotal(array $costs, array $branchCosts = []): int
     {
-        return array_sum(array_filter($costs, static fn (int $cost): bool => SkillCostScale::DORMANT !== $cost));
+        $total = array_sum(array_filter($costs, static fn (int $cost): bool => SkillCostScale::DORMANT !== $cost));
+
+        return $total - ($branchCosts === [] ? 0 : max($branchCosts));
+    }
+
+    /**
+     * Ce que chaque branche d'un arbre declare, lu dans son corps.
+     *
+     * @return array<string, int>
+     */
+    private function branchCostsOf(string $tree): array
+    {
+        $source = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/Game/SkillFixtures.php');
+
+        if (preg_match('/    private function get' . $tree . 'Skills\(\): array\s*\{.*?\n    \}\n/s', $source, $found) !== 1) {
+            return [];
+        }
+
+        // Nœud par nœud, et **jamais** par une expression qui traverse leurs
+        // frontieres : un `.*?` entre le cout et la branche apparie le cout
+        // d'un nœud sans branche avec la branche du suivant. Mesure faite, il
+        // rendait 100 et 150 la ou les deux branches valent 150 — et le total
+        // tombait juste par accident, ce qui est la pire facon d'avoir raison.
+        preg_match_all("/'[a-z0-9_]+' => \[\n(.*?)\n            \],/s", $found[0], $bodies, \PREG_SET_ORDER);
+
+        $costs = [];
+        foreach ($bodies as [, $body]) {
+            if (preg_match("/'branch' => '(\w+)'/", $body, $branch) !== 1
+                || preg_match("/'requiredPoints' => (\d+)/", $body, $points) !== 1) {
+                continue;
+            }
+
+            $costs[$branch[1]] = ($costs[$branch[1]] ?? 0) + (int) $points[1];
+        }
+
+        return $costs;
     }
 
     /**
@@ -189,7 +237,10 @@ class SkillCostScaleTest extends TestCase
     {
         $costs = $this->costsByCombatTree()['Pyromancy'];
 
-        self::assertSame(SkillCostScale::COMPLETE_TREE, $this->learnableTotal($costs));
+        self::assertSame(
+            SkillCostScale::COMPLETE_TREE,
+            $this->learnableTotal($costs, $this->branchCostsOf('Pyromancy')),
+        );
     }
 
     /**
@@ -242,7 +293,7 @@ class SkillCostScaleTest extends TestCase
                 continue;
             }
 
-            $now = abs($this->learnableTotal($costs) - SkillCostScale::COMPLETE_TREE);
+            $now = abs($this->learnableTotal($costs, $this->branchCostsOf($tree)) - SkillCostScale::COMPLETE_TREE);
             $was = abs($baseline - SkillCostScale::COMPLETE_TREE);
 
             if ($now > $was) {
