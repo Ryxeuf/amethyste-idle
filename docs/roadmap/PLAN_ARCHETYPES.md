@@ -450,12 +450,12 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > que le canon annonçait. Et *on ne monte pas un arbre en tapant des rats* devient un
 > chiffre : chasser un palier en dessous **double** le temps (98 jours contre 49).
 >
-> **ARC-06b — ouvert, et BLOQUÉ sur une décision de conception** (2026-08-05). Le
-> travail mécanique est clair : brancher la distribution sur `MobDeadEvent` comme
-> `MateriaXpGranter` (même anti-exploit sur les invocations, même partage en coop),
-> avec le report du reste — la table descend à 0,25 et un compteur qui perd ses restes
-> fait gagner **zéro** point par rencontre à un joueur de palier 1, arrondi après
-> arrondi.
+> **ARC-06b — DÉBLOQUÉ : les trois questions sont tranchées le 2026-08-06** (voir
+> plus bas). Le travail mécanique est clair : brancher la distribution sur
+> `MobDeadEvent` comme `MateriaXpGranter` (même anti-exploit sur les invocations,
+> même partage en coop), avec le report du reste — la table descend à 0,25 et un
+> compteur qui perd ses restes fait gagner **zéro** point par rencontre à un joueur
+> de palier 1, arrondi après arrondi.
 >
 > **Ce qui manque est en amont : à quel arbre les points vont-ils ?** Les documents
 > fixent le *taux* (T1 0,25 · T2 0,5 · T3 1 · T4 2) et ne disent **nulle part** qui le
@@ -480,7 +480,26 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 >
 > Aucune de ces réponses n'est neutre : elles décident si un joueur a intérêt à mener
 > **un** arbre ou **quatre**, ce que GAME_PROGRESSION §1 (« il en mène deux à quatre »)
-> suppose sans le garantir. À trancher avant d'écrire l'écouteur.
+> suppose sans le garantir.
+>
+> **Décision (2026-08-06) — les trois questions sont tranchées :**
+>
+> 1. **Le porteur du gain est la case du geste.** Le gain va **en entier** à l'arbre
+>    `élément × registre` du geste employé (`Spell::element` + `Spell::register`,
+>    livrés par ARC-02) — un geste désigne une case unique de la grille des 24
+>    arbres de combat. On progresse dans ce qu'on **joue**, pas dans ce qu'on a
+>    acheté : jouer des gestes de feu fait progresser le feu, quel que soit l'arbre
+>    qui a ouvert la matéria.
+> 2. **Le partage est sans objet.** Les 39 gestes ambigus le sont par leurs
+>    *ouvreurs*, pas par leur nature : `magnetic-pull` employé en combat a un
+>    registre et un élément, donc une case. Jamais de division, jamais de
+>    multiplication — le multi-arbre reste neutre, comme GAME_PROGRESSION §1 le
+>    suppose.
+> 3. **L'attaque d'arme de base crédite l'arbre du port de l'arme employée**, gain
+>    plein. Précision d'implémentation : un port pouvant être enseigné par
+>    plusieurs arbres, le gain va à l'arbre où le joueur a **effectivement appris**
+>    le nœud de port de cette arme (le premier appris si plusieurs). Mains nues :
+>    aucun nœud de port → aucun point — le repli reste un repli.
 > GAME_ARCHETYPES §6.2. Un arbre coûte 465 points pour un plafond global de 500.
 - [x] Échelle **0 / 10 / 25 / 50 / 100** (+ 150 dormant) sur les 24 arbres de combat
       *(ARC-06a — `SkillCostScale`, échelle fermée et refusée à la lecture ; 192 coûts
