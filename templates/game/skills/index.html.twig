@@ -417,6 +417,12 @@
                                                         {% if skill.hit > 0 %}<span class="stat-badge stat-badge-hit">+{{ skill.hit }} préc.</span>{% endif %}
                                                         {% if skill.critical > 0 %}<span class="stat-badge stat-badge-critical">+{{ skill.critical }} crit.</span>{% endif %}
                                                         {% if skill.life > 0 %}<span class="stat-badge stat-badge-life">+{{ skill.life }} vie</span>{% endif %}
+                                                        {# ARC-12b — ce qu'un nœud rapporte, et ce qu'il faut porter pour l'obtenir. #}
+                                                        {% for readout in skill.leverReadouts|default([]) %}
+                                                            <span class="ds-seal {{ readout.conditional ? 'ds-seal--gain' : '' }}">
+                                                                {{ readout.leverLabel }} {{ readout.formattedEffect }}{% if readout.conditional %} — {{ readout.requirement }}{% endif %}
+                                                            </span>
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
                                                 <form action="{{ path('app_game_skill_acquire') }}" method="post" class="shrink-0">

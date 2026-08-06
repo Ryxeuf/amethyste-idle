@@ -14,6 +14,7 @@ use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Progression\SynergyCalculator;
 use App\GameEngine\Reputation\PatronageBonusResolver;
@@ -315,6 +316,6 @@ class CombatSkillResolverScopeTest extends TestCase
 
     private function leverReader(): SkillLeverReader
     {
-        return new SkillLeverReader($this->leverScale());
+        return new SkillLeverReader($this->leverScale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
     }
 }

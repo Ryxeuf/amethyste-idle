@@ -8,6 +8,7 @@ use App\Enum\CombatRegister;
 use App\GameEngine\Progression\CombatLeverDefinitionException;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillLeverReader;
 use PHPUnit\Framework\TestCase;
 
@@ -314,7 +315,7 @@ class CombatLeverTest extends TestCase
      */
     public function testANodeWithoutLeversGrantsNothing(): void
     {
-        $reader = new SkillLeverReader($this->scale());
+        $reader = new SkillLeverReader($this->scale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
 
         $skill = new Skill();
         $skill->setSlug('soldier-apprenti-1');
@@ -325,7 +326,7 @@ class CombatLeverTest extends TestCase
 
     public function testANodeGrantsAReadableListOfLevers(): void
     {
-        $reader = new SkillLeverReader($this->scale());
+        $reader = new SkillLeverReader($this->scale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
 
         $skill = new Skill();
         $skill->setSlug('soldier-rang3-1');
@@ -352,7 +353,7 @@ class CombatLeverTest extends TestCase
      */
     public function testANodeCannotGrantTheSameLeverTwice(): void
     {
-        $reader = new SkillLeverReader($this->scale());
+        $reader = new SkillLeverReader($this->scale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
 
         $this->expectException(CombatLeverDefinitionException::class);
         $reader->read([
@@ -363,7 +364,7 @@ class CombatLeverTest extends TestCase
 
     public function testANodeCannotGrantMoreThanTheCap(): void
     {
-        $reader = new SkillLeverReader($this->scale());
+        $reader = new SkillLeverReader($this->scale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
 
         $this->expectException(CombatLeverDefinitionException::class);
         $reader->read([['lever' => 'guard', 'points' => 99]]);
@@ -371,7 +372,7 @@ class CombatLeverTest extends TestCase
 
     public function testANodeCannotGrantAnUnknownLever(): void
     {
-        $reader = new SkillLeverReader($this->scale());
+        $reader = new SkillLeverReader($this->scale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
 
         $this->expectException(CombatLeverDefinitionException::class);
         $reader->read([['lever' => 'lifesteal', 'points' => 4]]);
