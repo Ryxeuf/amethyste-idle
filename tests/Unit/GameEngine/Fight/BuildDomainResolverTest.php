@@ -11,6 +11,7 @@ use App\Entity\Game\Item;
 use App\Enum\CombatRegister;
 use App\Enum\Element;
 use App\GameEngine\Fight\BuildDomainResolver;
+use App\GameEngine\Progression\SynergyCalculator;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,9 @@ class BuildDomainResolverTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->resolver = new BuildDomainResolver();
+        $synergies = $this->createMock(SynergyCalculator::class);
+        $synergies->method('getExpressionWidenings')->willReturn([]);
+        $this->resolver = new BuildDomainResolver($synergies);
     }
 
     /**

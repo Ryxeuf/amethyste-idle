@@ -4,6 +4,7 @@ namespace App\GameEngine\Progression;
 
 use App\Entity\App\Player;
 use App\Entity\Game\DomainSynergy;
+use App\Enum\AccointanceForm;
 use Doctrine\ORM\EntityManagerInterface;
 
 class SynergyCalculator
@@ -77,30 +78,42 @@ class SynergyCalculator
     }
 
     /**
-     * Calcule les bonus de combat issus des synergies actives.
+     * Les domaines qu'une accointance active fait **aussi** exprimer (ARC-16).
      *
-     * @return array{damage: int, heal: int, hit: int, critical: int, life: int}
+     * C'est la forme `domain_expression` du canon, et la seule dont le lecteur
+     * existe : *ce qu'on porte pour l'un parle aussi pour l'autre*. Le service
+     * rend, pour chaque domaine, la liste de ses voisins d'accointance — c'est
+     * `BuildDomainResolver` qui decide ensuite si l'un d'eux s'exprime.
+     *
+     * **Ce qu'il ne rend plus** : des statistiques. `getSynergyBonuses()`
+     * ajoutait `damage`, `heal`, `hit`, `critical` et `life` dans
+     * `CombatSkillResolver`, hors des 50 points de budget, hors des plafonds
+     * par levier et hors des palettes de fonction — la porte de service que la
+     * decision 15 ferme.
+     *
+     * @return array<int, list<int>> domainId => les domaines qui l'expriment aussi
      */
-    public function getSynergyBonuses(Player $player): array
+    public function getExpressionWidenings(Player $player): array
     {
-        $bonuses = [
-            'damage' => 0,
-            'heal' => 0,
-            'hit' => 0,
-            'critical' => 0,
-            'life' => 0,
-        ];
+        $widenings = [];
 
         foreach ($this->getActiveSynergies($player) as $entry) {
             $synergy = $entry['synergy'];
-            $type = $synergy->getBonusType();
-
-            if (isset($bonuses[$type])) {
-                $bonuses[$type] += $synergy->getBonusValue();
+            if ($synergy->getForm() !== AccointanceForm::DomainExpression) {
+                continue;
             }
+
+            $a = $synergy->getDomainA()->getId();
+            $b = $synergy->getDomainB()->getId();
+            if ($a === null || $b === null) {
+                continue;
+            }
+
+            $widenings[$a][] = $b;
+            $widenings[$b][] = $a;
         }
 
-        return $bonuses;
+        return $widenings;
     }
 
     /**

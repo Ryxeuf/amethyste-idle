@@ -38,7 +38,7 @@ class SynergyCalculatorTest extends TestCase
     {
         $domainA = $this->createDomain(1);
         $domainB = $this->createDomain(2);
-        $synergy = $this->createSynergy($domainA, $domainB, 'damage', 10, 50);
+        $synergy = $this->createSynergy($domainA, $domainB, 50);
 
         $this->mockRepository([$synergy]);
         $player = $this->createPlayer([
@@ -56,7 +56,7 @@ class SynergyCalculatorTest extends TestCase
     {
         $domainA = $this->createDomain(1);
         $domainB = $this->createDomain(2);
-        $synergy = $this->createSynergy($domainA, $domainB, 'damage', 10, 50);
+        $synergy = $this->createSynergy($domainA, $domainB, 50);
 
         $this->mockRepository([$synergy]);
         $player = $this->createPlayer([
@@ -73,7 +73,7 @@ class SynergyCalculatorTest extends TestCase
     {
         $domainA = $this->createDomain(1);
         $domainB = $this->createDomain(2);
-        $synergy = $this->createSynergy($domainA, $domainB, 'damage', 10, 50);
+        $synergy = $this->createSynergy($domainA, $domainB, 50);
 
         $this->mockRepository([$synergy]);
         $player = $this->createPlayer([]);
@@ -89,9 +89,9 @@ class SynergyCalculatorTest extends TestCase
         $domainB = $this->createDomain(2);
         $domainC = $this->createDomain(3);
 
-        $synergy1 = $this->createSynergy($domainA, $domainB, 'damage', 10, 50);
-        $synergy2 = $this->createSynergy($domainA, $domainC, 'damage', 6, 50);
-        $synergy3 = $this->createSynergy($domainB, $domainC, 'heal', 15, 50);
+        $synergy1 = $this->createSynergy($domainA, $domainB, 50);
+        $synergy2 = $this->createSynergy($domainA, $domainC, 50);
+        $synergy3 = $this->createSynergy($domainB, $domainC, 50);
 
         $this->mockRepository([$synergy1, $synergy2, $synergy3]);
         $player = $this->createPlayer([
@@ -115,8 +115,8 @@ class SynergyCalculatorTest extends TestCase
         $domainB = $this->createDomain(2);
         $domainC = $this->createDomain(3);
 
-        $synergy1 = $this->createSynergy($domainA, $domainB, 'damage', 10, 50);
-        $synergy2 = $this->createSynergy($domainA, $domainC, 'heal', 12, 50);
+        $synergy1 = $this->createSynergy($domainA, $domainB, 50);
+        $synergy2 = $this->createSynergy($domainA, $domainC, 50);
 
         $this->mockRepository([$synergy1, $synergy2]);
         $player = $this->createPlayer([
@@ -136,7 +136,7 @@ class SynergyCalculatorTest extends TestCase
     {
         $domainA = $this->createDomain(1);
         $domainB = $this->createDomain(2);
-        $synergy = $this->createSynergy($domainA, $domainB, 'critical', 8, 50);
+        $synergy = $this->createSynergy($domainA, $domainB, 50);
 
         $this->mockRepository([$synergy]);
         $player = $this->createPlayer([
@@ -171,15 +171,13 @@ class SynergyCalculatorTest extends TestCase
         return $domain;
     }
 
-    private function createSynergy(Domain $a, Domain $b, string $bonusType, int $bonusValue, int $threshold): DomainSynergy
+    private function createSynergy(Domain $a, Domain $b, int $threshold): DomainSynergy
     {
         $synergy = new DomainSynergy();
         $synergy->setDomainA($a);
         $synergy->setDomainB($b);
         $synergy->setName('Test Synergy');
         $synergy->setDescription('Test description');
-        $synergy->setBonusType($bonusType);
-        $synergy->setBonusValue($bonusValue);
         $synergy->setActivationThreshold($threshold);
 
         return $synergy;

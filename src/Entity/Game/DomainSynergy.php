@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\AccointanceForm;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity()]
@@ -28,11 +29,15 @@ class DomainSynergy
     #[ORM\Column(type: 'text')]
     private string $description;
 
-    #[ORM\Column(type: 'string', length: 32)]
-    private string $bonusType;
-
-    #[ORM\Column(type: 'integer')]
-    private int $bonusValue;
+    /**
+     * Ce que l'accointance fait — et la liste est fermee (ARC-16).
+     *
+     * Elle remplace le couple `bonusType`/`bonusValue`, qui distribuait des
+     * statistiques plates hors des 50 points de budget, hors des plafonds et
+     * hors des palettes. *Une accointance ne donne jamais de puissance.*
+     */
+    #[ORM\Column(type: 'string', length: 32, enumType: AccointanceForm::class)]
+    private AccointanceForm $form = AccointanceForm::DomainExpression;
 
     #[ORM\Column(type: 'integer', options: ['default' => 50])]
     private int $activationThreshold = 50;
@@ -90,26 +95,14 @@ class DomainSynergy
         return $this;
     }
 
-    public function getBonusType(): string
+    public function getForm(): AccointanceForm
     {
-        return $this->bonusType;
+        return $this->form;
     }
 
-    public function setBonusType(string $bonusType): self
+    public function setForm(AccointanceForm $form): self
     {
-        $this->bonusType = $bonusType;
-
-        return $this;
-    }
-
-    public function getBonusValue(): int
-    {
-        return $this->bonusValue;
-    }
-
-    public function setBonusValue(int $bonusValue): self
-    {
-        $this->bonusValue = $bonusValue;
+        $this->form = $form;
 
         return $this;
     }
