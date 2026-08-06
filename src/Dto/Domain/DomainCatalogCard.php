@@ -23,6 +23,13 @@ final class DomainCatalogCard
         public readonly ?CombatRegister $register,
         public readonly string $teaches,
         public readonly string $equips,
+        // ARC-13b-b — la trace que son element laisse sur ce qu'il frappe.
+        // `null` pour les arbres sans element marque (les metiers, et tout ce
+        // qui est neutre) : `None` n'est pas un element mais son absence, et
+        // lui inventer une marque creerait une case qui ne correspond a aucun
+        // domaine (§ 9 quater). Une phrase, jamais un chiffre : le type ne peut
+        // porter ni duree, ni pourcentage, ni chance d'application.
+        public readonly ?string $elementTrace,
         // Le parchemin qui l'ouvre. `null` designe un arbre inatteignable —
         // `DomainParchmentContractTest` interdit ce cas dans les donnees
         // livrees, mais le type doit pouvoir le representer pour qu'un ecran
@@ -54,6 +61,7 @@ final class DomainCatalogCard
         ?string $parchmentName,
         ?int $parchmentPrice,
         bool $opened,
+        ?string $elementTrace = null,
     ): self {
         return new self(
             (int) $domain->getId(),
@@ -62,6 +70,7 @@ final class DomainCatalogCard
             $domain->getRegister(),
             $teaches,
             $equips,
+            $elementTrace,
             $parchmentName,
             $parchmentPrice,
             $opened,

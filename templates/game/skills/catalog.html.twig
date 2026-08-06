@@ -35,6 +35,22 @@
                 <span>{{ ("game.skills.catalog.element." ~ element)|trans }}</span>
             </h2>
 
+            {#
+                ARC-13b-b — la trace que cet element laisse.
+
+                Une phrase par groupe, jamais par carte : la marque appartient a
+                l'element, et les trois arbres qui le partagent la partagent
+                aussi. Aucune valeur n'est dite ici — ni duree, ni pourcentage,
+                ni chance : le § 6.2 l'interdit, et le DTO n'a aucun champ pour
+                les porter.
+            #}
+            {% if element_traces[element] is defined %}
+                <p class="ds-hint mb-2">
+                    {{ element_traces[element] }}
+                    <span class="opacity-70">{{ "game.skills.catalog.mark_hint"|trans }}</span>
+                </p>
+            {% endif %}
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {% for card in cards %}
                     <article class="ds-card p-3 flex flex-col gap-2">

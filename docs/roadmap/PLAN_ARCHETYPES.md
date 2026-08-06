@@ -34,7 +34,7 @@
 | ARC-10 ✅ | Le plafond global de points — **tranché : suppression** | S | ∅ |
 | ARC-11 ✅ | L'intention et la portée du geste, et la loi du dépôt | M → 2 sous-phases | ← ARC-02 |
 | ARC-12 ✅ | Les passifs conditionnels d'équipement | M | ← ARC-03 |
-| ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
+| ARC-13 ✅ | Les huit marques élémentaires | M → 2 sous-phases | ← ARC-11 |
 | ARC-14 ✅ | La fourche : une branche exclusive par arbre de combat | S | **→ ARC-07** |
 | ARC-15 ✅ | Le pacte : un malus rend du budget | S | ← ARC-03 |
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
@@ -892,7 +892,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [ ] Croise **OBJ** : les familles d'arme et lignes d'armure doivent être lisibles depuis
       l'objet (`EquipmentPortCatalog` les déclare déjà par famille)
 
-### ARC-13 — Les huit marques élémentaires (M → 2 sous-phases | ★★★ | HAUTE) ◐
+### ARC-13 — Les huit marques élémentaires (M → 2 sous-phases | ★★★ | HAUTE) ✅
 
 > **Découpé (règle 8) : ARC-13a les marques et leur loi, ARC-13b leur emploi.** Poser les
 > huit marques est une chose ; les faire appliquer par un accord d'entrée de chacun des 24
@@ -940,9 +940,52 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > les accueillir. Il faut soit en créer un, soit séparer la Brûlure-marque de la
 > brûlure-DOT. **Question ouverte**, tenue en cliquet nommé.
 >
-> **ARC-13b-b — reste à faire** : le côté monstre (croise BES-01 — 21 monstres sur 65 ont
-> un sort, 9 appliquent un statut, et `ward` est dans deux palettes sur quatre sans rien
-> à quoi résister), et le catalogue public qui peut enfin dire à quoi sert un élément.
+> **ARC-13b-b — livré le 2026-08-06, et il clôt ARC-13.** Le côté monstre, et le catalogue
+> public.
+>
+> **La lecture qui fait tout le jalon** : *un joueur porte son élément dans ses gestes, un
+> monstre le porte dans sa peau.* Un joueur tient son élément de la matéria qu'il sertit,
+> donc du geste — ARC-13b-a a écrit la marque sur l'accord. Un monstre tient son élément de
+> **lui-même** (`Monster::element`, livré par BES-01) et ses gestes sont **partagés** :
+> `none_attack_1` sert des dizaines d'espèces de sept éléments différents. Écrire la marque
+> sur le geste obligerait donc à dupliquer chaque attaque par élément, ou à mentir.
+>
+> **Et cette lecture est immunisée, par construction, au défaut du côté joueur.** ARC-13b-a
+> a trouvé trois gestes qui appliquent la Brûlure sans être du feu et allument donc le
+> capstone d'un Pyromancien — le capstone d'un arbre s'allume sur le geste d'un autre. Ici
+> la marque **est** l'élément du monstre : elle ne peut pas en désigner un autre, et un test
+> le dit plutôt que de le supposer.
+>
+> **Mesure : 63 des 65 monstres marquent désormais** (les 2 exceptions sont les mannequins,
+> d'élément neutre — et `MonsterMarkLaw` les refuse une seconde fois par leur `trainingMode`,
+> parce que la clémence des mannequins se pose à *chaque* chemin plutôt qu'à un seul).
+> `ward` cesse donc d'être un levier mort pour deux palettes sur quatre, et le jet passe par
+> `applyStatusEffect()` — là où `grip` et `ward` se croisent — plutôt que par un chemin
+> direct qui contournerait la défense de la cible.
+>
+> **Les deux jalons se verrouillent l'un l'autre** : ARC-11b-b a rangé `TYPE_MARK` dans
+> l'intention `entrave`, et `ward` ne qualifie **que** l'entrave. Le porteur des leviers de
+> la cible est donc relu pour la marque, séparément du coup qui la porte : les confondre
+> reviendrait à faire résister une marque avec la garde, ou à ne la faire résister par rien.
+>
+> **Le catalogue public dit ce que chaque élément laisse** (GAME_ONBOARDING §6.2) — une
+> phrase par élément, dans `domain_catalog.yaml`, rangée à part des arbres parce que **la
+> marque appartient à l'élément** : 24 arbres partagent 8 marques, et les recopier serait 24
+> occasions de diverger pour une information identique.
+>
+> **Ce que ces phrases ne disent pas, et le défaut qu'elles révèlent.** Elles ne promettent
+> **aucun effet de combat**, et c'est délibéré : les marques déclarent des modificateurs
+> (`dodge`, `hit`, `guard`, `tempo`) que le moteur **ne lit pas** —
+> `StatusEffectManager::getStatModifiers()` n'a aucun appelant. Les brancher poserait deux
+> questions que ce jalon n'a pas à trancher (*un `guard: -0.20` retire-t-il vingt points de
+> réduction, ou multiplie-t-il les dégâts subis par 1,20 ?*), et le §0.2 interdit de
+> recalibrer à la main — c'est ARC-17 qui mesurera. Écrire « on esquive moins bien » serait
+> donc mentir, et *le catalogue omet, il ne ment pas*. Les phrases disent la **trace**, un
+> test refuse qu'un chiffre ou un `%` s'y glisse, et **`tempo` restera inerte de toute façon
+> tant que l'ordre du tour n'est pas modélisé** (ARC-03b l'avait déjà noté).
+>
+> **Question ouverte, portée au bilan** : *comment se lisent les modificateurs d'une marque
+> ?* Elle bloque la moitié de la valeur des huit marques, et appartient à ARC-17/ARC-18.
 > GAME_ARCHETYPES §1.1. **Trois pièces déjà écrites du système en dépendent** : le
 > capstone d'assaut (« contre une cible qui porte votre marque »), le levier `grip`
 > (« les statuts appliqués ») et la palette de contrôle (deux accords d'`entrave`).
@@ -955,11 +998,14 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       portée par un geste de dégât. *(ARC-13a — `MIN_DURATION`, tenu par test sur les 8)* Démonstration : en duel, échanger un de ses tours contre
       un tour adverse laisse les dégâts subis **rigoureusement identiques** (101 dans les
       quatre cas mesurés) — une entrave d'un tour est un nœud mort
-- [ ] **Côté monstre aussi** (correction du §9 ter) : mesuré, **21 monstres sur 65** ont un
+- [x] **Côté monstre aussi** (correction du §9 ter) : mesuré, **21 monstres sur 65** ont un
       sort et **9 de ces sorts** appliquent un statut. `ward` figure dans deux palettes sur
       quatre et l'accord de dissipation du Guérisseur n'a rien à dissiper — une marque qui
       n'existe que dans un sens est un levier mort pour la moitié des fonctions. Croise
-      **BES-01** (l'élément des monstres, prérequis de MAT-01)
+      **BES-01** (l'élément des monstres, prérequis de MAT-01) *(ARC-13b-b — `MonsterMarkLaw` :
+      la marque vient de l'**élément du monstre**, jamais de son geste, parce que les gestes
+      des monstres sont partagés. **63 des 65** marquent ; les 2 exceptions sont les
+      mannequins)*
 - [x] **Un des deux accords d'entrée de chaque arbre l'applique** : c'est ce qui rend le
       capstone atteignable au jour 1 *(ARC-13b-a — **20 des 24**, 19 gestes touchés, aucun
       effet écrasé. Les 4 restants n'ont aucun accord d'entrée qui blesse, donc rien à
@@ -971,10 +1017,16 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [x] Les 15 statuts livrés se rangent : ceux qui deviennent des marques, ceux qui restent
       des effets ordinaires (poison, régénération, bouclier…) *(ARC-13a — seule la Brûlure
       passe marque ; les 14 autres restent ordinaires, et un test le vérifie)*
-- [ ] Le **catalogue public** (GAME_ONBOARDING §6) peut enfin dire à quoi sert un élément —
-      sans jamais donner de valeur
-- [ ] Tests : une marque et une seule par élément ; tout arbre de combat a un accord
+- [x] Le **catalogue public** (GAME_ONBOARDING §6) peut enfin dire à quoi sert un élément —
+      sans jamais donner de valeur *(ARC-13b-b — une phrase par **élément** et non par arbre ;
+      elle dit la **trace**, jamais un effet de combat, parce que les modificateurs des
+      marques ne sont lus par personne — défaut nommé, tranché par ARC-17. Un test refuse
+      qu'un chiffre ou un `%` s'y glisse)*
+- [x] Tests : une marque et une seule par élément ; tout arbre de combat a un accord
       d'entrée qui applique la sienne ; aucune marque ne se cumule avec elle-même
+      *(ARC-13a + ARC-13b-a + ARC-13b-b — `MonsterMarkLawTest`,
+      `MonsterMarkReachabilityTest` (les 8 marques existent en base, un monstre ne laisse
+      **jamais** la marque d'un autre élément) et les 3 lois du catalogue)*
 
 ### ARC-14 — La fourche (S → 2 sous-phases | ★★★ | HAUTE) ✅
 > GAME_ARCHETYPES §6.1 bis. **Deux pyromanciens finis étaient identiques.** Le mécanisme

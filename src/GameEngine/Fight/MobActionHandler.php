@@ -8,6 +8,8 @@ use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Entity\Game\StatusEffect;
+use App\Enum\SpellIntent;
 use App\Event\Fight\ActionEvent;
 use App\Event\Fight\MobActionHitEvent;
 use App\Event\Fight\MobActionMissEvent;
@@ -161,6 +163,7 @@ class MobActionHandler
             $spellMessages = $this->spellApplicator->apply($spell, $mob, $target, $options);
             $result['messages'][] = sprintf('%s utilise %s !', $mob->getName(), $spell->getName());
             $result['messages'] = array_merge($result['messages'], $spellMessages);
+            $result['messages'] = array_merge($result['messages'], $this->applyMonsterMark($fight, $mob, $target, $spell));
             $this->combatLogger->logSpell($fight, $mob, $target, $spell->getName(), true);
             $this->eventDispatcher->dispatch(new MobActionHitEvent($spell->getName()), MobActionHitEvent::NAME);
         } else {
@@ -173,6 +176,53 @@ class MobActionHandler
         $fight->decrementAllCooldowns();
 
         return $result;
+    }
+
+    /**
+     * Le monstre laisse la marque de son element sur ce qu'il a frappe (ARC-13b-b).
+     *
+     * **C'est ici que `ward` gagne un objet.** Le levier resiste a l'application
+     * d'un statut subi ; il figure dans deux palettes sur quatre et n'avait,
+     * jusqu'a ce jalon, strictement rien a quoi resister — aucun monstre ne
+     * posait de marque. Le jet passe donc par `applyStatusEffect()`, la ou
+     * `grip` et `ward` se croisent (ARC-03b), et **pas** par un chemin direct
+     * qui contournerait la defense de la cible.
+     *
+     * **Les leviers sont relus pour l'entrave, et c'est la lettre d'ARC-11b-b.**
+     * Le porteur construit plus haut vise l'intention du **coup** (`degat`),
+     * qui ecarte `ward`. La marque est un second effet, d'une autre intention :
+     * elle merite son propre porteur. Les confondre reviendrait a faire resister
+     * une marque avec la garde, ou a ne la faire resister par rien.
+     *
+     * Une cible morte n'est pas marquee : le coup a pu la tuer, et marquer un
+     * cadavre poserait une duree que personne ne verra courir.
+     *
+     * @return list<string>
+     */
+    private function applyMonsterMark(Fight $fight, Mob $mob, CharacterInterface $target, Spell $spell): array
+    {
+        if ($target->isDead()) {
+            return [];
+        }
+
+        $mark = MonsterMarkLaw::markFor($mob->getMonster(), $spell);
+        if ($mark === null) {
+            return [];
+        }
+
+        $effect = $this->entityManager->getRepository(StatusEffect::class)->findOneBy(['slug' => $mark]);
+        if ($effect === null) {
+            return [];
+        }
+
+        $targetLevers = $target instanceof Player
+            ? $this->skillResolver->getLeverEffects($target, null, null, SpellIntent::Hinder)
+            : null;
+
+        $this->statusEffectManager->applyStatusEffect($fight, $target, $effect, null, $targetLevers);
+        $this->combatLogger->logStatusApply($fight, $target, $effect->getName());
+
+        return [sprintf('%s laisse %s sur %s.', $mob->getName(), $effect->getName(), $target->getName())];
     }
 
     /**

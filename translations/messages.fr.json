@@ -780,6 +780,7 @@
       "catalog": {
         "title": "Catalogue des arbres",
         "intro": "Tout ce qu'on peut apprendre existe et se lit ici. Ce qu'un arbre enseigne dans le détail ne se découvre qu'en l'ouvrant.",
+        "mark_hint": "C'est la prise sur laquelle les gestes de cet élément s'appuient.",
         "opened": "Ouvert",
         "equips": "Permet de porter",
         "parchment": "Parchemin",

@@ -35,6 +35,9 @@ class CatalogController extends AbstractController
 
         return $this->render('game/skills/catalog.html.twig', [
             'groups' => $this->catalogView->cardsByElement($player),
+            // ARC-13b-b — ce que chaque element marque. Une phrase par groupe,
+            // pas par carte : la marque appartient a l'element.
+            'element_traces' => $this->catalogView->elementTraces(),
         ]);
     }
 }

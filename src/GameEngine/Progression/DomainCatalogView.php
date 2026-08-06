@@ -58,7 +58,26 @@ class DomainCatalogView
             $parchment?->getName(),
             $parchment?->getPrice(),
             $player !== null && $this->accessManager->isOpen($player, $domain),
+            // ARC-13b-b — la trace de son element, la meme pour les trois
+            // arbres qui le partagent : elle appartient a l'element, pas a
+            // l'arbre.
+            $this->descriptions->traceOfElement($domain->getElement()),
         );
+    }
+
+    /**
+     * La trace que chaque element du groupe laisse (ARC-13b-b).
+     *
+     * Rendue **a cote** des cartes plutot que dedans : le gabarit groupe deja
+     * par element, et repeter la phrase sur les trois cartes d'un element la
+     * transformerait en bruit — alors qu'elle est exactement l'information qui
+     * manque au-dessus du groupe.
+     *
+     * @return array<string, string>
+     */
+    public function elementTraces(): array
+    {
+        return $this->descriptions->allElements();
     }
 
     /**

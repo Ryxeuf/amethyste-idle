@@ -780,6 +780,7 @@
       "catalog": {
         "title": "Tree catalogue",
         "intro": "Everything that can be learned exists and is listed here. What a tree teaches in detail is only revealed by opening it.",
+        "mark_hint": "It is the hold that gestures of this element build upon.",
         "opened": "Open",
         "equips": "Lets you carry",
         "parchment": "Parchment",
