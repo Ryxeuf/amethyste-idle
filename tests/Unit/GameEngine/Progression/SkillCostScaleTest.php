@@ -257,7 +257,22 @@ class SkillCostScaleTest extends TestCase
     {
         $source = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/Game/SkillFixtures.php');
 
-        preg_match_all("/'points' => (\d+)/", $source, $ports);
+        // **La clef `points` dit deux choses depuis ARC-07a**, et il faut les
+        // separer : un **cout** dans la fabrique des echelons de port, et un
+        // **point de budget** dans un `levers` (`['lever' => 'power',
+        // 'points' => 14]`). Les deux unites n'ont rien a voir — 3, 6, 9 et 14
+        // ne sont pas des couts et n'ont aucune raison d'etre sur l'echelle.
+        // Lire tout le fichier confondait les deux ; on ne lit donc que le
+        // corps de la fabrique, qui est le seul endroit ou `points` est un
+        // prix.
+        preg_match(
+            '/    private function getArmorPortUpperRungs\(\): array\s*\{.*?\n    \}\n/s',
+            $source,
+            $factory,
+        );
+        self::assertNotEmpty($factory, 'La fabrique des echelons de port a disparu : le test ne verifierait rien.');
+
+        preg_match_all("/'points' => (\d+)/", $factory[0], $ports);
         self::assertNotEmpty($ports[1], 'Les echelons de port ne declarent plus leur cout ici.');
 
         foreach ($ports[1] as $points) {
