@@ -615,6 +615,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'phoenix-flame']],
                 'requirements' => ['pyro_rang3_1'],
             ],
+            // Son prerequis suit les nœuds retires : il pointait vers deux
+            // accords que ce jalon a supprimes, et **une reference morte fait
+            // tomber tout le chargement des fixtures**, pas seulement ce nœud.
+            // Un seul parent, comme le § 6.6 le demande.
             'pyro_rang5_1' => [
                 'title' => 'Materia : Eruption volcanique',
                 'slug' => 'pyro-rang5-1',
@@ -622,7 +626,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'volcanic-eruption']],
-                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
+                'requirements' => ['pyro_rang3_4'],
             ],
         ];
     }
