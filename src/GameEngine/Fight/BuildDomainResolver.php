@@ -8,6 +8,7 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Enum\CombatRegister;
 use App\Enum\Element;
+use App\GameEngine\Progression\SynergyCalculator;
 
 /**
  * Les domaines qu'un build exprime (DOM-02).
@@ -39,10 +40,41 @@ class BuildDomainResolver
      */
     private const WEAPON_LOCATIONS = [Item::GEAR_LOCATION_MAIN_WEAPON, Item::GEAR_LOCATION_SIDE_WEAPON];
 
+    public function __construct(
+        private readonly SynergyCalculator $synergyCalculator,
+    ) {
+    }
+
     /**
      * Le domaine s'exprime-t-il avec ce que le joueur porte ?
+     *
+     * **Ou avec ce qu'il porte pour son voisin** : depuis ARC-16, une
+     * accointance active de forme `domain_expression` elargit ce qui exprime un
+     * domaine — *ce qu'on porte pour l'un parle aussi pour l'autre*. C'est le
+     * seul endroit du moteur ou une accointance agit, et elle n'y ajoute aucun
+     * chiffre : elle permet a un passif deja paye de s'exprimer dans une tenue
+     * qui, sans elle, l'aurait tu.
      */
     public function isActive(Player $player, Domain $domain): bool
+    {
+        if ($this->expressesItself($player, $domain)) {
+            return true;
+        }
+
+        foreach ($this->synergyCalculator->getExpressionWidenings($player)[$domain->getId()] ?? [] as $neighbourId) {
+            $neighbour = $this->domainById($player, $neighbourId);
+            if ($neighbour !== null && $this->expressesItself($player, $neighbour)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Ce que le build dit de ce domaine, sans le secours d'une accointance.
+     */
+    private function expressesItself(Player $player, Domain $domain): bool
     {
         $register = $domain->getRegister();
         if ($register === null) {
@@ -59,6 +91,26 @@ class BuildDomainResolver
         }
 
         return \in_array($register, $this->carriedRegisters($player), true);
+    }
+
+    /**
+     * Le domaine voisin, retrouve parmi ceux que le joueur pratique.
+     *
+     * On ne va pas le chercher en base : une accointance n'est active que si le
+     * joueur a de l'experience dans **les deux** domaines (le seuil de
+     * `SynergyCalculator`), donc le voisin est forcement dans ses
+     * `DomainExperience`. Le lire la evite une requete par domaine teste.
+     */
+    private function domainById(Player $player, int $id): ?Domain
+    {
+        foreach ($player->getDomainExperiences() as $experience) {
+            $domain = $experience->getDomain();
+            if ($domain->getId() === $id) {
+                return $domain;
+            }
+        }
+
+        return null;
     }
 
     /**

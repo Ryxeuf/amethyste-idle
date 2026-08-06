@@ -1313,17 +1313,54 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       *(ARC-15 — 15 tests ; le dépassement est refusé **par construction**, le contrôle de
       plafond s'appliquant au nœud complet)*
 
-### ARC-16 — Les accointances (M | ★★ | MOYENNE)
+### ARC-16 — Les accointances (M → 2 sous-phases | ★★ | MOYENNE) ◐
 > GAME_ARCHETYPES §9.7. **Constat : les synergies livrées sont une fuite de budget.**
 > `DomainSynergy` donne des statistiques plates (`damage +10`, `heal +15`) ajoutées dans
 > `CombatSkillResolver` **hors** des 50 pb, hors des plafonds, hors des palettes.
-- [ ] Refonte : une accointance ne donne **jamais** de puissance — quatre formes légales
+>
+> **Découpé (règle 8)** : ARC-16a ferme la fuite et pose le vocabulaire, ARC-16b branche les
+> formes dont le lecteur manque.
+>
+> **ARC-16a — livré le 2026-08-06.** `AccointanceForm` pose les quatre formes du canon en
+> liste fermée, et `bonusType`/`bonusValue` **disparaissent de l'entité** : *il n'y a plus de
+> champ où écrire un chiffre*. L'invariant est ainsi porté par le **type** plutôt que par les
+> valeurs — plus fort qu'une vérification de données, qui ne dirait rien du jour où quelqu'un
+> rajoute une colonne. Un second test ferme l'autre côté : le moteur de combat ne va plus
+> chercher d'accointance du tout.
+>
+> **Trouvé en ouvrant le jalon, et qui aggrave le constat** : `DomainSynergy` n'a **aucune
+> interface**. Les seules synergies visibles en jeu sont les synergies **élémentaires**, qui
+> sont un autre système. Les accointances étaient donc invisibles *et* génératrices de
+> puissance — un bonus que le joueur ne peut ni lire, ni prévoir, ni arbitrer.
+>
+> **Une seule des quatre formes a un lecteur**, et le jalon la branche : `domain_expression`
+> (`BuildDomainResolver`) — *ce qu'on porte pour l'un parle aussi pour l'autre*. Les huit
+> paires livrées s'y traduisent **sans rien inventer**, parce que toutes sont des couples où
+> l'un porte ce que l'autre ne porte pas : l'épée du soldat fait parler la pyromancie.
+>
+> **Le blocage de la forme 1 est un constat, pas un report de confort** :
+> `condition_widening` veut élargir ce qui satisfait la condition d'un passif — mais
+> `SkillCondition` est analysée (ARC-12a), valorisée et affichée, et **jamais confrontée à un
+> équipement réel**. Aucun service ne répond « ce joueur porte-t-il une dague ? ». Élargir ce
+> que personne n'évalue n'aurait aucun effet. Un test refuse donc qu'une accointance soit
+> écrite dans une forme sans lecteur : *une accointance inerte n'est pas fausse, mais elle est
+> un mensonge d'interface si on la laisse s'écrire sans le savoir.*
+- [x] Refonte : une accointance ne donne **jamais** de puissance — quatre formes légales
       seulement (élargir ce qui satisfait une condition, ce qui exprime un domaine, ce
-      qu'un emplacement accepte ; réduire un coût d'accès)
-- [ ] Migration des synergies livrées vers ces formes, ou suppression
-- [ ] Une accointance par paire, effet unique, **jamais nécessaire**
-- [ ] Tests : aucune accointance ne rend un point de budget, un levier ou une statistique ;
-      aucune recette, aucun palier, aucun contenu n'en dépend
+      qu'un emplacement accepte ; réduire un coût d'accès) *(ARC-16a — `AccointanceForm`,
+      liste fermée)*
+- [x] Migration des synergies livrées vers ces formes, ou suppression *(ARC-16a — les 8 paires
+      passent en `domain_expression`, aucune supprimée)*
+- [x] Une accointance par paire, effet unique, **jamais nécessaire** *(ARC-16a — testé **quel
+      que soit l'ordre des deux domaines**, que la contrainte d'unicité du schéma laisserait
+      passer)*
+- [x] Tests : aucune accointance ne rend un point de budget, un levier ou une statistique ;
+      aucune recette, aucun palier, aucun contenu n'en dépend *(ARC-16a —
+      `AccointanceContractTest`)*
+- [ ] **ARC-16b** : les trois formes restantes et leurs lecteurs — `slot_acceptance` (ce qu'un
+      emplacement de matéria accepte), `access_discount` (un échelon de port qui coûte un
+      palier de moins) et `condition_widening`, **qui exige d'abord qu'une condition de passif
+      soit évaluée quelque part**
 
 ### ARC-17 — Le simulateur d'équilibrage (M | ★★★ | HAUTE)
 > GAME_ARCHETYPES §0.2, §9 sexies et §9 septies. **Mesuré : les arbres ne sont pas

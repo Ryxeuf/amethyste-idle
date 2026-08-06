@@ -9,14 +9,12 @@ use App\Enum\CombatRegister;
 use App\Enum\SpellIntent;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\SkillLeverReader;
-use App\GameEngine\Progression\SynergyCalculator;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 
 class CombatSkillResolver
 {
     public function __construct(
         private readonly BuildDomainResolver $buildDomainResolver,
-        private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
         private readonly PatronageBonusResolver $patronageBonusResolver,
         private readonly SkillLeverReader $leverReader,
@@ -118,11 +116,13 @@ class CombatSkillResolver
             $bonuses['critical'] += $skill->getCritical();
         }
 
-        // Ajouter les bonus de synergies cross-domaine
-        $synergyBonuses = $this->synergyCalculator->getSynergyBonuses($player);
-        foreach ($synergyBonuses as $stat => $value) {
-            $bonuses[$stat] += $value;
-        }
+        // ARC-16 : **plus rien ici pour les accointances.** Elles ajoutaient
+        // `damage`, `heal`, `hit`, `critical` et `life` a cet endroit precis,
+        // c'est-a-dire hors de tout arbre — donc hors des 50 points de budget,
+        // hors des plafonds par levier et hors des palettes de fonction.
+        // *Une accointance ne donne jamais de puissance* (§ 9.7, decision 15) :
+        // elle elargit ce qui exprime un domaine, et cela se lit dans
+        // `BuildDomainResolver`, pas dans une addition de statistiques.
 
         // Ajouter les bonus de sets d'équipement
         $setBonuses = $this->equipmentSetResolver->getSetBonuses($player);
