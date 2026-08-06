@@ -74,6 +74,69 @@ class StatusEffectManager
     }
 
     /**
+     * Deposer un effet sur des allies, pour la duree de la rencontre (ARC-11b).
+     *
+     * C'est la loi du depot (`DepositLaw`, GAME_ARCHETYPES § 7 bis) rendue
+     * executable : un geste qui touche le groupe **ne reagit pas**, il pose
+     * une duree qui court que son lanceur soit connecte ou non. Le depot ne
+     * passe **pas** par le jet de chance d'`applyStatusEffect()` — on ne
+     * provisionne pas au hasard : ce qui est paye d'un tour est pose.
+     *
+     * La valeur totale est fixee par le geste ; la duree ne fait que
+     * l'**etaler**. Chaque allie recoit la meme part par tour, et c'est la
+     * multiplication par les corps — jamais le chiffre affiche — qui fait la
+     * valeur d'un depot en groupe.
+     *
+     * @param iterable<CharacterInterface> $allies
+     */
+    public function deposit(Fight $fight, iterable $allies, StatusEffect $effect, int $totalValue, ?CombatLeverEffects $casterLevers = null): int
+    {
+        $duration = DepositLaw::durationFor($this->effectiveDuration($effect, $casterLevers));
+        $perTurn = DepositLaw::spreadPerTurn($totalValue, $duration);
+
+        $deposited = 0;
+        foreach ($allies as $ally) {
+            if ($ally->isDead()) {
+                continue;
+            }
+
+            $targetType = $this->getTargetType($ally);
+            $existing = $this->findExistingEffect($fight, $targetType, $ally->getId(), $effect);
+
+            if ($existing !== null) {
+                // Un depot ne s'empile pas : il se **renouvelle**. Empiler
+                // ferait d'un tour rejoue le levier le moins cher du jeu.
+                $existing->setRemainingTurns($duration);
+                $existing->setValuePerTurn($perTurn > 0 ? $perTurn : null);
+                $existing->setAppliedAt(new \DateTime());
+                $existing->setLastTickTurn(null);
+                $this->entityManager->persist($existing);
+                ++$deposited;
+
+                continue;
+            }
+
+            $fightStatusEffect = new FightStatusEffect();
+            $fightStatusEffect->setFight($fight);
+            $fightStatusEffect->setTargetType($targetType);
+            $fightStatusEffect->setTargetId($ally->getId());
+            $fightStatusEffect->setStatusEffect($effect);
+            $fightStatusEffect->setRemainingTurns($duration);
+            $fightStatusEffect->setValuePerTurn($perTurn > 0 ? $perTurn : null);
+            $fightStatusEffect->setAppliedAt(new \DateTime());
+
+            $this->entityManager->persist($fightStatusEffect);
+            ++$deposited;
+        }
+
+        if ($deposited > 0) {
+            $this->entityManager->flush();
+        }
+
+        return $deposited;
+    }
+
+    /**
      * La chance d'application, emprise et sauvegarde comprises (ARC-03b).
      *
      * **Le plancher ne s'applique qu'a ce que les leviers deplacent.** Un statut
@@ -158,7 +221,7 @@ class StatusEffectManager
 
             // Damage over time (poison, burn)
             if ($effect->isDamaging()) {
-                $damage = $effect->getDamagePerTurn();
+                $damage = $fightEffect->getValuePerTurn() ?? $effect->getDamagePerTurn();
                 $newLife = max(0, $character->getLife() - $damage);
                 $character->setLife($newLife);
 
@@ -178,7 +241,11 @@ class StatusEffectManager
 
             // Heal over time (regeneration)
             if ($effect->isHealing()) {
-                $heal = $effect->getHealPerTurn();
+                // ARC-11b : un depot etale sa valeur, donc c'est
+                // l'**application** qui dit ce qu'elle rend par tour. `null`
+                // veut dire « rien n'a ete etale » — la fiche repond, et rien
+                // ne bouge par rapport a avant ce jalon.
+                $heal = $fightEffect->getValuePerTurn() ?? $effect->getHealPerTurn();
                 $cap = $character instanceof Player
                     ? $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($character)
                     : $character->getMaxLife();

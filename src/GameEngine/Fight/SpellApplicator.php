@@ -10,6 +10,7 @@ use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
 use App\Enum\CombatLever;
 use App\Enum\Element;
+use App\Enum\SpellScope;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
@@ -203,12 +204,37 @@ class SpellApplicator
             ]);
 
             if ($statusEffect !== null) {
-                // `grip` de celui qui applique, `ward` de celui qui subit :
-                // les deux se croisent sur le jet d'application, et nulle part
-                // ailleurs (ARC-03b).
-                $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect, $levers, $targetLevers);
-                $messages[] = sprintf('%s est affecte par %s !', $target->getName(), $statusEffect->getName());
-                $this->combatLogger->logStatusApply($fight, $target, $statusEffect->getName());
+                $intent = $spell->resolveIntent($statusEffect->getType());
+                $scope = $spell->resolveScope($statusEffect->getType());
+
+                if (DepositLaw::deposits($intent, $scope)) {
+                    // ARC-11b — la loi du depot. Le geste ne reagit pas : il
+                    // pose une duree qui court **que son lanceur soit connecte
+                    // ou non**, sur tous les allies s'il touche le groupe.
+                    // C'est ce qui rend l'entretien jouable dans un donjon
+                    // semi-synchrone, ou un soin reactif est une mecanique
+                    // morte.
+                    $allies = $scope === SpellScope::Group
+                        ? $this->alliesOf($fight, $sender)
+                        : [$target];
+
+                    $total = $this->depositedValue($statusEffect);
+                    $deposited = $this->statusEffectManager->deposit($fight, $allies, $statusEffect, $total, $levers);
+
+                    if ($deposited > 0) {
+                        $messages[] = $scope === SpellScope::Group
+                            ? sprintf('%s se depose sur le groupe.', $statusEffect->getName())
+                            : sprintf('%s se depose sur %s.', $statusEffect->getName(), $target->getName());
+                        $this->combatLogger->logStatusApply($fight, $target, $statusEffect->getName());
+                    }
+                } else {
+                    // `grip` de celui qui applique, `ward` de celui qui subit :
+                    // les deux se croisent sur le jet d'application, et nulle part
+                    // ailleurs (ARC-03b).
+                    $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect, $levers, $targetLevers);
+                    $messages[] = sprintf('%s est affecte par %s !', $target->getName(), $statusEffect->getName());
+                    $this->combatLogger->logStatusApply($fight, $target, $statusEffect->getName());
+                }
             }
         }
 
@@ -288,5 +314,53 @@ class SpellApplicator
         }
 
         return $totalAbsorb;
+    }
+
+    /**
+     * Les allies sur lesquels un depot de groupe se pose (ARC-11b).
+     *
+     * Un depot lance par un joueur couvre les joueurs de la rencontre ; lance
+     * par un monstre, il couvre les monstres. Le lanceur en fait partie : un
+     * geste qui protege le groupe protege celui qui le lance, sinon
+     * l'archetype d'encaisse paierait un tour pour couvrir tout le monde sauf
+     * lui.
+     *
+     * @return list<CharacterInterface>
+     */
+    private function alliesOf(Fight $fight, CharacterInterface $sender): array
+    {
+        $allies = [];
+
+        if ($sender instanceof Mob) {
+            foreach ($fight->getMobs() as $mob) {
+                $allies[] = $mob;
+            }
+
+            return $allies;
+        }
+
+        foreach ($fight->getPlayers() as $player) {
+            $allies[] = $player;
+        }
+
+        return $allies;
+    }
+
+    /**
+     * La valeur **totale** que ce depot vaut, avant etalement.
+     *
+     * Elle vient de la fiche de l'effet : `healPerTurn` (ou `damagePerTurn`)
+     * multiplie par la duree declaree, c'est-a-dire ce que l'effet rendait
+     * deja sur toute sa vie. C'est ce qui fait qu'**aucune valeur de jeu ne
+     * bouge** : le depot rend le meme total qu'avant, il le rend seulement
+     * selon la duree opposable plutot que selon la duree declaree.
+     */
+    private function depositedValue(StatusEffect $effect): int
+    {
+        $perTurn = $effect->isHealing()
+            ? (int) $effect->getHealPerTurn()
+            : (int) $effect->getDamagePerTurn();
+
+        return $perTurn * max(1, $effect->getDuration());
     }
 }
