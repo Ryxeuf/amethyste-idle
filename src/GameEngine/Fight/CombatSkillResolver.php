@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\Enum\CombatRegister;
+use App\Enum\SpellIntent;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Progression\SynergyCalculator;
@@ -174,10 +175,17 @@ class CombatSkillResolver
 
     /**
      * Les leviers deja convertis en effets, pour le registre de l'action.
+     *
+     * L'intention est le troisieme bornage, et le dernier (ARC-11b-b) : le
+     * domaine dit *quel arbre s'exprime*, le registre *sur quelle ressource*, et
+     * l'intention *sur quelle place de la formule*. Elle est facultative pour la
+     * meme raison que la portee — une fiche de personnage n'a pas de geste en
+     * cours, et lui en imposer un ferait dependre sa barre de vie du dernier
+     * sort lance.
      */
-    public function getLeverEffects(Player $player, ?CombatScope $scope = null, ?CombatRegister $register = null): CombatLeverEffects
+    public function getLeverEffects(Player $player, ?CombatScope $scope = null, ?CombatRegister $register = null, ?SpellIntent $intent = null): CombatLeverEffects
     {
-        return CombatLeverEffects::of($this->getCombatLevers($player, $scope), $this->leverScale, $register);
+        return CombatLeverEffects::of($this->getCombatLevers($player, $scope), $this->leverScale, $register, $intent);
     }
 
     /**

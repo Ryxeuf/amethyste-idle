@@ -19,11 +19,18 @@ use PHPUnit\Framework\TestCase;
 class SpellIntentDeriverTest extends TestCase
 {
     /**
-     * Les huit types d'effet de statut se rangent sans reste.
+     * Les types d'effet de statut se rangent sans reste.
      *
      * **C'est ce qui rend la derivation legitime.** Une table qui laisserait
      * des restes dirait qu'on invente une distinction ; celle-ci ne fait que
      * nommer une distinction que la donnee portait deja.
+     *
+     * **La liste attendue est comparee a `StatusEffect::TYPES`, et pas
+     * seulement parcourue** (ARC-11b-b). ARC-11a avait mesure huit types sans
+     * reste ; ARC-13a en a ajoute un neuvieme — `TYPE_MARK` — sans que rien ne
+     * s'en apercoive, parce que ce test se contentait de verifier les huit
+     * qu'il connaissait. Un test qui n'interroge que sa propre liste ne mesure
+     * plus rien des qu'elle vieillit.
      */
     public function testEveryStatusEffectTypeMapsToAnIntent(): void
     {
@@ -33,10 +40,16 @@ class SpellIntentDeriverTest extends TestCase
             StatusEffect::TYPE_BURN => SpellIntent::Hinder,
             StatusEffect::TYPE_FREEZE => SpellIntent::Hinder,
             StatusEffect::TYPE_SILENCE => SpellIntent::Hinder,
+            // Une marque retire une resistance ou une option : c'est la lettre
+            // de ce que l'entrave dit d'elle-meme.
+            StatusEffect::TYPE_MARK => SpellIntent::Hinder,
             StatusEffect::TYPE_REGENERATION => SpellIntent::Heal,
             StatusEffect::TYPE_SHIELD => SpellIntent::Protection,
             StatusEffect::TYPE_BERSERK => SpellIntent::Buff,
         ];
+
+        $missing = array_values(array_diff(StatusEffect::TYPES, array_keys($expected)));
+        self::assertSame([], $missing, 'Un type de statut ne se range dans aucune intention : le reste est de retour.');
 
         foreach ($expected as $type => $intent) {
             self::assertSame($intent, SpellIntent::fromStatusEffectType($type), $type);

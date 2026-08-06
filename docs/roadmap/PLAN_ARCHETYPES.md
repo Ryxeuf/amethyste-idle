@@ -32,7 +32,7 @@
 | ARC-08 | Conversion mécanique des 20 autres arbres | M | ← ARC-03, ARC-07 |
 | ARC-09 | Tests du plan (les 45 invariants) | S | ‖ |
 | ARC-10 ✅ | Le plafond global de points — **tranché : suppression** | S | ∅ |
-| ARC-11 | L'intention et la portée du geste, et la loi du dépôt | M | ← ARC-02 |
+| ARC-11 ✅ | L'intention et la portée du geste, et la loi du dépôt | M → 2 sous-phases | ← ARC-02 |
 | ARC-12 ✅ | Les passifs conditionnels d'équipement | M | ← ARC-03 |
 | ARC-13 | Les huit marques élémentaires | M | ← ARC-11 |
 | ARC-14 ✅ | La fourche : une branche exclusive par arbre de combat | S | **→ ARC-07** |
@@ -636,7 +636,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [x] Test : aucun refus d'acquisition ne dépend d'un total de points tous domaines
       confondus
 
-### ARC-11 — L'intention, la portée, et la loi du dépôt (M → 2 sous-phases | ★★★ | HAUTE) ◐
+### ARC-11 — L'intention, la portée, et la loi du dépôt (M → 2 sous-phases | ★★★ | HAUTE) ✅
 
 > **Découpé (règle 8) : ARC-11a le vocabulaire, ARC-11b la loi du dépôt.** Le jalon
 > tient deux choses de nature différente — deux étiquettes sur le geste, et une
@@ -690,10 +690,62 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > portée par `statModifier` donc jamais étalée). Un test le tient — s'il tombe, c'est
 > exactement le moment où il faut le savoir.
 >
-> **ARC-11b-b — reste à faire** : *les leviers visent par intention* (`mending` ne touche
-> que `soin`, `grip` que l'`entrave` — une fois sur le geste, jamais quinze fois dans
-> quinze formules), et la palette d'intentions tenue par arbre, qui se mesure à
-> l'écriture des arbres (ARC-07/08).
+> **ARC-11b-b — livré le 2026-08-06, et il clôt ARC-11.** *Les leviers visent par
+> intention* : `LeverIntentLaw` dit, **une fois**, quels leviers un geste qualifie, et
+> `CombatLeverEffects` n'en porte pas d'autres.
+>
+> **La loi existait, mais nulle part.** Le moteur la portait *implicitement*, éparpillée
+> dans quinze positions de formule — `applyPower()` ne lit que les dégâts,
+> `applyMending()` que le soin. Tant que la borne est un effet de bord de l'endroit où le
+> code appelle, elle n'est pas opposable, et elle **fuit** dès qu'un chemin neuf lit un
+> levier ailleurs. C'est arrivé à `grip` : il portait la durée de **tout** statut appliqué
+> — bouclier et régénération compris —, si bien qu'un arbre d'entretien pouvait acheter
+> 10 pb du levier principal du contrôle en teinte et rallonger ses propres protections.
+> Le jalon le referme, et pose la règle générale : **quand la formule exerce une place
+> que le canon n'autorise pas, le canon gagne** (deux cas — `grip` sur un bouclier, le jet
+> de touche sur un soin ; le critique n'en est pas un, le canon ne le restreignant pas).
+>
+> **Le bornage se fait en deux temps, parce que l'intention se lit en deux temps.** Le
+> dégât et le soin répondent sur la seule fiche du sort ; la protection, l'amélioration et
+> l'entrave demandent le **type de l'effet de statut**, que le moteur ne charge qu'au
+> moment de l'appliquer. Borner une seule fois en amont obligerait à charger le statut sur
+> les 194 gestes qui n'en portent pas. `aimedAt()` rétrécit donc une seconde fois quand le
+> statut a parlé — **rétrécir, jamais élargir**, sinon l'ordre des deux questions
+> deviendrait une valeur de jeu.
+>
+> **Un écart trouvé, et il précède le jalon de trois jalons** : ARC-11a avait mesuré que
+> *les huit types de `StatusEffect` se rangent sans reste* dans les cinq intentions —
+> ARC-13a en a ajouté un **neuvième**, `TYPE_MARK`, et le reste était là. Sans effet
+> jusqu'ici ; fatal à partir de maintenant, puisqu'une intention illisible **ne borne aucun
+> levier** : un geste de marque pure aurait été le seul du jeu à qualifier les quinze. Une
+> marque est une `entrave` à la lettre de ce que l'intention dit (*retirer à l'adversaire
+> un tour, une option, ou une résistance*). Le test qui aurait dû l'attraper ne parcourait
+> que sa propre liste ; il compare désormais à `StatusEffect::TYPES`.
+>
+> **La palette d'intentions est enfin opposée** (§5.1). `domain_roles.yaml` la déclare
+> depuis ARC-01 — *un arbre d'assaut ouvre ≥ 3 dégâts, un arbre de contrôle ≥ 2 entraves*
+> — et **rien ne la lisait** : un fichier de contraintes que personne n'oppose est un
+> commentaire. `DomainIntentPaletteContractTest` la mesure, et le résultat est le livrable
+> du jalon plutôt que sa conformité :
+>
+> - **Les 24 arbres ouvrent tous un accord de dégât** (loi 1 — tenue).
+> - **10 arbres n'ouvrent QUE des dégâts** (loi 2 — le plan B du jour 1 manque) : Archer,
+>   Artificier, Assassin, Berserker, Chasseur, Foudromancien, Nécromancien, Pyromancien,
+>   Soldat, Sorcier. Cliquet nommé.
+> - **15 écarts de palette**, et ils disent tous la même chose : **aucun des 253 gestes
+>   livrés ne dérive vers `entrave`, `protection` ni `amélioration`** — ils se rangent en
+>   194 dégâts et 59 soins. C'est l'ordre des questions d'ARC-11a qui le veut (le dégât
+>   d'abord, puis le soin), et c'est voulu : le §1.1 exige qu'une marque soit portée par un
+>   geste de dégât. Mais cela mesure une chose que le plan ne disait pas — **la protection
+>   et l'entrave n'existeront que le jour où un auteur les déclarera**, sur la colonne
+>   `Spell::intent` qu'ARC-11a a laissée nullable pour exactement cela. De même pour
+>   `SpellScope::Group`, qui ne se dérive jamais : aucun des 4 arbres d'entretien ne tient
+>   sa portée de groupe, la seule qui rende la loi du dépôt utile. **C'est le travail
+>   d'ARC-07 et ARC-08**, et le cliquet le rend impossible à oublier.
+>
+> **Aucune valeur de jeu ne bouge** : aucun nœud livré ne porte de levier, et aucun des
+> 253 gestes n'a d'intention illisible (testé).
+>
 > GAME_ARCHETYPES §3.1 et §7 bis. **Ce jalon décide si le donjon de groupe a un sens.**
 > Le combat de groupe est semi-synchrone (`GroupDungeonCombatService` : un joueur actif à
 > la fois, 45 s par tour, tour d'un absent résolu tout seul) — un soin **réactif** y est
@@ -703,8 +755,10 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       la matéria *(ARC-11a — colonnes **nullables** avec repli de dérivation
       (`SpellIntentDeriver`) : les 8 types de `StatusEffect` se rangent sans reste dans
       les 5 intentions. Aucune valeur de jeu ne bouge — les colonnes naissent vides)*
-- [ ] Les leviers visent par **intention** : `mending` ne touche que `soin`, `grip` que
+- [x] Les leviers visent par **intention** : `mending` ne touche que `soin`, `grip` que
       l'`entrave`. Une fois sur le geste, jamais quinze fois dans quinze formules
+      *(ARC-11b-b — `LeverIntentLaw`, appliquée au **porteur** et non aux consommateurs :
+      un porteur qui ne contient que ce qui qualifie ne peut pas fuir)*
 - [x] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
       alliés — régénération, absorption, amélioration — et elle court **que le lanceur soit
       connecté ou non** *(ARC-11b-a — `StatusEffectManager::deposit()` pose sur tous les
@@ -738,9 +792,11 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       une présence *(ARC-11b-a — tenu par la propriété vraie à toute échelle : un tour
       déposé ne rend jamais, **par cible**, plus qu'un tour direct ; c'est la
       multiplication par les corps qui fait la valeur, jamais le chiffre affiché)*
-- [ ] Les leviers visent par **intention** ; palette d'intentions tenue par arbre ; tout
-      arbre ouvre au moins un `dégât` et au moins un non-`dégât` *(**ARC-11b-b** — se
-      mesure à l'écriture des arbres, ARC-07/08)*
+- [x] Les leviers visent par **intention** ; palette d'intentions tenue par arbre ; tout
+      arbre ouvre au moins un `dégât` et au moins un non-`dégât` *(ARC-11b-b —
+      `DomainIntentPaletteContractTest` : loi 1 tenue par les 24 arbres, loi 2 manquée par
+      **10** d'entre eux, et **15 écarts de palette** — cliquets nommés, refermés par
+      ARC-07/08. La mesure est le livrable)*
 - [x] Tests : aucun geste `le groupe` instantané *(ARC-11b-a —
       `DepositedGestureContractTest`, écrit **avant** qu'un seul geste ne porte la portée
       pour qu'aucun ne puisse naître instantané, plus le contrat « aucune valeur livrée ne

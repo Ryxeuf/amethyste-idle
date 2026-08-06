@@ -207,6 +207,15 @@ class SpellApplicator
                 $intent = $spell->resolveIntent($statusEffect->getType());
                 $scope = $spell->resolveScope($statusEffect->getType());
 
+                // ARC-11b-b — l'intention complete est **ici**, et nulle part
+                // avant : c'est le type du statut qui distingue une entrave
+                // d'une protection, et il vient d'etre charge. `grip` et `ward`
+                // ne se croisent donc que sur une entrave — un bouclier ne se
+                // rallonge pas parce que son porteur a achete le levier
+                // principal du controle.
+                $aimedLevers = $levers->aimedAt($intent);
+                $aimedTargetLevers = $targetLevers->aimedAt($intent);
+
                 if (DepositLaw::deposits($intent, $scope)) {
                     // ARC-11b — la loi du depot. Le geste ne reagit pas : il
                     // pose une duree qui court **que son lanceur soit connecte
@@ -219,7 +228,7 @@ class SpellApplicator
                         : [$target];
 
                     $total = $this->depositedValue($statusEffect);
-                    $deposited = $this->statusEffectManager->deposit($fight, $allies, $statusEffect, $total, $levers);
+                    $deposited = $this->statusEffectManager->deposit($fight, $allies, $statusEffect, $total, $aimedLevers);
 
                     if ($deposited > 0) {
                         $messages[] = $scope === SpellScope::Group
@@ -230,8 +239,9 @@ class SpellApplicator
                 } else {
                     // `grip` de celui qui applique, `ward` de celui qui subit :
                     // les deux se croisent sur le jet d'application, et nulle part
-                    // ailleurs (ARC-03b).
-                    $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect, $levers, $targetLevers);
+                    // ailleurs (ARC-03b) — ni sur autre chose qu'une entrave
+                    // (ARC-11b-b).
+                    $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect, $aimedLevers, $aimedTargetLevers);
                     $messages[] = sprintf('%s est affecte par %s !', $target->getName(), $statusEffect->getName());
                     $this->combatLogger->logStatusApply($fight, $target, $statusEffect->getName());
                 }

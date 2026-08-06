@@ -4,6 +4,7 @@ namespace App\GameEngine\Fight;
 
 use App\Enum\CombatLever;
 use App\Enum\CombatRegister;
+use App\Enum\SpellIntent;
 use App\GameEngine\Progression\CombatLeverDefinitionException;
 use App\GameEngine\Progression\CombatLeverScale;
 
@@ -55,9 +56,15 @@ final readonly class CombatLeverEffects
      * voudrait dire choisir les PM par defaut, donc etre faux pour deux
      * registres sur trois, en silence.
      *
+     * **L'intention borne l'autre moitie** (ARC-11b-b, § 3.1) : un levier
+     * n'entre dans le porteur que si le geste exerce la place qu'il occupe.
+     * C'est ici, et non dans chaque consommateur, parce qu'un porteur qui ne
+     * contient que ce qui qualifie ne peut pas fuir : le jour ou un chemin neuf
+     * lit `grip` sur un bouclier, il ne trouvera rien a lire.
+     *
      * @param array<string, int> $budgetPoints points de budget par levier
      */
-    public static function of(array $budgetPoints, CombatLeverScale $scale, ?CombatRegister $register = null): self
+    public static function of(array $budgetPoints, CombatLeverScale $scale, ?CombatRegister $register = null, ?SpellIntent $intent = null): self
     {
         $effects = [];
 
@@ -71,10 +78,46 @@ final readonly class CombatLeverEffects
                 continue;
             }
 
+            if (!LeverIntentLaw::qualifies($lever, $intent)) {
+                continue;
+            }
+
             $effects[$lever->value] = $scale->effectOf($lever, $points, $register);
         }
 
         return new self($effects);
+    }
+
+    /**
+     * Le meme porteur, retreci a ce qu'une intention qualifie (ARC-11b-b).
+     *
+     * **Pourquoi un second bornage.** L'intention d'un geste se lit en deux
+     * temps : le degat et le soin repondent sur la seule fiche du sort, tandis
+     * que la protection, l'amelioration et l'entrave demandent le **type de
+     * l'effet de statut** — que le moteur ne charge qu'au moment de
+     * l'appliquer. Borner une fois pour toutes en amont obligerait a charger le
+     * statut a chaque geste, y compris les 194 qui n'en portent pas.
+     *
+     * On borne donc la ou chaque question a sa reponse : le porteur de l'action
+     * est construit avec ce que le sort dit de lui-meme, et `aimedAt()` le
+     * retrecit une seconde fois quand le statut a parle. Retrecir, jamais
+     * elargir — un levier ecarte en amont ne peut pas revenir.
+     */
+    public function aimedAt(?SpellIntent $intent): self
+    {
+        if ($intent === null || $this->effects === []) {
+            return $this;
+        }
+
+        $kept = [];
+        foreach ($this->effects as $name => $effect) {
+            $lever = CombatLever::from($name);
+            if (LeverIntentLaw::qualifies($lever, $intent)) {
+                $kept[$name] = $effect;
+            }
+        }
+
+        return $kept === $this->effects ? $this : new self($kept);
     }
 
     public function isEmpty(): bool
