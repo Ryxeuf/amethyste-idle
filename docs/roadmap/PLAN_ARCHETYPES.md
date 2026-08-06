@@ -668,11 +668,32 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > apparaître : un soin de groupe et un soin d'allié ont exactement les mêmes valeurs. Ce
 > qui les sépare est une décision d'auteur, et la durée qu'ARC-11b y attache.
 >
-> **ARC-11b — reste à faire** : la loi du dépôt elle-même. Un geste de portée `Group`
-> pose une **durée** qui court que le lanceur soit connecté ou non ; toute `protection`
-> porte une durée quelle que soit sa portée ; la durée se compte **en tours de la
-> rencontre** ; la durée **étale** la valeur sans l'augmenter ; et le garde-fou —
-> aucun rôle n'est nécessaire.
+> **ARC-11b-a — livré le 2026-08-06.** La loi du dépôt est écrite et **opposable** :
+> `DepositLaw` répond à *ce geste se dépose-t-il ?* (toute portée `Group`, plus toute
+> `protection` quelle que soit sa portée — l'extension du §9 bis), *combien de temps ?*
+> (`MIN_DURATION = 2`, même raison arithmétique qu'`ElementalMark` : un effet qui ne dure
+> que le tour où il est joué n'a rien déposé, il a **réagi**), *combien par tour ?*
+> (`spreadPerTurn` — **la durée étale la valeur, elle ne l'augmente pas**), et *cela
+> se multiplie-t-il par les alliés ?* (l'état oui, l'action non).
+>
+> `StatusEffectManager::deposit()` pose l'effet sur tous les alliés **sans jet de
+> chance** — on ne provisionne pas au hasard : ce qui est payé d'un tour est posé —, et
+> la valeur par tour vit sur `FightStatusEffect` (colonne `value_per_turn`, nullable) et
+> non sur la fiche de l'effet, qui est partagée par toutes ses applications : l'écrire
+> dessus changerait la valeur de tous les dépôts déjà posés.
+>
+> **Le jalon n'est pas inerte, et ce n'est pas ce qu'on attendait.** ARC-11a notait
+> qu'aucun geste ne porte encore la portée `Group` ; mais l'extension à toute
+> `protection` fait basculer **15 gestes de bouclier déjà livrés** vers le dépôt. Vérifié
+> plutôt que supposé : leurs trois valeurs sensibles ne bougent pas (durée déjà ≥ 3 donc
+> jamais relevée, `chance` à 100 donc le jet contourné ne changeait rien, absorption
+> portée par `statModifier` donc jamais étalée). Un test le tient — s'il tombe, c'est
+> exactement le moment où il faut le savoir.
+>
+> **ARC-11b-b — reste à faire** : *les leviers visent par intention* (`mending` ne touche
+> que `soin`, `grip` que l'`entrave` — une fois sur le geste, jamais quinze fois dans
+> quinze formules), et la palette d'intentions tenue par arbre, qui se mesure à
+> l'écriture des arbres (ARC-07/08).
 > GAME_ARCHETYPES §3.1 et §7 bis. **Ce jalon décide si le donjon de groupe a un sens.**
 > Le combat de groupe est semi-synchrone (`GroupDungeonCombatService` : un joueur actif à
 > la fois, 45 s par tour, tour d'un absent résolu tout seul) — un soin **réactif** y est
@@ -684,29 +705,46 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       les 5 intentions. Aucune valeur de jeu ne bouge — les colonnes naissent vides)*
 - [ ] Les leviers visent par **intention** : `mending` ne touche que `soin`, `grip` que
       l'`entrave`. Une fois sur le geste, jamais quinze fois dans quinze formules
-- [ ] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
+- [x] **Les gestes déposés** : un effet de portée `le groupe` pose une **durée** sur les
       alliés — régénération, absorption, amélioration — et elle court **que le lanceur soit
-      connecté ou non**
-- [ ] **L'asymétrie du donjon semi-synchrone**, à écrire noir sur blanc (correction du
-      §9 quinquies) : un effet posé sur les **alliés** se multiplie par leur nombre (×8,8 à
+      connecté ou non** *(ARC-11b-a — `StatusEffectManager::deposit()` pose sur tous les
+      alliés, le lanceur compris : un geste qui protège le groupe protège celui qui le
+      lance)*
+- [x] **L'asymétrie du donjon semi-synchrone**, à écrire noir sur blanc (correction du
+      §9 quinquies) *(ARC-11b-a — `DepositLaw::multipliesWithAllies()` : l'état oui,
+      l'action non, et un test le dit fonction par fonction)* : un effet posé sur les **alliés** se multiplie par leur nombre (×8,8 à
       quatre), un effet posé sur l'**ennemi** ne se multiplie pas (×0,9) — un seul joueur
       agit par tour. Entretien et encaisse gagnent au groupe ; assaut et contrôle n'y
       gagnent rien. Ne pas équilibrer le contrôle comme un soutien
-- [ ] **Toute `protection` porte une durée**, quelle que soit sa portée (correction du
-      §9 bis) : une garde qui ne couvre que le tour où elle est jouée punit l'encaisse de
+- [x] **Toute `protection` porte une durée**, quelle que soit sa portée (correction du
+      §9 bis) *(ARC-11b-a — et c'est ce qui rend le jalon non inerte : 15 gestes de
+      bouclier livrés basculent, sans qu'aucune de leurs valeurs ne bouge)* : une garde qui ne couvre que le tour où elle est jouée punit l'encaisse de
       se défendre — il perd en dégâts exactement ce qu'il gagne en survie
-- [ ] **La durée se compte en tours de la rencontre**, jamais en temps réel ni en tours du
-      lanceur : c'est le seul compteur que l'asynchronie ne dérègle pas
-- [ ] **La durée étale la valeur, elle ne l'augmente pas** (correction du §9 ter) : la
+- [x] **La durée se compte en tours de la rencontre**, jamais en temps réel ni en tours du
+      lanceur : c'est le seul compteur que l'asynchronie ne dérègle pas *(ARC-11b-a —
+      `FightStatusEffect::remainingTurns`, le compteur que le moteur possédait déjà)*
+- [x] **La durée étale la valeur, elle ne l'augmente pas** (correction du §9 ter) : la
       valeur totale d'un dépôt est fixée par le palier de la matéria. Mesuré, un dépôt de
       10 tours sur quatre alliés vaut **14,7 tours d'attaque** — à ce prix, un groupe sans
-      entretien devient non viable, ce que le garde-fou interdit
-- [ ] Le même geste en `scope: soi` doit rester jouable en solo — un archétype, pas deux
-- [ ] Le garde-fou : **aucun rôle n'est nécessaire**. Un groupe sans entretien met plus de
+      entretien devient non viable, ce que le garde-fou interdit *(ARC-11b-a —
+      `spreadPerTurn` ; doubler la durée ne double pas ce qu'on reçoit, et un test le dit
+      dans ces termes)*
+- [x] Le même geste en `scope: soi` doit rester jouable en solo — un archétype, pas deux
+      *(ARC-11b-a — la loi n'interdit pas le soin direct : *le direct est l'urgence, le
+      dépôt est la provision* (§7 bis.2 bis), et un test refuse que le soin d'allié
+      devienne un dépôt)*
+- [x] Le garde-fou : **aucun rôle n'est nécessaire**. Un groupe sans entretien met plus de
       tours et perd plus de PV ; il ne rencontre pas un mur. Exiger un rôle, c'est exiger
-      une présence
-- [ ] Tests : aucun geste `le groupe` instantané ; palette d'intentions tenue par arbre ;
-      tout arbre ouvre au moins un `dégât` et au moins un non-`dégât`
+      une présence *(ARC-11b-a — tenu par la propriété vraie à toute échelle : un tour
+      déposé ne rend jamais, **par cible**, plus qu'un tour direct ; c'est la
+      multiplication par les corps qui fait la valeur, jamais le chiffre affiché)*
+- [ ] Les leviers visent par **intention** ; palette d'intentions tenue par arbre ; tout
+      arbre ouvre au moins un `dégât` et au moins un non-`dégât` *(**ARC-11b-b** — se
+      mesure à l'écriture des arbres, ARC-07/08)*
+- [x] Tests : aucun geste `le groupe` instantané *(ARC-11b-a —
+      `DepositedGestureContractTest`, écrit **avant** qu'un seul geste ne porte la portée
+      pour qu'aucun ne puisse naître instantané, plus le contrat « aucune valeur livrée ne
+      bouge »)*
 
 ### ARC-12 — Les passifs conditionnels d'équipement (M → 2 sous-phases | ★★★ | HAUTE) ◐
 

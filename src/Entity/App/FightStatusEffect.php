@@ -43,6 +43,22 @@ class FightStatusEffect
     #[ORM\Column(name: 'last_tick_turn', type: 'integer', nullable: true)]
     private ?int $lastTickTurn = null;
 
+    /**
+     * Ce que **cette** application rend par tour, quand elle a ete etalee.
+     *
+     * ARC-11b : la duree etale la valeur, elle ne l'augmente pas. Un depot
+     * pose sa valeur totale une fois pour toutes, et c'est la duree qui decide
+     * du morceau rendu a chaque tour — donc la valeur par tour appartient a
+     * l'**application**, jamais a la fiche de l'effet, qui est partagee par
+     * toutes ses applications.
+     *
+     * `null` signifie « rien n'a ete etale » : l'effet rend ce que sa fiche
+     * declare, exactement comme avant ce jalon. C'est ce qui fait qu'aucune
+     * valeur de jeu ne bouge.
+     */
+    #[ORM\Column(name: 'value_per_turn', type: 'integer', nullable: true)]
+    private ?int $valuePerTurn = null;
+
     public function __construct()
     {
         $this->appliedAt = new \DateTime();
@@ -126,6 +142,16 @@ class FightStatusEffect
     public function setLastTickTurn(?int $lastTickTurn): void
     {
         $this->lastTickTurn = $lastTickTurn;
+    }
+
+    public function getValuePerTurn(): ?int
+    {
+        return $this->valuePerTurn;
+    }
+
+    public function setValuePerTurn(?int $valuePerTurn): void
+    {
+        $this->valuePerTurn = $valuePerTurn;
     }
 
     public function isExpired(): bool
