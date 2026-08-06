@@ -618,10 +618,39 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > referme avec **DOM-09** : un arbre de sorts hérite aujourd'hui de **six** échelons générés
 > (bâton, baguette, tissu) là où le gabarit en veut deux.
 >
+> **ARC-07b — livré le 2026-08-06.** Le Guérisseur (eau × sorts × entretien, *« le
+> Ressac »*), et **le premier arbre du jeu qui dépose**. La loi du dépôt (ARC-11b) était
+> écrite, opposable — et sans objet : aucun geste ne portait `SpellScope::Group`, qui **ne se
+> dérive jamais**. La *Marée* et la *Grande Marée* sont les deux premiers gestes de portée
+> collective, et l'entretien devient jouable dans un donjon semi-synchrone.
+>
+> **Les deux branches tombent sur 50 pb** : le Ressac (`mending` 17 · `thrift` 3 · `wind` 6 ·
+> `ward` 6 · `recovery` 9 · `guard` 9) et la Marée (`mending` 17 · `thrift` 12 · `wind` 6 ·
+> `ward` 15). La teinte `guard` ne vit que dans le Ressac — *le soigneur de donjon n'a pas de
+> main gauche à donner à un bouclier* — et la Marée est au **palier 2**, donc les deux
+> branches l'ont : un guérisseur sert son groupe quel que soit son choix.
+>
+> **Le second accord d'entrée a été remplacé, pas complété** : il portait un soin, il porte
+> le Jet d'eau, qui blesse et applique **Trempé**. Le Guérisseur sort donc du cliquet
+> d'ARC-13b-a (son capstone devient atteignable au tour 2) *et* tient la loi 1 du §5.1 — un
+> arbre d'entretien a besoin d'un geste qui finisse le combat autant que d'un geste qui le
+> tienne.
+>
+> **Deux écarts au canon, nommés plutôt que maquillés** : la branche Ressac ouvre une
+> **protection** au lieu de la *Dissipation*, parce qu'aucune mécanique de dissipation
+> n'existe dans le moteur et qu'en inventer une serait une décision de conception (elle
+> revient avec ARC-18) ; et le capstone se déclenche sur `target_below_quarter_life` plutôt
+> que « sous 40 % », le vocabulaire de `SkillCondition` étant fermé et le §0.2 rangeant ce
+> seuil parmi les nombres qu'ARC-17 recalculera.
+>
+> **La chirurgie d'accords a été indolore, contrairement au Pyromancien** : les accords
+> retirés sont tous ouverts par un autre arbre, donc aucune matéria ne disparaît. La leçon
+> d'ARC-07a a servi — les prérequis ont été vérifiés sur les 561 nœuds avant le push.
+>
 > GAME_ARCHETYPES §9. Pyromancien (assaut), Guérisseur (entretien), Soldat (encaisse),
 > Archer (assaut/distance) — un par fonction, trois registres.
 - [ ] Les quatre arbres écrits au gabarit : 15 nœuds, 5 accords, 7 passifs, 2 échelons de
-      port, 1 dormant *(ARC-07a — **1/4** : le Pyromancien. Les échelons de port ne sont pas
+      port, 1 dormant *(ARC-07a/b — **2/4** : le Pyromancien et le Guérisseur. Les échelons de port ne sont pas
       écrits ici : ils sont générés et partagés (ONB-20b), et le canon les range hors budget)*
 - [ ] Les accords choisis **par rôle dans le combat**, jamais par niveau de sort
 - [ ] Les capstones conditionnels, condition atteignable au tour 2 avec les seuls accords
