@@ -308,9 +308,6 @@ class SpellApplicator
     }
 
     /**
-     * Get the total shield absorption available for a character.
-     */
-    /**
      * Le coup vient-il d'un mannequin d'entrainement ? (ONB-11).
      *
      * Le plancher a 1 PV ne s'applique qu'aux coups d'un mannequin — jamais a

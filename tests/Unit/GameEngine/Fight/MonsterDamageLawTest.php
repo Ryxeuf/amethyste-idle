@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 class MonsterDamageLawTest extends TestCase
 {
     /**
-     * **Le defaut d'ARC-17a, mesure a l'endroit ou il faisait mal.**
+     * **Le defaut d'ARC-17a, mesure a l'endroit ou il faisait mal.**.
      *
      * Le meme geste — `none_attack_1` sert 38 des 65 especes — porte par un
      * commun de palier 1 et par un boss de palier 4 retirait *exactement la
@@ -46,7 +46,7 @@ class MonsterDamageLawTest extends TestCase
     }
 
     /**
-     * **La derivation remplace un nombre, elle n'en cree pas.**
+     * **La derivation remplace un nombre, elle n'en cree pas.**.
      *
      * Sans ce refus, chaque soin et chaque entrave pure du bestiaire se
      * mettrait a frapper au palier de son porteur — un geste de soin de boss

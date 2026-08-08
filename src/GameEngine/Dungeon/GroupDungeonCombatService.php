@@ -309,10 +309,6 @@ class GroupDungeonCombatService
     }
 
     /**
-     * Le coup de la rencontre : celui du monstre de l'etape, ou le curseur
-     * historique quand la faune manque.
-     */
-    /**
      * Le coup de la rencontre — ARC-17b.
      *
      * **Ce chemin lisait la precision du monstre comme des degats.** DON-02
