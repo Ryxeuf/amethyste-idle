@@ -5,6 +5,7 @@ namespace App\Tests\Integration\Progression;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\Enum\CombatLever;
+use App\GameEngine\Balance\ReferenceBuildFactory;
 use App\GameEngine\Progression\CombatBranchCatalog;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\DomainRoleDefinitionLoader;
@@ -130,17 +131,10 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
     {
         foreach (self::CONVERTED as $title => $key) {
             foreach ($this->branchesOf($key) as $branch) {
-                $accords = 0;
-                foreach ($this->nodesOf($title) as $skill) {
-                    if ($this->branchOf($skill) !== $branch) {
-                        continue;
-                    }
-                    if (\is_string($skill->getActions()['materia']['unlock'] ?? null)) {
-                        ++$accords;
-                    }
-                }
-
-                self::assertGreaterThan(0, $accords, sprintf('%s / %s : une branche sans geste est une decoration.', $title, $branch));
+                self::assertNotEmpty(
+                    $this->factory()->branchAccordsOf($this->domain($title), $branch),
+                    sprintf('%s / %s : une branche sans geste est une decoration.', $title, $branch),
+                );
             }
         }
     }
@@ -221,14 +215,20 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
     // =====================================================================
 
     /**
-     * Ce qu'une branche depense, teinte comprise : les nœuds communs plus les
-     * siens. Un joueur porte les deux — c'est la lecture du canon.
+     * Ce qu'une branche depense, teinte comprise — **lu par la fabrique**.
+     *
+     * ARC-17c : la regle vivait ici, c'est-a-dire **dans un test**, donc hors de
+     * portee de tout autre appelant. Le simulateur en a besoin pour construire
+     * ses builds, et l'ecrire une seconde fois aurait produit le defaut
+     * qu'ARC-08a a nomme sur la loi de duree : *une regle recopiee derive de son
+     * original en silence.* Elle appartient desormais a
+     * `ReferenceBuildFactory`, et ce contrat l'interroge.
      *
      * @return array<string, int>
      */
     private function spendOf(string $title, string $branch): array
     {
-        return $this->sumLevers($title, fn (?string $nodeBranch): bool => $nodeBranch === null || $nodeBranch === $branch);
+        return $this->factory()->spendOf($this->domain($title), $branch);
     }
 
     /**
@@ -236,49 +236,15 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
      */
     private function branchOnlySpend(string $title, string $branch): array
     {
-        return $this->sumLevers($title, fn (?string $nodeBranch): bool => $nodeBranch === $branch);
+        return $this->factory()->branchOnlySpendOf($this->domain($title), $branch);
     }
 
-    /**
-     * @param callable(?string): bool $keep
-     *
-     * @return array<string, int>
-     */
-    private function sumLevers(string $title, callable $keep): array
+    private function factory(): ReferenceBuildFactory
     {
-        $reader = $this->reader();
-        $totals = [];
+        /** @var ReferenceBuildFactory $factory */
+        $factory = self::getContainer()->get(ReferenceBuildFactory::class);
 
-        foreach ($this->nodesOf($title) as $skill) {
-            if (!$keep($this->branchOf($skill))) {
-                continue;
-            }
-
-            foreach ($reader->grantsOf($skill) as $grant) {
-                $totals[$grant->lever->value] = ($totals[$grant->lever->value] ?? 0) + $grant->netBudgetPoints();
-            }
-        }
-
-        ksort($totals);
-
-        return $totals;
-    }
-
-    /**
-     * La branche que ce nœud declare, ou `null` s'il est commun.
-     */
-    private function branchOf(Skill $skill): ?string
-    {
-        foreach ($skill->getActions() ?? [] as $descriptor) {
-            if (\is_array($descriptor) && ($descriptor['action'] ?? null) === 'specialization.branch') {
-                $branch = (string) ($descriptor['branch'] ?? '');
-                if ($branch !== '') {
-                    return $branch;
-                }
-            }
-        }
-
-        return null;
+        return $factory;
     }
 
     /**
