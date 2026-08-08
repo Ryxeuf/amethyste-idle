@@ -176,10 +176,12 @@ final class ReferenceBuildFactory
         }
 
         $domains = [];
+        // Le catalogue garantit la cle `label` (elle est refusee au chargement
+        // si elle manque) : un repli `?? ''` serait du code mort, et PHPStan le
+        // dit.
         foreach ($this->branchCatalog->trees() as $treeKey => $tree) {
-            $label = (string) ($tree['label'] ?? '');
-            if (isset($byTitle[$label])) {
-                $domains[$treeKey] = $byTitle[$label];
+            if (isset($byTitle[$tree['label']])) {
+                $domains[$treeKey] = $byTitle[$tree['label']];
             }
         }
 
