@@ -320,6 +320,9 @@ class SpellApplicator
         return $sender instanceof Mob && $sender->getMonster()->isTrainingDummy();
     }
 
+    /**
+     * Get the total shield absorption available for a character.
+     */
     private function getShieldAbsorb(Fight $fight, CharacterInterface $character): int
     {
         $effects = $this->statusEffectManager->getActiveEffects($fight, $character);
