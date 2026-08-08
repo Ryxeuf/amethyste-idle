@@ -87,3 +87,20 @@ trees:
                 label: 'La Volée'
                 description: 'Quatre munitions d''un coup, dont la moitie revient.'
                 accord: 'Grêle'
+
+    # --- Necromancien — tenebres x sorts x controle (ARC-08a) ------------
+    # La cinquieme fourche, et la premiere hors des quatre patrons. Elle
+    # oppose **le solo au donjon** plutot que deux dosages : le Linceul tient
+    # l'ennemi et le tient seul, la Veillee tient la duree et sert le groupe.
+    # C'est la forme forte de la regle 6 (§ 12.3).
+    necromancer:
+        label: 'Nécromancien'
+        branches:
+            shroud:
+                label: 'Le Linceul'
+                description: 'Rien ne me touche parce que rien ne joue : percer les resistances, jouer le premier, etouffer.'
+                accord: 'Linceul'
+            vigil:
+                label: 'La Veillée'
+                description: 'Ce qu''on pose continue sans soi : ce qu''on prend revient, et ce qu''on laisse frappe encore.'
+                accord: 'Serviteur d''ossements'

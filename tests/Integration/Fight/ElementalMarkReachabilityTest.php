@@ -5,6 +5,7 @@ namespace App\Tests\Integration\Fight;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\Entity\Game\StatusEffect;
 use App\Enum\Element;
 use App\GameEngine\Fight\ElementalMark;
 use App\Tests\Integration\AbstractIntegrationTestCase;
@@ -79,14 +80,29 @@ class ElementalMarkReachabilityTest extends AbstractIntegrationTestCase
     }
 
     /**
-     * Une marque posee a l'entree l'est par un geste de **degat**.
+     * Une marque posee a l'entree tient **la loi de duree**, pas une version
+     * plus stricte d'elle-meme.
      *
-     * La loi de duree d'ARC-13a : une marque portee par un geste de degat
-     * echappe au plancher, parce que le tour n'a pas ete echange — il a servi
-     * deux fois. Une marque posee par un geste qui ne blesse pas coute un tour
-     * plein, et le § 9 quinquies a montre que ce tour-la ne rapporte rien.
+     * ARC-13a enonce la loi en deux membres : *une marque dure au moins deux
+     * tours, **ou** elle est portee par un geste de degat* — auquel cas le tour
+     * n'a pas ete echange, il a servi deux fois. Le § 9 quinquies l'a montre
+     * arithmetiquement : en duel, une entrave d'un tour laisse les degats subis
+     * rigoureusement identiques, le combat s'allongeant de ce qu'on a vole.
+     *
+     * **Ce test n'exigeait que le second membre** (ARC-13b-a), et c'etait plus
+     * strict que la loi qu'il citait : tous les arbres convertis se trouvaient
+     * alors marquer avec un geste offensif, si bien que l'ecart ne coutait
+     * rien. **ARC-08a a livre le premier arbre dont l'ouverture est une entrave
+     * pure** — le Voile de cendre du Necromancien, zero degat, Aveugle deux
+     * tours — et la fonction controle n'est pas une exception a faire : *ses
+     * trois premiers tours ne tuent rien* est sa definition.
+     *
+     * Il **appelle** donc la loi au lieu de la reecrire. Une regle recopiee
+     * derive de son original sans que rien ne le dise ; c'est le meme defaut
+     * qu'ARC-11b-b avait trouve dans un test qui ne parcourait que sa propre
+     * liste.
      */
-    public function testAnEntryMarkIsAlwaysCarriedByADamagingGesture(): void
+    public function testAnEntryMarkHoldsTheDurationLaw(): void
     {
         $offenders = [];
 
@@ -98,8 +114,20 @@ class ElementalMarkReachabilityTest extends AbstractIntegrationTestCase
                     continue;
                 }
 
-                if ((int) ($spell->getDamage() ?? 0) <= 0) {
-                    $offenders[] = sprintf('%s (%s ne blesse pas)', $domain->getTitle(), $spell->getSlug());
+                $effect = $this->em->getRepository(StatusEffect::class)->findOneBy(['slug' => $mark]);
+                self::assertInstanceOf(StatusEffect::class, $effect, sprintf('La marque "%s" n\'existe pas en base.', (string) $mark));
+
+                $duration = $effect->getDuration();
+                $wounds = (int) ($spell->getDamage() ?? 0) > 0;
+
+                if (!ElementalMark::durationIsLegal($duration, $wounds)) {
+                    $offenders[] = sprintf(
+                        '%s : %s ne blesse pas et %s ne dure que %d tour(s).',
+                        (string) $domain->getTitle(),
+                        (string) $spell->getSlug(),
+                        (string) $mark,
+                        $duration,
+                    );
                 }
             }
         }
