@@ -88,26 +88,72 @@ class MonsterAttackDerivationTest extends TestCase
     }
 
     /**
-     * Aucune valeur de jeu ne bouge encore.
+     * La formule de combat lit desormais la derivation — **par ses deux
+     * chemins** (ARC-17b).
      *
-     * Comme `EncounterAnchor` (ARC-05a) et `DailyAnchor` (ARC-05b) avant elle,
-     * la derivation est d'abord **un instrument de mesure** : elle dit ce que la
-     * regle exige sans toucher a la formule de combat, qui continue de lire les
-     * degats du geste porte par l'espece. Brancher la derivation deplacera de
-     * vraies valeurs, et c'est ARC-17b.
+     * Ce test etait l'inverse de lui-meme : ARC-17a, comme `EncounterAnchor` et
+     * `DailyAnchor` avant lui, livrait un **instrument de mesure** et verifiait
+     * qu'il ne deplacait rien. Il est **retourne et pas supprime**, parce que
+     * c'est lui qui documente la transition : la derivation a existe un jalon
+     * durant sans que personne ne la lise, et c'etait voulu.
      *
-     * Le test le verifie a l'endroit ou ca compte : le gestionnaire d'action des
-     * monstres ne connait pas encore le gabarit.
+     * **Il visait pourtant le mauvais fichier.** ARC-17a supposait que le point
+     * de branchement serait `MobActionHandler` ; il y en a deux, et aucun n'est
+     * celui-la. Les degats d'un monstre passent par `SpellApplicator` en combat
+     * de zone — donc aussi en invocation, en phase de boss et sur toute action
+     * qui resout un geste — et par `GroupDungeonCombatService` en donjon de
+     * groupe, qui resout sa riposte tout seul. *Brancher la ou l'action est
+     * choisie plutot que la ou le degat est calcule aurait laisse la moitie du
+     * jeu en dehors de la loi.*
+     *
+     * Ce que ce test ne prouve pas, et c'est pour cela qu'il n'est pas seul :
+     * une classe **nommee** n'est pas une classe **lue**. Le comportement est
+     * tenu par `MonsterDamageLawTest`, qui mesure ce que deux cases font du meme
+     * geste ; celui-ci garde la trace des deux chemins, pour qu'un troisieme ne
+     * naisse pas en silence.
      */
-    public function testTheFightFormulaDoesNotReadItYet(): void
+    public function testTheFightFormulaNowReadsItOnBothPaths(): void
     {
-        $source = file_get_contents(\dirname(__DIR__, 4) . '/src/GameEngine/Fight/MobActionHandler.php');
+        $root = \dirname(__DIR__, 4);
+
+        foreach ([
+            '/src/GameEngine/Fight/SpellApplicator.php' => 'le combat de zone',
+            '/src/GameEngine/Dungeon/GroupDungeonCombatService.php' => 'la riposte du donjon',
+        ] as $path => $what) {
+            $source = file_get_contents($root . $path);
+            self::assertIsString($source, $path);
+
+            self::assertStringContainsString(
+                'MonsterDamageLaw',
+                $source,
+                sprintf('%s ne passe pas par la loi : ce qu\'un monstre frappe y resterait celui de son geste.', $what),
+            );
+        }
+    }
+
+    /**
+     * La precision n'est plus lue comme des degats.
+     *
+     * **Le defaut qu'ARC-17b a trouve**, et il ne pouvait apparaitre qu'en
+     * cherchant tous les chemins : la riposte du donjon retirait
+     * `Monster::hit` points de vie, c'est-a-dire la valeur que le combat de zone
+     * passe a `FightCalculator::hasAttackHit()` comme une **probabilite**. Elle
+     * va de 75 a 95 sur toute la grille — un facteur 1,27 la ou le canon en
+     * demande 2,9 entre deux rangs voisins.
+     *
+     * Le test est ecrit sur la source parce que le defaut etait **une lecture**,
+     * pas une valeur : c'est la relecture de `getHit()` a cet endroit qui doit
+     * ne jamais revenir.
+     */
+    public function testTheDungeonNoLongerSpendsPrecisionAsDamage(): void
+    {
+        $source = file_get_contents(\dirname(__DIR__, 4) . '/src/GameEngine/Dungeon/GroupDungeonCombatService.php');
         self::assertIsString($source);
 
         self::assertStringNotContainsString(
-            'MonsterStatTemplate',
+            '$monster->getHit()',
             $source,
-            'La derivation est branchee dans le combat : ce jalon annonce pourtant ne deplacer aucune valeur de jeu.',
+            'La riposte du donjon relit la precision du monstre comme des degats.',
         );
     }
 }

@@ -10,6 +10,7 @@ use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
 use App\Enum\Element;
+use App\Enum\MonsterRank;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
@@ -454,10 +455,24 @@ class SpellApplicatorTest extends TestCase
         $this->spellApplicator->apply($spell, $sender, $target);
     }
 
+    /**
+     * Le seul scenario ou le monstre est l'**agresseur** — et depuis ARC-17b, il
+     * doit donc avoir une case.
+     *
+     * Ce que le geste declare (200) ne decide plus de rien : c'est le boss de
+     * palier 4 qui decide, et il frappe a 171. Un vrai `Monster` plutot qu'un
+     * double, parce que `MonsterRank` est une enumeration — PHPUnit ne sait pas
+     * en fabriquer une valeur de retour, et c'est ce qui a fait tomber ce test
+     * a la premiere passe.
+     */
     public function testPlayerDeadEventDispatchedWhenPlayerDies(): void
     {
         $spell = $this->createSpell(damage: 200, critical: 0);
         $sender = $this->createMobMock();
+        $monster = new Monster();
+        $monster->setTier(4);
+        $monster->setRank(MonsterRank::Boss);
+        $sender->method('getMonster')->willReturn($monster);
         $target = $this->createPlayerMock(life: 30, maxLife: 100);
 
         $this->eventDispatcher->expects($this->once())

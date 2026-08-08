@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
 use App\Entity\Game\Monster;
 use App\Enum\MonsterRank;
+use App\GameEngine\Bestiary\MonsterStatTemplate;
 use App\GameEngine\Dungeon\DungeonActionResolver;
 use App\GameEngine\Dungeon\DungeonEncounterPicker;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
@@ -41,10 +42,14 @@ class GroupDungeonCombatServiceTest extends TestCase
     public array $damageByPlayer = [];
 
     /**
-     * DON-03 : la faune servie par le tireur, par rang. Le commun porte
-     * 120 PV et un coup de 10 pour que les scenarios DON-02 gardent leurs
-     * chiffres — la rencontre d'alors etait un sac de 120 PV/membre qui
-     * frappait a 10.
+     * DON-03 : la faune servie par le tireur, par rang.
+     *
+     * **ARC-17b a retire leur coup declare.** Les scenarios DON-02 tenaient
+     * leurs chiffres d'un `hit` pose a la main (10, 25, 30) — c'est-a-dire de
+     * la *precision* du monstre, que la riposte depensait comme des degats. Ce
+     * qu'ils frappent se derive maintenant de leur case, et les trois
+     * constantes ci-dessous le disent une fois pour que les scenarios cessent
+     * de recopier des nombres.
      *
      * @var array<string, ?Monster>
      */
@@ -52,6 +57,11 @@ class GroupDungeonCombatServiceTest extends TestCase
 
     /** @var list<int> paliers demandes au tireur */
     public array $pickedTiers = [];
+
+    /** Ce que la rencontre de chaque rang retire, derive de la case (ARC-17b). */
+    private int $commonStrike = 0;
+    private int $eliteStrike = 0;
+    private int $bossStrike = 0;
 
     protected function setUp(): void
     {
@@ -73,11 +83,18 @@ class GroupDungeonCombatServiceTest extends TestCase
             ]
         );
 
+        // ARC-17b — la riposte ne se declare plus, elle se derive de la case du
+        // monstre. Ces trois-la sont de palier 1, donc leurs coups valent 4, 12
+        // et 18 (`MonsterStatTemplate::attackFor`) : la precision qu'ils
+        // portaient tenait lieu de degats, et elle redevient une precision.
         $this->monstersByRank = [
-            'common' => $this->buildMonster('Loup cendre', MonsterRank::Common, 120, 10),
-            'elite' => $this->buildMonster('Alpha cendre', MonsterRank::Elite, 200, 25),
-            'boss' => $this->buildMonster('Ancien des bois', MonsterRank::Boss, 300, 30),
+            'common' => $this->buildMonster('Loup cendre', MonsterRank::Common, 120),
+            'elite' => $this->buildMonster('Alpha cendre', MonsterRank::Elite, 200),
+            'boss' => $this->buildMonster('Ancien des bois', MonsterRank::Boss, 300),
         ];
+        $this->commonStrike = MonsterStatTemplate::attackFor(1, MonsterRank::Common);
+        $this->eliteStrike = MonsterStatTemplate::attackFor(1, MonsterRank::Elite);
+        $this->bossStrike = MonsterStatTemplate::attackFor(1, MonsterRank::Boss);
         $this->pickedTiers = [];
         $picker = $this->createMock(DungeonEncounterPicker::class);
         $picker->method('pick')->willReturnCallback(function (int $tier, MonsterRank $rank): ?Monster {
@@ -102,13 +119,20 @@ class GroupDungeonCombatServiceTest extends TestCase
         };
     }
 
-    private function buildMonster(string $name, MonsterRank $rank, int $life, int $hit): Monster
+    /**
+     * ARC-17b — plus de `hit` : ce que la rencontre frappe vient de sa case.
+     *
+     * Le parametre existait parce que la riposte lisait la **precision** du
+     * monstre comme des degats ; le passer encore laisserait croire qu'il decide
+     * de quelque chose.
+     */
+    private function buildMonster(string $name, MonsterRank $rank, int $life, int $tier = 1): Monster
     {
         $monster = new Monster();
         $monster->setName($name);
         $monster->setRank($rank);
         $monster->setLife($life);
-        $monster->setHit($hit);
+        $monster->setTier($tier);
 
         return $monster;
     }
@@ -184,8 +208,8 @@ class GroupDungeonCombatServiceTest extends TestCase
     }
 
     /**
-     * DON-02 — la riposte : la rencontre frappe le membre qui vient d'agir
-     * (10 par defaut), et agir a enfin un cout.
+     * DON-02 — la riposte : la rencontre frappe le membre qui vient d'agir, et
+     * agir a enfin un cout. ARC-17b : ce coup est celui de sa case.
      */
     public function testTheEncounterStrikesBack(): void
     {
@@ -196,8 +220,8 @@ class GroupDungeonCombatServiceTest extends TestCase
 
         $this->service->act($p1, $run);
 
-        $this->assertSame(40, $p1->getLife());
-        $this->assertSame(50, $p2->getLife());
+        $this->assertSame(50 - $this->commonStrike, $p1->getLife());
+        $this->assertSame(50, $p2->getLife(), 'Seul le membre qui vient d\'agir encaisse.');
     }
 
     /**
@@ -206,7 +230,10 @@ class GroupDungeonCombatServiceTest extends TestCase
      */
     public function testTheRunFailsWhenEveryMemberIsDown(): void
     {
-        $p1 = $this->buildPlayer(1, 10); // la riposte de son propre tour le couche
+        // Juste ce qu'il faut de vie pour que la riposte de son propre tour le
+        // couche — derive plutot qu'ecrit, pour que le scenario survive a la
+        // recalibration qu'ARC-17c fera de la grille.
+        $p1 = $this->buildPlayer(1, $this->commonStrike);
         $run = $this->buildRun([$p1]);
         $this->service->state($run);
 
@@ -224,7 +251,7 @@ class GroupDungeonCombatServiceTest extends TestCase
      */
     public function testADownedMemberIsSkipped(): void
     {
-        $p1 = $this->buildPlayer(1, 10);
+        $p1 = $this->buildPlayer(1, $this->commonStrike);
         $p2 = $this->buildPlayer(2, 50);
         $this->damageByPlayer = [1 => 5, 2 => 5];
         $run = $this->buildRun([$p1, $p2]);
@@ -286,7 +313,7 @@ class GroupDungeonCombatServiceTest extends TestCase
         $state = $this->service->state($run);
 
         $this->assertSame(140, $state['encounterHpCurrent']); // p1 a inflige 100 par defaut
-        $this->assertSame(40, $p1->getLife()); // et la riposte l'a touche
+        $this->assertSame(50 - $this->commonStrike, $p1->getLife()); // et la riposte l'a touche
         $this->assertSame(2, $state['activePlayerId']); // tour avance vers p2
     }
 
@@ -346,7 +373,12 @@ class GroupDungeonCombatServiceTest extends TestCase
         $this->assertSame(400, $state['encounterHpMax'], 'Etape 2 : la vie de l\'elite (200) x 2 membres.');
 
         $this->service->act($p2, $run); // entame l'elite : la riposte est son coup
-        $this->assertSame(175, $p2->getLife(), 'L\'elite frappe a 25, pas au curseur de 10.');
+        $this->assertSame(200 - $this->eliteStrike, $p2->getLife(), 'L\'elite frappe son coup, pas le curseur.');
+        $this->assertGreaterThan(
+            $this->commonStrike,
+            $this->eliteStrike,
+            'Une elite qui frappe comme un commun rend l\'etape suivante indolore.',
+        );
     }
 
     /**
@@ -402,8 +434,12 @@ class GroupDungeonCombatServiceTest extends TestCase
         $this->assertSame(0, $state['encounterHpCurrent']);
         // 7 actions, 4 ripostes seulement : les chutes d'etape (2 communs ->
         // non, 1 chute par etape x 3) ne ripostent pas. Ripostes subies :
-        // commun 10 (1 fois), elite 25 (1 fois), boss 30 (2 fois).
-        $this->assertSame(200 - 10 - 25 - 30 - 30, $p1->getLife());
+        // le commun (1 fois), l'elite (1 fois), le boss (2 fois) — chacun a son
+        // coup de case depuis ARC-17b.
+        $this->assertSame(
+            200 - $this->commonStrike - $this->eliteStrike - 2 * $this->bossStrike,
+            $p1->getLife(),
+        );
         $this->assertNull($run->getTurnDeadline());
     }
 }
