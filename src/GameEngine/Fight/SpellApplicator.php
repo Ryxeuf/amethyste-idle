@@ -59,6 +59,20 @@ class SpellApplicator
         $damage = $this->damageCalculator->computeBaseDamage($spell, $domainDamage, $target, $effectiveMaxLife);
         $heal = $this->damageCalculator->computeBaseHeal($spell, $domainHeal, $target, $effectiveMaxLife);
 
+        // ARC-17b — ce qu'un monstre frappe vient de sa case, pas de son geste.
+        //
+        // Pose **ici**, sur la valeur de base et avant tout modificateur : les
+        // leviers, le critique, la resistance, la meteo et la garde continuent
+        // de s'appliquer par-dessus, exactement comme avant. Le jalon change ce
+        // que le geste vaut, jamais ce que le combat en fait.
+        //
+        // Et pose **du cote de l'attaquant** : c'est la seule condition, un
+        // monstre porte sa case qu'il frappe un joueur, un autre monstre ou une
+        // invocation.
+        if ($sender instanceof Mob) {
+            $damage = MonsterDamageLaw::damageFor($sender->getMonster(), $spell, $damage);
+        }
+
         // `dodge` — **avant tout calcul de degats**. Poser l'esquive ici et non
         // apres la resistance est la moitie de ce qui la distingue de `guard` :
         // ce qui est evite n'est pas reduit, il n'a pas lieu. Le soin passe :

@@ -1440,6 +1440,45 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > trois fois un commun de son palier pour moins de deux fois ses PV — l'asymétrie qui fait
 > qu'elle tue un joueur seul. **Aucune valeur de jeu ne bouge**, comme les deux ancres d'ARC-05
 > avant elle, et un test vérifie que la formule de combat ne lit pas encore la dérivation.
+>
+> **ARC-17b — livré le 2026-08-08.** La dérivation est branchée, et `MonsterDamageLaw` dit
+> **une fois** ce qu'un monstre retire de vie. La symétrie avec `MonsterMarkLaw` n'est pas une
+> coquetterie : *un joueur porte ses dégâts dans son geste, un monstre les porte dans sa case*,
+> parce que les gestes des monstres sont **partagés** — `none_attack_1` sert 38 des 65 espèces,
+> de sept éléments et des quatre paliers.
+>
+> **Ce qui est remplacé est le nombre, et rien d'autre** : le geste garde son nom, son élément,
+> son aire, le statut qu'il applique. **Le rapport entre gestes ne survit pas non plus**, et
+> c'est une mesure : sur les 126 couples (sort du pool, attaque de base), le rapport va de 0,33
+> à 7,0 pour une médiane de 3,0 — ces rapports ne disent pas « ce sort frappe sept fois plus
+> fort », ils disent que l'attaque de base est le geste le plus faible d'une échelle plate où
+> tout tient **entre 1 et 7**. Le conserver reviendrait à conserver l'artefact et à le
+> multiplier par la dérivation : un boss T4 y gagnerait un sort à 1 200 dégâts. ***Ce qui ne
+> portait pas d'intention n'en gagne pas en étant mis à l'échelle.***
+>
+> **Le jalon a trouvé un second chemin, et un défaut à son bout.** Un monstre retire de la vie
+> par **deux** chemins, et un seul passe par un geste : le donjon de groupe résout sa riposte
+> tout seul (DON-02) et lisait **`Monster::hit`** — la *précision*. La même valeur servait donc
+> de **probabilité de toucher** en zone (`FightCalculator::hasAttackHit`) et de **dégâts** en
+> donjon. Le commentaire de DON-02 disait pourtant ce qu'il voulait — *« le coup est celui du
+> monstre de l'étape : une élite frappe plus fort qu'un commun, sans réglage spécial »* — et il
+> ne pouvait pas l'obtenir : **aucun nombre de dégâts n'existait sur un monstre avant ARC-17a**.
+> La précision va de 75 à 95 sur toute la grille, soit un facteur **1,27** là où le canon en
+> demande 2,9 entre deux rangs voisins ; la riposte d'une élite T1 valait 80 PV et celle d'un
+> boss T4 en valait 95. **Brancher un seul des deux chemins aurait laissé ARC-17c mesurer deux
+> lois** selon qu'il joue une zone ou un donjon.
+>
+> **Le garde-fou d'ARC-17a est retourné et pas supprimé** — c'est lui qui documente qu'un jalon
+> a livré une dérivation que personne ne lisait, et que c'était voulu. Il **visait pourtant le
+> mauvais fichier** : ARC-17a supposait `MobActionHandler`, alors que le dégât se calcule dans
+> `SpellApplicator` (donc aussi en invocation, en phase de boss, sur toute action résolue) et
+> dans `GroupDungeonCombatService`. *Brancher là où l'action est choisie plutôt que là où le
+> dégât est calculé aurait laissé la moitié du jeu hors de la loi.* Et parce qu'**une classe
+> nommée n'est pas une classe lue**, le comportement est tenu à part par `MonsterDamageLawTest`.
+>
+> **Ce que la loi refuse** : un geste qui ne blesse pas ne se met pas à blesser (sinon chaque
+> soin de monstre frapperait au palier de son porteur), et un geste en pourcentage garde le
+> sien (il porte déjà une échelle).
 
 > GAME_ARCHETYPES §0.2, §9 sexies et §9 septies. **Mesuré : les arbres ne sont pas
 > équilibrés, et le classement dépend de l'échelle.** Sur un combat le guerrier domine ;

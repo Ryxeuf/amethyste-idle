@@ -6,6 +6,7 @@ use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Enum\MonsterRank;
+use App\GameEngine\Fight\MonsterDamageLaw;
 use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -311,11 +312,27 @@ class GroupDungeonCombatService
      * Le coup de la rencontre : celui du monstre de l'etape, ou le curseur
      * historique quand la faune manque.
      */
+    /**
+     * Le coup de la rencontre — ARC-17b.
+     *
+     * **Ce chemin lisait la precision du monstre comme des degats.** DON-02
+     * disait pourtant ce qu'il voulait : *le coup est celui du monstre de
+     * l'etape, une elite frappe plus fort qu'un commun, sans reglage special.*
+     * Il ne pouvait pas l'obtenir — aucun nombre de degats n'existait sur un
+     * monstre avant ARC-17a —, et `Monster::hit` etait le seul entier
+     * disponible. La meme valeur servait donc de **probabilite de toucher** en
+     * combat de zone et de **degats** ici, et elle ne progresse que de 75 a 95
+     * sur toute la grille : un facteur 1,27 la ou le canon en demande 2,9 entre
+     * deux rangs voisins.
+     *
+     * Le curseur historique ne sert plus que **faute de monstre** : un palier
+     * sans faune n'empeche jamais un donjon de s'ouvrir (DON-03).
+     */
     private function getEncounterStrike(GroupDungeonRun $run): int
     {
         $monster = $run->getEncounterMonster();
-        if (null !== $monster && $monster->getHit() > 0) {
-            return $monster->getHit();
+        if (null !== $monster) {
+            return MonsterDamageLaw::strikeFor($monster);
         }
 
         return $this->getEncounterHit();
