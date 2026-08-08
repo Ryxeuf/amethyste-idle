@@ -577,6 +577,12 @@ class SpellFixtures extends Fixture
                 'hit' => 95,
                 'level' => 2,
             ],
+            // ARC-08a — l'entrave sur la duree du Necromancien (§ 12.2). Son
+            // intention est **declaree** pour la meme raison que le Mur de feu
+            // (ARC-07a) : la derivation lit le degat d'abord, et rendrait
+            // `degat` pour un geste dont le propos est de maudire. Le degat
+            // reste ce qu'il etait — ce qui change, c'est ce que le geste
+            // qualifie : `power` ne l'amplifie plus, `grip` l'allonge.
             'plague_strike' => [
                 'slug' => 'plague-strike',
                 'damage' => 3,
@@ -587,6 +593,79 @@ class SpellFixtures extends Fixture
                 'hit' => 90,
                 'energyCost' => 10,
                 'statusEffectSlug' => 'poison',
+                'level' => 3,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Target,
+            ],
+            // ARC-08a — le premier geste hostile du jeu qui ne blesse pas.
+            //
+            // Les trente gestes a zero degat livres sont **tous** amicaux
+            // (boucliers et regenerations) : le Voile est le premier a poser un
+            // statut sur un adversaire sans lui retirer un point de vie, et
+            // c'est la signature de la fonction controle — *ses trois premiers
+            // tours ne tuent rien*.
+            //
+            // Il tient la loi de duree d'ARC-13a **par le second membre** :
+            // Aveugle dure 2 tours, donc `durationIsLegal(2, false)` est vraie.
+            // Une entrave d'un tour serait un nœud mort — le § 9 quinquies l'a
+            // mesure — mais celle-ci n'en est pas une.
+            'ash_veil' => [
+                'slug' => 'ash-veil',
+                'damage' => null,
+                'element' => Element::Dark,
+                'heal' => null,
+                'name' => 'Voile de cendre',
+                'description' => 'Une cendre qui ne retombe pas : la cible ne voit plus ou elle frappe',
+                'hit' => 90,
+                'energyCost' => 15,
+                'statusEffectSlug' => 'blinded',
+                'level' => 2,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Target,
+            ],
+            // ARC-08a — l'accord de la branche **Linceul** (§ 12.3). *Rien ne me
+            // touche parce que rien ne joue* : il etouffe, la ou la Veillee
+            // depose. Le Silence est le seul statut d'entrave d'element
+            // tenebres du catalogue, et c'est sa duree (3 tours) qui en fait
+            // une entrave et non une reaction.
+            'shroud' => [
+                'slug' => 'shroud',
+                'damage' => null,
+                'element' => Element::Dark,
+                'heal' => null,
+                'name' => 'Linceul',
+                'description' => 'Un drap d\'ombre qui etouffe le geste avant qu\'il ne parte',
+                'hit' => 85,
+                'energyCost' => 25,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'silence',
+                'level' => 4,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Target,
+            ],
+            // ARC-08a — l'accord de la branche **Veillee** (§ 12.3).
+            //
+            // **Le canon en fait un familier, et le familier n'existe pas.** Le
+            // § 13.3 le range parmi les *formes de geste* — un depot offensif
+            // qui frappe sur les tours ou son invocateur n'est pas la —, et les
+            // formes sont le chantier d'ARC-18 : `DepositLaw` ne depose
+            // aujourd'hui que la portee `Group` et la protection.
+            //
+            // On ecrit donc ce que la mecanique livree sait tenir — une chose
+            // qui continue de frapper apres le tour ou on l'a posee — et on
+            // nomme ce qui manque, comme ARC-07b l'a fait pour la Dissipation.
+            // La fiction est deja la ; c'est la loi du depot qui devra
+            // l'accueillir.
+            'bone_servant' => [
+                'slug' => 'bone-servant',
+                'damage' => 3,
+                'element' => Element::Dark,
+                'heal' => null,
+                'name' => 'Serviteur d\'ossements',
+                'description' => 'Ce qui a servi sert encore : il frappe tant qu\'il tient debout',
+                'hit' => 85,
+                'energyCost' => 20,
+                'statusEffectSlug' => 'poison-slow',
                 'level' => 3,
             ],
             'death_coil' => [
@@ -3259,6 +3338,13 @@ class SpellFixtures extends Fixture
                 'statusEffectSlug' => 'poison',
                 'level' => 2,
             ],
+            // ARC-08a — l'entrave de zone du Necromancien (§ 12.2). Sa
+            // description promettait « les ennemis » depuis toujours ; son
+            // `aoeTargets` valait **0**, donc le geste ne touchait qu'une cible
+            // et sa portee se derivait en `Target`. Les deux se rejoignent : la
+            // portee n'est pas declaree ici, elle **suit** l'aire, sans quoi
+            // l'etiquette dirait « plusieurs cibles » d'un geste qui n'en
+            // frappe qu'une.
             'nightmare_pulse' => [
                 'slug' => 'nightmare-pulse',
                 'damage' => 4,
@@ -3270,8 +3356,9 @@ class SpellFixtures extends Fixture
                 'energyCost' => 12,
                 'cooldown' => 2,
                 'statusEffectSlug' => 'paralysis',
-                'aoeTargets' => 0,
+                'aoeTargets' => 2,
                 'level' => 3,
+                'intent' => SpellIntent::Hinder,
             ],
             'void_collapse' => [
                 'slug' => 'void-collapse',

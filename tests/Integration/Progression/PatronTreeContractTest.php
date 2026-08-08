@@ -33,6 +33,12 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
      * autres suivent avec ARC-08, et ils n'ont plus de modele a inventer : un
      * arbre par fonction et un par registre sont desormais en base.
      *
+     * **ARC-08a a ajoute le Necromancien**, et ce n'est pas un vingt-et-unieme
+     * arbre pris au hasard : les quatre patrons couvrent l'assaut **deux fois**,
+     * l'entretien et l'encaisse — le **controle** n'en avait aucun, alors qu'il
+     * compte sept arbres sur vingt-quatre. Le simulateur d'ARC-17 doit generer
+     * un build par fonction ; il lui manquait celui-la.
+     *
      * @var array<string, string>
      */
     private const CONVERTED = [
@@ -40,6 +46,7 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
         'Guérisseur' => 'healer',
         'Soldat' => 'soldier',
         'Archer' => 'archer',
+        'Nécromancien' => 'necromancer',
     ];
 
     /**

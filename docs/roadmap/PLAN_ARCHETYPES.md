@@ -564,7 +564,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       pas des coûts — le gabarit en écrit 18 quand ils en portent 13 à 18. ARC-07 et
       ARC-08 referment l'écart, qui ne peut plus grandir en silence)*
 
-### ARC-07 — Les quatre arbres patrons (L → 4 sous-phases | ★★★ | HAUTE) ◐
+### ARC-07 — Les quatre arbres patrons (L → 4 sous-phases | ★★★ | HAUTE) ✅
 
 > **Découpé (règle 8) : un arbre par sous-phase.** ARC-07a le Pyromancien, ARC-07b le
 > Guérisseur, ARC-07c le Soldat, ARC-07d l'Archer. Chacun réécrit 15 nœuds, crée les gestes
@@ -718,18 +718,73 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       port, 1 dormant *(ARC-07a/b/c/d — **4/4** : le Pyromancien, le Guérisseur, le Soldat et
       l'Archer. Les échelons de port ne sont pas
       écrits ici : ils sont générés et partagés (ONB-20b), et le canon les range hors budget)*
-- [ ] Les accords choisis **par rôle dans le combat**, jamais par niveau de sort
-- [ ] Les capstones conditionnels, condition atteignable au tour 2 avec les seuls accords
+- [x] Les accords choisis **par rôle dans le combat**, jamais par niveau de sort
+      *(ARC-07a/b/c/d — chaque branche ouvre **son** geste (§6.1 bis, règle 5), et c'est le
+      rôle qui décide : le Brasier reste quand la Nova tombe, la Grande Marée provisionne
+      quand la Dissipation répond. Le niveau de sort ne décide de rien — il ne sert qu'à
+      dériver le palier de la matéria)*
+- [x] Les capstones conditionnels, condition atteignable au tour 2 avec les seuls accords
       d'entrée *(ARC-07a — le Foyer entretenu : `power` +14 pb *contre une cible qui brûle*.
       La Flammèche applique la Brûlure et coûte 0 point, donc la condition est **fréquente**
       (×1,4) et non rare — l'écart n° 11 tranché par la décision 23)*
-- [ ] Ce sont les 4 domaines de combat **nourris en contenu** (GAME_PROGRESSION §7.1) : le
-      contenu matéria, butin et donjon se concentre sur eux
-- [ ] Tests : les 10 invariants du §12 passent sur les quatre *(ARC-07a — `PatronTreeContractTest`, en **cliquet inverse** : la liste des arbres tenus ne peut que grandir)*
+- [x] Ce sont les 4 domaines de combat **nourris en contenu** (GAME_PROGRESSION §7.1) : le
+      contenu matéria, butin et donjon se concentre sur eux *(ARC-07a/b/c/d — les quatre
+      arbres portent 24 accords écrits, dont 8 gestes créés pour eux)*
+- [x] Tests : les 10 invariants du §12 passent sur les quatre *(ARC-07a — `PatronTreeContractTest`, en **cliquet inverse** : la liste des arbres tenus ne peut que grandir)*
 
-### ARC-08 — Les vingt autres arbres (M | ★★ | MOYENNE)
+### ARC-08 — Les vingt autres arbres (M → sous-phases | ★★ | MOYENNE) ◐
 > GAME_ARCHETYPES §11.3. Conversion mécanique plutôt que réécriture — le jeu est en pur
 > dev, aucune compatibilité n'est due.
+>
+> **ARC-08a — le Nécromancien, livré le 2026-08-08.** Le premier des vingt, et il n'est pas
+> pris au hasard : **les quatre patrons ne couvrent pas le contrôle.** ARC-07 a livré
+> l'assaut *deux fois* (Pyromancien, Archer), l'entretien (Guérisseur) et l'encaisse
+> (Soldat) ; la fonction contrôle — **sept arbres sur vingt-quatre**, la deuxième du jeu en
+> nombre — n'existait qu'en document. Or ARC-17 doit générer *un build de référence par
+> fonction* et tenir le seuil « aucune fonction dominante dans les deux colonnes de la
+> matrice » : **le simulateur ne pouvait ni l'un ni l'autre**, et la dépendance ARC-08 →
+> ARC-17c ne figurait pas au graphe. C'est le même renversement qu'ARC-14a avait trouvé sur
+> ARC-07, et pour la même raison : *un jalon de mesure ne peut pas mesurer ce qui n'est pas
+> écrit.*
+>
+> L'arbre suit GAME_TREE_ANATOMY §12 au nœud près et tombe sur ses nombres **sans dosage** :
+> 390 points, deux branches à 50 pb, trois plafonds atteints pile (`grip` 20/20, `tempo`
+> 12/12 côté Linceul, `thrift` 15/15 côté Veillée). Le Linceul est le **seul arbre écrit
+> sans teinte** — ses 50 pb tiennent dans la palette du contrôle.
+>
+> **Le plafond a écrit la fourche**, pour la troisième fois (après le `guard` du Soldat et le
+> `critical_power` de l'Archer) : `grip` est le levier principal du contrôle, donc le candidat
+> naturel de sa fourche — et il est *impossible*, le capstone en consommant 14 pour un plafond
+> de 20. C'est le corollaire 2 du §7.1, celui que cet arbre avait produit sur le papier :
+> ***le levier principal d'un arbre est presque absent de sa propre fourche***.
+>
+> **La fourche oppose le solo au donjon** et non deux dosages (§12.3) — le Linceul tient
+> l'ennemi et le tient seul, la Veillée tient la durée et sert le groupe.
+>
+> **Un geste hostile qui ne blesse pas, le premier du jeu.** Les trente gestes à zéro dégât
+> livrés sont **tous amicaux** (boucliers, régénérations) ; le Voile de cendre pose un statut
+> sur un adversaire sans lui retirer un point de vie, et c'est la signature de la fonction :
+> *ses trois premiers tours ne tuent rien*. Ce qui a obligé à corriger un invariant :
+> `ElementalMarkReachabilityTest` exigeait qu'une marque d'entrée soit **portée par un geste
+> de dégât**, quand la loi d'ARC-13a en offre **deux membres** — *au moins deux tours, **ou**
+> portée par un geste de dégât*. Le test était plus strict que la loi qu'il citait, sans que
+> rien ne le dise, parce qu'aucun arbre converti n'avait encore ouvert sur une entrave pure.
+> Il **appelle** désormais `ElementalMark::durationIsLegal()` au lieu de la réécrire :
+> ***une règle recopiée dérive de son original en silence*** — le même défaut qu'ARC-11b-b
+> avait trouvé dans un test qui ne parcourait que sa propre liste.
+>
+> **Le contenu manquait moins que la déclaration** : la palette de contrôle réclame deux
+> `entrave` et le Nécromancien n'en ouvrait aucune — mais deux de ses quatre entraves sont des
+> gestes **déjà livrés** dont l'intention était seulement muette (la dérivation lit le dégât
+> d'abord, donc une malédiction qui blesse se rangeait en `dégât`). Il sort des deux cliquets
+> d'un coup : « ne sait que frapper » et « palette non tenue ».
+>
+> **Nommé, pas fait** : le Serviteur d'ossements est écrit comme un geste qui laisse quelque
+> chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
+> dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
+> discipline qu'ARC-07b avec la Dissipation.
+- [ ] **Les 19 arbres restants** — la liste vit dans `CombatBranchCatalogTest::WAITING_ON_ARC_08`,
+      en cliquet
 - [ ] Table de conversion `damage/heal/hit/critical/life` plat → `(levier, pb)` selon le
       palier du nœud
 - [ ] Relecture par arbre avec le **test du plafond** et le **test du voisin** ; corriger

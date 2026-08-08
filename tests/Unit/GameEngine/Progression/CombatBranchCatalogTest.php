@@ -29,7 +29,7 @@ class CombatBranchCatalogTest extends TestCase
     private const WAITING_ON_ARC_08 = [
         'Assassin', 'Berserker', 'Chasseur', 'Chevalier', 'Defender', 'Dompteur',
         'Druide', 'Foudromancien', 'Gardien', 'Geomancien', 'Hydromancien',
-        'Ingenieur', 'Inquisiteur', 'Maremancien', 'Necromancien', 'Paladin',
+        'Ingenieur', 'Inquisiteur', 'Maremancien', 'Paladin',
         'Pretre', 'Sorcier', 'Vagabond', 'Artificier',
     ];
 
@@ -39,17 +39,24 @@ class CombatBranchCatalogTest extends TestCase
     }
 
     /**
-     * Les quatre arbres patrons ont leur fourche, nommee par le canon.
+     * Les quatre arbres patrons ont leur fourche, nommee par le canon — plus
+     * le Necromancien, premier arbre de controle (ARC-08a).
+     *
+     * Le controle est la fonction que les quatre patrons ne couvrent pas :
+     * ARC-07 a livre l'assaut deux fois, l'entretien et l'encaisse. Sa fourche
+     * n'est donc pas « la cinquieme » — c'est celle sans laquelle le simulateur
+     * d'ARC-17 ne peut pas generer un build par fonction.
      */
     public function testTheFourPatronTreesHaveTheirFork(): void
     {
         $catalog = $this->catalog();
 
-        self::assertSame(['pyromancy', 'healer', 'soldier', 'archer'], $catalog->forkedTrees());
+        self::assertSame(['pyromancy', 'healer', 'soldier', 'archer', 'necromancer'], $catalog->forkedTrees());
         self::assertSame('La Braise', $catalog->labelOf('pyromancy', 'ember'));
         self::assertSame('Le Ressac', $catalog->labelOf('healer', 'undertow'));
         self::assertSame('Le Mur', $catalog->labelOf('soldier', 'wall'));
         self::assertSame('La Volée', $catalog->labelOf('archer', 'volley'));
+        self::assertSame('Le Linceul', $catalog->labelOf('necromancer', 'shroud'));
     }
 
     /**
@@ -164,7 +171,7 @@ class CombatBranchCatalogTest extends TestCase
      */
     public function testTheTreesStillWaitingAreNamed(): void
     {
-        self::assertCount(20, self::WAITING_ON_ARC_08);
+        self::assertCount(19, self::WAITING_ON_ARC_08);
         self::assertCount(
             24,
             array_merge(self::WAITING_ON_ARC_08, $this->catalog()->forkedTrees()),

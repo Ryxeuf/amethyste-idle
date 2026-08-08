@@ -62,7 +62,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
         'Berserker',
         'Chasseur',
         'Foudromancien',
-        'Nécromancien',
         'Sorcier',
     ];
 
@@ -89,6 +88,13 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      * Rempart, les premieres **protections de melee** du jeu — sans elles, un
      * archetype d'encaisse n'avait rien a jouer sur son tour defensif.
      *
+     * **ARC-08a a livre la premiere palette de controle tenue** : le
+     * Necromancien ouvre quatre `entrave` (le Voile, la Malediction, la
+     * Pulsation, le Linceul) la ou il n'en ouvrait aucune. Deux d'entre elles
+     * sont des gestes **deja livres** dont l'intention etait seulement muette —
+     * la derivation lit le degat d'abord, donc une malediction qui blesse se
+     * rangeait en `degat`. Le contenu manquait moins que la declaration.
+     *
      * La liste est un **cliquet** : elle peut retrecir, jamais grandir.
      *
      * @var list<string>
@@ -102,7 +108,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
         'Géomancien : 0 hinder sur 2',
         'Hydromancien : 0 hinder sur 2',
         'Ingénieur : 0 hinder sur 2',
-        'Nécromancien : 0 hinder sur 2',
         'Paladin : 0 protect sur 2',
         'Prêtre : 0 group_scoped sur 1',
         'Vagabond : 0 hinder sur 2',

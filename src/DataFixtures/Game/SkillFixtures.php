@@ -2519,58 +2519,131 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // NECROMANCIEN (ombre) — 18 skills, drain de vie et maledictions
+    // NECROMANCIEN (tenebres) — 18 nœuds au gabarit, le premier arbre de controle
     // =========================================================================
+    /**
+     * Le Necromancien — tenebres x sorts x controle, « la Veillee » (ARC-08a).
+     *
+     * GAME_TREE_ANATOMY § 12. **Le premier arbre de la fonction controle**, et
+     * c'est ce qui le rend urgent : les quatre patrons d'ARC-07 couvrent
+     * l'assaut deux fois, l'entretien et l'encaisse — le controle, qui compte
+     * pourtant **sept arbres sur vingt-quatre**, n'en avait aucun. Le
+     * simulateur d'ARC-17 doit generer *un build de reference par fonction* et
+     * tenir le seuil « aucune fonction dominante dans les deux colonnes » : il
+     * ne pouvait ni l'un ni l'autre tant que le controle n'existait qu'en
+     * document.
+     *
+     * **Le test du voisin dans sa forme la plus dure** (§ 12.0) : il partage
+     * l'element **et la marque** de l'Assassin, et absolument rien d'autre —
+     * registre, fonction, ressource, levier principal, teinte, profil temporel.
+     * L'Assassin **consomme** Aveugle, le Necromancien la **prolonge**.
+     *
+     * **Ce que l'arbre depense**, et il tombe sur ses 50 pb par branche :
+     *
+     * | | Linceul | Veillee |
+     * |---|---:|---:|
+     * | `grip` 6 + capstone 14 | 20 | 20 |
+     * | `hit` 3 | 3 | 3 |
+     * | `tempo` 3 (+9 Linceul) | 12 | 3 |
+     * | `thrift` 6 (+9 Veillee) | 6 | 15 |
+     * | `pierce` | 9 | — |
+     * | `mending` *(teinte)* | — | 9 |
+     * | **Total** | **50** | **50** |
+     *
+     * Palette de controle : `grip` (principal) + `hit`, `thrift`, `tempo`,
+     * `pierce`. Le Linceul depense ses **50 pb dans sa palette** — le seul des
+     * cinq arbres ecrits a n'avoir aucune teinte —, la Veillee 41 dedans et 9
+     * hors, sur `mending` et lui seul. Trois plafonds sont **atteints pile** :
+     * `grip` 20/20, `tempo` 12/12 (Linceul), `thrift` 15/15 (Veillee).
+     *
+     * **Le plafond a ecrit la fourche, comme chez le Soldat et l'Archer.**
+     * `grip` est le levier principal du controle, donc le candidat naturel de
+     * sa fourche — et il est impossible : le capstone en consomme 14, un nœud
+     * de palier 3 en vaut 9, et le plafond est 20 (§ 7.1, corollaire 2, que cet
+     * arbre a produit). *Le levier principal d'un arbre est presque absent de
+     * sa propre fourche*, qui est donc faite de ses leviers secondaires.
+     *
+     * **La fourche oppose le solo au donjon** (§ 12.3) et non deux dosages : le
+     * Linceul tient **l'ennemi** et le tient seul (`pierce`, `tempo`, une
+     * entrave longue) ; la Veillee tient **la duree** et sert le groupe
+     * (`mending`, `thrift`, une chose qui frappe apres son tour). Elles ne
+     * partagent aucun levier, et la teinte `mending` ne vit que dans la
+     * Veillee : *le necromancien qui joue seul ne se soigne pas, il empeche.*
+     *
+     * **Le capstone est atteignable au tour 1**, et mieux que chez les patrons :
+     * le Voile de cendre **est** un accord d'entree, donc gratuit
+     * (GAME_MATERIA § 3), et il ne fait que marquer. `target_marked` est donc
+     * une condition **frequente** (x1,4) — l'ecart n° 11 tranche par le canon.
+     *
+     * **Ce que ce jalon ne fait pas, et c'est nomme** : le Serviteur d'ossements
+     * est ecrit comme un geste qui laisse quelque chose derriere lui, pas comme
+     * un **familier**. La forme n'existe pas — `DepositLaw` ne depose que la
+     * portee `Group` et la protection —, et c'est ARC-18 qui l'ouvrira.
+     *
+     * @return array<string, array<string, mixed>>
+     */
     private function getNecromancerSkills(): array
     {
         $d = 'necromancer';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
-            'necro_materia_1' => [
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // GAME_MATERIA § 3 : exactement deux accords gratuits par arbre.
+            // L'un des deux **applique la marque** (§ 1.1). Ici c'est le Voile,
+            // et il ne blesse pas — le premier du jeu dans ce cas. La loi
+            // d'ARC-13a l'autorise par son second membre : Aveugle dure deux
+            // tours, donc le tour n'a pas ete echange contre rien.
+            'necro_apprenti_1' => [
+                'title' => 'Materia : Voile de cendre',
+                'slug' => 'necro-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Voile de cendre — la cendre qui aveugle',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ash-veil']],
+            ],
+            // Le plan B offensif, et la loi 1 du § 5.1 : un arbre qui n'ouvre
+            // aucun geste de degat ne finit jamais un combat. Le Drain le fait
+            // et rend des PV — la seule facon dont cet arbre survit avant sa
+            // teinte.
+            'necro_apprenti_2' => [
                 'title' => 'Materia : Drain de vie',
-                'slug' => 'necro-materia-1',
+                'slug' => 'necro-apprenti-2',
                 'description' => 'Permet d\'utiliser la materia Drain de vie',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'soul-drain']],
             ],
-            'necro_apprenti_2' => [
-                'title' => 'Materia : Toucher necrotique',
-                'slug' => 'necro-apprenti-2',
-                'description' => 'Permet d\'utiliser la materia Toucher necrotique',
-                'requiredPoints' => 0,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'necrotic-touch']],
-            ],
 
-            // Rang 2 (10-20 pts) — 4 skills
-            'necro_damage_1' => [
-                'title' => 'Energie sombre',
-                'slug' => 'necro-damage-1',
-                'description' => 'Augmente les degats des sorts de mort',
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 2 accords ------------
+            // Les passifs du palier 1 ne sont **jamais conditionnels** (§ 6.1) :
+            // au jour 1 un joueur n'a pas de tenue a arbitrer, et un bonus qui
+            // ne s'allume pas se lit comme un bug.
+            'necro_rang2_1' => [
+                'title' => 'Œil mort',
+                'slug' => 'necro-rang2-1',
+                'description' => 'Ce qu\'on vise dans le noir, on l\'atteint quand meme',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
-                'requirements' => ['necro_materia_1'],
+                'levers' => [['lever' => 'hit', 'points' => 3]],
+                'requirements' => ['necro_apprenti_1'],
             ],
             'necro_rang2_2' => [
-                'title' => 'Corruption',
+                'title' => 'Souffle court',
                 'slug' => 'necro-rang2-2',
-                'description' => 'Augmente les chances de coup critique',
+                'description' => 'Prendre le tour avant celui qui respire encore',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'critical' => 1,
-                'requirements' => ['necro_materia_1'],
+                'levers' => [['lever' => 'tempo', 'points' => 3]],
+                'requirements' => ['necro_apprenti_2'],
             ],
-            'necro_materia_2' => [
+            'necro_rang2_3' => [
                 'title' => 'Materia : Malediction',
-                'slug' => 'necro-materia-2',
-                'description' => 'Permet d\'utiliser la materia Malediction (poison)',
+                'slug' => 'necro-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Malediction — ce qui ronge sans qu\'on y touche',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'plague-strike']],
-                'requirements' => ['necro_apprenti_2'],
+                'requirements' => ['necro_apprenti_1'],
             ],
             'necro_rang2_4' => [
                 'title' => 'Materia : Sangsue vitale',
@@ -2582,114 +2655,152 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['necro_apprenti_2'],
             ],
 
-            'necro_rang2_5' => [
-                'title' => 'Volonte sombre',
-                'slug' => 'necro-rang2-5',
-                'description' => 'La volonte du necromancien renforce sa resistance et ses sorts',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'damage' => 1,
-                'life' => 2,
-                'requirements' => ['necro_apprenti_2'],
-            ],
-
-            // Rang 3 (25-50 pts) — 5 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 2 accords ------------
+            // `grip` entre ici et nulle part ailleurs avant le sommet : 6 + 14
+            // sature son plafond de 20. C'est la contrainte qui a ecrit la
+            // fourche de cet arbre (voir l'en-tete).
             'necro_rang3_1' => [
-                'title' => 'Materia : Eclair d\'ombre',
+                'title' => 'Ce qui s\'accroche',
                 'slug' => 'necro-rang3-1',
+                'description' => 'Ce qu\'on pose sur une cible y reste plus longtemps',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'grip', 'points' => 6]],
+                'requirements' => ['necro_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est ce
+            // qui fait de l'equipement un build plutot qu'un total. Le budget
+            // compte l'effet **moyen** (6 pb), l'ecran affiche l'effet obtenu.
+            'necro_rang3_2' => [
+                'title' => 'Economie du geste',
+                'slug' => 'necro-rang3-2',
+                'description' => 'Rien de lourd sur les epaules : le geste coute moins a porter',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 6, 'condition' => 'armor:cloth']],
+                'requirements' => ['necro_rang2_2'],
+            ],
+            // Le nœud charniere de l'arbre : toute la fourche et le capstone en
+            // dependent, comme le Pyromancien fait dependre les siens de la
+            // Pluie de flammes. Un seul parent au-dela (§ 6.6).
+            'necro_rang3_3' => [
+                'title' => 'Materia : Pulsation cauchemardesque',
+                'slug' => 'necro-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Pulsation cauchemardesque — la terreur en zone',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nightmare-pulse']],
+                'requirements' => ['necro_rang2_1', 'necro_rang2_2'],
+            ],
+            'necro_rang3_4' => [
+                'title' => 'Materia : Eclair d\'ombre',
+                'slug' => 'necro-rang3-4',
                 'description' => 'Permet d\'utiliser la materia Eclair d\'ombre',
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'shadow-bolt']],
-                'requirements' => ['necro_damage_1', 'necro_rang2_2'],
-            ],
-            'necro_materia_3' => [
-                'title' => 'Materia : Moisson sombre',
-                'slug' => 'necro-materia-3',
-                'description' => 'Permet d\'utiliser la materia Moisson sombre — drain massif',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'dark-harvest']],
-                'requirements' => ['necro_materia_2'],
-            ],
-            'necro_rang3_3' => [
-                'title' => 'Maitrise necrotique',
-                'slug' => 'necro-rang3-3',
-                'description' => 'Augmente la precision des sorts de mort',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['necro_rang2_4'],
             ],
-            'necro_rang3_4' => [
-                'title' => 'Materia : Rituel sombre',
-                'slug' => 'necro-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Rituel sombre (sacrifice + soin)',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'dark-ritual']],
-                'requirements' => ['necro_rang3_1'],
-            ],
 
-            'necro_t2_shadow_claw' => [
-                'title' => 'Materia : Griffe d\'ombre',
-                'slug' => 'necro-t2-shadow-claw',
-                'description' => 'Permet d\'utiliser la materia Griffe d\'ombre — laceration spectrale',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'shadow-claw']],
-                'requirements' => ['necro_materia_2', 'necro_rang2_5'],
-            ],
-
-            // Rang 4 (60-100 pts) — 3 skills
-            'necro_rang4_1' => [
-                'title' => 'Materia : Dechirure d\'ame',
-                'slug' => 'necro-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Dechirure d\'ame — degats massifs',
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // Deux branches de deux passifs **et d'un accord chacune**, dont on
+            // n'apprend qu'une : l'arbre ecrit 60 pb, le personnage en porte
+            // 50. Les prerequis ne traversent jamais la fourche (§ 6.6).
+            //
+            // *Le Linceul* tient l'**ennemi**, *la Veillee* tient la **duree**.
+            // Elles ne partagent aucun levier — {`pierce`, `tempo`} contre
+            // {`mending`, `thrift`} — et c'est la forme forte de la regle 6 :
+            // une branche jouable seul, une branche qui sert le groupe.
+            'necro_shroud_1' => [
+                'title' => 'Rien ne passe',
+                'slug' => 'necro-shroud-1',
+                'description' => 'L\'ombre traverse ce qui pretend l\'arreter',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'soul-rip']],
-                'requirements' => ['necro_rang3_1', 'necro_materia_3'],
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'nécromancien', 'branch' => 'shroud']],
+                'requirements' => ['necro_rang3_3'],
             ],
-            'necro_rang4_2' => [
-                'title' => 'Materia : Spirale de mort',
-                'slug' => 'necro-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Spirale de mort',
+            'necro_shroud_2' => [
+                'title' => 'Devancer',
+                'slug' => 'necro-shroud-2',
+                'description' => 'Poser l\'entrave avant que l\'autre ne joue',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'death-coil']],
-                'requirements' => ['necro_rang3_3', 'necro_rang3_4'],
+                'levers' => [['lever' => 'tempo', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'nécromancien', 'branch' => 'shroud']],
+                'requirements' => ['necro_rang3_3'],
             ],
-
-            'necro_t2_nightmare' => [
-                'title' => 'Materia : Pulse cauchemardesque',
-                'slug' => 'necro-t2-nightmare',
-                'description' => 'Permet d\'utiliser la materia Pulse cauchemardesque — terreur en zone',
+            // La teinte de l'arbre, et elle ne vit que dans cette branche : le
+            // seul levier hors palette des deux cotes, sur 9 des 10 pb que la
+            // regle des 80/20 autorise.
+            'necro_vigil_1' => [
+                'title' => 'Ce qu\'il prend',
+                'slug' => 'necro-vigil-1',
+                'description' => 'La main gauche libre, ce qu\'on prend a l\'autre revient plus plein',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'nightmare-pulse']],
-                'requirements' => ['necro_rang3_1', 'necro_rang3_3'],
+                'levers' => [['lever' => 'mending', 'points' => 9, 'condition' => 'offhand_free']],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'nécromancien', 'branch' => 'vigil']],
+                'requirements' => ['necro_rang3_3'],
+            ],
+            'necro_vigil_2' => [
+                'title' => 'Longue patience',
+                'slug' => 'necro-vigil-2',
+                'description' => 'Tenir le combat plus longtemps que ses propres reserves',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'nécromancien', 'branch' => 'vigil']],
+                'requirements' => ['necro_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 de § 6.1 bis, et celle
+            // qui decide si la fourche est un choix ou une decoration.
+            'necro_shroud_accord' => [
+                'title' => 'Materia : Linceul',
+                'slug' => 'necro-shroud-accord',
+                'description' => 'Permet d\'utiliser la materia Linceul — le geste etouffe avant de partir',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'shroud'],
+                    ['action' => 'specialization.branch', 'domain' => 'nécromancien', 'branch' => 'shroud'],
+                ],
+                'requirements' => ['necro_rang3_3'],
+            ],
+            'necro_vigil_accord' => [
+                'title' => 'Materia : Serviteur d\'ossements',
+                'slug' => 'necro-vigil-accord',
+                'description' => 'Permet d\'utiliser la materia Serviteur d\'ossements — ce qui a servi sert encore',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'bone-servant'],
+                    ['action' => 'specialization.branch', 'domain' => 'nécromancien', 'branch' => 'vigil'],
+                ],
+                'requirements' => ['necro_rang3_3'],
             ],
 
-            // Rang 5 (100-150 pts) — 3 skills
-            'necro_t3_eruption' => [
-                'title' => 'Materia : Eruption du vide',
-                'slug' => 'necro-t3-eruption',
-                'description' => 'Permet d\'utiliser la materia Eruption du vide — explosion spectrale',
+            // --- Capstone (100 pts) ------------------------------------------
+            // Un seul passif, **conditionnel**, 14 pb sur le levier principal.
+            // Sa condition est atteignable des le tour 1 avec le seul kit
+            // d'entree — le Voile de cendre est gratuit et ne fait que
+            // marquer —, donc **frequente** : x1,4 et non x2,0 (§ 7,
+            // decision 23).
+            'necro_capstone' => [
+                'title' => 'Ce qui ne lache pas',
+                'slug' => 'necro-capstone',
+                'description' => 'Ce qui tient deja tient plus longtemps',
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'void-eruption']],
-                'requirements' => ['necro_rang4_1', 'necro_t2_nightmare'],
+                'levers' => [['lever' => 'grip', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['necro_rang3_3'],
             ],
-            'necro_t3_collapse' => [
-                'title' => 'Materia : Effondrement du vide',
-                'slug' => 'necro-t3-collapse',
-                'description' => 'Permet d\'utiliser la materia Effondrement du vide — implosion devastatrice',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'void-collapse']],
-                'requirements' => ['necro_rang4_2', 'necro_t3_eruption'],
-            ],
+
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1). Il
+            // garde a l'arbre son accord de haut de gamme sans peser sur son
+            // calendrier — le meme role que l'Eruption volcanique chez le
+            // Pyromancien.
             'necro_rang5_1' => [
                 'title' => 'Materia : Nova de mort',
                 'slug' => 'necro-rang5-1',
@@ -2697,7 +2808,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'death-nova']],
-                'requirements' => ['necro_t3_collapse'],
+                'requirements' => ['necro_rang3_4'],
             ],
         ];
     }
