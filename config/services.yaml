@@ -96,6 +96,22 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # ARC-17c : l'instrument du simulateur, **public**.
+    #
+    # Un service prive que personne n'injecte est retire a la compilation, et
+    # ses contrats ne peuvent alors plus l'obtenir du conteneur. Son consommateur
+    # de production — la commande `app:balance:simulate` — arrive avec ARC-17c-b ;
+    # d'ici la, ses seuls appelants sont des tests, ce qui est le cas ou
+    # `public: true` se justifie plutot que de se contourner.
+    #
+    # Le declarer ici a un second effet, voulu : il **rend le cablage de
+    # `CombatBranchCatalog` vivant**. Le catalogue des fourches n'avait jamais
+    # ete resolu par le conteneur (son seul consommateur livre n'est instancie
+    # qu'a la main dans son test), donc son `$projectDir` manquant ne s'etait
+    # jamais vu.
+    App\GameEngine\Balance\ReferenceBuildFactory:
+        public: true
+
     # ARC-14a : les fourches des arbres de combat, la meme regle que ci-dessus.
     #
     # **Il n'etait pas cable, et personne ne s'en apercevait** : le seul
