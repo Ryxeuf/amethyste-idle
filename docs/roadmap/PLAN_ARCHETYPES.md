@@ -1418,8 +1418,42 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       soit évaluée quelque part**
 
 ### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ◐
-> **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation et
-> écrit les scénarios, 17c livre les sorties, les seuils en CI et le rapport daté.
+> **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation,
+> 17c livre le simulateur — **lui-même recoupé** en 17c-a (les builds de référence) et
+> 17c-b (les scénarios, les seuils en CI, le rapport daté).
+>
+> **ARC-17c-a — livré le 2026-08-08.** La première case de la liste ci-dessous, et le socle de
+> tout le reste : *un build par fonction × registre, arbre complet, **jamais écrit à la main**.*
+> Le canon dit pourquoi, et c'est une raison de méthode — *écrits en dur, ils se périmeraient
+> au premier changement de fixture, et c'est exactement ce qu'on cherche à détecter.* Un build
+> en dur mesurerait l'état du jeu **au jour où on l'a écrit**, et continuerait longtemps après
+> que ce soit faux.
+>
+> `ReferenceBuildFactory` dérive donc chaque build d'un arbre réel : sa fonction et son
+> registre du domaine, ses leviers de ses nœuds, ses gestes de ses accords. **Une branche fait
+> un build, pas un arbre** — la fourche existe pour que deux personnages du même arbre ne
+> soient pas le même personnage (ARC-14), et les moyenner effacerait le seul choix que l'arbre
+> offre. Cinq arbres au gabarit donnent **dix builds**.
+>
+> **La fabrique devient le lecteur unique de « ce qu'une branche dépense ».** La règle
+> existait — les nœuds communs plus ceux de la branche, en points de budget nets — mais elle
+> vivait **dans un test** (`PatronTreeContractTest`), donc hors de portée de tout autre
+> appelant. L'écrire une seconde fois aurait produit exactement ce qu'ARC-08a a nommé sur la
+> loi de durée : ***une règle recopiée dérive de son original en silence***. Le contrat des
+> arbres patrons interroge désormais la fabrique.
+>
+> **Le simulateur dit ce qu'il ne joue pas.** Les cinq arbres livrés tiennent les quatre
+> fonctions et les trois registres, mais **pas les douze cases** de la grille : `coverage()`
+> les nomme en cliquet. *Un simulateur qui tairait ce qu'il ne joue pas donnerait à ses
+> moyennes une autorité qu'elles n'ont pas.* Et c'est ici que le choix d'ouvrir par ARC-08a
+> se paie : sans le Nécromancien, la fonction contrôle serait vide et le seuil « aucune
+> fonction dominante dans les deux colonnes » n'aurait pas pu se calculer.
+>
+> **Trouvé en câblant** : `CombatBranchCatalog` n'avait **jamais été enregistré pour
+> l'injection**. Son seul consommateur livré (`CombatBranchManager`) n'est instancié qu'à la
+> main dans son test, si bien que le conteneur n'a jamais eu à résoudre son `$projectDir` —
+> *un service privé qu'on n'utilise pas est retiré à la compilation, et son câblage manquant
+> avec lui.*
 >
 > **ARC-17a — livré le 2026-08-06.** Le jalon s'ouvre sur un blocage : **quatre des cinq
 > seuils portent sur les dégâts subis**, et rien ne permettait de les mesurer. `MonsterStatTemplate`
@@ -1497,9 +1531,12 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       après BES-01), `Item` (lignes d'armure et leur mitigation, armes, carquois),
       `Spell`/matéria (registre, intention, portée, coût, durée), `Skill` (leviers,
       conditions), `Domain` (élément × registre × fonction)
-- [ ] **Builds de référence générés, jamais écrits à la main** : un par fonction × registre,
+- [x] **Builds de référence générés, jamais écrits à la main** : un par fonction × registre,
       arbre complet, équipement et matéria du palier. Écrits en dur, ils se périmeraient au
       premier changement de fixture — et c'est exactement ce qu'on cherche à détecter
+      *(ARC-17c-a — `ReferenceBuildFactory` : **deux builds par arbre**, un par branche ; la
+      couverture de la grille est nommée en cliquet. **Reste à ARC-17c-b** : l'équipement et
+      la matéria du palier, qui demandent de jouer un tour pour signifier quelque chose)*
 - [ ] **Y compris un invocateur**, et joué **dans les deux modes — présent et absent**.
       C'est le premier build dont la puissance dépend de **la façon de jouer** et non de ce
       qu'on porte : aucune table statique ne peut le mesurer (§13.3, correction 21)

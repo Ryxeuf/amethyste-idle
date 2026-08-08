@@ -96,6 +96,18 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # ARC-14a : les fourches des arbres de combat, la meme regle que ci-dessus.
+    #
+    # **Il n'etait pas cable, et personne ne s'en apercevait** : le seul
+    # consommateur livre (`CombatBranchManager`) n'est instancie qu'a la main
+    # dans son test, si bien que le conteneur n'a jamais eu a resoudre son
+    # `$projectDir` — un service prive qu'on n'utilise pas est retire a la
+    # compilation, et son cablage manquant avec lui. ARC-17c est le premier a
+    # en avoir besoin au runtime.
+    App\GameEngine\Progression\CombatBranchCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # FAC-01 : l'axe doctrinal — paires de tension, decote, patronage. Ajouter
     # une faction, c'est ajouter une ligne dans `config/game/factions.yaml`.
     App\GameEngine\Reputation\FactionTensionCatalog:
