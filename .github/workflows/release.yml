@@ -144,28 +144,62 @@ jobs:
             APP_ENV=prod
             APP_VERSION=${{ needs.release.outputs.new_release_version }}
 
-      # -----------------------------------------------------------------------
-      # L'image de developpement, publiee pour les sessions Claude Code
-      # -----------------------------------------------------------------------
-      # Une session web ne peut **pas construire** cette image : son egress
-      # passe par un proxy qui re-termine TLS, et si le demon (qui tourne sur
-      # l'hote) connait le CA, chaque etape `RUN` s'execute dans son propre
-      # conteneur qui ne le connait pas — `install-php-extensions` echoue sur
-      # `curl: (60) self-signed certificate in certificate chain`. Les *pulls*,
-      # eux, passent.
-      #
-      # La publier ici resout deux choses d'un coup : le TLS, et le temps de
-      # build qui se repaierait a chaque session puisque le conteneur est jete
-      # a la fin. Le cache est partage avec l'image de production juste
-      # au-dessus — les couches communes ne se reconstruisent pas.
-      #
-      # `:dev` suit la derniere release, sans version : une session veut « la
-      # stack du moment », jamais une version precise.
-      #
-      # Le nom suit la convention de `compose.yaml` — `${IMAGES_PREFIX}app-php`
-      # — sans quoi le `pull` de la session ne trouverait pas l'image qu'elle
-      # est censee utiliser.
-      - name: Build and push the dev image
+      - name: Push summary
+        run: |
+          echo "### Docker image pushed" >> $GITHUB_STEP_SUMMARY
+          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:v${{ needs.release.outputs.new_release_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
+  # ---------------------------------------------------------------------------
+  # 3 bis. L'image de developpement — pour les sessions Claude Code
+  # ---------------------------------------------------------------------------
+  # **Elle suit `main`, pas la derniere version, et c'est voulu.** Une session
+  # veut la stack du moment pour lancer les tests du code qu'elle est en train
+  # d'ecrire ; lui servir le dernier tag publie lui donnerait un environnement
+  # en retard sur la branche qu'elle modifie.
+  #
+  # Ce job n'est donc **pas** derriere `new_release_published` : la publier avec
+  # les versions liait un outil de developpement au rythme des livraisons, si
+  # bien qu'une fusion de type `ci:` ou `docs:` — qui ne declenche aucune
+  # release par construction (`.releaserc.json`) — laissait l'outillage inerte.
+  #
+  # Il depend de `ci` : on ne publie jamais une image dont la suite de tests
+  # n'est pas passee.
+  #
+  # Pourquoi la publier plutot que la construire en session : l'egress d'une
+  # session passe par un proxy qui re-termine TLS, et si le demon connait son
+  # CA, chaque etape `RUN` d'un build s'execute dans un conteneur qui l'ignore
+  # (`curl: (60) self-signed certificate in certificate chain`). Les *pulls*
+  # passent. Voir la section « Docker dans une session » de CLAUDE.md.
+  # ---------------------------------------------------------------------------
+  dev-image:
+    name: "Image de developpement"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [ci]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lowercase image name
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -174,11 +208,9 @@ jobs:
           # **Les deux tags comptent, et pas pour la meme raison.**
           # `compose.yaml` ecrit `image: ${IMAGES_PREFIX:-}app-php` **sans
           # tag** : Docker resout donc `:latest`, et c'est lui que la session
-          # tire reellement. `:dev` ne sert qu'a dire ce que ce depot contient —
-          # ne publier que lui laisserait le `pull` chercher un `:latest` qui
-          # n'existe pas. Ce depot d'images ne porte que l'image de
-          # developpement ; la production vit dans `ghcr.io/<repo>` sans
-          # suffixe.
+          # tire reellement. `:dev` ne sert qu'a dire ce que ce depot d'images
+          # contient — ne publier que lui laisserait le `pull` chercher un
+          # `:latest` qui n'existe pas.
           tags: |
             ghcr.io/${{ env.IMAGE_NAME }}-app-php:latest
             ghcr.io/${{ env.IMAGE_NAME }}-app-php:dev
@@ -187,11 +219,8 @@ jobs:
 
       - name: Push summary
         run: |
-          echo "### Docker image pushed" >> $GITHUB_STEP_SUMMARY
-          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:v${{ needs.release.outputs.new_release_version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}-app-php:dev\` (sessions Claude Code)" >> $GITHUB_STEP_SUMMARY
+          echo "### Image de developpement poussee" >> $GITHUB_STEP_SUMMARY
+          echo "- \`ghcr.io/${{ env.IMAGE_NAME }}-app-php:latest\` (tiree par les sessions)" >> $GITHUB_STEP_SUMMARY
 
   # ---------------------------------------------------------------------------
   # 4. Deploiement en production
