@@ -93,6 +93,13 @@ fi
     {
         echo "=== $(date -u +%FT%TZ) amorcage de la stack ==="
         echo "IMAGES_PREFIX=${IMAGES_PREFIX:-<vide>}"
+
+        # `compose.yaml` declare `traefik-network` comme **externe** : en
+        # production, Traefik le possede et le cree. Dans une session, personne
+        # ne le cree, et `compose up` s'arrete net sur « declared as external,
+        # but could not be found ». Le creer ici est sans effet la ou il existe
+        # deja — sur une machine de developpement, Traefik garde le sien.
+        docker network create traefik-network >/dev/null 2>&1 || true
         # Tirer plutot que construire (voir plus haut). Un echec n'est pas
         # fatal en soi — sur une machine de developpement, l'image locale fait
         # foi et `up` la reconstruira tres bien.
