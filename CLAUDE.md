@@ -339,6 +339,12 @@ Deux obstacles distincts, et il faut les traiter tous les deux :
 | Le demon ne demarre pas | `/etc/init.d/docker` appelle `ulimit`, qui exige `CAP_SYS_RESOURCE` — **la seule** capacite que le bac a sable retire | `scripts/session-start.sh` lance `dockerd` directement |
 | L'image ne se **construit** pas | L'egress passe par un proxy qui re-termine TLS ; le demon (sur l'hote) connait son CA, mais chaque etape `RUN` s'execute dans un conteneur qui l'ignore → `curl: (60) self-signed certificate in certificate chain` | On **tire** l'image `-app-php` publiee par `release.yml` au lieu de la construire |
 
+L'image de developpement **suit `main`, pas la derniere version** : le job
+`dev-image` de `release.yml` n'est pas derriere `new_release_published`. Une
+session veut la stack du moment pour tester le code qu'elle ecrit, et la lier au
+rythme des livraisons la laisserait inerte apres toute fusion de type `ci:` ou
+`docs:`, qui ne declenche aucune release par construction (`.releaserc.json`).
+
 > Lancer `dockerd` a la main contourne **un script d'init, jamais une
 > protection** : le bac a sable garde exactement les memes bornes. Les *pulls*
 > fonctionnent parce que le demon tourne sur l'hote ; seuls les conteneurs
