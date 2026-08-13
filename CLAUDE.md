@@ -321,8 +321,45 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 
 ## Hooks actifs
 
+- **SessionStart** : `scripts/session-start.sh` — rend `docker compose` utilisable (voir ci-dessous)
 - **PreToolUse (Bash)** : bloque les commandes PHP/Composer/Node.js hors Docker
 - **PostToolUse (Edit/Write)** : detecte les debug statements (`dd()`, `dump()`, `var_dump()`) dans les fichiers PHP modifies
+
+## Docker dans une session Claude Code
+
+La regle #1 impose que tout PHP passe par Docker, et le hook `PreToolUse` la fait
+respecter. **Une session ou le demon ne tourne pas ne peut donc ni lancer les
+tests, ni PHPStan, ni le linter** : elle ecrit du code et decouvre ses erreurs en
+CI, dix minutes plus tard. Constate le 2026-08-08, sur trois jalons.
+
+Deux obstacles distincts, et il faut les traiter tous les deux :
+
+| Obstacle | Cause | Ou c'est traite |
+|---|---|---|
+| Le demon ne demarre pas | `/etc/init.d/docker` appelle `ulimit`, qui exige `CAP_SYS_RESOURCE` — **la seule** capacite que le bac a sable retire | `scripts/session-start.sh` lance `dockerd` directement |
+| L'image ne se **construit** pas | L'egress passe par un proxy qui re-termine TLS ; le demon (sur l'hote) connait son CA, mais chaque etape `RUN` s'execute dans un conteneur qui l'ignore → `curl: (60) self-signed certificate in certificate chain` | On **tire** l'image `-app-php` publiee par `release.yml` au lieu de la construire |
+
+> Lancer `dockerd` a la main contourne **un script d'init, jamais une
+> protection** : le bac a sable garde exactement les memes bornes. Les *pulls*
+> fonctionnent parce que le demon tourne sur l'hote ; seuls les conteneurs
+> d'etape d'un `build` manquent du CA.
+
+Trois regles tenues par le script : **il ne bloque jamais la session** (un
+amorcage rate degrade vers « pas de Docker »), **il est idempotent** (sur une
+machine de dev ou le demon repond, il ne fait rien) et **il rend la main vite**
+(le demon se leve en secondes, la stack part en tache de fond — journal dans
+`$TMPDIR/amethyste-bootstrap.log`, a lire jusqu'a « pret » avant de lancer les
+tests). `AMETHYSTE_SKIP_BOOTSTRAP=1` saute l'amorcage de la stack.
+
+**Le pas qui n'est pas dans le depot** : le hook ne s'execute qu'une fois le
+depot cloné. Pour que le demon soit deja la au demarrage — et pour les sessions
+qui n'ouvrent pas ce depot —, la meme commande va dans le **script de setup de
+l'environnement** (claude.ai/code → parametres de l'environnement) :
+
+```bash
+sudo dockerd > /var/log/dockerd.log 2>&1 &
+timeout 30 sh -c 'until docker info >/dev/null 2>&1; do sleep 1; done'
+```
 
 ## Domaines web
 
