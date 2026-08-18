@@ -1670,3 +1670,122 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
    HOU-02) : 1 unite semee rend 2 a 3 en 3 h, sans energie ni presence — un rendement pose
    sans chiffrage, jamais confronte au budget d'energie (§8) ni aux prix de reference
    (§21.6 bis). A chiffrer ici.
+
+---
+
+## 25. Rapport du simulateur d'archetypes — passe du 2026-08-18 (ARC-17c-c)
+
+> Produit par `app:balance:simulate` sur les **vraies donnees**, jamais releve a la main.
+> GAME_ARCHETYPES §0.2 : *la recalibration passe par le simulateur, jamais par une relecture*.
+> Ce rapport est **date pour etre compare** : c'est la trace qui rend une regression lisible.
+>
+> Refaire la passe : `docker compose exec php php bin/console app:balance:simulate --tier=1`
+
+### 25.1 Ce que la passe joue, et ce qu'elle ne joue pas
+
+**10 builds** (5 arbres au gabarit x 2 branches), **5 cases** de la grille fonction x registre
+**sur 12**. Les sept cases manquantes attendent ARC-08 : aucune moyenne de ce rapport ne parle
+pour elles.
+
+Ne sont **pas** joues, et c'est declare plutot que tu :
+
+| Absent | Pourquoi | Consequence sur la lecture |
+|---|---|---|
+| La mitigation d'armure | elle n'existe pas dans le moteur (GAME_ITEMS §2.2 la mesure, ARC-19 la reclame) | l'encaisse est sous-estimee |
+| Les statuts et les depots | ils demandent le moteur de statuts entier | **le controle est sous-estime** |
+| Le donjon a quatre | il demande une composition — ARC-17c-d | rien ne se dit ici du jeu de groupe |
+| Le familier | la forme n'existe pas (ARC-18) | aucun build a puissance variable |
+
+L'arme est **pretee au mieux** (la meilleure du jeu, pas celle du palier — le palier d'une
+arme n'est pas une donnee). Les gestes sont ceux que la branche ouvre.
+
+### 25.2 Le resultat de la passe : l'echelle tient au palier 1 et casse au palier 2
+
+C'est le constat principal, et **aucun exercice isole ne pouvait le voir** :
+
+| | Palier 1 | Palier 2 |
+|---|---:|---:|
+| Builds venant a bout d'un commun | **8 / 10** | **0 / 10** |
+| Builds dans leur bande (3-5 tours) | **6 / 10** | 0 / 10 |
+| Ancre de fonction | **x5,62** *(borne x2,0)* | **incalculable** — aucune journee menee a terme |
+
+Le diagnostic n'est donc pas « les gestes sont faibles » mais : **la courbe des gestes et celle
+du bestiaire divergent d'un palier a l'autre**. Un commun de palier 2 porte 70 PV et frappe 9 ;
+un geste de palier 2 en retire ~3 quand la regle des 25 % (§6.4) en exige 17,5. C'est l'ecart
+mesure par ARC-05a (x4 a x12,5), vu du cote de la rencontre.
+
+### 25.3 Le detail du palier 1
+
+| Build | Case | Tours | Issue | Cout en PV | Bande |
+|---|---|---:|---|---:|---|
+| Pyromancien / La Braise | assault x spell | 4 | victoire | 45 % | oui |
+| Pyromancien / L'Eclat | assault x spell | 4 | victoire | 45 % | oui |
+| Guerisseur / Le Ressac | upkeep x spell | 9 | **mort** | 100 % | non |
+| Guerisseur / La Maree | upkeep x spell | 7 | **mort** | 100 % | non |
+| Soldat / Le Mur | bulwark x melee | 5 | victoire | 44 % | oui |
+| Soldat / La Ligne mobile | bulwark x melee | 5 | victoire | 50 % | oui |
+| Archer / Le Guet | assault x ranged | 4 | victoire | 45 % | oui |
+| Archer / La Volee | assault x ranged | 4 | victoire | 45 % | oui |
+| Necromancien / Le Linceul | control x spell | 6 | victoire | 75 % | non |
+| Necromancien / La Veillee | control x spell | 6 | victoire | 75 % | non |
+
+**Deux lectures, et elles sont differentes.** Le Guerisseur ne tient pas un commun de palier 1 :
+sa fonction paie en ressource, et sans mitigation ni depot son entretien n'a rien a entretenir.
+Le Necromancien, lui, gagne mais **hors bande** — six tours pour un format qui en demande trois
+a cinq —, et il faut lire cette ligne avec le §25.1 : *ses statuts ne sont pas joues*. Sa
+lenteur mesuree est un plancher, pas son vrai rythme.
+
+### 25.4 La journee, et l'ancre de fonction
+
+Journee derivee des curseurs livres — 86 400 s / 360 s = 240 points d'energie, un tiers au
+combat, une chasse a 5 points → **16 rencontres**, dont 14 communs et **2 tentatives** d'elite.
+
+| Build | Rencontres | PV perdus | Ressource | Attente |
+|---|---:|---:|---:|---:|
+| Pyromancien *(x2 branches)* | 14 / 16 | 146 | 1 350 | **164 mn** |
+| Necromancien *(x2)* | 14 / 16 | 230 | — | 46 mn |
+| Soldat *(x2)* | 14 / 16 | 176-179 | — | 35-36 mn |
+| Archer *(x2)* | 14 / 16 | 146 | — | **29 mn** |
+| Guerisseur *(x2)* | **0 / 16** | 20 | 28-36 | *ecarte du releve* |
+
+**Ecart d'attente : x5,62 pour une borne canonique de x2,0 — l'ancre de fonction n'est pas
+tenue.** Le Pyromancien paie 164 minutes quand l'Archer en paie 29, et l'ecart vient
+entierement des **PM** : la seule ressource qui se reporte d'une rencontre a la suivante
+(`DailyAnchor::carriesOverBetweenEncounters`). Le tir et la melee paient **dans** la rencontre,
+ce que cette colonne ne voit pas.
+
+> **Une lecture que le jalon a du corriger** : les deux Guerisseurs sont **ecartes** du calcul
+> de l'ancre, et pas comptes a 7-8 minutes. Une journee arretee au premier combat coute peu —
+> la compter ferait du build le plus fragile le plus econome, soit l'inverse exact de ce qu'on
+> mesure. *L'ancre ne lit que les journees menees a leur terme.*
+
+### 25.5 Les seuils, et pourquoi quatre sur cinq sont des cliquets
+
+`BalanceSimulationRatchetTest` tient le releve en CI.
+
+| Seuil du §9 octies | Etat | Forme en CI |
+|---|---|---|
+| Une elite tue un joueur seul | ✅ **tenu** | seuil **dur** — il dit ce qu'une elite est, jamais une echelle |
+| Ecart d'attente < x1,5 | ❌ x5,62 | **cliquet** a x5,7 |
+| Aucun build hors des bandes de duree | ❌ 6/10 dans la bande | **cliquet** sur le nombre, qui ne peut que monter |
+| Groupe sans tank ni soigneur face a une elite | — | ARC-17c-d (le donjon) |
+| Aucune fonction dominante dans les deux colonnes | — | ARC-17c-d (la matrice) |
+
+**Un seuil qu'on sait rouge ne se pose pas** : il produirait une CI durablement rouge que tout
+le monde apprend a ignorer, ou un seuil desserre jusqu'a passer — c'est-a-dire un seuil qui ne
+mesure plus rien. Le cliquet est la troisieme voie, deja employee par ARC-05a sur le meme
+ecart : *le releve peut s'ameliorer librement, il ne peut plus se degrader en silence.* Quand
+ARC-05c aura ramene l'ecart vers 1, le passage au seuil sec sera **un changement de chiffre**.
+
+### 25.6 Ce que cette passe rend au §24.2
+
+Le chantier « equilibrage des combats » (§24.2) attendait le simulateur pour trois choses.
+Deux ont maintenant une mesure :
+
+ - **La duree moyenne d'un combat en tours** : 4 a 6 tours au palier 1 pour les builds qui
+   concluent, **jamais** au palier 2. Le format tient a un palier et pas a l'autre.
+ - **Les couts des sorts par palier** : le Pyromancien depense 90 PM pour un commun de palier 1,
+   soit **90 % de son pool** dans une rencontre que l'Archer conclut gratuitement. Ce n'est pas
+   le curseur de regeneration qui est en cause — c'est le **cout du geste rapporte au pool**.
+
+Reste ouvert : les **passifs de cout** des arbres (§24.1), qui n'existent pas encore.

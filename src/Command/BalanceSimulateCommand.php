@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use App\Enum\MonsterRank;
+use App\GameEngine\Balance\DailyAnchor;
+use App\GameEngine\Balance\DaySimulator;
 use App\GameEngine\Balance\EncounterAnchor;
 use App\GameEngine\Balance\EncounterOutcome;
 use App\GameEngine\Balance\EncounterSimulator;
@@ -43,6 +45,7 @@ class BalanceSimulateCommand extends Command
         private readonly ReferenceBuildFactory $buildFactory,
         private readonly ReferenceCharacterFactory $characterFactory,
         private readonly EncounterSimulator $simulator,
+        private readonly DaySimulator $daySimulator,
     ) {
         parent::__construct();
     }
@@ -78,9 +81,105 @@ class BalanceSimulateCommand extends Command
             $this->renderScenario($io, $builds, $tier, $rank);
         }
 
+        $this->renderDay($io, $builds, $tier);
+        $this->renderEliteMortality($io, $builds, $tier);
+
         $io->note('Les statuts, les depots et la mitigation d\'armure ne sont pas joues : voir EncounterSimulator. Le controle est donc sous-estime par cet instrument.');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * La journee, et l'ancre de fonction qu'elle seule permet de calculer.
+     *
+     * **C'est le seul invariant qui ne se verifie pas sur un archetype isole**
+     * (§ 9 sexies, correction 16) : il compare les quatre fonctions entre elles,
+     * ce qu'aucun exercice individuel ne pouvait voir.
+     *
+     * @param list<ReferenceBuild> $builds
+     */
+    private function renderDay(SymfonyStyle $io, array $builds, int $tier): void
+    {
+        $io->section(sprintf('Scenario : une journee de palier %d', $tier));
+
+        $rows = [];
+        $restByBuild = [];
+
+        foreach ($builds as $build) {
+            $outcome = $this->daySimulator->simulate($this->characterFactory->of($build), $tier);
+
+            // **L'ancre ne lit que les journees menees a leur terme.** Une
+            // journee arretee a la troisieme rencontre coute peu, et la compter
+            // ferait passer le build qui meurt le plus vite pour le plus
+            // econome — l'inverse exact de ce qu'on mesure.
+            if ($outcome->clearedItsCommons()) {
+                $restByBuild[$outcome->buildLabel] = $outcome->restSeconds;
+            }
+
+            $rows[] = [
+                $outcome->buildLabel,
+                $build->cell(),
+                sprintf('%d / %d', $outcome->encountersCleared, $outcome->encountersBudgeted),
+                sprintf('%.0f %%', $outcome->completionShare()),
+                $outcome->deaths > 0 ? 'oui' : 'non',
+                (string) $outcome->lifeLost,
+                $outcome->resourceSpent > 0 ? (string) $outcome->resourceSpent : '—',
+                sprintf('%d mn', $outcome->restMinutes()),
+            ];
+        }
+
+        $io->table(['Build', 'Case', 'Rencontres', 'Journee jouee', 'Tombe', 'PV perdus', 'Ressource', 'Attente'], $rows);
+
+        $excluded = \count($builds) - \count($restByBuild);
+
+        if (\count($restByBuild) < 2) {
+            $io->writeln(sprintf(
+                ' <comment>Ancre de fonction : incalculable — %d build(s) seulement menent leur journee a terme. Un ecart se mesure entre deux.</comment>',
+                \count($restByBuild),
+            ));
+            $io->newLine();
+
+            return;
+        }
+
+        $spread = DailyAnchor::restSpread($restByBuild);
+
+        $io->writeln(sprintf(
+            ' <comment>Ancre de fonction : ecart d\'attente x%s pour une borne de x%s — %s%s.</comment>',
+            is_finite($spread) ? number_format($spread, 2, ',', ' ') : '∞',
+            number_format(DailyAnchor::MAX_REST_SPREAD, 1, ',', ' '),
+            DailyAnchor::isWithinFunctionAnchor($restByBuild) ? 'tenue' : 'NON tenue',
+            $excluded > 0 ? sprintf(' (%d build(s) ecarte(s), journee non menee a terme)', $excluded) : '',
+        ));
+        $io->newLine();
+    }
+
+    /**
+     * La mortalite solo des elites — l'un des cinq seuils du § 9 octies.
+     *
+     * *Une elite tue un joueur seul, quel que soit son archetype* : le canon la
+     * chiffre en **part de barre de vie** (102-129 %), et pas en frequence. Une
+     * elite qui couterait 40 % ne serait pas une elite ; une elite qui en
+     * couterait 300 % ne laisserait aucune place au jeu.
+     *
+     * @param list<ReferenceBuild> $builds
+     */
+    private function renderEliteMortality(SymfonyStyle $io, array $builds, int $tier): void
+    {
+        $io->section(sprintf('Mortalite solo des elites (palier %d)', $tier));
+
+        $rows = [];
+        foreach ($builds as $build) {
+            $outcome = $this->simulator->simulate($this->characterFactory->of($build), $tier, MonsterRank::Elite);
+
+            $rows[] = [
+                $outcome->buildLabel,
+                sprintf('%.0f %%', $outcome->lifeCostShare()),
+                $outcome->victory ? 'survit' : 'tombe',
+            ];
+        }
+
+        $io->table(['Build', 'Part de barre', 'Issue'], $rows);
     }
 
     /**
