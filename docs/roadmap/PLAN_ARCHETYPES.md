@@ -783,6 +783,30 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
+> **ARC-08e — le Vagabond, livré le 2026-08-18. La grille est couverte.** Le cinquième arbre au
+> gabarit remplit `control × melee`, et le simulateur joue désormais **toutes les cases que le
+> jeu possède**.
+>
+> **Mesure faite en l'ouvrant, et elle corrige l'instrument** : les 24 arbres de combat
+> n'occupent que **9 des 12 cases** de la grille fonction × registre — il n'existe aucun arbre
+> d'encaisse à distance, aucun d'encaisse en sorts, aucun d'entretien au tir. Le simulateur
+> comptait sur douze et se croyait plus incomplet qu'il ne l'était : *un dénominateur faux rend
+> une couverture pessimiste, et une couverture pessimiste se lit comme une excuse.*
+> `ReferenceBuildFactory::reachableCells()` le dérive des domaines plutôt que de l'écrire.
+>
+> **Il était dans deux listes d'attente à la fois, et pour la même raison** : la palette du
+> contrôle exige deux `entrave`, et l'arbre n'en portait aucune — que des soins et des
+> protections. *Un arbre de contrôle qui ne sait que soigner n'est pas un arbre de contrôle.*
+> Deux gestes écrits (**Croc-en-jambe**, qui porte enfin Déséquilibre, et **Vent contraire**)
+> l'en sortent des deux.
+>
+> **Le cliquet d'ARC-05a a fait son travail, deux fois.** Écrire *Vent contraire* à 2 dégâts a
+> creusé l'écart à l'ancre du palier 3 (×7,6 → ×9,5) ; et faire passer *Courant d'air* du palier
+> 1 au palier 3 sans toucher sa valeur l'a creusé de nouveau — ***changer le palier d'un geste
+> sans changer sa valeur, c'est l'affaiblir sans le dire.*** Les deux sont posés à la médiane de
+> leur palier. Le cliquet n'est pas un obstacle : c'est ce qui empêche d'ajouter un geste
+> sous-calibré sans le voir.
+>
 > **ARC-08d — le Gardien, livré le 2026-08-18.** Le quatrième au gabarit, et la case
 > **`upkeep × melee`** : le simulateur passe à **8 cases sur 12**. GAME_TREE_ANATOMY §14 l'écrit
 > **en paire avec le Défenseur**, sur la même case d'élément et de registre — *seule leur
@@ -880,7 +904,8 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > a pour tâche de recalibrer. On le nomme plutôt que de le doser ici.
 >
 - [◐] **Les 19 arbres restants** — la liste vit dans `CombatBranchCatalogTest::WAITING_ON_ARC_08`,
-      en cliquet *(ARC-08b→d — l'Assassin, l'Artificier et le Gardien en sortent, **16 restants**)*
+      en cliquet *(ARC-08b→e — cinq arbres convertis, **15 restants** ; la **grille des 9 cases
+      atteignables est couverte**, donc les suivants ajoutent de la profondeur, plus de la portée)*
 - [ ] Table de conversion `damage/heal/hit/critical/life` plat → `(levier, pb)` selon le
       palier du nœud
 - [ ] Relecture par arbre avec le **test du plafond** et le **test du voisin** ; corriger

@@ -44,6 +44,9 @@ class ReferenceBuildFactoryTest extends AbstractIntegrationTestCase
         'assault x spell',
         'bulwark x melee',
         // ARC-08c — l'Artificier remplit `control x ranged`.
+        // ARC-08e — le Vagabond remplit `control x melee`, la derniere case
+        // que la grille des 24 arbres rende atteignable.
+        'control x melee',
         'control x ranged',
         'control x spell',
         // ARC-08d — le Gardien remplit `upkeep x melee`.

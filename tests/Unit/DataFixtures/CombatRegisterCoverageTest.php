@@ -43,7 +43,6 @@ class CombatRegisterCoverageTest extends TestCase
         'inquisitor',
         'paladin',
         'tamer',
-        'wanderer',
     ];
 
     private function root(): string
