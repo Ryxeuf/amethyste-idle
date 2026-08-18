@@ -79,6 +79,13 @@ final class SkillCondition
         'first_turn',
         'alone_in_fight',
         'full_life',
+        // ARC-08d — *le combat dure*. Ajoutee pour le Gardien, et elle merite
+        // sa place dans la colonne x2,0 : elle est **fausse dans toutes les
+        // rencontres de trois tours**, c'est-a-dire dans le tout-venant que le
+        // § 6.4 range en bande 3-5. C'est la contrepartie exacte du cout
+        // structurel de l'entretien — *la fonction dont la promesse est la
+        // duree est celle dont le sommet se paie en duree*.
+        'long_fight',
     ];
 
     private function __construct(

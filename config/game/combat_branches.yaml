@@ -147,3 +147,24 @@ trees:
                 label: 'Réserve'
                 description: 'Durer plus longtemps que la ligne d''en face : recuperer la munition, percer plutot que bruler.'
                 accord: 'Tir couvrant'
+
+    # --- Gardien — terre x melee x entretien (ARC-08d) --------------------
+    # Le canon l'ecrit **en paire avec le Defenseur**, sur la meme case
+    # d'element et de registre : *seule leur fonction differe*. C'est la
+    # demonstration du troisieme axe sans qu'un seul chiffre ait a la faire.
+    #
+    # La fourche oppose **rendre** a **resister**, et depuis l'arbitrage de
+    # l'ecart n° 13 le Rempart echange `thrift` contre `wind` : la reprise
+    # **raccourcie** contre la reprise **sautee**, deux facons de payer le meme
+    # cout de registre.
+    guardian:
+        label: 'Gardien'
+        branches:
+            source:
+                label: 'La Source'
+                description: 'Ce qu''on pose continue sans nous : rendre a chaque tour, et porter assez pour en donner.'
+                accord: 'Sève de pierre'
+            rampart:
+                label: 'Le Rempart'
+                description: 'Rien n''accroche et rien ne coute : resister aux entraves, et sauter la reprise.'
+                accord: 'Rempart de pierre'

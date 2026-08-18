@@ -52,7 +52,7 @@ class ElementalMarkReachabilityTest extends AbstractIntegrationTestCase
      *
      * @var list<string>
      */
-    private const WAITING_ON_ARC_08 = ['Gardien', 'Prêtre', 'Vagabond'];
+    private const WAITING_ON_ARC_08 = ['Prêtre', 'Vagabond'];
 
     /**
      * Tout arbre de combat applique sa marque des son entree — ou figure sur

@@ -783,6 +783,34 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
+> **ARC-08d — le Gardien, livré le 2026-08-18.** Le quatrième au gabarit, et la case
+> **`upkeep × melee`** : le simulateur passe à **8 cases sur 12**. GAME_TREE_ANATOMY §14 l'écrit
+> **en paire avec le Défenseur**, sur la même case d'élément et de registre — *seule leur
+> fonction diffère* —, ce qui démontre le troisième axe sans qu'un seul chiffre ait à le faire.
+>
+> **Il est le seul arbre du jeu dont le capstone garde ×2,0** (décision 23), et il le mérite :
+> sa condition — *le combat dure* — est fausse dans toutes les rencontres de la bande 3-5,
+> c'est-à-dire dans le tout-venant. C'est la contrepartie exacte de son coût structurel, et elle
+> tombe sans qu'on ait rien ajusté : *la fonction dont la promesse est la durée est celle dont le
+> sommet se paie en durée.* Le vocabulaire fermé des conditions gagne donc `long_fight`, dans la
+> colonne ×2,0.
+>
+> **Quatre gestes à écrire, quand le canon en annonçait deux.** Le §14.2 prévoyait Racines et
+> Sève de pierre ; il fallait aussi le Bouclier terreux et le Bouclier magique, **partagés avec
+> le Géomancien** donc de registre `spell`. C'est la troisième fois que la règle d'ARC-08b décide
+> du contenu à écrire — *un accord partagé garde le registre de celui qui l'a ouvert le premier*
+> —, et la marque de la terre déménage avec : **Alourdi passe sur le Jet de cailloux**, le seul
+> accord d'entrée que l'arbre possède en propre.
+>
+> **La fourche prend la meilleure version, celle que le document recommande lui-même** : depuis
+> l'arbitrage de l'écart n° 13, le Rempart échange `thrift` contre `wind` et oppose la reprise
+> **raccourcie** à la reprise **sautée**. Deux façons de payer le même coût de registre.
+>
+> **Un bénéfice de voisinage, mesuré** : convertir les gestes du Gardien à la mêlée a fait sortir
+> le **Défenseur** de la liste d'attente des registres, et l'a fait passer de 0 à 1 `protect` sur
+> les 2 que sa palette exige. *Convertir un arbre sert ses voisins de case* — le même effet que
+> le Chevalier avait tiré du Soldat.
+>
 > **ARC-08c — l'Artificier, livré le 2026-08-18.** Le troisième au gabarit, et la case
 > **`control × ranged`** : le simulateur passe à **7 cases sur 12**. GAME_TREE_ANATOMY §13 le
 > choisit parce qu'il croise le **test du voisin sur trois axes à la fois** — élément et marque
@@ -852,7 +880,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > a pour tâche de recalibrer. On le nomme plutôt que de le doser ici.
 >
 - [◐] **Les 19 arbres restants** — la liste vit dans `CombatBranchCatalogTest::WAITING_ON_ARC_08`,
-      en cliquet *(ARC-08b puis ARC-08c — l'Assassin et l'Artificier en sortent, **17 restants**)*
+      en cliquet *(ARC-08b→d — l'Assassin, l'Artificier et le Gardien en sortent, **16 restants**)*
 - [ ] Table de conversion `damage/heal/hit/critical/life` plat → `(levier, pb)` selon le
       palier du nœud
 - [ ] Relecture par arbre avec le **test du plafond** et le **test du voisin** ; corriger

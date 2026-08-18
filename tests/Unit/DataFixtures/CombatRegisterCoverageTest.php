@@ -38,9 +38,7 @@ class CombatRegisterCoverageTest extends TestCase
      */
     private const AWAITING_ARC_08 = [
         'berserker',
-        'defender',
         'engineer',
-        'guardian',
         'hunter',
         'inquisitor',
         'paladin',
