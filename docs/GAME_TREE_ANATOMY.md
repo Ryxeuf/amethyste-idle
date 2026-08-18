@@ -118,6 +118,16 @@ et c'est ce qui la rend testable.
 | **Pacte** | un levier **majoré** payé par un malus permanent | 19 pb de bonus, 10 pb de malus | palier 3 seulement, 1 au plus, et c'est une feuille |
 | **Accord dormant** | rien, aujourd'hui — l'hybride réservé (DOM-07) | hors budget | 1 par arbre de combat |
 
+> **Amendement du 2026-08-18 — une septième nature, et pourquoi la liste était
+> fermée à six.** [GAME_VITALITY.md](GAME_VITALITY.md) ajoute le **Socle** : une
+> porte à **0 point et 0 pb** qui porte le **palier de vitalité** du personnage
+> (sémantique de *maximum*, jamais de somme). Les six natures ci-dessus répondaient
+> à *« qu'est-ce qu'un nœud donne à un build ? »* ; le Socle ne donne rien à un
+> build — il enregistre *ce que le personnage est devenu capable d'encaisser*, une
+> question que la liste ne posait pas. La règle qui la referme : **une septième
+> nature n'est admise que si elle ne donne ni geste, ni levier, ni droit de port** —
+> sinon c'est l'une des six sous un autre nom.
+
 **Et ce qu'un nœud ne peut jamais être**, ce qui compte autant :
 
 - **jamais une action** (règle absolue n° 9) — un arbre n'accorde pas un sort, il

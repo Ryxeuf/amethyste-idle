@@ -18,7 +18,7 @@
 
 ## Vue d'ensemble
 
-**19 jalons** (**ARC-01** à **ARC-19**) en 4 pistes.
+**20 jalons** (**ARC-01** à **ARC-20**) en 4 pistes.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -40,7 +40,8 @@
 | ARC-16 | Les accointances : la synergie donne de la souplesse, pas de la puissance | M | ← ARC-12 |
 | ARC-17 | **Le simulateur d'équilibrage** (`app:balance:simulate`) — l'outil qui remplace les repères calculés à la main | M | ← ARC-05, ARC-07 |
 | ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | M | ← ARC-11 |
-| ARC-19 | L'aggro bornée, et ce qu'elle exige de l'armure | M | ← DON-03, OBJ |
+| ARC-19 | L'aggro bornée, et ce qu'elle exige de l'armure | M | ← DON-03, OBJ, **ARC-20** |
+| ARC-20 | **La barre de vie** : le Socle, la loi dérivée du bestiaire, et les cascades | **L** → 3 sous-phases | ← BES-01, ARC-05 |
 
 ```
 Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → ARC-15
@@ -48,6 +49,7 @@ Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → 
 Piste B — L'échelle   : ARC-05 → ARC-17 ; ARC-06 ‖ ARC-10
 Piste C — Le contenu  : ARC-07 → ARC-08 ; ARC-07 → ARC-14 ; ARC-09 ‖
 Piste D — Les formes  : ARC-11 → ARC-18 (a livrer par forme, jamais en bloc) ; ARC-19 ← DON-03
+Piste B (suite)       : BES-01 → ARC-20 → ARC-17 ; ARC-20 → ARC-19
 ```
 
 **Le noyau minimal.** Si le chantier doit être livré par morceaux, ARC-01, 02, 03 et
@@ -1997,6 +1999,11 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       supplémentaire, aucune montée en puissance entre les combats
 
 ### ARC-19 — L'aggro bornée (M | ★★★ | MOYENNE)
+> **Prérequis ARC-20.** Tous les chiffres de ce jalon (147 PV, 144 encaissés, 120 sur
+> 120) sont posés sur une barre de vie que **rien ne produit dans le code** (20 PV
+> livrés) : ils se recalculent sur `VitalityLaw`. Livrer l'aggro avant la barre
+> reviendrait à borner un transfert dont on ne sait pas ce qu'il transfère.
+>
 > GAME_ARCHETYPES §13.4. **Le refus du §13.3 est rouvert** : il reposait sur le modèle
 > actuel du donjon (rencontre abstraite à PV partagés, aucune riposte). **DON-02/03 le
 > change** — de vrais monstres, une vraie riposte —, et dès qu'une riposte existe, la
@@ -2045,6 +2052,105 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 - [ ] Tests : un groupe sans tank et sans soigneur vient à bout d'une élite de son palier ;
       aucun score de menace cumulé ; la part déplacée ne dépasse jamais 50 %
 
+### ARC-20 — La barre de vie : le Socle, la loi, et les cascades (L | ★★★ | HAUTE) → 3 sous-phases
+> [../GAME_VITALITY.md](../GAME_VITALITY.md) (2026-08-18). **Le trou que personne
+> n'avait nommé** : le personnage n'a pas de niveau, et **rien ne fait monter sa barre
+> de vie**. Mesuré — `PlayerFactory::BASE_LIFE` vaut **20**, plafonné entre 26 et 40 PV
+> une fois tout appris, quand `MonsterStatTemplate` fait **×80** de T1 à T4 et qu'une
+> élite T4 frappe **110**. Le canon, lui, raisonne depuis le premier jour avec
+> « joueur 120 PV » au palier 2 (§9 bis, §9 sexies, §9 octies) : **tous ses chiffres
+> reposent sur une échelle que le code ne produit nulle part**, ce qui rend
+> inatteignables **quatre des cinq seuils** d'ARC-17 — ils portent sur les dégâts subis.
+>
+> **Ce que l'étude des autres jeux a tranché** (GAME_VITALITY §1) : OSRS fait de la vie
+> une compétence qui monte en combattant — refusé, elle récompense les rats (ARC-06b) ;
+> PoE et Dofus la font acheter dans l'arbre — refusé, **c'est une taxe** que tout le
+> monde paie ; Albion la met dans l'équipement — refusé, le marché déciderait de la
+> survie, et le full loot qui l'équilibre là-bas nous est interdit (règle 11). **Ryzom**
+> donne le véhicule (le pool dérive de la branche la plus avancée, **jamais de la
+> somme**) et **FFXIV/GW2** le découpage (la base vient du contenu, l'archétype d'un
+> multiplicateur qu'on n'achète pas — chez nous, **la ligne d'armure**).
+>
+> **La règle qui en sort, et qui tient tout le jalon** : *la progression verticale ne
+> doit jamais être un choix ; seule la différenciation l'est.* C'est le Socle qui rend
+> le levier `life` **facultatif** — sans lui, il deviendrait obligatoire dans les
+> 24 arbres et le budget de 50 pb n'en compterait plus que 30.
+
+#### ARC-20a — La loi, et rien d'autre (M)
+- [ ] **`VitalityLaw`** : *la barre d'un joueur de palier n vaut ce qu'une élite de son
+      palier lui prend en une rencontre entière* — `8 × MonsterStatTemplate::attackFor(n, Elite)`.
+      Les 8 tours ne sont pas un chiffre de goût : c'est **le centre de la bande de durée
+      d'une élite** déjà livrée dans `EncounterAnchor::TURN_BANDS`. La barre est définie
+      par le **format d'une rencontre**, jamais par une table
+- [ ] **La dérivation retrouve ses propres références** — 17 % de la barre pour un commun
+      sur quatre tours (bande « 16 à 26 % » du §9 octies), **100 %** pour une élite sur
+      huit (mesuré « 102 à 129 % »), et **le rapport ne dépend pas du palier** puisque les
+      deux membres dérivent de la même vie de commun. Test : *une dérivation qui rate sa
+      propre référence ne dérive rien* (le critère d'ARC-17a)
+- [ ] **`MendingAnchor`**, frère symétrique d'`EncounterAnchor` : soin direct = **25 % de
+      la barre du palier**, dépôt = **8 % par tour**. Sans lui, la grille des soins et
+      celle des dégâts divergent au premier ajustement du bestiaire
+- [ ] **Aucune valeur de jeu ne bouge** — comme `EncounterAnchor`, `DailyAnchor` et
+      `MonsterStatTemplate::attackFor()` avant elle, cette sous-phase rend une règle
+      **calculable** pour qu'on mesure l'écart. Un test vérifie qu'aucune formule ne lit
+      encore la loi, et documente que c'est voulu
+- [ ] **Constat à porter en cliquet** : un boss de palier 2 frappe **19,7 % de la barre
+      par tour** — il tue en 5 tours quand sa bande en demande 12 à 20. *Un boss n'est pas
+      un contenu solo, et la barre le dit sans qu'on ait à l'interdire*
+
+#### ARC-20b — Le Socle : un nœud visible **et** la loi (L)
+- [ ] **Les deux, jamais l'un ou l'autre** : le nœud existe pour être **vu** (un palier de
+      vie est un moment de la progression, pas une variable cachée), la valeur est
+      **calculée** (une valeur écrite dans 24 arbres diverge au premier ajustement)
+- [ ] **Sa forme** : une **porte**. 0 point, **0 pb**, aucun levier, aucun geste, aucun
+      droit de port. **Gratuit parce qu'il n'est pas une récompense** — le faire payer en
+      points en ferait un péage, en budget la taxe de PoE
+- [ ] **Sémantique de maximum, jamais de somme.** C'est la seule forme qui survive à « le
+      savoir n'est jamais borné » : un nœud additif à +100 PV donnerait **+3 200 PV** au
+      joueur qui a mené les 32 arbres — le défaut exact de `Skill::life` aujourd'hui
+- [ ] **Un Socle par palier 1, 2 et 3 dans chacun des 24 arbres de combat.** Le gabarit
+      passe de 18 à **21 nœuds écrits** ; `PatronTreeContractTest` et le compte de budget
+      sont à reprendre — le Socle pèse **0 pb**, donc les 50 pb ne bougent pas
+- [ ] **Amendement à GAME_TREE_ANATOMY §2** : la liste des **six natures** répondait à
+      *« qu'est-ce qu'un nœud donne à un build ? »* ; le Socle enregistre *ce que le
+      personnage est devenu capable d'encaisser*, une question qu'elle ne posait pas. La
+      règle qui la referme : *une septième nature n'est admise que si elle ne donne ni
+      geste, ni levier, ni droit de port — sinon c'est l'une des six sous un autre nom*
+- [ ] **Le plancher est porté par `PlayerFactory`, jamais par un arbre** : un personnage
+      qui sort du tunnel, ou qui ne mène que des arbres de métier, a le palier 1 sans rien
+      avoir appris (même principe que l'outil de palier 1 d'OBJ-06 et le plancher du
+      jour 1 de GAME_MATERIA §3). **On ne peut pas se retrouver sans barre de vie**
+- [ ] **Retirer `Skill::life`** — plat, cumulatif, hors budget, **écrit en dur** dans
+      `Player::maxLife` par `SkillAcquiring` : la même fuite que les échelons de port de
+      l'écart n° 5. Migration des personnages existants, et `SkillRespecManager` n'a plus
+      de bonus plat à défaire — **un respec rend des points, jamais un palier**
+- [ ] Tests : les invariants 1 à 6 et 11 de GAME_VITALITY §8 (aucun cumul, aucun coût,
+      aucun levier, couverture des 24 arbres en **cliquet**, plancher inconditionnel,
+      aucune source indexée sur le nombre d'arbres appris)
+
+#### ARC-20c — Les cascades (M)
+- [ ] **`LifeRegenManager` passe en pourcentage de la barre.** Livré, il régénère
+      **12 secondes par point, en absolu** : le retour à pleine vie passe de 19 min au
+      palier 1 à **2 h 56** au palier 4, et l'ancre en minutes d'attente de `DailyAnchor`
+      explose. Invariant : *le temps de retour à plein ne dépend pas du palier*
+- [ ] **La grille des soins appliquée** — sorts de soin et potions sur `MendingAnchor`.
+      **L'obsolescence est une fonctionnalité** (un soin de palier 1 rend 2,7 % d'une barre
+      de palier 4) ; la seule chose à garantir est le **plancher du jour 1** : l'accord
+      d'entrée gratuit ouvre un soin de **son** palier, jamais un soin figé au palier 1
+- [ ] **Effet de bord à encaisser, pas à corriger** : les potions deviennent une échelle de
+      paliers comme les outils (OBJ-06). L'alchimiste a un produit **à chaque palier** au
+      lieu d'un seul qui se périme — du contenu économique gratuit pour MET et ECO
+- [ ] **Trancher `Item::protection`** : lu par `EquipmentSetResolver`, affiché sur la fiche
+      d'inventaire, **et par aucune formule de combat**. Le brancher comme mitigation
+      (ARC-19) ou le retirer — *un chiffre affiché sans effet est un mensonge d'interface*
+- [ ] **`ReferenceCharacterFactory::maxLifeOf()` lit la loi** et non `BASE_LIFE` : c'est ce
+      qui rend les cinq seuils d'ARC-17 mesurables, et la raison pour laquelle ce jalon
+      passe **avant** la suite d'ARC-17 et **avant** ARC-19
+- [ ] Tests : les invariants 7 à 10 et 12 de GAME_VITALITY §8 (la part qu'un commun retire,
+      l'élite mortelle en solo, le temps de retour constant, la part qu'un soin rend, et
+      **plus de la moitié de l'écart de PV effectifs vient de l'armure** — la décision 21
+      du canon, enfin mesurable)
+
 ---
 
 ## Risques
@@ -2059,6 +2165,8 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 | La **fonction** se relit comme un retour des classes | Elle n'est jamais affichée, ne ferme aucun arbre et ne conditionne aucun port. C'est une contrainte d'auteur — le joueur n'en voit que la conséquence |
 | Les **passifs conditionnels** se relisent comme des interdits de port | Une condition ne ferme rien : le mage en plaque existe toujours, il n'a pas le bonus. L'UI d'ARC-12 dit ce qu'on gagnerait à porter autre chose — jamais ce qui est refusé |
 | Les **dépôts de groupe** rendent un rôle **obligatoire** en donjon | Garde-fou testé (ARC-11) : un groupe sans entretien met plus de tours et perd plus de PV, il ne rencontre pas un mur. Aucune rencontre ne suppose une composition |
+| **La barre de vie devient une taxe** — le défaut mesuré de Path of Exile et de Dofus | Le **Socle** ne coûte ni point ni budget, et c'est ce qui rend le levier `life` facultatif. *La progression verticale n'est jamais un choix ; seule la différenciation l'est* (GAME_VITALITY §1.3) |
+| Le **Socle** se relit comme un niveau de personnage déguisé | Il est **par arbre**, jamais global ; sa sémantique est le **maximum**, jamais la somme ; il ne s'affiche pas comme un rang, et il **n'ouvre aucun contenu** — il donne la survie, jamais la capacité de nuire |
 | **L'aggro rend un rôle obligatoire** | Elle est **bornée à 50 %** et portée par un **geste**, jamais par une table : sans tank, chacun encaisse la sienne et le groupe passe. Un test l'exige (ARC-19) |
 | **L'entretien casse l'équilibre solo** s'il ne paie rien | Le curseur de régénération des PM (ARC-17) est ce qui le borne. Sans lui, mesuré : 14 minutes d'attente par jour contre 99 à 142 pour les autres — il joue trois fois plus de contenu pour la même énergie d'action |
 | **L'assaut n'a pas de raison d'exister** tant que la vitesse ne vaut rien | Les rencontres à fenêtre (ARC-17). Une chasse coûte 5 points d'énergie quel que soit le nombre de tours : sans contenu à fenêtre, tuer vite ne rapporte rien |
