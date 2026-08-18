@@ -115,6 +115,7 @@ final class DaySimulator
                 $resourceSpent,
                 $this->lifeRegen->getRegenSeconds(),
                 $this->manaRegen->getRegenSeconds(),
+                $character->maxLife,
             ),
         );
     }

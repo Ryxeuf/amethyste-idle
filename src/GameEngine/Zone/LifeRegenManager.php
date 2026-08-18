@@ -4,6 +4,7 @@ namespace App\GameEngine\Zone;
 
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\GameEngine\Balance\VitalityRegen;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -92,13 +93,20 @@ class LifeRegenManager
         }
 
         $regenSeconds = $this->getRegenSeconds();
+        // ARC-20c — **la regeneration est proportionnelle a la barre.** Elle
+        // valait 12 secondes par point en absolu, ce qui etait tenable quand la
+        // barre valait 20 PV et que rien ne la faisait monter ; le Socle la
+        // porte a 880 au palier 4, et le retour a plein passerait de 19 minutes
+        // a 2 h 56. L'invariant : *le temps de retour a plein ne depend pas du
+        // palier* (`VitalityRegen`).
         $elapsed = $now->getTimestamp() - $updatedAt->getTimestamp();
-        $points = intdiv(max(0, $elapsed), $regenSeconds);
+        $bar = $player->getMaxLife();
+        $points = VitalityRegen::pointsFor(max(0, $elapsed), $bar, $regenSeconds);
         if (0 === $points) {
             return 0;
         }
 
-        $missing = $player->getMaxLife() - $player->getLife();
+        $missing = $bar - $player->getLife();
         $granted = min($points, $missing);
         $player->setLife($player->getLife() + $granted);
 
@@ -106,8 +114,10 @@ class LifeRegenManager
             // Plein atteint : reliquat sans objet.
             $player->setLifeUpdatedAt($now);
         } else {
-            // Reliquat de temps conserve : l'ancre avance par pas entiers.
-            $player->setLifeUpdatedAt($updatedAt->modify(sprintf('+%d seconds', $points * $regenSeconds)));
+            // Reliquat de temps conserve : l'ancre avance du temps que les
+            // points credites ont reellement coute, jamais d'un multiple du
+            // curseur — sinon le reliquat derive a chaque passage.
+            $player->setLifeUpdatedAt($updatedAt->modify(sprintf('+%d seconds', VitalityRegen::secondsFor($points, $bar, $regenSeconds))));
         }
 
         if ($flush) {
@@ -148,9 +158,9 @@ class LifeRegenManager
         }
 
         $elapsed = time() - $updatedAt->getTimestamp();
-        $regenSeconds = $this->getRegenSeconds();
+        $step = VitalityRegen::secondsPerPoint($player->getMaxLife(), $this->getRegenSeconds());
 
-        return max(0, $regenSeconds - ($elapsed % $regenSeconds));
+        return max(0, $step - ($elapsed % $step));
     }
 
     /**
@@ -168,9 +178,10 @@ class LifeRegenManager
             return null;
         }
 
-        $next = $this->secondsUntilNextPoint($player) ?? $this->getRegenSeconds();
+        $step = VitalityRegen::secondsPerPoint($player->getMaxLife(), $this->getRegenSeconds());
+        $next = $this->secondsUntilNextPoint($player) ?? $step;
 
-        return $next + ($missing - 1) * $this->getRegenSeconds();
+        return $next + ($missing - 1) * $step;
     }
 
     public function getRegenSeconds(): int

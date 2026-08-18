@@ -73,7 +73,7 @@ final class ReferenceCharacterFactory
     ) {
     }
 
-    public function of(ReferenceBuild $build): ReferenceCharacter
+    public function of(ReferenceBuild $build, int $tier = VitalityLaw::FIRST_TIER): ReferenceCharacter
     {
         // L'intention `degat` est celle sous laquelle se lisent **et** ce qu'on
         // inflige (`power`, `critical`, `hit`) **et** ce qu'on encaisse
@@ -91,7 +91,7 @@ final class ReferenceCharacterFactory
             label: $build->label(),
             role: $build->role,
             register: $build->register,
-            maxLife: $this->maxLifeOf($effects),
+            maxLife: $this->maxLifeOf($effects, $tier),
             maxResource: $this->maxResourceOf($build->register),
             gestureSlug: $gesture?->getSlug() ?? '',
             gestureDamage: max(0, (int) round($baseDamage * $power)),
@@ -171,11 +171,22 @@ final class ReferenceCharacterFactory
     }
 
     /**
-     * La barre de vie : la base du jeu, multipliee par le levier `life`.
+     * La barre de vie : celle de son palier, multipliee par le levier `life`.
+     *
+     * ARC-20c — **c'est la cascade qui rend ARC-17 mesurable.** Elle partait de
+     * `PlayerFactory::BASE_LIFE`, c'est-a-dire **20 PV a tous les paliers**,
+     * quand une elite de palier 4 en retire 110 : quatre des cinq seuils du
+     * simulateur portent sur les degats subis, et ils comparaient une barre qui
+     * ne bougeait pas a des monstres qui font x80. *Un simulateur qui mesure une
+     * barre fausse mesure faux, et ses moyennes ont l'air justes.*
+     *
+     * Le palier est **un parametre et non une constante** : le meme build se
+     * simule a chaque palier, et c'est ce qui permet de verifier que le rapport
+     * ne depend pas du palier — l'invariant que `VitalityLaw` promet.
      */
-    private function maxLifeOf(CombatLeverEffects $effects): int
+    private function maxLifeOf(CombatLeverEffects $effects, int $tier): int
     {
-        return max(1, (int) round(PlayerFactory::BASE_LIFE * $effects->multiplierFor(CombatLever::Life, $this->leverScale)));
+        return max(1, (int) round(VitalityLaw::barFor($tier) * $effects->multiplierFor(CombatLever::Life, $this->leverScale)));
     }
 
     /**

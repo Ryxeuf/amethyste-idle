@@ -8,6 +8,7 @@ use App\Enum\MonsterRank;
 use App\GameEngine\Balance\EncounterSimulator;
 use App\GameEngine\Balance\ReferenceBuildFactory;
 use App\GameEngine\Balance\ReferenceCharacterFactory;
+use App\GameEngine\Balance\VitalityLaw;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\Service\PlayerFactory;
 use App\Tests\Integration\AbstractIntegrationTestCase;
@@ -63,7 +64,12 @@ class ReferenceCharacterFactoryTest extends AbstractIntegrationTestCase
 
         foreach ($buildFactory->all() as $build) {
             $points = $build->leverBudget[CombatLever::Life->value] ?? 0;
-            $expected = (int) round(PlayerFactory::BASE_LIFE * (1.0 + $scale->effectOf(CombatLever::Life, $points) / 100.0));
+            // ARC-20c — la barre part de **son palier** et non plus d'une base
+            // unique. Elle valait `PlayerFactory::BASE_LIFE`, c'est-a-dire
+            // 20 PV a tous les paliers, quand une elite de palier 4 en retire
+            // 110 : *un simulateur qui mesure une barre fausse mesure faux, et
+            // ses moyennes ont l'air justes*.
+            $expected = (int) round(VitalityLaw::barFor(VitalityLaw::FIRST_TIER) * (1.0 + $scale->effectOf(CombatLever::Life, $points) / 100.0));
 
             self::assertSame(
                 max(1, $expected),
