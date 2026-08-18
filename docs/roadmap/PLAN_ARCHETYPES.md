@@ -783,6 +783,34 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
+> **ARC-08c — l'Artificier, livré le 2026-08-18.** Le troisième au gabarit, et la case
+> **`control × ranged`** : le simulateur passe à **7 cases sur 12**. GAME_TREE_ANATOMY §13 le
+> choisit parce qu'il croise le **test du voisin sur trois axes à la fois** — élément et marque
+> avec le Pyromancien, fonction avec le Nécromancien, registre avec l'Archer.
+>
+> **Six gestes exclusifs suffisaient pour quatre des six rôles** : l'arbre écrivait déjà le
+> Piège incendiaire, le Bouclier d'étincelles, la Bombe flash et le Barrage d'artillerie. Seules
+> les deux `entrave` de la palette de contrôle manquaient — **Nappe de poix** et **Tir
+> couvrant** —, parce que tous les gestes de feu à plusieurs cibles déjà livrés sont **partagés
+> avec le Pyromancien**, donc de registre `spell`. C'est la règle d'ARC-08b appliquée une
+> seconde fois : *un accord partagé garde le registre de celui qui l'a ouvert le premier.*
+>
+> **Le canon a corrigé le document, et le résultat est meilleur.** Le §13.2 donne à l'arbre un
+> capstone sur `thrift` (« Économie de guerre ») ; la table de la décision 22 (§7.1) ne range
+> `thrift` parmi les sommets du contrôle que **pour l'arbre à pacte**, et celui-ci n'en porte
+> aucun. Le sommet revient donc à `grip`, le levier canonique de sa fonction — et le
+> **corollaire 2 s'y montre mieux que dans le document** : 14 pb sur un plafond de 20 laissent
+> 6 pb que le palier 1 consomme entièrement, si bien que `grip` est **absent des deux
+> branches**. C'est la forme forte de *le levier principal d'un arbre est presque absent de sa
+> propre fourche*. `PatronTreeContractTest` l'a attrapé — l'invariant livré valait mieux que la
+> table écrite à la main.
+>
+> **Un défaut d'effet à l'envers, trouvé en déclarant les portées** : le Bouclier d'étincelles
+> se posait `sur soi` **et appliquait `burn`**. Sa description dit « brûle les attaquants »,
+> mais le statut suit la portée, et la portée est le lanceur ; il portait en plus un dégât de 1,
+> qui frappait donc celui qu'il protège. *Ce n'était pas un choix d'équilibrage, c'était un
+> effet à l'envers.* Les deux partent, le `shield` que sa fonction réclame arrive.
+>
 > **ARC-08b — l'Assassin, livré le 2026-08-18.** Le second des vingt, et il remplit la case que
 > les quatre patrons laissaient vide : **`assault × melee`**. ARC-07 avait livré l'assaut en
 > sorts (Pyromancien) et au tir (Archer), et la mêlée **en encaisse** (Soldat) ; personne ne
@@ -824,7 +852,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > a pour tâche de recalibrer. On le nomme plutôt que de le doser ici.
 >
 - [◐] **Les 19 arbres restants** — la liste vit dans `CombatBranchCatalogTest::WAITING_ON_ARC_08`,
-      en cliquet *(ARC-08b — l'Assassin en sort, **18 restants**)*
+      en cliquet *(ARC-08b puis ARC-08c — l'Assassin et l'Artificier en sortent, **17 restants**)*
 - [ ] Table de conversion `damage/heal/hit/critical/life` plat → `(levier, pb)` selon le
       palier du nœud
 - [ ] Relecture par arbre avec le **test du plafond** et le **test du voisin** ; corriger

@@ -43,6 +43,8 @@ class ReferenceBuildFactoryTest extends AbstractIntegrationTestCase
         'assault x ranged',
         'assault x spell',
         'bulwark x melee',
+        // ARC-08c — l'Artificier remplit `control x ranged`.
+        'control x ranged',
         'control x spell',
         'upkeep x spell',
     ];

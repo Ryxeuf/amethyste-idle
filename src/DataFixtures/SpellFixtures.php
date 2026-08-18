@@ -245,14 +245,27 @@ class SpellFixtures extends Fixture
             ],
             'ember_shield' => [
                 'slug' => 'ember-shield',
-                'damage' => 1,
+                // ARC-08c — **un bouclier qui brulait son porteur.** Le geste
+                // se posait `sur soi` et appliquait `burn` : la description
+                // dit « brule les attaquants », mais le statut suit la portee,
+                // et la portee est le lanceur. Il portait aussi un degat de 1,
+                // qui frappait donc celui qu'il protege. Les deux partent —
+                // *ce n'etait pas un choix d'equilibrage, c'etait un effet a
+                // l'envers* — et le soin reste, avec le `shield` que sa
+                // fonction reclame.
+                'damage' => null,
                 'element' => Element::Fire,
                 'heal' => 3,
                 'name' => 'Bouclier d\'étincelles',
-                'description' => 'Un bouclier de braises qui protège et brûle les attaquants',
+                'description' => 'Un voile de braises qui absorbe ce qui vient',
                 'hit' => 100,
+                'energyCost' => 0,
+                'ammoCost' => 2,
                 'level' => 2,
-                'statusEffectSlug' => 'burn',
+                'statusEffectSlug' => 'shield',
+                'register' => CombatRegister::Ranged,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::SelfOnly,
             ],
             'fire_whip' => [
                 'slug' => 'fire-whip',
@@ -1796,9 +1809,17 @@ class SpellFixtures extends Fixture
                 'name' => 'Piège incendiaire',
                 'description' => 'Pose un piège qui explose en flammes au contact',
                 'hit' => 95,
-                'energyCost' => 6,
+                // ARC-08c : le tir ne paie pas de PM, il paie sa munition
+                // (ARC-04b). Le carquois est **durable** — il se vide dans la
+                // rencontre et se ramasse apres —, donc ce cout n'est jamais un
+                // cout en gils.
+                'energyCost' => 0,
+                'ammoCost' => 2,
                 'statusEffectSlug' => 'burn',
                 'level' => 2,
+                'register' => CombatRegister::Ranged,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
             ],
             'explosive_mine' => [
                 'slug' => 'explosive-mine',
@@ -1820,8 +1841,19 @@ class SpellFixtures extends Fixture
                 'name' => 'Bombe flash',
                 'description' => 'Une bombe aveuglante qui désoriente les ennemis',
                 'hit' => 100,
+                'energyCost' => 0,
+                'ammoCost' => 2,
                 'statusEffectSlug' => 'paralysis',
                 'level' => 2,
+                'aoeTargets' => 3,
+                'register' => CombatRegister::Ranged,
+                // **L'intention se declare, elle ne se derive pas.** La
+                // derivation lit le degat d'abord (ARC-11a), donc ce geste se
+                // rangeait en `degat` alors qu'on ne le lance pas pour ses deux
+                // points : on le lance pour la paralysie. C'est le meme constat
+                // qu'ARC-08a a fait sur les entraves du Necromancien.
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Targets,
             ],
             'artillery_barrage' => [
                 'slug' => 'artillery-barrage',
@@ -1831,11 +1863,63 @@ class SpellFixtures extends Fixture
                 'name' => 'Barrage d\'artillerie',
                 'description' => 'Un bombardement massif qui dévaste la zone',
                 'hit' => 70,
-                'energyCost' => 22,
+                'energyCost' => 0,
+                'ammoCost' => 5,
+                // La reprise reste : GAME_MATERIA § 2.3 bis regle 3 autorise un
+                // `cooldown` hors melee **a partir du palier 3**, comme
+                // garde-fou anti-spam. Celui-ci est de palier 5.
                 'cooldown' => 4,
                 'aoeTargets' => 0,
                 'critical' => 10,
                 'level' => 5,
+                'register' => CombatRegister::Ranged,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Targets,
+            ],
+
+            // --- Les deux entraves que l'Artificier devait ecrire (ARC-08c) ---
+            //
+            // La palette du **controle** reclame au moins deux accords
+            // d'`entrave` (§ 5.1), et l'arbre n'en portait qu'un seul candidat.
+            // Les gestes de feu a plusieurs cibles deja livres — Mur de feu,
+            // Nova de feu, Pluie de flammes — sont **partages avec le
+            // Pyromancien**, donc de registre `spell` : les lui prendre casserait
+            // un arbre livre, et les partager obligerait un meme geste a etre une
+            // technique ici et un sort la-bas. C'est la regle qu'ARC-08b a
+            // enoncee, appliquee une seconde fois.
+            'pitch_slick' => [
+                'slug' => 'pitch-slick',
+                'damage' => 2,
+                'element' => Element::Fire,
+                'heal' => null,
+                'name' => 'Nappe de poix',
+                'description' => 'Le sol prend, et qui le traverse prend avec lui',
+                'hit' => 100,
+                'energyCost' => 0,
+                'ammoCost' => 3,
+                'statusEffectSlug' => 'burn',
+                'level' => 3,
+                'aoeTargets' => 3,
+                'register' => CombatRegister::Ranged,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Targets,
+            ],
+            'covering_fire' => [
+                'slug' => 'covering-fire',
+                'damage' => 2,
+                'element' => Element::Fire,
+                'heal' => null,
+                'name' => 'Tir couvrant',
+                'description' => 'Personne n\'avance tant que la ligne tient',
+                'hit' => 100,
+                'energyCost' => 0,
+                'ammoCost' => 4,
+                'statusEffectSlug' => 'paralysis',
+                'level' => 4,
+                'aoeTargets' => 3,
+                'register' => CombatRegister::Ranged,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Targets,
             ],
 
             // Sorts spécifiques — Archer (air/physique distance)

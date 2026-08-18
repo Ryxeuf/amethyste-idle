@@ -783,22 +783,50 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // ARTIFICIER (feu) — 15 skills, pieges et explosifs
+    // ARTIFICIER — feu x distance x controle, « Meche courte » / « Reserve »
+    // (ARC-08c)
     // =========================================================================
+    /**
+     * Le troisieme arbre au gabarit, et la case `control x ranged`.
+     *
+     * GAME_TREE_ANATOMY § 13 le deroule en entier, et le choisit pour une
+     * raison precise : il croise le **test du voisin sur trois axes a la fois**
+     * — element et marque avec le Pyromancien, fonction avec le Necromancien,
+     * registre avec l'Archer. *Trois arbres, une seule marque, trois verbes :
+     * frapper dessus, la faire durer, la depenser.*
+     *
+     * **Sa tension d'archetype est la seule du jeu** (§ 13.4) : sa fonction
+     * allonge les combats, et sa ressource se vide avec leur longueur. C'est ce
+     * qui fait de sa teinte — `wind`, qui recupere de la munition — une
+     * reparation plutot qu'un assaisonnement, et ce qui donne son sens a la
+     * fourche : *finir vite* contre *pouvoir durer*.
+     *
+     * **Le capstone applique le corollaire 2 a la lettre** (§ 7.1), et mieux
+     * que le document ne l'annoncait : `grip` plafonne a 20 pb, le sommet en
+     * consomme 14, et le palier 1 prend les 6 qui restent — le levier principal
+     * est donc **absent des deux branches**. C'est la forme forte de *le levier
+     * principal d'un arbre est presque absent de sa propre fourche*.
+     */
     private function getArtificerSkills(): array
     {
         $d = 'artificer';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // Le Piege incendiaire porte **Brulure**, la marque du feu
+            // (ARC-13b-a) : c'est lui qui rend le capstone atteignable des la
+            // premiere rencontre, puisqu'il ne coute aucun point.
             'artif_apprenti_1' => [
-                'title' => 'Materia : Flammeche',
+                'title' => 'Materia : Piege incendiaire',
                 'slug' => 'artif-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Flammeche',
+                'description' => 'Permet d\'utiliser la materia Piege incendiaire — ce qui prend feu et ne s\'arrete plus',
                 'requiredPoints' => 0,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'flame']],
+                'actions' => ['materia' => ['unlock' => 'fire-trap']],
             ],
+            // Le plan B du jour 1, et la loi 1 du § 5.1 : un arbre de controle
+            // qui ne saurait que poser des entraves ne finirait jamais un
+            // combat — celui-ci ouvre un degat **et** de quoi tenir.
             'artif_apprenti_2' => [
                 'title' => 'Materia : Bouclier d\'etincelles',
                 'slug' => 'artif-apprenti-2',
@@ -808,119 +836,173 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'ember-shield']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord + 1 port ----
+            // `grip` est le levier principal du controle : il entre ici, puis
+            // au palier 2, puis dans une seule branche — 3 + 6 + 9 = 18, sous
+            // son plafond de 20. Le capstone, lui, vise `thrift`.
             'artif_rang2_1' => [
-                'title' => 'Materia : Piege incendiaire',
+                'title' => 'Meche calibree',
                 'slug' => 'artif-rang2-1',
-                'description' => 'Permet d\'utiliser la materia Piege incendiaire',
+                'description' => 'Ce qui prend feu au bon moment brule plus longtemps',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'fire-trap']],
+                'levers' => [['lever' => 'grip', 'points' => 3]],
                 'requirements' => ['artif_apprenti_1'],
             ],
             'artif_rang2_2' => [
-                'title' => 'Precision mecanique',
+                'title' => 'Lunette',
                 'slug' => 'artif-rang2-2',
-                'description' => 'Augmente la precision des attaques',
+                'description' => 'Viser prend un instant, et le rend au tir suivant',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 2,
-                'requirements' => ['artif_apprenti_1'],
+                'levers' => [['lever' => 'hit', 'points' => 3]],
+                'requirements' => ['artif_apprenti_2'],
             ],
             'artif_rang2_3' => [
                 'title' => 'Materia : Bombe flash',
                 'slug' => 'artif-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Bombe flash (paralysie)',
+                'description' => 'Permet d\'utiliser la materia Bombe flash — ce qui arrete une ligne entiere',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'flash-bomb']],
-                'requirements' => ['artif_apprenti_2'],
-            ],
-            'artif_rang2_4' => [
-                'title' => 'Blindage',
-                'slug' => 'artif-rang2-4',
-                'description' => 'Augmente les points de vie',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'life' => 3,
-                'requirements' => ['artif_apprenti_2'],
+                'requirements' => ['artif_apprenti_1'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord + 1 port ----
             'artif_rang3_1' => [
-                'title' => 'Materia : Mine explosive',
+                'title' => 'Charges mesurees',
                 'slug' => 'artif-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Mine explosive (AoE)',
+                'description' => 'Doser la poudre, c\'est en avoir encore au dixieme tir',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'explosive-mine']],
+                'levers' => [['lever' => 'thrift', 'points' => 6]],
+                'requirements' => ['artif_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est lui
+            // qui fait de l'equipement un build plutot qu'un total.
+            'artif_rang3_2' => [
+                'title' => 'Ligne de tir',
+                'slug' => 'artif-rang3-2',
+                'description' => 'Les deux mains sur l\'arme, et rien ne devie',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'hit', 'points' => 6, 'condition' => 'weapon:crossbow']],
+                'requirements' => ['artif_rang2_2'],
+            ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous.
+            'artif_rang3_3' => [
+                'title' => 'Materia : Nappe de poix',
+                'slug' => 'artif-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Nappe de poix — le terrain reste, et qui y passe brule',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'pitch-slick']],
                 'requirements' => ['artif_rang2_1', 'artif_rang2_2'],
             ],
-            'artif_rang3_2' => [
-                'title' => 'Materia : Nova de feu',
-                'slug' => 'artif-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Nova de feu',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'fire-nova']],
-                'requirements' => ['artif_rang2_3'],
-            ],
-            'artif_rang3_3' => [
-                'title' => 'Degats amplifies',
-                'slug' => 'artif-rang3-3',
-                'description' => 'Augmente les degats des pieges',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'damage' => 1,
-                'critical' => 1,
-                'requirements' => ['artif_rang2_4'],
-            ],
-            'artif_rang3_4' => [
-                'title' => 'Materia : Mur de feu',
-                'slug' => 'artif-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Mur de feu',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'fire-wall']],
-                'requirements' => ['artif_rang3_1'],
-            ],
 
-            // Rang 4 (60-100 pts) — 2 skills
-            'artif_rang4_1' => [
-                'title' => 'Materia : Pluie de flammes',
-                'slug' => 'artif-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Pluie de flammes (AoE)',
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // *Meche courte* depense ce qui brule ; *Reserve* fait durer et
+            // recupere. Aucun levier commun — {`grip`, `tempo`} contre
+            // {`wind`, `pierce`} —, et l'opposition est celle du § 13.4 : la
+            // fonction allonge les combats, la ressource se vide avec eux.
+            'artif_fuse_1' => [
+                'title' => 'Pointes durcies',
+                'slug' => 'artif-fuse-1',
+                'description' => 'Ce qui perce n\'a pas besoin de bruler longtemps',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'flame-rain']],
-                'requirements' => ['artif_rang3_1', 'artif_rang3_2'],
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'artificier', 'branch' => 'short_fuse']],
+                'requirements' => ['artif_rang3_3'],
             ],
-            'artif_rang4_2' => [
-                'title' => 'Materia : Souffle du dragon',
-                'slug' => 'artif-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Souffle du dragon',
+            'artif_fuse_2' => [
+                'title' => 'Deux crans d\'avance',
+                'slug' => 'artif-fuse-2',
+                'description' => 'Armer avant que l\'autre ne bouge',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'dragon-breath']],
-                'requirements' => ['artif_rang3_3', 'artif_rang3_4'],
+                'levers' => [['lever' => 'tempo', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'artificier', 'branch' => 'short_fuse']],
+                'requirements' => ['artif_rang3_3'],
             ],
-
-            // Rang 5 (150+ pts) — 1 skill ultime
-            'artif_rang5_1' => [
+            // La teinte de l'arbre, et elle ne vit que dans cette branche :
+            // `wind` rend de la munition, c'est-a-dire exactement ce que la
+            // fonction consomme.
+            'artif_reserve_1' => [
+                'title' => 'Rien ne se perd',
+                'slug' => 'artif-reserve-1',
+                'description' => 'Ce qui n\'a pas servi se ramasse et resservira',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'wind', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'artificier', 'branch' => 'reserve']],
+                'requirements' => ['artif_rang3_3'],
+            ],
+            'artif_reserve_2' => [
+                'title' => 'Longue campagne',
+                'slug' => 'artif-reserve-2',
+                'description' => 'Tenir la ligne plus longtemps que le carquois ne le permet',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'artificier', 'branch' => 'reserve']],
+                'requirements' => ['artif_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis.
+            'artif_fuse_accord' => [
                 'title' => 'Materia : Barrage d\'artillerie',
-                'slug' => 'artif-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Barrage d\'artillerie',
-                'requiredPoints' => 150,
+                'slug' => 'artif-fuse-accord',
+                'description' => 'Permet d\'utiliser la materia Barrage d\'artillerie — tout, et tout de suite',
+                'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'artillery-barrage']],
-                'requirements' => ['artif_rang4_1', 'artif_rang4_2'],
+                'actions' => [
+                    'materia' => ['unlock' => 'artillery-barrage'],
+                    ['action' => 'specialization.branch', 'domain' => 'artificier', 'branch' => 'short_fuse'],
+                ],
+                'requirements' => ['artif_rang3_3'],
+            ],
+            'artif_reserve_accord' => [
+                'title' => 'Materia : Tir couvrant',
+                'slug' => 'artif-reserve-accord',
+                'description' => 'Permet d\'utiliser la materia Tir couvrant — personne n\'avance tant que la ligne tient',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'covering-fire'],
+                    ['action' => 'specialization.branch', 'domain' => 'artificier', 'branch' => 'reserve'],
+                ],
+                'requirements' => ['artif_rang3_3'],
             ],
 
-            // Maitrise des armes (arbaletes) — GAME_TREE_ANATOMY § 13.8, ecart
-            // n° 10. La famille manquait a l'echelle alors que le catalogue
-            // public la promettait ; ces deux echelons sont recables sur elle
-            // par `rewireWeaponPortLadders()` (donc partages avec l'ingenieur et
-            // le chasseur), et ils ne portent **aucune statistique**.
+            // --- Capstone (100 pts) ------------------------------------------
+            // **`grip`, et pas `thrift`.** GAME_TREE_ANATOMY § 13.2 pose ici
+            // « Economie de guerre », un sommet sur `thrift` — mais le canon
+            // (§ 7.1, table de la decision 22) ne range `thrift` parmi les
+            // sommets du controle que **pour l'arbre a pacte**, et celui-ci n'en
+            // porte aucun. Le sommet revient donc au levier canonique de sa
+            // fonction.
+            //
+            // Et le corollaire 2 s'y montre **mieux** que dans le document : 14
+            // pb sur un plafond de 20 laissent 6 pb, que le palier 1 consomme
+            // entierement — `grip` est donc **absent des deux branches**, ce qui
+            // est la forme forte de *le levier principal d'un arbre est presque
+            // absent de sa propre fourche*.
+            //
+            // Sa condition — une cible qui brule — est posee des le tour 1 par
+            // un accord gratuit, donc **frequente** : x1,4 et non x2,0 (§ 7,
+            // decision 23).
+            'artif_capstone' => [
+                'title' => 'Ce qui ne s\'eteint pas',
+                'slug' => 'artif-capstone',
+                'description' => 'Ce qui brule deja n\'a pas besoin qu\'on y remette',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'levers' => [['lever' => 'grip', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['artif_rang3_3'],
+            ],
+
+            // --- Les echelons de port (0 pb) ---------------------------------
+            // *Un echelon est une porte, jamais une recompense.*
             'artificer_weapon_t2' => [
                 'title' => 'Maitrise de l\'arbalete (T2)',
                 'slug' => 'artificer-weapon-t2',
