@@ -1419,8 +1419,48 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 
 ### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ◐
 > **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation,
-> 17c livre le simulateur — **lui-même recoupé** en 17c-a (les builds de référence) et
-> 17c-b (les scénarios, les seuils en CI, le rapport daté).
+> 17c livre le simulateur — **lui-même recoupé** en 17c-a (les builds de référence),
+> 17c-b (le moteur et les trois scénarios solo) et 17c-c (la journée, le donjon, les seuils
+> en CI et le rapport daté).
+>
+> **ARC-17c-b — livré le 2026-08-18.** Le simulateur joue enfin des tours.
+> `EncounterSimulator` fait s'affronter une fiche de personnage et une case du bestiaire ;
+> `ReferenceCharacterFactory` fabrique la fiche en **convertissant le build par le
+> convertisseur unique d'ARC-03** plutôt qu'en recopiant une table — un simulateur qui
+> dériverait de la formule qu'il mesure ne mesurerait plus rien. `app:balance:simulate` rend
+> la table croisée sur les trois scénarios solo (un commun · une élite · un boss).
+>
+> **Déterministe, et sans dés du tout.** Le plan demandait une graine fixée ; on va plus
+> loin, et il faut dire pourquoi : *une graine reste un tirage*, donc un seuil de CI finirait
+> par se décider sur un critique qui tombe ou ne tombe pas. L'espérance mesure la même règle
+> sans lui laisser cette latitude. Ce qu'elle ne voit pas — **la variance** — est nommé : le
+> jour où un seuil demandera une fréquence de mort plutôt qu'une part de barre, il demandera
+> des tirages.
+>
+> **Ce que la première mesure dit, et elle est nette.** Au palier 1, le Pyromancien nettoie un
+> commun en **4 tours** (dans la bande 3-5) ; **les neuf autres builds meurent**. Au palier 2,
+> les dix meurent, en 3 à 4 tours. C'est l'écart d'ARC-05a vu de l'autre côté — les gestes
+> retirent ~3 points quand la règle des 25 % en demande 17,5 — et c'est exactement la mesure
+> qu'ARC-05c doit ramener vers 1. *Le simulateur ne dit pas que l'assaut est trop fort : il
+> dit que l'échelle des gestes ne rencontre pas celle du bestiaire.*
+>
+> **Deux défauts trouvés en jouant**, qu'aucune relecture n'aurait vus :
+>  - **La bande de durée se lisait sur une défaite.** Un personnage qui tombe en trois tours
+>    face à un commun n'a pas « tenu la bande des 3-5 tours » — il est mort dedans. La bande
+>    ne se lit désormais que sur une victoire, sans quoi la table serait verte en ne mesurant
+>    rien.
+>  - **Un registre sans ressource retombait sur l'attaque de base.** La mêlée paie en tours et
+>    le tir dans son carquois : les faire jouer les mains nues revenait à leur facturer un
+>    coût qu'ils n'ont pas. *Seul un pool qui existe peut se vider.*
+>
+> **Ce que l'instrument ne joue pas est déclaré plutôt que tu** — la mitigation d'armure
+> (elle n'existe pas dans le moteur, cf. ARC-19), les statuts et les dépôts (**le contrôle est
+> donc sous-estimé**, à lire dans toute table produite), et l'ordre du tour, fixe. L'arme,
+> elle, est **prêtée au mieux** : la meilleure du jeu plutôt que celle du palier, le palier
+> d'une arme n'étant pas une donnée (`t2-axe` déclare `level: 5`). Prêter le maximum est la
+> lecture la plus favorable au personnage — *si l'écart tient avec elle, il tient a fortiori*
+> — et le chiffre confirme qu'elle ne déplace pas la conclusion : les armes livrées frappent
+> de **1 à 3** quand un commun de palier 2 porte **70 PV**.
 >
 > **ARC-17c-a — livré le 2026-08-08.** La première case de la liste ci-dessous, et le socle de
 > tout le reste : *un build par fonction × registre, arbre complet, **jamais écrit à la main**.*
@@ -1527,10 +1567,12 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 **`app:balance:simulate`** — la sœur **dynamique** de `app:balance:report` (qui, lui, est
 statique : il compte et détecte des anomalies, il ne joue pas de combat).
 
-- [ ] **Entrées : les vraies données, jamais des constantes.** `Monster` (`tier`/`rank`
+- [x] **Entrées : les vraies données, jamais des constantes.** `Monster` (`tier`/`rank`
       après BES-01), `Item` (lignes d'armure et leur mitigation, armes, carquois),
       `Spell`/matéria (registre, intention, portée, coût, durée), `Skill` (leviers,
-      conditions), `Domain` (élément × registre × fonction)
+      conditions), `Domain` (élément × registre × fonction) *(ARC-17c-b — toutes lues, sauf
+      **la mitigation d'armure qui n'existe pas dans le moteur** : elle est déclarée absente
+      plutôt que simulée, et ARC-19 la réclame comme prérequis)*
 - [x] **Builds de référence générés, jamais écrits à la main** : un par fonction × registre,
       arbre complet, équipement et matéria du palier. Écrits en dur, ils se périmeraient au
       premier changement de fixture — et c'est exactement ce qu'on cherche à détecter
@@ -1540,15 +1582,20 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 - [ ] **Y compris un invocateur**, et joué **dans les deux modes — présent et absent**.
       C'est le premier build dont la puissance dépend de **la façon de jouer** et non de ce
       qu'on porte : aucune table statique ne peut le mesurer (§13.3, correction 21)
-- [ ] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
+- [◐] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
       **journée** (14 communs + 2 tentatives) · un **donjon à quatre**, joué dans les quatre
-      compositions (avec/sans tank × avec/sans soigneur)
+      compositions (avec/sans tank × avec/sans soigneur) *(ARC-17c-b — **les trois solo sont
+      joués** ; la journée et le donjon sont ARC-17c-c, l'une demandant le budget d'énergie et
+      l'autre une composition)*
 - [ ] **Sorties** : la **table croisée** du §9 sexies (durée, PV restants, ressource
       dépensée, attente convertie en minutes) · l'**ancre de fonction** (écart entre le
       meilleur et le pire) · la **mortalité solo des élites** · la **matrice contexte ×
       fonction** du §9 septies.3
-- [ ] **Déterministe** — graine fixée. Une CI qui clignote ne sert à rien, et un
-      équilibrage qu'on ne peut pas reproduire n'est pas un équilibrage
+- [x] **Déterministe** — graine fixée. Une CI qui clignote ne sert à rien, et un
+      équilibrage qu'on ne peut pas reproduire n'est pas un équilibrage *(ARC-17c-b — **aucun
+      dé du tout** : on joue l'espérance, parce qu'une graine reste un tirage et qu'un seuil
+      de CI finirait par se décider dessus. La variance est ce que l'espérance ne voit pas,
+      et c'est dit)*
 - [ ] **Seuils tenus en CI** :
   - [ ] écart d'attente quotidienne entre le meilleur et le pire build **< ×1,5**
   - [ ] **une élite tue un joueur seul**, quel que soit son archétype (102-129 % de sa barre)

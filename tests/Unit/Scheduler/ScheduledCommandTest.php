@@ -36,6 +36,7 @@ class ScheduledCommandTest extends TestCase
         'app:avatar:inventory' => 'outil d\'inventaire des sprites, lance a la demande',
         'app:economy:rent-backlog-reset' => 'operation d\'exploitation, lancee par l\'entrypoint du worker avant chaque consommation du calendrier (F.0) — pas une tache planifiee',
         'app:balance:report' => 'rapport d\'equilibrage, lu par un humain',
+        'app:balance:simulate' => 'simulateur d\'equilibrage (ARC-17c), joue a la demande sur une passe de recalibrage — il ne change aucune donnee, il en rend une table',
         'app:fixtures:load-selective' => 'outil de developpement',
         'app:game:validate' => 'controle de coherence, lance par la CI',
         'app:player:backfill-zone' => 'reparation ponctuelle des joueurs sans zone, a lancer une fois apres deploiement',

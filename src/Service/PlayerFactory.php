@@ -13,9 +13,18 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerFactory
 {
-    private const BASE_LIFE = 20;
+    /**
+     * Ce qu'un personnage porte en sortant du tunnel d'entree.
+     *
+     * **Publiques depuis ARC-17c-b** : le simulateur d'equilibrage part de la
+     * barre de vie et du pool de ressource reels, et le canon (GAME_ARCHETYPES
+     * § 0.2) refuse qu'un instrument de mesure recopie une valeur de jeu — une
+     * constante recopiee cesse de suivre son original des la premiere fois
+     * qu'on deplace l'une des deux.
+     */
+    public const BASE_LIFE = 20;
+    public const BASE_MAX_ENERGY = 100;
     private const BASE_ENERGY = 80;
-    private const BASE_MAX_ENERGY = 100;
     private const BASE_SPEED = 10;
     private const BASE_HIT = 50;
     private const SPAWN_COORDINATES = '20.20';
