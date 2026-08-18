@@ -1420,8 +1420,37 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 ### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ◐
 > **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation,
 > 17c livre le simulateur — **lui-même recoupé** en 17c-a (les builds de référence),
-> 17c-b (le moteur et les trois scénarios solo) et 17c-c (la journée, le donjon, les seuils
-> en CI et le rapport daté).
+> 17c-b (le moteur et les trois scénarios solo), 17c-c (la journée, les seuils en CI et le
+> rapport daté) et 17c-d (le donjon à quatre et la matrice contexte × fonction).
+>
+> **ARC-17c-c — livré le 2026-08-18.** La journée, l'ancre de fonction et le rapport daté.
+> `DaySimulator` joue les **16 rencontres** que le budget d'énergie autorise — dérivées des
+> curseurs réels, jamais écrites —, dont 14 communs et **2 tentatives** d'élite.
+>
+> **Le résultat de la passe : l'échelle tient au palier 1 et casse au palier 2.** 8 builds sur
+> 10 viennent à bout d'un commun de palier 1 (6 dans leur bande) ; au palier 2, les dix
+> tombent. Le diagnostic n'est donc pas « les gestes sont faibles » mais *la courbe des gestes
+> et celle du bestiaire divergent d'un palier à l'autre*. **L'ancre de fonction n'est pas
+> tenue : x5,62 pour une borne de x2,0**, et l'écart vient entièrement des PM — la seule
+> ressource qui se reporte d'une rencontre à la suivante.
+>
+> **Une lecture corrigée en cours de jalon.** Le premier relevé donnait **x24,15**, et il avait
+> tort : il comptait les deux Guérisseurs, tombés au premier combat, dont la journée coûte 7
+> minutes. ***Une journée arrêtée coûte peu*** — la compter ferait du build le plus fragile le
+> plus économe, soit l'inverse exact de ce qu'on mesure. L'ancre ne lit désormais que les
+> journées menées à leur terme, tentatives d'élite exclues.
+>
+> **Quatre seuils sur cinq sont des cliquets, et c'est délibéré.** Un seuil qu'on sait rouge
+> produit soit une CI durablement rouge que tout le monde apprend à ignorer, soit un seuil
+> desserré jusqu'à passer — c'est-à-dire un seuil qui ne mesure plus rien. Le cliquet est la
+> troisième voie, déjà employée par ARC-05a sur le même écart. Le cinquième est **dur** et il
+> est tenu : *une élite tue un joueur seul* ne dit rien de l'échelle, il dit ce qu'une élite
+> **est**.
+>
+> Rapport daté au **§25 de [../BALANCE.md](../BALANCE.md)**, et deux des trois questions du
+> §24.2 y trouvent enfin une mesure. **Reste ARC-17c-d** : le donjon à quatre dans ses quatre
+> compositions, la matrice contexte × fonction, et les deux curseurs que le simulateur doit
+> fixer.
 >
 > **ARC-17c-b — livré le 2026-08-18.** Le simulateur joue enfin des tours.
 > `EncounterSimulator` fait s'affronter une fiche de personnage et une case du bestiaire ;
@@ -1437,12 +1466,15 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > jour où un seuil demandera une fréquence de mort plutôt qu'une part de barre, il demandera
 > des tirages.
 >
-> **Ce que la première mesure dit, et elle est nette.** Au palier 1, le Pyromancien nettoie un
-> commun en **4 tours** (dans la bande 3-5) ; **les neuf autres builds meurent**. Au palier 2,
-> les dix meurent, en 3 à 4 tours. C'est l'écart d'ARC-05a vu de l'autre côté — les gestes
-> retirent ~3 points quand la règle des 25 % en demande 17,5 — et c'est exactement la mesure
-> qu'ARC-05c doit ramener vers 1. *Le simulateur ne dit pas que l'assaut est trop fort : il
-> dit que l'échelle des gestes ne rencontre pas celle du bestiaire.*
+> **Ce que la première mesure dit** — chiffres **corrigés le 2026-08-18 par ARC-17c-c** : le
+> relevé publié ici avait été pris **avant** le second correctif de ce même jalon (le registre
+> sans ressource qui retombait sur l'attaque de base), et il sous-estimait donc la mêlée, le
+> tir et le contrôle. Le relevé juste est au §25 de [../BALANCE.md](../BALANCE.md) : au palier
+> 1, **8 builds sur 10** viennent à bout d'un commun (6 dans leur bande) ; au palier 2, **les
+> dix tombent**. Le diagnostic ne bouge pas, il se précise : *l'échelle tient au palier 1 et
+> casse au palier 2* — la courbe des gestes et celle du bestiaire divergent d'un palier à
+> l'autre. C'est l'écart d'ARC-05a vu de l'autre côté, et la mesure qu'ARC-05c doit ramener
+> vers 1.
 >
 > **Deux défauts trouvés en jouant**, qu'aucune relecture n'aurait vus :
 >  - **La bande de durée se lisait sur une défaite.** Un personnage qui tombe en trois tours
@@ -1584,27 +1616,37 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       qu'on porte : aucune table statique ne peut le mesurer (§13.3, correction 21)
 - [◐] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
       **journée** (14 communs + 2 tentatives) · un **donjon à quatre**, joué dans les quatre
-      compositions (avec/sans tank × avec/sans soigneur) *(ARC-17c-b — **les trois solo sont
-      joués** ; la journée et le donjon sont ARC-17c-c, l'une demandant le budget d'énergie et
-      l'autre une composition)*
-- [ ] **Sorties** : la **table croisée** du §9 sexies (durée, PV restants, ressource
+      compositions (avec/sans tank × avec/sans soigneur) *(ARC-17c-b — les trois solo ;
+      **ARC-17c-c — la journée** ; le donjon reste à ARC-17c-d, qui demande une composition)*
+- [◐] **Sorties** : la **table croisée** du §9 sexies (durée, PV restants, ressource
       dépensée, attente convertie en minutes) · l'**ancre de fonction** (écart entre le
       meilleur et le pire) · la **mortalité solo des élites** · la **matrice contexte ×
-      fonction** du §9 septies.3
+      fonction** du §9 septies.3 *(ARC-17c-c — **les trois premières sont rendues** ; la
+      matrice demande le donjon, donc ARC-17c-d)*
 - [x] **Déterministe** — graine fixée. Une CI qui clignote ne sert à rien, et un
       équilibrage qu'on ne peut pas reproduire n'est pas un équilibrage *(ARC-17c-b — **aucun
       dé du tout** : on joue l'espérance, parce qu'une graine reste un tirage et qu'un seuil
       de CI finirait par se décider dessus. La variance est ce que l'espérance ne voit pas,
       et c'est dit)*
-- [ ] **Seuils tenus en CI** :
-  - [ ] écart d'attente quotidienne entre le meilleur et le pire build **< ×1,5**
-  - [ ] **une élite tue un joueur seul**, quel que soit son archétype (102-129 % de sa barre)
+- [◐] **Seuils tenus en CI** *(ARC-17c-c — `BalanceSimulationRatchetTest`. **Quatre des cinq
+      sont des cliquets** et non des seuils secs : ils sont rouges aujourd'hui, et un seuil
+      qu'on sait rouge produit soit une CI qu'on ignore, soit un seuil desserré jusqu'à ne
+      plus rien mesurer. Le relevé peut s'améliorer librement, il ne peut plus se dégrader en
+      silence — le passage au seuil sec, après ARC-05c, sera un changement de chiffre)* :
+  - [◐] écart d'attente quotidienne entre le meilleur et le pire build **< ×1,5**
+        *(mesuré ×5,62 — cliquet à ×5,7)*
+  - [x] **une élite tue un joueur seul**, quel que soit son archétype (102-129 % de sa barre)
+        *(ARC-17c-c — **seuil dur**, et tenu : il ne dit rien de l'échelle, il dit ce qu'une
+        élite est)*
   - [ ] **un groupe sans tank ni soigneur vient à bout d'une élite de son palier** — sinon un
         rôle est devenu nécessaire, ce que le §7 bis interdit
-  - [ ] aucun build hors des fourchettes de durée du §6.4 (commun 3-5, élite 6-10, boss 12-20)
+  - [◐] aucun build hors des fourchettes de durée du §6.4 (commun 3-5, élite 6-10, boss 12-20)
+        *(mesuré 6 builds sur 10 dans leur bande au palier 1, **0 au palier 2** — cliquet sur
+        le nombre, qui ne peut que monter)*
   - [ ] aucune fonction dominante dans les **deux** colonnes de la matrice
-- [ ] **Rapport archivé et daté** dans [../BALANCE.md](../BALANCE.md), pour comparer d'une
-      passe à l'autre — c'est la trace qui rend une régression lisible
+- [x] **Rapport archivé et daté** dans [../BALANCE.md](../BALANCE.md), pour comparer d'une
+      passe à l'autre — c'est la trace qui rend une régression lisible *(ARC-17c-c — §25,
+      passe du 2026-08-18 ; il rend au §24.2 deux de ses trois questions ouvertes)*
 - [ ] **Les deux curseurs que le simulateur doit fixer** : la **régénération des PM** hors
       combat (~6 s/point, à confronter aux 12 s/PV livrés) et
       `zone.dungeon.encounter_hp_per_member` (200 → ~110). Ce sont eux qui décident de
