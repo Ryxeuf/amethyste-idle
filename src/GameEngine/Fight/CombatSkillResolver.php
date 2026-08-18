@@ -11,6 +11,8 @@ use App\Enum\SpellIntent;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Reputation\PatronageBonusResolver;
+use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 
 class CombatSkillResolver
 {
@@ -21,6 +23,8 @@ class CombatSkillResolver
         private readonly SkillLeverReader $leverReader,
         private readonly CombatLeverScale $leverScale,
         private readonly StanceLeverReader $stanceLeverReader,
+        private readonly LifeRegenManager $lifeRegen,
+        private readonly ManaRegenManager $manaRegen,
     ) {
     }
 
@@ -52,9 +56,17 @@ class CombatSkillResolver
     /**
      * Consume energy from a player when casting a spell.
      * Returns false if the player does not have enough energy.
+     *
+     * **La conversion se resout avant le cout, pas apres** (ARC-18c). Un geste
+     * de conversion sert precisement a payer un geste qu'on ne pourrait plus
+     * payer ; l'appliquer apres reviendrait a exiger d'avoir deja les PM qu'on
+     * cherche a obtenir, c'est-a-dire a rendre la forme inutile exactement
+     * quand elle sert.
      */
     public function consumeEnergy(Player $player, Spell $spell): bool
     {
+        $this->convert($player, $spell);
+
         if (!$this->hasEnoughEnergy($player, $spell)) {
             return false;
         }
@@ -62,6 +74,51 @@ class CombatSkillResolver
         $player->setEnergy($player->getEnergy() - $spell->getEnergyCost());
 
         return true;
+    }
+
+    /**
+     * Echanger de la vie contre de la magie (ARC-18c).
+     *
+     * Rend ce que la conversion a rapporte, en points de magie — `0` pour les
+     * gestes qui ne convertissent pas, c'est-a-dire tous ceux qui sont livres.
+     *
+     * Trois choses tenues ici, et aucune n'est un reglage :
+     * la conversion **ne tue jamais** (`affordableLife()`), elle **ne remplit
+     * jamais au-dela du pool** — les PM en trop seraient une ressource creee de
+     * rien —, et elle **rend le plancher de ce qu'elle vaut**, l'arrondi allant
+     * toujours contre celui qui convertit.
+     */
+    public function convert(Player $player, Spell $spell): int
+    {
+        if (!$spell->isConversion()) {
+            return 0;
+        }
+
+        $spent = ConversionLaw::affordableLife($player->getLife(), $spell->getLifeCost());
+        if ($spent <= 0) {
+            return 0;
+        }
+
+        $gained = ConversionLaw::manaFor(
+            $spent,
+            $this->lifeRegen->getRegenSeconds(),
+            $this->manaRegen->getRegenSeconds(),
+        );
+
+        if ($gained <= 0) {
+            return 0;
+        }
+
+        $room = max(0, $player->getMaxEnergy() - $player->getEnergy());
+        $gained = min($gained, $room);
+        if ($gained <= 0) {
+            return 0;
+        }
+
+        $player->setLife($player->getLife() - $spent);
+        $player->setEnergy($player->getEnergy() + $gained);
+
+        return $gained;
     }
 
     /**

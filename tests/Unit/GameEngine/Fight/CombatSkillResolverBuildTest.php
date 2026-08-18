@@ -17,6 +17,8 @@ use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Reputation\PatronageBonusResolver;
+use App\GameEngine\Zone\LifeRegenManager;
+use App\GameEngine\Zone\ManaRegenManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -125,7 +127,7 @@ class CombatSkillResolverBuildTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn($carried);
 
-        return new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale(), $this->stanceReader());
+        return new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale(), $this->stanceReader(), $this->regen(LifeRegenManager::class), $this->regen(ManaRegenManager::class));
     }
 
     private function skill(
@@ -192,6 +194,24 @@ class CombatSkillResolverBuildTest extends TestCase
      * Une posture ne survit pas a la rencontre : sans combat, `heldBy()` rend
      * `[]` et rien de ce fichier ne change.
      */
+    /**
+     * Un gestionnaire de regeneration muet (ARC-18c).
+     *
+     * Il ne sert qu'a la conversion, et aucun geste de ce fichier n'en est une.
+     * Le doubler evite d'aller chercher un parametre en base pour une question
+     * qu'on ne pose pas.
+     *
+     * @template T of LifeRegenManager|ManaRegenManager
+     *
+     * @param class-string<T> $class
+     *
+     * @return T
+     */
+    private function regen(string $class): LifeRegenManager|ManaRegenManager
+    {
+        return $this->createMock($class);
+    }
+
     private function stanceReader(): StanceLeverReader
     {
         return new StanceLeverReader($this->leverScale(), $this->createMock(EntityManagerInterface::class));
