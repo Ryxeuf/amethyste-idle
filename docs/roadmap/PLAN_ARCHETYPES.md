@@ -1861,7 +1861,7 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 > `StatusEffect::TYPES`). Une neuvième forme devra **retirer** son nom de la liste tant
 > qu'elle n'est pas branchée, et le test le lui rappellera.
 >
-> Reste la dernière ligne du jalon — les **sept refus** du §13.3 verrouillés par test.
+> Les **sept refus** du §13.3 sont tenus depuis ARC-18i — 3 par le code, 4 nommés par absence.
 >
 > GAME_ARCHETYPES §13. Le vocabulaire d'intentions dit ce qu'un geste **fait** ; il ne dit
 > rien de sa **forme**. C'est là que vivent les archétypes des autres MMO — un chasseur et
@@ -2133,10 +2133,31 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       l'arbre qualifient ses gestes (la double borne s'applique) · il ne mitige rien, ne
       protège personne, n'encaisse pas — **un invocateur en tissu reste aussi fragile qu'un
       mage**
-- [ ] Les **sept refus** du §13.3 verrouillés par test là où c'est possible : aucune table de
+- [x] Les **sept refus** du §13.3 verrouillés par test là où c'est possible : aucune table de
       menace, aucun rôle nécessaire, aucun geste sans lecture `scope: soi`, aucun changement
       d'arme en combat, aucune ressource persistant entre deux rencontres, aucun tour
       supplémentaire, aucune montée en puissance entre les combats
+      *(**ARC-18i — livré le 2026-08-18, ARC-18 est clos.** *Un refus qu'aucun test ne tient
+      n'est pas un refus, c'est une intention* — et une intention se perd à la première personne
+      qui n'a pas lu le document.
+      **Le refus n° 4 était violé en production** : cinq chemins changent l'équipement — équiper,
+      déséquiper, sertir, dessertir, modifier — et **aucun ne vérifiait le combat**, quand
+      `UseItemController` le vérifiait depuis toujours. *La règle était tenue à un endroit sur
+      six*, ce qui est la façon habituelle dont une règle recopiée disparaît. Ce qu'elle protège
+      n'est pas une préférence de style : autoriser le changement en combat effondre DOM-02
+      **et** les passifs conditionnels d'ARC-12 d'un coup — porter la dague pour le geste qui
+      aime la dague puis la hache au tour suivant rendrait *chaque condition vraie tout le
+      temps*, donc jamais payée. `BuildChangeLaw` la dit **une fois** (la discipline
+      d'`EmailVerificationGate`), et le test **compte les appelants** plutôt que de relire les
+      fichiers : un sixième chemin ajouté sans elle serait invisible à la relecture.
+      **Le contrat distingue ce qu'il tient de ce qu'il ne peut pas tenir**, comme l'inventaire
+      d'ARC-09 : **3 refus vérifiables par le code**, **4 par absence** — on ne peut pas prouver
+      qu'une chose n'existe pas, seulement montrer qu'aucun mécanisme livré ne la produit *et
+      nommer lequel la produirait*. Les compter comme tenus serait un mensonge d'inventaire.
+      **L'exception apparente est nommée** : l'ouverture (ARC-18g) survit bien hors rencontre, ce
+      qui ressemble au refus n° 5. Ce n'en est pas une, et ce qui les sépare est précis — *le
+      refus vise le **stock**, pas la **préparation*** : une seule ouverture attend, elle est
+      payée en énergie d'action, et la première rencontre la consomme)*
 
 ### ARC-19 — L'aggro bornée (M | ★★★ | MOYENNE)
 > **Prérequis ARC-20.** Tous les chiffres de ce jalon (147 PV, 144 encaissés, 120 sur
