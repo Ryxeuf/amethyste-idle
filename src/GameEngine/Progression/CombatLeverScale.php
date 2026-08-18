@@ -46,12 +46,26 @@ class CombatLeverScale
      */
     public function effectOf(CombatLever $lever, int $budgetPoints, ?CombatRegister $register = null): float
     {
-        if ($budgetPoints < 0) {
-            throw new CombatLeverDefinitionException(sprintf('A node cannot invest %d budget points on "%s".', $budgetPoints, $lever->value));
-        }
-
+        // ARC-18b — **le convertisseur convertit, il ne juge pas ce qu'on lui
+        // donne.** Une premiere redaction refusait ici tout total negatif, avec
+        // le message « a *node* cannot invest -6 budget points » : la phrase
+        // dit d'elle-meme ou la regle appartient — on n'**achete** pas une
+        // puissance negative, et c'est vrai a l'ecriture d'un nœud
+        // (`SkillLeverReader` refuse deja les points <= 0). Ce n'est pas vrai a
+        // la conversion d'un **total**, qui peut avoir ete diminue depuis.
+        //
+        // Le refus etait donc au mauvais endroit, et il coutait deux
+        // mecaniques : la posture (ARC-18b), qui donne sur un levier ce qu'elle
+        // retire sur un autre, et surtout **le pacte** (ARC-15) — *la seule
+        // mecanique du canon qui rende un personnage mesurablement plus faible
+        // quelque part*, dont le malus etait lu, valide, compte au budget, et
+        // n'atteignait jamais la formule. Invisible jusqu'ici parce qu'aucun
+        // nœud livre ne porte de levier.
+        //
+        // Le plafond, lui, se lit en valeur absolue : il borne l'**ampleur**
+        // d'un deplacement, dans un sens comme dans l'autre.
         $cap = $this->capOf($lever);
-        if ($budgetPoints > $cap) {
+        if (abs($budgetPoints) > $cap) {
             throw new CombatLeverDefinitionException(sprintf('"%s" is capped at %d budget points per tree, %d asked.', $lever->value, $cap, $budgetPoints));
         }
 

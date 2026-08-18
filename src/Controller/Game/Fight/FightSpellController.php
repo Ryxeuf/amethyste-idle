@@ -185,7 +185,7 @@ class FightSpellController extends AbstractController
         // dans `SpellApplicator` ; l'ordre des questions de la derivation fait
         // que le degat et le soin repondent avant lui, et ce sont les seules
         // intentions que les 253 gestes livres portent.
-        $levers = $this->combatSkillResolver->getLeverEffects($player, CombatScope::ofSpell($spell), $spell->getRegister(), $spell->resolveIntent());
+        $levers = $this->combatSkillResolver->getLeverEffects($player, CombatScope::ofSpell($spell), $spell->getRegister(), $spell->resolveIntent(), $fight);
 
         // Apply enchantment bonuses from equipped items
         $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($player);

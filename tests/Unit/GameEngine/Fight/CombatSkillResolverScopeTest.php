@@ -12,12 +12,14 @@ use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
+use App\GameEngine\Fight\StanceLeverReader;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -52,12 +54,40 @@ class CombatSkillResolverScopeTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn(true);
 
-        $this->resolver = new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale());
+        $this->resolver = new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale(), $this->stanceReader());
     }
 
     // =====================================================================
     // La case element x registre
     // =====================================================================
+
+    /**
+     * **Le malus d'un pacte arrive dans la formule** (ARC-18b).
+     *
+     * ARC-15 a livre le pacte comme *la seule mecanique du canon qui rende un
+     * personnage mesurablement plus faible quelque part*. Il etait lu, valide
+     * et compte au budget de l'arbre — et son malus s'arretait la : le
+     * convertisseur refusait les totaux negatifs, si bien que **rien de ce qui
+     * retire ne pouvait le traverser**. Invisible jusqu'ici parce qu'aucun nœud
+     * livre ne porte encore de levier.
+     *
+     * Les deux comptes restent distincts, et c'est la lettre du § 6.5 : l'arbre
+     * paie le **net** (un nœud a 19 pb dont 10 rendus pese 9), le personnage
+     * porte le **brut** de chaque cote — +19 ici, −10 la.
+     */
+    public function testAPactMakesTheCharacterWeakerSomewhere(): void
+    {
+        $skill = $this->createMock(Skill::class);
+        $skill->method('getDomains')->willReturn(new ArrayCollection([]));
+        $skill->method('getLevers')->willReturn([
+            ['lever' => 'power', 'points' => 19, 'pact' => ['lever' => 'life', 'points' => 10]],
+        ]);
+
+        $levers = $this->resolver->getCombatLevers($this->playerWith([$skill]));
+
+        self::assertSame(19, $levers['power'], 'Le nœud ne rend plus ce qu\'il promet.');
+        self::assertSame(-10, $levers['life'], 'Le pacte ne coute rien : ce n\'est plus un pacte, c\'est un cadeau.');
+    }
 
     /**
      * Le passif du pyromancien sert le sort de feu.
@@ -305,6 +335,18 @@ class CombatSkillResolverScopeTest extends TestCase
      * Un double rendrait le test aveugle a la seule chose qui compte ici : les
      * leviers suivent la meme borne que les statistiques plates.
      */
+    /**
+     * Le lecteur de postures, sans combat a lire (ARC-18b).
+     *
+     * `heldBy()` rend `[]` des que le combat est `null`, ce qui est le cas de
+     * tous les appels de ce fichier : une posture ne survit pas a la rencontre,
+     * et ces tests portent sur les bornes de domaine.
+     */
+    private function stanceReader(): StanceLeverReader
+    {
+        return new StanceLeverReader($this->leverScale(), $this->createMock(EntityManagerInterface::class));
+    }
+
     private function leverScale(): CombatLeverScale
     {
         return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));

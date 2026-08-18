@@ -1881,8 +1881,49 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       **Aucune valeur de jeu ne bouge** : aucun geste livré ne porte la forme, et la loi est
       posée avant qu'il y ait quelque chose à relire — comme `ElementalMark` et `DepositLaw`
       avant elle)*
-- [ ] **La posture** (S) — un dépôt `scope: soi`, sans durée, **exclusif**. Répare : aucun
+- [x] **La posture** (S) — un dépôt `scope: soi`, sans durée, **exclusif**. Répare : aucun
       choix à l'échelle d'une rencontre. En changer coûte le tour
+      *(**ARC-18b — livré le 2026-08-18.** `StanceLaw` pose les quatre propriétés qui font
+      qu'une posture est une décision, et la plus importante n'est pas dans le canon : **elle
+      déplace le budget, elle ne l'ajoute pas.** Le garde-fou écrit — *en changer coûte le
+      tour* — borne la **fréquence** des changements, jamais la **valeur** de ce qu'on prend :
+      une posture qui donnerait `+9 %` sans rien retirer se paierait un tour et rapporterait
+      dix tours de bonus sur une rencontre ordinaire, soit le meilleur rapport du jeu et un
+      geste qu'on ne se pose même pas la question de jouer. La borne se **dérive** de la
+      phrase qui définit la forme plutôt que de s'inventer : une fourche **répartit** les
+      50 points de l'arbre entre deux branches, donc la posture — *la fourche à l'échelle de
+      la rencontre* — répartit aussi. Le sacrifice reste légal ; seul le cadeau est refusé.
+      **Elle s'écrit en leviers, jamais en `statModifier`** : ce champ existait et aurait été
+      le rangement évident, mais son vocabulaire est **ouvert** (les quinze statuts livrés y
+      écrivent `damage`, `speed`, `defense`, `shield_absorb`, `max_life`, et aussi quatre noms
+      de leviers) — la leçon d'ARC-16a, *un système qui compte 50 points et laisse à côté un
+      champ où l'on écrit n'importe quel chiffre ne compte rien*. Conséquence heureuse : la
+      posture se somme aux nœuds **comme un dix-neuvième nœud**, si bien que rien dans la
+      formule n'a besoin de savoir qu'elle existe, et que **les bornes des nœuds s'appliquent
+      gratuitement** (une posture qui déplace `grip` ne parle pas sur un bouclier).
+      **Deux défauts antérieurs trouvés, et le second est le plus grave.**
+      (1) `TYPE_RIPOSTE` n'avait jamais rejoint `StatusEffect::TYPES` — donc le contrôle « les
+      types se rangent sans reste » ne l'a pas vu, alors que c'est exactement ce qu'il existe
+      pour voir. ARC-11b-b avait fermé la moitié du défaut (une liste **de test** qui
+      vieillit) sans fermer l'autre (une liste **de référence** qui vieillit). On ne répare
+      donc pas la liste mais la façon dont elle diverge : les constantes sont désormais
+      énumérées **par réflexion**. *Une liste tenue à la main diverge de ses membres en
+      silence.*
+      (2) **Le malus d'un pacte n'atteignait jamais la formule.** ARC-15 l'a livré comme *la
+      seule mécanique du canon qui rende un personnage mesurablement plus faible quelque
+      part* ; il était lu, validé et compté au budget, et s'arrêtait là — parce que
+      `CombatLeverScale::effectOf()` refusait tout total négatif. Le refus était **au mauvais
+      endroit**, et son propre message le disait : « a **node** cannot invest -6 budget
+      points » — on n'*achète* pas une puissance négative, ce qui est vrai à l'écriture d'un
+      nœud (`SkillLeverReader` refuse déjà les points ≤ 0) et faux à la conversion d'un
+      **total**, qui a pu être diminué depuis. *Un convertisseur convertit, il ne juge pas ce
+      qu'on lui donne.* Le plafond se lit maintenant en valeur absolue — il borne l'ampleur
+      d'un déplacement, dans les deux sens —, et le malus est branché : l'arbre paie le
+      **net**, le personnage porte le **brut** de chaque côté.
+      **Aucune valeur de jeu ne bouge** : la colonne naît vide sur les quinze statuts livrés,
+      et aucun nœud livré ne porte encore de levier ni de pacte. Hors périmètre nommé : le
+      donjon de groupe a son propre modèle (DON-02) et n'a pas de `Fight`, donc aucune posture
+      ne s'y lit — à rouvrir avec ARC-19)*
 - [ ] **La conversion** (S) — échanger des PV contre des PM. Répare : le pyromancien paie
       deux fois. **Taux de change défavorable**, sinon convertir est toujours correct
 - [ ] **Le transfert** (M) — une part des dégâts des alliés revient sur soi. Répare :

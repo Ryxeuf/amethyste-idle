@@ -157,7 +157,7 @@ class MobActionHandler
             // **recu**, la seule que celui qui encaisse ait sous les yeux.
             $options = ['fight' => $fight];
             if ($target instanceof Player) {
-                $options['targetLevers'] = $this->skillResolver->getLeverEffects($target, null, null, $spell->resolveIntent());
+                $options['targetLevers'] = $this->skillResolver->getLeverEffects($target, null, null, $spell->resolveIntent(), $fight);
             }
 
             $spellMessages = $this->spellApplicator->apply($spell, $mob, $target, $options);
@@ -216,7 +216,7 @@ class MobActionHandler
         }
 
         $targetLevers = $target instanceof Player
-            ? $this->skillResolver->getLeverEffects($target, null, null, SpellIntent::Hinder)
+            ? $this->skillResolver->getLeverEffects($target, null, null, SpellIntent::Hinder, $fight)
             : null;
 
         $this->statusEffectManager->applyStatusEffect($fight, $target, $effect, null, $targetLevers);
