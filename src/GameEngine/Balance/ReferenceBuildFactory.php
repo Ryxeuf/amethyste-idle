@@ -136,6 +136,33 @@ final class ReferenceBuildFactory
     }
 
     /**
+     * Les cases que la grille des 24 arbres rend **atteignables**.
+     *
+     * **Mesure faite en ouvrant ARC-08e** : la grille theorique compte douze
+     * cases (quatre fonctions x trois registres), mais les 24 arbres de combat
+     * n'en occupent que **neuf**. Il n'existe aucun arbre d'encaisse a
+     * distance, aucun d'encaisse en sorts, aucun d'entretien au tir.
+     *
+     * Compter sur douze faisait donc dire au simulateur qu'il lui manquait
+     * quatre cases quand une seule etait a sa portee — *un denominateur faux
+     * rend une couverture pessimiste, et une couverture pessimiste se lit comme
+     * une excuse*.
+     */
+    public function reachableCells(): int
+    {
+        $cells = [];
+        foreach ($this->entityManager->getRepository(Domain::class)->findAll() as $domain) {
+            $role = $domain->getRole();
+            $register = $domain->getRegister();
+            if (null !== $role && null !== $register) {
+                $cells[sprintf('%s x %s', $role->value, $register->value)] = true;
+            }
+        }
+
+        return \count($cells);
+    }
+
+    /**
      * Les cases de la grille fonction x registre que les builds couvrent.
      *
      * Rendue plutot que tue : c'est elle qui empeche un seuil de se prononcer

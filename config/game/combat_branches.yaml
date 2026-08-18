@@ -168,3 +168,24 @@ trees:
                 label: 'Le Rempart'
                 description: 'Rien n''accroche et rien ne coute : resister aux entraves, et sauter la reprise.'
                 accord: 'Rempart de pierre'
+
+    # --- Vagabond — air x melee x controle (ARC-08e) ----------------------
+    # **La derniere case atteignable de la grille.** Les 24 arbres de combat
+    # n'occupent que 9 des 12 cases fonction x registre : il n'existe aucun
+    # arbre d'encaisse a distance, aucun d'encaisse en sorts, aucun
+    # d'entretien au tir. Avec celui-ci, le simulateur les joue toutes.
+    #
+    # La fourche oppose **passer devant** a **casser l'elan** : le Sillage
+    # arrive avant la question et ramasse les siens en passant, le Contre
+    # attend et retire l'appui.
+    wanderer:
+        label: 'Vagabond'
+        branches:
+            wake:
+                label: 'Le Sillage'
+                description: 'Arriver avant que la question ne se pose, et ne laisser personne derriere.'
+                accord: 'Brise apaisante'
+            counter:
+                label: 'Le Contre'
+                description: 'Attendre le pas de trop : passer entre les gardes, et durer plus que l''autre.'
+                accord: 'Courant d''air'

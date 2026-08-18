@@ -80,7 +80,17 @@ class BalanceSimulateCommand extends Command
         // donnerait a ses moyennes une autorite qu'elles n'ont pas.
         $io->section('Ce que cette table joue');
         $io->listing($this->buildFactory->coverage());
-        $io->writeln(sprintf(' <comment>%d builds, %d cases de la grille sur 12.</comment>', \count($builds), \count($this->buildFactory->coverage())));
+        // **Le denominateur est le nombre de cases *atteignables*, pas douze.**
+        // Les 24 arbres n'occupent que neuf des douze cases de la grille
+        // theorique : compter sur douze ferait dire au simulateur qu'il lui
+        // manque quatre cases quand une seule est a sa portee.
+        $reachable = $this->buildFactory->reachableCells();
+        $io->writeln(sprintf(
+            ' <comment>%d builds, %d cases sur les %d que la grille des 24 arbres rend atteignables (la grille theorique en compte 12).</comment>',
+            \count($builds),
+            \count($this->buildFactory->coverage()),
+            $reachable,
+        ));
         $io->newLine();
 
         foreach ([MonsterRank::Common, MonsterRank::Elite, MonsterRank::Boss] as $rank) {

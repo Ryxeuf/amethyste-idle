@@ -1358,13 +1358,19 @@ class SpellFixtures extends Fixture
             ],
             'wind_shield' => [
                 'slug' => 'wind-shield',
-                'damage' => 0,
+                'damage' => null,
                 'element' => Element::Air,
                 'heal' => 2,
                 'name' => 'Bouclier de vent',
-                'description' => 'Un tourbillon protecteur qui dévie les attaques',
+                'description' => 'Un souffle qui detourne ce qui vient',
                 'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'statusEffectSlug' => 'shield',
                 'level' => 1,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::SelfOnly,
             ],
             'gust' => [
                 'slug' => 'gust',
@@ -1428,10 +1434,15 @@ class SpellFixtures extends Fixture
                 'damage' => null,
                 'element' => Element::Air,
                 'heal' => 5,
-                'name' => 'Brise guérisseuse',
-                'description' => 'Une douce brise qui apaise et soigne les blessures',
+                'name' => 'Brise apaisante',
+                'description' => 'Le vent passe sur les siens et referme ce qui saigne',
                 'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 1,
                 'level' => 2,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Heal,
+                'scope' => SpellScope::Ally,
             ],
             'vacuum_blade' => [
                 'slug' => 'vacuum-blade',
@@ -1465,13 +1476,23 @@ class SpellFixtures extends Fixture
             ],
             'air_current' => [
                 'slug' => 'air-current',
-                'damage' => 2,
+                // Il devient l'accord de branche du Contre, donc un geste de
+                // **palier 3** ; ses 2 degats le laissaient sous la mediane de
+                // son nouveau palier, et le cliquet d'ARC-05a l'a vu. *Changer
+                // le palier d'un geste sans changer sa valeur, c'est l'affaiblir
+                // sans le dire.*
+                'damage' => 5,
                 'element' => Element::Air,
-                'heal' => 3,
+                'heal' => null,
                 'name' => 'Courant d\'air',
-                'description' => 'Un courant d\'air revigorant qui soigne et protège',
-                'hit' => 95,
-                'level' => 1,
+                'description' => 'Une lame d\'air qui passe entre les gardes',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 2,
+                'level' => 3,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
             ],
             // ARC-07d — **la Volee** : le geste a plusieurs cibles de l'Archer.
             // Ses deux munitions ne sont pas un choix d'auteur, elles sont la
@@ -2419,16 +2440,74 @@ class SpellFixtures extends Fixture
                 'energyCost' => 5,
                 'level' => 1,
             ],
+            // --- Les deux gestes du Vagabond (ARC-08e) -----------------------
+            //
+            // La marque de l'air — Desequilibre — est portee par la Bourrasque,
+            // un geste **du Foudromancien** donc de registre `spell`. Quatrieme
+            // application de la regle d'ARC-08b : le Vagabond ecrit le sien.
+            //
+            // Et il lui fallait une **seconde entrave** : la palette du controle
+            // en exige deux, l'arbre n'en portait aucune — c'est ce qui le
+            // maintenait dans deux listes d'attente a la fois.
+            'trip' => [
+                'slug' => 'trip',
+                'damage' => 2,
+                'element' => Element::Air,
+                'heal' => null,
+                'name' => 'Croc-en-jambe',
+                'description' => 'Un appui retire au bon moment vaut mieux qu\'un coup',
+                'hit' => 95,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'statusEffectSlug' => 'off-balance',
+                'level' => 1,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
+            ],
+            'headwind' => [
+                'slug' => 'headwind',
+                // **4 et non 2 : le cliquet d'ARC-05a l'a demande.** Un geste
+                // ecrit sous la mediane de son palier creuse l'ecart a l'ancre
+                // (§ 6.4) — le releve est passe de x7,6 a x9,5 sur le palier 3
+                // avant cette correction. Le cliquet n'est pas un obstacle,
+                // c'est ce qui empeche d'ajouter un geste sous-calibre sans le
+                // voir : *reduire l'ecart est libre, l'aggraver demande de le
+                // dire*. On le pose donc a la mediane de son palier, qui est 5.
+                'damage' => 5,
+                'element' => Element::Air,
+                'heal' => null,
+                'name' => 'Vent contraire',
+                'description' => 'Avancer devient une affaire, pour tout le monde en face',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 2,
+                'statusEffectSlug' => 'paralysis',
+                'level' => 3,
+                'aoeTargets' => 3,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Targets,
+            ],
             'mirage' => [
                 'slug' => 'mirage',
                 'damage' => 2,
                 'element' => Element::Air,
-                'heal' => 2,
+                'heal' => null,
                 'name' => 'Mirage',
-                'description' => 'Crée des illusions qui désorientent l\'ennemi',
-                'hit' => 90,
-                'energyCost' => 7,
+                'description' => 'On frappe la ou il etait, et il n\'y est plus',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 1,
+                // **L'intention se declare.** La derivation lit le degat
+                // d'abord (ARC-11a), donc ce geste se rangeait en `degat` ;
+                // on ne le lance pas pour ses deux points, on le lance pour le
+                // tour qu'il fait perdre.
+                'statusEffectSlug' => 'paralysis',
                 'level' => 2,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Hinder,
+                'scope' => SpellScope::Target,
             ],
             'zephyr' => [
                 'slug' => 'zephyr',

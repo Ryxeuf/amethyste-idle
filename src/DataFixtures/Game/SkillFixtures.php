@@ -3868,21 +3868,41 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // VAGABOND (air) — 13 skills, support vitesse et evasion
+    // VAGABOND — air x melee x controle, « le Sillage » / « le Contre »
+    // (ARC-08e)
     // =========================================================================
+    /**
+     * Le cinquieme arbre au gabarit, et **la derniere case atteignable** de la
+     * grille : `control x melee`.
+     *
+     * Mesure faite en l'ouvrant : les 24 arbres de combat n'occupent que **9
+     * des 12 cases** de la grille fonction x registre — il n'existe aucun arbre
+     * d'encaisse a distance, aucun d'encaisse en sorts, aucun d'entretien au
+     * tir. Le simulateur d'ARC-17 comptait donc sur douze, et se croyait plus
+     * incomplet qu'il ne l'est.
+     *
+     * **Il etait dans deux listes d'attente a la fois**, et pour la meme
+     * raison : la palette du controle exige deux `entrave`, et l'arbre n'en
+     * portait aucune — que des soins et des protections. *Un arbre de controle
+     * qui ne sait que soigner n'est pas un arbre de controle.*
+     */
     private function getWandererSkills(): array
     {
         $d = 'wanderer';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // Le Croc-en-jambe porte **Desequilibre**, la marque de l'air. Elle
+            // etait portee par la Bourrasque, un geste **du Foudromancien**
+            // donc de registre `spell` : quatrieme fois que la regle d'ARC-08b
+            // decide du contenu a ecrire.
             'wander_apprenti_1' => [
-                'title' => 'Materia : Hate',
+                'title' => 'Materia : Croc-en-jambe',
                 'slug' => 'wander-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Hate',
+                'description' => 'Permet d\'utiliser la materia Croc-en-jambe — un appui retire au bon moment',
                 'requiredPoints' => 0,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'haste']],
+                'actions' => ['materia' => ['unlock' => 'trip']],
             ],
             'wander_apprenti_2' => [
                 'title' => 'Materia : Bouclier de vent',
@@ -3893,117 +3913,176 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'wind-shield']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord + 1 port ----
+            // `grip` est le levier principal du controle : 3 ici, 3 de plus
+            // nulle part, et 14 au sommet — 17 sur un plafond de 20.
             'wander_rang2_1' => [
-                'title' => 'Agilite du vent',
+                'title' => 'Pied leger',
                 'slug' => 'wander-rang2-1',
-                'description' => 'Augmente la precision des attaques',
+                'description' => 'Ce qu\'on pose sur quelqu\'un tient tant qu\'on reste autour',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 1,
+                'levers' => [['lever' => 'grip', 'points' => 3]],
                 'requirements' => ['wander_apprenti_1'],
             ],
             'wander_rang2_2' => [
-                'title' => 'Vitesse du vagabond',
+                'title' => 'Coup d\'œil',
                 'slug' => 'wander-rang2-2',
-                'description' => 'Augmente les chances de coup critique',
+                'description' => 'Voir ou l\'autre va avant qu\'il y aille',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'critical' => 1,
-                'requirements' => ['wander_apprenti_1'],
+                'levers' => [['lever' => 'hit', 'points' => 3]],
+                'requirements' => ['wander_apprenti_2'],
             ],
             'wander_rang2_3' => [
-                'title' => 'Materia : Brise guerisseuse',
-                'slug' => 'wander-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Brise guerisseuse',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'healing-breeze']],
-                'requirements' => ['wander_apprenti_2'],
-            ],
-            'wander_rang2_4' => [
-                'title' => 'Endurance du voyageur',
-                'slug' => 'wander-rang2-4',
-                'description' => 'Augmente les points de vie maximum',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'life' => 5,
-                'requirements' => ['wander_apprenti_2'],
-            ],
-
-            // Rang 3 (25-50 pts) — 4 skills
-            'wander_rang3_1' => [
                 'title' => 'Materia : Mirage',
-                'slug' => 'wander-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Mirage (degats + soin)',
-                'requiredPoints' => 25,
+                'slug' => 'wander-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Mirage — on frappe la ou il n\'est plus',
+                'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'mirage']],
+                'requirements' => ['wander_apprenti_1'],
+            ],
+
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord + 1 port ----
+            'wander_rang3_1' => [
+                'title' => 'Economie de mouvement',
+                'slug' => 'wander-rang3-1',
+                'description' => 'Ne jamais faire deux gestes la ou un suffit',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 6]],
+                'requirements' => ['wander_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3).
+            'wander_rang3_2' => [
+                'title' => 'Terrain connu',
+                'slug' => 'wander-rang3-2',
+                'description' => 'Rien sur le dos, et chaque appui se voit d\'avance',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'hit', 'points' => 6, 'condition' => 'armor:leather']],
+                'requirements' => ['wander_rang2_2'],
+            ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous.
+            'wander_rang3_3' => [
+                'title' => 'Materia : Vent contraire',
+                'slug' => 'wander-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Vent contraire — avancer devient une affaire',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'headwind']],
                 'requirements' => ['wander_rang2_1', 'wander_rang2_2'],
             ],
-            'wander_rang3_2' => [
+
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // *Le Sillage* passe devant et ramasse les siens ; *le Contre*
+            // attend et casse l'elan. Aucun levier commun — {`tempo`,
+            // `mending`} contre {`pierce`, `thrift`}.
+            'wander_wake_1' => [
+                'title' => 'Toujours devant',
+                'slug' => 'wander-wake-1',
+                'description' => 'Arriver avant que la question ne se pose',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'tempo', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'vagabond', 'branch' => 'wake']],
+                'requirements' => ['wander_rang3_3'],
+            ],
+            // La teinte, et elle ne vit que dans cette branche : le Vagabond
+            // ramasse les siens en passant, ce que la palette du controle ne
+            // prevoit pas.
+            'wander_wake_2' => [
+                'title' => 'On ne laisse personne',
+                'slug' => 'wander-wake-2',
+                'description' => 'Le vent qui passe referme ce qu\'il trouve ouvert',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'mending', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'vagabond', 'branch' => 'wake']],
+                'requirements' => ['wander_rang3_3'],
+            ],
+            'wander_counter_1' => [
+                'title' => 'Entre les gardes',
+                'slug' => 'wander-counter-1',
+                'description' => 'L\'air passe la ou l\'acier ne passe pas',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'vagabond', 'branch' => 'counter']],
+                'requirements' => ['wander_rang3_3'],
+            ],
+            'wander_counter_2' => [
+                'title' => 'Longue route',
+                'slug' => 'wander-counter-2',
+                'description' => 'Celui qui marche depuis toujours sait ce que coute un pas',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'vagabond', 'branch' => 'counter']],
+                'requirements' => ['wander_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis.
+            'wander_wake_accord' => [
+                'title' => 'Materia : Brise apaisante',
+                'slug' => 'wander-wake-accord',
+                'description' => 'Permet d\'utiliser la materia Brise apaisante — le vent passe sur les siens',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'healing-breeze'],
+                    ['action' => 'specialization.branch', 'domain' => 'vagabond', 'branch' => 'wake'],
+                ],
+                'requirements' => ['wander_rang3_3'],
+            ],
+            'wander_counter_accord' => [
                 'title' => 'Materia : Courant d\'air',
-                'slug' => 'wander-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Courant d\'air',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'air-current']],
-                'requirements' => ['wander_rang2_3'],
-            ],
-            'wander_rang3_3' => [
-                'title' => 'Souffle revitalisant',
-                'slug' => 'wander-rang3-3',
-                'description' => 'Augmente la puissance des soins',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'heal' => 1,
-                'requirements' => ['wander_rang2_4'],
-            ],
-            'wander_rang3_4' => [
-                'title' => 'Materia : Benediction du vent',
-                'slug' => 'wander-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Benediction du vent',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'wind-blessing']],
-                'requirements' => ['wander_rang3_1'],
-            ],
-
-            // Rang 4 (60-100 pts) — 2 skills
-            'wander_rang4_1' => [
-                'title' => 'Materia : Mur de vent',
-                'slug' => 'wander-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Mur de vent (degats + soin)',
+                'slug' => 'wander-counter-accord',
+                'description' => 'Permet d\'utiliser la materia Courant d\'air — une lame qui passe entre les gardes',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'wind-wall']],
-                'requirements' => ['wander_rang3_1', 'wander_rang3_2'],
-            ],
-            'wander_rang4_2' => [
-                'title' => 'Materia : Tempete',
-                'slug' => 'wander-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Tempete',
-                'requiredPoints' => 50,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'tempest']],
-                'requirements' => ['wander_rang3_3', 'wander_rang3_4'],
+                'actions' => [
+                    'materia' => ['unlock' => 'air-current'],
+                    ['action' => 'specialization.branch', 'domain' => 'vagabond', 'branch' => 'counter'],
+                ],
+                'requirements' => ['wander_rang3_3'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
-            'wander_rang5_1' => [
-                'title' => 'Materia : Zephyr',
-                'slug' => 'wander-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Zephyr',
-                'requiredPoints' => 150,
+            // --- Capstone (100 pts) ------------------------------------------
+            // 14 pb de `grip` sur un plafond de 20 : le palier 1 prend 3, et il
+            // n'en reste plus pour les branches. Le corollaire 2, une fois de
+            // plus. Sa condition est posee des le tour 1 par un accord gratuit,
+            // donc **frequente** : x1,4 (§ 7, decision 23).
+            'wander_capstone' => [
+                'title' => 'Ce qui ne retrouve pas son appui',
+                'slug' => 'wander-capstone',
+                'description' => 'Qui a perdu l\'equilibre met longtemps a le reprendre',
+                'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'zephyr']],
-                'requirements' => ['wander_rang4_1', 'wander_rang4_2'],
+                'levers' => [['lever' => 'grip', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['wander_rang3_3'],
+            ],
+
+            // --- Les echelons de port (0 pb) ---------------------------------
+            'wanderer_weapon_t2' => [
+                'title' => 'Maitrise du baton (T2)',
+                'slug' => 'wanderer-weapon-t2',
+                'description' => 'Permet d\'equiper les batons de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['wander_apprenti_1'],
+            ],
+            'wanderer_weapon_t3' => [
+                'title' => 'Maitrise du baton (T3)',
+                'slug' => 'wanderer-weapon-t3',
+                'description' => 'Permet d\'equiper les batons de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['wanderer_weapon_t2'],
             ],
         ];
     }
 
-    // =========================================================================
-    // PALADIN (lumiere) — 13 skills, guerrier sacre tank/healer
     // =========================================================================
     private function getPaladinSkills(): array
     {

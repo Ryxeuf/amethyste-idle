@@ -107,7 +107,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
         'Ingénieur : 0 hinder sur 2',
         'Paladin : 0 protect sur 2',
         'Prêtre : 0 group_scoped sur 1',
-        'Vagabond : 0 hinder sur 2',
     ];
 
     /**
