@@ -41,6 +41,9 @@ class GroupDungeonCombatServiceTest extends TestCase
     /** @var array<int, int> degat par id de joueur (defaut 100) */
     public array $damageByPlayer = [];
 
+    /** @var array<int, array{share: float, turns: int}> transfert pose, par id de joueur (ARC-18d) */
+    public array $transferByPlayer = [];
+
     /**
      * DON-03 : la faune servie par le tireur, par rang.
      *
@@ -77,10 +80,21 @@ class GroupDungeonCombatServiceTest extends TestCase
 
         $this->actionResolver = $this->createMock(DungeonActionResolver::class);
         $this->actionResolver->method('resolve')->willReturnCallback(
-            fn (Player $player, ?string $spellSlug = null): array => [
-                'damage' => $this->damageByPlayer[$player->getId()] ?? 100,
-                'spellSlug' => $spellSlug,
-            ]
+            function (Player $player, ?string $spellSlug = null): array {
+                $action = [
+                    'damage' => $this->damageByPlayer[$player->getId()] ?? 100,
+                    'spellSlug' => $spellSlug,
+                ];
+
+                // ARC-18d — le geste de transfert, servi par le meme tireur que
+                // le degat : le contrat du resolveur a son propre test, celui-ci
+                // ne verifie que ce que le service en fait.
+                if (isset($this->transferByPlayer[$player->getId()])) {
+                    $action['transfer'] = $this->transferByPlayer[$player->getId()];
+                }
+
+                return $action;
+            }
         );
 
         // ARC-17b — la riposte ne se declare plus, elle se derive de la case du
@@ -222,6 +236,46 @@ class GroupDungeonCombatServiceTest extends TestCase
 
         $this->assertSame(50 - $this->commonStrike, $p1->getLife());
         $this->assertSame(50, $p2->getLife(), 'Seul le membre qui vient d\'agir encaisse.');
+    }
+
+    /**
+     * **ARC-18d — le transfert deplace le coup, il ne le reduit pas.**.
+     *
+     * C'est ce qui repare le defaut le plus structurel des huit formes : *notre
+     * modele ne peut pas avoir d'aggro*. La rencontre frappe le membre qui
+     * vient d'agir, il n'y a personne a provoquer — le transfert decide donc
+     * qui paie, sans jamais demander au monstre qui il vise.
+     *
+     * Le test verifie **les deux moities ensemble**, parce que verifier la
+     * premiere seule laisserait passer la faute qu'on veut interdire : un
+     * allie qui prend moins **et** un protecteur qui prend le reste, dont la
+     * somme vaut exactement le coup d'origine.
+     */
+    public function testAProtectorTakesHalfTheBlowForHisAlly(): void
+    {
+        $protector = $this->buildPlayer(1, 50);
+        $ally = $this->buildPlayer(2, 50);
+        $this->damageByPlayer = [1 => 0, 2 => 1];
+        $this->transferByPlayer = [1 => ['share' => 0.5, 'turns' => 3]];
+
+        $run = $this->buildRun([$protector, $ally]);
+        $this->service->state($run);
+
+        $this->service->act($protector, $run);
+        $afterPosting = $protector->getLife();
+
+        $this->service->act($ally, $run);
+
+        $moved = $afterPosting - $protector->getLife();
+        $borne = 50 - $ally->getLife();
+
+        $this->assertGreaterThan(0, $moved, 'Le protecteur ne prend rien : le transfert est inerte.');
+        $this->assertSame(
+            $this->commonStrike,
+            $moved + $borne,
+            'Le coup a change de taille en changeant de porteur : le transfert est devenu une reduction de degats.'
+        );
+        $this->assertLessThan($this->commonStrike, $borne, 'L\'allie encaisse tout : rien n\'a ete deplace.');
     }
 
     /**

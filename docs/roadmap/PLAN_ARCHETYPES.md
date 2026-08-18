@@ -1957,9 +1957,44 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       lecteur ne s'y adosse, ce qui est exactement pourquoi elle doit être tenue par un test.
       Les deux y entrent ici, et le cliquet ne va que dans un sens.
       **Aucune valeur de jeu ne bouge** : `life_cost` naît à 0 sur les 253 gestes livrés)*
-- [ ] **Le transfert** (M) — une part des dégâts des alliés revient sur soi. Répare :
+- [x] **Le transfert** (M) — une part des dégâts des alliés revient sur soi. Répare :
       l'aggro est impossible sur une rencontre à PV partagés. Borné en pourcentage **et** en
       durée. Ally-side, donc il se multiplie (§9 quinquies)
+      *(**ARC-18d — livré le 2026-08-18.** La forme qui répare le défaut le plus structurel des
+      huit : *notre modèle ne peut pas avoir d'aggro*. La rencontre frappe le membre qui vient
+      d'agir, il n'y a personne à provoquer — le transfert décide donc **qui paie**, sans jamais
+      demander au monstre qui il vise, et **sans table de menace**.
+      **Le total du coup ne bouge jamais** — *l'aggro ne réduit rien, elle déplace* (§13.4) :
+      ce que les protecteurs prennent est retiré à la cible **et ajouté à eux**, ce qu'un test
+      vérifie sur les deux moitiés ensemble. Vérifier la première seule laisserait passer la
+      seule faute que le canon interdise explicitement à cette forme : devenir une réduction de
+      dégâts déguisée.
+      **Les deux bornes sont deux, et l'une sans l'autre ne suffit pas** : la part empêche
+      qu'un allié devienne invulnérable (sans elle, la parade optimale d'un groupe serait un
+      protecteur permanent), la durée empêche que le protecteur paie tout le combat (sans elle,
+      le transfert ne serait pas un geste mais un état). La part est **la moitié**, et elle se
+      **dérive** : le §13.4 borne déjà le déplacement de menace à « au plus la moitié », et lui
+      donner une autre valeur ferait exister deux bornes pour une seule question.
+      **L'anti-empilement est la règle qui rend la borne opposable** : deux protecteurs à 50 %
+      ne retirent pas 100 % — *ce qui est transféré ne peut pas l'être deux fois*. Sans elle, la
+      borne serait un plafond par personne et non par coup, donc elle s'annulerait elle-même dès
+      qu'un groupe compte deux encaisses. Elle vit **au moment du coup** et non à la pose : deux
+      gestes posés séparément ne peuvent pas savoir l'un de l'autre.
+      **Défaut trouvé en ouvrant le jalon** : ***le donjon de groupe ne savait jouer que des
+      gestes de dégâts*** — tout geste dont `damage` valait zéro retombait silencieusement sur
+      l'attaque d'arme, si bien que le seul contenu de groupe du jeu n'acceptait aucun geste
+      d'entretien ni d'encaisse, c'est-à-dire exactement les deux fonctions dont le canon dit
+      qu'elles gagnent au groupe (§7 bis). Le transfert est le **premier geste non offensif que
+      le donjon sache jouer** ; les autres restent à ouvrir.
+      Il vit sur `GroupDungeonMember` et non sur un `StatusEffect`, et c'est un constat plutôt
+      qu'un choix : le donjon a son propre modèle de combat (DON-02) — pas de `Fight`, donc pas
+      de `FightStatusEffect` à déposer — et le transfert étant *par nature* une mécanique de
+      groupe, il n'existe aujourd'hui aucun autre endroit où il aurait un sens.
+      Deux garde-fous de plus : *un protecteur tombé ne protège plus* (sinon le groupe serait
+      **plus** solide après une perte qu'avant) et *un protecteur ne se protège pas de lui-même*
+      (sinon le geste le plus rentable du jeu serait de se transférer ses propres dégâts).
+      **Aucune valeur de jeu ne bouge** : les deux colonnes naissent à zéro, et aucune fixture
+      ne porte de statut `transfer`)*
 - [ ] **La charge** (M) — `generates` / `consumes` sur `Spell`, un compteur par rencontre.
       Répare : la mêlée n'a aucune raison d'aimer les longs combats. **Meurt avec la
       rencontre**

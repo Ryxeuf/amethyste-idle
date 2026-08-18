@@ -4,10 +4,14 @@ namespace App\GameEngine\Dungeon;
 
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\Entity\Game\Spell;
+use App\Entity\Game\StatusEffect;
 use App\Enum\CombatLever;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\TransferLaw;
 use App\GameEngine\Progression\CombatLeverScale;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * L'action reelle d'un membre en donjon (DON-02).
@@ -33,11 +37,12 @@ class DungeonActionResolver
         private readonly CombatCapacityResolver $capacityResolver,
         private readonly CombatSkillResolver $skillResolver,
         private readonly CombatLeverScale $leverScale,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
     /**
-     * @return array{damage: int, spellSlug: ?string}
+     * @return array{damage: int, spellSlug: ?string, transfer?: array{share: float, turns: int}}
      */
     public function resolve(Player $player, ?string $spellSlug = null): array
     {
@@ -54,6 +59,25 @@ class DungeonActionResolver
 
         if (null !== $spellSlug && '' !== $spellSlug) {
             $entry = $this->capacityResolver->findMateriaSpell($player, $spellSlug);
+
+            // ARC-18d — **le donjon ne savait jouer que des degats.** Tout
+            // geste dont `damage` valait zero retombait silencieusement sur
+            // l'attaque d'arme, si bien que le seul contenu de groupe du jeu
+            // n'acceptait aucun geste d'entretien ni d'encaisse — c'est-a-dire
+            // exactement les deux fonctions dont le canon dit qu'elles gagnent
+            // au groupe (§ 7 bis).
+            //
+            // Le transfert est le premier geste non offensif que le donjon
+            // sache jouer. Il est traite **avant** le degat, parce qu'un geste
+            // de protection qui blesserait aussi serait rendu par le degat et
+            // sa protection perdue en route.
+            $transfer = null !== $entry && !$entry['locked']
+                ? $this->transferOf($entry['spell'])
+                : null;
+            if (null !== $transfer) {
+                return ['damage' => 0, 'spellSlug' => $spellSlug, 'transfer' => $transfer];
+            }
+
             if (null !== $entry && !$entry['locked'] && (int) ($entry['spell']->getDamage() ?? 0) > 0) {
                 $damage = (int) $entry['spell']->getDamage() + $skillDamage;
                 $damage = (int) round($damage * $this->capacityResolver->getElementMatchDamageMultiplier($entry['slot'], $entry['materia']) * $power);
@@ -63,6 +87,35 @@ class DungeonActionResolver
         }
 
         return ['damage' => max(1, (int) round(($this->weaponDamage($player) + $skillDamage) * $power)), 'spellSlug' => null];
+    }
+
+    /**
+     * Ce geste pose-t-il un transfert, et pour combien de temps ?
+     *
+     * La **duree** vient du statut, comme partout ailleurs. La **part**, elle,
+     * ne vient de nulle part : le canon en fixe une — *au plus la moitie* — et
+     * laisser chaque geste choisir la sienne rendrait le curseur qu'on vient de
+     * fermer. Deux transferts different donc par leur duree, jamais par leur
+     * force.
+     *
+     * @return array{share: float, turns: int}|null
+     */
+    private function transferOf(Spell $spell): ?array
+    {
+        $slug = $spell->getStatusEffectSlug();
+        if (null === $slug || '' === $slug) {
+            return null;
+        }
+
+        $effect = $this->entityManager->getRepository(StatusEffect::class)->findOneBy(['slug' => $slug]);
+        if (null === $effect || StatusEffect::TYPE_TRANSFER !== $effect->getType()) {
+            return null;
+        }
+
+        return [
+            'share' => TransferLaw::MAX_SHARE,
+            'turns' => TransferLaw::durationFor($effect->getDuration()),
+        ];
     }
 
     /**

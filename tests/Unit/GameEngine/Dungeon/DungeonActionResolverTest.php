@@ -10,6 +10,7 @@ use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -37,7 +38,7 @@ class DungeonActionResolverTest extends TestCase
         $this->skills->method('getLeverEffects')->willReturn(CombatLeverEffects::none());
         $this->skills->method('getCombatBonuses')->willReturnCallback(fn (): array => $this->bonuses);
 
-        $this->resolver = new DungeonActionResolver($this->capacities, $this->skills, $this->leverScale());
+        $this->resolver = new DungeonActionResolver($this->capacities, $this->skills, $this->leverScale(), $this->createMock(EntityManagerInterface::class));
     }
 
     private function spell(int $damage): Spell
