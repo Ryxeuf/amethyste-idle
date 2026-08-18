@@ -41,7 +41,7 @@
 | ARC-17 | **Le simulateur d'équilibrage** (`app:balance:simulate`) — l'outil qui remplace les repères calculés à la main | M | ← ARC-05, ARC-07 |
 | ARC-18 | Les formes de geste : huit mécaniques empruntées, chacune réparant un défaut mesuré | M | ← ARC-11 |
 | ARC-19 | L'aggro bornée, et ce qu'elle exige de l'armure | M | ← DON-03, OBJ, **ARC-20** |
-| ARC-20 | **La barre de vie** : le Socle, la loi dérivée du bestiaire, et les cascades | **L** → 3 sous-phases | ← BES-01, ARC-05 |
+| ARC-20 ◐ | **La barre de vie** : le Socle, la loi dérivée du bestiaire, et les cascades | **L** → 3 sous-phases | ← BES-01, ARC-05 |
 
 ```
 Piste A — Le modèle   : ARC-01 → ARC-03 → ARC-12 → ARC-16 ; ARC-03 → ARC-15
@@ -2170,7 +2170,7 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 - [ ] Tests : un groupe sans tank et sans soigneur vient à bout d'une élite de son palier ;
       aucun score de menace cumulé ; la part déplacée ne dépasse jamais 50 %
 
-### ARC-20 — La barre de vie : le Socle, la loi, et les cascades (L | ★★★ | HAUTE) → 3 sous-phases
+### ARC-20 — La barre de vie : le Socle, la loi, et les cascades (L | ★★★ | HAUTE) ◐ → 3 sous-phases
 > [../GAME_VITALITY.md](../GAME_VITALITY.md) (2026-08-18). **Le trou que personne
 > n'avait nommé** : le personnage n'a pas de niveau, et **rien ne fait monter sa barre
 > de vie**. Mesuré — `PlayerFactory::BASE_LIFE` vaut **20**, plafonné entre 26 et 40 PV
@@ -2194,27 +2194,55 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 > le levier `life` **facultatif** — sans lui, il deviendrait obligatoire dans les
 > 24 arbres et le budget de 50 pb n'en compterait plus que 30.
 
-#### ARC-20a — La loi, et rien d'autre (M)
-- [ ] **`VitalityLaw`** : *la barre d'un joueur de palier n vaut ce qu'une élite de son
+#### ARC-20a — La loi, et rien d'autre (M) ✅
+- [x] **`VitalityLaw`** : *la barre d'un joueur de palier n vaut ce qu'une élite de son
       palier lui prend en une rencontre entière* — `8 × MonsterStatTemplate::attackFor(n, Elite)`.
       Les 8 tours ne sont pas un chiffre de goût : c'est **le centre de la bande de durée
       d'une élite** déjà livrée dans `EncounterAnchor::TURN_BANDS`. La barre est définie
       par le **format d'une rencontre**, jamais par une table
-- [ ] **La dérivation retrouve ses propres références** — 17 % de la barre pour un commun
+- [x] **La dérivation retrouve ses propres références** — 17 % de la barre pour un commun
       sur quatre tours (bande « 16 à 26 % » du §9 octies), **100 %** pour une élite sur
       huit (mesuré « 102 à 129 % »), et **le rapport ne dépend pas du palier** puisque les
       deux membres dérivent de la même vie de commun. Test : *une dérivation qui rate sa
       propre référence ne dérive rien* (le critère d'ARC-17a)
-- [ ] **`MendingAnchor`**, frère symétrique d'`EncounterAnchor` : soin direct = **25 % de
+- [x] **`MendingAnchor`**, frère symétrique d'`EncounterAnchor` : soin direct = **25 % de
       la barre du palier**, dépôt = **8 % par tour**. Sans lui, la grille des soins et
       celle des dégâts divergent au premier ajustement du bestiaire
-- [ ] **Aucune valeur de jeu ne bouge** — comme `EncounterAnchor`, `DailyAnchor` et
+- [x] **Aucune valeur de jeu ne bouge** — comme `EncounterAnchor`, `DailyAnchor` et
       `MonsterStatTemplate::attackFor()` avant elle, cette sous-phase rend une règle
       **calculable** pour qu'on mesure l'écart. Un test vérifie qu'aucune formule ne lit
       encore la loi, et documente que c'est voulu
-- [ ] **Constat à porter en cliquet** : un boss de palier 2 frappe **19,7 % de la barre
+- [x] **Constat à porter en cliquet** : un boss de palier 2 frappe **19,7 % de la barre
       par tour** — il tue en 5 tours quand sa bande en demande 12 à 20. *Un boss n'est pas
       un contenu solo, et la barre le dit sans qu'on ait à l'interdire*
+
+
+> **ARC-20a — livré le 2026-08-18.** `VitalityLaw` et `MendingAnchor` posent les deux
+> lois, et **aucune valeur de jeu ne bouge** — deux tests le tiennent, l'un par fichier
+> (rien dans `PlayerFactory`, `PlayerEffectiveStatsCalculator` ni `LifeRegenManager` ne
+> nomme la loi), l'autre sur `SpellApplicator` pour l'ancre des soins ; ils seront
+> **retournés et pas supprimés** par ARC-20b/c, comme celui d'ARC-17a l'a été par ARC-17b.
+>
+> **Les huit tours se dérivent** de `EncounterAnchor::TURN_BANDS['elite']` au lieu de
+> s'écrire : poser la constante ferait diverger la barre de la bande le jour où l'une des
+> deux bouge, ce que ce jalon existe précisément pour empêcher.
+>
+> **La dérivation retrouve ses propres références** — 16 à 26 % de barre pour un commun
+> sur une rencontre, et une élite qui tue en un nombre de tours qui **retombe dans sa
+> propre bande** (8, dans 6-10). Ce second invariant n'est pas tautologique : un arrondi
+> malheureux ou une grille d'attaque remaniée le perdraient en silence.
+>
+> **Le constat sur les boss entre en cliquet** : un boss tue en 5 à 6 tours quand sa bande
+> en demande 12 à 20, à **tous les paliers**. *Un boss n'est pas un contenu solo, et la
+> barre le dit sans qu'on ait eu à l'interdire.*
+>
+> **L'écart avec le livré entre en cliquet lui aussi** : `PlayerFactory::BASE_LIFE` (20)
+> ne peut plus dépasser le plancher de la loi (96) — il peut se réduire, plus s'aggraver.
+>
+> **Trouvé en écrivant** : la loi doit **borner** hors des quatre paliers plutôt
+> qu'extrapoler. Le palier 0 du bestiaire ne sert qu'aux mannequins, qui ne frappent pas ;
+> lui donner une barre propre créerait un cinquième palier ne correspondant à aucun
+> contenu — le défaut du §9 quater, celui qui avait éteint l'archer, transposé à la barre.
 
 #### ARC-20b — Le Socle : un nœud visible **et** la loi (L)
 - [ ] **Les deux, jamais l'un ou l'autre** : le nœud existe pour être **vu** (un palier de
