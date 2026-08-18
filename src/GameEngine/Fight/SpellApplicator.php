@@ -33,6 +33,7 @@ class SpellApplicator
         private readonly WeatherService $weatherService,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly CombatLeverScale $leverScale,
+        private readonly DeferredQueue $deferredQueue,
     ) {
     }
 
@@ -187,6 +188,20 @@ class SpellApplicator
         // se terminerait exactement comme on voulait l'eviter.
         if ($life < 1 && $this->isStruckByTrainingDummy($sender)) {
             $life = 1;
+        }
+
+        // ARC-18f — **le differe**. Le geste est calcule entierement — degats
+        // du sort, passifs, resistance, garde, tout —, puis **mis de cote au
+        // lieu d'etre applique**. Differer apres le calcul et non avant est ce
+        // qui fait qu'un differe reste le geste qu'il est : le calculer a
+        // l'echeance ferait dependre son resultat de l'etat du monde deux tours
+        // plus tard, c'est-a-dire d'une garde qu'on n'avait pas vue et d'une
+        // cible qui a peut-etre change.
+        if ($fight !== null && $spell->isDeferred() && $sender instanceof Player && $damage > 0) {
+            $this->deferredQueue->defer($fight, $sender, $damage, $spell->getDeferredTurns());
+            $messages[] = sprintf('%s frappera dans %d tours.', $spell->getName(), DeferredLaw::delayFor($spell->getDeferredTurns()));
+
+            return $messages;
         }
 
         $damageActuallyDealt = max(0, $target->getLife() - $life);

@@ -2026,8 +2026,37 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       geste refusé ne doit rien coûter.
       **Aucune valeur de jeu ne bouge** : `charge_gain` et `charge_cost` naissent à 0 sur les 253
       gestes livrés)*
-- [ ] **Le différé** (M) — une file d'effets résolus en **tours de rencontre**. Répare :
+- [x] **Le différé** (M) — une file d'effets résolus en **tours de rencontre**. Répare :
       l'asynchronie n'est jamais un avantage. Seule forme qui l'exploite au lieu de la subir
+      *(**ARC-18f — livré le 2026-08-18.** Le garde-fou du canon — *des tours, jamais des
+      secondes* — n'est pas une commodité : dans un donjon où un tour peut durer des heures, une
+      échéance en temps réel ferait exploser la bombe avant que le tour suivant n'ait été joué,
+      ou trois tours trop tard selon la vitesse de connexion des autres. *Le geste dépendrait de
+      la ponctualité d'inconnus plutôt que du combat.*
+      **Chaque entrée porte son échéance, pas son compte à rebours** : un compte à rebours
+      devrait être décrémenté à chaque tour — donc par quelqu'un, donc par un appel qu'on peut
+      oublier —, quand une échéance se compare au tour courant et ne demande rien à personne.
+      *Un état qui se lit ne dérive pas ; un état qu'il faut entretenir, si.*
+      **Lire la file, c'est la consommer** : les séparer laisserait un appelant lire, agir, et
+      oublier de vider — c'est-à-dire **une bombe qui explose à chaque tour jusqu'à la fin du
+      combat**. La seule façon de ne pas écrire ce défaut est de rendre impossible de lire sans
+      consommer. De même la comparaison d'échéance est **large** et non stricte : un tour peut
+      être sauté, et une égalité stricte laisserait la bombe dans la file *pour toujours*, ni
+      résolue ni effacée.
+      **Trois garde-fous que le canon n'écrit pas.** *Attendre ne rapporte rien* (la correction 5
+      transposée — sinon poser sa bombe au tour le plus lointain serait toujours correct, et le
+      différé cesserait d'être un choix pour devenir un calcul) ; *le délai est borné en haut*
+      (sans quoi un différé posé au tour 1 pour le tour 30 serait oublié de tout le monde, et un
+      geste qu'on ne relie pas à sa cause n'est pas une mécanique mais du bruit) ; *il meurt avec
+      la rencontre* (sinon un différé posé puis fui exploserait sur un monstre qui n'existait pas
+      quand on a visé — garanti par le rangement, la file vivant dans les métadonnées du combat).
+      **Le geste est calculé à la pose et non à l'échéance** : calculer plus tard ferait dépendre
+      son résultat de l'état du monde deux tours après, c'est-à-dire d'une garde qu'on n'avait
+      pas vue. Et les différés dus frappent **avant** le geste du tour : *sinon la bombe du tour 3
+      s'appliquerait après le coup du tour 4, et le joueur ne pourrait plus lire sa propre
+      séquence*.
+      **Aucune valeur de jeu ne bouge** : `deferred_turns` naît à 0 — « tout de suite » — sur les
+      253 gestes livrés)*
 - [ ] **L'ouverture** (M) — un geste posé depuis l'écran de zone, appliqué à la rencontre
       suivante. Répare : `tempo` n'a aucun effet modélisé. Coûte de l'**énergie d'action**,
       jamais un tour

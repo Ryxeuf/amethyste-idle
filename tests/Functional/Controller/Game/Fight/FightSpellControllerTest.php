@@ -18,6 +18,7 @@ use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\DeferredQueue;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
@@ -110,6 +111,7 @@ class FightSpellControllerTest extends TestCase
             $gestureCase,
             new CombatGestureLedger(),
             new ChargeLedger(),
+            new DeferredQueue(),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

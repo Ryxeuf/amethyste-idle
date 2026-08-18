@@ -15,6 +15,7 @@ use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\DeferredQueue;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
@@ -140,6 +141,7 @@ class BusinessAssertionsTest extends TestCase
             new WeatherService(new GameTimeService(new StaticUtcDayCycleFactorProvider(1.0))),
             $playerStatsCalc,
             $this->leverScale(),
+            new DeferredQueue(),
         );
 
         $spell = new Spell();
@@ -217,6 +219,7 @@ class BusinessAssertionsTest extends TestCase
             $this->createMock(CombatLogger::class),
             $this->createMock(PlayerEffectiveStatsCalculator::class),
             $this->leverScale(),
+            new DeferredQueue(),
         );
 
         $manager->processStartOfTurn($fight, $player);

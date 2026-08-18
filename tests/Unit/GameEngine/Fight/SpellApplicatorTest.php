@@ -16,6 +16,7 @@ use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\DeferredQueue;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
@@ -67,7 +68,40 @@ class SpellApplicatorTest extends TestCase
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
+            new DeferredQueue(),
         );
+    }
+
+    /**
+     * **ARC-18f — un differe ne frappe pas maintenant.**.
+     *
+     * Le geste est calcule entierement — degats, passifs, resistance, garde —
+     * puis **mis de cote au lieu d'etre applique**. Calculer a l'echeance
+     * plutot qu'a la pose ferait dependre son resultat de l'etat du monde deux
+     * tours plus tard, c'est-a-dire d'une garde qu'on n'avait pas vue.
+     */
+    public function testADeferredGestureStrikesLaterNotNow(): void
+    {
+        $fight = new Fight();
+        $fight->setStep(2);
+
+        $player = new Player();
+        (new \ReflectionProperty(Player::class, 'id'))->setValue($player, 1);
+
+        $mob = $this->createMobMock(50, 50);
+
+        $spell = $this->createSpell(damage: 12, name: 'Sceau');
+        $spell->method('isDeferred')->willReturn(true);
+        $spell->method('getDeferredTurns')->willReturn(2);
+
+        $this->spellApplicator->apply($spell, $player, $mob, ['fight' => $fight]);
+
+        self::assertSame(50, $mob->getLife(), 'Le differe a frappe tout de suite : ce n\'est plus un differe.');
+
+        $queue = new DeferredQueue();
+        $pending = $queue->all($fight);
+        self::assertCount(1, $pending);
+        self::assertSame(4, $pending[0]['at'], 'Le geste ne se resout pas au tour attendu.');
     }
 
     /**
@@ -282,6 +316,7 @@ class SpellApplicatorTest extends TestCase
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
+            new DeferredQueue(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -331,6 +366,7 @@ class SpellApplicatorTest extends TestCase
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
+            new DeferredQueue(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -380,6 +416,7 @@ class SpellApplicatorTest extends TestCase
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
+            new DeferredQueue(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -427,6 +464,7 @@ class SpellApplicatorTest extends TestCase
             new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
+            new DeferredQueue(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);

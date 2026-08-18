@@ -122,6 +122,20 @@ class Spell
     #[ORM\Column(name: 'charge_cost', type: 'integer', options: ['default' => 0])]
     private int $chargeCost = 0;
 
+    /**
+     * Dans combien de tours ce geste frappe (ARC-18f).
+     *
+     * La forme **differe** : *un geste qui frappe plus tard*. `0` sur tous les
+     * gestes livres, c'est-a-dire « tout de suite » — la forme est une decision
+     * d'auteur, et son absence doit etre strictement sans effet.
+     *
+     * Le geste garde ses degats la ou ils sont : ce champ ne dit pas *combien*
+     * il frappe, seulement **quand**. Les deux separes, un differe reste
+     * lisible comme le geste qu'il est.
+     */
+    #[ORM\Column(name: 'deferred_turns', type: 'integer', options: ['default' => 0])]
+    private int $deferredTurns = 0;
+
     #[ORM\Column(name: 'status_effect_slug', type: 'string', length: 255, nullable: true)]
     private ?string $statusEffectSlug = null;
 
@@ -373,6 +387,24 @@ class Spell
     public function getEnergyCost(): int
     {
         return $this->energyCost;
+    }
+
+    public function getDeferredTurns(): int
+    {
+        return $this->deferredTurns;
+    }
+
+    public function setDeferredTurns(int $deferredTurns): void
+    {
+        $this->deferredTurns = max(0, $deferredTurns);
+    }
+
+    /**
+     * Ce geste frappe-t-il plus tard ?
+     */
+    public function isDeferred(): bool
+    {
+        return $this->deferredTurns > 0;
     }
 
     public function getChargeGain(): int
