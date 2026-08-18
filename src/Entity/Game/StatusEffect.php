@@ -41,6 +41,17 @@ class StatusEffect
      */
     public const TYPE_RIPOSTE = 'riposte';
 
+    /**
+     * ARC-18b — la posture : *un choix durable qu'on remplace*.
+     *
+     * Un depot sur soi **sans duree** et **exclusif** : elle ne finit pas en
+     * se decomptant, mais parce qu'on en pose une autre ou parce que la
+     * rencontre s'acheve. Le type existe a part parce qu'elle n'ameliore pas
+     * comme le berserk — elle **deplace** : ce qu'elle donne sur un levier,
+     * elle le retire sur un autre (`StanceLaw`).
+     */
+    public const TYPE_STANCE = 'stance';
+
     public const TYPES = [
         self::TYPE_POISON,
         self::TYPE_PARALYSIS,
@@ -51,6 +62,8 @@ class StatusEffect
         self::TYPE_SHIELD,
         self::TYPE_BERSERK,
         self::TYPE_MARK,
+        self::TYPE_RIPOSTE,
+        self::TYPE_STANCE,
     ];
 
     public const CATEGORY_BUFF = 'buff';
@@ -101,6 +114,21 @@ class StatusEffect
 
     #[ORM\Column(name: 'stat_modifier', type: 'json', nullable: true)]
     private ?array $statModifier = null;
+
+    /**
+     * Les leviers qu'une posture deplace (ARC-18b).
+     *
+     * `{"power": 6, "guard": -6}` : des points de budget, dans le vocabulaire
+     * ferme de `CombatLever`, jamais des effets. La colonne est distincte de
+     * `stat_modifier` **et ne la remplace pas** : celle-la porte un vocabulaire
+     * ouvert (`damage`, `speed`, `defense`, `shield_absorb`, `max_life`…) que
+     * rien ne borne, celle-ci la seule unite que le budget de 50 points sache
+     * compter. Elle est `null` sur les quinze statuts livres.
+     *
+     * @var array<array-key, mixed>|null
+     */
+    #[ORM\Column(name: 'levers', type: 'json', nullable: true)]
+    private ?array $levers = null;
 
     #[ORM\Column(name: 'chance', type: 'integer', options: ['default' => 100])]
     private int $chance = 100;
@@ -232,6 +260,29 @@ class StatusEffect
     public function setStatModifier(?array $statModifier): void
     {
         $this->statModifier = $statModifier;
+    }
+
+    /**
+     * Ce que la colonne contient, sans promesse sur sa forme.
+     *
+     * Le type annonce `mixed` et non `array<string, int>` **exprès** : c'est un
+     * JSON, il accepte n'importe quoi, et promettre ici une forme que rien ne
+     * garantit ferait taire le seul endroit qui la verifie
+     * (`StanceLeverReader`). La meme prudence que `Skill::getLevers()`.
+     *
+     * @return array<array-key, mixed>
+     */
+    public function getLevers(): array
+    {
+        return $this->levers ?? [];
+    }
+
+    /**
+     * @param array<array-key, mixed>|null $levers
+     */
+    public function setLevers(?array $levers): void
+    {
+        $this->levers = $levers;
     }
 
     public function getChance(): int

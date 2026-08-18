@@ -74,7 +74,15 @@ enum SpellIntent: string
             StatusEffect::TYPE_MARK => self::Hinder,
             StatusEffect::TYPE_REGENERATION => self::Heal,
             StatusEffect::TYPE_SHIELD => self::Protection,
-            StatusEffect::TYPE_BERSERK => self::Buff,
+            // Les trois ameliorations, et elles se rangent ensemble sans
+            // effort : le berserk augmente ce qu'on rend, la riposte ajoute une
+            // reponse a ce qu'on encaisse, la posture deplace le budget de
+            // leviers. Aucune ne blesse, aucune ne protege au sens ou une
+            // absorption protege — **elles changent le porteur**, et c'est la
+            // definition de l'amelioration (ARC-11a).
+            StatusEffect::TYPE_BERSERK,
+            StatusEffect::TYPE_RIPOSTE,
+            StatusEffect::TYPE_STANCE => self::Buff,
             default => null,
         };
     }

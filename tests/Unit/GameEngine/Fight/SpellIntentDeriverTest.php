@@ -45,7 +45,13 @@ class SpellIntentDeriverTest extends TestCase
             StatusEffect::TYPE_MARK => SpellIntent::Hinder,
             StatusEffect::TYPE_REGENERATION => SpellIntent::Heal,
             StatusEffect::TYPE_SHIELD => SpellIntent::Protection,
+            // Les trois ameliorations : le berserk augmente ce qu'on rend, la
+            // riposte ajoute une reponse a ce qu'on encaisse, la posture
+            // deplace le budget de leviers. Aucune ne blesse, aucune n'absorbe
+            // — elles changent le porteur.
             StatusEffect::TYPE_BERSERK => SpellIntent::Buff,
+            StatusEffect::TYPE_RIPOSTE => SpellIntent::Buff,
+            StatusEffect::TYPE_STANCE => SpellIntent::Buff,
         ];
 
         $missing = array_values(array_diff(StatusEffect::TYPES, array_keys($expected)));
@@ -54,6 +60,43 @@ class SpellIntentDeriverTest extends TestCase
         foreach ($expected as $type => $intent) {
             self::assertSame($intent, SpellIntent::fromStatusEffectType($type), $type);
         }
+    }
+
+    /**
+     * **`TYPES` contient tous les types, et rien ne le tient a la main.**.
+     *
+     * ARC-18b. Le test ci-dessus se protege depuis ARC-11b-b contre une liste
+     * *de test* qui vieillit ; il ne protegeait pas contre l'autre moitie du
+     * meme defaut — une liste **de reference** qui vieillit. ARC-18a a ajoute
+     * `TYPE_RIPOSTE` sans l'inscrire dans `TYPES`, et le controle « les types
+     * se rangent sans reste » ne l'a pas vu, precisement parce qu'il compare
+     * deux listes tenues a la main.
+     *
+     * On ne repare donc pas la liste, on repare la facon dont elle peut
+     * diverger : les constantes sont **enumerees par reflexion**, si bien
+     * qu'une dixieme constante `TYPE_*` ajoutee demain rend ce test rouge le
+     * jour meme. *Une liste tenue a la main diverge de ses membres en silence.*
+     */
+    public function testTheTypeListNamesEveryTypeConstant(): void
+    {
+        $constants = (new \ReflectionClass(StatusEffect::class))->getConstants();
+
+        $declared = [];
+        foreach ($constants as $name => $value) {
+            if (str_starts_with($name, 'TYPE_') && \is_string($value)) {
+                $declared[] = $value;
+            }
+        }
+
+        sort($declared);
+        $listed = StatusEffect::TYPES;
+        sort($listed);
+
+        self::assertSame(
+            $declared,
+            $listed,
+            'Un type de statut existe sans figurer dans StatusEffect::TYPES : la liste a vieilli, et tout ce qui la parcourt est aveugle a ce type.'
+        );
     }
 
     /**

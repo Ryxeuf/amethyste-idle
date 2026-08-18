@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Fight;
 
+use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
@@ -19,6 +20,7 @@ class CombatSkillResolver
         private readonly PatronageBonusResolver $patronageBonusResolver,
         private readonly SkillLeverReader $leverReader,
         private readonly CombatLeverScale $leverScale,
+        private readonly StanceLeverReader $stanceLeverReader,
     ) {
     }
 
@@ -154,7 +156,7 @@ class CombatSkillResolver
      *
      * @return array<string, int>
      */
-    public function getCombatLevers(Player $player, ?CombatScope $scope = null): array
+    public function getCombatLevers(Player $player, ?CombatScope $scope = null, ?Fight $fight = null): array
     {
         $totals = [];
 
@@ -167,7 +169,40 @@ class CombatSkillResolver
                 }
 
                 $totals[$grant->lever->value] = ($totals[$grant->lever->value] ?? 0) + $grant->budgetPoints;
+
+                // ARC-18b — **le malus d'un pacte arrive enfin dans la
+                // formule.** ARC-15 l'a livre comme *la seule mecanique du
+                // canon qui rende un personnage mesurablement plus faible
+                // quelque part* ; il etait lu, valide et compte au budget, et
+                // s'arretait la. Le convertisseur refusait les totaux negatifs,
+                // donc rien de ce qui retire ne pouvait le traverser — invisible
+                // parce qu'aucun nœud livre ne porte encore de levier.
+                //
+                // Les deux comptes restent distincts, et c'est la lettre du
+                // § 6.5 : l'arbre paie le **net** (un nœud a 19 pb dont 10
+                // rendus pese 9), le personnage porte le **brut** de chaque
+                // cote — +19 ici, −10 la. Les confondre effacerait soit le
+                // gain, soit le prix.
+                if ($grant->pact !== null) {
+                    $malus = $grant->pact->lever->value;
+                    $totals[$malus] = ($totals[$malus] ?? 0) - $grant->pact->budgetPoints;
+                }
             }
+        }
+
+        // ARC-18b — **la posture se somme aux nœuds, exactement comme un
+        // dix-neuvieme nœud.** C'est tout l'interet de l'avoir ecrite en points
+        // de budget plutot qu'en `statModifier` : rien dans la formule n'a
+        // besoin de savoir qu'une posture existe, et **les bornes des nœuds
+        // s'appliquent gratuitement** — le registre et l'intention filtrent le
+        // total dans `CombatLeverEffects::of()`, si bien qu'une posture qui
+        // deplace `grip` ne parle pas sur un bouclier (ARC-11b-b).
+        //
+        // Le combat est facultatif pour la meme raison que la portee : une
+        // fiche de personnage n'est pas en combat, et une posture ne survit pas
+        // a la rencontre — hors combat, il n'y a rien a lire.
+        foreach ($this->stanceLeverReader->heldBy($player, $fight) as $lever => $points) {
+            $totals[$lever] = ($totals[$lever] ?? 0) + $points;
         }
 
         return $totals;
@@ -182,10 +217,14 @@ class CombatSkillResolver
      * meme raison que la portee — une fiche de personnage n'a pas de geste en
      * cours, et lui en imposer un ferait dependre sa barre de vie du dernier
      * sort lance.
+     *
+     * Le combat l'est aussi, et pour la meme famille de raisons (ARC-18b) : une
+     * posture ne survit pas a la rencontre, donc hors combat il n'y a rien a
+     * lire.
      */
-    public function getLeverEffects(Player $player, ?CombatScope $scope = null, ?CombatRegister $register = null, ?SpellIntent $intent = null): CombatLeverEffects
+    public function getLeverEffects(Player $player, ?CombatScope $scope = null, ?CombatRegister $register = null, ?SpellIntent $intent = null, ?Fight $fight = null): CombatLeverEffects
     {
-        return CombatLeverEffects::of($this->getCombatLevers($player, $scope), $this->leverScale, $register, $intent);
+        return CombatLeverEffects::of($this->getCombatLevers($player, $scope, $fight), $this->leverScale, $register, $intent);
     }
 
     /**

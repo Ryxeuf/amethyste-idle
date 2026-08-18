@@ -49,6 +49,16 @@ class StatusEffectManager
         // Determine target type
         $targetType = $this->getTargetType($target);
 
+        // ARC-18b — **une posture chasse la precedente.** L'exclusivite est le
+        // garde-fou qui fait de la forme une decision : deux postures cumulees
+        // seraient deux capstones portes ensemble, et surtout il n'y aurait
+        // plus rien a arbitrer — on les prendrait toutes. On retire donc
+        // **avant** de poser, pour qu'aucun instant du combat ne voie deux
+        // postures actives.
+        if (StanceLaw::isStance($effect)) {
+            $this->clearStancesOf($fight, $targetType, $target->getId(), $effect);
+        }
+
         // Check if effect already exists on this target (don't stack, refresh duration)
         $existing = $this->findExistingEffect($fight, $targetType, $target->getId(), $effect);
         if ($existing !== null) {
@@ -66,11 +76,51 @@ class StatusEffectManager
         $fightStatusEffect->setTargetType($targetType);
         $fightStatusEffect->setTargetId($target->getId());
         $fightStatusEffect->setStatusEffect($effect);
-        $fightStatusEffect->setRemainingTurns($this->effectiveDuration($effect, $casterLevers));
+        $fightStatusEffect->setRemainingTurns(
+            StanceLaw::isStance($effect)
+                ? StanceLaw::HELD
+                : $this->effectiveDuration($effect, $casterLevers)
+        );
         $fightStatusEffect->setAppliedAt(new \DateTime());
 
         $this->entityManager->persist($fightStatusEffect);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Retirer les postures deja tenues par ce personnage (ARC-18b).
+     *
+     * Toutes sauf celle qu'on s'apprete a poser : reposer la posture qu'on
+     * tient deja doit etre un geste **sans effet**, et non un geste qui la
+     * retire puis la remet. Le rafraichissement d'`applyStatusEffect()` s'en
+     * charge ensuite, et il ne change rien puisqu'une posture ne se decompte
+     * pas.
+     */
+    private function clearStancesOf(Fight $fight, string $targetType, int $targetId, StatusEffect $incoming): void
+    {
+        $existing = $this->entityManager->getRepository(FightStatusEffect::class)->findBy([
+            'fight' => $fight,
+            'targetType' => $targetType,
+            'targetId' => $targetId,
+        ]);
+
+        $removed = false;
+        foreach ($existing as $fightEffect) {
+            if (!StanceLaw::isStance($fightEffect->getStatusEffect())) {
+                continue;
+            }
+
+            if ($fightEffect->getStatusEffect()->getId() === $incoming->getId()) {
+                continue;
+            }
+
+            $this->entityManager->remove($fightEffect);
+            $removed = true;
+        }
+
+        if ($removed) {
+            $this->entityManager->flush();
+        }
     }
 
     /**
@@ -207,6 +257,16 @@ class StatusEffectManager
 
         foreach ($activeEffects as $fightEffect) {
             $effect = $fightEffect->getStatusEffect();
+
+            // ARC-18b — **une posture ne vieillit pas.** Elle ne finit pas en
+            // se decomptant : elle finit parce qu'on en pose une autre, ou
+            // parce que la rencontre s'acheve (`clearAllEffects()`). Lui
+            // donner une duree la ramenerait a une amelioration ordinaire, et
+            // la decision qu'elle porte cesserait d'en etre une — il suffirait
+            // d'attendre.
+            if (StanceLaw::holdsThroughTheTurn($effect)) {
+                continue;
+            }
 
             // Check frequency: should this effect tick this turn?
             if (!$this->shouldTick($fightEffect, $currentTurn)) {

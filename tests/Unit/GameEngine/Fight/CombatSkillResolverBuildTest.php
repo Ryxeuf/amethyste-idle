@@ -11,12 +11,14 @@ use App\GameEngine\Fight\BuildDomainResolver;
 use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
+use App\GameEngine\Fight\StanceLeverReader;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -123,7 +125,7 @@ class CombatSkillResolverBuildTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn($carried);
 
-        return new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale());
+        return new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale(), $this->stanceReader());
     }
 
     private function skill(
@@ -184,6 +186,17 @@ class CombatSkillResolverBuildTest extends TestCase
      * Un double rendrait le test aveugle a la seule chose qui compte ici : les
      * leviers suivent la meme borne que les statistiques plates.
      */
+    /**
+     * Le lecteur de postures, sans combat a lire (ARC-18b).
+     *
+     * Une posture ne survit pas a la rencontre : sans combat, `heldBy()` rend
+     * `[]` et rien de ce fichier ne change.
+     */
+    private function stanceReader(): StanceLeverReader
+    {
+        return new StanceLeverReader($this->leverScale(), $this->createMock(EntityManagerInterface::class));
+    }
+
     private function leverScale(): CombatLeverScale
     {
         return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));
