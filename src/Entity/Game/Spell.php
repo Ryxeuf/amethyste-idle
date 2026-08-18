@@ -87,6 +87,22 @@ class Spell
     #[ORM\Column(name: 'energy_cost', type: 'integer', options: ['default' => 0])]
     private int $energyCost = 0;
 
+    /**
+     * Ce que ce geste coute en points de vie (ARC-18c).
+     *
+     * La forme **conversion** (GAME_ARCHETYPES § 13.1, n° 6) : *echanger une
+     * ressource contre une autre*. `0` sur tous les gestes livres — un geste
+     * qui coute de la vie est une decision d'auteur, jamais un defaut.
+     *
+     * Elle n'est pas une quatrieme ressource de registre : un geste de
+     * conversion **facture toujours celle de son registre**, et cette colonne
+     * dit seulement qu'il en achete une autre au passage. Ce qu'un point de vie
+     * rend est `ConversionLaw`, jamais un second chiffre ecrit ici — *deux
+     * chiffres a la main divergent, une derivation ne peut pas*.
+     */
+    #[ORM\Column(name: 'life_cost', type: 'integer', options: ['default' => 0])]
+    private int $lifeCost = 0;
+
     #[ORM\Column(name: 'status_effect_slug', type: 'string', length: 255, nullable: true)]
     private ?string $statusEffectSlug = null;
 
@@ -338,6 +354,28 @@ class Spell
     public function getEnergyCost(): int
     {
         return $this->energyCost;
+    }
+
+    public function getLifeCost(): int
+    {
+        return $this->lifeCost;
+    }
+
+    public function setLifeCost(int $lifeCost): void
+    {
+        $this->lifeCost = max(0, $lifeCost);
+    }
+
+    /**
+     * Ce geste echange-t-il de la vie contre de la magie ?
+     *
+     * La forme se **derive du champ** plutot que de se declarer a cote de lui :
+     * une colonne `form` qui pourrait dire « conversion » sur un geste sans
+     * cout en vie serait un mensonge que rien ne rattraperait.
+     */
+    public function isConversion(): bool
+    {
+        return $this->lifeCost > 0;
     }
 
     public function setEnergyCost(int $energyCost): void

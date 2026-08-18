@@ -85,17 +85,34 @@ class RiposteLawTest extends TestCase
     }
 
     /**
-     * **Le vocabulaire des formes est ferme, et une seule est livree.**.
+     * **Le vocabulaire des formes est ferme, et il dit lesquelles ont un
+     * lecteur.**.
      *
-     * Les sept autres sont nommees sans lecteur, et c'est delibere : *une forme
+     * Les formes sans lecteur sont nommees et c'est delibere : *une forme
      * inerte n'est pas fausse, mais elle serait un mensonge d'interface si on la
      * laissait s'ecrire sans le savoir* (la discipline d'ARC-16a).
+     *
+     * La liste **grandit d'un cran par sous-phase**, et le cliquet va dans ce
+     * sens-la seulement : une forme retiree serait une forme dont on a cesse de
+     * savoir lire quelque chose. ARC-18c y inscrit la conversion — et **la
+     * posture, qu'ARC-18b avait livree sans l'y ecrire** : la liste ne coute
+     * rien a oublier tant qu'aucun lecteur ne s'y adosse, ce qui est
+     * exactement pourquoi elle doit etre verifiee ici.
      */
-    public function testOnlyOneFormIsImplementedAndTheVocabularyIsClosed(): void
+    public function testTheVocabularyIsClosedAndNamesItsReadableForms(): void
     {
         self::assertCount(8, GestureForm::cases(), 'Huit formes, et une neuvieme est une decision de moteur.');
-        self::assertSame([GestureForm::Riposte], GestureForm::implemented());
-        self::assertTrue(GestureForm::Riposte->isImplemented());
+
+        self::assertSame(
+            [GestureForm::Riposte, GestureForm::Stance, GestureForm::Conversion],
+            GestureForm::implemented(),
+            'La liste des formes lues a bouge : elle grandit avec ARC-18, elle ne retrecit jamais.'
+        );
+
+        foreach (GestureForm::implemented() as $form) {
+            self::assertTrue($form->isImplemented(), $form->value);
+        }
+
         self::assertFalse(GestureForm::Familiar->isImplemented());
     }
 }

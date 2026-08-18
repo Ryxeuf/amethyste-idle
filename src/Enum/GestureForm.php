@@ -69,11 +69,17 @@ enum GestureForm: string
      * geste declarant une forme inerte, et elle grandit d'un cran a chaque
      * sous-phase d'ARC-18.
      *
+     * *ARC-18b avait livre la posture sans l'y inscrire* — la liste ne coutant
+     * rien a oublier tant qu'aucun lecteur ne s'y adosse. C'est ARC-18c qui la
+     * rattrape en l'ecrivant, et le test qui l'accompagne la tient desormais
+     * **par le comportement du moteur** plutot que par la vigilance : une forme
+     * n'y figure que si quelque chose sait la lire.
+     *
      * @return list<self>
      */
     public static function implemented(): array
     {
-        return [self::Riposte];
+        return [self::Riposte, self::Stance, self::Conversion];
     }
 
     public function isImplemented(): bool

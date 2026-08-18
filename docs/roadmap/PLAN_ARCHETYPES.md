@@ -1924,8 +1924,37 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       et aucun nœud livré ne porte encore de levier ni de pacte. Hors périmètre nommé : le
       donjon de groupe a son propre modèle (DON-02) et n'a pas de `Fight`, donc aucune posture
       ne s'y lit — à rouvrir avec ARC-19)*
-- [ ] **La conversion** (S) — échanger des PV contre des PM. Répare : le pyromancien paie
+- [x] **La conversion** (S) — échanger des PV contre des PM. Répare : le pyromancien paie
       deux fois. **Taux de change défavorable**, sinon convertir est toujours correct
+      *(**ARC-18c — livré le 2026-08-18.** **Le taux se dérive, il ne se pose pas** : ARC-05b a
+      établi que le temps d'attente est la seule monnaie commune aux quatre fonctions, et les
+      deux ressources ont chacune leur curseur de régénération — 12 s par PV, 6 s par PM —,
+      dont le rapport dit ce qu'un point de vie vaut en points de magie sans qu'on ait à en
+      décider. C'est le **rapport** qui est figé, jamais le chiffre : déplacer un curseur
+      déplace le taux, comme il déplace le calendrier d'ARC-06a. La pénalité est un facteur
+      nommé plutôt qu'un second chiffre — la moitié —, si bien que *convertir rend la moitié de
+      ce que le temps rendrait*, et un test refuse qu'on la ramène à 1,0 « pour que la forme
+      serve enfin ».
+      **Elle ne réduit pas la facture, elle la rend jouable**, et se tromper là-dessus serait
+      se tromper de correction : le §9 octies.4 demande que le coût en PM du pyromancien
+      descende ou que sa barre monte, pas qu'un bouton efface la différence. Ce que la
+      conversion répare est autre chose — le relevé du §9 sexies le montre **en panne de PM au
+      tour 8** alors qu'il lui reste des points de vie, et elle lui rend un choix à ce
+      moment-là.
+      **Deux garde-fous que le canon n'écrit pas**, et qui sont nécessaires : *la conversion ne
+      tue jamais* (sans plancher, un geste qui coûte des PV peut coûter le dernier, et le
+      joueur meurt **en lançant un sort**, d'une façon qu'aucun écran ne lui aura annoncée — le
+      plancher est **un** PV et pas davantage : elle peut laisser à un coup de la mort, et
+      c'est un pari qu'on laisse au joueur) ; et *l'arrondi va toujours contre celui qui
+      convertit*, sans quoi la rentabilité dépendrait de la parité d'un nombre.
+      **Elle se résout avant le coût, jamais après** — un geste de conversion sert précisément
+      à payer un geste qu'on ne pourrait plus payer, et l'appliquer après exigerait d'avoir
+      déjà les PM qu'on cherche à obtenir.
+      **Défaut trouvé, du jalon précédent** : ARC-18b avait livré la posture **sans l'inscrire
+      dans `GestureForm::implemented()`** — la liste ne coûte rien à oublier tant qu'aucun
+      lecteur ne s'y adosse, ce qui est exactement pourquoi elle doit être tenue par un test.
+      Les deux y entrent ici, et le cliquet ne va que dans un sens.
+      **Aucune valeur de jeu ne bouge** : `life_cost` naît à 0 sur les 253 gestes livrés)*
 - [ ] **Le transfert** (M) — une part des dégâts des alliés revient sur soi. Répare :
       l'aggro est impossible sur une rencontre à PV partagés. Borné en pourcentage **et** en
       durée. Ally-side, donc il se multiplie (§9 quinquies)
