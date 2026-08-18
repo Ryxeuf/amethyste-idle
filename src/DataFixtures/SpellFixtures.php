@@ -531,7 +531,12 @@ class SpellFixtures extends Fixture
                 'name' => 'Toucher nécrotique',
                 'description' => 'Un toucher qui provoque la nécrose des tissus',
                 'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 0,
                 'level' => 1,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
             ],
             'dark_harvest' => [
                 'slug' => 'dark-harvest',
@@ -2168,10 +2173,24 @@ class SpellFixtures extends Fixture
                 'name' => 'Embuscade',
                 'description' => 'Surgit de l\'ombre pour frapper par surprise',
                 'hit' => 95,
-                'energyCost' => 5,
-                'critical' => 20,
-                'level' => 2,
+                // ARC-08b : la melee ne paie pas de PM, elle paie le tour
+                // suivant (ARC-04a). Un accord d'entree est gratuit **des deux
+                // facons** — c'est la regle du jour 1 (GAME_MATERIA § 3), et
+                // c'est elle qui rend le capstone atteignable des la premiere
+                // rencontre : ce geste pose Aveugle sans rien couter.
+                'energyCost' => 0,
+                'cooldown' => 0,
+                // Palier **1** et non 2 : la grille de reprise rend le palier 1
+                // gratuit, et c'est la seule facon de tenir ensemble les deux
+                // regles qui portent sur ce geste — *un accord d'entree est
+                // gratuit* (GAME_MATERIA § 3) et *au-dela du palier 1, une
+                // technique coute toujours un tour*. Un geste distribue a 0
+                // point qui se declarait de palier 2 les mettait en conflit.
+                'level' => 1,
                 'statusEffectSlug' => 'blinded',
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
             ],
             'deadly_strike' => [
                 'slug' => 'deadly-strike',
@@ -2181,9 +2200,61 @@ class SpellFixtures extends Fixture
                 'name' => 'Coup mortel',
                 'description' => 'Un coup visant les organes vitaux',
                 'hit' => 80,
-                'energyCost' => 12,
+                'energyCost' => 0,
+                'cooldown' => 3,
                 'critical' => 25,
                 'level' => 4,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
+            ],
+            // --- Les deux gestes que l'Assassin devait ecrire (ARC-08b) ------
+            //
+            // Le gabarit lui demande un accord de **protection** au palier 1 et
+            // un accord **a plusieurs cibles** au palier 2. Aucun des deux
+            // n'existait en registre melee : les gestes sombres livres sont
+            // tous des sorts, et GAME_TREE_ANATOMY § 4.7 nommait « Nova de
+            // mort » pour la seconde case — un geste que le Necromancien
+            // ouvre deja, donc **de registre `spell`**. Le lui prendre aurait
+            // casse un arbre livre ; le partager aurait oblige un meme geste a
+            // etre une technique ici et un sort la-bas.
+            //
+            // C'est la lecon d'ARC-07d, transposee : *un accord partage garde
+            // le registre de celui qui l'a ouvert le premier*, et l'arbre qui
+            // arrive apres ecrit le sien.
+            'shadow_veil' => [
+                'slug' => 'shadow-veil',
+                'damage' => null,
+                'element' => Element::Dark,
+                'heal' => null,
+                'name' => 'Voile',
+                'description' => 'Un pas dans l\'ombre, et le coup ne trouve personne',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 1,
+                'statusEffectSlug' => 'shield',
+                'critical' => 0,
+                'level' => 2,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::SelfOnly,
+            ],
+            'shadow_reap' => [
+                'slug' => 'shadow-reap',
+                'damage' => 5,
+                'element' => Element::Dark,
+                'heal' => null,
+                'name' => 'Fauchée d\'ombre',
+                'description' => 'La lame passe bas et large, et personne ne l\'a vue venir',
+                'hit' => 85,
+                'energyCost' => 0,
+                'cooldown' => 2,
+                'critical' => 15,
+                'level' => 3,
+                'aoeTargets' => 3,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Targets,
             ],
             'shadow_dance' => [
                 'slug' => 'shadow-dance',
@@ -2193,10 +2264,14 @@ class SpellFixtures extends Fixture
                 'name' => 'Danse des ombres',
                 'description' => 'Se fond dans les ombres pour porter une série de coups mortels',
                 'hit' => 85,
-                'energyCost' => 20,
+                'energyCost' => 0,
                 'cooldown' => 4,
                 'critical' => 20,
                 'level' => 5,
+                'aoeTargets' => 3,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Targets,
             ],
 
             // Sorts spécifiques — Sorcier (ombre/debuff)

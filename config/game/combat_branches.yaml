@@ -104,3 +104,25 @@ trees:
                 label: 'La Veillée'
                 description: 'Ce qu''on pose continue sans soi : ce qu''on prend revient, et ce qu''on laisse frappe encore.'
                 accord: 'Serviteur d''ossements'
+
+    # --- Assassin — tenebres x melee x assaut (ARC-08b) -------------------
+    # Le premier arbre d'**assaut en melee**, et la case que les quatre
+    # patrons laissaient vide : ARC-07 a livre l'assaut en sorts et au tir,
+    # jamais au contact. C'est aussi l'arbre que GAME_TREE_ANATOMY deroule
+    # comme methode (§ 4), donc celui dont chaque nœud est deja ecrit.
+    #
+    # La fourche n'oppose pas deux dosages du critique : elle oppose **la
+    # facon de ne pas etre touche** a **la facon de trancher**. L'Ombre evite
+    # et rejoue ; la Lame ignore l'armure et frappe une fois pour toutes.
+    # Aucun levier commun — {dodge, tempo} contre {critical_power, pierce}.
+    assassin:
+        label: 'Assassin'
+        branches:
+            shadow:
+                label: 'L''Ombre'
+                description: 'Ce qui ne se laisse pas toucher frappe deux fois : esquiver en cuir, rejouer a deux lames.'
+                accord: 'Danse des ombres'
+            blade:
+                label: 'La Lame'
+                description: 'Une seule ouverture suffit : ignorer ce qui protege, et faire payer le critique.'
+                accord: 'Coup mortel'

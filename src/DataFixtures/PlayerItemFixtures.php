@@ -350,7 +350,13 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
             'materia_wind_lame', 'materia_stone_throw', 'materia_punishment', 'materia_liana_whip',
             'materia_sharp_blade', 'materia_combustion', 'materia_frost_mist', 'materia_air_chain_lightning',
             'materia_stone_shield', 'materia_savage_bite', 'materia_light_blessing',
-            'materia_vital_drain',
+            // ARC-08b : le Drain vital a disparu du catalogue avec le
+            // resserrement de l'Assassin — il n'etait ouvert que par lui, et un
+            // drain n'a rien a faire dans un arbre d'assaut. La materia se
+            // **derivant** des nœuds (MAT-03), retirer l'unlock retire l'objet ;
+            // l'inventaire de demonstration porte desormais un geste que
+            // l'arbre ouvre vraiment.
+            'materia_shadow_reap',
         ];
 
         foreach ($remyMateriaItems as $itemRef) {

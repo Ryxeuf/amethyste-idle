@@ -4308,18 +4308,55 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // ASSASSIN (ombre) — 13 skills, furtivite et critiques
+    // ASSASSIN — tenebres x melee x assaut, « L'Ombre » / « La Lame » (ARC-08b)
     // =========================================================================
+    /**
+     * Le premier arbre d'**assaut en melee**, et la case que les quatre patrons
+     * laissaient vide.
+     *
+     * ARC-07 a livre l'assaut deux fois — en sorts (Pyromancien) et au tir
+     * (Archer) — et la melee **en encaisse** (Soldat). Personne ne frappait
+     * fort au contact, si bien que le simulateur d'ARC-17 ne pouvait pas juger
+     * la case ou vit la moitie du bestiaire.
+     *
+     * C'est aussi l'arbre que GAME_TREE_ANATOMY deroule comme **methode**
+     * (§ 4) : ses dix-huit nœuds y sont ecrits un par un. L'ecrire revient donc
+     * a verifier que le document tient en donnees — et il tient, sans dosage :
+     * 390 points, 50 pb par branche, `critical_power` a 15/15 cote Lame.
+     *
+     * **La fourche n'oppose pas deux dosages du critique.** Elle oppose la
+     * facon de **ne pas etre touche** a la facon de **trancher** : l'Ombre
+     * evite en cuir et rejoue a deux lames, la Lame ignore l'armure et fait
+     * payer le critique. Aucun levier commun — {`dodge`, `tempo`} contre
+     * {`critical_power`, `pierce`}.
+     *
+     * **Ce que l'arbre perd en se resserrant.** Il portait onze accords ; le
+     * gabarit en autorise sept. Cinq gestes partent, et deux d'entre eux
+     * (`vital-drain`, `soul-siphon`) etaient des drains — un verbe d'entretien
+     * dans un arbre d'assaut. Ce n'est pas une coupe de confort : *un arbre qui
+     * ouvre tout n'ouvre rien*, et la palette d'assaut (§ 5.1) ne demande pas
+     * qu'on sache aussi se soigner.
+     */
     private function getAssassinSkills(): array
     {
         $d = 'assassin';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // GAME_MATERIA § 3 : exactement deux accords gratuits. L'Embuscade
+            // porte **Aveugle**, la marque des tenebres (ARC-13b-a) — et c'est
+            // elle qui rend le capstone atteignable des la premiere rencontre,
+            // puisqu'elle ne coute ni PM ni reprise.
+            //
+            // *GAME_TREE_ANATOMY § 4.7 attribuait la marque au Toucher
+            // necrotique ; la donnee livree la porte sur l'Embuscade. Les deux
+            // sont des accords d'entree gratuits, donc la loi est tenue de la
+            // meme facon — lequel des deux la porte est une question d'auteur,
+            // pas de regle, et on garde celui qui est deja teste.*
             'assassin_apprenti_1' => [
                 'title' => 'Materia : Embuscade',
                 'slug' => 'assassin-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Embuscade',
+                'description' => 'Permet d\'utiliser la materia Embuscade — celle qui aveugle avant de blesser',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'ambush']],
@@ -4333,123 +4370,167 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'necrotic-touch']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord + 1 port ----
+            // Les passifs du palier 1 ne sont **jamais conditionnels** (§ 6.1) :
+            // au jour 1 le joueur n'a pas de tenue a arbitrer.
             'assassin_rang2_1' => [
-                'title' => 'Lame dans l\'ombre',
+                'title' => 'Coup bas',
                 'slug' => 'assassin-rang2-1',
-                'description' => 'Augmente les chances de coup critique',
+                'description' => 'Ce qui ne se voit pas venir entre plus profond',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'critical' => 2,
+                'levers' => [['lever' => 'power', 'points' => 3]],
                 'requirements' => ['assassin_apprenti_1'],
             ],
             'assassin_rang2_2' => [
-                'title' => 'Frappe vicieuse',
+                'title' => 'Point vital',
                 'slug' => 'assassin-rang2-2',
-                'description' => 'Augmente les degats des attaques',
+                'description' => 'Savoir ou ca fait mal, et y revenir',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
-                'requirements' => ['assassin_apprenti_1'],
+                'levers' => [['lever' => 'critical', 'points' => 3]],
+                'requirements' => ['assassin_apprenti_2'],
             ],
             'assassin_rang2_3' => [
-                'title' => 'Materia : Toucher mortel',
+                'title' => 'Materia : Voile',
                 'slug' => 'assassin-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Toucher mortel',
+                'description' => 'Permet d\'utiliser la materia Voile — un pas dans l\'ombre plutot qu\'une parade',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'death-touch']],
-                'requirements' => ['assassin_apprenti_2'],
-            ],
-            'assassin_rang2_4' => [
-                'title' => 'Materia : Sangsue vitale',
-                'slug' => 'assassin-rang2-4',
-                'description' => 'Permet d\'utiliser la materia Sangsue vitale (drain)',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'life-leech']],
-                'requirements' => ['assassin_apprenti_2'],
-            ],
-            'assassin_materia_t2' => [
-                'title' => 'Materia : Drain vital',
-                'slug' => 'assassin-materia-t2',
-                'description' => 'Permet d\'utiliser la materia Drain vital (absorption)',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'vital-drain']],
-                'requirements' => ['assassin_apprenti_2'],
+                'actions' => ['materia' => ['unlock' => 'shadow-veil']],
+                'requirements' => ['assassin_apprenti_1'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord + 1 port ----
             'assassin_rang3_1' => [
-                'title' => 'Materia : Eclair d\'ombre',
+                'title' => 'La ou ca saigne',
                 'slug' => 'assassin-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Eclair d\'ombre',
+                'description' => 'Un coup bien place ne fait pas un peu plus mal, il fait beaucoup plus mal',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'shadow-bolt']],
+                'levers' => [['lever' => 'critical_power', 'points' => 6]],
+                'requirements' => ['assassin_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est lui
+            // qui fait de l'equipement un build plutot qu'un total. Le budget
+            // compte l'effet **moyen**, l'ecran affiche l'effet obtenu.
+            'assassin_rang3_2' => [
+                'title' => 'Lame courte',
+                'slug' => 'assassin-rang3-2',
+                'description' => 'Ce qui tient dans la main se glisse ou rien d\'autre ne passe',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical', 'points' => 6, 'condition' => 'weapon:dagger']],
+                'requirements' => ['assassin_rang2_2'],
+            ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous,
+            // et un seul parent au-dela (§ 6.6).
+            'assassin_rang3_3' => [
+                'title' => 'Materia : Fauchee d\'ombre',
+                'slug' => 'assassin-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Fauchee d\'ombre — la lame passe bas et large',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-reap']],
                 'requirements' => ['assassin_rang2_1', 'assassin_rang2_2'],
             ],
-            'assassin_rang3_2' => [
-                'title' => 'Materia : Emprise de la mort',
-                'slug' => 'assassin-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Emprise de la mort',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'death-grip']],
-                'requirements' => ['assassin_rang2_3'],
-            ],
-            'assassin_rang3_3' => [
-                'title' => 'Precision assassine',
-                'slug' => 'assassin-rang3-3',
-                'description' => 'Augmente la precision des attaques furtives',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'hit' => 2,
-                'requirements' => ['assassin_rang2_4'],
-            ],
-            'assassin_rang3_4' => [
-                'title' => 'Materia : Siphon d\'ame',
-                'slug' => 'assassin-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Siphon d\'ame (drain)',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'soul-siphon']],
-                'requirements' => ['assassin_rang3_1'],
-            ],
 
-            // Rang 4 (60-100 pts) — 2 skills
-            'assassin_rang4_1' => [
-                'title' => 'Materia : Coup mortel',
-                'slug' => 'assassin-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Coup mortel — degats devastateurs',
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // Deux branches de deux passifs **et d'un accord chacune**, dont on
+            // n'apprend qu'une : l'arbre ecrit 60 pb, le personnage en porte 50.
+            // Les prerequis ne traversent jamais la fourche (§ 6.6).
+            'assassin_shadow_1' => [
+                'title' => 'Pas de cote',
+                'slug' => 'assassin-shadow-1',
+                'description' => 'Le cuir ne pare rien : il permet de ne pas etre la',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'deadly-strike']],
-                'requirements' => ['assassin_rang3_1', 'assassin_rang3_2'],
+                'levers' => [['lever' => 'dodge', 'points' => 9, 'condition' => 'armor:leather']],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'assassin', 'branch' => 'shadow']],
+                'requirements' => ['assassin_rang3_3'],
             ],
-            'assassin_rang4_2' => [
-                'title' => 'Materia : Nova de mort',
-                'slug' => 'assassin-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Nova de mort (AoE)',
+            'assassin_shadow_2' => [
+                'title' => 'Deux fois plutot qu\'une',
+                'slug' => 'assassin-shadow-2',
+                'description' => 'Deux lames ne frappent pas plus fort, elles frappent plus tot',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'death-nova']],
-                'requirements' => ['assassin_rang3_3', 'assassin_rang3_4'],
+                'levers' => [['lever' => 'tempo', 'points' => 9, 'condition' => 'dual_wield']],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'assassin', 'branch' => 'shadow']],
+                'requirements' => ['assassin_rang3_3'],
             ],
-
-            // Rang 5 (150+ pts) — 1 skill ultime
-            'assassin_rang5_1' => [
+            'assassin_blade_1' => [
+                'title' => 'Entre les cotes',
+                'slug' => 'assassin-blade-1',
+                'description' => 'La ou l\'armure s\'arrete, la lame continue',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical_power', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'assassin', 'branch' => 'blade']],
+                'requirements' => ['assassin_rang3_3'],
+            ],
+            'assassin_blade_2' => [
+                'title' => 'Fil aiguise',
+                'slug' => 'assassin-blade-2',
+                'description' => 'Ce qui coupe assez bien n\'a pas a contourner',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'assassin', 'branch' => 'blade']],
+                'requirements' => ['assassin_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis, celle qui
+            // decide si la fourche est un choix ou une decoration : sans lui,
+            // deux branches produisent le meme combat au tour pres.
+            'assassin_shadow_accord' => [
                 'title' => 'Materia : Danse des ombres',
-                'slug' => 'assassin-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Danse des ombres',
-                'requiredPoints' => 150,
+                'slug' => 'assassin-shadow-accord',
+                'description' => 'Permet d\'utiliser la materia Danse des ombres — plusieurs cibles, et repartir',
+                'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'shadow-dance']],
-                'requirements' => ['assassin_rang4_1', 'assassin_rang4_2'],
+                'actions' => [
+                    'materia' => ['unlock' => 'shadow-dance'],
+                    ['action' => 'specialization.branch', 'domain' => 'assassin', 'branch' => 'shadow'],
+                ],
+                'requirements' => ['assassin_rang3_3'],
+            ],
+            'assassin_blade_accord' => [
+                'title' => 'Materia : Coup mortel',
+                'slug' => 'assassin-blade-accord',
+                'description' => 'Permet d\'utiliser la materia Coup mortel — une seule ouverture suffit',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'deadly-strike'],
+                    ['action' => 'specialization.branch', 'domain' => 'assassin', 'branch' => 'blade'],
+                ],
+                'requirements' => ['assassin_rang3_3'],
             ],
 
-            // Maitrise des armes (dagues)
+            // --- Capstone (100 pts) ------------------------------------------
+            // Un seul passif, **conditionnel**, 14 pb sur le levier principal.
+            // Sa condition — une cible qui porte la marque — est atteignable
+            // des le tour 1 avec le seul kit d'entree, donc **frequente** :
+            // x1,4 et non x2,0 (§ 7, decision 23).
+            //
+            // Et c'est ici que le § 7.1 se verifie une quatrieme fois : 14 pb de
+            // `power` plus les 3 du palier 1 laissent 3 pb sous le plafond de
+            // 20, donc **`power` ne pouvait pas etre le levier de la fourche**.
+            // Le plafond a ecrit l'opposition ; on ne l'a pas dosee.
+            'assassin_capstone' => [
+                'title' => 'Ce qui ne voit pas venir',
+                'slug' => 'assassin-capstone',
+                'description' => 'Ce qui ne vous voit pas ne se protege pas',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'levers' => [['lever' => 'power', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['assassin_rang3_3'],
+            ],
+
+            // --- Les echelons de port (0 pb) ---------------------------------
+            // *Un echelon est une porte, jamais une recompense* : ils ne
+            // portent aucune statistique depuis la correction de l'ecart 5, et
+            // ils ne comptent pas dans les 390 points de l'arbre.
             'assassin_weapon_t2' => [
                 'title' => 'Maitrise de la dague (T2)',
                 'slug' => 'assassin-weapon-t2',

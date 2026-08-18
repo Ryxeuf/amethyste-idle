@@ -36,6 +36,10 @@ class ReferenceBuildFactoryTest extends AbstractIntegrationTestCase
      * @var list<string>
      */
     private const COVERED_CELLS = [
+        // ARC-08b — l'Assassin remplit `assault x melee`, la case que les
+        // quatre patrons laissaient vide : l'assaut n'existait qu'en sorts et
+        // au tir, jamais au contact.
+        'assault x melee',
         'assault x ranged',
         'assault x spell',
         'bulwark x melee',

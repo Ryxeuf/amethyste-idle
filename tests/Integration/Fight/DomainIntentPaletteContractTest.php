@@ -58,7 +58,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      * @var list<string>
      */
     private const ONLY_DAMAGE = [
-        'Assassin',
         'Berserker',
         'Chasseur',
         'Foudromancien',
