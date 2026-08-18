@@ -2057,9 +2057,35 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       séquence*.
       **Aucune valeur de jeu ne bouge** : `deferred_turns` naît à 0 — « tout de suite » — sur les
       253 gestes livrés)*
-- [ ] **L'ouverture** (M) — un geste posé depuis l'écran de zone, appliqué à la rencontre
+- [x] **L'ouverture** (M) — un geste posé depuis l'écran de zone, appliqué à la rencontre
       suivante. Répare : `tempo` n'a aucun effet modélisé. Coûte de l'**énergie d'action**,
       jamais un tour
+      *(**ARC-18g — livré le 2026-08-18.** **Le garde-fou du canon est économique, pas
+      ludique**, et c'est ce qui décide de tout le reste : un geste qui coûte un **tour** se paie
+      dans la rencontre où on le joue, donc on le joue toujours si son effet dépasse celui d'une
+      attaque ; un geste qui coûte de l'**énergie d'action** se paie sur la **journée**, et il
+      entre alors en concurrence avec *un combat de plus* — la seule monnaie que le §9 septies
+      reconnaisse.
+      D'où **la dérivation du coût plutôt que son écriture** : il vaut un tiers de ce que coûte
+      une chasse, si bien que la question posée au joueur est toujours la même et toujours
+      lisible — *combien d'ouvertures est-ce que j'échange contre une rencontre ?* Écrire un
+      chiffre à la main l'aurait décroché du jour où la chasse changera de prix. Plancher à 1 :
+      *une ouverture gratuite serait posée avant chaque rencontre sans qu'on ait à y penser*,
+      l'exact inverse de ce que le garde-fou cherche.
+      **Trois règles que le canon n'écrit pas.** *Une seule ouverture en attente* — sans elle, la
+      journée optimale consisterait à en poser dix avant d'engager, et l'ouverture cesserait
+      d'être une préparation pour devenir un **stock** (la dérive que la charge évite en mourant
+      avec la rencontre) ; une seconde **remplace** la première plutôt que d'être refusée, un
+      refus étant plus surprenant qu'utile et l'énergie déjà dépensée perdue de toute façon.
+      *La première rencontre la consomme, et elle seule* — sinon c'est un bonus permanent acheté
+      une fois ; lire et consommer se font donc **en un seul geste**, comme la file des différés.
+      *Elle ne se pose pas en combat* — c'est ce qui la distingue d'un geste ordinaire : posée
+      pendant la rencontre, elle ne coûterait ni tour ni presque énergie et deviendrait le geste
+      le moins cher du jeu.
+      Elle vit **sur le joueur** et non dans un combat, et c'est la définition même de la forme :
+      une ouverture se pose *hors* rencontre et attend la suivante — la ranger dans un combat
+      serait une contradiction dans les termes.
+      **Aucune valeur de jeu ne bouge** : `pending_opening` naît à 0)*
 - [ ] **Le familier** (M) — **arbitrage rendu (§13.3) : c'est un dépôt offensif, pas un
       acteur.** Retirez le ciblage et il ne reste qu'une chose qui frappe à chaque tour
       pendant une durée : le critère d'admission du §13.1 impose donc de le traiter comme

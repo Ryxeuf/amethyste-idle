@@ -771,6 +771,53 @@ class Player implements CharacterInterface
         $this->lifeUpdatedAt = $lifeUpdatedAt;
     }
 
+    /**
+     * Le geste prepare qui s'appliquera a la prochaine rencontre (ARC-18g).
+     *
+     * La forme **ouverture** : *le combat commence avant le combat*. `0` quand
+     * rien n'attend.
+     *
+     * **Elle vit sur le joueur et non dans un combat**, et c'est la definition
+     * meme de la forme : elle est posee **hors** rencontre, depuis l'ecran de
+     * zone, et attend la suivante. Une ouverture rangee dans un combat serait
+     * une contradiction dans les termes.
+     */
+    #[ORM\Column(name: 'pending_opening', type: 'integer', options: ['default' => 0])]
+    private int $pendingOpening = 0;
+
+    public function getPendingOpening(): int
+    {
+        return $this->pendingOpening;
+    }
+
+    /**
+     * Preparer un geste pour la prochaine rencontre.
+     *
+     * Une seconde ouverture **remplace** la premiere plutot que de s'y
+     * ajouter : sans cela, la journee optimale consisterait a en poser dix
+     * avant d'engager, et l'ouverture cesserait d'etre une preparation pour
+     * devenir un **stock**.
+     */
+    public function prepareOpening(int $value): void
+    {
+        $this->pendingOpening = max(0, $value);
+    }
+
+    /**
+     * Consommer l'ouverture en attente, et rendre ce qu'elle valait.
+     *
+     * Lire et consommer **en un seul geste**, comme la file des differes : les
+     * separer laisserait une ouverture servir a chaque rencontre, c'est-a-dire
+     * un bonus permanent achete une fois.
+     */
+    public function consumeOpening(): int
+    {
+        $value = $this->pendingOpening;
+        $this->pendingOpening = 0;
+
+        return $value;
+    }
+
     public function getEnergyUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->energyUpdatedAt;
