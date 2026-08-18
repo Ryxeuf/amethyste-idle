@@ -104,7 +104,7 @@ class RiposteLawTest extends TestCase
         self::assertCount(8, GestureForm::cases(), 'Huit formes, et une neuvieme est une decision de moteur.');
 
         self::assertSame(
-            [GestureForm::Riposte, GestureForm::Stance, GestureForm::Conversion],
+            [GestureForm::Riposte, GestureForm::Stance, GestureForm::Conversion, GestureForm::Transfer],
             GestureForm::implemented(),
             'La liste des formes lues a bouge : elle grandit avec ARC-18, elle ne retrecit jamais.'
         );

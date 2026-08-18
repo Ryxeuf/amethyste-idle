@@ -52,6 +52,10 @@ class SpellIntentDeriverTest extends TestCase
             StatusEffect::TYPE_BERSERK => SpellIntent::Buff,
             StatusEffect::TYPE_RIPOSTE => SpellIntent::Buff,
             StatusEffect::TYPE_STANCE => SpellIntent::Buff,
+            // Le transfert protege : il n'ameliore pas son porteur (il le rend
+            // plus fragile) et ne blesse personne — il met quelqu'un entre le
+            // coup et son allie.
+            StatusEffect::TYPE_TRANSFER => SpellIntent::Protection,
         ];
 
         $missing = array_values(array_diff(StatusEffect::TYPES, array_keys($expected)));

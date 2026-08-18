@@ -2,11 +2,13 @@
 
 namespace App\GameEngine\Dungeon;
 
+use App\Entity\App\GroupDungeonMember;
 use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Enum\MonsterRank;
 use App\GameEngine\Fight\MonsterDamageLaw;
+use App\GameEngine\Fight\TransferLaw;
 use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -212,6 +214,17 @@ class GroupDungeonCombatService
     private function applyAction(GroupDungeonRun $run, Player $player, ?string $spellSlug = null): void
     {
         $action = $this->actionResolver->resolve($player, $spellSlug);
+
+        // ARC-18d — le geste de transfert : il ne frappe pas, il decide qui
+        // paiera. C'est le premier geste non offensif que le donjon sache
+        // jouer.
+        if (isset($action['transfer'])) {
+            $this->memberOf($run, $player)?->protectAllies(
+                $action['transfer']['share'],
+                $action['transfer']['turns'],
+            );
+        }
+
         $run->damageEncounter($action['damage']);
 
         if ($run->getEncounterHpCurrent() <= 0) {
@@ -239,10 +252,7 @@ class GroupDungeonCombatService
         // — agir a un cout, et un donjon peut desormais etre perdu. DON-03 :
         // le coup est celui du monstre de l'etape — une elite frappe plus
         // fort qu'un commun, sans reglage special (GAME_ARCHETYPES §9 octies).
-        $player->setLife(max(0, $player->getLife() - $this->getEncounterStrike($run)));
-        if (0 === $player->getLife() && null === $player->getDiedAt()) {
-            $player->setDiedAt(new \DateTime());
-        }
+        $this->strike($run, $player, $this->getEncounterStrike($run));
 
         if ($this->everyMemberIsDown($run)) {
             $run->setStatus(GroupDungeonRun::STATUS_FAILED);
@@ -253,6 +263,74 @@ class GroupDungeonCombatService
 
         $this->advanceToNextStandingMember($run);
         $run->setTurnDeadline($this->now()->modify(sprintf('+%d seconds', $this->getTurnSeconds())));
+    }
+
+    /**
+     * Le coup encaisse, protecteurs servis (ARC-18d).
+     *
+     * ***L'aggro ne reduit rien, elle deplace*** (§ 13.4) : ce que les
+     * protecteurs prennent est retire a la cible **et ajoute a eux**, si bien
+     * que le total du coup ne bouge pas. Le verifier ici plutot que chez
+     * l'appelant est ce qui empeche le transfert de devenir une reduction de
+     * degats deguisee — la faute la plus facile a commettre sur cette forme, et
+     * la seule que le canon lui interdise explicitement.
+     *
+     * Un protecteur ne se protege pas de lui-meme : quand c'est lui qui vient
+     * d'agir, il encaisse son coup en entier. *Sinon le geste le plus rentable
+     * du jeu serait de se transferer ses propres degats.*
+     */
+    private function strike(GroupDungeonRun $run, Player $target, int $damage): void
+    {
+        $protectors = [];
+        $shares = [];
+        foreach ($run->getMembers() as $member) {
+            if ($member->getPlayer() === $target || !$member->isProtecting()) {
+                continue;
+            }
+
+            $protectors[] = $member;
+            $shares[] = $member->getTransferShare();
+        }
+
+        $redirected = TransferLaw::redirected($damage, $shares);
+        $this->hurt($target, TransferLaw::borneBy($damage, $shares));
+
+        if ($redirected > 0 && $protectors !== []) {
+            // Reparti entre les protecteurs, le reste de la division allant au
+            // premier : un coup impair ne doit pas s'evaporer.
+            $each = intdiv($redirected, \count($protectors));
+            $remainder = $redirected - $each * \count($protectors);
+            foreach ($protectors as $index => $member) {
+                $this->hurt($member->getPlayer(), $each + (0 === $index ? $remainder : 0));
+            }
+        }
+
+        foreach ($run->getMembers() as $member) {
+            $member->ageTransfer();
+        }
+    }
+
+    private function hurt(Player $player, int $damage): void
+    {
+        if ($damage <= 0) {
+            return;
+        }
+
+        $player->setLife(max(0, $player->getLife() - $damage));
+        if (0 === $player->getLife() && null === $player->getDiedAt()) {
+            $player->setDiedAt(new \DateTime());
+        }
+    }
+
+    private function memberOf(GroupDungeonRun $run, Player $player): ?GroupDungeonMember
+    {
+        foreach ($run->getMembers() as $member) {
+            if ($member->getPlayer() === $player) {
+                return $member;
+            }
+        }
+
+        return null;
     }
 
     private function everyMemberIsDown(GroupDungeonRun $run): bool

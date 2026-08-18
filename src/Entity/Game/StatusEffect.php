@@ -52,6 +52,17 @@ class StatusEffect
      */
     public const TYPE_STANCE = 'stance';
 
+    /**
+     * ARC-18d — le transfert : *une part des degats des allies vous revient*.
+     *
+     * Un depot pose sur le groupe, qui ne fait ni bien ni mal a celui qui le
+     * porte : il **deplace** qui paie. Le type existe a part parce que la forme
+     * n'est ni une protection — elle n'empeche aucun degat, le total de la
+     * rencontre est inchange — ni une amelioration : elle rend le porteur
+     * strictement plus fragile.
+     */
+    public const TYPE_TRANSFER = 'transfer';
+
     public const TYPES = [
         self::TYPE_POISON,
         self::TYPE_PARALYSIS,
@@ -64,6 +75,7 @@ class StatusEffect
         self::TYPE_MARK,
         self::TYPE_RIPOSTE,
         self::TYPE_STANCE,
+        self::TYPE_TRANSFER,
     ];
 
     public const CATEGORY_BUFF = 'buff';

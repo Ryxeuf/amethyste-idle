@@ -83,6 +83,11 @@ enum SpellIntent: string
             StatusEffect::TYPE_BERSERK,
             StatusEffect::TYPE_RIPOSTE,
             StatusEffect::TYPE_STANCE => self::Buff,
+            // Le transfert **protege**, et c'est le seul rangement qui tienne :
+            // il n'ameliore pas son porteur (il le rend plus fragile) et il ne
+            // blesse personne (le total de la rencontre est inchange). Ce qu'il
+            // fait, c'est mettre quelqu'un entre le coup et son allie.
+            StatusEffect::TYPE_TRANSFER => self::Protection,
             default => null,
         };
     }
