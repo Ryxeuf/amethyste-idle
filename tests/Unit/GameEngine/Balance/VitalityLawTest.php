@@ -88,6 +88,15 @@ class VitalityLawTest extends TestCase
      */
     public function testTheShareDoesNotDependOnTheTier(): void
     {
+        // **La tolerance se derive, elle ne se choisit pas.** La grille d'attaque
+        // arrondit deux fois — la vie divisee par huit, puis le rapport de rang —,
+        // si bien qu'un rang peut frapper un point a cote du rapport exact. Un
+        // point pese le plus la ou la barre est la plus petite : c'est le plancher
+        // qui fixe la borne. Mesure : l'elite ne derive pas d'un millieme (elle
+        // *est* la definition de la barre), le commun de 0,0016, le boss de 0,0096
+        // — dont on lit maintenant qu'il vient de l'arrondi et de rien d'autre.
+        $tolerance = 1 / VitalityLaw::floor();
+
         foreach (MonsterRank::cases() as $rank) {
             $reference = VitalityLaw::shareTakenPerTurn(VitalityLaw::FIRST_TIER, $rank);
 
@@ -95,7 +104,7 @@ class VitalityLawTest extends TestCase
                 self::assertEqualsWithDelta(
                     $reference,
                     VitalityLaw::shareTakenPerTurn($tier, $rank),
-                    0.005,
+                    $tolerance,
                     sprintf('%s T%d : la part prise change de palier en palier.', $rank->value, $tier),
                 );
             }
@@ -154,7 +163,7 @@ class VitalityLawTest extends TestCase
     }
 
     /**
-     * **L'ecart avec ce qui est livre, en cliquet.**
+     * **L'ecart avec ce qui est livre, en cliquet.**.
      *
      * `PlayerFactory::BASE_LIFE` vaut 20 quand le plancher de la loi en demande
      * 96 : c'est l'ecart qu'ARC-20b refermera en portant le plancher sur la loi.
@@ -170,7 +179,7 @@ class VitalityLawTest extends TestCase
     }
 
     /**
-     * **Aucune formule ne lit encore la loi, et c'est voulu.**
+     * **Aucune formule ne lit encore la loi, et c'est voulu.**.
      *
      * Comme `EncounterAnchor`, `DailyAnchor` et `MonsterStatTemplate::attackFor()`
      * avant elle, cette sous-phase livre un **instrument de mesure** et ne
