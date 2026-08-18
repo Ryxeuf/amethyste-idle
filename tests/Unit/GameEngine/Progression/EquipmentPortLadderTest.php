@@ -4,6 +4,7 @@ namespace App\Tests\Unit\GameEngine\Progression;
 
 use App\DataFixtures\Game\SkillFixtures;
 use App\Entity\Game\Domain;
+use App\GameEngine\Progression\CombatBranchCatalog;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\EquipmentPortDefinitionException;
 use PHPUnit\Framework\TestCase;
@@ -231,7 +232,7 @@ class EquipmentPortLadderTest extends TestCase
     public function testNoPortRungCarriesCombatStats(): void
     {
         $catalog = $this->catalog();
-        $fixtures = new SkillFixtures($catalog);
+        $fixtures = new SkillFixtures($catalog, new CombatBranchCatalog(\dirname(__DIR__, 4)));
 
         $method = new \ReflectionMethod($fixtures, 'getSkillsData');
         /** @var array<string, array<string, mixed>> $skills */

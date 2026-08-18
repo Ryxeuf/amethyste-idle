@@ -2287,14 +2287,39 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 > lui donner une barre propre créerait un cinquième palier ne correspondant à aucun
 > contenu — le défaut du §9 quater, celui qui avait éteint l'archer, transposé à la barre.
 
-#### ARC-20b — Le Socle : un nœud visible **et** la loi (L)
-- [ ] **Les deux, jamais l'un ou l'autre** : le nœud existe pour être **vu** (un palier de
+#### ARC-20b — Le Socle : un nœud visible **et** la loi (L) ◐ → 2 sous-phases
+
+> **ARC-20b-a — livré le 2026-08-18** : la loi appliquée, le plancher, les Socles générés et
+> le retrait de `Skill::life`. Reste **ARC-20b-b** : les Socles des 15 arbres non encore
+> convertis (ils arrivent avec ARC-08, la génération les prendra sans qu'on y pense) et la
+> reprise du gabarit dans `PatronTreeContractTest` (18 → 21 nœuds écrits).
+>
+> **Deux découvertes en chemin.** (1) *Le contrat d'ARC-09 comptait « les nœuds gratuits »
+> comme synonyme d'« accords gratuits »* — vrai tant qu'aucun autre nœud ne coûtait zéro ; le
+> Socle est la **septième nature de nœud**, et une porte gratuite n'est pas un geste offert.
+> (2) **Le garde-fou d'ARC-20a est retourné, pas supprimé** — il vérifiait que *personne ne lit
+> encore la loi* ; il vérifie maintenant que **le plancher est lu là où un personnage naît**,
+> et il tient en cliquet les deux lecteurs qui restent à brancher (ARC-20c). *Un test effacé
+> aurait laissé croire que la question ne s'était jamais posée.*
+>
+> **Les Socles sont générés, jamais écrits vingt-quatre fois** : trois nœuds identiques par
+> arbre écrits à la main seraient 72 occasions de se tromper, et le seul chiffre qu'ils portent
+> est de toute façon calculé. La génération lit `combat_branches.yaml` — *ce qui fait qu'un
+> arbre est un arbre de combat, c'est qu'il a une fourche* —, si bien qu'un arbre ajouté demain
+> reçoit ses Socles sans qu'on y pense.
+>
+> **La barre mesurée** : 96 / 208 / 440 / 880 PV aux paliers 1 à 4, contre **20 PV** livrés
+> jusqu'ici. Les personnages existants sont remontés au plancher par migration — *on remonte,
+> on ne descend jamais* : un personnage au-dessus a payé ses points, et lui retirer de la vie
+> serait une perte que rien dans le jeu n'annonce.
+
+- [x] **Les deux, jamais l'un ou l'autre** : le nœud existe pour être **vu** (un palier de
       vie est un moment de la progression, pas une variable cachée), la valeur est
       **calculée** (une valeur écrite dans 24 arbres diverge au premier ajustement)
-- [ ] **Sa forme** : une **porte**. 0 point, **0 pb**, aucun levier, aucun geste, aucun
+- [x] **Sa forme** : une **porte**. 0 point, **0 pb**, aucun levier, aucun geste, aucun
       droit de port. **Gratuit parce qu'il n'est pas une récompense** — le faire payer en
       points en ferait un péage, en budget la taxe de PoE
-- [ ] **Sémantique de maximum, jamais de somme.** C'est la seule forme qui survive à « le
+- [x] **Sémantique de maximum, jamais de somme.** C'est la seule forme qui survive à « le
       savoir n'est jamais borné » : un nœud additif à +100 PV donnerait **+3 200 PV** au
       joueur qui a mené les 32 arbres — le défaut exact de `Skill::life` aujourd'hui
 - [ ] **Un Socle par palier 1, 2 et 3 dans chacun des 24 arbres de combat.** Le gabarit
@@ -2305,15 +2330,15 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       personnage est devenu capable d'encaisser*, une question qu'elle ne posait pas. La
       règle qui la referme : *une septième nature n'est admise que si elle ne donne ni
       geste, ni levier, ni droit de port — sinon c'est l'une des six sous un autre nom*
-- [ ] **Le plancher est porté par `PlayerFactory`, jamais par un arbre** : un personnage
+- [x] **Le plancher est porté par `PlayerFactory`, jamais par un arbre** : un personnage
       qui sort du tunnel, ou qui ne mène que des arbres de métier, a le palier 1 sans rien
       avoir appris (même principe que l'outil de palier 1 d'OBJ-06 et le plancher du
       jour 1 de GAME_MATERIA §3). **On ne peut pas se retrouver sans barre de vie**
-- [ ] **Retirer `Skill::life`** — plat, cumulatif, hors budget, **écrit en dur** dans
+- [x] **Retirer `Skill::life`** — plat, cumulatif, hors budget, **écrit en dur** dans
       `Player::maxLife` par `SkillAcquiring` : la même fuite que les échelons de port de
       l'écart n° 5. Migration des personnages existants, et `SkillRespecManager` n'a plus
       de bonus plat à défaire — **un respec rend des points, jamais un palier**
-- [ ] Tests : les invariants 1 à 6 et 11 de GAME_VITALITY §8 (aucun cumul, aucun coût,
+- [x] Tests : les invariants 1 à 6 et 11 de GAME_VITALITY §8 (aucun cumul, aucun coût,
       aucun levier, couverture des 24 arbres en **cliquet**, plancher inconditionnel,
       aucune source indexée sur le nombre d'arbres appris)
 

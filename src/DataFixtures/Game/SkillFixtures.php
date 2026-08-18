@@ -5,7 +5,9 @@ namespace App\DataFixtures\Game;
 use App\DataFixtures\DomainFixtures;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
+use App\GameEngine\Progression\CombatBranchCatalog;
 use App\GameEngine\Progression\EquipmentPortCatalog;
+use App\GameEngine\Progression\VitalityTier;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -22,6 +24,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
     public function __construct(
         private readonly EquipmentPortCatalog $portCatalog,
+        private readonly CombatBranchCatalog $branchCatalog,
     ) {
     }
 
@@ -115,7 +118,68 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
     private function getSkillsData(): array
     {
-        return $this->rewireWeaponPortLadders($this->declaredSkills());
+        return $this->withVitalitySocles($this->rewireWeaponPortLadders($this->declaredSkills()));
+    }
+
+    /**
+     * Ajouter les Socles de vitalite aux arbres de combat (ARC-20b).
+     *
+     * ***Generes plutot qu'ecrits vingt-quatre fois.*** Trois nœuds identiques
+     * par arbre, ecrits a la main, seraient soixante-douze occasions de se
+     * tromper d'un chiffre — et le seul chiffre qu'ils portent est de toute
+     * facon **calcule** (`VitalityLaw`), donc les ecrire ne dirait rien de plus
+     * que « cet arbre en a un ».
+     *
+     * La derivation suit celle des echelons de port : elle lit les arbres
+     * declares plutot qu'une liste a part, si bien qu'**un arbre de combat
+     * ajoute demain recoit ses Socles sans qu'on y pense** — et l'inverse, un
+     * arbre retire n'en laisse pas d'orphelins.
+     *
+     * Leur forme est celle d'une **porte** : 0 point, aucun levier, aucun geste,
+     * aucun droit de port. *Gratuit parce qu'il n'est pas une recompense* — le
+     * faire payer en ferait un peage que les 24 arbres acquitteraient tous,
+     * donc qui ne differencierait rien.
+     *
+     * @param array<string, array<string, mixed>> $skills
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function withVitalitySocles(array $skills): array
+    {
+        $trees = $this->branchCatalog->trees();
+
+        $domains = [];
+        foreach ($skills as $data) {
+            $domain = $data['domain'] ?? null;
+            if (\is_string($domain) && $domain !== '' && !\in_array($domain, $domains, true)) {
+                $domains[] = $domain;
+            }
+        }
+
+        foreach ($domains as $domain) {
+            // **Ce qui fait qu'un arbre est un arbre de combat, c'est qu'il a
+            // une fourche** : `combat_branches.yaml` les enumere tous les 24
+            // depuis ARC-14a. Relire cette liste plutot qu'en ecrire une
+            // seconde est ce qui garantit qu'un arbre ajoute demain recoit ses
+            // Socles, et qu'un arbre retire n'en laisse pas d'orphelins.
+            if (!isset($trees[$domain])) {
+                continue;
+            }
+
+            foreach ([1, 2, 3] as $tier) {
+                $key = sprintf('%s_socle_%d', $domain, $tier);
+                $skills[$key] = [
+                    'title' => sprintf('Socle %d', $tier),
+                    'slug' => sprintf('%s-socle-%d', str_replace('_', '-', $domain), $tier),
+                    'description' => 'Ce que vous êtes devenu capable d\'encaisser.',
+                    'requiredPoints' => 0,
+                    'domain' => $domain,
+                    'actions' => [VitalityTier::ACTION_KEY => ['tier' => $tier]],
+                ];
+            }
+        }
+
+        return $skills;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Tests\Integration\Progression;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\SkillLeverReader;
+use App\GameEngine\Progression\VitalityTier;
 use App\Tests\Integration\AbstractIntegrationTestCase;
 
 /**
@@ -146,7 +147,16 @@ class ArchetypesPlanContractTest extends AbstractIntegrationTestCase
         foreach (self::CONVERTED as $title) {
             $free = [];
             foreach ($this->nodesOf($title) as $skill) {
-                if (0 === $skill->getRequiredPoints()) {
+                // ARC-20b — **le Socle est gratuit lui aussi, et ce test le
+                // confondait avec un accord.** Il comptait « les nœuds
+                // gratuits » comme synonyme d'« accords gratuits », ce qui
+                // etait vrai tant qu'aucun autre nœud ne coutait zero : le
+                // Socle est la septieme nature de nœud, et *une porte gratuite
+                // n'est pas un geste offert*.
+                //
+                // C'est la borne du jour 1 qu'on protege ici — deux gestes, pas
+                // trois —, pas le nombre de nœuds a zero point.
+                if (0 === $skill->getRequiredPoints() && !VitalityTier::isSocle($skill)) {
                     $free[] = $skill;
                 }
             }
