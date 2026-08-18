@@ -513,7 +513,7 @@ zones:
               # ARC-08a : le Voile de cendre rejoint le Drain de vie. Les deux
               # accords d'entree du Necromancien se tiennent au meme comptoir —
               # le plancher du jour 1 ne depend jamais du hasard (MAT-04).
-              shop_items: [m1-water-jet, m2-rising-tide, m2-soul-drain, m2-ambush, m2-ash-veil]
+              shop_items: [m1-water-jet, m2-rising-tide, m2-soul-drain, m1-ambush, m2-ash-veil]
         map_x: 32
         map_y: 74
         map_shape: '4,58 14,54 26,57 33,64 34,74 22,80 8,78'

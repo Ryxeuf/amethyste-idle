@@ -783,8 +783,48 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
-- [ ] **Les 19 arbres restants** — la liste vit dans `CombatBranchCatalogTest::WAITING_ON_ARC_08`,
-      en cliquet
+> **ARC-08b — l'Assassin, livré le 2026-08-18.** Le second des vingt, et il remplit la case que
+> les quatre patrons laissaient vide : **`assault × melee`**. ARC-07 avait livré l'assaut en
+> sorts (Pyromancien) et au tir (Archer), et la mêlée **en encaisse** (Soldat) ; personne ne
+> frappait fort au contact, c'est-à-dire dans la case où se joue la moitié du bestiaire. Le
+> simulateur passe de **5 à 6 cases sur 12**.
+>
+> C'est aussi l'arbre que GAME_TREE_ANATOMY déroule comme **méthode** (§ 4) : ses dix-huit nœuds
+> y sont écrits un par un. L'écrire revenait donc à vérifier que le document tient en données —
+> **et il tient sans un seul dosage** : 390 points, 50 pb par branche, `PatronTreeContractTest`
+> vert du premier coup.
+>
+> **Le plafond a écrit la fourche pour la quatrième fois** : le capstone consomme 14 pb de
+> `power` et le palier 1 en met 3, ce qui laisse 3 pb sous le plafond de 20 — `power` ne
+> *pouvait* pas être le levier de la fourche. Elle oppose donc **la façon de ne pas être touché**
+> à **la façon de trancher** : {`dodge`, `tempo`} contre {`critical_power`, `pierce`}.
+>
+> **Trois défauts trouvés en écrivant**, tous par les invariants livrés :
+>  - **La grille de reprise s'indexe sur le niveau du sort, pas sur le palier du nœud.** On avait
+>    supposé l'inverse ; `RegisterResourceTest` a tranché. La conséquence est une correction
+>    réelle : **l'Embuscade passe du palier 2 au palier 1**, parce qu'un geste distribué à
+>    *zéro point* qui se déclarait de palier 2 mettait en conflit les deux règles qui le
+>    régissent — *un accord d'entrée est gratuit* et *au-delà du palier 1, une technique coûte
+>    toujours un tour*. Sa matéria devient `m1-ambush`, et le comptoir du Marais suit.
+>  - **Un accord partagé garde le registre de celui qui l'a ouvert le premier.** Le § 4.7 nommait
+>    « Nova de mort » pour la case à plusieurs cibles — un geste que le Nécromancien ouvre déjà,
+>    donc de registre `spell`. Le lui prendre aurait cassé un arbre livré ; le partager aurait
+>    obligé un même geste à être une technique ici et un sort là-bas. L'Assassin écrit donc les
+>    siens : **Voile** et **Fauchée d'ombre**. C'est la leçon d'ARC-07d, transposée.
+>  - **Le catalogue de matéria rétrécit, et c'est voulu.** L'arbre portait onze accords, le
+>    gabarit en autorise sept ; `vital-drain` et `death-touch` n'étaient ouverts que par lui et
+>    quittent le catalogue. Deux d'entre eux étaient des **drains** — un verbe d'entretien dans
+>    un arbre d'assaut. *Un arbre qui ouvre tout n'ouvre rien.*
+>
+> **Mesuré, et laissé à ARC-05c** : les deux branches ne se départagent pas par leurs leviers
+> mais par les **dégâts bruts de leur accord** — `shadow-dance` (8) contre `deadly-strike` (6) —,
+> si bien que La Lame met **5 tours** là où L'Ombre en met 4, alors que sa fiction dit
+> l'inverse (*une seule ouverture suffit*). Le budget est pourtant égal, et le contrat le
+> vérifie : ce qui diffère est une **valeur de dégât**, c'est-à-dire précisément ce qu'ARC-05c
+> a pour tâche de recalibrer. On le nomme plutôt que de le doser ici.
+>
+- [◐] **Les 19 arbres restants** — la liste vit dans `CombatBranchCatalogTest::WAITING_ON_ARC_08`,
+      en cliquet *(ARC-08b — l'Assassin en sort, **18 restants**)*
 - [ ] Table de conversion `damage/heal/hit/critical/life` plat → `(levier, pb)` selon le
       palier du nœud
 - [ ] Relecture par arbre avec le **test du plafond** et le **test du voisin** ; corriger
