@@ -3194,6 +3194,12 @@ que le §7 bis interdit. Il doit descendre à ~120.
   30 % minimum pour que l'aggro passe, 50 % maximum avant que le solo ne casse,
   cible ~40 %), mais le chiffre retenu appartient à
   [GAME_ITEMS.md](GAME_ITEMS.md), pas au budget d'arbre.
+- **D'où vient la barre de vie du joueur** — ce document la **suppose** (120 PV au
+  palier 2, §9 bis et §9 octies) sans jamais dire ce qui la produit, et le code n'en
+  produit rien (20 PV fixes). **Chantier instruit depuis** :
+  [GAME_VITALITY.md](GAME_VITALITY.md) (2026-08-18) — le **Socle** (un palier, pas un
+  cumul), la barre **dérivée du bestiaire**, et la règle qui en sort : *la progression
+  verticale n'est jamais un choix ; seule la différenciation l'est*.
 - **Le nombre d'arbres qu'un joueur mènera réellement** : c'est une conséquence de
   l'énergie et du build, pas une règle à écrire.
 - **La valeur de la vitesse de combat** (§9 sexies.4) — l'arbitrage est posé et
