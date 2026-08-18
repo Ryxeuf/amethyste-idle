@@ -3,16 +3,19 @@
 namespace App\Tests\Integration\Balance;
 
 use App\Enum\MonsterRank;
+use App\GameEngine\Balance\CompositionFactory;
 use App\GameEngine\Balance\DailyAnchor;
 use App\GameEngine\Balance\DaySimulator;
 use App\GameEngine\Balance\EncounterSimulator;
+use App\GameEngine\Balance\GroupEncounterSimulator;
 use App\GameEngine\Balance\ReferenceBuildFactory;
 use App\GameEngine\Balance\ReferenceCharacter;
 use App\GameEngine\Balance\ReferenceCharacterFactory;
 use App\Tests\Integration\AbstractIntegrationTestCase;
 
 /**
- * Le releve du simulateur, tenu en CI comme un cliquet (ARC-17c-c).
+ * Le releve du simulateur, tenu en CI comme un cliquet (ARC-17c-c, etendu au groupe
+ * par ARC-17c-d).
  *
  * ## Pourquoi un cliquet et pas les cinq seuils du canon
  *
@@ -77,6 +80,14 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
      * l'ecart se reduire sans limite et refuse qu'il s'aggrave.
      */
     private const MAX_FUNCTION_ANCHOR_SPREAD = 5.7;
+
+    /**
+     * Ce que le meilleur des quatre groupes entame de sa rencontre.
+     *
+     * Mesure le 2026-08-18 : **14 %**, pour un groupe qui tombe en trois rondes.
+     * Comme les autres, ce nombre ne peut que monter.
+     */
+    private const MIN_GROUP_ENCOUNTER_SHARE = 14.0;
 
     /**
      * **Une elite tue un joueur seul** — le seuil du § 9 octies, et il est dur.
@@ -167,6 +178,83 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
             \count($completed),
             'Moins de deux journees menees a terme : un ecart se mesure entre deux, et l\'ancre cesserait d\'etre calculable.',
         );
+    }
+
+    /**
+     * **Aucun role n'est necessaire** — le seuil du § 7 bis, et il est dur.
+     *
+     * La formulation exacte compte : on ne demande pas qu'un groupe gagne, on
+     * demande qu'**aucune composition ne reussisse la ou « sans tank / sans
+     * soigneur » echoue**. C'est la difference entre un role utile et un role
+     * obligatoire, et c'est la seule des deux qui soit une regle.
+     *
+     * Aujourd'hui les quatre compositions echouent — le seuil tient donc, mais
+     * **par construction** : le donjon ne connait ni soin ni mitigation ni
+     * deplacement de riposte. *Un seuil qu'aucun mecanisme ne peut faire echouer
+     * ne mesure rien tant que le mecanisme n'existe pas.* Ce test prend son sens
+     * avec ARC-18 et ARC-19, et il est ecrit maintenant pour qu'ils le trouvent.
+     */
+    public function testNoCompositionSucceedsWhereThePlainOneFails(): void
+    {
+        $outcomes = $this->groupOutcomes();
+
+        self::assertNotEmpty($outcomes, 'Aucune composition jouable : les quatre fonctions ne sont pas toutes au gabarit.');
+
+        $plain = $outcomes['sans tank / sans soigneur'] ?? null;
+        self::assertNotNull($plain, 'La composition sans tank ni soigneur est celle que le § 7 bis protege : elle doit etre jouee.');
+
+        if ($plain->victory) {
+            return;
+        }
+
+        foreach ($outcomes as $label => $outcome) {
+            self::assertFalse(
+                $outcome->victory,
+                sprintf('« %s » vient a bout de la rencontre quand « sans tank / sans soigneur » echoue : un role est devenu necessaire, ce que le § 7 bis interdit.', $label),
+            );
+        }
+    }
+
+    /**
+     * Ce que le meilleur groupe entame de la rencontre, en cliquet.
+     *
+     * Mesure le 2026-08-18 : **14 %** au mieux, pour un groupe qui tombe en
+     * trois rondes. La rencontre porte 480 PV partages (120 x 4) quand les
+     * membres en retirent cinq ou six par tour et tombent en deux coups. C'est
+     * le meme ecart d'echelle qu'en solo, amplifie par le multiple.
+     */
+    public function testWhatTheBestGroupClearsNeverShrinks(): void
+    {
+        $best = 0.0;
+        foreach ($this->groupOutcomes() as $outcome) {
+            $best = max($best, $outcome->encounterShareCleared());
+        }
+
+        self::assertGreaterThanOrEqual(
+            self::MIN_GROUP_ENCOUNTER_SHARE,
+            $best,
+            sprintf('Le meilleur groupe entame %.1f %% de la rencontre, contre %.1f %% au releve. Ce nombre peut monter, jamais descendre.', $best, self::MIN_GROUP_ENCOUNTER_SHARE),
+        );
+    }
+
+    /**
+     * Les quatre compositions, jouees contre une elite du palier du releve.
+     *
+     * @return array<string, \App\GameEngine\Balance\GroupOutcome>
+     */
+    private function groupOutcomes(): array
+    {
+        /** @var CompositionFactory $compositions */
+        $compositions = self::getContainer()->get(CompositionFactory::class);
+        /** @var GroupEncounterSimulator $simulator */
+        $simulator = self::getContainer()->get(GroupEncounterSimulator::class);
+
+        $outcomes = [];
+        foreach ($compositions->all() as $label => $members) {
+            $outcomes[$label] = $simulator->simulate($members, self::REPORTED_TIER, MonsterRank::Elite, $label);
+        }
+
+        return $outcomes;
     }
 
     /**

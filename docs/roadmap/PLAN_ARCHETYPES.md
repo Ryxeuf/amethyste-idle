@@ -1417,11 +1417,44 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       palier de moins) et `condition_widening`, **qui exige d'abord qu'une condition de passif
       soit évaluée quelque part**
 
-### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ◐
+### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ✅
 > **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation,
 > 17c livre le simulateur — **lui-même recoupé** en 17c-a (les builds de référence),
 > 17c-b (le moteur et les trois scénarios solo), 17c-c (la journée, les seuils en CI et le
 > rapport daté) et 17c-d (le donjon à quatre et la matrice contexte × fonction).
+> **Complet le 2026-08-18.**
+>
+> **ARC-17c-d — livré le 2026-08-18. ARC-17 est complet.** Le donjon à quatre et la matrice
+> contexte × fonction. `GroupEncounterSimulator` joue la rencontre **comme le donjon la joue**
+> — PV partagés (`encounter_hp_per_member` × membres), tour à tour, riposte sur celui qui vient
+> d'agir : ce sont les curseurs et la boucle de `GroupDungeonCombatService`, jamais une version
+> à part.
+>
+> **Les quatre compositions périssent**, aucune n'entamant plus de 14 % d'une élite de palier 1.
+> Le même écart d'échelle qu'en solo, amplifié par le multiple.
+>
+> **Mais le résultat du jalon est ailleurs, et il est structurel : la composition n'existe pas
+> encore dans le moteur de donjon.** `DungeonActionResolver` ne rend **qu'un dégât** — pas de
+> soin —, il n'y a aucune mitigation, et la riposte ne se déplace pas. Les quatre lignes ne
+> diffèrent donc que par les barres de vie et les dégâts des membres qu'on échange, et les deux
+> « avec soigneur » remplacent simplement un assaut par quelqu'un qui frappe moins fort.
+>
+> Deux conséquences, écrites plutôt que tues :
+>  - le seuil *« un groupe sans tank ni soigneur vient à bout d'une élite »* est **tenu par
+>    construction**. Le test est écrit **maintenant** pour qu'ARC-18 et ARC-19 le trouvent, mais
+>    *un seuil qu'aucun mécanisme ne peut faire échouer ne mesure rien tant que le mécanisme
+>    n'existe pas* ;
+>  - le seuil *« aucune fonction dominante dans les deux colonnes »* est **impossible à tenir**,
+>    et pas par déséquilibre : faute de soin, de mitigation et d'aggro, la contribution d'un
+>    membre **est** son dégât par tour, si bien que les deux colonnes sont *la même mesure dans
+>    deux unités*. ***Un contexte qui ne change pas ce qu'une fonction vaut n'est pas un
+>    contexte.***
+>
+> **Les deux curseurs ne bougent pas, et c'est délibéré.** À l'échelle actuelle des gestes,
+> `encounter_hp_per_member` devrait descendre à une vingtaine ; or ARC-05c va multiplier les
+> dégâts par ~6, et le curseur juste *après* n'a aucun rapport avec le curseur juste *avant*.
+> *Régler un côté d'une échelle cassée, c'est la casser deux fois.* Ils se fixent avec ARC-05c —
+> le **recalibrage conjoint** que le canon nomme. Détail au §25.9 de [../BALANCE.md](../BALANCE.md).
 >
 > **ARC-17c-c — livré le 2026-08-18.** La journée, l'ancre de fonction et le rapport daté.
 > `DaySimulator` joue les **16 rencontres** que le budget d'énergie autorise — dérivées des
@@ -1611,18 +1644,22 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       *(ARC-17c-a — `ReferenceBuildFactory` : **deux builds par arbre**, un par branche ; la
       couverture de la grille est nommée en cliquet. **Reste à ARC-17c-b** : l'équipement et
       la matéria du palier, qui demandent de jouer un tour pour signifier quelque chose)*
-- [ ] **Y compris un invocateur**, et joué **dans les deux modes — présent et absent**.
+- [ ] **Y compris un invocateur**, et joué **dans les deux modes — présent et absent**
+      *(impossible avant ARC-18 : la forme « familier » n'existe pas, donc aucun build dont la
+      puissance dépende de la façon de jouer)*.
       C'est le premier build dont la puissance dépend de **la façon de jouer** et non de ce
       qu'on porte : aucune table statique ne peut le mesurer (§13.3, correction 21)
-- [◐] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
+- [x] **Cinq scénarios** : un commun · une élite · un boss *(la rencontre à fenêtre)* · une
       **journée** (14 communs + 2 tentatives) · un **donjon à quatre**, joué dans les quatre
-      compositions (avec/sans tank × avec/sans soigneur) *(ARC-17c-b — les trois solo ;
-      **ARC-17c-c — la journée** ; le donjon reste à ARC-17c-d, qui demande une composition)*
+      compositions (avec/sans tank × avec/sans soigneur) *(ARC-17c-b les trois solo, ARC-17c-c
+      la journée, **ARC-17c-d le donjon** — dont le relevé montre que la composition n'existe
+      pas encore dans le moteur)*
 - [◐] **Sorties** : la **table croisée** du §9 sexies (durée, PV restants, ressource
       dépensée, attente convertie en minutes) · l'**ancre de fonction** (écart entre le
       meilleur et le pire) · la **mortalité solo des élites** · la **matrice contexte ×
-      fonction** du §9 septies.3 *(ARC-17c-c — **les trois premières sont rendues** ; la
-      matrice demande le donjon, donc ARC-17c-d)*
+      fonction** du §9 septies.3 *(ARC-17c-c les trois premières, **ARC-17c-d la matrice** —
+      et le relevé montre que ses deux colonnes sont aujourd'hui la même mesure dans deux
+      unités)*
 - [x] **Déterministe** — graine fixée. Une CI qui clignote ne sert à rien, et un
       équilibrage qu'on ne peut pas reproduire n'est pas un équilibrage *(ARC-17c-b — **aucun
       dé du tout** : on joue l'espérance, parce qu'une graine reste un tirage et qu'un seuil
@@ -1638,19 +1675,26 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
   - [x] **une élite tue un joueur seul**, quel que soit son archétype (102-129 % de sa barre)
         *(ARC-17c-c — **seuil dur**, et tenu : il ne dit rien de l'échelle, il dit ce qu'une
         élite est)*
-  - [ ] **un groupe sans tank ni soigneur vient à bout d'une élite de son palier** — sinon un
-        rôle est devenu nécessaire, ce que le §7 bis interdit
+  - [x] **un groupe sans tank ni soigneur vient à bout d'une élite de son palier** — sinon un
+        rôle est devenu nécessaire, ce que le §7 bis interdit *(ARC-17c-d — **seuil dur**, tenu
+        **par construction** : le donjon ne connaît ni soin ni mitigation. Écrit maintenant pour
+        qu'ARC-18/19 le trouvent)*
   - [◐] aucun build hors des fourchettes de durée du §6.4 (commun 3-5, élite 6-10, boss 12-20)
         *(mesuré 6 builds sur 10 dans leur bande au palier 1, **0 au palier 2** — cliquet sur
         le nombre, qui ne peut que monter)*
-  - [ ] aucune fonction dominante dans les **deux** colonnes de la matrice
+  - [◐] aucune fonction dominante dans les **deux** colonnes de la matrice *(ARC-17c-d —
+        l'assaut domine les deux, mais **le seuil est impossible à tenir en l'état** : les deux
+        colonnes sont la même mesure dans deux unités tant que le groupe n'a ni soin ni aggro)*
 - [x] **Rapport archivé et daté** dans [../BALANCE.md](../BALANCE.md), pour comparer d'une
       passe à l'autre — c'est la trace qui rend une régression lisible *(ARC-17c-c — §25,
       passe du 2026-08-18 ; il rend au §24.2 deux de ses trois questions ouvertes)*
-- [ ] **Les deux curseurs que le simulateur doit fixer** : la **régénération des PM** hors
+- [◐] **Les deux curseurs que le simulateur doit fixer** : la **régénération des PM** hors
       combat (~6 s/point, à confronter aux 12 s/PV livrés) et
       `zone.dungeon.encounter_hp_per_member` (200 → ~110). Ce sont eux qui décident de
-      l'équilibre solo et de l'équilibre de groupe respectivement
+      l'équilibre solo et de l'équilibre de groupe respectivement *(ARC-17c-d — **mesurés, pas
+      déplacés** : ARC-05c va multiplier les gestes par ~6, et le curseur juste après n'a aucun
+      rapport avec le curseur juste avant. Ils se fixent dans le recalibrage conjoint, §25.9 de
+      [../BALANCE.md](../BALANCE.md))*
 - [ ] **Ce que le simulateur ne décide pas** : les règles (§0.2, colonne de gauche). Elles
       tiennent quelles que soient les valeurs, et une mesure qui les contredirait signalerait
       un bug de simulation avant un défaut de conception
