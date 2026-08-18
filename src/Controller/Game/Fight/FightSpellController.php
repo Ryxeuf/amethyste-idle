@@ -12,6 +12,7 @@ use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\DeferredQueue;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
@@ -60,6 +61,7 @@ class FightSpellController extends AbstractController
         private readonly CombatGestureCase $gestureCase,
         private readonly CombatGestureLedger $gestureLedger,
         private readonly ChargeLedger $chargeLedger,
+        private readonly DeferredQueue $deferredQueue,
     ) {
     }
 
@@ -181,6 +183,22 @@ class FightSpellController extends AbstractController
 
         // Process status effects at start of turn
         $statusMessages = $this->statusEffectManager->processStartOfTurn($fight, $player);
+
+        // ARC-18f — les differes dus a ce tour frappent **avant** le geste du
+        // joueur. L'ordre porte la regle : un differe est une action posee au
+        // tour precedent, elle a donc lieu avant celle qu'on joue maintenant —
+        // *sinon la bombe du tour 3 s'appliquerait apres le coup du tour 4, et
+        // le joueur ne pourrait plus lire sa propre sequence*.
+        foreach ($this->deferredQueue->collectDue($fight) as $due) {
+            $target = $fight->getMob();
+            if ($target === null || $due['player'] !== $player->getId()) {
+                continue;
+            }
+
+            $target->setLife(max(0, $target->getLife() - $due['value']));
+            $statusMessages[] = sprintf('Le geste differe frappe pour %d degats !', $due['value']);
+            $this->combatLogger->logDamage($fight, $target, $due['value'], 'deferred');
+        }
 
         // Calculate combat bonuses from skills.
         // DOM-01 : bornes a la case du geste — l'element du sort et le registre
