@@ -341,7 +341,16 @@ class GroupDungeonCombatService
         return $value > 0 ? $value : self::DEFAULT_TURN_SECONDS;
     }
 
-    private function getHpPerMember(): int
+    /**
+     * Les PV de rencontre par membre — le curseur, jamais une copie.
+     *
+     * **Publique depuis ARC-17c-d** : le simulateur d'equilibrage joue la
+     * rencontre de groupe, et il doit la jouer avec le curseur que le jeu
+     * applique. Le recopier ferait diverger la mesure du moteur des la premiere
+     * fois qu'on deplace l'un des deux — et c'est precisement ce curseur que le
+     * simulateur a pour tache de fixer (GAME_ARCHETYPES § 9 octies).
+     */
+    public function getHpPerMember(): int
     {
         $value = $this->readParameter(self::PARAM_HP_PER_MEMBER, self::DEFAULT_HP_PER_MEMBER);
 

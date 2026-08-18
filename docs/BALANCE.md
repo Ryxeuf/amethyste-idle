@@ -1673,7 +1673,7 @@ Issus du playtest sur papier du premier mois ([PLAYTEST_PAPIER_MOIS_1.md](PLAYTE
 
 ---
 
-## 25. Rapport du simulateur d'archetypes — passe du 2026-08-18 (ARC-17c-c)
+## 25. Rapport du simulateur d'archetypes — passe du 2026-08-18 (ARC-17c-c et 17c-d)
 
 > Produit par `app:balance:simulate` sur les **vraies donnees**, jamais releve a la main.
 > GAME_ARCHETYPES §0.2 : *la recalibration passe par le simulateur, jamais par une relecture*.
@@ -1693,7 +1693,7 @@ Ne sont **pas** joues, et c'est declare plutot que tu :
 |---|---|---|
 | La mitigation d'armure | elle n'existe pas dans le moteur (GAME_ITEMS §2.2 la mesure, ARC-19 la reclame) | l'encaisse est sous-estimee |
 | Les statuts et les depots | ils demandent le moteur de statuts entier | **le controle est sous-estime** |
-| Le donjon a quatre | il demande une composition — ARC-17c-d | rien ne se dit ici du jeu de groupe |
+| Le soin et la mitigation **en donjon** | le moteur de donjon ne rend qu'un degat | **la composition n'existe pas encore** (§25.7) |
 | Le familier | la forme n'existe pas (ARC-18) | aucun build a puissance variable |
 
 L'arme est **pretee au mieux** (la meilleure du jeu, pas celle du palier — le palier d'une
@@ -1768,8 +1768,8 @@ ce que cette colonne ne voit pas.
 | Une elite tue un joueur seul | ✅ **tenu** | seuil **dur** — il dit ce qu'une elite est, jamais une echelle |
 | Ecart d'attente < x1,5 | ❌ x5,62 | **cliquet** a x5,7 |
 | Aucun build hors des bandes de duree | ❌ 6/10 dans la bande | **cliquet** sur le nombre, qui ne peut que monter |
-| Groupe sans tank ni soigneur face a une elite | — | ARC-17c-d (le donjon) |
-| Aucune fonction dominante dans les deux colonnes | — | ARC-17c-d (la matrice) |
+| Groupe sans tank ni soigneur face a une elite | ✅ tenu **par construction** *(§25.7)* | seuil **dur**, mais il ne mesure rien tant qu'ARC-18/19 n'existent pas |
+| Aucune fonction dominante dans les deux colonnes | ❌ l'assaut domine les deux *(§25.8)* | **pas de seuil** — la seconde colonne n'a pas encore d'existence propre |
 
 **Un seuil qu'on sait rouge ne se pose pas** : il produirait une CI durablement rouge que tout
 le monde apprend a ignorer, ou un seuil desserre jusqu'a passer — c'est-a-dire un seuil qui ne
@@ -1789,3 +1789,80 @@ Deux ont maintenant une mesure :
    le curseur de regeneration qui est en cause — c'est le **cout du geste rapporte au pool**.
 
 Reste ouvert : les **passifs de cout** des arbres (§24.1), qui n'existent pas encore.
+
+### 25.7 Le donjon a quatre — les quatre compositions (ARC-17c-d)
+
+Rencontre a **PV partages** (`encounter_hp_per_member` = 120 x 4 membres = **480 PV**), les
+membres agissent chacun leur tour, la rencontre **riposte sur celui qui vient d'agir**
+(DON-02). Elite de palier 1 : elle frappe **12**.
+
+| Composition | Rondes | Issue | Debout | Rencontre entamee |
+|---|---:|---|---:|---:|
+| avec tank / avec soigneur | 3 | **defaite** | 0 / 4 | 11 % |
+| sans tank / avec soigneur | 2 | **defaite** | 0 / 4 | 11 % |
+| avec tank / sans soigneur | 3 | **defaite** | 0 / 4 | 14 % |
+| sans tank / sans soigneur | 2 | **defaite** | 0 / 4 | 14 % |
+
+**Les quatre compositions perissent, et aucune n'entame plus de 14 % de la rencontre.** Le
+meme ecart d'echelle qu'en solo, amplifie par le multiple : quatre membres qui retirent cinq a
+six points par tour contre 480 PV partages, en tombant chacun en deux coups.
+
+**Ce que ce tableau ne mesure pas, et il faut le lire avant les chiffres.** Le donjon **ne
+connait aucun soin** — `DungeonActionResolver` ne rend qu'un degat — et aucune mitigation ; la
+riposte ne se deplace pas non plus. ***La composition n'existe donc pas encore dans le moteur
+de donjon*** : les quatre lignes ne different que par les barres de vie et les degats des
+membres qu'on echange, et les deux lignes « avec soigneur » ne font que remplacer un assaut par
+un guerisseur qui frappe moins fort — d'ou leurs 11 % contre 14 %.
+
+Le seuil du §7 bis — *un groupe sans tank ni soigneur vient a bout d'une elite de son palier* —
+est donc **tenu par construction**, et le dire vaut mieux qu'un vert qui se lirait comme un
+equilibrage reussi : *un seuil qu'aucun mecanisme ne peut faire echouer ne mesure rien tant que
+le mecanisme n'existe pas*. ARC-18 (le transfert) et ARC-19 (l'aggro bornee) lui donneront un
+sens ; le test qui le tient est ecrit maintenant pour qu'ils le trouvent.
+
+### 25.8 La matrice contexte x fonction (§9 septies.3)
+
+*Aucune fonction ne doit dominer dans les **deux** colonnes* : une fonction meilleure seule
+**et** en groupe n'est pas un archetype, c'est un choix par defaut.
+
+| Fonction | Rendement solo *(part de rencontre / tour)* | Rendement en groupe |
+|---|---:|---:|
+| **assault** | **25,0** | **1,9** |
+| bulwark | 20,0 | 1,4 |
+| control | 16,7 | 1,0 |
+| upkeep | 0,0 *(ne conclut pas)* | 0,6 |
+
+**L'assaut domine les deux colonnes** — le seuil n'est pas tenu. Mais la lecture importante est
+ailleurs, et elle est plus dure : **les deux colonnes sont aujourd'hui la meme mesure dans deux
+unites**. Faute de soin, de mitigation et d'aggro, la contribution d'un membre a une rencontre
+de groupe **est** son degat par tour ; le classement du groupe ne peut donc que recopier celui
+du solo.
+
+> ***Un contexte qui ne change pas ce qu'une fonction vaut n'est pas un contexte.*** Le seuil
+> « aucune fonction dominante dans les deux colonnes » est, en l'etat, **impossible a tenir** —
+> non par desequilibre, mais parce que la seconde colonne n'a pas encore d'existence propre.
+> C'est ARC-18 et ARC-19 qui la lui donneront.
+
+Le zero de l'entretien n'est pas une faiblesse de mesure : le Guerisseur **ne conclut pas** un
+commun de palier 1 (cf. §25.3), et un build qui ne conclut pas rend zero. Lui preter la part
+qu'il a entamee avant de tomber ferait passer une defaite pour une lenteur.
+
+### 25.9 Les deux curseurs que le simulateur doit fixer — et pourquoi il ne les bouge pas encore
+
+Le plan demande au simulateur de fixer **la regeneration des PM** et
+**`zone.dungeon.encounter_hp_per_member`**. La mesure est faite, le geste ne l'est pas, et c'est
+delibere :
+
+ - **`encounter_hp_per_member`** est a 120 (DON-02 l'avait deja ramene de 200). Le releve du
+   §25.7 dit qu'a l'echelle actuelle des gestes, **meme 120 est hors d'atteinte** — il faudrait
+   descendre a une vingtaine pour qu'un groupe conclue. Or ARC-05c va multiplier les degats des
+   gestes par un facteur de l'ordre de six : le curseur juste **apres** la recalibration n'a
+   aucun rapport avec le curseur juste avant. *Regler un cote d'une echelle cassee, c'est la
+   casser deux fois.*
+ - **La regeneration des PM** (6 s/point) a deja sa justification chiffree (ARC-05b, §24.2).
+   Le releve du §25.4 montre que ce n'est pas elle qui creuse l'ecart de x5,62, mais le **cout
+   du geste rapporte au pool** — le Pyromancien depense 90 % de ses PM sur un commun. Deplacer
+   la regeneration masquerait ce cout au lieu de le corriger.
+
+**Les deux curseurs se fixent donc avec ARC-05c**, dans la meme passe que les valeurs qu'ils
+accompagnent. C'est ce que le canon appelle un *recalibrage conjoint*.

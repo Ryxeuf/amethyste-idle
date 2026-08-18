@@ -3,14 +3,17 @@
 namespace App\Command;
 
 use App\Enum\MonsterRank;
+use App\GameEngine\Balance\CompositionFactory;
 use App\GameEngine\Balance\DailyAnchor;
 use App\GameEngine\Balance\DaySimulator;
 use App\GameEngine\Balance\EncounterAnchor;
 use App\GameEngine\Balance\EncounterOutcome;
 use App\GameEngine\Balance\EncounterSimulator;
+use App\GameEngine\Balance\GroupEncounterSimulator;
 use App\GameEngine\Balance\ReferenceBuild;
 use App\GameEngine\Balance\ReferenceBuildFactory;
 use App\GameEngine\Balance\ReferenceCharacterFactory;
+use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,6 +49,9 @@ class BalanceSimulateCommand extends Command
         private readonly ReferenceCharacterFactory $characterFactory,
         private readonly EncounterSimulator $simulator,
         private readonly DaySimulator $daySimulator,
+        private readonly CompositionFactory $compositionFactory,
+        private readonly GroupEncounterSimulator $groupSimulator,
+        private readonly GroupDungeonCombatService $dungeon,
     ) {
         parent::__construct();
     }
@@ -83,6 +89,8 @@ class BalanceSimulateCommand extends Command
 
         $this->renderDay($io, $builds, $tier);
         $this->renderEliteMortality($io, $builds, $tier);
+        $this->renderGroup($io, $tier);
+        $this->renderContextMatrix($io, $builds, $tier);
 
         $io->note('Les statuts, les depots et la mitigation d\'armure ne sont pas joues : voir EncounterSimulator. Le controle est donc sous-estime par cet instrument.');
 
@@ -180,6 +188,112 @@ class BalanceSimulateCommand extends Command
         }
 
         $io->table(['Build', 'Part de barre', 'Issue'], $rows);
+    }
+
+    /**
+     * Le donjon a quatre, dans ses quatre compositions.
+     *
+     * Le seuil du § 9 octies est le plus politique des cinq : *un groupe sans
+     * tank ni soigneur vient a bout d'une elite de son palier*. S'il tombe, un
+     * role est devenu necessaire — ce que le § 7 bis interdit.
+     */
+    private function renderGroup(SymfonyStyle $io, int $tier): void
+    {
+        $io->section(sprintf('Scenario : un donjon a quatre, elite de palier %d', $tier));
+
+        $compositions = $this->compositionFactory->all();
+        if ([] === $compositions) {
+            $io->writeln(' <comment>Aucune composition jouable : les quatre fonctions ne sont pas toutes au gabarit.</comment>');
+            $io->newLine();
+
+            return;
+        }
+
+        $rows = [];
+        foreach ($compositions as $label => $members) {
+            $outcome = $this->groupSimulator->simulate($members, $tier, MonsterRank::Elite, $label);
+
+            $rows[] = [
+                $label,
+                $outcome->resolved ? (string) $outcome->turns : sprintf('> %d', GroupEncounterSimulator::MAX_ROUNDS),
+                $outcome->victory ? 'victoire' : ($outcome->resolved ? 'defaite' : 'sans fin'),
+                sprintf('%d / %d', $outcome->membersStanding(), $outcome->memberCount),
+                sprintf('%.0f %%', $outcome->encounterShareCleared()),
+            ];
+        }
+
+        $io->table(['Composition', 'Rondes', 'Issue', 'Debout', 'Rencontre entamee'], $rows);
+        $io->writeln(' <comment>Le donjon ne connait aucun soin et aucune mitigation : ces quatre lignes ne different que par les barres de vie et les degats echanges. Le seuil « aucun role n\'est necessaire » est donc tenu par construction — ARC-18 et ARC-19 lui donneront un sens.</comment>');
+        $io->newLine();
+    }
+
+    /**
+     * La matrice contexte x fonction du § 9 septies.3.
+     *
+     * *Aucune fonction ne doit dominer dans les **deux** colonnes* : une
+     * fonction meilleure seule **et** en groupe n'est pas un archetype, c'est un
+     * choix par defaut.
+     *
+     * @param list<ReferenceBuild> $builds
+     */
+    private function renderContextMatrix(SymfonyStyle $io, array $builds, int $tier): void
+    {
+        $io->section(sprintf('Matrice contexte x fonction (palier %d)', $tier));
+
+        /** @var array<string, list<float>> $solo */
+        $solo = [];
+        foreach ($builds as $build) {
+            $character = $this->characterFactory->of($build);
+            $outcome = $this->simulator->simulate($character, $tier, MonsterRank::Common);
+
+            // Le rendement solo se lit en **part de la rencontre par tour** :
+            // un nombre de tours ne se compare pas entre deux adversaires, une
+            // part de barre si.
+            // Un build qui ne conclut pas rend **zero** : il n'a pas un
+            // mauvais rendement, il n'en a aucun. Lui preter la part qu'il a
+            // entamee avant de tomber ferait passer une defaite pour une
+            // lenteur.
+            $solo[$build->role->value][] = $outcome->victory ? 100.0 / max(1, $outcome->turns) : 0.0;
+        }
+
+        $group = $this->groupContributionByRole();
+
+        $rows = [];
+        foreach ($solo as $role => $values) {
+            $rows[] = [
+                $role,
+                sprintf('%.1f', array_sum($values) / \count($values)),
+                isset($group[$role]) ? sprintf('%.1f', $group[$role]) : '—',
+            ];
+        }
+
+        $io->table(['Fonction', 'Rendement solo (part/tour)', 'Rendement en groupe (part/tour)'], $rows);
+        $io->newLine();
+    }
+
+    /**
+     * Ce que chaque fonction retire par tour dans une rencontre de groupe.
+     *
+     * @return array<string, float>
+     */
+    private function groupContributionByRole(): array
+    {
+        $hpPerMember = $this->dungeon->getHpPerMember();
+
+        $byRole = [];
+        foreach ($this->buildFactory->all() as $build) {
+            $character = $this->characterFactory->of($build);
+            $perTurn = max($character->expectedDamagePerTurn(), $character->expectedFallbackDamagePerTurn());
+
+            $byRole[$build->role->value][] = $perTurn * 100.0 / max(1, $hpPerMember * CompositionFactory::GROUP_SIZE);
+        }
+
+        $averaged = [];
+        foreach ($byRole as $role => $values) {
+            $averaged[$role] = array_sum($values) / \count($values);
+        }
+
+        return $averaged;
     }
 
     /**
