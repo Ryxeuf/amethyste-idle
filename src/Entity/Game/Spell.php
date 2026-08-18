@@ -103,6 +103,25 @@ class Spell
     #[ORM\Column(name: 'life_cost', type: 'integer', options: ['default' => 0])]
     private int $lifeCost = 0;
 
+    /**
+     * Ce que ce geste ajoute au compteur de charge (ARC-18e).
+     *
+     * La forme **charge** : *une ressource qui se construit dans la rencontre*.
+     * `0` sur tous les gestes livres.
+     */
+    #[ORM\Column(name: 'charge_gain', type: 'integer', options: ['default' => 0])]
+    private int $chargeGain = 0;
+
+    /**
+     * Ce que ce geste exige du compteur de charge (ARC-18e).
+     *
+     * Un geste qui coute plus qu'on ne possede **ne se joue pas du tout** — il
+     * ne se joue pas en moins fort. C'est ce qui fait de la charge une
+     * decision : la garder ou la depenser.
+     */
+    #[ORM\Column(name: 'charge_cost', type: 'integer', options: ['default' => 0])]
+    private int $chargeCost = 0;
+
     #[ORM\Column(name: 'status_effect_slug', type: 'string', length: 255, nullable: true)]
     private ?string $statusEffectSlug = null;
 
@@ -354,6 +373,39 @@ class Spell
     public function getEnergyCost(): int
     {
         return $this->energyCost;
+    }
+
+    public function getChargeGain(): int
+    {
+        return $this->chargeGain;
+    }
+
+    public function setChargeGain(int $chargeGain): void
+    {
+        $this->chargeGain = max(0, $chargeGain);
+    }
+
+    public function getChargeCost(): int
+    {
+        return $this->chargeCost;
+    }
+
+    public function setChargeCost(int $chargeCost): void
+    {
+        $this->chargeCost = max(0, $chargeCost);
+    }
+
+    /**
+     * Ce geste parle-t-il a la charge ?
+     *
+     * Comme la conversion, la forme se **derive des champs** plutot que de se
+     * declarer a cote d'eux : une colonne `form` qui pourrait dire « charge »
+     * sur un geste qui n'en genere ni n'en depense serait un mensonge que rien
+     * ne rattraperait.
+     */
+    public function usesCharge(): bool
+    {
+        return $this->chargeGain > 0 || $this->chargeCost > 0;
     }
 
     public function getLifeCost(): int

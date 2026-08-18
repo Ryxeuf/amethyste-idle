@@ -7,6 +7,7 @@ use App\Entity\CharacterInterface;
 use App\Enum\Element;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
+use App\GameEngine\Fight\ChargeLedger;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatScope;
@@ -58,6 +59,7 @@ class FightSpellController extends AbstractController
         private readonly QuiverResolver $quiverResolver,
         private readonly CombatGestureCase $gestureCase,
         private readonly CombatGestureLedger $gestureLedger,
+        private readonly ChargeLedger $chargeLedger,
     ) {
     }
 
@@ -154,12 +156,22 @@ class FightSpellController extends AbstractController
             return new JsonResponse(['error' => 'Carquois vide', 'success' => false]);
         }
 
+        // ARC-18e : la charge. Le refus se place ici, au meme rang que le
+        // carquois et **avant** la consommation des PM : un geste qu'on ne peut
+        // pas payer ne doit rien couter. ***Un geste qui consomme plus qu'on ne
+        // possede ne se joue pas du tout***, il ne se joue pas en moins fort —
+        // c'est ce qui fait de la charge une decision plutot qu'un bonus.
+        if (!$this->chargeLedger->affords($fight, $player, $spell)) {
+            return new JsonResponse(['error' => 'Charge insuffisante', 'success' => false]);
+        }
+
         // Check energy
         if (!$this->combatSkillResolver->consumeEnergy($player, $spell)) {
             return new JsonResponse(['error' => 'Énergie insuffisante', 'success' => false]);
         }
 
         $this->quiverResolver->consume($fight, $player, $spell);
+        $this->chargeLedger->apply($fight, $player, $spell);
 
         // Find target
         $target = $this->findTarget($fight, (int) $data['targetId'], $data['targetType']);
