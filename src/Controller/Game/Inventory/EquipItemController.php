@@ -5,6 +5,7 @@ namespace App\Controller\Game\Inventory;
 use App\Entity\App\PlayerItem;
 use App\Enum\QuestGesture;
 use App\Event\Game\PlayerGestureEvent;
+use App\GameEngine\Fight\BuildChangeLaw;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\Helper\GearHelper;
@@ -36,6 +37,17 @@ class EquipItemController extends AbstractController
 
         $bagInventory = $this->playerHelper->getBagInventory();
         $player = $this->playerHelper->getPlayer();
+
+        // ARC-18i — refus n° 4 du § 13.5 : **le build se change hors combat**.
+        // Il contredit DOM-02, et surtout il effondre les passifs conditionnels
+        // d'ARC-12 : porter la dague pour le geste qui aime la dague puis la
+        // hache au tour suivant rendrait *chaque condition vraie tout le
+        // temps*, donc jamais payee.
+        if (!BuildChangeLaw::isAllowed($player)) {
+            $this->addFlash('error', BuildChangeLaw::refusal());
+
+            return $this->redirectToRoute('app_game_inventory_equipment_list');
+        }
 
         $itemToEquip = null;
         foreach ($bagInventory->getItems() as $item) {

@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\Slot;
+use App\GameEngine\Fight\BuildChangeLaw;
 use App\GameEngine\Gear\MateriaGearSetter;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,17 @@ class UnsetMateriaController extends AbstractController
     public function __invoke(int $slotId): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // ARC-18i — refus n° 4 du § 13.5 : **le build se change hors combat**
+        // (`BuildChangeLaw`). Sertir en plein combat rendrait le geste d'une
+        // materia disponible au tour ou l'on en a besoin, ce qui supprimerait
+        // le seul arbitrage que les emplacements imposent.
+        $player = $this->playerHelper->getPlayer();
+        if (!BuildChangeLaw::isAllowed($player)) {
+            $this->addFlash('error', BuildChangeLaw::refusal());
+
+            return $this->redirectToRoute('app_game_inventory_equipment_list');
+        }
 
         $slot = $this->entityManager->getRepository(Slot::class)->find($slotId);
         if (!$slot) {

@@ -7,6 +7,7 @@ use App\Exception\ItemNotEquippedException;
 use App\Exception\ItemNotMateriaException;
 use App\Exception\ItemRequirementsException;
 use App\Exception\MateriaSlotTypeException;
+use App\GameEngine\Fight\BuildChangeLaw;
 use App\GameEngine\Gear\MateriaGearSetter;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
@@ -29,6 +30,17 @@ class SetMateriaController extends AbstractController
     public function __invoke(int $slotId, int $materiaId): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // ARC-18i — refus n° 4 du § 13.5 : **le build se change hors combat**
+        // (`BuildChangeLaw`). Sertir en plein combat rendrait le geste d'une
+        // materia disponible au tour ou l'on en a besoin, ce qui supprimerait
+        // le seul arbitrage que les emplacements imposent.
+        $player = $this->playerHelper->getPlayer();
+        if (!BuildChangeLaw::isAllowed($player)) {
+            $this->addFlash('error', BuildChangeLaw::refusal());
+
+            return $this->redirectToRoute('app_game_inventory_equipment_list');
+        }
 
         $slot = $this->entityManager->getRepository(Slot::class)->find($slotId);
         if (!$slot) {
