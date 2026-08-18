@@ -1995,9 +1995,37 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       (sinon le geste le plus rentable du jeu serait de se transférer ses propres dégâts).
       **Aucune valeur de jeu ne bouge** : les deux colonnes naissent à zéro, et aucune fixture
       ne porte de statut `transfer`)*
-- [ ] **La charge** (M) — `generates` / `consumes` sur `Spell`, un compteur par rencontre.
+- [x] **La charge** (M) — `generates` / `consumes` sur `Spell`, un compteur par rencontre.
       Répare : la mêlée n'a aucune raison d'aimer les longs combats. **Meurt avec la
       rencontre**
+      *(**ARC-18e — livré le 2026-08-18.** La seule des huit formes dont la valeur **croît avec
+      la durée du combat**, ce qui la met exactement là où la mêlée perd (§9 octies) : elle
+      répare une rotation sans récompense, où les gestes se succèdent sans que rien ne
+      s'accumule et où jouer bien ne se distingue pas de jouer au hasard.
+      **Le garde-fou du canon est tenu par le rangement, pas par une routine** : la charge vit
+      dans les **métadonnées du combat**, comme le registre des gestes d'ARC-06b — *le même
+      endroit que ce qui n'a de sens que le temps d'une rencontre*. Elle n'a donc aucune
+      colonne, et le jour où la rencontre s'efface elle s'efface avec. *Une remise à zéro qu'il
+      faut penser à appeler finit par être oubliée* ; celle-ci n'existe pas parce qu'il n'y a
+      rien à remettre.
+      **Le plafond n'est pas dans le canon, et il est nécessaire** : sans lui la charge croîtrait
+      linéairement avec la durée, si bien qu'un combat de quarante tours donnerait un geste
+      quarante fois plus fort qu'au premier — ce n'est plus une ressource, c'est **une prime à la
+      lenteur**, et elle irait à l'exact opposé de ce que la forme répare (*la mêlée doit aimer
+      les longs combats, pas les provoquer*). Il vaut **cinq**, et il se dérive : la grille de
+      reprise de la mêlée compte cinq crans (GAME_MATERIA §2.3 bis), donc une charge qui se
+      remplit en cinq gestes tient **dans une rotation complète**.
+      **Deux règles qui font de la charge une décision.** *Un geste qu'on ne peut pas payer ne
+      se joue pas du tout* — il ne se joue pas en moins fort : un geste qui s'adapterait au
+      compteur retirerait le choix, puisqu'il serait toujours correct de le lancer. Et *un geste
+      ne peut pas à la fois générer et consommer* : il serait impossible à lire au moment de
+      jouer (le joueur ne saurait pas s'il monte ou s'il dépense) et ses deux moitiés se
+      neutraliseraient dès que le coût égale le gain — **la charge oppose deux gestes, elle n'en
+      décore pas un seul**.
+      Le refus se place au même rang que le carquois, **avant** la consommation des PM : un
+      geste refusé ne doit rien coûter.
+      **Aucune valeur de jeu ne bouge** : `charge_gain` et `charge_cost` naissent à 0 sur les 253
+      gestes livrés)*
 - [ ] **Le différé** (M) — une file d'effets résolus en **tours de rencontre**. Répare :
       l'asynchronie n'est jamais un avantage. Seule forme qui l'exploite au lieu de la subir
 - [ ] **L'ouverture** (M) — un geste posé depuis l'écran de zone, appliqué à la rencontre

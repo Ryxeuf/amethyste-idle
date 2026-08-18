@@ -13,6 +13,7 @@ use App\Enum\CombatRegister;
 use App\Enum\Element;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
+use App\GameEngine\Fight\ChargeLedger;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Fight\CombatLogger;
@@ -108,6 +109,7 @@ class FightSpellControllerTest extends TestCase
             new QuiverResolver(),
             $gestureCase,
             new CombatGestureLedger(),
+            new ChargeLedger(),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
