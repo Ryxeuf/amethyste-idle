@@ -189,7 +189,28 @@ class SpellApplicator
             $life = 1;
         }
 
+        $damageActuallyDealt = max(0, $target->getLife() - $life);
+
         $target->setLife($life);
+
+        // ARC-18a — **la riposte**. Elle se lit sur ce que le coup a
+        // *reellement* retire, jamais sur ce qu'il annoncait : un coup esquive,
+        // absorbe par un bouclier ou ramene a zero par la garde retire zero, et
+        // zero ne riposte pas.
+        //
+        // Poser la question sur le **resultat** plutot que sur la cause ferme
+        // d'un coup tous les chemins d'evitement, y compris ceux qui n'existent
+        // pas encore — et c'est le garde-fou d'admission de la forme : si
+        // l'esquive declenchait la riposte, l'encaisse optimale consisterait a
+        // se faire toucher expres.
+        if ($fight !== null && $damageActuallyDealt > 0) {
+            $riposte = $this->resolveRiposte($fight, $target, $damageActuallyDealt);
+            if ($riposte > 0) {
+                $sender->setLife(max(0, $sender->getLife() - $riposte));
+                $messages[] = sprintf('La riposte rend %d degats !', $riposte);
+                $this->combatLogger->logDamage($fight, $sender, $riposte, 'riposte');
+            }
+        }
 
         if ($target->getLife() > 0) {
             $target->setDiedAt(null);
@@ -323,6 +344,28 @@ class SpellApplicator
     /**
      * Get the total shield absorption available for a character.
      */
+    /**
+     * Ce que les ripostes portees par cette cible rendent sur ce coup.
+     *
+     * La valeur vit sur l'**application** (`FightStatusEffect::valuePerTurn`,
+     * le champ qu'ARC-11b-a a pose pour les depots) et non sur la fiche du
+     * statut, qui est partagee par toutes ses applications.
+     */
+    private function resolveRiposte(Fight $fight, CharacterInterface $character, int $lifeActuallyLost): int
+    {
+        $returned = 0;
+
+        foreach ($this->statusEffectManager->getActiveEffects($fight, $character) as $fightEffect) {
+            if ($fightEffect->getStatusEffect()->getType() !== StatusEffect::TYPE_RIPOSTE) {
+                continue;
+            }
+
+            $returned += RiposteLaw::returnedDamage($lifeActuallyLost, $fightEffect->getValuePerTurn());
+        }
+
+        return $returned;
+    }
+
     private function getShieldAbsorb(Fight $fight, CharacterInterface $character): int
     {
         $effects = $this->statusEffectManager->getActiveEffects($fight, $character);

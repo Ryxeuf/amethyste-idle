@@ -31,6 +31,16 @@ class StatusEffect
      */
     public const TYPE_MARK = 'mark';
 
+    /**
+     * ARC-18a — la riposte : *etre frappe est une action*.
+     *
+     * Un depot sur soi qui rend des degats a qui vous touche, **et seulement
+     * quand le coup a reellement retire des points de vie** (`RiposteLaw`). Le
+     * type existe a part parce que la forme n'est ni une protection — elle
+     * n'empeche rien — ni une entrave : elle **repond**.
+     */
+    public const TYPE_RIPOSTE = 'riposte';
+
     public const TYPES = [
         self::TYPE_POISON,
         self::TYPE_PARALYSIS,
