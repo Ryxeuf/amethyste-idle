@@ -1852,7 +1852,7 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       tiennent quelles que soient les valeurs, et une mesure qui les contredirait signalerait
       un bug de simulation avant un défaut de conception
 
-### ARC-18 — Les formes de geste (L | ★★★ | MOYENNE)
+### ARC-18 — Les formes de geste (L | ★★★ | MOYENNE) ◐
 > GAME_ARCHETYPES §13. Le vocabulaire d'intentions dit ce qu'un geste **fait** ; il ne dit
 > rien de sa **forme**. C'est là que vivent les archétypes des autres MMO — un chasseur et
 > un nécromancien ne diffèrent pas par leurs statistiques, mais parce qu'un **familier joue
@@ -1860,8 +1860,27 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 >
 > **À livrer une forme à la fois**, jamais en bloc : chacune est un mécanisme de combat
 > indépendant, et l'ordre ci-dessous va du moins cher au plus cher.
-- [ ] **La riposte** (S) — être frappé rend des dégâts. Un point d'accroche à l'encaissement.
+- [x] **La riposte** (S) — être frappé rend des dégâts. Un point d'accroche à l'encaissement.
       Répare : le tank ne tue pas (14 tours contre 6). Ne s'applique jamais aux dégâts évités
+      *(**ARC-18a — livré le 2026-08-18.** `GestureForm` pose le **vocabulaire fermé des huit
+      formes** — une neuvième est une décision de moteur, jamais un ajout de fixture (invariant
+      36) — et une seule a un lecteur, la discipline d'ARC-16a appliquée aux formes.
+      `RiposteLaw` dit ce qu'elle rend et quand elle ne rend rien.
+      **Le garde-fou est le cœur de la forme, et sa lecture est arithmétique plutôt que
+      déclarative** : on ne demande pas « la cible a-t-elle esquivé ? » mais « combien de points
+      de vie ont réellement été retirés ? ». Un coup esquivé, absorbé par un bouclier ou ramené
+      à zéro par la garde retire zéro, et zéro ne riposte pas — *poser la question sur le
+      résultat plutôt que sur la cause ferme d'un coup tous les chemins d'évitement, y compris
+      ceux qui n'existent pas encore*. Sans lui, l'encaisse optimale consisterait à se faire
+      toucher exprès.
+      **Elle rend une valeur fixe, jamais une part des dégâts reçus** : une part grandirait avec
+      le palier de l'adversaire, donc la riposte vaudrait le plus contre ceux qui frappent le
+      plus fort — elle récompenserait d'être en danger, ce que le garde-fou interdit déjà dans
+      l'autre sens. `DepositValue` porte la borne de la correction 21, lue une fois pour toutes
+      les formes qui déposent.
+      **Aucune valeur de jeu ne bouge** : aucun geste livré ne porte la forme, et la loi est
+      posée avant qu'il y ait quelque chose à relire — comme `ElementalMark` et `DepositLaw`
+      avant elle)*
 - [ ] **La posture** (S) — un dépôt `scope: soi`, sans durée, **exclusif**. Répare : aucun
       choix à l'échelle d'une rencontre. En changer coûte le tour
 - [ ] **La conversion** (S) — échanger des PV contre des PM. Répare : le pyromancien paie
