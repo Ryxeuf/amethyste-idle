@@ -241,7 +241,7 @@ zones:
               name_en: 'Lucine the Attuner'
               class_type: villager
               greeting: "Une amethyste ou un geste est reste lisible, voila tout ce qu'est une materia. Choisis ton flux : les premieres ne sont jamais hors de portee d'une bourse de debutant."
-              shop_items: [m1-air-dash, m1-angelic-touch, m1-aqua-shield, m1-beast-bond, m1-burning-touch, m1-falcon-strike, m1-fire-ball, m1-flame, m1-frozen-touch, m1-garde-haute, m1-gust, m1-haste, m1-hex, m1-liana-whip, m1-life-heal, m1-magnetic-pull, m1-natural-healing, m1-necrotic-touch, m1-precise-shot, m1-provocation, m1-punishment, m1-quicksand, m1-rock-armor, m1-sharp-blade, m1-stone-throw, m1-water-heal, m1-water-jet, m1-wind-lame, m1-wind-shield]
+              shop_items: [m1-air-dash, m1-angelic-touch, m1-aqua-shield, m1-beast-bond, m1-burning-touch, m1-earthen-guard, m1-falcon-strike, m1-fire-ball, m1-flame, m1-frozen-touch, m1-garde-haute, m1-gust, m1-haste, m1-hex, m1-liana-whip, m1-life-heal, m1-magnetic-pull, m1-natural-healing, m1-necrotic-touch, m1-precise-shot, m1-provocation, m1-punishment, m1-quicksand, m1-rock-armor, m1-sharp-blade, m1-stone-throw, m1-water-heal, m1-water-jet, m1-wind-lame, m1-wind-shield]
               opens_at: 20
               closes_at: 6
 

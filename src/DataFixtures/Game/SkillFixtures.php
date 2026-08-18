@@ -2465,143 +2465,237 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // GARDIEN (terre) — 15 skills, tank/support, protection de groupe
+    // GARDIEN — terre x melee x entretien, « la Source » / « le Rempart »
+    // (ARC-08d)
     // =========================================================================
+    /**
+     * Le quatrieme arbre au gabarit, et la case `upkeep x melee`.
+     *
+     * GAME_TREE_ANATOMY § 14 l'ecrit **en paire avec le Defenseur**, sur la
+     * meme case d'element et de registre : *seule leur fonction differe*. C'est
+     * la demonstration du troisieme axe sans qu'un seul chiffre ait a faire le
+     * travail — et c'est le Gardien qui porte la moitie « entretien ».
+     *
+     * **Sa promesse** : *je ne perds pas le combat que les autres perdent au
+     * tour 8 — et je le perds encore moins quand je ne suis pas la.* Son cout
+     * structurel est la lenteur et un plafond de degats bas : il use, il ne tue
+     * pas. Sa faiblesse est le combat de trois tours, ou provisionner ne sert a
+     * rien.
+     *
+     * **Il est le seul arbre dont le capstone garde x2,0** (§ 7, decision 23) :
+     * sa condition — *le combat dure* — est reellement intermittente, fausse
+     * dans toutes les rencontres de la bande 3-5. C'est la contrepartie exacte
+     * de son cout structurel, et elle tombe sans qu'on ait rien ajuste : *la
+     * fonction dont la promesse est la duree est celle dont le sommet se paie
+     * en duree*.
+     *
+     * **Ses gestes de groupe sont tous des depots** (§ 7 bis), et pour un
+     * archetype d'entretien ce n'est pas une contrainte mais sa definition :
+     * *il ne soigne pas, il provisionne*. Son seul soin direct est le Bouclier
+     * terreux, en portee `soi`.
+     */
     private function getGuardianSkills(): array
     {
         $d = 'guardian';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // Le Jet de cailloux porte **Alourdi**, la marque de la terre. Elle
+            // etait posee par le Bouclier terreux, un geste **partage** avec le
+            // Geomancien — donc de registre `spell`, donc hors de portee d'un
+            // arbre de melee.
             'guardian_apprenti_1' => [
-                'title' => 'Materia : Bouclier partage',
+                'title' => 'Materia : Bouclier terreux',
                 'slug' => 'guardian-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Bouclier partage',
+                'description' => 'Permet d\'utiliser la materia Bouclier terreux',
                 'requiredPoints' => 0,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'shared-shield']],
+                'actions' => ['materia' => ['unlock' => 'earthen-guard']],
             ],
+            // Le plan B offensif, et la loi 1 du § 5.1 : un arbre qui n'ouvre
+            // aucun geste de degat ne finit jamais un combat.
             'guardian_apprenti_2' => [
-                'title' => 'Materia : Parade',
+                'title' => 'Materia : Jet de cailloux',
                 'slug' => 'guardian-apprenti-2',
-                'description' => 'Permet d\'utiliser la materia Parade',
+                'description' => 'Permet d\'utiliser la materia Jet de cailloux — ce qui pese sur qui le recoit',
                 'requiredPoints' => 0,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'rock-armor']],
+                'actions' => ['materia' => ['unlock' => 'stone-throw']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord + 1 port ----
             'guardian_rang2_1' => [
-                'title' => 'Robustesse',
+                'title' => 'Main calme',
                 'slug' => 'guardian-rang2-1',
-                'description' => 'Augmente les points de vie maximum',
+                'description' => 'Ce qu\'on pose sans trembler tient mieux',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'life' => 5,
+                'levers' => [['lever' => 'mending', 'points' => 3]],
                 'requirements' => ['guardian_apprenti_1'],
             ],
             'guardian_rang2_2' => [
-                'title' => 'Materia : Benediction de la terre',
+                'title' => 'Souffle long',
                 'slug' => 'guardian-rang2-2',
-                'description' => 'Permet d\'utiliser la materia Benediction de la terre (soin)',
+                'description' => 'Reprendre son souffle sans cesser d\'avancer',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'earth-blessing']],
-                'requirements' => ['guardian_apprenti_1'],
+                'levers' => [['lever' => 'recovery', 'points' => 3]],
+                'requirements' => ['guardian_apprenti_2'],
             ],
             'guardian_rang2_3' => [
-                'title' => 'Materia : Bouclier terreux',
+                'title' => 'Materia : Racines',
                 'slug' => 'guardian-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Bouclier terreux',
+                'description' => 'Permet d\'utiliser la materia Racines — ce qu\'on plante a cote de quelqu\'un',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'earth-shield']],
-                'requirements' => ['guardian_apprenti_2'],
-            ],
-            'guardian_rang2_4' => [
-                'title' => 'Vigilance',
-                'slug' => 'guardian-rang2-4',
-                'description' => 'Augmente la precision des protections',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'hit' => 2,
-                'requirements' => ['guardian_apprenti_2'],
+                'actions' => ['materia' => ['unlock' => 'roots']],
+                'requirements' => ['guardian_apprenti_1'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord + 1 port ----
             'guardian_rang3_1' => [
-                'title' => 'Materia : Peau de pierre',
+                'title' => 'Geste econome',
                 'slug' => 'guardian-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Peau de pierre — armure renforcee',
+                'description' => 'Un mouvement de moins, c\'est un tour de plus',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'stone-skin']],
+                'levers' => [['lever' => 'thrift', 'points' => 6]],
+                'requirements' => ['guardian_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3).
+            'guardian_rang3_2' => [
+                'title' => 'Sang-froid',
+                'slug' => 'guardian-rang3-2',
+                'description' => 'Ce qui pese sur les epaules ne monte pas a la tete',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'ward', 'points' => 6, 'condition' => 'armor:plate']],
+                'requirements' => ['guardian_rang2_2'],
+            ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous.
+            'guardian_rang3_3' => [
+                'title' => 'Materia : Bouclier magique',
+                'slug' => 'guardian-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Bouclier magique — la pierre se leve autour des siens',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-bulwark']],
                 'requirements' => ['guardian_rang2_1', 'guardian_rang2_2'],
             ],
-            'guardian_rang3_2' => [
-                'title' => 'Materia : Force de la montagne',
-                'slug' => 'guardian-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Force de la montagne',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'mountain-strength']],
-                'requirements' => ['guardian_rang2_3'],
-            ],
-            'guardian_rang3_3' => [
-                'title' => 'Protection innebreanlable',
-                'slug' => 'guardian-rang3-3',
-                'description' => 'Augmente les points de vie et le soin',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'life' => 5,
-                'heal' => 1,
-                'requirements' => ['guardian_rang2_4'],
-            ],
-            'guardian_rang3_4' => [
-                'title' => 'Materia : Mur de fer',
-                'slug' => 'guardian-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Mur de fer (bouclier puissant)',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'stone-wall']],
-                'requirements' => ['guardian_rang3_1'],
-            ],
 
-            // Rang 4 (60-100 pts) — 2 skills
-            'guardian_rang4_1' => [
-                'title' => 'Materia : Croissance cristalline',
-                'slug' => 'guardian-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Croissance cristalline — armure de cristal',
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // *La Source* rend et tient dans la duree ; *le Rempart* resiste et
+            // saute la reprise. Aucun levier commun — {`recovery`, `life`}
+            // contre {`ward`, `wind`}.
+            //
+            // **Le Rempart echange `thrift` contre `wind`**, ce que le § 14.2
+            // recommande lui-meme depuis l'arbitrage de l'ecart n° 13 : la
+            // fourche oppose alors la reprise **raccourcie** a la reprise
+            // **sautee**, deux facons de payer le meme cout de registre.
+            'guardian_source_1' => [
+                'title' => 'Sourdre',
+                'slug' => 'guardian-source-1',
+                'description' => 'Ce qui coule sans bruit ne s\'arrete pas',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'crystal-growth']],
-                'requirements' => ['guardian_rang3_1', 'guardian_rang3_2'],
+                'levers' => [['lever' => 'recovery', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'gardien', 'branch' => 'source']],
+                'requirements' => ['guardian_rang3_3'],
             ],
-            'guardian_rang4_2' => [
-                'title' => 'Materia : Lance de cristal',
-                'slug' => 'guardian-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Lance de cristal — represailles',
+            // La teinte de l'arbre, et elle ne vit que dans cette branche : *il
+            // est la citerne du groupe*, ce qu'il depose se mesure a ce qu'il
+            // peut tenir.
+            'guardian_source_2' => [
+                'title' => 'Ce qui tient',
+                'slug' => 'guardian-source-2',
+                'description' => 'On ne donne pas plus que ce qu\'on peut porter',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'crystal-spear']],
-                'requirements' => ['guardian_rang3_3', 'guardian_rang3_4'],
+                'levers' => [['lever' => 'life', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'gardien', 'branch' => 'source']],
+                'requirements' => ['guardian_rang3_3'],
+            ],
+            'guardian_rampart_1' => [
+                'title' => 'Eaux calmes',
+                'slug' => 'guardian-rampart-1',
+                'description' => 'Ce qui vient glisse dessus',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'ward', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'gardien', 'branch' => 'rampart']],
+                'requirements' => ['guardian_rang3_3'],
+            ],
+            'guardian_rampart_2' => [
+                'title' => 'Longue patience',
+                'slug' => 'guardian-rampart-2',
+                'description' => 'Le geste qui n\'a pas coute son tour revient plus vite',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'wind', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'gardien', 'branch' => 'rampart']],
+                'requirements' => ['guardian_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis.
+            'guardian_source_accord' => [
+                'title' => 'Materia : Seve de pierre',
+                'slug' => 'guardian-source-accord',
+                'description' => 'Permet d\'utiliser la materia Seve de pierre — ce qui coule longtemps, et pour tous',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'stone-sap'],
+                    ['action' => 'specialization.branch', 'domain' => 'gardien', 'branch' => 'source'],
+                ],
+                'requirements' => ['guardian_rang3_3'],
+            ],
+            'guardian_rampart_accord' => [
+                'title' => 'Materia : Rempart de pierre',
+                'slug' => 'guardian-rampart-accord',
+                'description' => 'Permet d\'utiliser la materia Rempart de pierre — un mur qui tient sans nous',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'stonewall'],
+                    ['action' => 'specialization.branch', 'domain' => 'gardien', 'branch' => 'rampart'],
+                ],
+                'requirements' => ['guardian_rang3_3'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
-            'guardian_rang5_1' => [
-                'title' => 'Materia : Bastion',
-                'slug' => 'guardian-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Bastion — protection ultime du groupe',
-                'requiredPoints' => 150,
+            // --- Capstone (100 pts) ------------------------------------------
+            // **Le seul capstone du jeu qui garde x2,0.** Sa condition est
+            // reellement intermittente : *le combat dure* est faux dans toutes
+            // les rencontres de trois tours, c'est-a-dire dans le tout-venant.
+            // C'est la contrepartie exacte du cout structurel de l'entretien.
+            'guardian_capstone' => [
+                'title' => 'Ce qui dure',
+                'slug' => 'guardian-capstone',
+                'description' => 'Plus le combat s\'allonge, plus ce qu\'on a pose compte',
+                'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'bastion']],
-                'requirements' => ['guardian_rang4_1', 'guardian_rang4_2'],
+                'levers' => [['lever' => 'mending', 'points' => 14, 'condition' => 'long_fight']],
+                'requirements' => ['guardian_rang3_3'],
+            ],
+
+            // --- Les echelons de port (0 pb) ---------------------------------
+            'guardian_weapon_t2' => [
+                'title' => 'Maitrise de la lance (T2)',
+                'slug' => 'guardian-weapon-t2',
+                'description' => 'Permet d\'equiper les lances de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['guardian_apprenti_1'],
+            ],
+            'guardian_weapon_t3' => [
+                'title' => 'Maitrise de la lance (T3)',
+                'slug' => 'guardian-weapon-t3',
+                'description' => 'Permet d\'equiper les lances de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['guardian_weapon_t2'],
             ],
         ];
     }
 
-    // =========================================================================
-    // NECROMANCIEN (tenebres) — 18 nœuds au gabarit, le premier arbre de controle
     // =========================================================================
     /**
      * Le Necromancien — tenebres x sorts x controle, « la Veillee » (ARC-08a).

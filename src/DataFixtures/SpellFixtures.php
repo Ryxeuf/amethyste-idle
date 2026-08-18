@@ -724,9 +724,19 @@ class SpellFixtures extends Fixture
                 'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Jet de cailloux',
-                'description' => 'Un sort de jet de cailloux',
+                'description' => 'Une volee de pierres qui pese sur qui la recoit',
                 'hit' => 90,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                // ARC-08d : la marque de la terre passe sur l'accord d'entree
+                // du Gardien. Elle etait portee par le Bouclier terreux, un
+                // geste **partage** avec le Geomancien — donc de registre
+                // `spell`, donc hors de portee d'un arbre de melee.
+                'statusEffectSlug' => 'weighed-down',
                 'level' => 1,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Damage,
+                'scope' => SpellScope::Target,
             ],
             'earthquake' => [
                 'slug' => 'earthquake',
@@ -3065,18 +3075,98 @@ class SpellFixtures extends Fixture
                 'level' => 3,
             ],
             // Terre — Soin défensif avancé
+            // --- Les quatre gestes du Gardien (ARC-08d) ----------------------
+            //
+            // Le canon (§ 14.2) en annoncait **deux** a creer — Racines et Seve
+            // de pierre. Il en fallait quatre : le Bouclier terreux et le
+            // Bouclier magique sont **partages avec le Geomancien**, donc de
+            // registre `spell`, donc hors de portee d'un arbre de melee. C'est
+            // la meme regle qu'ARC-08b et ARC-08c ont rencontree — *un accord
+            // partage garde le registre de celui qui l'a ouvert le premier* —,
+            // et c'est la troisieme fois qu'elle decide du contenu a ecrire.
+            //
+            // **Les trois gestes de groupe sont des depots** (§ 7 bis), et pour
+            // un archetype d'entretien ce n'est pas une contrainte mais sa
+            // definition : *il ne soigne pas, il provisionne*.
+            'earthen_guard' => [
+                'slug' => 'earthen-guard',
+                'damage' => null,
+                'element' => Element::Earth,
+                'heal' => 4,
+                'name' => 'Bouclier terreux',
+                'description' => 'La terre qu\'on ramene sur soi, et qui tient le premier coup',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'statusEffectSlug' => 'shield',
+                'level' => 1,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::SelfOnly,
+            ],
+            'roots' => [
+                'slug' => 'roots',
+                'damage' => null,
+                'element' => Element::Earth,
+                'heal' => 5,
+                'name' => 'Racines',
+                'description' => 'Ce qu\'on plante a cote de quelqu\'un continue de pousser',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 1,
+                'statusEffectSlug' => 'regeneration',
+                'level' => 2,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Heal,
+                'scope' => SpellScope::Ally,
+            ],
+            'stone_bulwark' => [
+                'slug' => 'stone-bulwark',
+                'damage' => null,
+                'element' => Element::Earth,
+                'heal' => 3,
+                'name' => 'Bouclier magique',
+                'description' => 'La pierre se leve autour des siens, pas autour de soi',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 2,
+                'statusEffectSlug' => 'shield',
+                'level' => 3,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::Group,
+            ],
+            'stone_sap' => [
+                'slug' => 'stone-sap',
+                'damage' => null,
+                'element' => Element::Earth,
+                'heal' => 6,
+                'name' => 'Seve de pierre',
+                'description' => 'Ce qui coule dans la roche coule longtemps, et pour tout le monde',
+                'hit' => 100,
+                'energyCost' => 0,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'regeneration',
+                'level' => 4,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Heal,
+                'scope' => SpellScope::Group,
+            ],
             'stonewall' => [
                 'slug' => 'stonewall',
-                'damage' => 0,
+                'damage' => null,
                 'element' => Element::Earth,
                 'heal' => 4,
                 'name' => 'Rempart de pierre',
-                'description' => 'Érige un rempart de roche enchantée qui absorbe les coups et soigne les alliés',
+                'description' => 'Un mur qu\'on dresse pour les autres, et qui tient sans nous',
                 'hit' => 100,
-                'energyCost' => 14,
+                'energyCost' => 0,
                 'cooldown' => 3,
                 'statusEffectSlug' => 'shield-strong',
                 'level' => 4,
+                'register' => CombatRegister::Melee,
+                'intent' => SpellIntent::Protection,
+                'scope' => SpellScope::Group,
             ],
 
             // Métal — Sort de zone
