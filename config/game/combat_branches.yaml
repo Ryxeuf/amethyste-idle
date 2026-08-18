@@ -126,3 +126,24 @@ trees:
                 label: 'La Lame'
                 description: 'Une seule ouverture suffit : ignorer ce qui protege, et faire payer le critique.'
                 accord: 'Coup mortel'
+
+    # --- Artificier — feu x distance x controle (ARC-08c) -----------------
+    # La seule tension d'archetype du jeu (§ 13.4) : **sa fonction allonge les
+    # combats, et sa ressource se vide avec leur longueur**. La fourche est
+    # donc une reponse a cette tension, et pas un dosage — *finir vite* contre
+    # *pouvoir durer*.
+    #
+    # C'est aussi ce qui fait de `wind` une **reparation** plutot qu'un
+    # assaisonnement : la teinte rend de la munition, c'est-a-dire exactement
+    # ce que la fonction consomme.
+    artificer:
+        label: 'Artificier'
+        branches:
+            short_fuse:
+                label: 'Mèche courte'
+                description: 'Ce qui brule doit bruler maintenant : tenir la marque, jouer le premier, tout depenser d''un coup.'
+                accord: 'Barrage d''artillerie'
+            reserve:
+                label: 'Réserve'
+                description: 'Durer plus longtemps que la ligne d''en face : recuperer la munition, percer plutot que bruler.'
+                accord: 'Tir couvrant'

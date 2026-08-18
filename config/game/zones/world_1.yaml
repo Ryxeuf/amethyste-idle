@@ -477,7 +477,7 @@ zones:
               greeting: "Je marche devant, tu marches derriere. Si ma lampe s'eteint, ne cours pas : ecoute."
               # MAT-04 : la part de Feu et de Metal du plancher du jour 1 — la
               # forge et la ligne du metal vivent ici.
-              shop_items: [m2-rage-flame, m2-ember-shield, m2-steel-shield]
+              shop_items: [m2-rage-flame, m2-ember-shield, m2-fire-trap, m2-steel-shield]
             # FAC-04a — le comptoir de la Fonderie, au carreau des Mines (son
             # siege, GAME_WORLD §12.2). Le contraste exact des Ruelles : elle
             # s'affiche, visible des le jour 1. Ce comptoir porte le **plancher

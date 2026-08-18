@@ -30,7 +30,7 @@ class CombatBranchCatalogTest extends TestCase
         'Berserker', 'Chasseur', 'Chevalier', 'Defender', 'Dompteur',
         'Druide', 'Foudromancien', 'Gardien', 'Geomancien', 'Hydromancien',
         'Ingenieur', 'Inquisiteur', 'Maremancien', 'Paladin',
-        'Pretre', 'Sorcier', 'Vagabond', 'Artificier',
+        'Pretre', 'Sorcier', 'Vagabond',
     ];
 
     private function catalog(): CombatBranchCatalog
@@ -51,13 +51,14 @@ class CombatBranchCatalogTest extends TestCase
     {
         $catalog = $this->catalog();
 
-        self::assertSame(['pyromancy', 'healer', 'soldier', 'archer', 'necromancer', 'assassin'], $catalog->forkedTrees());
+        self::assertSame(['pyromancy', 'healer', 'soldier', 'archer', 'necromancer', 'assassin', 'artificer'], $catalog->forkedTrees());
         self::assertSame('La Braise', $catalog->labelOf('pyromancy', 'ember'));
         self::assertSame('Le Ressac', $catalog->labelOf('healer', 'undertow'));
         self::assertSame('Le Mur', $catalog->labelOf('soldier', 'wall'));
         self::assertSame('La Volée', $catalog->labelOf('archer', 'volley'));
         self::assertSame('Le Linceul', $catalog->labelOf('necromancer', 'shroud'));
         self::assertSame('L\'Ombre', $catalog->labelOf('assassin', 'shadow'));
+        self::assertSame('Mèche courte', $catalog->labelOf('artificer', 'short_fuse'));
     }
 
     /**
@@ -172,7 +173,7 @@ class CombatBranchCatalogTest extends TestCase
      */
     public function testTheTreesStillWaitingAreNamed(): void
     {
-        self::assertCount(18, self::WAITING_ON_ARC_08);
+        self::assertCount(17, self::WAITING_ON_ARC_08);
         self::assertCount(
             24,
             array_merge(self::WAITING_ON_ARC_08, $this->catalog()->forkedTrees()),

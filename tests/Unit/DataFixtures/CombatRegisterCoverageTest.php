@@ -37,7 +37,6 @@ class CombatRegisterCoverageTest extends TestCase
      * @var list<string>
      */
     private const AWAITING_ARC_08 = [
-        'artificer',
         'berserker',
         'defender',
         'engineer',

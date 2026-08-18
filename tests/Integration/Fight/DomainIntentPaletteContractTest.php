@@ -99,7 +99,6 @@ class DomainIntentPaletteContractTest extends AbstractIntegrationTestCase
      * @var list<string>
      */
     private const WAITING_ON_ARC_07_08 = [
-        'Artificier : 1 hinder sur 2',
         'Dompteur : 0 hinder sur 2',
         'Druide : 0 group_scoped sur 1',
         'Défenseur : 0 protect sur 2',
