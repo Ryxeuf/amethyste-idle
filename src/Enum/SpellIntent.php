@@ -88,6 +88,10 @@ enum SpellIntent: string
             // blesse personne (le total de la rencontre est inchange). Ce qu'il
             // fait, c'est mettre quelqu'un entre le coup et son allie.
             StatusEffect::TYPE_TRANSFER => self::Protection,
+            // Le familier **blesse** : c'est un depot offensif, et l'intention
+            // se lit sur ce qu'il fait a sa cible, jamais sur la fiction qui
+            // l'enveloppe.
+            StatusEffect::TYPE_FAMILIAR => self::Damage,
             default => null,
         };
     }
