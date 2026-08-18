@@ -9,13 +9,31 @@ use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 
 /**
  * ONB-01 — l'inscription.
  *
- * Chaque test part d'une adresse IP distincte : le limiteur de 5 comptes par
- * heure est partage par tout le suite sinon, et l'ordre d'execution deciderait
- * du resultat.
+ * Chaque test part d'une adresse IP distincte **et d'un compteur vide**.
+ *
+ * L'adresse distincte protege des autres tests du meme passage ; elle ne
+ * protege de rien d'autre, et c'est ce qui manquait. ***Le limiteur est le
+ * seul etat partage de la suite qui ne soit pas reinitialise*** : la base est
+ * isolee par transaction, le noyau est reconstruit a chaque client, mais les
+ * jetons vivent dans `var/cache/test`, donc ils **survivent a l'execution qui
+ * les a consommes**.
+ *
+ * Le defaut se paie en CI, et il s'est paye deux fois : le pipeline rejoue
+ * toute la suite quand elle tombe (« Rejouer les echecs sans couverture »), et
+ * ce second passage trouve les compteurs pleins. Le test du sixieme compte
+ * echoue alors **des sa premiere inscription**, `--stop-on-failure` arrete
+ * tout la, et *l'etape ajoutee pour rendre les echecs lisibles les rend
+ * illisibles* — elle affiche un 429 a la place du defaut qu'on cherchait.
+ *
+ * La reparation est celle que le reste de la suite applique deja a la base :
+ * **on ne se fie pas a l'etat laisse par le passage precedent, on le remet a
+ * zero**. `clientFromIp()` est le bon endroit — *la ou le test choisit son
+ * adresse est la ou il doit la rendre vierge*.
  */
 class RegistrationControllerTest extends WebTestCase
 {
@@ -119,7 +137,13 @@ class RegistrationControllerTest extends WebTestCase
 
     private function clientFromIp(string $ip): KernelBrowser
     {
-        return static::createClient([], ['REMOTE_ADDR' => $ip]);
+        $client = static::createClient([], ['REMOTE_ADDR' => $ip]);
+
+        /** @var RateLimiterFactoryInterface $limiter */
+        $limiter = static::getContainer()->get('limiter.registration');
+        $limiter->create($ip)->reset();
+
+        return $client;
     }
 
     private function uniqueEmail(): string
