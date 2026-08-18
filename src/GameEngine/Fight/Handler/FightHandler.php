@@ -9,6 +9,7 @@ use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Fight\OpeningLaw;
 use App\GameEngine\Party\PartyManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -84,6 +85,27 @@ class FightHandler
         $this->entityManager->flush();
 
         $this->combatLogger->logFightStart($fight);
+
+        // ARC-18g — **l'ouverture**. Le geste prepare depuis l'ecran de zone
+        // s'applique ici, avant le premier tour : *le premier tour est joue
+        // avant que l'ennemi n'existe*. Il est consomme au passage — une
+        // ouverture qui servirait a chaque rencontre serait un bonus permanent
+        // achete une fois.
+        //
+        // Elle frappe **la premiere cible**, et pas toutes : une preparation
+        // vise, elle ne balaie pas.
+        foreach ($partyPlayers as $partyPlayer) {
+            $prepared = OpeningLaw::payload($partyPlayer->consumeOpening());
+            if ($prepared <= 0 || $mobs === []) {
+                continue;
+            }
+
+            $first = $mobs[array_key_first($mobs)];
+            $first->setLife(max(0, $first->getLife() - $prepared));
+            $this->combatLogger->logDamage($fight, $first, $prepared, 'opening');
+        }
+
+        $this->entityManager->flush();
 
         // Initialize coop turn system if multiple players
         if (count($partyPlayers) > 1) {

@@ -79,7 +79,7 @@ enum GestureForm: string
      */
     public static function implemented(): array
     {
-        return [self::Riposte, self::Stance, self::Conversion, self::Transfer, self::Charge, self::Delayed];
+        return [self::Riposte, self::Stance, self::Conversion, self::Transfer, self::Charge, self::Delayed, self::Opening];
     }
 
     public function isImplemented(): bool
