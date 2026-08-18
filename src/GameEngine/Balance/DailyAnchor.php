@@ -131,9 +131,24 @@ final class DailyAnchor
         int $manaSpent,
         int $lifeRegenSeconds,
         int $manaRegenSeconds,
+        int $bar = 0,
     ): int {
-        return max(0, $lifeLost) * max(0, $lifeRegenSeconds)
-            + max(0, $manaSpent) * max(0, $manaRegenSeconds);
+        // ARC-20c — **les PV se recuperent proportionnellement a la barre.**
+        // Cette formule les comptait en absolu, ce qui etait exact tant que la
+        // barre valait 20 PV a tous les paliers ; le Socle la porte a 880 au
+        // palier 4, et l'attente aurait ete multipliee par neuf **pour le seul
+        // fait d'avoir progresse**. Or c'est cette attente qui sert d'ancre
+        // pour comparer les fonctions entre elles : la laisser exploser aurait
+        // fausse la comparaison, pas seulement allonge le jeu.
+        //
+        // La barre est **facultative** pour que les appelants qui n'en ont pas
+        // — un releve du canon rejoue a la main — gardent le comportement
+        // d'avant. Sans elle, on retombe sur le compte absolu.
+        $lifeSeconds = $bar > 0
+            ? VitalityRegen::secondsFor(max(0, $lifeLost), $bar, $lifeRegenSeconds)
+            : max(0, $lifeLost) * max(0, $lifeRegenSeconds);
+
+        return $lifeSeconds + max(0, $manaSpent) * max(0, $manaRegenSeconds);
     }
 
     /**
@@ -147,8 +162,9 @@ final class DailyAnchor
         int $manaSpent,
         int $lifeRegenSeconds,
         int $manaRegenSeconds,
+        int $bar = 0,
     ): int {
-        return (int) round(self::restSeconds($lifeLost, $manaSpent, $lifeRegenSeconds, $manaRegenSeconds) / 60);
+        return (int) round(self::restSeconds($lifeLost, $manaSpent, $lifeRegenSeconds, $manaRegenSeconds, $bar) / 60);
     }
 
     /**

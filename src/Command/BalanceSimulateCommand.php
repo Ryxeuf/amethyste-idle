@@ -124,7 +124,7 @@ class BalanceSimulateCommand extends Command
         $restByBuild = [];
 
         foreach ($builds as $build) {
-            $outcome = $this->daySimulator->simulate($this->characterFactory->of($build), $tier);
+            $outcome = $this->daySimulator->simulate($this->characterFactory->of($build, $tier), $tier);
 
             // **L'ancre ne lit que les journees menees a leur terme.** Une
             // journee arretee a la troisieme rencontre coute peu, et la compter
@@ -188,7 +188,7 @@ class BalanceSimulateCommand extends Command
 
         $rows = [];
         foreach ($builds as $build) {
-            $outcome = $this->simulator->simulate($this->characterFactory->of($build), $tier, MonsterRank::Elite);
+            $outcome = $this->simulator->simulate($this->characterFactory->of($build, $tier), $tier, MonsterRank::Elite);
 
             $rows[] = [
                 $outcome->buildLabel,
@@ -253,7 +253,7 @@ class BalanceSimulateCommand extends Command
         /** @var array<string, list<float>> $solo */
         $solo = [];
         foreach ($builds as $build) {
-            $character = $this->characterFactory->of($build);
+            $character = $this->characterFactory->of($build, $tier);
             $outcome = $this->simulator->simulate($character, $tier, MonsterRank::Common);
 
             // Le rendement solo se lit en **part de la rencontre par tour** :
@@ -266,7 +266,7 @@ class BalanceSimulateCommand extends Command
             $solo[$build->role->value][] = $outcome->victory ? 100.0 / max(1, $outcome->turns) : 0.0;
         }
 
-        $group = $this->groupContributionByRole();
+        $group = $this->groupContributionByRole($tier);
 
         $rows = [];
         foreach ($solo as $role => $values) {
@@ -286,13 +286,13 @@ class BalanceSimulateCommand extends Command
      *
      * @return array<string, float>
      */
-    private function groupContributionByRole(): array
+    private function groupContributionByRole(int $tier): array
     {
         $hpPerMember = $this->dungeon->getHpPerMember();
 
         $byRole = [];
         foreach ($this->buildFactory->all() as $build) {
-            $character = $this->characterFactory->of($build);
+            $character = $this->characterFactory->of($build, $tier);
             $perTurn = max($character->expectedDamagePerTurn(), $character->expectedFallbackDamagePerTurn());
 
             $byRole[$build->role->value][] = $perTurn * 100.0 / max(1, $hpPerMember * CompositionFactory::GROUP_SIZE);
@@ -317,7 +317,7 @@ class BalanceSimulateCommand extends Command
 
         $rows = [];
         foreach ($builds as $build) {
-            $outcome = $this->simulator->simulate($this->characterFactory->of($build), $tier, $rank);
+            $outcome = $this->simulator->simulate($this->characterFactory->of($build, $tier), $tier, $rank);
             $rows[] = $this->rowOf($outcome, $build->cell());
         }
 

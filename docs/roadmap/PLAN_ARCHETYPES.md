@@ -2342,8 +2342,33 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       aucun levier, couverture des 24 arbres en **cliquet**, plancher inconditionnel,
       aucune source indexée sur le nombre d'arbres appris)
 
-#### ARC-20c — Les cascades (M)
-- [ ] **`LifeRegenManager` passe en pourcentage de la barre.** Livré, il régénère
+#### ARC-20c — Les cascades (M) ◐ → 2 sous-phases
+
+> **ARC-20c-a — livré le 2026-08-18** : les deux cascades que le plan désigne comme
+> débloquantes — la régénération proportionnelle et le simulateur qui lit la loi. Restent
+> **ARC-20c-b** : la grille des soins (`MendingAnchor`), l'échelle de potions par palier, et
+> l'arbitrage de `Item::protection`.
+>
+> **Le simulateur mesure enfin des dégâts subis**, et c'était l'objet du jalon : il partait de
+> `PlayerFactory::BASE_LIFE`, c'est-à-dire **20 PV à tous les paliers**, quand une élite de
+> palier 4 en retire 110. *Un simulateur qui mesure une barre fausse mesure faux, et ses
+> moyennes ont l'air justes.*
+>
+> **La mesure retrouve la référence du canon** : les builds laissent **97 à 100 %** de leur
+> barre contre une élite de leur palier, quand le §9 octies annonçait « 102 à 129 % ».
+>
+> **Deux cliquets se déplacent, et le déplacement est le livrable.** *Une élite tue un joueur
+> seul* passe de **seuil dur à cliquet mesuré** — il était vert sur une barre de 20 PV,
+> c'est-à-dire qu'il mesurait une mort certaine contre n'importe quoi ; avec la barre réelle,
+> **14 builds sur 18 tombent** et les quatre survivants sont ceux qui la tuent avant huit tours,
+> *ce qui est arithmétique* (la bande d'une élite est 6-10 tours, la barre est calibrée sur 8).
+> Le canon est ici en tension avec lui-même, et ce qui manque pour trancher est la moitié qu'il
+> nomme lui-même : **la mitigation d'armure** (décision 21), qu'aucune formule ne lit et qui
+> appartient à ARC-19. Et l'écart d'ancre de fonction passe de ×5,7 à **×13,2** : *les PV se
+> rechargent proportionnellement, les PM non*. ***Un cliquet qui bouge parce qu'on mesure enfin
+> est le contraire d'un cliquet qui bouge en silence.***
+
+- [x] **`LifeRegenManager` passe en pourcentage de la barre.** Livré, il régénère
       **12 secondes par point, en absolu** : le retour à pleine vie passe de 19 min au
       palier 1 à **2 h 56** au palier 4, et l'ancre en minutes d'attente de `DailyAnchor`
       explose. Invariant : *le temps de retour à plein ne dépend pas du palier*
@@ -2357,7 +2382,7 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
 - [ ] **Trancher `Item::protection`** : lu par `EquipmentSetResolver`, affiché sur la fiche
       d'inventaire, **et par aucune formule de combat**. Le brancher comme mitigation
       (ARC-19) ou le retirer — *un chiffre affiché sans effet est un mensonge d'interface*
-- [ ] **`ReferenceCharacterFactory::maxLifeOf()` lit la loi** et non `BASE_LIFE` : c'est ce
+- [x] **`ReferenceCharacterFactory::maxLifeOf()` lit la loi** et non `BASE_LIFE` : c'est ce
       qui rend les cinq seuils d'ARC-17 mesurables, et la raison pour laquelle ce jalon
       passe **avant** la suite d'ARC-17 et **avant** ARC-19
 - [ ] Tests : les invariants 7 à 10 et 12 de GAME_VITALITY §8 (la part qu'un commun retire,

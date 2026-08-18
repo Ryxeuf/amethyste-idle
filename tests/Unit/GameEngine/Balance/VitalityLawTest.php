@@ -207,20 +207,23 @@ class VitalityLawTest extends TestCase
             'La creation du personnage n\'ecrit plus le plancher de la loi : un personnage peut naitre sans barre.',
         );
 
-        // Les deux autres lecteurs restent a brancher (ARC-20c, les cascades) :
-        // le dire ici plutot que de le taire evite qu'on croie le jalon fini.
-        foreach ([
-            '/src/GameEngine/Player/PlayerEffectiveStatsCalculator.php' => 'les statistiques effectives',
-            '/src/GameEngine/Zone/LifeRegenManager.php' => 'la regeneration hors combat',
-        ] as $path => $what) {
-            $pending = file_get_contents($root . $path);
-            self::assertIsString($pending, $path);
+        // ARC-20c a branche la regeneration : elle lit `VitalityRegen`, qui
+        // derive de la loi. Ce qui reste est la grille des soins
+        // (`MendingAnchor`) et `Item::protection`.
+        $regen = file_get_contents($root . '/src/GameEngine/Zone/LifeRegenManager.php');
+        self::assertIsString($regen);
+        self::assertStringContainsString(
+            'VitalityRegen',
+            $regen,
+            'La regeneration ne lit plus la loi : le retour a plein redepend du palier.',
+        );
 
-            self::assertStringNotContainsString(
-                'VitalityLaw',
-                $pending,
-                sprintf('%s lit la loi : la cascade est livree, ce cliquet doit etre retire.', $what),
-            );
-        }
+        $pending = file_get_contents($root . '/src/GameEngine/Player/PlayerEffectiveStatsCalculator.php');
+        self::assertIsString($pending);
+        self::assertStringNotContainsString(
+            'MendingAnchor',
+            $pending,
+            'La grille des soins est branchee : ce cliquet doit etre retire.',
+        );
     }
 }

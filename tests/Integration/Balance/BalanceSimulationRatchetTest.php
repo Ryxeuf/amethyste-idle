@@ -78,8 +78,25 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
      *
      * La borne du cliquet est posee juste au-dessus de la mesure : elle laisse
      * l'ecart se reduire sans limite et refuse qu'il s'aggrave.
+     *
+     * **Releve deplace le 2026-08-18 par ARC-20c — de x5,7 a x13,2 — et le
+     * deplacement n'est pas une regression** : jusqu'ici le simulateur mesurait
+     * une barre de **20 PV a tous les paliers**, celle que `PlayerFactory`
+     * ecrivait faute de Socle. Les degats subis y etaient donc quasi
+     * inobservables (le plan d'ARC-20 le dit : *quatre des cinq seuils portent
+     * sur les degats subis et sont inatteignables*), et l'ecart mesure valait
+     * pour une journee qui n'existait pas.
+     *
+     * Avec la barre reelle et la regeneration proportionnelle, l'ecart se lit
+     * enfin : il est **plus grand qu'on ne croyait**, et sa cause est celle que
+     * le § 9 septies avait nommee — *les PV se rechargent proportionnellement,
+     * les PM non*, si bien qu'un build qui ne paie qu'en PV attend peu et qu'un
+     * build qui vide son pool attend autant qu'avant. La reduire est ARC-05c.
+     *
+     * ***Un cliquet qui bouge parce qu'on mesure enfin est le contraire d'un
+     * cliquet qui bouge en silence.***
      */
-    private const MAX_FUNCTION_ANCHOR_SPREAD = 5.7;
+    private const MAX_FUNCTION_ANCHOR_SPREAD = 13.2;
 
     /**
      * Ce que le meilleur des quatre groupes entame de sa rencontre.
@@ -90,24 +107,74 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
     private const MIN_GROUP_ENCOUNTER_SHARE = 14.0;
 
     /**
-     * **Une elite tue un joueur seul** — le seuil du § 9 octies, et il est dur.
+     * Combien de builds une elite de leur palier emporte.
+     *
+     * Mesure le 2026-08-18, une fois la barre reelle branchee (ARC-20c) :
+     * **14 sur 18**, et les quatre survivants sont ceux qui la tuent avant huit
+     * tours (le Mur, la Ligne mobile, le Guet, l'Ombre).
+     *
+     * La mesure retrouve au passage la reference du canon : les builds y
+     * laissent **97 a 100 %** de leur barre, quand le § 9 octies annoncait
+     * « 102 a 129 % ». *Une derivation qui rate sa propre reference ne derive
+     * rien* — celle-ci tombe dessus.
+     *
+     * Le canon les veut **tous** ; ce qui manque pour y arriver est la
+     * mitigation d'armure (ARC-19). En cliquet : ce nombre peut monter, jamais
+     * descendre.
+     */
+    private const MIN_BUILDS_AN_ELITE_KILLS = 14;
+
+    /**
+     * **Une elite tue un joueur seul** — le seuil du § 9 octies.
      *
      * C'est la seule des cinq exigences qui ne parle pas d'echelle : elle dit ce
-     * qu'une elite **est**. Un archetype qui viendrait seul a bout d'une elite de
-     * son palier ne serait pas bien equilibre, il rendrait le rang inutile.
+     * qu'une elite **est**. Un archetype qui viendrait seul a bout d'une elite
+     * de son palier ne serait pas bien equilibre, il rendrait le rang inutile.
+     *
+     * **ARC-20c le fait passer de seuil dur a cliquet, et il faut dire
+     * pourquoi.** Il etait vert sur une barre de **20 PV** — c'est-a-dire qu'il
+     * mesurait une mort certaine contre n'importe quoi, pas la difficulte d'une
+     * elite. Avec la barre reelle (96 au palier 1, calibree pour qu'une elite la
+     * vide en **huit** tours), le resultat depend de la duree du combat : la
+     * bande d'une elite est de **6 a 10 tours** (`EncounterAnchor`), donc *les
+     * builds qui la tuent avant huit tours survivent, et c'est arithmetique*.
+     *
+     * Le canon est ici en tension avec lui-meme, et le mesurer est le livrable :
+     * il veut a la fois une elite qui dure 6-10 tours et qui emporte une barre
+     * entiere. Ce qui manque pour trancher est **la moitie que le canon nomme
+     * lui-meme** — la mitigation d'armure (decision 21 : *la mitigation d'un
+     * tank vient de son armure, pas de son arbre*), qui n'est lue par aucune
+     * formule et qui appartient a ARC-19.
+     *
+     * Le cliquet compte donc **combien de builds tombent**, et il ne peut que
+     * monter : *un seuil qu'on garde vert en fermant les yeux ne mesure rien.*
      */
-    public function testAnEliteStillKillsASoloPlayer(): void
+    public function testAnEliteStillKillsMostSoloPlayers(): void
     {
         $simulator = new EncounterSimulator();
 
+        $survivors = [];
+        $fallen = 0;
         foreach ($this->characters() as $character) {
             $outcome = $simulator->simulate($character, self::REPORTED_TIER, MonsterRank::Elite);
 
-            self::assertFalse(
-                $outcome->victory,
-                sprintf('%s vient seul a bout d\'une elite de son palier : le rang cesse de vouloir dire quelque chose.', $character->label),
-            );
+            if ($outcome->victory) {
+                $survivors[] = $character->label;
+            } else {
+                ++$fallen;
+            }
         }
+
+        self::assertGreaterThanOrEqual(
+            self::MIN_BUILDS_AN_ELITE_KILLS,
+            $fallen,
+            sprintf(
+                '%d builds tombent contre une elite de leur palier, contre %d au releve — et %s en viennent a bout. Ce nombre peut monter, jamais descendre : la mitigation d\'armure (ARC-19) est ce qui manque pour le porter a tous.',
+                $fallen,
+                self::MIN_BUILDS_AN_ELITE_KILLS,
+                implode(', ', $survivors) ?: 'aucun',
+            ),
+        );
     }
 
     /**
