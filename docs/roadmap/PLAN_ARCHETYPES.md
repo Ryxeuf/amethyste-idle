@@ -922,24 +922,56 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       (ouverts par des arbres de registres différents, ex. `magnetic-pull` : Soldat mêlée
       + Ingénieur tir) demandent un arbitrage par geste, pas une conversion mécanique
 
-### ARC-09 — Tests du plan (S | ★★ | HAUTE)
+### ARC-09 — Tests du plan (S | ★★ | HAUTE) ✅
 > ‖ au fil des jalons. Les 45 invariants de GAME_ARCHETYPES §12.
-- [ ] Budget (50 pb), plafonds par levier, règle des 80/20
-- [ ] Grille : une fonction par domaine, aucun triplet en double
-- [ ] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
-- [ ] Capstone : unique, conditionnel, 14 pb, condition atteignable au tour 2
-- [ ] Registre : tout arbre ouvre au moins un geste de son registre
-- [ ] Intentions : palette tenue, un `dégât` et un non-`dégât` par arbre, un geste de
-      portée collective pour l'entretien et l'encaisse
-- [ ] Dépôt : aucun geste de portée `le groupe` instantané ; durée en tours de rencontre
-- [ ] Conditions : les cinq garde-fous du §4.3, et le **vocabulaire fermé** (12 entrées) ;
-      aucun plafond global de points
-- [ ] Marques : une par élément, appliquée par un accord d'entrée de chaque arbre
-- [ ] Fourche : deux branches sans levier commun, chacune tenant les 50 pb
-- [ ] Pacte : unique, borné, feuille, hors palette, jamais au palier 1
-- [ ] Accointances : aucune ne rend un point de budget, un levier ou une statistique
-- [ ] Exclusivité : chaque arbre ouvre au moins un accord que nul autre n'ouvre
-- [ ] Règle 9 étendue au chemin des techniques ; aucun passif plat restant
+>
+> **Livré le 2026-08-18.** `ArchetypesPlanContractTest` répond à une seule question pour chacun
+> des 45 : **qui le tient ?** Il ne re-teste pas ce que d'autres tiennent — il est la table des
+> matières, il empêche l'index de pourrir (chaque test cité doit exister), et il porte les
+> garde-fous que personne ne portait.
+>
+> **L'inventaire, et c'est lui le livrable** : **26 tenus**, **5 portés ici pour la première
+> fois**, **14 impossibles aujourd'hui**. Les distinguer est tout l'objet du fichier — *un
+> invariant qu'aucun mécanisme ne peut violer ne mesure rien, et le compter comme tenu serait un
+> mensonge d'inventaire.* Les quatorze se rangent en trois familles, chacune avec son jalon :
+> **ARC-18** (n° 36-38, 42, 43 — aucune forme de geste n'est livrée), **ARC-19** (n° 39, 40 — la
+> riposte ne se déplace pas), **ARC-05c** (n° 29, 34, 35 — le simulateur les mesure depuis
+> ARC-17c, et le relevé dit qu'ils ne sont pas tenus ; ils vivent en cliquet plutôt qu'en seuil
+> sec).
+>
+> **Les cinq garde-fous neufs** portent sur les neuf arbres convertis : l'**accord exclusif**
+> (n° 45 — *un arbre dont tous les gestes s'obtiennent ailleurs n'est pas un arbre, c'est un
+> raccourci* ; il avait déjà décidé du contenu quatre fois sans que rien ne le vérifie), les
+> **deux nœuds gratuits qui sont des accords** (n° 5), l'**absence de condition au palier 1** et
+> le **plancher de deux passifs inconditionnels** (n° 12), et le **parent unique** (n° 21 quater).
+>
+> **Un constat que l'index a produit** : le canon veut que *le capstone exige l'accord de
+> branche*, quand les neuf arbres convertis le font dépendre du **nœud charnière du palier 2**.
+> Ce n'est pas un oubli — un prérequis unique ne peut pas désigner « celui des deux accords de
+> fourche que le joueur a pris », et le modèle n'exprime pas l'alternative. L'invariant est donc
+> **à moitié tenu**, et le dire vaut mieux que de le compter vert.
+- [x] Budget (50 pb), plafonds par levier, règle des 80/20 *(PatronTreeContractTest)*
+- [x] Grille : une fonction par domaine, aucun triplet en double *(DomainRoleTest)*
+- [x] Gabarit : 15 nœuds, échelle de coût, 2 entrées à 0 point **qui sont des accords**
+      *(ARC-09 — le second membre n'était tenu par personne)*
+- [◐] Capstone : unique, conditionnel, 14 pb, condition atteignable au tour 2 *(tenu, sauf le
+      prérequis de branche — voir le constat ci-dessus)*
+- [x] Registre : tout arbre ouvre au moins un geste de son registre *(CombatRegisterCoverageTest)*
+- [x] Intentions : palette tenue, un `dégât` et un non-`dégât` par arbre, un geste de
+      portée collective pour l'entretien et l'encaisse *(DomainIntentPaletteContractTest)*
+- [x] Dépôt : aucun geste de portée `le groupe` instantané ; durée en tours de rencontre
+      *(DepositLawTest, DepositedGestureContractTest)*
+- [x] Conditions : les cinq garde-fous du §4.3, et le **vocabulaire fermé** (12 entrées) ;
+      aucun plafond global de points *(SkillConditionTest ; ARC-09 pour le palier 1 et le
+      plancher d'inconditionnels)*
+- [x] Marques : une par élément, appliquée par un accord d'entrée de chaque arbre
+      *(ElementalMarkReachabilityTest — reste le Prêtre)*
+- [x] Fourche : deux branches sans levier commun, chacune tenant les 50 pb *(PatronTreeContractTest)*
+- [x] Pacte : unique, borné, feuille, hors palette, jamais au palier 1 *(PactRuleTest)*
+- [x] Accointances : aucune ne rend un point de budget, un levier ou une statistique
+      *(AccointanceContractTest)*
+- [x] Exclusivité : chaque arbre ouvre au moins un accord que nul autre n'ouvre *(ARC-09)*
+- [x] Règle 9 étendue au chemin des techniques ; aucun passif plat restant *(DomainPlanContractTest)*
 
 ### ARC-10 — Le plafond global de points (S | ★★ | MOYENNE) ✅
 
