@@ -63,6 +63,18 @@ class StatusEffect
      */
     public const TYPE_TRANSFER = 'transfer';
 
+    /**
+     * ARC-18h — le familier : *une creature qui frappe a votre place*.
+     *
+     * L'arbitrage du § 13.3 en fait un **depot offensif et non un acteur** :
+     * retirez le ciblage, il ne reste qu'une chose qui inflige des degats a
+     * chaque tour pendant une duree, posee en un tour. Le type existe a part
+     * d'un DOT ordinaire parce que sa valeur ne s'ecrit pas — *elle se derive
+     * d'un tour d'attaque de son invocateur* (`FamiliarLaw`) —, et parce qu'il
+     * n'y en a **qu'un a la fois**.
+     */
+    public const TYPE_FAMILIAR = 'familiar';
+
     public const TYPES = [
         self::TYPE_POISON,
         self::TYPE_PARALYSIS,
@@ -76,6 +88,7 @@ class StatusEffect
         self::TYPE_RIPOSTE,
         self::TYPE_STANCE,
         self::TYPE_TRANSFER,
+        self::TYPE_FAMILIAR,
     ];
 
     public const CATEGORY_BUFF = 'buff';

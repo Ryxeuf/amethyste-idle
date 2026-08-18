@@ -1854,7 +1854,15 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       tiennent quelles que soient les valeurs, et une mesure qui les contredirait signalerait
       un bug de simulation avant un défaut de conception
 
-### ARC-18 — Les formes de geste (L | ★★★ | MOYENNE) ◐
+### ARC-18 — Les formes de geste (L | ★★★ | MOYENNE) ✅
+> **Complet le 2026-08-18 : les huit formes ont un lecteur.** `GestureForm::implemented()`
+> rend désormais `cases()` — et c'est la forme la plus honnête, une liste écrite à la main
+> ayant divergé de ses membres en silence une fois déjà (le défaut trouvé par ARC-18b sur
+> `StatusEffect::TYPES`). Une neuvième forme devra **retirer** son nom de la liste tant
+> qu'elle n'est pas branchée, et le test le lui rappellera.
+>
+> Reste la dernière ligne du jalon — les **sept refus** du §13.3 verrouillés par test.
+>
 > GAME_ARCHETYPES §13. Le vocabulaire d'intentions dit ce qu'un geste **fait** ; il ne dit
 > rien de sa **forme**. C'est là que vivent les archétypes des autres MMO — un chasseur et
 > un nécromancien ne diffèrent pas par leurs statistiques, mais parce qu'un **familier joue
@@ -2086,28 +2094,42 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       une ouverture se pose *hors* rencontre et attend la suivante — la ranger dans un combat
       serait une contradiction dans les termes.
       **Aucune valeur de jeu ne bouge** : `pending_opening` naît à 0)*
-- [ ] **Le familier** (M) — **arbitrage rendu (§13.3) : c'est un dépôt offensif, pas un
-      acteur.** Retirez le ciblage et il ne reste qu'une chose qui frappe à chaque tour
+- [x] **Le familier** (M) — **arbitrage rendu (§13.3) : c'est un dépôt offensif, pas un
+      acteur.**
+      *(**ARC-18h — livré le 2026-08-18, et ARC-18 est complet.** `FamiliarLaw` applique la
+      **correction 21**, la seule recalibration chiffrée que le canon ait faite sur lui-même —
+      et qui **était déjà écrite quand elle n'a pas été appliquée** : la correction 5 (*la durée
+      étale la valeur, elle ne l'augmente pas*) existait quand la première calibration a été
+      posée. Sa valeur totale vaut donc **un tour d'attaque de son invocateur**, étalé sur sa
+      durée, ce qui le met à l'équilibre quand le joueur est présent et à **+56 % sur six tours
+      d'absence** : ***il ne vaut rien quand vous jouez, il vaut tout quand vous ne jouez pas***.
+      **Sa valeur se dérive de l'attaque de son invocateur, jamais d'un chiffre en base** — un
+      chiffre écrit vaudrait la même chose pour un débutant et pour un personnage fini, donc il
+      serait dominant au jour 1 et décoratif au mois 3. *La borne est un rapport, pas un nombre.*
+      L'affirmation du canon est rendue **calculable** plutôt que décrite (`contributionOver()`),
+      et l'étalement passe par `DepositLaw` : une règle recopiée dérive de son original en
+      silence.
+      **Aucune valeur de jeu ne bouge** : aucune fixture ne porte de statut `familiar`)* Retirez le ciblage et il ne reste qu'une chose qui frappe à chaque tour
       pendant une durée : le critère d'admission du §13.1 impose donc de le traiter comme
       tel. On garde ce qui comptait — **il agit sur les tours où son invocateur est
       absent** — et la fiction entière ; on perd le ciblage, on économise un acteur, une IA
       et une cible. Mesuré : +2 % sur un commun, **+9 % sur une élite**, rendement ×2,4 le
       tour investi — il ne sert que sur les longues rencontres, comme *la charge*
-- [ ] **Sa valeur totale est fixée à ~1 tour d'attaque par invocation** (correction 21).
+- [x] **Sa valeur totale est fixée à ~1 tour d'attaque par invocation** (correction 21).
       La première calibration — 40 % du geste sur 6 tours, soit ×2,4 le tour investi —
       **était cassée en groupe** : le familier agit sur les tours de **la rencontre** quand
       son invocateur n'a que **les siens**, soit un taux de change de 4 pour 1. Mesuré,
       l'invocateur contribuait **+87 %** avec quatre invocations, et plus il invoquait plus
       il gagnait
-- [ ] **Règle générale à verrouiller** : *un dépôt **offensif** ne dépasse jamais un tour
+- [x] **Règle générale à verrouiller** : *un dépôt **offensif** ne dépasse jamais un tour
       d'attaque par tour investi ; un dépôt **défensif** peut valoir davantage, parce que la
       barre de vie de sa cible l'écrête toute seule.* C'est ce qui autorise ×8,8 pour un soin
       de groupe et interdit ×2,4 pour des dégâts
-- [ ] Résultat visé : **à l'équilibre quand le joueur est présent** (solo comme en groupe),
+- [x] Résultat visé : **à l'équilibre quand le joueur est présent** (solo comme en groupe),
       **+56 % sur six tours d'absence** — le familier ne vaut rien quand on joue et tout
       quand on ne joue pas. Le geste devient une décision : *je pose mon familier avant de
       fermer l'onglet*
-- [ ] Garde-fous du familier : meurt avec la rencontre · un seul à la fois · les passifs de
+- [x] Garde-fous du familier : meurt avec la rencontre · un seul à la fois · les passifs de
       l'arbre qualifient ses gestes (la double borne s'applique) · il ne mitige rien, ne
       protège personne, n'encaisse pas — **un invocateur en tissu reste aussi fragile qu'un
       mage**

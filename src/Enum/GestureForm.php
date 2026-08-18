@@ -66,20 +66,25 @@ enum GestureForm: string
      * Les formes dont le moteur sait quelque chose.
      *
      * **Rendue plutot que sous-entendue** : c'est elle qui permet de refuser un
-     * geste declarant une forme inerte, et elle grandit d'un cran a chaque
+     * geste declarant une forme inerte, et elle a grandi d'un cran a chaque
      * sous-phase d'ARC-18.
      *
+     * **Depuis ARC-18h, les huit ont un lecteur** — elle rend donc `cases()`,
+     * et c'est la forme la plus honnete : une liste ecrite a la main aurait
+     * diverge de ses membres en silence le jour d'une neuvieme forme (le defaut
+     * qu'ARC-18b a trouve sur `StatusEffect::TYPES`). Une neuvieme forme devra
+     * **retirer** son nom d'ici tant qu'elle n'est pas branchee, et le test le
+     * lui rappellera.
+     *
      * *ARC-18b avait livre la posture sans l'y inscrire* — la liste ne coutant
-     * rien a oublier tant qu'aucun lecteur ne s'y adosse. C'est ARC-18c qui la
-     * rattrape en l'ecrivant, et le test qui l'accompagne la tient desormais
-     * **par le comportement du moteur** plutot que par la vigilance : une forme
-     * n'y figure que si quelque chose sait la lire.
+     * rien a oublier tant qu'aucun lecteur ne s'y adosse ; c'est ARC-18c qui
+     * l'avait rattrapee.
      *
      * @return list<self>
      */
     public static function implemented(): array
     {
-        return [self::Riposte, self::Stance, self::Conversion, self::Transfer, self::Charge, self::Delayed, self::Opening];
+        return self::cases();
     }
 
     public function isImplemented(): bool

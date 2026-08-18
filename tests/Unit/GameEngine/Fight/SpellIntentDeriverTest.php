@@ -56,6 +56,9 @@ class SpellIntentDeriverTest extends TestCase
             // plus fragile) et ne blesse personne — il met quelqu'un entre le
             // coup et son allie.
             StatusEffect::TYPE_TRANSFER => SpellIntent::Protection,
+            // Le familier blesse : l'intention se lit sur ce qu'il fait a sa
+            // cible, jamais sur la fiction qui l'enveloppe.
+            StatusEffect::TYPE_FAMILIAR => SpellIntent::Damage,
         ];
 
         $missing = array_values(array_diff(StatusEffect::TYPES, array_keys($expected)));

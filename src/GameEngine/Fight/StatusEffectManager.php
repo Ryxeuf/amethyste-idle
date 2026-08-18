@@ -136,6 +136,92 @@ class StatusEffectManager
      * l'**etaler**. Chaque allie recoit la meme part par tour, et c'est la
      * multiplication par les corps — jamais le chiffre affiche — qui fait la
      * valeur d'un depot en groupe.
+     */
+    /**
+     * Invoquer un familier (ARC-18h).
+     *
+     * ***Un depot offensif, pas un acteur*** (§ 13.3) : il pose une duree sur
+     * la cible et frappe a chaque tour de la rencontre, y compris ceux ou son
+     * invocateur n'agit pas — ce qui est sa raison d'etre.
+     *
+     * **Sa valeur se derive d'un tour d'attaque de son invocateur** et n'est
+     * jamais ecrite sur la fiche : un chiffre en base vaudrait la meme chose
+     * pour un debutant et pour un personnage fini, donc il serait dominant au
+     * jour 1 et decoratif au mois 3. *La borne est un rapport, pas un nombre.*
+     *
+     * Comme le depot, il ne passe pas par le jet de chance : ce qui est paye
+     * d'un tour est pose.
+     *
+     * @return int ce que le familier rend par tour, `0` s'il n'a pas ete pose
+     */
+    public function summon(Fight $fight, CharacterInterface $summoner, CharacterInterface $target, StatusEffect $effect, int $oneTurnOfAttack, ?CombatLeverEffects $casterLevers = null): int
+    {
+        $duration = FamiliarLaw::durationFor($this->effectiveDuration($effect, $casterLevers));
+        $perTurn = FamiliarLaw::perTurn($oneTurnOfAttack, $duration);
+
+        if ($perTurn <= 0) {
+            return 0;
+        }
+
+        // Garde-fou n° 2 du § 13.3 : **un seul familier a la fois**. Sans lui,
+        // la correction de valeur ne suffirait pas — on empilerait quatre
+        // depots a un tour d'attaque chacun, ce qui est exactement la mesure a
+        // +87 % que la correction 21 a fermee.
+        $this->dismissFamiliarsOf($fight, $summoner);
+
+        $targetType = $this->getTargetType($target);
+        $existing = $this->findExistingEffect($fight, $targetType, $target->getId(), $effect);
+
+        $row = $existing ?? new FightStatusEffect();
+        $row->setFight($fight);
+        $row->setTargetType($targetType);
+        $row->setTargetId($target->getId());
+        $row->setStatusEffect($effect);
+        $row->setRemainingTurns($duration);
+        $row->setValuePerTurn($perTurn);
+        $row->setAppliedAt(new \DateTime());
+        $row->setLastTickTurn(null);
+
+        $this->entityManager->persist($row);
+        $this->entityManager->flush();
+
+        return $perTurn;
+    }
+
+    /**
+     * Congedier les familiers de cet invocateur (ARC-18h).
+     *
+     * Ils sont poses **sur les cibles** et non sur lui : on les retrouve donc
+     * par leur fiche, la seule chose qu'ils aient en commun. C'est une
+     * approximation assumee tant qu'un seul invocateur agit — et le combat
+     * solo n'en connait qu'un.
+     */
+    private function dismissFamiliarsOf(Fight $fight, CharacterInterface $summoner): void
+    {
+        $rows = $this->entityManager->getRepository(FightStatusEffect::class)->findBy(['fight' => $fight]);
+
+        $removed = false;
+        foreach ($rows as $row) {
+            if ($row->getStatusEffect()->getType() !== StatusEffect::TYPE_FAMILIAR) {
+                continue;
+            }
+
+            $this->entityManager->remove($row);
+            $removed = true;
+        }
+
+        if ($removed) {
+            $this->entityManager->flush();
+        }
+    }
+
+    /**
+     * Deposer un effet sur des allies, pour la duree de la rencontre (ARC-11b).
+     *
+     * La loi du depot (`DepositLaw`, GAME_ARCHETYPES § 7 bis) rendue
+     * executable : un geste qui touche le groupe **ne reagit pas**, il pose une
+     * duree qui court que son lanceur soit connecte ou non. Il ne passe pas par
+     * le jet de chance — *on ne provisionne pas au hasard*.
      *
      * @param iterable<CharacterInterface> $allies
      */
