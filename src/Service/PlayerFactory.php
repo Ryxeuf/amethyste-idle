@@ -7,6 +7,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\Game\Race;
 use App\Entity\User;
+use App\GameEngine\Balance\VitalityLaw;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Service\Avatar\AvatarHashRecalculator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,19 @@ class PlayerFactory
      * § 0.2) refuse qu'un instrument de mesure recopie une valeur de jeu — une
      * constante recopiee cesse de suivre son original des la premiere fois
      * qu'on deplace l'une des deux.
+     */
+    /**
+     * La barre d'un personnage qui n'a rien appris (ARC-20b).
+     *
+     * ***On ne peut pas se retrouver sans barre de vie.*** Le plancher est
+     * porte ici plutot que par un arbre, parce qu'un personnage qui sort du
+     * tunnel — ou qui ne mene que des arbres de metier — n'en ouvrira jamais.
+     * Meme principe que l'outil de palier 1 offert avec l'arbre de recolte
+     * (OBJ-06) et que le plancher du jour 1 de GAME_MATERIA § 3.
+     *
+     * Elle **se derive** (`VitalityLaw::floor()`) et ne s'ecrit plus : les 20 PV
+     * qu'elle valait ne venaient de nulle part, et le canon raisonne depuis le
+     * premier jour sur une echelle que le code ne produisait pas.
      */
     public const BASE_LIFE = 20;
     public const BASE_MAX_ENERGY = 100;
@@ -62,8 +76,8 @@ class PlayerFactory
         // pas 3 d'un tunnel ou aucune decision de build ne doit etre prise
         // (A8). Ce que le peuple apporte est desormais une **capacite**, qui
         // touche ce qu'on sait et jamais ce qu'on produit (`RaceCapability`).
-        $player->setLife(self::BASE_LIFE);
-        $player->setMaxLife(self::BASE_LIFE);
+        $player->setLife(VitalityLaw::floor());
+        $player->setMaxLife(VitalityLaw::floor());
         $player->setEnergy(self::BASE_ENERGY);
         $player->setMaxEnergy(self::BASE_MAX_ENERGY);
         $player->setSpeed(self::BASE_SPEED);

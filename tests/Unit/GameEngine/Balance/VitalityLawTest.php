@@ -179,30 +179,47 @@ class VitalityLawTest extends TestCase
     }
 
     /**
-     * **Aucune formule ne lit encore la loi, et c'est voulu.**.
+     * **La loi est branchee — et le garde-fou est retourne, pas supprime.**.
      *
-     * Comme `EncounterAnchor`, `DailyAnchor` et `MonsterStatTemplate::attackFor()`
-     * avant elle, cette sous-phase livre un **instrument de mesure** et ne
-     * deplace aucune valeur de jeu. Ce test documente la transition : le jour ou
-     * ARC-20b et ARC-20c branchent la loi, il sera **retourne et pas supprime**,
-     * comme celui d'ARC-17a l'a ete par ARC-17b.
+     * ARC-20a avait livre `VitalityLaw` sans qu'aucune formule ne la lise, et
+     * un test le verifiait : *cette sous-phase rend une regle calculable pour
+     * qu'on mesure l'ecart, elle ne deplace aucune valeur de jeu.* ARC-20b la
+     * branche, donc le test dit maintenant l'inverse.
+     *
+     * **Le retourner plutot que le supprimer** — comme celui d'ARC-17a l'a ete
+     * par ARC-17b — garde la trace de ce qui s'est passe : *un jalon a livre
+     * une loi que personne ne lisait, et c'etait voulu*. Un test efface aurait
+     * laisse croire que la question ne s'etait jamais posee.
+     *
+     * Ce qu'il tient desormais est la moitie utile : **le plancher est lu la ou
+     * un personnage nait**, donc on ne peut plus se retrouver sans barre de vie.
      */
-    public function testNothingReadsTheLawYet(): void
+    public function testTheLawIsReadWhereACharacterIsBorn(): void
     {
         $root = \dirname(__DIR__, 4);
 
+        $source = file_get_contents($root . '/src/Service/PlayerFactory.php');
+        self::assertIsString($source);
+
+        self::assertStringContainsString(
+            'VitalityLaw::floor()',
+            $source,
+            'La creation du personnage n\'ecrit plus le plancher de la loi : un personnage peut naitre sans barre.',
+        );
+
+        // Les deux autres lecteurs restent a brancher (ARC-20c, les cascades) :
+        // le dire ici plutot que de le taire evite qu'on croie le jalon fini.
         foreach ([
-            '/src/Service/PlayerFactory.php' => 'la creation du personnage',
             '/src/GameEngine/Player/PlayerEffectiveStatsCalculator.php' => 'les statistiques effectives',
             '/src/GameEngine/Zone/LifeRegenManager.php' => 'la regeneration hors combat',
         ] as $path => $what) {
-            $source = file_get_contents($root . $path);
-            self::assertIsString($source, $path);
+            $pending = file_get_contents($root . $path);
+            self::assertIsString($pending, $path);
 
             self::assertStringNotContainsString(
                 'VitalityLaw',
-                $source,
-                sprintf('%s lit deja la loi : ARC-20a ne devait deplacer aucune valeur de jeu.', $what),
+                $pending,
+                sprintf('%s lit la loi : la cascade est livree, ce cliquet doit etre retire.', $what),
             );
         }
     }
