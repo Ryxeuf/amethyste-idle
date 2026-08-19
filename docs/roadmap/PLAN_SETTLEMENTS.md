@@ -515,7 +515,54 @@ Phase 5 (tests)      : FOY-16  (parallélisable)
 > jour où le fichier qu'elle nomme cesse d'être un canal : *une exemption qui ne
 > correspond plus à rien survit à la raison qui l'a justifiée*.
 
-### FOY-21 — Tests de la vague (S | ★★ | HAUTE)
-- [ ] Invariants : jamais d'expulsion, le plancher Jardins jamais gaté, le loyer
-      toujours routé ou détruit (jamais perdu en route), le retour au logis sans exploit
-      de voyage (pas de contournement du time-gating vers une zone tierce)
+### FOY-21 ✅ — Tests de la vague (S | ★★ | HAUTE) — livré le 2026-08-19
+> Le contrat transverse de la vague logement (`SettlementsHousingContractTest`).
+> Quatre jalons ont leurs tests ; celui-ci n'en refait aucun et porte ce qu'aucun
+> d'eux ne peut voir depuis sa position.
+- [x] **Jamais d'expulsion, tenu par la forme.** `ResidentialParcels` écrivait dans
+      son en-tête « aucun chemin de ce service ne touche une demeure existante, la
+      borne tient par construction » — *un commentaire n'est pas un invariant*. Le
+      contrat dérive la forme d'une expulsion : effacer une demeure, ou **lui retirer
+      son propriétaire** (le plus insidieux — la ligne reste en base et le joueur n'a
+      plus de chez-soi). `setOwner()` n'est légitime qu'à la construction. Plus la
+      porte de service : le dépôt n'offre **aucun verbe** de destruction, invisible au
+      scan tant que personne ne l'appelle et disponible le jour où quelqu'un la cherche
+- [x] **Le plancher jamais gaté, lu sur la règle et non sur son cas.**
+      `HouseRentRoutingTest` nomme le Quartier des Jardins ; c'est correct et
+      insuffisant — *une règle illustrée par son unique instance ne vieillit pas*. Le
+      contrat dérive de la **constante** et croise trois sources qu'aucun jalon ne voit
+      ensemble : le code, le monde semé (aucun foyer) et la déclaration
+      (`without_settlement`, qui distingue une omission d'une décision). Second volet :
+      **la capacité ne se consulte jamais sans exempter le plancher d'abord** — un
+      second appelant sans l'exemption le fermerait le jour où la ville est pleine,
+      c'est-à-dire le jour où le plancher sert
+- [x] **Le loyer routé ou détruit, jamais perdu en route.** Les tests de FOY-19
+      vérifient chaque destination une fois le loyer *entré* dans le routeur ; ils ne
+      voient pas ce qui se passe avant. Un chemin qui débiterait sans router ne serait
+      ni versé ni brûlé, et les deux disparitions se ressemblent du côté du joueur. La
+      règle se lit en **comptant** : autant de routages que de débits, par fichier.
+      Plus : le routeur ne peut jamais payer un joueur (aucune méthode ne nomme
+      `Player`) — un loyer ne revient jamais à quelqu'un
+- [x] **Le retour au logis sans exploit, lu dans la signature.** Les refus de FOY-20
+      sont un *comportement* : une surcharge ou un paramètre optionnel ajouté « pour la
+      flexibilité » le changerait sans qu'aucun test ne parle. L'invariant se lit donc
+      dans la **signature** — *un geste qui emmènerait ailleurs devrait le nommer*,
+      le motif d'ARC-16a. Plus : la destination se lit sur la **demeure**, jamais sur
+      une zone d'attache portée par le joueur, qui se réglerait à volonté
+- [x] Chaque invariant porte son garde-fou de **non-vacuité**, et les sept ont été
+      vérifiés par mutation : chacun échoue quand on écrit la violation qu'il décrit
+
+> **Ce que le contrat a trouvé.** Le plancher est le **seul endroit du jeu où une
+> demeure existe sans foyer** — c'est même ce qui le rend inconditionnel. Aucun test
+> de jalon ne pouvait voir ce croisement : FOY-20 pose ses demeures dans une zone à
+> foyer, et FOY-19 sait que le plancher n'a pas de percepteur mais ignore les
+> cheminées. Au croisement, un défaut livré : `SettlementDepositService::deposit()`
+> rend zéro quand la zone n'a pas de foyer, et `ResidenceGrain` comptait la cheminée
+> **allumée** quand même. Aucune conséquence de jeu — mais *un compteur qui compte des
+> grains qui ne sont pas tombés ne mesure plus rien*, et c'est ce compteur qu'un
+> opérateur lit pour savoir que le calendrier tourne. Corrigé : la cheminée est
+> comptée *skipped*, et **la clé de jour n'est pas posée** — rien n'a eu lieu, donc
+> rien à marquer, et le jour où un foyer lèvera dans cette zone elle fumera sans
+> rattrapage.
+
+**La vague 2 est complète : FOY-18 → FOY-21, 4/4.**

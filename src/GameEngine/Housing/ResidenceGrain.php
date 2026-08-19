@@ -26,6 +26,14 @@ use Doctrine\ORM\EntityManagerInterface;
  * La cle de jour vit sur la demeure, et c'est ce qui rend la commande
  * **idempotente** : le calendrier ne rejoue rien, mais une relance a la main ne
  * doit pas deposer deux fois.
+ *
+ * **Une cheminee sans ville ne fume pas** (FOY-21). Le plancher du logement est
+ * le seul endroit du jeu ou une demeure existe **sans foyer** — c'est meme ce
+ * qui le rend inconditionnel (personne n'en tire rien, donc personne ne peut le
+ * fermer). Le depot y rend zero, et la cle de jour n'est **pas** posee : un
+ * compteur qui compterait des grains qui ne sont pas tombes ne mesurerait plus
+ * rien, et c'est ce compteur qu'un operateur lit pour savoir que le systeme
+ * tourne.
  */
 class ResidenceGrain
 {
@@ -61,7 +69,14 @@ class ResidenceGrain
             // une ligne de la table `sediment`, pas un chemin a part. C'est ce
             // qui garantit qu'il obeit aux memes regles que les autres gestes —
             // multiplicateurs de doctrine compris.
-            $this->deposits->deposit($house->getOwner(), self::ACTION, $house->getZone(), $now);
+            $grains = $this->deposits->deposit($house->getOwner(), self::ACTION, $house->getZone(), $now);
+
+            // Zone sans foyer : il n'y a pas de ville a soutenir. On ne pose pas
+            // la cle — rien n'a eu lieu, et le compteur doit le dire.
+            if ($grains <= 0) {
+                ++$skipped;
+                continue;
+            }
 
             $house->recordResidenceGrain($dayKey);
             ++$burned;
