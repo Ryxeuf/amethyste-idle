@@ -90,6 +90,19 @@ class Domain
     #[ORM\Column(name: 'combat_role', type: 'string', length: 20, nullable: true, enumType: DomainRole::class)]
     private ?DomainRole $role = null;
 
+    /**
+     * Un arbre **hors registre** (DOM-10).
+     *
+     * Il n'apparait pas au catalogue public : le joueur ne peut pas decider de
+     * l'ouvrir, parce qu'il ignore qu'il existe. Il ne s'ouvre que par un
+     * **parchemin retrouve**, lie, remis par une rencontre qu'un accomplissement
+     * declenche.
+     *
+     * *Ce n'est pas un arbre cache : c'est un arbre qui n'a pas de vendeur.*
+     */
+    #[ORM\Column(name: 'off_register', type: 'boolean', options: ['default' => false])]
+    private bool $offRegister = false;
+
     #[ORM\OneToMany(targetEntity: DomainExperience::class, mappedBy: 'domain')]
     private $playerExperiences;
 
@@ -325,6 +338,21 @@ class Domain
     public function isCombatDomain(): bool
     {
         return $this->register !== null;
+    }
+
+    /**
+     * Cet arbre est-il hors du registre public (DOM-10) ?
+     */
+    public function isOffRegister(): bool
+    {
+        return $this->offRegister;
+    }
+
+    public function setOffRegister(bool $offRegister): self
+    {
+        $this->offRegister = $offRegister;
+
+        return $this;
     }
 
     /**

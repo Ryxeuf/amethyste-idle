@@ -220,6 +220,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getCookSkills(),
             $this->getCarpenterSkills(),
             $this->getTailorSkills(),
+            $this->getProspectorSkills(),
             $this->getBlacksmithSkills(),
             $this->getLeatherworkerSkills(),
             $this->getAlchimistSkills(),
@@ -7131,6 +7132,58 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // COMPETENCES PARTAGEES — multi-domaines (recolte + craft)
     // =========================================================================
+    /**
+     * PROSPECTEUR — l'arbre retrouve (DOM-10), hors registre.
+     *
+     * Il n'a pas d'entree au catalogue et pas de vendeur : il ne s'ouvre que par
+     * le **Carnet de prospection**, un parchemin **lie** que le vieux Nain remet
+     * a qui a mene l'arbre du mineur a son dernier palier.
+     *
+     * **Lateral, jamais vertical** (GAME_WORLD § 12.3c) : ses nœuds n'accordent
+     * ni statistique de combat ni levier — ils ouvrent des **voies alternatives**
+     * vers des minerais qui existent deja. Le prospecteur ne mine pas plus, il
+     * mine **autrement** : c'est une option de plus, pas une puissance de plus,
+     * et le joueur qui n'a pas croise le Nain n'est derriere sur rien.
+     *
+     * **Jamais necessaire** : aucune recette du jeu ne depend de celles-ci,
+     * aucune quete ne les demande, et ce qu'elles produisent s'obtient
+     * autrement — c'est meme leur definition.
+     */
+    private function getProspectorSkills(): array
+    {
+        $d = 'prospector';
+
+        return [
+            // L'entree, gratuite comme partout : lire le carnet ouvre l'arbre,
+            // il ne se paie pas une seconde fois.
+            'prospector_reading' => [
+                'title' => 'Lecture du carnet',
+                'slug' => 'prospector-reading',
+                'description' => 'Les annotations d\'un vieux mineur, enfin lisibles',
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'prospector_sorting' => [
+                'title' => 'Tri du tout-venant',
+                'slug' => 'prospector-sorting',
+                'description' => 'Ce qu\'on jette contient ce qu\'on cherche, en plus petite quantite',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-prospect-iron']]],
+                'requirements' => ['prospector_reading'],
+            ],
+            'prospector_reading_veins' => [
+                'title' => 'Lecture des veines',
+                'slug' => 'prospector-reading-veins',
+                'description' => 'La roche dit ou elle s\'enrichit, a qui sait la lire',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-prospect-silver']]],
+                'requirements' => ['prospector_sorting'],
+            ],
+        ];
+    }
+
     /**
      * Les nœuds partages entre metiers — **et pourquoi il n'y en a plus** (DOM-09).
      *

@@ -4,6 +4,7 @@ namespace App\Tests\Integration\Economy;
 
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\GameEngine\Progression\FoundTreeCatalog;
 use App\Tests\Integration\AbstractIntegrationTestCase;
 
 /**
@@ -26,6 +27,9 @@ final class CraftInterdependenceTest extends AbstractIntegrationTestCase
 {
     /** @var array<string, string>|null slug produit → metier producteur */
     private ?array $producers = null;
+
+    /** @var list<string>|null les metiers hors chaine, lus la ou ils se declarent */
+    private ?array $lateralCrafts = null;
 
     public function testEveryCraftConsumesTheOutputOfAnother(): void
     {
@@ -75,7 +79,7 @@ final class CraftInterdependenceTest extends AbstractIntegrationTestCase
         $producers = $this->producers();
         $violations = [];
 
-        foreach ($this->em->getRepository(Recipe::class)->findBy(['requiredLevel' => 1]) as $recipe) {
+        foreach ($this->recipes(1) as $recipe) {
             foreach ($this->ingredientSlugs($recipe) as $slug) {
                 if (isset($producers[$slug])) {
                     $violations[] = sprintf('%s ← %s (%s)', $recipe->getSlug(), $slug, $producers[$slug]);
@@ -100,7 +104,7 @@ final class CraftInterdependenceTest extends AbstractIntegrationTestCase
         $producers = $this->producers();
         $graph = [];
 
-        foreach ($this->em->getRepository(Recipe::class)->findAll() as $recipe) {
+        foreach ($this->recipes() as $recipe) {
             $craft = $recipe->getCraft();
             $graph[$craft] ??= [];
 
@@ -129,7 +133,7 @@ final class CraftInterdependenceTest extends AbstractIntegrationTestCase
         }
 
         $producers = [];
-        foreach ($this->em->getRepository(Recipe::class)->findAll() as $recipe) {
+        foreach ($this->recipes() as $recipe) {
             $result = $recipe->getResult();
             if ($result instanceof Item) {
                 $producers[$result->getSlug()] = $recipe->getCraft();
@@ -137,6 +141,46 @@ final class CraftInterdependenceTest extends AbstractIntegrationTestCase
         }
 
         return $this->producers = $producers;
+    }
+
+    /**
+     * Les recettes qui font l'economie — celles des arbres **retrouves** exclues (DOM-10).
+     *
+     * Un arbre retrouve est lateral par loi : *jamais necessaire*, et ce qu'il
+     * produit s'obtient deja autrement. Le compter ici lui ferait dire
+     * l'inverse de sa loi dans les deux sens a la fois — il apparaitrait comme
+     * une **dependance** du palier d'entree (le fer se mine, il ne s'achete
+     * pas), et comme un metier a qui l'on doit des clients. La chaine de
+     * production se lit sans lui, ce qui est exactement sa place.
+     *
+     * @return list<Recipe>
+     */
+    private function recipes(?int $requiredLevel = null): array
+    {
+        $criteria = $requiredLevel === null ? [] : ['requiredLevel' => $requiredLevel];
+        $lateral = $this->lateralCrafts();
+
+        return array_values(array_filter(
+            $this->em->getRepository(Recipe::class)->findBy($criteria),
+            static fn (Recipe $recipe): bool => !\in_array(mb_strtolower($recipe->getCraft()), $lateral, true),
+        ));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function lateralCrafts(): array
+    {
+        if (null !== $this->lateralCrafts) {
+            return $this->lateralCrafts;
+        }
+
+        $crafts = [];
+        foreach ((new FoundTreeCatalog(\dirname(__DIR__, 3)))->trees() as $tree) {
+            $crafts[] = mb_strtolower($tree['label']);
+        }
+
+        return $this->lateralCrafts = $crafts;
     }
 
     /**

@@ -77,6 +77,14 @@ class DomainFixtures extends Fixture
             // tissu est ce qui pese le moins, et le metier prend l'element de ce
             // qu'il travaille.
             'tailor' => ['title' => 'Tailleur', 'element' => 'air', 'title_translations' => ['en' => 'Tailor']],
+
+            // --- Les arbres retrouves (DOM-10) --------------------------------
+            // **Hors registre** : absent du catalogue public, sans vendeur. Il ne
+            // s'ouvre que par un parchemin **retrouve**, remis par une rencontre
+            // qu'un accomplissement declenche — ici, avoir mene l'arbre du mineur
+            // a son dernier palier. *Ce n'est pas un arbre cache : c'est un arbre
+            // qui n'a pas de vendeur.*
+            'prospector' => ['title' => 'Prospecteur', 'element' => 'earth', 'off_register' => true, 'title_translations' => ['en' => 'Prospector']],
         ];
 
         foreach ($domains as $key => $data) {
@@ -85,6 +93,7 @@ class DomainFixtures extends Fixture
             $domain->setElement($data['element']);
             $domain->setRegister($data['register'] ?? null);
             $domain->setRole($data['role'] ?? null);
+            $domain->setOffRegister($data['off_register'] ?? false);
             if (isset($data['title_translations']) && is_array($data['title_translations'])) {
                 $domain->setTitleTranslations($data['title_translations']);
             }

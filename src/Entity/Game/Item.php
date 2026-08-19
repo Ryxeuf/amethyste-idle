@@ -67,6 +67,11 @@ class Item
         'cuisinier' => self::TOOL_TYPE_COOKPOT,
         'charpentier' => self::TOOL_TYPE_PLANE,
         'tailleur' => self::TOOL_TYPE_NEEDLE,
+        // DOM-10 : le prospecteur travaille **a la pioche**. Ce n'est pas un
+        // huitieme metier d'artisanat — c'est un mineur qui a fini son arbre, et
+        // lui inventer un outil propre en ferait une ligne de progression de
+        // plus la ou le jalon veut une **option**.
+        'prospecteur' => self::TOOL_TYPE_PICKAXE,
     ];
 
     // OBJ-05 : l'outil que chaque profession de filon exige (GAME_ITEMS §4).

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\DataFixtures;
 
+use App\GameEngine\Progression\FoundTreeCatalog;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -148,14 +149,47 @@ class DomainRegisterTest extends TestCase
      */
     public function testEveryDeclaredDomainIsClassified(): void
     {
-        $known = array_merge(array_keys(self::COMBAT_DOMAINS), self::NON_COMBAT_DOMAINS);
+        $known = array_merge(array_keys(self::COMBAT_DOMAINS), self::NON_COMBAT_DOMAINS, $this->foundDomains());
 
         $unclassified = array_values(array_diff(array_keys($this->domains()), $known));
 
         self::assertSame(
             [],
             $unclassified,
-            'Ces domaines ne sont declares ni de combat ni de metier : personne ne verifie leur borne.',
+            'Ces domaines ne sont declares ni de combat, ni de metier, ni retrouves : personne ne verifie leur borne.',
         );
+    }
+
+    /**
+     * Un arbre **retrouve** ne porte pas de registre non plus (DOM-10).
+     *
+     * Il est hors registre par definition — c'est ce que le mot dit. Lui en
+     * donner un le ferait entrer dans le combat par une porte que personne ne
+     * regarde, puisqu'il n'a ni vendeur ni entree de catalogue : la fuite de
+     * DOM-09 rejouee, mais invisible.
+     */
+    public function testNoFoundTreeCarriesARegister(): void
+    {
+        $domains = $this->domains();
+
+        $intruders = [];
+        foreach ($this->foundDomains() as $slug) {
+            self::assertArrayHasKey($slug, $domains, sprintf('L\'arbre retrouve "%s" n\'est pas livre.', $slug));
+            if ($domains[$slug]['register'] !== null) {
+                $intruders[] = $slug;
+            }
+        }
+
+        self::assertSame([], $intruders, 'Un arbre retrouve porte un registre de combat : il accorderait de la puissance, ce que sa loi 1 interdit.');
+    }
+
+    /**
+     * Les arbres retrouves, lus la ou ils se declarent — jamais recopies ici.
+     *
+     * @return list<string>
+     */
+    private function foundDomains(): array
+    {
+        return (new FoundTreeCatalog(\dirname(__DIR__, 3)))->keys();
     }
 }

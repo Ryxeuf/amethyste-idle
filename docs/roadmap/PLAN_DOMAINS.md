@@ -25,7 +25,7 @@
 | DOM-07 ✅ | Nœuds d'accord d'hybride dormants | S | ← DOM-01 |
 | DOM-08 ✅ | Tests du plan | S | ‖ |
 | DOM-09 | La borne sans fuite (audit 2026-07-29) | M | ← DOM-01, DOM-02 |
-| DOM-10 | Les arbres retrouves (hors catalogue) | M | ← ONB-08 |
+| DOM-10 ✅ | Les arbres retrouves (hors catalogue) | M | ← ONB-08 |
 
 ```
 Piste A — Le système   : DOM-01 → DOM-02 ; DOM-03 ‖ ; DOM-04 ‖
@@ -335,7 +335,7 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > qu'aucun domaine de combat ne porte — la neuvième case que le §9 quater interdit. `wood`
 > reste la **teinte** de deux métiers ; le canon (§8) est corrigé.
 
-### DOM-10 — Les arbres retrouvés (M | ★★ | MOYENNE)
+### DOM-10 ✅ — Les arbres retrouvés (M | ★★ | MOYENNE) — livré le 2026-08-19
 > Ouvert le 2026-07-29 par la doctrine du parchemin ([../GAME_ONBOARDING.md](../GAME_ONBOARDING.md)
 > §6.4, arbitrage A17). Une fois l'accès aux arbres porté par un parchemin (**ONB-08**), une
 > couche devient possible : des arbres **hors catalogue**, ouverts par une rencontre que
@@ -349,24 +349,52 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > Prérequis : ← **ONB-08** (le parchemin ouvre un arbre) ; croise NAR (les rencontres) et
 > PLAN_REPERTOIRE (cousin, à ne pas confondre : le Répertoire est **collectif** et porte sur la
 > **matéria** ; ceci est **individuel** et porte sur les **domaines**)
-- [ ] Catégorie d'arbre **hors registre** : absent du catalogue public, existant pour le joueur
-      seulement après la rencontre
-- [ ] Parchemin retrouvé **lié** (non échangeable) — l'unique exception aux quatre conditions
-      du parchemin de registre. Ce qui circule entre joueurs est **l'information**, jamais
-      l'objet : sans ça, le premier découvreur met le secret à l'hôtel des ventes et il meurt
-      en deux jours
-- [ ] Condition de rencontre = **un accomplissement**, jamais un tirage
-- [ ] **Les cinq lois**, chacune verrouillée par un test :
-  - [ ] **latéral, jamais vertical** (GAME_WORLD §12.3c) — des options, jamais de la puissance,
-        sinon le joueur qui n'a pas croisé le Nain est mécaniquement derrière
-  - [ ] **cumulatif, jamais manqué** (§12.3d) — la rencontre reste disponible indéfiniment pour
-        quiconque remplit la condition. Pas de premier arrivé, pas de fenêtre, pas de date
-  - [ ] **jamais nécessaire** — aucune recette, aucun palier, aucune quête normale n'en dépend
-  - [ ] la condition est un accomplissement
-  - [ ] le parchemin est lié
-- [ ] Premier contenu : un arbre retrouvé, en preuve du mécanisme (le reste est du contenu)
-- [ ] Tests : absence du catalogue ; rencontre rejouable par un second joueur ; non-échangeable ;
-      aucune recette ni progression normale n'en dépend
+- [x] Catégorie d'arbre **hors registre** : `Domain::offRegister`, absent du catalogue public
+- [x] Parchemin retrouvé **lié** (`BindType::BindOnPickup`, prix 0) — l'unique exception aux
+      quatre conditions du parchemin de registre. Ce qui circule entre joueurs est
+      **l'information**, jamais l'objet
+- [x] Condition de rencontre = **un accomplissement**, jamais un tirage (`earned_by`)
+- [x] **Les cinq lois**, chacune verrouillée par un test (`FoundTreeContractTest`)
+- [x] Premier contenu : le **Prospecteur**, gagné au dernier nœud de l'arbre du mineur
+- [x] Tests : absence du catalogue ; non-échangeable ; aucune recette ni progression normale
+      n'en dépend
+
+> **Livré (2026-08-19).** *Terminer un arbre ne donnait rien* : le dernier palier était un
+> cul-de-sac, et DOM-09 venait d'en vider un (`miner-master` ne portait qu'une statistique de
+> combat, qui fuyait). Il devient une **condition de rencontre** — ce n'est pas ce qu'il donne
+> qui compte, c'est ce qu'il prouve.
+>
+> Une couche de contenu est un **bloc de configuration** (`config/game/found_trees.yaml` +
+> `FoundTreeCatalog`), comme `combat_branches.yaml` et `equipment_ports.yaml` avant elle ; le
+> chargeur refuse un arbre sans accomplissement, sans parchemin, ou dont le parchemin n'a ni nom
+> ni description. **La loi 2 est tenue par la forme du fichier** : il n'existe aucun champ où
+> écrire une date, une fenêtre, un quota ou une chance — *ce qu'on ne peut pas écrire ne peut
+> pas dériver*, et un test verrouille la liste des clés admises pour que l'ajout d'un champ soit
+> une décision et jamais un glissement.
+>
+> Le déclenchement passe par `FoundTreeGranter`, branché sur `SkillAcquiring` : *un nœud appris,
+> une question, une réponse*. Il est **idempotent** (un second apprentissage ne redonne rien) et
+> il ne connaît pas la base — le catalogue rend une clé, jamais un arbre.
+>
+> **Ce que la loi 3 a corrigé dans son propre test.** La première écriture demandait qu'une
+> **autre recette** produise ce que le prospecteur produit ; elle avait tort — le fer se mine, il
+> ne se fabrique pas. *La question n'est pas « une autre recette existe-t-elle ? » mais « cet
+> objet a-t-il une autre source ? »* : une voie alternative qui serait la seule voie n'en serait
+> pas une. Le test lit donc les filons de `zones.yaml` avant les recettes.
+>
+> **Et la même erreur vivait dans un test voisin, en sens inverse.** `CraftInterdependenceTest`
+> (ECO-14) tenait `ore-iron` pour un produit d'artisanat dès qu'une recette le rendait, si bien
+> que quatre recettes de palier 1 devenaient « dépendantes d'un autre joueur » alors qu'on mine
+> leur ingrédient. Un arbre retrouvé sort donc de la chaîne de production — dans **les deux
+> sens** : il n'est la dépendance de personne (loi 3) et personne ne lui doit de clients. *La
+> chaîne se lit sans lui, ce qui est exactement sa place.*
+>
+> Trois contrats livrés ont dû apprendre l'exception, et chacun l'a apprise **au même endroit**
+> (le catalogue, jamais une liste recopiée) : le parchemin d'un arbre retrouvé **couvre** son
+> arbre (il vit simplement hors d'`ItemFixtures`), un arbre retrouvé est **classé** — troisième
+> catégorie à côté du combat et des métiers, et sans registre, sinon la fuite de DOM-09 se
+> rejouerait là où personne ne regarde —, et le catalogue public reste complet **sur les arbres
+> publics**. *Ce n'est pas un arbre caché : c'est un arbre qui n'a pas de vendeur.*
 
 ---
 

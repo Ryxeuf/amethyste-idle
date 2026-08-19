@@ -4,7 +4,9 @@ namespace App\DataFixtures;
 
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
+use App\Enum\BindType;
 use App\GameEngine\Item\ItemEffectEncoder;
+use App\GameEngine\Progression\FoundTreeCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -40,6 +42,11 @@ use Doctrine\Persistence\ObjectManager;
  */
 class DomainParchmentFixtures extends Fixture implements DependentFixtureInterface
 {
+    public function __construct(
+        private readonly FoundTreeCatalog $foundTrees,
+    ) {
+    }
+
     /**
      * Prix unique, provisoire (cf. l'en-tete de classe).
      */
@@ -107,6 +114,8 @@ class DomainParchmentFixtures extends Fixture implements DependentFixtureInterfa
 
     public function load(ObjectManager $manager): void
     {
+        $this->loadFoundParchments($manager);
+
         foreach (self::PARCHMENTS as $domainKey => [$nameFr, $nameEn]) {
             /** @var Domain $domain */
             $domain = $this->getReference($domainKey, Domain::class);
@@ -134,6 +143,51 @@ class DomainParchmentFixtures extends Fixture implements DependentFixtureInterfa
         }
 
         $manager->flush();
+    }
+
+    /**
+     * Les parchemins **retrouves** (DOM-10) — et leur unique difference.
+     *
+     * Ils sont **lies** (`bind_on_pickup`), ce qui est l'unique exception aux
+     * quatre conditions du parchemin de registre rappelees en tete de classe :
+     * *ce qui circule entre joueurs est l'information, jamais l'objet*. Sans
+     * cela, le premier decouvreur met le secret a l'hotel des ventes et il meurt
+     * en deux jours.
+     *
+     * Deux autres differences suivent d'elles-memes : ils n'ont **pas de prix**
+     * (aucune echoppe n'en vend — un carnet se donne), et ils sont declares dans
+     * `found_trees.yaml` plutot qu'ici, parce que c'est la que vit la rencontre
+     * qui les remet.
+     */
+    private function loadFoundParchments(ObjectManager $manager): void
+    {
+        foreach ($this->foundTrees->trees() as $domainKey => $tree) {
+            /** @var Domain $domain */
+            $domain = $this->getReference($domainKey, Domain::class);
+            $parchment = $tree['parchment'];
+
+            $item = new Item();
+            $item->setName($parchment['name']);
+            $item->setNameTranslations(['en' => $parchment['name_en']]);
+            $item->setSlug($parchment['slug']);
+            $item->setDescription($parchment['description']);
+            $item->setDescriptionTranslations(['en' => $parchment['description_en']]);
+            $item->setType('stuff');
+            $item->setEffect(json_encode([
+                ItemEffectEncoder::KEY_ACTION => ItemEffectEncoder::ACTION_OPEN_DOMAIN,
+                ItemEffectEncoder::KEY_SLUG => $domain->getSlug(),
+            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
+            $item->setPrice(0);
+            $item->setSpace(1);
+            $item->setEnergyCost(0);
+            $item->setNbUsages(1);
+            $item->setBindType(BindType::BindOnPickup);
+            $item->setCreatedAt(new \DateTime());
+            $item->setUpdatedAt(new \DateTime());
+
+            $manager->persist($item);
+            $this->addReference($domainKey . '_found_parchment', $item);
+        }
     }
 
     public static function parchmentSlug(string $domainKey): string

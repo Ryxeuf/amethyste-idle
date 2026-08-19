@@ -7,6 +7,7 @@ use App\Enum\Element;
 use App\GameEngine\Fight\ElementalMark;
 use App\GameEngine\Progression\DomainCatalogDefinitionException;
 use App\GameEngine\Progression\DomainCatalogDescriptions;
+use App\GameEngine\Progression\FoundTreeCatalog;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -166,7 +167,13 @@ class DomainCatalogContractTest extends TestCase
     }
 
     /**
-     * Slugs des domaines livres, derives exactement comme l'entite le fait.
+     * Slugs des arbres **publics** livres, derives exactement comme l'entite le fait.
+     *
+     * Les arbres **retrouves** (DOM-10) en sont retires, et c'est leur
+     * definition meme : *ce n'est pas un arbre cache, c'est un arbre qui n'a
+     * pas de vendeur*. Les deux lois du catalogue continuent de tirer en sens
+     * inverse sur tout le reste — l'exception est nommee ici plutot que
+     * dispersee en cas particuliers dans chacune.
      *
      * @return list<string>
      */
@@ -174,11 +181,17 @@ class DomainCatalogContractTest extends TestCase
     {
         $source = (string) file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/DomainFixtures.php');
 
-        preg_match_all("/'[a-z]+' => \['title' => '([^']+)'/", $source, $matches);
-        self::assertNotEmpty($matches[1], 'Aucun domaine trouve : la loi ne verifierait rien.');
+        preg_match_all("/'([a-z]+)' => \['title' => '([^']+)'/", $source, $matches, \PREG_SET_ORDER);
+        self::assertNotEmpty($matches, 'Aucun domaine trouve : la loi ne verifierait rien.');
+
+        $found = (new FoundTreeCatalog(\dirname(__DIR__, 4)))->keys();
 
         $slugs = [];
-        foreach ($matches[1] as $title) {
+        foreach ($matches as [, $key, $title]) {
+            if (\in_array($key, $found, true)) {
+                continue;
+            }
+
             $domain = new Domain();
             $domain->setTitle($title);
             $slugs[] = mb_strtolower($domain->getSlug());

@@ -898,6 +898,43 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Distille une potion de soin du dernier palier, à la fleur de phénix.',
                 'name_translations' => ['en' => 'Supreme Healing Potion'],
             ],
+            // --- DOM-10 : les voies du prospecteur ---------------------------
+            // **Laterales, jamais verticales** : elles menent a des minerais qui
+            // existent deja, par un autre chemin. Le prospecteur ne mine pas
+            // plus, il mine **autrement** — et personne n'en depend, ce qui est
+            // la definition d'une voie alternative.
+            'recipe_prospect_iron' => [
+                'name' => 'Tri du tout-venant',
+                'slug' => 'recipe-prospect-iron',
+                'craft' => 'prospecteur',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'ore-copper', 'quantity' => 5],
+                ],
+                'result_ref' => 'ore_iron',
+                'result_quantity' => 3,
+                'crafting_time' => 5,
+                'xp_reward' => 10,
+                'description' => 'Trie le tout-venant de cuivre pour en tirer le fer qu\'il contenait.',
+                'name_translations' => ['en' => 'Sorting the Spoil'],
+            ],
+            'recipe_prospect_silver' => [
+                'name' => 'Lecture des veines',
+                'slug' => 'recipe-prospect-silver',
+                'craft' => 'prospecteur',
+                'required_level' => 2,
+                // Rien d'un autre metier : une voie alternative qui exigerait
+                // un joaillier ne serait pas une voie (ECO-02).
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 4],
+                ],
+                'result_ref' => 'ore_silver',
+                'result_quantity' => 3,
+                'crafting_time' => 8,
+                'xp_reward' => 18,
+                'description' => 'Suit l\'enrichissement d\'une veine jusqu\'a l\'argent qu\'elle cache.',
+                'name_translations' => ['en' => 'Reading the Veins'],
+            ],
             'recipe_elixir_vitality' => [
                 'name' => 'Élixir de vitalité',
                 'slug' => 'recipe-elixir-vitality',
