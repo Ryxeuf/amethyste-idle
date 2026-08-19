@@ -38,13 +38,15 @@ enum AccointanceForm: string
      * Elargir ce qui satisfait une condition de passif.
      *
      * *Soldat + Vagabond — « Pied sur » : les passifs conditionnes « en cuir »
-     * sont aussi satisfaits par la maille.*
+     * sont aussi satisfaits par la plaque.*
      *
-     * **Sans lecteur a ce jour** : `SkillCondition` est analysee, valorisee et
-     * affichee, mais **jamais confrontee a un equipement reel** — aucun service
-     * ne repond « ce joueur porte-t-il une dague ? ». Elargir ce que personne
-     * n'evalue n'aurait aucun effet ; la forme est declaree, son branchement
-     * attend qu'il existe quelque chose a elargir.
+     * **Lecteur : `BuildConditionEvaluator`** (ARC-16b). Le blocage d'ARC-16a
+     * etait un constat — `SkillCondition` etait analysee, valorisee et affichee,
+     * jamais confrontee a un equipement reel — et il est leve : l'evaluateur
+     * repond « ce joueur porte-t-il une dague ? », et l'accointance elargit ce
+     * qui compte comme reponse. Le sujet et l'elargissement sont **deux
+     * conditions de build de la meme ligne** (`subject`, `widenedBy`), refusees
+     * a la lecture par `AccointanceRule`.
      */
     case ConditionWidening = 'condition_widening';
 
@@ -64,8 +66,14 @@ enum AccointanceForm: string
     /**
      * Elargir ce qu'un emplacement de materia accepte.
      *
-     * *Guerisseur + Pretre — « Liturgie » : un emplacement de sort accepte une
-     * materia de l'element voisin.*
+     * *Guerisseur + Pretre — « Liturgie » : un emplacement type accepte une
+     * materia de l'ecole voisine.*
+     *
+     * **Lecteur : `SlotAcceptanceWidener`** (ARC-16b), branche la ou le refus
+     * vit (`MateriaGearSetter`). La paire suffit — aucun sujet : un emplacement
+     * qui refuserait une materia par son genre l'accepte quand son geste est
+     * ouvert par l'une des deux ecoles de l'accointance. *Les deux ecoles se
+     * comprennent : leurs gestes se sertissent l'un chez l'autre.*
      */
     case SlotAcceptance = 'slot_acceptance';
 
@@ -74,6 +82,12 @@ enum AccointanceForm: string
      *
      * *Archer + Charpentier — « Fut droit » : l'echelon 3 de port de l'arc
      * coute un palier de moins.*
+     *
+     * **Lecteur : `PortAccessDiscount`** (ARC-16b), branche sur les trois
+     * moments ou le cout se lit — le refus, la depense, le respec — pour que
+     * les trois disent le meme chiffre. Le sujet nomme la **famille** de
+     * l'echelle de port (`subject: bow`), et la remise est fixe par la regle :
+     * un barreau de moins sur `SkillCostScale`, jamais un nombre en donnees.
      *
      * La borne qui la garde honnete : elle porte sur un **acces** (un echelon,
      * une porte), jamais sur une ressource de combat. Reduire un cout en PM ou
@@ -89,9 +103,33 @@ enum AccointanceForm: string
      * ferait **rien** sans que rien ne le dise. Une accointance inerte n'est
      * pas fausse — le canon veut qu'aucune ne soit necessaire —, mais elle est
      * un mensonge d'interface si on la laisse s'ecrire sans le savoir.
+     *
+     * **Les quatre formes ont leur lecteur depuis ARC-16b.** Le drapeau reste :
+     * une cinquieme forme n'entrerait pas sans lui, et le contrat
+     * (`AccointanceContractTest`) continue de le lire.
      */
     public function hasReader(): bool
     {
-        return $this === self::DomainExpression;
+        return true;
+    }
+
+    /**
+     * Cette forme exige-t-elle un sujet ?
+     *
+     * Les deux formes derivees de la paire n'en portent aucun — leur payload
+     * EST la paire, et un sujet qu'aucun lecteur ne lit serait un mensonge de
+     * donnees. Les deux autres nomment ce sur quoi elles agissent.
+     */
+    public function needsSubject(): bool
+    {
+        return $this === self::ConditionWidening || $this === self::AccessDiscount;
+    }
+
+    /**
+     * Cette forme exige-t-elle un elargissement (`widenedBy`) ?
+     */
+    public function needsWidenedBy(): bool
+    {
+        return $this === self::ConditionWidening;
     }
 }

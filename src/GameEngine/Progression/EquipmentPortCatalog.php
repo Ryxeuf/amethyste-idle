@@ -113,6 +113,25 @@ class EquipmentPortCatalog
     }
 
     /**
+     * La famille dont ce slug est l'echelon **3**, et lui seul (ARC-16b).
+     *
+     * L'accointance `access_discount` ne remise que le dernier barreau — *« l'echelon 3
+     * de port de l'arc coute un palier de moins »* —, jamais l'entree (gratuite par
+     * regle) ni l'echelon 2. Repondre ici plutot que chez le lecteur garde la
+     * convention slug/reference (`_` → `-`) en un seul endroit.
+     */
+    public function familyOfRungThree(string $skillSlug): ?string
+    {
+        foreach ($this->families() as $key => $family) {
+            if ($skillSlug === str_replace('_', '-', $family['rung3'])) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      *
      * @throws EquipmentPortDefinitionException

@@ -14,6 +14,7 @@ class CrossDomainSkillResolver
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerDomainHelper $playerDomainHelper,
+        private readonly PortAccessDiscount $portAccessDiscount,
     ) {
     }
 
@@ -23,9 +24,10 @@ class CrossDomainSkillResolver
      */
     public function checkAutoUnlock(Player $player, Skill $skill): bool
     {
+        $cost = $this->portAccessDiscount->effectiveRequiredPointsOf($player, $skill);
         foreach ($skill->getDomains() as $domain) {
             $available = $this->playerDomainHelper->getAvailableDomainExperience($domain, $player);
-            if ($available >= $skill->getRequiredPoints()) {
+            if ($available >= $cost) {
                 return true;
             }
         }
@@ -43,11 +45,16 @@ class CrossDomainSkillResolver
     {
         $domainExperiences = [];
 
+        // ARC-16b : la depense lit le meme cout que le refus — remise
+        // d'accointance comprise. Un cout verifie a 25 et debite a 50 serait
+        // le pire des mensonges, celui qu'on ne decouvre qu'a son solde.
+        $cost = $this->portAccessDiscount->effectiveRequiredPointsOf($player, $skill);
+
         foreach ($skill->getDomains() as $domain) {
             $domainExperience = $this->getOrCreateDomainExperience($player, $domain);
 
             $domainExperience->setUsedExperience(
-                $domainExperience->getUsedExperience() + $skill->getRequiredPoints()
+                $domainExperience->getUsedExperience() + $cost
             );
             $domainExperience->setHit($domainExperience->getHit() + $skill->getHit());
             $domainExperience->setCritical($domainExperience->getCritical() + $skill->getCritical());

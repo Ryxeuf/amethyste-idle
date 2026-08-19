@@ -7,6 +7,7 @@ use App\Entity\App\PlayerCraftSpecialization;
 use App\Entity\Game\Skill;
 use App\Enum\CraftSpecialization;
 use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\PortAccessDiscount;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
@@ -104,7 +105,7 @@ class PlayerSkillBranchGateTest extends TestCase
         $domainAccess = $this->createMock(DomainAccessManager::class);
         $domainAccess->method('isSkillReachable')->willReturn(true);
 
-        return new PlayerSkillHelper($playerHelper, $this->createMock(PlayerDomainHelper::class), $domainAccess);
+        return new PlayerSkillHelper($playerHelper, $this->createMock(PlayerDomainHelper::class), $domainAccess, $this->fullPriceDiscount());
     }
 
     private function branchNode(string $craft, string $branch): Skill&MockObject
@@ -131,5 +132,19 @@ class PlayerSkillBranchGateTest extends TestCase
         }
 
         return $player;
+    }
+
+    /**
+     * ARC-16b : ces tests ne parlent pas d'accointance — le cout effectif est
+     * le cout nominal.
+     */
+    private function fullPriceDiscount(): PortAccessDiscount
+    {
+        $discount = $this->createMock(PortAccessDiscount::class);
+        $discount->method('effectiveRequiredPointsOf')->willReturnCallback(
+            fn ($player, $skill) => $skill->getRequiredPoints(),
+        );
+
+        return $discount;
     }
 }

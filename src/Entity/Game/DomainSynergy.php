@@ -39,6 +39,29 @@ class DomainSynergy
     #[ORM\Column(type: 'string', length: 32, enumType: AccointanceForm::class)]
     private AccointanceForm $form = AccointanceForm::DomainExpression;
 
+    /**
+     * Ce sur quoi la forme agit — jamais un chiffre (ARC-16b).
+     *
+     * La grammaire depend de la forme, et `AccointanceRule` la refuse a la
+     * lecture : une famille de l'echelle de port pour `access_discount`
+     * (« fut droit » nomme l'arc), une condition de build pour
+     * `condition_widening` (« pied sur » nomme le cuir). Les deux formes
+     * derivees de la paire (`domain_expression`, `slot_acceptance`) n'en
+     * portent aucun — leur payload EST la paire.
+     */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
+    private ?string $subject = null;
+
+    /**
+     * Ce qui satisfait desormais aussi le sujet (`condition_widening` seule).
+     *
+     * « Pied sur » : les passifs conditionnes `armor:leather` sont aussi
+     * satisfaits par `armor:plate`. Deux conditions de build, la meme ligne,
+     * jamais un nombre.
+     */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
+    private ?string $widenedBy = null;
+
     #[ORM\Column(type: 'integer', options: ['default' => 50])]
     private int $activationThreshold = 50;
 
@@ -103,6 +126,30 @@ class DomainSynergy
     public function setForm(AccointanceForm $form): self
     {
         $this->form = $form;
+
+        return $this;
+    }
+
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(?string $subject): self
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getWidenedBy(): ?string
+    {
+        return $this->widenedBy;
+    }
+
+    public function setWidenedBy(?string $widenedBy): self
+    {
+        $this->widenedBy = $widenedBy;
 
         return $this;
     }

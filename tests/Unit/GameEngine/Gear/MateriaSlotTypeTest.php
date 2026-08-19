@@ -11,6 +11,7 @@ use App\Enum\MateriaSlotType;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\MateriaSlotTypeException;
 use App\GameEngine\Gear\MateriaGearSetter;
+use App\GameEngine\Gear\SlotAcceptanceWidener;
 use App\Helper\GearHelper;
 use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -155,7 +156,10 @@ class MateriaSlotTypeTest extends TestCase
         $playerItemHelper = $this->createMock(PlayerItemHelper::class);
         $playerItemHelper->method('canEquipMateria')->willReturn(true);
 
-        return new MateriaGearSetter($gearHelper, $this->createMock(EntityManagerInterface::class), $playerItemHelper, $this->createMock(EventDispatcherInterface::class));
+        $widener = $this->createMock(SlotAcceptanceWidener::class);
+        $widener->method('widens')->willReturn(false);
+
+        return new MateriaGearSetter($gearHelper, $this->createMock(EntityManagerInterface::class), $playerItemHelper, $this->createMock(EventDispatcherInterface::class), $widener);
     }
 
     private function materia(bool $spell): PlayerItem&MockObject

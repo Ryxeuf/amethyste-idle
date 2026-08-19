@@ -6,11 +6,12 @@ use App\Dto\Domain\DomainModel;
 use App\Dto\Skill\SkillModel;
 use App\Dto\Skill\SkillPlayer;
 use App\Entity\Game\Skill as SkillEntity;
+use App\GameEngine\Progression\PortAccessDiscount;
 use App\Helper\PlayerHelper;
 
 class PlayerSkillTransformer extends AbstractSkillTransformer
 {
-    public function __construct(private readonly PlayerHelper $playerHelper)
+    public function __construct(private readonly PlayerHelper $playerHelper, private readonly PortAccessDiscount $portAccessDiscount)
     {
     }
 
@@ -32,11 +33,13 @@ class PlayerSkillTransformer extends AbstractSkillTransformer
         $player = $this->playerHelper->getPlayer();
         $output->acquired = $player->hasSkill($skill);
 
-        // Multi-domaine : vérifier l'XP disponible dans au moins un des domaines
+        // Multi-domaine : vérifier l'XP disponible dans au moins un des domaines.
+        // ARC-16b : au cout effectif — remise d'accointance comprise.
+        $cost = $this->portAccessDiscount->effectiveRequiredPointsOf($player, $skill);
         foreach ($skill->getDomains() as $domain) {
             foreach ($domain->getPlayerExperiences() as $playerExperience) {
                 if ($playerExperience->getPlayer() === $player) {
-                    if ($playerExperience->getAvailableExperience() >= $skill->getRequiredPoints()) {
+                    if ($playerExperience->getAvailableExperience() >= $cost) {
                         $output->canBeAcquired = true;
                         break 2;
                     }

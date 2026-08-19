@@ -2,10 +2,12 @@
 
 namespace App\Service\Skill;
 
+use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\BuildPresetManager;
 use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\PortAccessDiscount;
 use App\GameEngine\Progression\SkillRespecManager;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
@@ -25,6 +27,7 @@ class SkillTreePayloadBuilder
         private readonly SkillRespecManager $respecManager,
         private readonly BuildPresetManager $presetManager,
         private readonly DomainAccessManager $accessManager,
+        private readonly PortAccessDiscount $portAccessDiscount,
     ) {
     }
 
@@ -89,7 +92,7 @@ class SkillTreePayloadBuilder
 
         $skills = [];
         foreach ($domain->getSkills() as $skill) {
-            $entry = $this->serializeSkill($skill, $locale);
+            $entry = $this->serializeSkill($skill, $locale, $this->playerHelper->getPlayer());
 
             if ($entry['acquired']) {
                 $buildStats['damage'] += (int) $entry['damage'];
@@ -120,7 +123,7 @@ class SkillTreePayloadBuilder
     /**
      * @return array<string, mixed>
      */
-    private function serializeSkill(Skill $skill, ?string $locale): array
+    private function serializeSkill(Skill $skill, ?string $locale, ?Player $player): array
     {
         $requirementIds = [];
         foreach ($skill->getRequirements() as $requirement) {
@@ -132,7 +135,12 @@ class SkillTreePayloadBuilder
             'slug' => $skill->getSlug(),
             'title' => $skill->getLocalizedTitle($locale),
             'description' => $skill->getDescription(),
-            'requiredPoints' => $skill->getRequiredPoints(),
+            // ARC-16b : le cout affiche est le cout effectif — remise
+            // d'accointance comprise. Afficher 25 et debiter 10 serait un
+            // mensonge d'interface, dans le sens qui ne se plaint jamais.
+            'requiredPoints' => $player !== null
+                ? $this->portAccessDiscount->effectiveRequiredPointsOf($player, $skill)
+                : $skill->getRequiredPoints(),
             'damage' => $skill->getDamage(),
             'heal' => $skill->getHeal(),
             'hit' => $skill->getHit(),

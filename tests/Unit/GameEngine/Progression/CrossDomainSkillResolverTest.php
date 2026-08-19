@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\CrossDomainSkillResolver;
+use App\GameEngine\Progression\PortAccessDiscount;
 use App\Helper\PlayerDomainHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -22,9 +23,15 @@ class CrossDomainSkillResolverTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->playerDomainHelper = $this->createMock(PlayerDomainHelper::class);
+        $discount = $this->createMock(PortAccessDiscount::class);
+        $discount->method('effectiveRequiredPointsOf')->willReturnCallback(
+            fn ($player, $skill) => $skill->getRequiredPoints(),
+        );
+
         $this->resolver = new CrossDomainSkillResolver(
             $this->entityManager,
             $this->playerDomainHelper,
+            $discount,
         );
     }
 

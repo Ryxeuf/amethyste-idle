@@ -5,6 +5,7 @@ namespace App\Helper;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\PortAccessDiscount;
 
 class PlayerSkillHelper
 {
@@ -60,6 +61,7 @@ class PlayerSkillHelper
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerDomainHelper $playerDomainHelper,
         private readonly DomainAccessManager $domainAccessManager,
+        private readonly PortAccessDiscount $portAccessDiscount,
     ) {
     }
 
@@ -110,9 +112,14 @@ class PlayerSkillHelper
         // Multi-domaine : il faut assez de points dans AU MOINS UN des domaines.
         // Une competence sans domaine reste apprenable si elle ne coute rien —
         // l'ancienne boucle la refusait, faute d'iteration.
-        $hasEnoughPoints = 0 === $skill->getRequiredPoints();
+        //
+        // ARC-16b : le cout se lit avec la remise d'accointance — le meme
+        // service que la depense, pour que le refus et le debit disent le
+        // meme chiffre.
+        $cost = $this->portAccessDiscount->effectiveRequiredPointsOf($player, $skill);
+        $hasEnoughPoints = 0 === $cost;
         foreach ($skill->getDomains() as $domain) {
-            if ($this->playerDomainHelper->getAvailableDomainExperience($domain, $player) >= $skill->getRequiredPoints()) {
+            if ($this->playerDomainHelper->getAvailableDomainExperience($domain, $player) >= $cost) {
                 $hasEnoughPoints = true;
                 break;
             }

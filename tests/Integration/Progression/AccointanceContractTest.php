@@ -4,6 +4,8 @@ namespace App\Tests\Integration\Progression;
 
 use App\Entity\Game\DomainSynergy;
 use App\Enum\AccointanceForm;
+use App\GameEngine\Progression\AccointanceRule;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\Tests\Integration\AbstractIntegrationTestCase;
 
 /**
@@ -99,13 +101,12 @@ class AccointanceContractTest extends AbstractIntegrationTestCase
     /**
      * Aucune accointance n'est ecrite dans une forme que personne ne lit.
      *
-     * **Ce n'est pas une regle du canon, c'est un garde-fou d'honnetete.** Trois
-     * des quatre formes n'ont pas encore de lecteur : `condition_widening`
-     * attend qu'une condition de passif soit **evaluee** quelque part — a ce
-     * jour `SkillCondition` est analysee, valorisee et affichee, jamais
-     * confrontee a un equipement reel —, et les deux autres attendent ARC-16b.
-     * Les declarer en donnees les rendrait inertes **en silence**, ce qui se
-     * lit comme un choix de conception au lieu d'un chantier en cours.
+     * **Ce n'est pas une regle du canon, c'est un garde-fou d'honnetete.**
+     * ARC-16b a branche les trois lecteurs qui manquaient
+     * (`BuildConditionEvaluator`, `SlotAcceptanceWidener`,
+     * `PortAccessDiscount`) : les quatre formes se lisent. Le test reste —
+     * une cinquieme forme n'entrerait pas sans lecteur, et le supprimer
+     * laisserait croire que la question ne s'est jamais posee.
      */
     public function testNoAccointanceIsWrittenInAFormNobodyReads(): void
     {
@@ -115,6 +116,45 @@ class AccointanceContractTest extends AbstractIntegrationTestCase
                 sprintf('« %s » est de forme %s, que rien ne lit : elle serait inerte sans le dire.', $synergy->getName(), $synergy->getForm()->value),
             );
         }
+    }
+
+    /**
+     * La grammaire de sujet tient sur toutes les lignes chargees (ARC-16b).
+     *
+     * Une famille mal orthographiee laisserait sa remise silencieusement morte,
+     * un elargissement hors ligne promettrait a l'ecran ce que l'evaluateur ne
+     * rendra jamais. La regle est la meme qu'aux fixtures — c'est le meme
+     * service —, et le contrat la rejoue sur la base reelle.
+     */
+    public function testEverySubjectHoldsItsFormGrammar(): void
+    {
+        $rule = new AccointanceRule(new EquipmentPortCatalog(\dirname(__DIR__, 3)));
+
+        foreach ($this->em->getRepository(DomainSynergy::class)->findAll() as $synergy) {
+            self::assertSame([], $rule->failuresOf($synergy));
+        }
+    }
+
+    /**
+     * Les quatre formes existent en donnees — chacune avec son exemple du
+     * canon, maintenant que son lecteur existe.
+     *
+     * Sans cette ligne, ARC-16b aurait livre trois lecteurs que rien
+     * n'exerce : des accointances toutes `domain_expression` laisseraient les
+     * trois formes neuves aussi inertes qu'avant, en silence.
+     */
+    public function testEachOfTheFourFormsIsExercisedByTheData(): void
+    {
+        $present = [];
+        foreach ($this->em->getRepository(DomainSynergy::class)->findAll() as $synergy) {
+            $present[$synergy->getForm()->value] = true;
+        }
+        ksort($present);
+
+        self::assertSame(
+            ['access_discount', 'condition_widening', 'domain_expression', 'slot_acceptance'],
+            array_keys($present),
+        );
     }
 
     /**
