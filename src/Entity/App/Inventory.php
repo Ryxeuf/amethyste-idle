@@ -17,6 +17,16 @@ class Inventory
     public const TYPE_MATERIA = 2;
     public const TYPE_BANK = 3;
 
+    /**
+     * Le coffre domestique (FOY-20).
+     *
+     * Complementaire de la banque de zone, et nettement plus petit : *ce n'est
+     * pas un second entrepot, c'est ce qu'on laisse chez soi*. Il naît avec la
+     * demeure et non avec le personnage — on n'a pas de coffre avant d'avoir un
+     * logis.
+     */
+    public const TYPE_HOUSE = 4;
+
     public function __toString(): string
     {
         return 'Inventaire [' . $this->getType() . '] de ' . $this->getPlayer();
@@ -44,6 +54,11 @@ class Inventory
     public function isBank()
     {
         return $this->getType() == self::TYPE_BANK;
+    }
+
+    public function isHouse(): bool
+    {
+        return $this->getType() === self::TYPE_HOUSE;
     }
 
     public function getOccupiedSpace()

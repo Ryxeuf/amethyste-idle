@@ -2,10 +2,13 @@
 
 namespace App\GameEngine\Housing;
 
+use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerHouse;
+use App\Entity\App\PlayerItem;
 use App\Entity\App\Zone;
 use App\Enum\HouseStyle;
+use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\Helper\InventoryHelper;
 use App\Repository\PlayerHouseRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,6 +52,7 @@ class HousingManager
         // milieu — un service insere entre deux autres decalerait sans un mot
         // toute construction positionnelle dans les tests.
         private readonly HouseRentRouting $rentRouting,
+        private readonly SettlementDefinitionLoader $settlements,
     ) {
     }
 
@@ -115,6 +119,14 @@ class HousingManager
         $house->setRentDueAt($now->modify(sprintf('+%d days', PlayerHouse::RENT_PERIOD_DAYS)));
 
         $this->entityManager->persist($house);
+
+        // FOY-20 : le coffre naît avec la demeure et non avec le personnage —
+        // on n'a pas de coffre avant d'avoir un logis. Cree ici plutot qu'a la
+        // demande : un coffre qui apparaîtrait au premier depot ferait de son
+        // existence un effet de bord, et l'ecran ne saurait pas quoi montrer
+        // avant.
+        $this->openHouseChest($player);
+
         $this->entityManager->flush();
 
         $this->logger->info('House purchased', [
@@ -292,5 +304,99 @@ class HousingManager
 
         $house->setName($name);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Le coffre domestique de ce joueur, ouvert s'il ne l'etait pas (FOY-20).
+     *
+     * Idempotent : un joueur n'a qu'un coffre, et l'appeler deux fois n'en
+     * ouvre pas un second.
+     */
+    public function openHouseChest(Player $player): Inventory
+    {
+        foreach ($player->getInventories() as $inventory) {
+            if ($inventory->isHouse()) {
+                return $inventory;
+            }
+        }
+
+        $chest = new Inventory();
+        $chest->setType(Inventory::TYPE_HOUSE);
+        $chest->setSize($this->settlements->load()['housing']['chest_size']);
+        $chest->setPlayer($player);
+        $player->addInventory($chest);
+        $this->entityManager->persist($chest);
+
+        return $chest;
+    }
+
+    /**
+     * Le coffre, s'il existe. `null` tant qu'on n'a pas de logis.
+     */
+    public function houseChest(Player $player): ?Inventory
+    {
+        foreach ($player->getInventories() as $inventory) {
+            if ($inventory->isHouse()) {
+                return $inventory;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Deplace une piece entre le sac et le coffre (FOY-20).
+     *
+     * **Trois refus, et le premier est la propriete.** Un identifiant de piece
+     * vient d'un formulaire : sans cette verification, un joueur rangerait chez
+     * lui l'objet d'un autre.
+     *
+     * Le coffre refuse ce qui est **lie** ou **equipe**, pour la meme raison que
+     * la banque et le coffre de guilde : on ne range pas ce qu'on porte, et une
+     * piece liee n'a pas a bouger. Le predicat est celui de
+     * `PlayerItem::isExchangeable()` — *« peut-il circuler ? » se demande une
+     * fois* (FOY-19 l'a ramene a un seul endroit pour le coffre de guilde).
+     */
+    public function moveToChest(Player $player, int $playerItemId, bool $withdraw): void
+    {
+        $chest = $this->houseChest($player);
+        if ($chest === null) {
+            throw new \InvalidArgumentException('game.house.chest.error.no_chest');
+        }
+
+        $item = $this->entityManager->getRepository(PlayerItem::class)->find($playerItemId);
+        if ($item === null || $item->getInventory()?->getPlayer()?->getId() !== $player->getId()) {
+            throw new \InvalidArgumentException('game.house.chest.error.not_yours');
+        }
+
+        if (!$item->isExchangeable()) {
+            throw new \InvalidArgumentException('game.house.chest.error.not_movable');
+        }
+
+        $destination = $withdraw ? $this->bagOf($player) : $chest;
+        if ($destination === null) {
+            throw new \InvalidArgumentException('game.house.chest.error.no_chest');
+        }
+
+        if (\count($destination->getItems()) >= $destination->getSize()) {
+            throw new \InvalidArgumentException('game.house.chest.error.full');
+        }
+
+        $item->getInventory()->removeItem($item);
+        $item->setInventory($destination);
+        $destination->addItem($item);
+
+        $this->entityManager->flush();
+    }
+
+    private function bagOf(Player $player): ?Inventory
+    {
+        foreach ($player->getInventories() as $inventory) {
+            if ($inventory->isBag()) {
+                return $inventory;
+            }
+        }
+
+        return null;
     }
 }

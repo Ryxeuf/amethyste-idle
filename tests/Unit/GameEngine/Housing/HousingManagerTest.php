@@ -25,6 +25,8 @@ final class HousingManagerTest extends TestCase
     private \App\GameEngine\Housing\ResidentialParcels&MockObject $residentialParcels;
 
     private \App\GameEngine\Housing\HouseRentRouting&MockObject $rentRouting;
+
+    private \App\GameEngine\Settlement\SettlementDefinitionLoader&MockObject $settlementLoader;
     private HousingManager $manager;
 
     /** @var list<object> */
@@ -53,7 +55,12 @@ final class HousingManagerTest extends TestCase
         // ici on verifie que le manager l'appelle, pas ou il envoie.
         $this->rentRouting = $this->createMock(\App\GameEngine\Housing\HouseRentRouting::class);
 
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper, $this->residentialParcels, $this->rentRouting);
+        // FOY-20 : le coffre naît avec la demeure ; sa taille vient de la
+        // configuration, que ces tests ne mesurent pas.
+        $this->settlementLoader = $this->createMock(\App\GameEngine\Settlement\SettlementDefinitionLoader::class);
+        $this->settlementLoader->method('load')->willReturn(['housing' => ['chest_size' => 60, 'homecoming_per_day' => 1, 'parcels_per_rank' => []]]);
+
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper, $this->residentialParcels, $this->rentRouting, $this->settlementLoader);
     }
 
     /**
@@ -66,7 +73,7 @@ final class HousingManagerTest extends TestCase
             ->with(HousingManager::FURNISHING_KIT_SLUG, 1)
             ->willReturn(1);
 
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels, $this->rentRouting);
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels, $this->rentRouting, $this->settlementLoader);
     }
 
     public function testBuyingLandCostsTheLandPriceAndBuildsTheHouse(): void
@@ -372,7 +379,7 @@ final class HousingManagerTest extends TestCase
     {
         $inventoryHelper = $this->createMock(InventoryHelper::class);
         $inventoryHelper->expects(self::never())->method('removeItemBySlug');
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels, $this->rentRouting);
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels, $this->rentRouting, $this->settlementLoader);
 
         $player = $this->playerIn($this->residentialZone(), 10_000);
         $house = $this->ownedHouse($player);

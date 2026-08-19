@@ -31,6 +31,22 @@ use App\Tests\Integration\AbstractIntegrationTestCase;
  */
 class FactionsPlanContractTest extends AbstractIntegrationTestCase
 {
+    /**
+     * Canaux qui en ont la **forme** sans etre entre deux joueurs.
+     *
+     * Exempter par nom est un aveu, pas un confort : chaque entree doit dire
+     * pourquoi la regle 11 ne la concerne pas, faute de quoi la liste
+     * deviendrait la porte de service qu'elle pretend documenter.
+     *
+     * @var list<string>
+     */
+    private const NOT_BETWEEN_PLAYERS = [
+        // FOY-20 — le coffre domestique : les deux inventaires appartiennent
+        // au meme joueur. Rien ne change de main, et refuser d'y ranger une
+        // contrefacon la revelerait (FAC-07 la veut indiscernable).
+        'HousingManager.php',
+    ];
+
     private function root(): string
     {
         return \dirname(__DIR__, 3);
@@ -268,16 +284,31 @@ class FactionsPlanContractTest extends AbstractIntegrationTestCase
      * des deux criteres. Il portait bien son verrou — mais rien n'aurait dit le
      * contraire. Le predicat a desormais **un seul endroit**, et le coffre
      * entre dans la derivation comme les autres.
+     *
+     * **Une exception nommee, et son motif** (FOY-20) : le coffre domestique a
+     * la forme d'un canal — il deplace une piece d'un inventaire a l'autre et
+     * verifie qu'elle peut circuler — mais les deux inventaires sont ceux
+     * **du meme joueur**. Rien ne change de main, donc la regle 11 n'est pas
+     * en jeu. Et y poser le verrou serait **activement faux** : refuser de
+     * ranger une contrefacon dans son propre coffre la **revelerait**, quand
+     * FAC-07 veut qu'elle reste indiscernable jusqu'a la trahison. *Un verrou
+     * qui trahit ce qu'il protege est pire que pas de verrou.*
      */
     public function testEveryTransferChannelRefusesACounterfeit(): void
     {
         $channels = [];
         $leaking = [];
+        $exempted = [];
 
         foreach ($this->sourceFiles() as $path) {
             $source = (string) file_get_contents($path);
 
             if (!str_contains($source, 'setInventory(') || !str_contains($source, 'isExchangeable()')) {
+                continue;
+            }
+
+            if (\in_array(basename($path), self::NOT_BETWEEN_PLAYERS, true)) {
+                $exempted[] = basename($path);
                 continue;
             }
 
@@ -299,6 +330,15 @@ class FactionsPlanContractTest extends AbstractIntegrationTestCase
             . 'Un joueur ne trompe jamais un joueur (FAC-07).',
             implode(', ', $leaking),
         ));
+
+        // Une exemption qui ne correspond plus a rien survit a la raison qui
+        // l'a justifiee : elle doit tomber avec le fichier qu'elle nomme.
+        sort($exempted);
+        self::assertSame(
+            self::NOT_BETWEEN_PLAYERS,
+            array_values(array_unique($exempted)),
+            'Une exemption de NOT_BETWEEN_PLAYERS ne designe plus un canal existant : retirez-la.',
+        );
     }
 
     /**

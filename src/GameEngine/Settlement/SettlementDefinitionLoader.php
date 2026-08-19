@@ -56,7 +56,7 @@ class SettlementDefinitionLoader
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
-     *     housing: array{parcels_per_rank: array<string, int>},
+     *     housing: array{parcels_per_rank: array<string, int>, homecoming_per_day: int, chest_size: int},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
@@ -107,7 +107,7 @@ class SettlementDefinitionLoader
      *     workshop: array{rank_bonus: array<string, int>, type_bonus: array<string, array<string, int>>, line_bonus: array<string, array<string, int>>, cap: int, zone_line: array<string, string>},
      *     weekly_work: array{demands: array<string, list<string>>, targets: array<string, int>, rank_multipliers: array<string, int>},
      *     crue: array<string, int>,
-     *     housing: array{parcels_per_rank: array<string, int>},
+     *     housing: array{parcels_per_rank: array<string, int>, homecoming_per_day: int, chest_size: int},
      *     seed: array<string, array{rank: SettlementRank, stock: int}>,
      *     without_settlement: array<string, string>,
      *     paleness: array{rise_per_pressure: float, daily_recovery: float, max: float, visible_from: float, dulls_purity_from: float},
@@ -491,7 +491,13 @@ class SettlementDefinitionLoader
      * qu'un rang loge, Ruine et Campement sont refuses : on ne s'installe
      * pas dans ce qui peut disparaitre.
      *
-     * @return array{parcels_per_rank: array<string, int>}
+     * FOY-20 y ajoute les deux commodites du logis. Elles sont **facultatives**
+     * — un monde sans elles est un monde ou l'on habite sans retour au logis ni
+     * coffre —, mais un chiffre ecrit doit etre positif : un `0` se lirait comme
+     * « aucun retour par jour » ou « un coffre sans place », deux etats qui ne se
+     * distinguent pas d'un bug en jeu.
+     *
+     * @return array{parcels_per_rank: array<string, int>, homecoming_per_day: int, chest_size: int}
      */
     private function normalizeHousing(mixed $housing, string $source): array
     {
@@ -534,7 +540,20 @@ class SettlementDefinitionLoader
             $previous = $value;
         }
 
-        return ['parcels_per_rank' => $capacities];
+        $commodities = [];
+        foreach (['homecoming_per_day' => 1, 'chest_size' => 60] as $field => $default) {
+            $value = $housing[$field] ?? $default;
+            if (!\is_int($value) || $value < 1) {
+                throw new SettlementDefinitionException(sprintf('"housing.%s" must be a positive integer in "%s".', $field, $source));
+            }
+            $commodities[$field] = $value;
+        }
+
+        return [
+            'parcels_per_rank' => $capacities,
+            'homecoming_per_day' => $commodities['homecoming_per_day'],
+            'chest_size' => $commodities['chest_size'],
+        ];
     }
 
     /**

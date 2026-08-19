@@ -124,6 +124,14 @@ class EconomyChokePointTest extends TestCase
      * joueur de la **session**. Il ne peut donc pas deleguer, et reapplique la
      * regle lui-meme — ce que verifie
      * `testTheGuildVaultExceptionStillAppliesTheRule()`.
+     *
+     * FOY-20 en ajoute une seconde, et de nature differente :
+     * `HousingManager::moveToChest()` ne fait **entrer** aucun objet dans le
+     * jeu — il en deplace un entre deux inventaires **du meme joueur**. La
+     * liaison a l'obtention s'est appliquee au ramassage ; la repasser par
+     * `InventoryHelper::addItem()` la reappliquerait a un objet qui n'est pas
+     * obtenu. *Ce que le point unique protege, c'est l'entree, pas le
+     * rangement.*
      */
     public function testNothingEntersAPlayerInventoryOutsideTheHelper(): void
     {
@@ -131,7 +139,8 @@ class EconomyChokePointTest extends TestCase
 
         foreach ($this->sources('src') as $path => $source) {
             if (str_ends_with($path, 'Helper/InventoryHelper.php')
-                || str_ends_with($path, 'Guild/GuildVaultManager.php')) {
+                || str_ends_with($path, 'Guild/GuildVaultManager.php')
+                || str_ends_with($path, 'Housing/HousingManager.php')) {
                 continue;
             }
             foreach (explode("\n", $source) as $number => $line) {
@@ -217,5 +226,21 @@ class EconomyChokePointTest extends TestCase
                 );
             }
         }
+    }
+
+    /**
+     * L'exception du coffre domestique reapplique ce qui compte (FOY-20).
+     *
+     * Elle est exemptee du point unique parce qu'elle ne fait entrer aucun
+     * objet dans le jeu. Encore faut-il qu'elle ne devienne pas une porte
+     * d'entree : elle ne cree jamais de piece, et elle refuse de deplacer ce
+     * qui ne peut pas circuler.
+     */
+    public function testTheHouseChestExceptionNeverLetsAnythingIn(): void
+    {
+        $source = (string) file_get_contents($this->projectDir() . '/src/GameEngine/Housing/HousingManager.php');
+
+        $this->assertStringNotContainsString('new PlayerItem(', $source, 'Le coffre fabrique une piece : ce n\'est plus un rangement.');
+        $this->assertStringContainsString('isExchangeable()', $source, 'Le coffre ne se demande plus si la piece peut circuler.');
     }
 }

@@ -471,15 +471,49 @@ Phase 5 (tests)      : FOY-16  (parallélisable)
 > pose, *combien les habitants rapportent-ils*. Le trait politique ne vaut que s'il se voit — un
 > trésor qui monte sans dire d'où ne dit rien de la ville qu'on tient.
 
-### FOY-20 — Le retour au logis & les cheminées (M | ★★ | MOYENNE)
+### FOY-20 ✅ — Le retour au logis & les cheminées (M | ★★ | MOYENNE) — livré le 2026-08-19
 > §12.6 d. La commodité de fin de session (playtest V2) et le grain de résidence.
-- [ ] **Retour au logis** : 1×/jour, voyage instantané vers sa zone de résidence
-      (jamais vers ailleurs — une commodité, pas un téléporteur)
-- [ ] **Coffre domestique** (stockage borné, complémentaire de la banque de zone)
-- [ ] **Grain de résidence** : chaque demeure habitée (loyer à jour) dépose un petit
-      grain quotidien au foyer de sa zone (table de dépôt §23.1, pondération énergie
-      sans objet — valeur propre, paramètre)
-- [ ] Tests : cadence 1/jour, cible unique, grain conditionné au loyer à jour
+- [x] **Retour au logis** : 1×/jour, voyage instantané vers sa zone de résidence.
+      **La borne est dans la forme** — `Homecoming::comeHome()` ne prend *aucune
+      destination*, il n'y a donc aucun endroit où en passer une. Un téléporteur
+      libre rendrait le graphe de zones décoratif, et avec lui les durées de trajet
+      et le choix d'itinéraire, c'est-à-dire tout ce que le pivot PBBG a mis à la
+      place de la carte navigable. Cadence tenue par une **clé de jour** portée par
+      la demeure (`homecomingDayKey` + compteur) : *une clé différente est un autre
+      jour*, ni purge ni cron. **Les deux refus du voyage restent** (en combat, en
+      cours de voyage) : *la commodité raccourcit un trajet, elle n'annule pas un
+      état* — et chaque refus rend **sa raison**, un bouton grisé sans explication se
+      lisant comme une panne
+- [x] **Coffre domestique** : naît avec la demeure, 60 places contre les centaines de
+      la banque — *ce n'est pas un second entrepôt, c'est ce qu'on laisse chez soi*.
+      **Exempté du point unique d'entrée en inventaire** (ECO-17) avec son motif :
+      il ne fait entrer aucun objet dans le jeu, il en déplace un entre deux
+      inventaires **du même joueur** ; repasser par `InventoryHelper::addItem()`
+      réappliquerait la liaison à l'obtention à un objet qui n'est pas obtenu.
+      *Ce que le point unique protège, c'est l'entrée, pas le rangement* — et un test
+      miroir vérifie que l'exception ne devient jamais une porte (elle ne construit
+      aucune pièce, et elle refuse toujours de déplacer ce qui ne circule pas)
+- [x] **Grain de résidence** : une **ligne de la table de sédiment** (`residence`,
+      `spread`, 4 grains, **non plafonné**) et pas un chemin à part — c'est ce qui lui
+      fait obéir aux mêmes règles que les autres gestes, multiplicateurs de doctrine
+      compris. Non plafonné parce qu'un plafond le ferait disparaître chez les joueurs
+      les plus actifs, *c'est-à-dire chez ceux qui font vivre la ville*. Conditionné au
+      **loyer à jour** : sans quoi on entretiendrait une ville avec des logis vides.
+      Commande `app:house:residence-grain` au calendrier, après le tick de foyer,
+      idempotente par clé de jour
+- [x] Tests : `HomecomingAndHearthTest` (6) — cadence 1/jour, cible unique, les deux
+      refus d'état, le coffre né avec la demeure et plus petit que la banque, la
+      cheminée conditionnée au loyer **et** idempotente, le grain déclaré au YAML
+
+> **Ce que le jalon a trouvé.** La dérivation de FAC-10 (« tout canal entre joueurs
+> refuse la contrefaçon ») a **attrapé le coffre domestique** : il en a la forme
+> exacte — il déplace une pièce et se demande si elle peut circuler. Y poser le
+> verrou aurait été **activement faux** : refuser de ranger une contrefaçon dans son
+> propre coffre la **révélerait**, quand FAC-07 la veut indiscernable jusqu'à la
+> trahison. *Un verrou qui trahit ce qu'il protège est pire que pas de verrou.* D'où
+> une exemption **nommée**, avec son motif — et un garde-fou qui la fait tomber le
+> jour où le fichier qu'elle nomme cesse d'être un canal : *une exemption qui ne
+> correspond plus à rien survit à la raison qui l'a justifiée*.
 
 ### FOY-21 — Tests de la vague (S | ★★ | HAUTE)
 - [ ] Invariants : jamais d'expulsion, le plancher Jardins jamais gaté, le loyer

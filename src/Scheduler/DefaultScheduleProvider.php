@@ -118,6 +118,12 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // ou une doctrine adoptee dans la journee doit compter le jour
                 // meme, pas le lendemain.
                 RecurringMessage::cron('9 0 * * *', new RunCommandMessage('app:repertoire:unlock')),
+
+                // FOY-20 : les cheminees. **Apres** le tick des foyers, comme
+                // le Repertoire : un grain depose avant la decroissance du jour
+                // serait mange par elle le matin meme, et la population
+                // residente ne soutiendrait rien.
+                RecurringMessage::cron('11 0 * * *', new RunCommandMessage('app:house:residence-grain')),
                 // GilsSupply : relève la masse monétaire (ECO-15).
                 // Après le tick de saison : les récompenses de clôture doivent
                 // être versées avant qu'on compte, sinon la masse du jour saute
