@@ -80,7 +80,12 @@ final class EncounterSimulator
         $incoming = $strike
             * $monsterHit
             * (1.0 - max(0.0, min(100.0, $character->dodgeRate)) / 100.0)
-            * max(0.0, $character->guardMultiplier);
+            * max(0.0, $character->guardMultiplier)
+            // ARC-19 — l'armure, apres `guard` et multiplicative avec elle,
+            // exactement comme `SpellApplicator` les enchaine. C'est la moitie
+            // que le canon refuse a l'arbre : *la mitigation d'un tank vient de
+            // son armure, pas de son arbre*.
+            * max(0.0, $character->armorMultiplier);
 
         $recovery = $character->recoveryPerTurnPoints();
 

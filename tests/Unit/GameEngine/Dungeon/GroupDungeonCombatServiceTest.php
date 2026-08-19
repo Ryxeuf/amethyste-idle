@@ -10,12 +10,14 @@ use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
 use App\Entity\Game\Monster;
 use App\Enum\MonsterRank;
+use App\GameEngine\Balance\VitalityLaw;
 use App\GameEngine\Bestiary\MonsterStatTemplate;
 use App\GameEngine\Dungeon\DungeonActionResolver;
 use App\GameEngine\Dungeon\DungeonEncounterPicker;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonException;
 use App\GameEngine\Dungeon\GroupDungeonRewardService;
+use App\GameEngine\Fight\ArmorMitigationResolver;
 use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -120,10 +122,14 @@ class GroupDungeonCombatServiceTest extends TestCase
         $publisher = $this->createMock(GroupDungeonCombatPublisher::class);
         $this->rewardService = $this->createMock(GroupDungeonRewardService::class);
         $test = $this;
-        $this->service = new class($this->entityManager, $publisher, $this->rewardService, $this->actionResolver, $picker, $test) extends GroupDungeonCombatService {
-            public function __construct(EntityManagerInterface $em, GroupDungeonCombatPublisher $publisher, GroupDungeonRewardService $rewardService, DungeonActionResolver $actionResolver, DungeonEncounterPicker $picker, private $test)
+        // ARC-19 : ces tests mesurent la boucle du donjon, pas l'armure — le
+        // resolveur rend le coup intact.
+        $mitigation = $this->createMock(ArmorMitigationResolver::class);
+        $mitigation->method('mitigate')->willReturnCallback(fn (int $damage) => $damage);
+        $this->service = new class($this->entityManager, $publisher, $this->rewardService, $this->actionResolver, $picker, $mitigation, $test) extends GroupDungeonCombatService {
+            public function __construct(EntityManagerInterface $em, GroupDungeonCombatPublisher $publisher, GroupDungeonRewardService $rewardService, DungeonActionResolver $actionResolver, DungeonEncounterPicker $picker, ArmorMitigationResolver $mitigation, private $test)
             {
-                parent::__construct($em, $publisher, $rewardService, $actionResolver, $picker);
+                parent::__construct($em, $publisher, $rewardService, $actionResolver, $picker, $mitigation);
             }
 
             protected function now(): \DateTimeImmutable
@@ -451,9 +457,15 @@ class GroupDungeonCombatServiceTest extends TestCase
     }
 
     /**
-     * Sans faune (palier vide, monstre supprime), les curseurs historiques
-     * reprennent : un donjon ne refuse jamais de s'ouvrir pour un accident
-     * de repartition.
+     * Sans faune (palier vide, monstre supprime), le **repli** reprend : un
+     * donjon ne refuse jamais de s'ouvrir pour un accident de repartition.
+     *
+     * **ARC-19 le derive au lieu de le figer** : le repli vaut une barre de
+     * `VitalityLaw` par membre — 96 au palier 1 — la ou 120 etait ecrit en dur.
+     * C'est ce que 120 signifiait deja, du temps ou la barre du canon valait
+     * 120 PV a tous les paliers ; depuis ARC-20 elle va de 96 a 880, et *une
+     * rencontre de groupe se calibre sur le pool de PV du groupe, jamais sur un
+     * multiple du nombre de joueurs*.
      */
     public function testWithoutFaunaTheLegacyCursorsApply(): void
     {
@@ -463,7 +475,11 @@ class GroupDungeonCombatServiceTest extends TestCase
         $run = $this->buildRun([$p1, $p2]);
 
         $state = $this->service->state($run);
-        $this->assertSame(240, $state['encounterHpMax'], '2 membres x 120 PV/membre.');
+        $this->assertSame(
+            2 * VitalityLaw::barFor(1),
+            $state['encounterHpMax'],
+            '2 membres x la barre de leur palier — le repli se derive, il ne se dose pas.',
+        );
         $this->assertNull($state['encounterName']);
 
         $this->service->act($p1, $run);

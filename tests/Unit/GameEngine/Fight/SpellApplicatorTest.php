@@ -69,6 +69,7 @@ class SpellApplicatorTest extends TestCase
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
     }
 
@@ -317,6 +318,7 @@ class SpellApplicatorTest extends TestCase
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -367,6 +369,7 @@ class SpellApplicatorTest extends TestCase
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -417,6 +420,7 @@ class SpellApplicatorTest extends TestCase
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -465,6 +469,7 @@ class SpellApplicatorTest extends TestCase
             $this->playerEffectiveStatsCalculator,
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -668,5 +673,17 @@ class SpellApplicatorTest extends TestCase
     private function leverScale(): CombatLeverScale
     {
         return new CombatLeverScale(new CombatLeverDefinitionLoader(\dirname(__DIR__, 4)));
+    }
+
+    /**
+     * ARC-19 : ces tests ne parlent pas d'armure — rien n'est mitige.
+     */
+    private function unarmouredMitigation(): \App\GameEngine\Fight\ArmorMitigationResolver
+    {
+        $resolver = $this->createMock(\App\GameEngine\Fight\ArmorMitigationResolver::class);
+        $resolver->method('mitigate')->willReturnCallback(fn (int $damage) => $damage);
+        $resolver->method('shareFor')->willReturn(0.0);
+
+        return $resolver;
     }
 }

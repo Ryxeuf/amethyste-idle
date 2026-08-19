@@ -132,6 +132,34 @@ class EquipmentPortCatalog
     }
 
     /**
+     * La ligne d'armure qu'un arbre enseigne, s'il en enseigne une (ARC-19).
+     *
+     * *Un personnage porte ce que son arbre lui a appris a porter* : c'est ce
+     * qui donne sa ligne a un build de reference sans qu'on ait a lui inventer
+     * un vestiaire. Le **bouclier** en est exclu : c'est une famille de ligne
+     * `armor` dans l'echelle, mais ce qu'il apporte se joue ailleurs (le levier
+     * `guard` sous condition `shield`), et le compter ici le compterait deux
+     * fois.
+     *
+     * Un arbre qui n'enseigne aucune ligne rend `null` — il ne mitige rien, et
+     * c'est un constat a mesurer plutot qu'un defaut a combler par defaut.
+     */
+    public function armorLineTaughtBy(string $domainKey): ?string
+    {
+        foreach ($this->families() as $key => $family) {
+            if ($family['line'] !== 'armor' || $key === 'shield') {
+                continue;
+            }
+
+            if (\in_array($domainKey, $family['taught_by'], true)) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      *
      * @throws EquipmentPortDefinitionException

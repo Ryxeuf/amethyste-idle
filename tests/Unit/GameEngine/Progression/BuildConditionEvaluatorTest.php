@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
+use App\GameEngine\Gear\WornPieceReader;
 use App\GameEngine\Progression\BuildConditionEvaluator;
 use App\GameEngine\Progression\CombatLeverDefinitionException;
 use App\GameEngine\Progression\EquipmentPortCatalog;
@@ -105,10 +106,12 @@ class BuildConditionEvaluatorTest extends TestCase
         $synergyCalculator = $this->createMock(SynergyCalculator::class);
         $synergyCalculator->method('conditionWidenings')->willReturn($widenings);
 
+        $catalog = new EquipmentPortCatalog(\dirname(__DIR__, 4));
+
         return new BuildConditionEvaluator(
-            new EquipmentPortCatalog(\dirname(__DIR__, 4)),
+            $catalog,
             $synergyCalculator,
-            new GearHelper($this->createMock(PlayerHelper::class)),
+            new WornPieceReader($catalog, new GearHelper($this->createMock(PlayerHelper::class))),
         );
     }
 

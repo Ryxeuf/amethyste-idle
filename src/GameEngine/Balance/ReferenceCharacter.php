@@ -37,6 +37,7 @@ final readonly class ReferenceCharacter
      * @param float  $criticalRate    chance de critique, en pourcentage
      * @param float  $criticalPower   multiplicateur du critique
      * @param float  $guardMultiplier ce qui reste des degats subis apres `guard`
+     * @param float  $armorMultiplier ce qui reste des degats subis apres l'armure (ARC-19)
      * @param float  $dodgeRate       chance d'eviter entierement, en pourcentage
      * @param float  $recoveryPerTurn part des PV maximum rendue en fin de tour
      * @param float  $resourcePerTurn ce que `wind` rend par tour, dans la ressource
@@ -55,6 +56,7 @@ final readonly class ReferenceCharacter
         public float $criticalRate,
         public float $criticalPower,
         public float $guardMultiplier,
+        public float $armorMultiplier,
         public float $dodgeRate,
         public float $recoveryPerTurn,
         public float $resourcePerTurn,

@@ -90,12 +90,15 @@ final class GroupEncounterSimulator
                     break 2;
                 }
 
-                // La riposte frappe **celui qui vient d'agir** (DON-02). Elle
-                // ne se deplace pas : le geste de menace qui le permettrait est
-                // ARC-19, et il n'existe pas.
+                // La riposte frappe **celui qui vient d'agir** (DON-02). Le
+                // transfert qui la deplacerait existe (`TransferLaw`, ARC-18d)
+                // mais ne se simule pas ici : il se pose par un geste, et la
+                // table croisee mesure des builds, jamais des tactiques.
                 $life[$index] -= $strike
                     * (1.0 - max(0.0, min(100.0, $member->dodgeRate)) / 100.0)
-                    * max(0.0, $member->guardMultiplier);
+                    * max(0.0, $member->guardMultiplier)
+                    // ARC-19 — l'armure de celui qui encaisse.
+                    * max(0.0, $member->armorMultiplier);
 
                 if ($life[$index] > 0.0) {
                     $life[$index] = min((float) $member->maxLife, $life[$index] + $member->recoveryPerTurnPoints());

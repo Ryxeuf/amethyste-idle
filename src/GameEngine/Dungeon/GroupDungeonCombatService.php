@@ -7,6 +7,8 @@ use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Enum\MonsterRank;
+use App\GameEngine\Balance\VitalityLaw;
+use App\GameEngine\Fight\ArmorMitigationResolver;
 use App\GameEngine\Fight\MonsterDamageLaw;
 use App\GameEngine\Fight\TransferLaw;
 use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
@@ -34,6 +36,14 @@ class GroupDungeonCombatService
     // DON-02 : 200 etait calibre pour une rencontre **sans riposte** — le jour
     // ou elle frappe, 800 PV pour quatre rendraient le soigneur obligatoire
     // (GAME_ARCHETYPES §7 bis). Ramene a ~120 avec l'arrivee de la riposte.
+    //
+    // ARC-19 : ce nombre n'est plus un choix. *Une rencontre de groupe se
+    // calibre sur le **pool de PV du groupe**, jamais sur un multiple du nombre
+    // de joueurs* — un multiple lineaire produit une difficulte qui ne depend
+    // pas du palier, donc qui exige la meilleure composition. La constante
+    // reste comme **plancher** (le palier 1 de `VitalityLaw`, que 120
+    // approchait deja : la barre du canon valait 120 PV) ; le repli reel se
+    // derive du palier de la zone, cf. `getHpPerMember()`.
     public const DEFAULT_HP_PER_MEMBER = 120;
     public const PARAM_HP_PER_MEMBER = 'zone.dungeon.encounter_hp_per_member';
     // DON-02 : la riposte — la rencontre frappe le membre qui vient d'agir.
@@ -55,6 +65,7 @@ class GroupDungeonCombatService
         private readonly GroupDungeonRewardService $rewardService,
         private readonly DungeonActionResolver $actionResolver,
         private readonly DungeonEncounterPicker $encounterPicker,
+        private readonly ArmorMitigationResolver $armorMitigation,
     ) {
     }
 
@@ -157,7 +168,7 @@ class GroupDungeonCombatService
         $members = max(1, \count($run->getTurnOrder()));
         $hp = null !== $monster
             ? max(1, (int) $monster->getLife()) * $members
-            : $this->getHpPerMember() * $members;
+            : $this->getHpPerMember($this->encounterTier($run)) * $members;
         $run->setEncounterHp($hp, $hp);
     }
 
@@ -316,6 +327,18 @@ class GroupDungeonCombatService
             return;
         }
 
+        // ARC-19 — **chacun mitige ce qu'il porte, y compris ce qu'il a pris
+        // pour un autre.** Poser la mitigation ici, apres la repartition du
+        // transfert, est ce qui donne son sens au geste de l'encaisse : le
+        // deplacement se fait sur le coup brut (*l'aggro ne reduit rien, elle
+        // deplace*), et la reduction est celle de l'armure de **celui qui
+        // encaisse**. C'est tout l'interet de concentrer les coups sur celui
+        // qui est equipe pour les recevoir.
+        $damage = $this->armorMitigation->mitigate($damage, $player);
+        if ($damage <= 0) {
+            return;
+        }
+
         $player->setLife(max(0, $player->getLife() - $damage));
         if (0 === $player->getLife() && null === $player->getDiedAt()) {
             $player->setDiedAt(new \DateTime());
@@ -428,11 +451,25 @@ class GroupDungeonCombatService
      * fois qu'on deplace l'un des deux — et c'est precisement ce curseur que le
      * simulateur a pour tache de fixer (GAME_ARCHETYPES § 9 octies).
      */
-    public function getHpPerMember(): int
+    public function getHpPerMember(?int $tier = null): int
     {
-        $value = $this->readParameter(self::PARAM_HP_PER_MEMBER, self::DEFAULT_HP_PER_MEMBER);
+        $value = $this->readParameter(self::PARAM_HP_PER_MEMBER, 0);
+        if ($value > 0) {
+            // Un curseur pose a la main l'emporte : l'operateur peut toujours
+            // forcer une valeur, et la derivation ne doit pas la lui reprendre.
+            return $value;
+        }
 
-        return $value > 0 ? $value : self::DEFAULT_HP_PER_MEMBER;
+        // ARC-19 — **le repli se derive de la barre du palier** : une barre par
+        // membre. C'est ce que 120 signifiait deja, du temps ou la barre du
+        // canon valait 120 PV a tous les paliers ; depuis ARC-20 elle va de 96
+        // a 880, et un nombre fige rendrait un donjon T4 quatre-vingts fois
+        // trop facile pour ce que ses monstres frappent.
+        //
+        // Ce repli ne sert qu'aux paliers **sans faune** : depuis DON-03, la
+        // barre d'une rencontre est la vie reelle du monstre de l'etape,
+        // multipliee par la taille du groupe.
+        return VitalityLaw::barFor($tier ?? VitalityLaw::FIRST_TIER);
     }
 
     private function getEncounterHit(): int

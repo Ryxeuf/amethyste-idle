@@ -142,6 +142,7 @@ class BusinessAssertionsTest extends TestCase
             $playerStatsCalc,
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
 
         $spell = new Spell();
@@ -220,6 +221,7 @@ class BusinessAssertionsTest extends TestCase
             $this->createMock(PlayerEffectiveStatsCalculator::class),
             $this->leverScale(),
             new DeferredQueue(),
+            $this->unarmouredMitigation(),
         );
 
         $manager->processStartOfTurn($fight, $player);
@@ -315,6 +317,18 @@ class BusinessAssertionsTest extends TestCase
     {
         $resolver = $this->createMock(CombatSkillResolver::class);
         $resolver->method('getLeverEffects')->willReturn(CombatLeverEffects::none());
+
+        return $resolver;
+    }
+
+    /**
+     * ARC-19 : ces tests ne parlent pas d'armure — rien n'est mitige.
+     */
+    private function unarmouredMitigation(): \App\GameEngine\Fight\ArmorMitigationResolver
+    {
+        $resolver = $this->createMock(\App\GameEngine\Fight\ArmorMitigationResolver::class);
+        $resolver->method('mitigate')->willReturnCallback(fn (int $damage) => $damage);
+        $resolver->method('shareFor')->willReturn(0.0);
 
         return $resolver;
     }

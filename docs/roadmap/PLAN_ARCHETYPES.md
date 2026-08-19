@@ -2191,7 +2191,7 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       refus vise le **stock**, pas la **préparation*** : une seule ouverture attend, elle est
       payée en énergie d'action, et la première rencontre la consomme)*
 
-### ARC-19 — L'aggro bornée (M | ★★★ | MOYENNE)
+### ARC-19 — L'aggro bornée (M | ★★★ | MOYENNE) ◐
 > **Prérequis ARC-20.** Tous les chiffres de ce jalon (147 PV, 144 encaissés, 120 sur
 > 120) sont posés sur une barre de vie que **rien ne produit dans le code** (20 PV
 > livrés) : ils se recalculent sur `VitalityLaw`. Livrer l'aggro avant la barre
@@ -2242,8 +2242,62 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       rencontre de groupe se calibre sur le **pool de PV du groupe**, jamais sur un multiple
       du nombre de joueurs* — un multiple linéaire produit une difficulté qui ne dépend pas
       de la composition, et qui exige donc la meilleure
-- [ ] Tests : un groupe sans tank et sans soigneur vient à bout d'une élite de son palier ;
-      aucun score de menace cumulé ; la part déplacée ne dépasse jamais 50 %
+- [x] Tests : un groupe sans tank et sans soigneur vient à bout d'une élite de son palier ;
+      aucun score de menace cumulé ; la part déplacée ne dépasse jamais 50 % *(les deux
+      derniers sont tenus par `TransferLaw` depuis ARC-18d ; le premier par le simulateur
+      de groupe)*
+
+> **ARC-19a — livré le 2026-08-19 : la mitigation d'armure, la moitié que le canon refuse
+> à l'arbre.** C'est le prérequis chiffré que ce jalon nomme lui-même, et il manquait
+> entièrement : aucune formule ne mitigeait quoi que ce soit.
+>
+> **La ligne, et non les points de défense.** `Item::protection` semblait le véhicule — il
+> est déjà affiché sur la fiche. **La mesure dit le contraire** : la colonne est **nulle
+> sur les quinze pièces de la grille de référence** (celle qu'OBJ-03 a verrouillée, et que
+> les builds du simulateur portent) et **n'oppose pas les lignes** là où elle existe (le
+> cuir de palier 2 totalise exactement autant que la plaque : 37 contre 37). ***Une valeur
+> qui vaut zéro là où on la lirait le plus n'est pas un véhicule, c'est un ornement.*** Le
+> canon, lui, n'a jamais parlé en points : il acte « plaque 40 %, cuir 20 %, tissu 0 % ».
+> `ArmorMitigationLaw` suit le canon ; l'alignement de la colonne reste du contenu (OBJ),
+> en cliquet — et le cliquet d'ARC-20c-b est **retourné en disant pourquoi**, au lieu d'être
+> tenu vert par une promesse.
+>
+> **Une part s'obtient en portant la ligne, pas en possédant une pièce** : la mitigation se
+> moyenne sur les sept emplacements d'armure, et la ligne d'une pièce se lit **sur l'échelle
+> de port** — la même source qu'ARC-16b, extraite dans `WornPieceReader` pour qu'elle ne
+> vive plus dans une méthode privée : *une règle recopiée dérive de son original en silence*.
+>
+> **Branchée aux trois endroits où le dégât se calcule**, à la place que le canon donne à
+> `guard` et juste après lui (les deux se multiplient — additionner des réductions les ferait
+> atteindre 100 %). En donjon, elle s'applique **après** la répartition du transfert : le
+> déplacement se fait sur le coup brut (*l'aggro ne réduit rien, elle déplace*) et la
+> réduction est celle de l'armure de **celui qui encaisse** — ce qui est exactement la raison
+> d'être du geste.
+>
+> **Le simulateur la lit en dérivant la ligne de l'arbre** (*un personnage porte ce que son
+> arbre lui a appris à porter*) : la même source que le jeu, donc les deux ne peuvent pas
+> diverger. Mesure : **l'écart de PV effectifs vient majoritairement de l'armure**
+> (invariant 12 de GAME_VITALITY, enfin mesurable), et **un seul arbre au gabarit
+> n'enseigne aucune ligne** (l'Artificier) — cliquet nommé.
+>
+> **Le cliquet de l'élite bouge, et l'attribution était fausse.** ARC-20c-a annonçait que la
+> mitigation porterait « à tous » le nombre de builds qu'une élite emporte ; la mesure dit
+> l'inverse — ***mitiger, c'est survivre*** —, et le relevé passe de 14 à **12 sur 18**, les
+> six survivants étant précisément ceux qui portent une ligne. Ce qui manque pour les emporter
+> tous n'était donc pas la mitigation mais **la recalibration (ARC-05c)**. Le cliquet repart
+> de sa nouvelle mesure, et une seconde assertion tient désormais **la loi** plutôt que le
+> relevé : *une élite en tue au moins un sur deux*, qui ne dépend d'aucune calibration.
+>
+> **Le curseur que le jalon demandait de corriger n'existe plus comme chemin normal** :
+> DON-03 a remplacé `encounter_hp_per_member` par la vie réelle du monstre de l'étape. Ce
+> qui restait est un **repli**, et il se dérive désormais de la barre du palier (une barre
+> par membre — ce que 120 signifiait déjà, du temps où la barre du canon valait 120 PV) :
+> *une rencontre de groupe se calibre sur le pool de PV du groupe, jamais sur un multiple du
+> nombre de joueurs*.
+>
+> Reste **ARC-19b** : le geste de menace lui-même — `TransferLaw` (ARC-18d) en porte déjà la
+> borne, l'anti-empilement et la durée ; il lui manque un accord qui le pose en zone comme il
+> se pose en donjon.
 
 ### ARC-20 — La barre de vie : le Socle, la loi, et les cascades (L | ★★★ | HAUTE) ◐ → 3 sous-phases
 > [../GAME_VITALITY.md](../GAME_VITALITY.md) (2026-08-18). **Le trou que personne

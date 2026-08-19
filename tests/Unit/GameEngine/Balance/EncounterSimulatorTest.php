@@ -156,6 +156,7 @@ class EncounterSimulatorTest extends TestCase
         int $gestureCost = 0,
         int $fallbackDamage = 0,
         float $guardMultiplier = 1.0,
+        float $armorMultiplier = 1.0,
         float $dodgeRate = 0.0,
     ): ReferenceCharacter {
         return new ReferenceCharacter(
@@ -174,6 +175,8 @@ class EncounterSimulatorTest extends TestCase
             criticalRate: 0.0,
             criticalPower: 1.5,
             guardMultiplier: $guardMultiplier,
+            // ARC-19 : ces tests mesurent l'arbre, pas l'armure.
+            armorMultiplier: $armorMultiplier,
             dodgeRate: $dodgeRate,
             recoveryPerTurn: 0.0,
             resourcePerTurn: 0.0,

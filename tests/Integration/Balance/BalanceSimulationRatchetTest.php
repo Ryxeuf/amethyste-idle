@@ -122,7 +122,7 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
      * mitigation d'armure (ARC-19). En cliquet : ce nombre peut monter, jamais
      * descendre.
      */
-    private const MIN_BUILDS_AN_ELITE_KILLS = 14;
+    private const MIN_BUILDS_AN_ELITE_KILLS = 12;
 
     /**
      * **Une elite tue un joueur seul** — le seuil du § 9 octies.
@@ -148,6 +148,23 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
      *
      * Le cliquet compte donc **combien de builds tombent**, et il ne peut que
      * monter : *un seuil qu'on garde vert en fermant les yeux ne mesure rien.*
+     *
+     * **ARC-19 a re-cale le releve, et la raison compte plus que le chiffre.**
+     * Le commentaire ci-dessus attendait de la mitigation d'armure qu'elle
+     * porte le compte « a tous » ; la mesure dit l'inverse, et c'est
+     * arithmetique elle aussi — ***mitiger, c'est survivre***. Les six builds
+     * qui s'en sortent desormais sont ceux qui portent une ligne (plaque ou
+     * cuir), et le releve passe de 14 a **12 sur 18**.
+     *
+     * Ce qui manque pour que l'elite les emporte tous n'etait donc pas la
+     * mitigation mais **la recalibration** — ARC-05c, que le canon (§ 0.2)
+     * confie au simulateur et jamais a une relecture a la main. L'attribution
+     * etait fausse, la mesure la corrige, et le cliquet repart de sa nouvelle
+     * mesure : il ne pourra plus redescendre sous 12.
+     *
+     * La **loi**, elle, ne bouge pas : GAME_VITALITY § 8 invariant 8 dit *« en
+     * tue au moins un sur deux »*, et c'est la seconde assertion — celle qui,
+     * contrairement au releve, ne depend d'aucune calibration.
      */
     public function testAnEliteStillKillsMostSoloPlayers(): void
     {
@@ -169,11 +186,21 @@ class BalanceSimulationRatchetTest extends AbstractIntegrationTestCase
             self::MIN_BUILDS_AN_ELITE_KILLS,
             $fallen,
             sprintf(
-                '%d builds tombent contre une elite de leur palier, contre %d au releve — et %s en viennent a bout. Ce nombre peut monter, jamais descendre : la mitigation d\'armure (ARC-19) est ce qui manque pour le porter a tous.',
+                '%d builds tombent contre une elite de leur palier, contre %d au releve — et %s en viennent a bout. Ce nombre peut monter, jamais descendre : ce qui manque pour le porter a tous est la recalibration (ARC-05c), pas la mitigation.',
                 $fallen,
                 self::MIN_BUILDS_AN_ELITE_KILLS,
                 implode(', ', $survivors) ?: 'aucun',
             ),
+        );
+
+        // La loi, et non le releve : *une elite en tue au moins un sur deux*
+        // (GAME_VITALITY § 8, invariant 8). Elle ne depend d'aucune
+        // calibration, donc elle ne se re-cale jamais.
+        $total = $fallen + \count($survivors);
+        self::assertGreaterThanOrEqual(
+            $total / 2,
+            $fallen,
+            sprintf('Une elite n\'emporte plus la moitie des builds (%d sur %d) : le rang cesse d\'etre un rang.', $fallen, $total),
         );
     }
 
