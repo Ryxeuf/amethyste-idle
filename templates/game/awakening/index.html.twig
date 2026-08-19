@@ -1,0 +1,86 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.repertoire.altar.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">
+                {{ 'game.repertoire.altar.title'|trans }}
+                {% if zone %}<span class="text-purple-300 font-normal">— {{ zone.localizedName(app.request.locale) }}</span>{% endif %}
+            </h2>
+            <p class="text-gray-400 text-xs mt-0.5">{{ 'game.repertoire.altar.intro'|trans }}</p>
+        </div>
+
+        <div class="game-card-body space-y-4">
+            {# La porte, et ce qui manque pour la franchir. L'ecran s'ouvre meme
+               ferme : c'est l'objet de desir de l'horizon de l'an, et il doit se
+               voir avant d'etre atteignable. #}
+            {% if verdict is null or not verdict.allowed %}
+                <div class="ds-empty">
+                    <p class="text-sm text-gray-300">
+                        {% if verdict is null %}
+                            {{ 'game.repertoire.altar.no_settlement'|trans }}
+                        {% else %}
+                            {{ 'game.repertoire.altar.closed'|trans({
+                                '%current%': verdict.current ? verdict.current.value : '—',
+                                '%missing%': verdict.missingRanks,
+                            }) }}
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if rite %}
+                <div class="ds-line">
+                    <div>
+                        <p class="text-sm text-white">{{ 'game.repertoire.altar.running'|trans({'%materia%': rite.materia.name}) }}</p>
+                        <p class="text-xs text-gray-400 font-mono">
+                            {% if rite.isReady(now) %}
+                                {{ 'game.repertoire.altar.ready'|trans }}
+                            {% else %}
+                                {{ 'game.repertoire.altar.remaining'|trans({'%hours%': (rite.secondsRemaining(now) / 3600)|round(1)}) }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if rite.isReady(now) %}
+                        <form method="post" action="{{ path('app_game_awakening_claim') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('awakening_claim') }}">
+                            <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs rounded-lg">{{ 'game.repertoire.altar.collect'|trans }}</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% elseif verdict and verdict.allowed %}
+                <p class="text-xs text-gray-400 font-mono">
+                    {{ 'game.repertoire.altar.cost'|trans({
+                        '%lots%': cost.lots,
+                        '%held%': perfectLots,
+                        '%gils%': cost.gils,
+                        '%hours%': (cost.seconds / 3600)|round(1),
+                    }) }}
+                    {% if cost.sanctuary %}<span class="text-emerald-300">{{ 'game.repertoire.altar.sanctuary'|trans }}</span>{% endif %}
+                </p>
+
+                {% if awakenable is empty %}
+                    <div class="ds-empty">
+                        <p class="text-sm text-gray-300">{{ 'game.repertoire.altar.nothing'|trans }}</p>
+                    </div>
+                {% else %}
+                    <ul class="space-y-2">
+                        {% for materia in awakenable %}
+                            <li class="ds-line">
+                                <span class="text-sm text-white">{{ materia.name }}</span>
+                                <form method="post" action="{{ path('app_game_awakening_start', {id: materia.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('awakening_start') }}">
+                                    <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs rounded-lg">{{ 'game.repertoire.altar.awaken'|trans }}</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2148,6 +2148,33 @@
         "materia": "Comprendre les matérias — le wiki",
         "craft": "Comprendre les artisanats — le wiki"
       }
+    },
+    "repertoire": {
+      "altar": {
+        "title": "Autel d'éveil",
+        "intro": "Le seul geste qui fasse naître une matéria. Un service de la cité : ouvert à tous, taxé par qui la gouverne.",
+        "no_settlement": "Aucun foyer ici : l'Autel se tient dans une Métropole.",
+        "closed": "L'Autel attend une Métropole. Ce foyer est %current%, il en manque %missing%.",
+        "cost": "%lots% lot(s) d'améthystite Parfaite (vous en avez %held%), %gils% gils, %hours% h.",
+        "sanctuary": "Le Sanctuaire allège le rite.",
+        "running": "Rite en cours — %materia%",
+        "ready": "prêt",
+        "remaining": "encore %hours% h",
+        "collect": "Recueillir",
+        "awaken": "Éveiller",
+        "nothing": "Rien à éveiller pour l'instant. L'Autel ne connaît que les gestes que le monde a retrouvés, et dont vous avez appris l'accord.",
+        "started": "Le rite est lancé. Revenez quand il aura pris.",
+        "claimed": "La matéria s'est éveillée.",
+        "error": {
+          "closed": "L'Autel n'est pas ouvert ici.",
+          "already_running": "Un rite est déjà en cours.",
+          "not_awakenable": "Ce geste n'a pas été retrouvé, ou vous n'en avez pas l'accord.",
+          "not_enough_perfect": "Il vous manque de l'améthystite Parfaite.",
+          "not_enough_gils": "Il vous manque des gils.",
+          "nothing_to_claim": "Aucun rite à recueillir.",
+          "not_ready": "Le rite n'a pas encore pris."
+        }
+      }
     }
   },
   "common": {

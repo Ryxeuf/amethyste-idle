@@ -45,6 +45,9 @@ class RepertoireCatalog
     /** @var array{per_effective_player: int, floor: int}|null */
     private ?array $unlock = null;
 
+    /** @var array{perfect_lots: int, gils: int, duration_hours: int, sanctuary_discount_percent: int, tax_percent: int}|null */
+    private ?array $altar = null;
+
     public function __construct(
         private readonly string $projectDir,
     ) {
@@ -250,6 +253,62 @@ class RepertoireCatalog
         }
 
         return ['per_effective_player' => $values['per_effective_player'], 'floor' => $values['floor']];
+    }
+
+    /**
+     * Les reglages du rite d'eveil (REP-04).
+     *
+     * @return array{perfect_lots: int, gils: int, duration_hours: int, sanctuary_discount_percent: int, tax_percent: int}
+     */
+    public function altar(): array
+    {
+        if ($this->altar === null) {
+            $this->altar = $this->normalizeAltar($this->raw($this->defaultFile()), $this->defaultFile());
+        }
+
+        return $this->altar;
+    }
+
+    /**
+     * @param array<array-key, mixed> $raw
+     *
+     * @return array{perfect_lots: int, gils: int, duration_hours: int, sanctuary_discount_percent: int, tax_percent: int}
+     */
+    public function normalizeAltar(array $raw, string $source = '<array>'): array
+    {
+        $altar = $raw['altar'] ?? null;
+        if (!\is_array($altar)) {
+            throw new RepertoireDefinitionException(sprintf('"%s" must declare an "altar" block.', $source));
+        }
+
+        $values = [];
+        foreach (['perfect_lots', 'gils', 'duration_hours'] as $field) {
+            $value = $altar[$field] ?? null;
+            if (!\is_int($value) || $value <= 0) {
+                throw new RepertoireDefinitionException(sprintf('"%s" needs a positive "altar.%s".', $source, $field));
+            }
+            $values[$field] = $value;
+        }
+
+        // Les deux pourcentages admettent zero — un monde sans taxe et un
+        // Sanctuaire sans remise sont des reglages legitimes — mais jamais
+        // cent : une remise totale rendrait le rite gratuit au Sanctuaire, et
+        // une taxe totale le rendrait impossible ailleurs.
+        foreach (['sanctuary_discount_percent', 'tax_percent'] as $field) {
+            $value = $altar[$field] ?? null;
+            if (!\is_int($value) || $value < 0 || $value >= 100) {
+                throw new RepertoireDefinitionException(sprintf('"%s" needs "altar.%s" between 0 and 99.', $source, $field));
+            }
+            $values[$field] = $value;
+        }
+
+        return [
+            'perfect_lots' => $values['perfect_lots'],
+            'gils' => $values['gils'],
+            'duration_hours' => $values['duration_hours'],
+            'sanctuary_discount_percent' => $values['sanctuary_discount_percent'],
+            'tax_percent' => $values['tax_percent'],
+        ];
     }
 
     /**

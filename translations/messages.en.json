@@ -2148,6 +2148,33 @@
         "materia": "Understanding materia — the wiki",
         "craft": "Understanding crafts — the wiki"
       }
+    },
+    "repertoire": {
+      "altar": {
+        "title": "Awakening Altar",
+        "intro": "The only gesture that brings a materia into being. A city service: open to all, taxed by whoever governs.",
+        "no_settlement": "No settlement here: the Altar stands in a Metropolis.",
+        "closed": "The Altar awaits a Metropolis. This settlement is %current%, %missing% rank(s) short.",
+        "cost": "%lots% lot(s) of Perfect amethystite (you hold %held%), %gils% gils, %hours% h.",
+        "sanctuary": "The Sanctuary lightens the rite.",
+        "running": "Rite under way — %materia%",
+        "ready": "ready",
+        "remaining": "%hours% h left",
+        "collect": "Collect",
+        "awaken": "Awaken",
+        "nothing": "Nothing to awaken yet. The Altar knows only the gestures the world has recovered, and whose accord you have learned.",
+        "started": "The rite has begun. Come back once it has taken.",
+        "claimed": "The materia has awakened.",
+        "error": {
+          "closed": "The Altar is not open here.",
+          "already_running": "A rite is already under way.",
+          "not_awakenable": "That gesture has not been recovered, or you lack its accord.",
+          "not_enough_perfect": "You are short of Perfect amethystite.",
+          "not_enough_gils": "You are short of gils.",
+          "nothing_to_claim": "No rite to collect.",
+          "not_ready": "The rite has not taken yet."
+        }
+      }
     }
   },
   "common": {

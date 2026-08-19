@@ -50,6 +50,41 @@ unlock:
     floor: 40
 
 # =============================================================================
+# L'Autel d'eveil (REP-04)
+# =============================================================================
+# GAME_WORLD § 12.3 a : **un service de la ville, comme le marche ou la banque**.
+# La guilde qui gouverne la Metropole **taxe** chaque rite ; elle ne ferme
+# jamais la porte (doctrine D14). N'importe quel joueur — guilde ou non — peut
+# eveiller.
+#
+# C'est le **seul craft de materia du jeu** (§ 2.1), et il reste *exceptionnel,
+# tardif, jamais necessaire* : le gate Metropole le place a l'horizon de l'an,
+# et rien de ce qu'il produit n'est introuvable ailleurs.
+altar:
+    # Les lots d'amethystite **Parfaite** que le rite consomme. Seul le Parfait
+    # eveille (ECO-22) : c'est la seule bande a avoir un debouche d'usage qui ne
+    # soit pas un prix.
+    perfect_lots: 3
+
+    # Le cout en gils. Du meme ordre qu'une doctrine de foyer (6 000) : une
+    # decision, pas un achat d'impulsion.
+    gils: 5000
+
+    # Le temps reel. Un rite n'est pas un artisanat : on le lance et on revient.
+    duration_hours: 24
+
+    # Ce qu'un foyer **Sanctuaire** retire au cout **et** au delai. C'est la
+    # vocation du type depuis le § 3.2, et la seule chose que le type de foyer
+    # change ici — il ne change jamais *ce que* l'on peut eveiller.
+    sanctuary_discount_percent: 25
+
+    # Ce que la guilde controlante preleve. Sans guilde, la taxe est
+    # **detruite** — meme regle qu'a l'hotel des ventes et a l'echoppe : les
+    # gils sortent du jeu au lieu de revenir au joueur, ce qui en fait un gold
+    # sink et non une remise deguisee.
+    tax_percent: 10
+
+# =============================================================================
 # Le bassin des gestes retrouves (REP-02)
 # =============================================================================
 # GAME_WORLD § 12.3 b, regle 1 : **un seul bassin, ecrit une fois**. Le contenu

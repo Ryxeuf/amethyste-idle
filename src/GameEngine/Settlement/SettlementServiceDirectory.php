@@ -16,8 +16,8 @@ use App\Enum\SettlementRank;
  * Un service declare dans `settlements.yaml` mais absent de `ROUTES` est une
  * **promesse** : le palier l'annonce (`SettlementPanelBuilder::opensAt()`), et
  * rien ne s'affiche tant que le jalon qui le livre n'est pas passe. C'est le cas
- * de l'etal loue (ECO Piste D) et de l'Autel d'eveil, qui attend la purete
- * (ECO-22) — sans bande `parfait`, un rite d'eveil n'aurait rien a consommer.
+ * de l'etal loue (ECO Piste D). **L'Autel d'eveil en etait un jusqu'a REP-04** :
+ * il attendait la purete (ECO-22), livree depuis, et il a desormais son ecran.
  *
  * Les routes vivent ici et non dans le YAML : ce n'est pas du calibrage. La
  * regle « rien en dur » de PLAN_SETTLEMENTS porte sur les seuils, les taux et
@@ -43,7 +43,19 @@ class SettlementServiceDirectory
      */
     private const ROUTES = [
         'regional_market' => 'app_game_auction',
-        'zone_bank' => 'app_game_inventory',
+        // REP-04 : le nom etait **faux**. `IndexController` porte l'attribut de
+        // route sur la classe (`app_game_inventory`) et Symfony suffixe celui de
+        // la methode : la route s'appelle `app_game_inventory_index`. Le defaut
+        // etait latent — `zone_bank` s'ouvre a la Cite, qu'aucun foyer du monde
+        // livre n'atteint —, donc il attendait le premier serveur assez vieux
+        // pour l'y conduire, et il aurait alors casse le panneau de foyer plutot
+        // que d'y manquer une ligne. C'est le contrat gate ↔ routeur qui l'a
+        // trouve, en cherchant l'Autel.
+        'zone_bank' => 'app_game_inventory_index',
+        // REP-04 : l'Autel cesse d'etre une promesse. Il etait **gate sans etre
+        // route** — le panneau de foyer l'annoncait ouvert a la Metropole, et
+        // il ne menait a rien.
+        'awakening_altar' => 'app_game_awakening',
     ];
 
     public function __construct(
@@ -81,6 +93,21 @@ class SettlementServiceDirectory
         usort($rows, static fn (array $a, array $b): int => $a['required']->level() <=> $b['required']->level());
 
         return $rows;
+    }
+
+    /**
+     * Les services **branches** et leur route, lisibles de l'exterieur (REP-04).
+     *
+     * Rendue publique pour que le contrat gate ↔ routeur puisse interroger la
+     * table plutot que la recopier : *une regle recopiee derive de son original
+     * en silence*, et un contrat qui porterait sa propre copie de la liste
+     * cesserait de mesurer quoi que ce soit des qu'elle vieillirait.
+     *
+     * @return array<string, string>
+     */
+    public static function routes(): array
+    {
+        return self::ROUTES;
     }
 
     /**
