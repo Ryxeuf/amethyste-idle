@@ -17,6 +17,7 @@ use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Materia\MateriaLootTable;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Reputation\FactionGate;
 use App\GameEngine\Retention\WeeklyCommissionDelivery;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\GameEngine\Settlement\SettlementDoctrineException;
@@ -109,6 +110,7 @@ class ZoneController extends AbstractController
         private readonly SettlementDoctrineService $settlementDoctrineService,
         private readonly GameMasterPolicy $gameMasterPolicy,
         private readonly TrainingDummyOffer $trainingDummyOffer,
+        private readonly FactionGate $factionGate,
     ) {
     }
 
@@ -188,6 +190,20 @@ class ZoneController extends AbstractController
         $connections = $isGameMaster
             ? $this->zoneConnectionRepository->findAllFrom($zone)
             : $this->zoneConnectionRepository->findEnabledFrom($zone);
+
+        // FAC-09 — une porte fermee ne s'affiche pas.
+        //
+        // Le refus de voyage ne suffit pas : une liaison listee mais barree
+        // **dit qu'une Cour des Miracles existe**, et a qui la regarde depuis
+        // l'exterieur elle donne deja la moitie de ce qu'une exaltation devait
+        // donner. On filtre par le meme service que le voyage, jamais par une
+        // seconde regle qui derivera.
+        if (!$isGameMaster) {
+            $connections = array_values(array_filter(
+                $connections,
+                fn ($connection): bool => $this->factionGate->isOpenFor($player, $connection->getToZone()),
+            ));
+        }
 
         // Un MJ incognito ne figure pas dans la liste : c'est tout l'objet du
         // mode — observer une zone sans que sa presence change ce qui s'y passe.

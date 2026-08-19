@@ -27,6 +27,8 @@ class ZoneTravelServiceTest extends TestCase
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private HostileConsequenceResolver&MockObject $hostileConsequences;
     private \App\GameEngine\Reputation\ShadowsSmuggling&MockObject $shadowsSmuggling;
+    private \App\GameEngine\Reputation\FactionGate&MockObject $factionGate;
+
     private ZoneTravelService $service;
 
     protected function setUp(): void
@@ -40,7 +42,11 @@ class ZoneTravelServiceTest extends TestCase
         // FAC-08 : la fouille aux portes est muette par defaut — les cas de
         // contrebande la configurent explicitement.
         $this->shadowsSmuggling = $this->createMock(\App\GameEngine\Reputation\ShadowsSmuggling::class);
-        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy(), $this->hostileConsequences, $this->shadowsSmuggling);
+        // FAC-09 : la porte est ouverte par defaut — une zone sans garde l'est
+        // pour tout le monde, et les cinq portes ont leur propre contrat.
+        $this->factionGate = $this->createMock(\App\GameEngine\Reputation\FactionGate::class);
+        $this->factionGate->method('isOpenFor')->willReturn(true);
+        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy(), $this->hostileConsequences, $this->shadowsSmuggling, $this->factionGate);
     }
 
     private function buildZone(string $slug): Zone
@@ -327,6 +333,28 @@ class ZoneTravelServiceTest extends TestCase
 
         $this->expectExceptionMessage('game.zone.travel.error.not_discovered');
         $this->service->startTravel($player, $connection);
+    }
+
+    /**
+     * FAC-09 — une porte fermee refuse, et **elle refuse sans se nommer**.
+     *
+     * Le message est celui d'« indisponible », pas un « il vous faut etre
+     * Exalte chez les Ruelles » : une porte cachee qui se nomme en se refusant
+     * n'est plus cachee, et un joueur qui n'a rien gagne apprendrait a la fois
+     * qu'une Cour des Miracles existe et ou elle se trouve.
+     */
+    public function testAClosedDoorRefusesWithoutNamingItself(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('la-cour-des-miracles');
+        $player = $this->buildPlayerIn($from);
+
+        $gate = $this->createMock(\App\GameEngine\Reputation\FactionGate::class);
+        $gate->method('isOpenFor')->willReturn(false);
+        $service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed(), new GameMasterPolicy(), $this->hostileConsequences, $this->shadowsSmuggling, $gate);
+
+        $this->expectExceptionMessage('game.zone.travel.error.unavailable');
+        $service->startTravel($player, new ZoneConnection($from, $to, 0));
     }
 
     public function testAllowsFastLinkTowardsVisitedZone(): void

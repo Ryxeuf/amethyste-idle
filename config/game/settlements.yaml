@@ -304,6 +304,16 @@ without_settlement:
     mer-de-sel: 'le Silence / Extension 1 (GAME_WORLD § 4.3)'
     pas-de-givre: 'Extension 1'
     glacier-du-silence: 'Extension 1'
+    # FAC-09 — les cinq portes. Un foyer se peuple, monte et retombe avec
+    # l'activite ; une porte est une salle derriere une reputation, ou personne
+    # n'habite et ou rien ne se depose. Lui donner un rang la ferait entrer dans
+    # la Crue, c'est-a-dire dans le quota de grandes cites, pour un quartier
+    # qu'une poignee de joueurs peuvent voir.
+    la-grande-halle: 'porte de faction : une salle, pas un lieu de vie (FAC-09)'
+    la-salle-du-serment: 'porte de faction : une salle, pas un lieu de vie (FAC-09)'
+    le-scriptorium: 'porte de faction : une salle, pas un lieu de vie (FAC-09)'
+    la-cour-des-miracles: 'porte de faction : une salle, pas un lieu de vie (FAC-09)'
+    le-grand-fourneau: 'porte de faction : une salle, pas un lieu de vie (FAC-09)'
 
 # =============================================================================
 # Paleur des filons (FOY-11)

@@ -84,6 +84,8 @@ class ZoneControllerTest extends TestCase
     private ExpeditionService&MockObject $expeditionService;
     private ChatManager&MockObject $chatManager;
     private TrainingDummyOffer&MockObject $trainingDummyOffer;
+
+    private \App\GameEngine\Reputation\FactionGate&MockObject $factionGate;
     private ZoneEventService&MockObject $zoneEventService;
     private GameTimeService&MockObject $gameTimeService;
     private ZoneBossService&MockObject $zoneBossService;
@@ -177,6 +179,8 @@ class ZoneControllerTest extends TestCase
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
         $this->trainingDummyOffer = $this->createMock(TrainingDummyOffer::class);
         $this->trainingDummyOffer->method('pendingFor')->willReturn(null);
+        $this->factionGate = $this->createMock(\App\GameEngine\Reputation\FactionGate::class);
+        $this->factionGate->method('isOpenFor')->willReturn(true);
 
         $this->controller = new ZoneController(
             $this->entityManager,
@@ -211,6 +215,9 @@ class ZoneControllerTest extends TestCase
             // portent sur les actions de zone, et un joueur hors tutoriel ne
             // se voit proposer aucun entrainement — c'est l'etat normal.
             $this->trainingDummyOffer,
+            // FAC-09 : aucune de ces zones n'est une porte de faction, et une
+            // zone sans garde est ouverte a tout le monde.
+            $this->factionGate,
         );
         $this->controller->setContainer($this->createContainer());
     }

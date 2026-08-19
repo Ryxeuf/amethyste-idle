@@ -3,6 +3,7 @@
 namespace App\GameEngine\Zone;
 
 use App\Entity\App\Zone;
+use App\Enum\ReputationTier;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -180,6 +181,9 @@ class ZoneDefinitionLoader
             // C'est de lui que les monstres tiennent leur palier.
             'tier' => max(0, min(4, (int) ($definition['tier'] ?? 0))),
             'enabled' => (bool) ($definition['enabled'] ?? true),
+            // FAC-09 — la porte : la zone dit elle-meme a quelle maison elle
+            // appartient et a quel palier elle s'ouvre.
+            'requires_reputation' => $this->normalizeReputationGate($slug, $definition['requires_reputation'] ?? null, $source),
             'source_map' => \is_string($definition['source_map'] ?? null) ? $definition['source_map'] : null,
             // Zone **principale** de sa carte d'origine (ZON-04).
             //
@@ -210,6 +214,61 @@ class ZoneDefinitionLoader
             'mobs' => $this->normalizeMobs($slug, $definition['mobs'] ?? null, $source),
             'pnjs' => $this->normalizePnjs($slug, $definition['pnjs'] ?? null, $source),
         ];
+    }
+
+    /**
+     * La garde de reputation d'une zone (FAC-09).
+     *
+     * `requires_reputation: { faction: ombres, tier: exalte }`, ou rien.
+     *
+     * Trois refus, et ils disent tous la meme chose — *une garde a moitie
+     * ecrite est pire que pas de garde* :
+     *
+     * 1. **les deux cles ou aucune.** Une faction sans palier laisserait la
+     *    porte grande ouverte ; un palier sans faction la fermerait a tout le
+     *    monde, et personne ne saurait pourquoi ;
+     * 2. **un palier inconnu est refuse**, jamais corrige en silence — la lecon
+     *    d'ARC-12a : une chaine mal orthographiee produirait une porte qui ne
+     *    s'ouvre a personne, et un contenu muet se lit comme un choix ;
+     * 3. **`hostile`, `inconnu` et `neutre` sont refuses comme garde.** Ils sont
+     *    au niveau du sol ou en dessous : une porte gardee par eux n'est pas une
+     *    porte. Le refus attrape la faute de frappe (`neutre` pour `revere`)
+     *    qu'aucune autre verification ne verrait, puisque la valeur est valide.
+     *
+     * Le nom de la faction n'est **pas** verifie ici : les factions vivent dans
+     * les fixtures et les zones s'importent par une commande. Une garde qui
+     * nomme une maison pas encore semee reste **inerte** (`FactionGate`), comme
+     * une paire de tension dont un membre manque (FAC-01).
+     *
+     * @return array{faction: string, tier: string}|null
+     */
+    private function normalizeReputationGate(string $slug, mixed $gate, string $source): ?array
+    {
+        if ($gate === null) {
+            return null;
+        }
+
+        if (!\is_array($gate)) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has a malformed "requires_reputation" in "%s": expected a mapping with "faction" and "tier".', $slug, $source));
+        }
+
+        $faction = $gate['faction'] ?? null;
+        $tier = $gate['tier'] ?? null;
+
+        if (!\is_string($faction) || trim($faction) === '' || !\is_string($tier) || trim($tier) === '') {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" needs both a "faction" and a "tier" in its "requires_reputation" in "%s": a half-written gate either opens to everyone or closes to everyone.', $slug, $source));
+        }
+
+        $parsed = ReputationTier::tryFrom($tier);
+        if ($parsed === null) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" requires an unknown reputation tier "%s" in "%s".', $slug, $tier, $source));
+        }
+
+        if ($parsed->threshold() < ReputationTier::Ami->threshold()) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" is guarded by "%s" in "%s": a tier at or below Neutre is not a gate.', $slug, $tier, $source));
+        }
+
+        return ['faction' => $faction, 'tier' => $parsed->value];
     }
 
     /**

@@ -25,7 +25,8 @@
 | FAC-06 ✅ | Les Ruelles : approche nocturne + receleur + rumeurs | M | ← FAC-01 |
 | FAC-07 ✅ | La contrefaçon (flag, trahison, faussaire) | M | ← FAC-06 |
 | FAC-08 ✅ | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
-| FAC-09 | Échelles latérales + les cinq portes | L → par maison | ← FAC-01→03 |
+| FAC-09a ✅ | La loi latérale + les cinq portes | M | ← FAC-01→03 |
+| FAC-09b→e | Les échelles par maison (Ami / Honoré / Révéré) | L → par maison | ← FAC-09a |
 | FAC-10 | Tests du plan | S | ‖ |
 
 ```
@@ -279,16 +280,64 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
 
 ## Piste D — Les échelles
 
-### FAC-09 — Échelles latérales & les cinq portes (L — par maison | ★★★ | HAUTE)
-> §12.5. Un sous-jalon **par maison** (09a Marchands, 09b Chevaliers, 09c Mages,
-> 09d Fonderie, 09e Ruelles), chacun commitable seul : récompenses de palier latérales
-> (recettes, cosmétiques, montures, accès) + le système propre restant (commissions de
-> négoce, tableau des primes, Programme du Cercle) + la zone `interior` d'Exalté.
-> Prérequis : ← FAC-01→03 ; les zones passent par le chemin déclaratif de `world_1.yaml`
-- [ ] Les cinq portes : Cour des Miracles, Grand Fourneau, Grande Halle, Salle du Serment,
-      Scriptorium — zones `interior` cachées, gate de réputation Exalté
-- [ ] Aucune récompense verticale : revue systématique contre §6.4 c
-- [ ] Tests : gates d'accès, exclusivité des portes
+### FAC-09a ✅ — La loi latérale & les cinq portes (M | ★★★ | HAUTE) — livré le 2026-08-19
+> §12.5. **Le découpage a changé** : le plan prévoyait un sous-jalon par maison, mais le
+> mécanisme n'existait nulle part — chaque maison l'aurait réinventé. Le socle passe donc
+> devant, et les échelles par maison deviennent du contenu (FAC-09b→e).
+- [x] Vocabulaire **fermé** des formes de récompense (`FactionRewardForm`), refusé à la lecture
+- [x] `stat_bonus` devient **`patronage`** : la seule forme qui puisse nommer une statistique
+      porte le nom de la règle qui la borne
+- [x] Les cinq portes : Grande Halle, Salle du Serment, Scriptorium, Cour des Miracles,
+      Grand Fourneau — zones `interior` cachées, garde de réputation Exalté
+- [x] La garde se déclare dans `zones.yaml` (`requires_reputation`), refusée si à moitié écrite
+- [x] Tests : `FactionLadderContractTest`, `FactionGateTest`, refus de garde au chargeur
+
+> **Livré (2026-08-19).** Le plan demandait « une revue systématique contre §6.4 c », comme si
+> quelques récompenses verticales s'étaient glissées parmi des récompenses latérales. **La
+> mesure dit l'inverse, et c'est pire** : sur les 12 récompenses livrées, **3 sont des remises
+> et 9 sont des statistiques**. Hors de la Guilde des Marchands — la seule maison hors tension
+> —, l'échelle **ne contenait rien d'autre que des statistiques** ; FAC-01 les ayant bornées au
+> patron, un Exalté chez les Chevaliers qui portait d'autres couleurs recevait, pour une échelle
+> entière, **exactement rien**. Et la Fonderie n'avait **aucune récompense du tout**. *Ce n'est
+> pas « le reste est vertical » : il n'y avait pas de reste.*
+>
+> `FactionRewardForm` ferme la liste — c'est le geste d'ARC-16a sur les accointances, appliqué
+> ici : murer la porte de service par laquelle la puissance entrait. `rewardData` étant un JSON
+> libre, l'invariant ne peut pas tenir par le type ; il tient par **la forme**, et il est écrit
+> en négatif — *tout ce qui n'est pas le patronage est latéral*, si bien qu'une dixième forme
+> ajoutée demain est latérale par défaut : **l'oubli penche du côté de la doctrine**.
+>
+> **La porte répond à deux questions, et la seconde n'est pas un refus.** Peut-on entrer
+> (`ZoneTravelService`, au crochet que la règle du MJ avait déjà nommé) — et *doit-on seulement
+> voir la liaison* (l'écran de zone). Une porte listée mais barrée ne serait plus cachée : elle
+> dirait son existence à qui ne l'a pas gagnée, et une récompense d'exaltation qu'on lit
+> par-dessus l'épaule d'un autre a déjà donné la moitié de ce qu'elle donne. Les deux passent
+> par **le même appel** : les séparer les ferait dériver. Pour la même raison, le refus emprunte
+> la clé d'« indisponible » plutôt qu'un message propre — *une porte cachée qui se nomme en se
+> refusant n'est plus cachée*.
+>
+> **Une garde qui nomme une maison pas encore semée est inerte**, jamais fermée : même doctrine
+> que la paire de tension déclarée avant que la Fonderie existe (FAC-01). *On ne ferme pas une
+> porte au nom de quelqu'un qui n'est pas là.*
+>
+> **Un test voisin savait déjà la règle, au singulier.** `HawthornValesTest` vérifie que les
+> Vallons sont la zone la plus proche du hub, en excluant les Jardins — avec ce commentaire :
+> « les compter ferait gagner la comparaison à une **porte intérieure** ». La règle était donc
+> écrite, mais contre un slug, parce que le monde n'avait alors qu'un seul intérieur : *une
+> règle illustrée par son unique cas ne vieillit pas*. Elle se lit désormais sur le `type`.
+
+### FAC-09b→e — Les échelles par maison (L — par maison | ★★★ | HAUTE)
+> §12.5. Ce que le socle laisse : les paliers **Ami, Honoré et Révéré** de chaque maison, et le
+> système propre restant. Un sous-jalon par maison, chacun commitable seul.
+- [ ] **Marchands** : cote des marchés (Ami), commissions de négoce + balance de précision
+      (Honoré), mule bâtée + priorité d'étal (Révéré)
+- [ ] **Chevaliers** : tableau des primes (Ami), bénédictions + héraldique (Honoré), monture
+      caparaçonnée + garde du corps (Révéré)
+- [ ] **Mages** : tarif de lecture + bibliothèque (Ami), Programme du Cercle (Honoré),
+      familier-lanterne + archive (Révéré) — gagne à suivre PLAN_REPERTOIRE
+- [ ] **Fonderie** et **Ruelles** : leurs systèmes propres sont livrés (FAC-05, FAC-06→08) ;
+      restent les récompenses de palier
+- [ ] Aucune récompense verticale : la loi est tenue par `FactionLadderContractTest`
 
 ### FAC-10 — Tests du plan (S | ★★ | HAUTE)
 > ‖ au fil des jalons.
