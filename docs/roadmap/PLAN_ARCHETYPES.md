@@ -785,6 +785,41 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
+> **ARC-08g — le Défenseur, livré le 2026-08-19. Le second voisin exact.** Le septième arbre
+> au gabarit occupe `encaisse × mêlée`, la case du Soldat (ARC-07c) : deux conversions de
+> suite sur une case déjà tenue, et la même conclusion — *deux arbres de même fonction et même
+> registre ne se distinguent que par ce qu'ils font*. Le Soldat oppose **encaisser pour
+> quatre** à **finir seul** ; le Défenseur, qui est de terre, oppose **ce qui ne s'entame
+> pas** à **ce qui pèse**.
+>
+> **La palette effective de l'encaisse est la plus étroite du jeu** (§ 5.0), et cet arbre le
+> démontre : `guard` plafonne à 15, le capstone en consomme 14, il reste **1 pb** — *un arbre
+> d'encaisse achète son principal à son sommet ou jamais*. C'est la décision 21 rendue
+> visible : la mitigation d'un tank vient de son armure (ARC-19a), pas de son arbre.
+>
+> **Le plafond a écrit la fourche pour la sixième fois, et cette fois le contrat l'a refusée
+> avant nous.** Écrite d'abord avec `ward` au palier 1, au palier 2 *et* dans la branche, la
+> Roche dépensait **18 pb pour un plafond de 15**. Redistribué, l'arbre tombe sur **deux
+> plafonds atteints pile du même côté** — `ward` à 15 et `dodge` à 12. *On ne l'a pas dosé :
+> le plafond a dit où les points pouvaient aller, et il n'en restait qu'une répartition.*
+>
+> **La teinte est `grip`, et elle sort de la fiction** : la marque de la terre est **Alourdi**
+> (ARC-13a), et `grip` prolonge les statuts appliqués — *le Poids ne frappe pas plus fort, il
+> pèse plus longtemps*. Elle distingue aussi l'arbre du Soldat, dont la teinte est `power`.
+>
+> **Deux intentions déclarées, et c'était nécessaire** : la palette de l'encaisse exige deux
+> `protect`, et la dérivation lit le soin avant le statut (ARC-11a) — une Parade qui rend
+> 3 PV et pose un bouclier se rangeait en *soin*. C'est exactement ce qu'ARC-11b-b annonçait :
+> *ces intentions n'existeront que déclarées à la main*. Le Défenseur **sort de la liste
+> d'attente des palettes**, où ARC-08d l'avait laissé à 1 protect sur 2.
+>
+> **Six gestes déclarent leur registre**, et le Bouclier terreux descend au palier 1 — le
+> précédent de l'Embuscade (ARC-08b) : *un accord d'entrée distribué à zéro point ne peut pas
+> se déclarer de palier 2*, sinon il coûterait un tour de reprise en mêlée. Sa matéria devient
+> `m1-earth-shield`, et le comptoir de la Forêt suit — ce qui le rend **plus** cohérent,
+> puisque c'est le plancher du jour 1 (MAT-04). Cliquets : arbres au gabarit 6 → **7**, liste
+> d'attente des fourches 14 → **13**, palettes 8 → **7**, catalogue 197 → **192**, dit.
+>
 > **ARC-08f — le Chevalier, livré le 2026-08-19. Le test du voisin dans sa forme la plus
 > dure.** Le sixième arbre au gabarit occupe une case **déjà tenue** — `assaut × mêlée`, celle
 > de l'Assassin (ARC-08b) —, et seul l'élément les sépare. C'est le premier arbre qui ne peut

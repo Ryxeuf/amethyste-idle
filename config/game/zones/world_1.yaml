@@ -373,7 +373,7 @@ zones:
               greeting: "Le jour, la foret n'est qu'une foret. Apres le crepuscule, ce qui marche entre les arbres n'a plus de souffle. Rentre."
               # MAT-04 : la part de Terre du plancher du jour 1 — la Foret est
               # la reference du monde, le depot sans a-coups (purity.yaml).
-              shop_items: [m2-earth-shield, m2-shared-shield]
+              shop_items: [m1-earth-shield, m2-shared-shield]
 
     # =========================================================================
     # ZONE 3 — Mines Profondes (extraction, palier au-dessus de la foret)

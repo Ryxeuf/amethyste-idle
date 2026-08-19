@@ -2424,16 +2424,48 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // DEFENSEUR (terre) — 18 skills, tank absorption et murs
     // =========================================================================
+    /**
+     * DEFENSEUR — terre x melee x encaisse (ARC-08g), au gabarit.
+     *
+     * **Le second voisin exact du chantier**, apres le Chevalier : le Soldat
+     * occupe deja `encaisse x melee` (ARC-07c), et seul l'element les separe.
+     * Le Soldat oppose *encaisser pour quatre* a *finir seul* ; le Defenseur,
+     * qui est de terre, oppose **ce qui ne s'entame pas** a **ce qui pese**.
+     *
+     * **La palette effective de l'encaisse est la plus etroite du jeu** (§ 5.0) :
+     * `guard` plafonne a 15 et le capstone en consomme 14, si bien qu'il reste
+     * **1 pb** — *un arbre d'encaisse achete son principal a son sommet ou
+     * jamais*, et repartit ses quatre autres leviers. C'est la demonstration la
+     * plus nette de la decision 21 : la mitigation d'un tank vient de son
+     * armure, pas de son arbre.
+     *
+     * **Le plafond a de nouveau ecrit la fourche, et cette fois deux fois dans
+     * la meme branche.** Ecrite d'abord avec `ward` au palier 1, au palier 2 et
+     * dans la branche, la Roche depensait **18 pb pour un plafond de 15** — le
+     * contrat l'a refusee. Redistribue, l'arbre tombe sur **deux plafonds
+     * atteints pile** du meme cote : `ward` a 15 (6 + 9) et `dodge` a 12
+     * (3 + 9). *On ne l'a pas dose : le plafond a dit ou les points pouvaient
+     * aller, et il n'en restait qu'une repartition.*
+     *
+     * **La teinte est `grip`**, et elle sort de la fiction plutot que d'un
+     * dosage : la marque de la terre est **Alourdi** (ARC-13a), et `grip`
+     * prolonge les statuts appliques — *le Poids ne frappe pas plus fort, il
+     * pese plus longtemps*. Elle distingue aussi l'arbre du Soldat, dont la
+     * teinte est `power`.
+     */
     private function getDefenderSkills(): array
     {
         $d = 'defender';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // Le Bouclier terreux porte **Alourdi**, la marque de la terre
+            // (ARC-13b-a), et il blesse : le capstone est atteignable des la
+            // premiere rencontre, puisqu'il ne coute ni PM ni reprise.
             'defender_apprenti_1' => [
                 'title' => 'Materia : Parade',
                 'slug' => 'defender-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Parade',
+                'description' => 'Permet d\'utiliser la technique Parade — la pierre qu\'on oppose',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'rock-armor']],
@@ -2441,167 +2473,177 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'defender_apprenti_2' => [
                 'title' => 'Materia : Bouclier terreux',
                 'slug' => 'defender-apprenti-2',
-                'description' => 'Permet d\'utiliser la materia Bouclier terreux',
+                'description' => 'Permet d\'utiliser la technique Bouclier terreux — celle qui alourdit ce qui insiste',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'earth-shield']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord + 1 port ----
+            // Les passifs du palier 1 ne sont **jamais conditionnels** (§ 6.1).
             'defender_rang2_1' => [
-                'title' => 'Constitution',
+                'title' => 'Assise',
                 'slug' => 'defender-rang2-1',
-                'description' => 'Augmente les points de vie maximum',
+                'description' => 'Ce qui est pose large ne se renverse pas',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'life' => 5,
+                'levers' => [['lever' => 'life', 'points' => 3]],
                 'requirements' => ['defender_apprenti_1'],
             ],
             'defender_rang2_2' => [
-                'title' => 'Riposte',
+                'title' => 'Face inclinee',
                 'slug' => 'defender-rang2-2',
-                'description' => 'Augmente les degats de contre-attaque',
+                'description' => 'Un mur droit prend le coup ; un mur penche le renvoie au sol',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'damage' => 1,
-                'requirements' => ['defender_apprenti_1'],
+                'levers' => [['lever' => 'dodge', 'points' => 3]],
+                'requirements' => ['defender_apprenti_2'],
             ],
             'defender_rang2_3' => [
                 'title' => 'Materia : Peau de pierre',
                 'slug' => 'defender-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Peau de pierre — protection renforcee',
+                'description' => 'Permet d\'utiliser la technique Peau de pierre',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'stone-skin']],
-                'requirements' => ['defender_apprenti_2'],
-            ],
-            'defender_rang2_4' => [
-                'title' => 'Materia : Pics de pierre',
-                'slug' => 'defender-rang2-4',
-                'description' => 'Permet d\'utiliser la materia Pics de pierre — riposte epineuse',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'stone-spikes']],
-                'requirements' => ['defender_apprenti_2'],
+                'requirements' => ['defender_apprenti_1'],
             ],
 
-            'defender_rang2_5' => [
-                'title' => 'Resistance naturelle',
-                'slug' => 'defender-rang2-5',
-                'description' => 'Renforce la constitution naturelle du defenseur',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'life' => 3,
-                'hit' => 1,
-                'requirements' => ['defender_apprenti_2'],
-            ],
-
-            // Rang 3 (25-50 pts) — 5 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord + 1 port ----
             'defender_rang3_1' => [
-                'title' => 'Materia : Mur de fer',
+                'title' => 'Masse',
                 'slug' => 'defender-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Mur de fer — defense ultime',
+                'description' => 'Il faut plus de coups pour entamer plus de pierre',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'stone-wall']],
-                'requirements' => ['defender_rang2_1', 'defender_rang2_2'],
+                'levers' => [['lever' => 'life', 'points' => 6]],
+                'requirements' => ['defender_rang2_1'],
             ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est lui
+            // qui fait de l'equipement un build plutot qu'un total.
             'defender_rang3_2' => [
-                'title' => 'Materia : Force de la montagne',
+                'title' => 'Plaques scellees',
                 'slug' => 'defender-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Force de la montagne (degats + soin)',
+                'description' => 'Sous la plaque, rien n\'accroche',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'mountain-strength']],
-                'requirements' => ['defender_rang2_3'],
+                'levers' => [['lever' => 'ward', 'points' => 6, 'condition' => 'armor:plate']],
+                'requirements' => ['defender_rang2_2'],
             ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous,
+            // et un seul parent au-dela (§ 6.6). C'est aussi l'accord qui donne
+            // a l'arbre sa portee de groupe, exigee par la palette de
+            // l'encaisse — *l'encaisse encaisse pour les autres*.
             'defender_rang3_3' => [
-                'title' => 'Endurance de fer',
-                'slug' => 'defender-rang3-3',
-                'description' => 'Augmente les points de vie et la precision',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'life' => 5,
-                'hit' => 1,
-                'requirements' => ['defender_rang2_4'],
-            ],
-            'defender_rang3_4' => [
-                'title' => 'Materia : Croissance cristalline',
-                'slug' => 'defender-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Croissance cristalline (armure)',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'crystal-growth']],
-                'requirements' => ['defender_rang3_1'],
-            ],
-
-            'defender_t2_stonewall' => [
                 'title' => 'Materia : Rempart de pierre',
-                'slug' => 'defender-t2-stonewall',
-                'description' => 'Permet d\'utiliser la materia Rempart de pierre — mur defensif puissant',
+                'slug' => 'defender-rang3-3',
+                'description' => 'Permet d\'utiliser la technique Rempart de pierre — une garde posee sur tout le groupe',
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'stonewall']],
-                'requirements' => ['defender_rang2_3', 'defender_rang2_5'],
+                'requirements' => ['defender_rang2_1', 'defender_rang2_2'],
             ],
 
-            // Rang 4 (60-100 pts) — 3 skills
-            'defender_rang4_1' => [
-                'title' => 'Materia : Tremblement de terre',
-                'slug' => 'defender-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Tremblement de terre — repousse les ennemis',
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // Deux branches de deux passifs **et d'un accord chacune**, dont on
+            // n'apprend qu'une : l'arbre ecrit 60 pb, le personnage en porte 50.
+            'defender_rock_1' => [
+                'title' => 'Roche vive',
+                'slug' => 'defender-rock-1',
+                'description' => 'Ce qui n\'a pas de prise ne se retient pas',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'earthquake']],
-                'requirements' => ['defender_rang3_1', 'defender_rang3_2'],
+                'levers' => [['lever' => 'ward', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'defender', 'branch' => 'rock']],
+                'requirements' => ['defender_rang3_3'],
             ],
-            'defender_rang4_2' => [
+            'defender_rock_2' => [
+                'title' => 'Face lisse',
+                'slug' => 'defender-rock-2',
+                'description' => 'Le coup glisse au lieu d\'entrer',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'dodge', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'defender', 'branch' => 'rock']],
+                'requirements' => ['defender_rang3_3'],
+            ],
+            // La teinte de l'arbre — 9 pb hors palette, sur **un seul** levier
+            // (§ 5, regle des 80/20). `grip` est le principal du controle : a ce
+            // dosage il donne au Poids sa silhouette sans lui donner l'identite
+            // d'un arbre de controle, et il prolonge Alourdi — la marque que
+            // l'accord d'entree pose deja.
+            'defender_weight_1' => [
+                'title' => 'Poids mort',
+                'slug' => 'defender-weight-1',
+                'description' => 'Ce qu\'on a alourdi le reste plus longtemps qu\'il ne voudrait',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'grip', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'defender', 'branch' => 'weight']],
+                'requirements' => ['defender_rang3_3'],
+            ],
+            'defender_weight_2' => [
+                'title' => 'Ou ca porte',
+                'slug' => 'defender-weight-2',
+                'description' => 'Une masse ne cherche pas la vitesse, elle cherche l\'endroit',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'hit', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'defender', 'branch' => 'weight']],
+                'requirements' => ['defender_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis : sans lui,
+            // deux branches produisent le meme combat au tour pres.
+            'defender_rock_accord' => [
+                'title' => 'Materia : Mur de fer',
+                'slug' => 'defender-rock-accord',
+                'description' => 'Permet d\'utiliser la technique Mur de fer — ce qui ne se franchit pas',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => [
+                    'materia' => ['unlock' => 'stone-wall'],
+                    ['action' => 'specialization.branch', 'domain' => 'defender', 'branch' => 'rock'],
+                ],
+                'requirements' => ['defender_rang3_3'],
+            ],
+            'defender_weight_accord' => [
                 'title' => 'Materia : Lancer de rocher',
-                'slug' => 'defender-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Lancer de rocher — projectile lourd',
+                'slug' => 'defender-weight-accord',
+                'description' => 'Permet d\'utiliser la technique Lancer de rocher — tout le poids d\'un coup',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'boulder-throw']],
-                'requirements' => ['defender_rang3_3', 'defender_rang3_4'],
+                'actions' => [
+                    'materia' => ['unlock' => 'boulder-throw'],
+                    ['action' => 'specialization.branch', 'domain' => 'defender', 'branch' => 'weight'],
+                ],
+                'requirements' => ['defender_rang3_3'],
             ],
 
-            'defender_t2_fissure' => [
-                'title' => 'Materia : Fissure',
-                'slug' => 'defender-t2-fissure',
-                'description' => 'Permet d\'utiliser la materia Fissure — faille devastatrice dans le sol',
-                'requiredPoints' => 50,
+            // --- Capstone (100 pts) ------------------------------------------
+            // Un seul passif, **conditionnel**, 14 pb sur le levier principal —
+            // et c'est **tout** ce que l'arbre peut acheter en `guard`, dont le
+            // plafond est a 15 (§ 5.0). Sa condition est *avoir encaisse au tour
+            // precedent* : vraie des le tour 2 pour qui se bat au contact, donc
+            // **frequente** — x1,4 et non x2,0 (§ 9 bis).
+            'defender_capstone' => [
+                'title' => 'Ce qui a deja tenu',
+                'slug' => 'defender-capstone',
+                'description' => 'Un mur qui a encaisse un coup sait ou le suivant va tomber',
+                'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'fissure']],
-                'requirements' => ['defender_rang3_1', 'defender_rang3_3'],
+                'levers' => [['lever' => 'guard', 'points' => 14, 'condition' => 'took_hit_last_turn']],
+                'requirements' => ['defender_rang3_3'],
             ],
 
-            // Rang 5 (100-150 pts) — 3 skills
-            'defender_t3_quake' => [
-                'title' => 'Materia : Seisme cristallin',
-                'slug' => 'defender-t3-quake',
-                'description' => 'Permet d\'utiliser la materia Seisme cristallin — onde de choc puissante',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'crystal-quake']],
-                'requirements' => ['defender_rang4_1', 'defender_t2_fissure'],
-            ],
-            'defender_t3_obsidian' => [
-                'title' => 'Materia : Lance d\'obsidienne',
-                'slug' => 'defender-t3-obsidian',
-                'description' => 'Permet d\'utiliser la materia Lance d\'obsidienne — projectile perforant',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'obsidian-lance']],
-                'requirements' => ['defender_rang4_2', 'defender_t3_quake'],
-            ],
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1).
             'defender_rang5_1' => [
                 'title' => 'Materia : Petrification',
                 'slug' => 'defender-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Petrification — defense absolue',
+                'description' => 'Permet d\'utiliser la technique Petrification',
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'petrification']],
-                'requirements' => ['defender_t3_obsidian'],
+                'requirements' => ['defender_rang3_3'],
             ],
         ];
     }

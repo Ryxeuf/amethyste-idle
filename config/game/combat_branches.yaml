@@ -212,3 +212,23 @@ trees:
                 label: 'Le Rempart'
                 description: 'Avancer derriere sa garde, et rendre chaque coup recu au tour suivant.'
                 accord: 'Vierge de fer'
+
+    # --- Defenseur — terre x melee x encaisse (ARC-08g) --------------------
+    # **Le second voisin exact du chantier**, apres le Chevalier : le Soldat
+    # occupe deja `encaisse x melee` (ARC-07c), et seul l'element les separe.
+    # Le Soldat oppose *encaisser pour quatre* a *finir seul* ; le Defenseur,
+    # qui est de terre, oppose **ce qui ne s'entame pas** a **ce qui pese**.
+    #
+    # La Roche se joue seul — rien n'accroche, rien n'entre. Le Poids sert le
+    # groupe : ce qu'il alourdit, tout le monde le frappe plus longtemps.
+    defender:
+        label: 'Défenseur'
+        branches:
+            rock:
+                label: 'La Roche'
+                description: 'Ni prise ni entaille : resister a ce qui s''accroche, et laisser glisser le reste.'
+                accord: 'Mur de fer'
+            weight:
+                label: 'Le Poids'
+                description: 'Faire durer ce qu''on alourdit, et poser la masse la ou elle porte.'
+                accord: 'Lancer de rocher'
