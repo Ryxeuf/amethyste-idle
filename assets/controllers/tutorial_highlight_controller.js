@@ -1,24 +1,23 @@
 import { Controller } from '@hotwired/stimulus'
 
 /**
- * Highlights relevant navigation links based on the current tutorial step.
+ * Souligne, dans la navigation, le lien qui mene la ou le tutoriel envoie.
  *
- * Steps → target routes:
- *   0 (Movement) → map
- *   1 (Combat)   → map
- *   2 (Loot)     → (none — happens in fight screen)
- *   3 (Quests)   → quests
- *   4 (Craft)    → craft
+ * **Ce qu'il faisait avant.** Il portait une table `etape -> route` ecrite du
+ * temps ou les cinq etapes s'appelaient Deplacement / Combat / Butin / Quetes /
+ * Artisanat. ONB-14 les a redefinies (Arme / Materia / Metier / Depart /
+ * Expedition) sans que la table suive : elle mettait donc en valeur « Quetes »
+ * pendant l'etape du Depart, « Artisanat » pendant celle de l'Expedition, et
+ * visait une route `map` supprimee avec la carte navigable (ZON-21).
+ *
+ * **Pourquoi ca ne peut plus vieillir.** Il n'y a plus de table. La destination
+ * est calculee cote serveur par `TutorialGuide` et passee ici comme un chemin ;
+ * on met en valeur le lien de navigation qui pointe dessus, quel qu'il soit.
+ * Une etape ajoutee, un PNJ deplace ou un ecran renomme n'ont plus rien a
+ * mettre a jour ici.
  */
 export default class extends Controller {
-    static values = { step: Number }
-
-    static STEP_ROUTES = {
-        0: ['map'],
-        1: ['map'],
-        3: ['quests'],
-        4: ['craft'],
-    }
+    static values = { path: String }
 
     connect() {
         this._applyHighlights()
@@ -31,13 +30,19 @@ export default class extends Controller {
     }
 
     _applyHighlights() {
-        const routes = this.constructor.STEP_ROUTES[this.stepValue]
-        if (!routes) return
+        const path = this.pathValue
+        if (!path) return
 
-        routes.forEach(route => {
-            document.querySelectorAll(`[data-tutorial-route~="${route}"]`).forEach(el => {
-                el.classList.add('tutorial-highlight')
-            })
+        // On compare l'attribut plutot que d'assembler un selecteur : un chemin
+        // contient des `/` et parfois des chiffres, que `CSS.escape` echapperait
+        // au point de ne plus rien trouver.
+        //
+        // Le bandeau porte deja son propre lien : le mettre en valeur une
+        // seconde fois ferait clignoter la meme phrase deux fois.
+        document.querySelectorAll('a[href]').forEach(el => {
+            if (el.getAttribute('href') !== path) return
+            if (this.element.contains(el)) return
+            el.classList.add('tutorial-highlight')
         })
     }
 }

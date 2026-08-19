@@ -21,6 +21,7 @@ use App\GameEngine\Settlement\SettlementDoctrineService;
 use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\VeinRestorationService;
 use App\GameEngine\Social\ChatManager;
+use App\GameEngine\Tutorial\TrainingDummyOffer;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
@@ -82,6 +83,7 @@ class ZoneControllerTest extends TestCase
     private GatherService&MockObject $gatherService;
     private ExpeditionService&MockObject $expeditionService;
     private ChatManager&MockObject $chatManager;
+    private TrainingDummyOffer&MockObject $trainingDummyOffer;
     private ZoneEventService&MockObject $zoneEventService;
     private GameTimeService&MockObject $gameTimeService;
     private ZoneBossService&MockObject $zoneBossService;
@@ -173,6 +175,8 @@ class ZoneControllerTest extends TestCase
         $this->commissionDelivery = $this->createMock(WeeklyCommissionDelivery::class);
         $this->commissionDelivery->method('current')->willReturn(null);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
+        $this->trainingDummyOffer = $this->createMock(TrainingDummyOffer::class);
+        $this->trainingDummyOffer->method('pendingFor')->willReturn(null);
 
         $this->controller = new ZoneController(
             $this->entityManager,
@@ -203,6 +207,10 @@ class ZoneControllerTest extends TestCase
             $this->veinRestorationService(),
             $this->settlementDoctrineService(),
             new GameMasterPolicy(),
+            // Le mannequin de l'acte I n'a rien a faire dans ces tests : ils
+            // portent sur les actions de zone, et un joueur hors tutoriel ne
+            // se voit proposer aucun entrainement — c'est l'etat normal.
+            $this->trainingDummyOffer,
         );
         $this->controller->setContainer($this->createContainer());
     }

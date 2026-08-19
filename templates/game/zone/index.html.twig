@@ -762,6 +762,30 @@
                     {% endif %}
                 </div>
 
+                {# ── Le mannequin de l'acte I (ONB-11) ───────────── #}
+                {# Il n'apparait que pendant les deux etapes qui le demandent :
+                   le lanceur existait depuis ONB-11 sans qu'aucune route ni
+                   aucun bouton ne l'appelle, si bien que la chaine de l'acte I
+                   butait sur sa troisieme etape. Le combat ne coute pas
+                   d'energie — c'est une lecon, pas une chasse. #}
+                {% if trainingDummy is defined and trainingDummy is not null %}
+                    <div class="mb-4" data-testid="zone-training-dummy">
+                        <h4 class="ds-label mb-2">{{ 'game.onboarding.training.heading'|trans }}</h4>
+                        <div class="ds-row">
+                            <span class="ds-row__body">
+                                <span class="ds-row__name ds-name--sm">{{ trainingDummy.name }}</span>
+                                <span class="ds-row__meta">{{ 'game.onboarding.training.hint'|trans }}</span>
+                            </span>
+                            <form method="post" action="{{ path('app_game_training_dummy') }}" class="shrink-0 ml-3">
+                                <input type="hidden" name="_token" value="{{ csrf_token('training_dummy') }}">
+                                <button type="submit" class="ds-btn ds-btn--secondary ds-btn--sm">
+                                    {{ 'game.onboarding.training.action'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+
                 {# ── Actions de zone (ZON-08..10) ────────────────── #}
                 {% if actions is not empty %}
                     <div class="mb-4">
