@@ -1,0 +1,70 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.repertoire.state.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.repertoire.state.title'|trans }}</h2>
+            <p class="text-gray-400 text-xs mt-0.5">
+                {{ inScriptorium ? 'game.repertoire.state.intro_scriptorium'|trans : 'game.repertoire.state.intro'|trans }}
+            </p>
+        </div>
+
+        <div class="game-card-body space-y-4">
+            {# Le seuil : on sait qu'on approche, jamais de quoi. Le prochain
+               geste n'est pas dans `state` — il n'y a pas de champ ou l'ecrire. #}
+            <div>
+                <p class="ds-label mb-1">{{ 'game.repertoire.state.progress_heading'|trans({'%rank%': state.rank}) }}</p>
+                <p class="text-xs text-gray-400 font-mono">
+                    {{ 'game.repertoire.state.progress'|trans({
+                        '%readings%': state.readings,
+                        '%threshold%': state.threshold,
+                        '%percent%': state.progress,
+                    }) }}
+                </p>
+                <p class="ds-hint mt-1">{{ 'game.repertoire.state.remaining'|trans({'%count%': state.remaining}) }}</p>
+            </div>
+
+            {# Les dominantes : ce que le monde lit, donc la famille de ce qui
+               vient. C'est ce qu'une campagne collective a besoin de voir. #}
+            <div>
+                <p class="ds-label mb-1">{{ 'game.repertoire.state.dominance_heading'|trans }}</p>
+                {% if state.dominant_element %}
+                    <ul class="text-xs text-gray-300 space-y-0.5">
+                        <li>{{ 'game.repertoire.state.dominant_element'|trans({'%value%': state.dominant_element}) }}</li>
+                        {% if state.dominant_provenance %}
+                            <li>{{ 'game.repertoire.state.dominant_provenance'|trans({'%value%': state.dominant_provenance}) }}</li>
+                        {% endif %}
+                        {% if state.dominant_place %}
+                            <li>{{ 'game.repertoire.state.dominant_place'|trans({'%value%': state.dominant_place}) }}</li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p class="ds-hint">{{ 'game.repertoire.state.no_dominance'|trans }}</p>
+                {% endif %}
+            </div>
+
+            {# Ce qui est retrouve, et qui ne se re-perd jamais. #}
+            <div>
+                <p class="ds-label mb-1">{{ 'game.repertoire.state.recovered_heading'|trans }}</p>
+                {% if state.recovered is empty %}
+                    <div class="ds-empty">
+                        <p class="ds-empty__hint">{{ 'game.repertoire.state.nothing_recovered'|trans }}</p>
+                    </div>
+                {% else %}
+                    <ol class="space-y-2">
+                        {% for gesture in state.recovered %}
+                            <li class="ds-line">
+                                <span class="text-xs text-gray-500 font-mono">{{ gesture.rank }}</span>
+                                <p class="text-sm text-gray-200">{{ gesture.revelation }}</p>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

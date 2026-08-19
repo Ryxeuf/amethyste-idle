@@ -2174,6 +2174,22 @@
           "nothing_to_claim": "No rite to collect.",
           "not_ready": "The rite has not taken yet."
         }
+      },
+      "state": {
+        "title": "The Repertoire",
+        "intro": "What this world has read, and what it has left to recover. Every materia read at the Circle leaves something here.",
+        "intro_scriptorium": "On the central table: the state of what the world has read. What is missing is more visible here than what is present.",
+        "progress_heading": "Toward the %rank%th gesture",
+        "progress": "%readings% / %threshold% readings — %percent% %",
+        "remaining": "%count% gesture(s) remain in the pool.",
+        "dominance_heading": "What this world reads",
+        "dominant_element": "Element — %value%",
+        "dominant_provenance": "Provenance — %value%",
+        "dominant_place": "Place of reading — %value%",
+        "no_dominance": "Nothing has been read yet: the Repertoire is blank.",
+        "recovered_heading": "What this world has recovered",
+        "nothing_recovered": "No gesture recovered yet.",
+        "link": "The Repertoire"
       }
     }
   },

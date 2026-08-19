@@ -23,7 +23,7 @@
 | REP-02 ✅ | Le bassin des gestes retrouvés (contenu tagué) | M | ∅ (données pures) |
 | REP-03 ✅ | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
 | REP-04 ✅ | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
-| REP-05 | La restitution : le Scriptorium & le journal | S | ← REP-03 ; converge FAC-09c |
+| REP-05 ✅ | La restitution : le Scriptorium & le journal | S | ← REP-03 ; converge FAC-09c |
 | REP-06 | Tests du plan | S | ‖ |
 
 ```
@@ -231,15 +231,44 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
 > panneau de foyer plutôt que d'y manquer une ligne. Les promesses restantes sont nommées une à
 > une, en cliquet : *une promesse assumée est une décision, une promesse oubliée est un bug*.
 
-### REP-05 — La restitution : le Scriptorium & le journal (S | ★★ | MOYENNE)
+### REP-05 ✅ — La restitution : le Scriptorium & le journal (S | ★★ | MOYENNE) — livré le 2026-08-19
 > Le Répertoire doit se **voir** pour être un projet collectif.
-> Prérequis : ← REP-03 ; converge avec FAC-09c (la zone Scriptorium des Mages)
-- [ ] Un écran d'état du Répertoire : dominantes en cours, prochain seuil (sans révéler
-      quel geste — on sait qu'on approche, pas de quoi), gestes déjà retrouvés
-- [ ] Restitution portée par le **Scriptorium** quand FAC-09c livrera la zone ; d'ici
-      là, accessible via le Codex
-- [ ] Le Programme du Cercle (FAC-09c) lit les mêmes agrégats — une seule source
-- [ ] Tests : état, non-révélation du prochain geste, source unique
+> Prérequis : ← REP-03 ✅ ; la zone Scriptorium est livrée par **FAC-09a**, pas FAC-09c
+- [x] Écran d'état : dominantes, seuil suivant, gestes retrouvés — **et jamais le prochain**
+- [x] Porté par le **Scriptorium** (livré par FAC-09a) **et** par le Codex
+- [x] `RepertoireState` est la source unique que FAC-09c lira aussi
+- [x] Tests : état d'un monde vierge, **non-révélation vérifiée sur les données**, ordre de
+      découverte, progression bornée, écho des services
+
+> **Livré (2026-08-19).** **La dépendance s'est dénouée toute seule.** Le plan écrivait
+> « porté par le Scriptorium *quand FAC-09c livrera la zone* ; d'ici là, accessible via le
+> Codex ». Or FAC-09a a livré le Scriptorium en avance — c'est l'une des cinq portes —, parce
+> que ce jalon a été redécoupé par mécanisme plutôt que par maison. La zone existe donc, et sa
+> description dit déjà littéralement ce que cet écran affiche : *« sur la table centrale, l'état
+> de ce que le monde a lu »*.
+>
+> **Les deux entrées restent, et le repli n'en est plus un.** Le Scriptorium demande une
+> exaltation chez les Mages ; le savoir du serveur est un projet **collectif**, et un joueur
+> sans les couleurs du Cercle doit pouvoir suivre ce que son monde retrouve — sinon la campagne
+> que le canon appelle légitime ne serait le projet que d'une maison. L'écran est donc joignable
+> depuis le Codex par tout le monde ; ce que le lieu ajoute, c'est de le voir **là où il
+> s'écrit**.
+>
+> **La non-révélation est dans la forme, pas dans le gabarit.** `RepertoireState` n'a
+> **aucune méthode qui rende le prochain geste**, alors que `RepertoireUnlocker` sait le
+> calculer : le même geste qu'ARC-16a sur les accointances — *il n'y a pas de champ où
+> l'écrire*, donc aucun écran ne peut le montrer par mégarde. Le test ne se contente pas de le
+> constater : il calcule le prochain geste, aplatit tout l'instantané et vérifie que sa clé n'y
+> figure nulle part.
+>
+> Ce qu'on rend est en revanche **exact** — total lu, seuil suivant, dominantes —, et un joueur
+> peut en déduire la *famille* de ce qui vient. C'est précisément voulu : c'est ce que sa
+> campagne a produit.
+>
+> Deux détails que la mesure a imposés : la progression est **bornée à 100** (au-delà du seuil
+> le geste est *dû* et attend le calendrier — afficher 140 % ferait croire à un retard quand
+> c'est une avance), et le nombre de gestes restants se dit **en nombre, jamais en liste** :
+> *on sait qu'il en reste, pas lesquels*.
 
 ### REP-06 — Tests du plan (S | ★★ | HAUTE)
 > ‖ au fil des jalons.

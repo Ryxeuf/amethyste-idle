@@ -937,6 +937,17 @@
                     {% endif %}
                 {% endif %}
 
+                {# ── Le Repertoire, sur place (REP-05) ────────────
+                   Le Scriptorium est la seule des cinq portes dont le contenu
+                   soit un ecran deja ecrit ; les quatre autres attendent
+                   FAC-09b→e. Le meme ecran se lit depuis le Codex : ce que le
+                   lieu ajoute, c'est de le voir la ou il s'ecrit. #}
+                {% if repertoireHere|default(false) %}
+                    <div class="mb-4">
+                        <a href="{{ path('app_game_repertoire') }}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-ink-on text-xs rounded-lg">{{ 'game.repertoire.state.link'|trans }}</a>
+                    </div>
+                {% endif %}
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {# ── Connexions ──────────────────────────────── #}
                     <div>
