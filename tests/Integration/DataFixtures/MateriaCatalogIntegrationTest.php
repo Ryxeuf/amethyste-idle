@@ -60,8 +60,14 @@ class MateriaCatalogIntegrationTest extends AbstractIntegrationTestCase
      * ouvre aussi). C'est la meme mesure qu'ARC-08b et ARC-08f, et elle se
      * repete parce que la cause est structurelle : *les arbres herites portent
      * onze accords en moyenne, le gabarit en ecrit sept*.
+     *
+     * **ARC-08h — le Pretre, 192 → 187.** Meme cause, troisieme mesure. Un
+     * accord change de main au passage : la Priere quitte le catalogue et la
+     * **Lumiere sacree** entre a l'entree, parce que le simulateur a refuse une
+     * branche qui ne pouvait retirer aucun point de vie — *un arbre d'entretien
+     * a besoin d'un geste qui blesse, sinon ses deux branches heritent de zero*.
      */
-    private const MEASURED_UNLOCK_FLOOR = 192;
+    private const MEASURED_UNLOCK_FLOOR = 187;
 
     /**
      * @return list<string> les slugs de sort distincts ouverts par un nœud

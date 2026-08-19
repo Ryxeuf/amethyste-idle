@@ -359,17 +359,32 @@ class SpellFixtures extends Fixture
                 'statusEffectSlug' => 'regeneration',
                 'level' => 2,
             ],
+            // ARC-08h — **la portee de groupe du Pretre.** La palette de
+            // l'entretien exige un geste de groupe et l'arbre n'en avait aucun ;
+            // `Group` ne se **derive jamais** (ARC-11a) — un soin de groupe et
+            // un soin d'allie ont exactement les memes valeurs, ce qui les
+            // separe est une decision d'auteur. La voici.
+            //
+            // Deux consequences suivent d'elles-memes, et aucune n'est un
+            // reglage : la loi du depot s'applique (ARC-11b — une provision se
+            // pose et court, meme deconnecte), et sa composante directe tombe a
+            // zero (ARC-20c-b — *un geste ne fait pas l'urgence et la provision
+            // a la fois*), sa valeur entiere passant par le depot derive de son
+            // palier. La regeneration qu'il porte dure 4 tours, donc bien
+            // au-dela du plancher de la loi.
             'divine_blessing' => [
                 'slug' => 'divine-blessing',
                 'damage' => null,
                 'element' => Element::Light,
                 'heal' => 12,
                 'name' => 'Benediction divine',
-                'description' => 'Une puissante benediction qui soigne les blessures graves',
+                'description' => 'Une puissante benediction posee sur tout le groupe, qui court meme en votre absence',
                 'hit' => 100,
                 'energyCost' => 18,
                 'cooldown' => 3,
                 'statusEffectSlug' => 'regeneration-strong',
+                'intent' => SpellIntent::Heal,
+                'scope' => SpellScope::Group,
                 'level' => 4,
             ],
             'healing_wave' => [

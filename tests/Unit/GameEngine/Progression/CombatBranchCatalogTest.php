@@ -30,7 +30,7 @@ class CombatBranchCatalogTest extends TestCase
         'Berserker', 'Chasseur', 'Dompteur',
         'Druide', 'Foudromancien', 'Geomancien', 'Hydromancien',
         'Ingenieur', 'Inquisiteur', 'Maremancien', 'Paladin',
-        'Pretre', 'Sorcier',
+        'Sorcier',
     ];
 
     private function catalog(): CombatBranchCatalog
@@ -51,7 +51,7 @@ class CombatBranchCatalogTest extends TestCase
     {
         $catalog = $this->catalog();
 
-        self::assertSame(['pyromancy', 'healer', 'soldier', 'archer', 'necromancer', 'assassin', 'artificer', 'guardian', 'wanderer', 'knight', 'defender'], $catalog->forkedTrees());
+        self::assertSame(['pyromancy', 'healer', 'soldier', 'archer', 'necromancer', 'assassin', 'artificer', 'guardian', 'wanderer', 'knight', 'defender', 'priest'], $catalog->forkedTrees());
         self::assertSame('La Braise', $catalog->labelOf('pyromancy', 'ember'));
         self::assertSame('Le Ressac', $catalog->labelOf('healer', 'undertow'));
         self::assertSame('Le Mur', $catalog->labelOf('soldier', 'wall'));
@@ -175,7 +175,7 @@ class CombatBranchCatalogTest extends TestCase
      */
     public function testTheTreesStillWaitingAreNamed(): void
     {
-        self::assertCount(13, self::WAITING_ON_ARC_08);
+        self::assertCount(12, self::WAITING_ON_ARC_08);
         self::assertCount(
             24,
             array_merge(self::WAITING_ON_ARC_08, $this->catalog()->forkedTrees()),

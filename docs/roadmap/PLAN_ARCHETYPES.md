@@ -785,6 +785,38 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
+> **ARC-08h — le Prêtre, livré le 2026-08-19. La liste d'attente des marques tombe à zéro.**
+> Le huitième arbre au gabarit occupe `entretien × sorts`, la case du Guérisseur (ARC-07b) —
+> **troisième voisin exact d'affilée**. Le Guérisseur avait pris l'opposition la plus
+> évidente (*le solitaire contre le groupe*), donc le Prêtre en trouve une autre, que la
+> lumière donne : **bénir** contre **purifier**.
+>
+> **La mesure a corrigé la conception, et c'est le livrable.** Écrit d'abord avec deux soins
+> à l'entrée — ce que la fonction suggérait —, l'arbre a produit une branche que le
+> simulateur a refusée : *« La Bénédiction ne peut retirer aucun point de vie : elle ne
+> conclurait jamais une rencontre. »* Le tronc commun ne portait aucun dégât, donc **les deux
+> branches en héritaient de zéro**. La Lumière sacrée répare les deux choses à la fois : elle
+> blesse, **et** elle porte Révélé, la marque de la lumière. ***Le Prêtre n'était pas sans
+> marque par choix, il l'était faute d'un geste qui blesse*** — ARC-13b-a l'avait rangé parmi
+> les cas « défendables », et la conversion montre que c'en était un par défaut.
+>
+> **Les 24 arbres appliquent désormais leur marque dès le jour 1** : le capstone d'assaut, le
+> levier `grip` et la palette de contrôle pointent tous vers quelque chose, partout.
+>
+> **Un invariant du simulateur était vrai par accident.** `testThePlayedEncountersStayWithin
+> TheirOwnUnits` bornait la dépense de ressource par le **pool seul** ; la Bénédiction porte
+> 9 pb de `wind` et dépense 102 pour un pool de 100 — *ce qui est exactement ce que `wind`
+> existe pour faire*. La borne juste est le pool **plus ce que la régénération a rendu** : un
+> test qui refuserait cela mesurerait un jeu où rendre de la ressource ne sert à rien.
+>
+> **Aucun registre à convertir** — c'est le premier arbre de **sorts** du chantier. Ce qui
+> manquait n'était pas le registre mais la **portée** : la palette de l'entretien exige un
+> geste de groupe, et l'arbre n'en avait aucun. La Bénédiction divine le devient (`Group` ne
+> se dérive jamais, c'est une décision d'auteur), et deux conséquences suivent seules — la loi
+> du dépôt s'applique, et sa composante directe tombe à zéro (ARC-20c-b). Cliquets : arbres au
+> gabarit 7 → **8**, fourches en attente 13 → **12**, palettes 7 → **6**, marques 1 → **0**,
+> catalogue 192 → **187**, dit.
+>
 > **ARC-08g — le Défenseur, livré le 2026-08-19. Le second voisin exact.** Le septième arbre
 > au gabarit occupe `encaisse × mêlée`, la case du Soldat (ARC-07c) : deux conversions de
 > suite sur une case déjà tenue, et la même conclusion — *deux arbres de même fonction et même
