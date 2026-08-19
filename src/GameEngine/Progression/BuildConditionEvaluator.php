@@ -4,7 +4,7 @@ namespace App\GameEngine\Progression;
 
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
-use App\Helper\GearHelper;
+use App\GameEngine\Gear\WornPieceReader;
 
 /**
  * Une condition de build, confrontee a l'equipement reel (ARC-16b).
@@ -46,7 +46,7 @@ class BuildConditionEvaluator
     public function __construct(
         private readonly EquipmentPortCatalog $portCatalog,
         private readonly SynergyCalculator $synergyCalculator,
-        private readonly GearHelper $gearHelper,
+        private readonly WornPieceReader $wornPieces,
     ) {
     }
 
@@ -139,23 +139,15 @@ class BuildConditionEvaluator
     }
 
     /**
-     * La famille d'une piece — celle dont elle exige un echelon de port.
+     * La famille d'une piece, lue par le lecteur unique (ARC-19).
      *
-     * Une piece sans echelon (le kit de depart du palier 1 des armures) n'a pas
-     * de famille aux yeux de la doctrine : elle se porte sans rien, et elle ne
-     * satisfait rien. *La doctrine gate l'evolution, jamais l'arrivee* — et une
-     * condition recompense un choix de build, pas un kit offert.
+     * La regle vivait ici, en prive : *une piece est de la famille dont elle
+     * exige un echelon*. La mitigation d'armure pose la meme question, et
+     * l'ecrire deux fois l'aurait laissee deriver — d'ou `WornPieceReader`.
      */
     private function familyOf(PlayerItem $item): ?string
     {
-        foreach ($item->getGenericItem()->getRequirements() as $requirement) {
-            $family = $this->portCatalog->familyOfPortSkill($requirement->getSlug());
-            if ($family !== null) {
-                return $family;
-            }
-        }
-
-        return null;
+        return $this->wornPieces->familyOf($item);
     }
 
     /**
@@ -163,16 +155,6 @@ class BuildConditionEvaluator
      */
     private function equippedItems(Player $player): iterable
     {
-        foreach ($player->getInventories() as $inventory) {
-            if (!$inventory->isBag()) {
-                continue;
-            }
-
-            foreach ($inventory->getItems() as $playerItem) {
-                if ($this->gearHelper->isEquipped($playerItem)) {
-                    yield $playerItem;
-                }
-            }
-        }
+        return $this->wornPieces->equippedItems($player);
     }
 }

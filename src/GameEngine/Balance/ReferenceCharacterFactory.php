@@ -7,10 +7,12 @@ use App\Entity\Game\Spell;
 use App\Enum\CombatLever;
 use App\Enum\CombatRegister;
 use App\Enum\SpellIntent;
+use App\GameEngine\Fight\ArmorMitigationLaw;
 use App\GameEngine\Fight\BareHandsAttack;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\CombatLeverEffects;
 use App\GameEngine\Progression\CombatLeverScale;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\Service\PlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -61,16 +63,34 @@ use Doctrine\ORM\EntityManagerInterface;
  * *L'equipement n'est pas ce qui separe un archetype d'un autre* — c'est
  * exactement ce que le § 0.2 annonce, verifie ici plutot que suppose.
  *
- * La mitigation d'armure, elle, ne se prete pas : elle n'existe pas dans le
- * moteur (GAME_ITEMS § 2.2 la mesure, ARC-19 la reclame). Simuler ce que le jeu
- * ne fait pas mesurerait un autre jeu.
+ * **La mitigation d'armure entre avec ARC-19**, et elle se derive de l'arbre :
+ * *un personnage porte ce que son arbre lui a appris a porter*. Le simulateur
+ * ne lui invente donc pas de vestiaire — il lit `equipment_ports.yaml`, la
+ * meme source que le jeu. Un arbre qui n'enseigne aucune ligne ne mitige rien.
  */
 final class ReferenceCharacterFactory
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLeverScale $leverScale,
+        private readonly EquipmentPortCatalog $portCatalog,
     ) {
+    }
+
+    /**
+     * Ce qui reste des degats subis apres l'armure de ce build (ARC-19).
+     *
+     * La ligne se **derive de l'arbre** — celle qu'il enseigne dans l'echelle
+     * de port —, jamais d'un vestiaire invente : c'est la meme source que le
+     * jeu, donc le simulateur et le combat ne peuvent pas diverger. Un arbre
+     * qui n'enseigne aucune ligne rend 1,0 : il ne mitige rien, et le cliquet
+     * de couverture le nomme plutot que de lui prêter une plaque.
+     */
+    private function armorMultiplierOf(ReferenceBuild $build): float
+    {
+        $line = $this->portCatalog->armorLineTaughtBy($build->treeKey);
+
+        return 1.0 - ArmorMitigationLaw::shareOfLine($line);
     }
 
     public function of(ReferenceBuild $build, int $tier = VitalityLaw::FIRST_TIER): ReferenceCharacter
@@ -101,6 +121,7 @@ final class ReferenceCharacterFactory
             criticalRate: $this->criticalRateOf($gesture, $effects),
             criticalPower: CriticalCalculator::CRITICAL_MULTIPLIER * $effects->multiplierFor(CombatLever::CriticalPower, $this->leverScale),
             guardMultiplier: $effects->multiplierFor(CombatLever::Guard, $this->leverScale),
+            armorMultiplier: $this->armorMultiplierOf($build),
             dodgeRate: $effects->pointsFor(CombatLever::Dodge, $this->leverScale),
             recoveryPerTurn: $effects->rawFor(CombatLever::Recovery),
             resourcePerTurn: $this->resourcePerTurnOf($build->register, $effects),

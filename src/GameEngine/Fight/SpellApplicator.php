@@ -35,6 +35,7 @@ class SpellApplicator
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly CombatLeverScale $leverScale,
         private readonly DeferredQueue $deferredQueue,
+        private readonly ArmorMitigationResolver $armorMitigation,
     ) {
     }
 
@@ -155,6 +156,14 @@ class SpellApplicator
         // rend valable aussi quand la cible est un joueur, qui n'a pas de
         // resistance elementaire.
         $damage = $this->damageCalculator->applyGuard($damage, $targetLevers, $this->leverScale);
+
+        // ARC-19 — **la mitigation d'armure, a la meme place que `guard` et
+        // juste apres lui.** Les deux se multiplient plutot que de s'ajouter :
+        // additionner des reductions les ferait atteindre 100 %, et une cible
+        // invulnerable n'est plus une cible. C'est ici que vit la moitie que le
+        // canon refuse a l'arbre — *la mitigation d'un tank vient de son
+        // armure, pas de son arbre* (decision 21).
+        $damage = $this->armorMitigation->mitigate($damage, $target);
 
         // Invariant métier : les dégâts ne peuvent jamais être négatifs
         $damage = max(0, $damage);
