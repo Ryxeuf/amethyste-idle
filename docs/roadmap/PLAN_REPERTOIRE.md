@@ -20,7 +20,7 @@
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
 | REP-01 ✅ | Les lectures contextées (le savoir du serveur) | S | ← FAC-04b (le crochet existe) |
-| REP-02 | Le bassin des gestes retrouvés (contenu tagué) | M | ∅ (données pures) |
+| REP-02 ✅ | Le bassin des gestes retrouvés (contenu tagué) | M | ∅ (données pures) |
 | REP-03 | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
 | REP-04 | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
 | REP-05 | La restitution : le Scriptorium & le journal | S | ← REP-03 ; converge FAC-09c |
@@ -84,19 +84,54 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
 > suppression et voyage dans l'événement. Un test vérifie désormais que le crochet **a** son
 > abonné : *un événement dispatché que personne n'écoute est silencieux par nature*.
 
-### REP-02 — Le bassin des gestes retrouvés (M | ★★ | HAUTE)
+### REP-02 ✅ — Le bassin des gestes retrouvés (M | ★★ | HAUTE) — livré le 2026-08-19
 > **Un seul bassin, écrit une fois** (§12.3) : le contenu est global et tagué, les
 > serveurs le traversent dans des ordres différents. Jamais de contenu par serveur.
 > Prérequis : ∅ — données pures (`config/game/repertoire.yaml`)
-- [ ] Format d'entrée : geste (slug de recette d'éveil), tags (éléments, provenances,
-      lieux), condition rare éventuelle (l'exclusivité naturelle), texte de révélation
-- [ ] Premier lot : ~10-15 gestes couvrant les huit éléments, dont 2-3 à conditions
-      rares (que la plupart des serveurs ne rempliront jamais)
-- [ ] **La règle latérale vérifiable** : un geste retrouvé produit une matéria du
-      **catalogue standard** (jamais un sort inédit, jamais plus de puissance — des
-      options)
-- [ ] Tests : validation du format à la lecture, latéralité (le résultat existe au
-      catalogue)
+- [x] Format d'entrée : la **matéria éveillée** (et non un slug de recette — voir
+      ci-dessous), tags (éléments, provenances, lieux), condition rare éventuelle, texte
+      de révélation en deux langues
+- [x] Premier lot : **14 gestes** couvrant les huit éléments qui marquent, dont **3 à
+      conditions rares**
+- [x] **La règle latérale vérifiable** : tenue en deux moitiés — la forme du fichier
+      (aucun champ où écrire une valeur) et le contrat en base (la matéria existe au
+      catalogue standard, et son élément est celui que le geste déclare)
+- [x] Tests : six refus au chargement, couverture des éléments, part rare bornée des deux
+      côtés, latéralité, zones taguées existantes
+
+> **Livré (2026-08-19).** **Une entrée nomme la matéria, pas une recette** — et c'est une
+> correction au plan. Celui-ci demandait un « slug de recette d'éveil » ; aucune n'existe :
+> l'Autel est déclaré dans `settlements.yaml` comme une **promesse sans route**, et c'est
+> REP-04 qui le livrera. Un bassin de références pendantes n'aurait rien pu vérifier du tout.
+> Nommer la matéria rend au contraire vérifiable **dès aujourd'hui** ce que le plan appelle
+> lui-même « la règle latérale vérifiable ». REP-04 dérivera la recette depuis l'entrée, comme
+> MAT-03 dérive le catalogue des matéria depuis les nœuds.
+>
+> **Pourquoi ce n'est pas de la puissance, et comment on le vérifie.** Une matéria du catalogue
+> a **déjà** un canal (MAT-08 : aucune n'est orpheline). Ce qu'un geste retrouvé ajoute n'est
+> donc pas l'objet mais la **façon de l'obtenir** — l'éveil à l'Autel plutôt que l'attente d'un
+> coffre. *Le serveur qui n'a pas retrouvé le geste n'est pas derrière, seulement moins souple.*
+> Un test le vérifie par la négative, la seule tenable ici : aucune matéria du bassin n'est
+> introuvable ailleurs.
+>
+> **La règle latérale tient en deux moitiés.** La forme du fichier en porte une : le chargeur
+> **refuse une clé inconnue** au lieu de l'ignorer, donc il n'existe aucun endroit où écrire une
+> statistique, un sort, un multiplicateur ou un palier — *ce qu'on ne peut pas écrire ne peut
+> pas dériver*. L'autre moitié ne se lit qu'en base, et le contrat s'en charge.
+>
+> **L'élément déclaré doit être celui de la matéria**, sinon la dominante mentirait : un serveur
+> qui a lu du feu toute l'année retrouverait un geste tagué feu qui éveille une matéria d'eau, et
+> *ce qu'il a vécu ne serait plus ce dont il se souvient*.
+>
+> **Le vocabulaire des conditions rares est fermé**, et chacune désigne quelque chose qui existe
+> déjà dans le code — `metropolis_exists`, `readers_doctrine` (la doctrine des Lecteurs de
+> FOY-13 : 6 000 gils et un verrou d'une marée), `every_element_read`. Une condition qui
+> nommerait un système absent rendrait son geste **inatteignable en silence**, ce qui est le pire
+> état pour un contenu rare : *indiscernable d'un contenu qu'on n'a pas encore mérité*. REP-03
+> les évaluera ; REP-02 ne fait que les admettre.
+>
+> La part rare est bornée **des deux côtés** : sans condition rare, le bassin est une liste que
+> tout le monde épuise ; avec trop, la plupart des serveurs ne retrouvent presque rien.
 
 ### REP-03 — Seuils, dominantes & déblocage orienté (M | ★★★ | HAUTE)
 > La nuance actée : ce qu'un serveur lit est ce dont il se souvient. Le déblocage est

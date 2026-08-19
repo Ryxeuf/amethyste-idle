@@ -6,8 +6,9 @@
 # debloquent une liste fixe : **ce qu'un serveur retrouve depend de ce qu'il a
 # lu** — quelles materias, ou, a quelle intensite, a quel moment. »
 #
-# Ce fichier ne porte pour l'instant qu'une chose : **le plafond anti-forcage**.
-# Le bassin des gestes retrouves arrive avec REP-02, et il s'ecrira ici.
+# Ce fichier porte deux choses : le **plafond anti-forcage** (REP-01) et le
+# **bassin des gestes retrouves** (REP-02, plus bas). C'est deliberement le meme
+# fichier : le savoir du serveur et ce qu'il en tire sont un seul sujet.
 #
 # --- Pourquoi un plafond, et pourquoi celui-la ---------------------------------
 #
@@ -24,3 +25,186 @@
 # lecture est un acte rare et couteux (elle renonce a la fonte), pas une
 # activite de remplissage.
 daily_readings_per_player: 5
+
+# =============================================================================
+# Le bassin des gestes retrouves (REP-02)
+# =============================================================================
+# GAME_WORLD § 12.3 b, regle 1 : **un seul bassin, ecrit une fois**. Le contenu
+# est global et tague ; les serveurs le traversent dans des ordres differents.
+# *On n'ecrit jamais du contenu pour un serveur* — le cout est amorti partout, et
+# la divergence naît de l'ordre, pas d'une branche ecrite a la main.
+#
+# --- Ce qu'une entree nomme, et ce que le plan demandait ----------------------
+#
+# Le plan voulait qu'une entree nomme une **recette d'eveil**. Aucune n'existe :
+# l'Autel est declare dans `settlements.yaml` comme une promesse sans route, et
+# c'est REP-04 qui le livrera. Nommer des recettes que rien ne cree donnerait un
+# bassin de references pendantes qu'aucun chargeur ne pourrait verifier.
+#
+# Une entree nomme donc la **materia qu'elle eveille**, et cela rend verifiable
+# des aujourd'hui la regle que le plan appelle lui-meme « la regle laterale
+# verifiable » : *un geste retrouve produit une materia du catalogue standard,
+# jamais un sort inedit*. REP-04 derivera la recette depuis l'entree, comme
+# MAT-03 derive le catalogue des materia depuis les nœuds.
+#
+# --- Pourquoi ce n'est pas de la puissance -----------------------------------
+#
+# Une materia du catalogue standard a **deja** un canal (MAT-08 : aucune n'est
+# orpheline). Ce qu'un geste retrouve ajoute n'est donc pas l'objet, c'est la
+# **facon de l'obtenir** : on peut desormais l'eveiller a l'Autel a partir
+# d'amethystite Parfaite, au lieu de l'attendre d'un coffre ou d'un donjon. Une
+# option de plus, jamais un point de degat de plus.
+#
+# Et cela se tient **par la forme du fichier** : il n'existe aucun champ ou
+# ecrire une statistique, un sort, un multiplicateur ou un palier. *Ce qu'on ne
+# peut pas ecrire ne peut pas deriver.*
+#
+# --- Les tags ----------------------------------------------------------------
+#
+# `elements`, `provenances` et `places` sont les trois axes que REP-01 decompte.
+# Au franchissement d'un seuil, REP-03 filtrera le bassin par la **dominante**
+# des lectures : un serveur qui lit surtout du feu dans les Mines retrouve
+# d'abord des gestes de feu et de metal ; son voisin, qui lit de l'eau au
+# Marais, retrouve tout autre chose.
+#
+# `elements` est **obligatoire** — c'est l'axe de premier rang. Les deux autres
+# sont facultatifs : une entree sans provenance ni lieu est un geste que
+# n'importe quel serveur peut retrouver pourvu qu'il lise le bon element, et le
+# bassin en a besoin, sinon un serveur qui ne joue qu'une region ne retrouverait
+# jamais rien.
+#
+# --- Les conditions rares ----------------------------------------------------
+#
+# « Une petite part du bassin porte des conditions assez rares pour que la
+# plupart des serveurs ne voient jamais tout : *l'exclusivite naît des
+# conditions, pas d'un marquage par serveur* » (§ 12.3 b, regle 1).
+#
+# Le vocabulaire est **ferme** et chaque condition designe quelque chose qui
+# existe deja dans le code — une condition qui nommerait un systeme absent
+# rendrait son geste **inatteignable en silence**, ce qui est le pire des etats
+# pour un contenu rare : indiscernable d'un contenu qu'on n'a pas encore merite.
+#
+#   metropolis_exists  — un foyer du monde a atteint la Metropole
+#   readers_doctrine   — un foyer a adopte la doctrine des Lecteurs (FOY-13) :
+#                        une decision de guilde qui coute 6 000 et se verrouille
+#                        pour une maree entiere
+#   every_element_read — les huit elements figurent au Repertoire
+#
+# **REP-03 les evalue** ; ici on ne fait que les declarer, et le chargeur refuse
+# tout ce qui n'est pas dans la liste.
+found_gestures:
+    # --- Air -----------------------------------------------------------------
+    souffle-du-vide:
+        awakens: m4-vacuum-blade
+        elements: [air]
+        provenances: [crete-de-ventombre]
+        places: [crete-de-ventombre]
+        revelation: "Les Lecteurs ont retrouvé le geste du Souffle du vide : ce que le vent emporte, on peut le rappeler."
+        revelation_en: 'The Readers have recovered the gesture of the Void Breath: what the wind carries away can be called back.'
+
+    # --- Bete ----------------------------------------------------------------
+    appel-de-la-foret:
+        awakens: m4-nature-wrath
+        elements: [beast]
+        provenances: [foret-des-murmures]
+        places: [foret-des-murmures]
+        revelation: "Les Lecteurs ont retrouvé l'Appel de la forêt : elle répondait déjà, personne ne savait plus l'appeler."
+        revelation_en: "The Readers have recovered the Call of the Forest: it was already answering; no one remembered how to call."
+
+    regeneration-sauvage:
+        awakens: m4-wild-regeneration
+        elements: [beast]
+        provenances: [vallons-d-aubepine]
+        revelation: 'Les Lecteurs ont retrouvé la Régénération sauvage : ce qui repousse au bocage repousse aussi sur un homme.'
+        revelation_en: 'The Readers have recovered Wild Regeneration: what grows back in the hedgerows grows back on a man too.'
+
+    # --- Tenebres ------------------------------------------------------------
+    linceul:
+        awakens: m4-shroud
+        elements: [dark]
+        provenances: [cite-ensevelie]
+        revelation: "Les Lecteurs ont retrouvé le Linceul : sous la cité, on avait appris à ne plus être vu."
+        revelation_en: 'The Readers have recovered the Shroud: beneath the city, they had learned not to be seen.'
+
+    # --- Terre ---------------------------------------------------------------
+    lance-de-cristal:
+        awakens: m4-crystal-spear
+        elements: [earth]
+        provenances: [mines-profondes]
+        places: [mines-profondes]
+        revelation: 'Les Lecteurs ont retrouvé la Lance de cristal : le filon se taille aussi bien en arme qu''en monnaie.'
+        revelation_en: 'The Readers have recovered the Crystal Spear: a vein cuts into a weapon as readily as into coin.'
+
+    seve-de-pierre:
+        awakens: m4-stone-sap
+        elements: [earth]
+        provenances: [vallons-d-aubepine]
+        revelation: 'Les Lecteurs ont retrouvé la Sève de pierre : la roche aussi porte quelque chose qui monte.'
+        revelation_en: 'The Readers have recovered Stone Sap: rock too carries something that rises.'
+
+    # --- Feu -----------------------------------------------------------------
+    frappe-meteorique:
+        awakens: m4-meteor-strike
+        elements: [fire]
+        provenances: [mines-profondes]
+        revelation: 'Les Lecteurs ont retrouvé la Frappe météorique : ce qui est tombé du ciel une fois peut être rappelé.'
+        revelation_en: 'The Readers have recovered the Meteor Strike: what fell from the sky once can be called down again.'
+
+    # --- Lumiere -------------------------------------------------------------
+    benediction-divine:
+        awakens: m4-divine-blessing
+        elements: [light]
+        provenances: [quartier-des-jardins]
+        places: [village-de-lumiere, quartier-des-jardins]
+        revelation: 'Les Lecteurs ont retrouvé la Bénédiction divine : le Fanal ne brûlait pas pour rien.'
+        revelation_en: 'The Readers have recovered the Divine Blessing: the Beacon was not burning for nothing.'
+
+    # --- Metal ---------------------------------------------------------------
+    poids-ecrasant:
+        awakens: m4-crushing-weight
+        elements: [metal]
+        provenances: [mines-profondes]
+        places: [mines-profondes]
+        revelation: 'Les Lecteurs ont retrouvé le Poids écrasant : le métal ne coupe pas, il pèse.'
+        revelation_en: 'The Readers have recovered Crushing Weight: metal does not cut, it bears down.'
+
+    # --- Eau -----------------------------------------------------------------
+    grande-maree:
+        awakens: m4-grande-maree
+        elements: [water]
+        provenances: [marais-brumeux]
+        revelation: 'Les Lecteurs ont retrouvé la Grande Marée : elle montait déjà, on avait seulement cessé de la nommer.'
+        revelation_en: 'The Readers have recovered the Great Tide: it was already rising; only its name had been forgotten.'
+
+    maelstrom:
+        awakens: m4-maelstrom
+        elements: [water]
+        provenances: [mer-de-sel]
+        revelation: 'Les Lecteurs ont retrouvé le Maelström : au large, le sel tourne encore autour de quelque chose.'
+        revelation_en: 'The Readers have recovered the Maelstrom: out at sea, the salt still turns around something.'
+
+    # --- Les trois conditions rares ------------------------------------------
+    # Ce que la plupart des serveurs ne verront jamais. Aucune de ces trois
+    # conditions ne se force par le jeu d'une personne : il faut un foyer que
+    # tout un serveur a fait monter, une guilde qui a payé une doctrine, ou un
+    # Repertoire nourri des huit elements.
+    predateur-supreme:
+        awakens: m4-apex-predator
+        elements: [beast]
+        condition: readers_doctrine
+        revelation: "Les Lecteurs ont retrouvé le Prédateur suprême : là où l'on ne fond plus, la bête se souvient d'elle-même."
+        revelation_en: 'The Readers have recovered the Apex Predator: where nothing is melted down any more, the beast remembers itself.'
+
+    rempart:
+        awakens: m4-rempart
+        elements: [metal]
+        condition: metropolis_exists
+        revelation: 'Les Lecteurs ont retrouvé le Rempart : il fallait une ville pour se rappeler à quoi sert un mur.'
+        revelation_en: 'The Readers have recovered the Rampart: it took a city to remember what a wall is for.'
+
+    benediction-de-l-ocean:
+        awakens: m4-ocean-blessing
+        elements: [water]
+        condition: every_element_read
+        revelation: "Les Lecteurs ont retrouvé la Bénédiction de l'océan : elle attendait qu'on ait tout lu, et pas seulement beaucoup."
+        revelation_en: 'The Readers have recovered the Ocean Blessing: it was waiting for everything to have been read, not merely a great deal.'
