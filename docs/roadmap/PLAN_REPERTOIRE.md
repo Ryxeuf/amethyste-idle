@@ -22,7 +22,7 @@
 | REP-01 ✅ | Les lectures contextées (le savoir du serveur) | S | ← FAC-04b (le crochet existe) |
 | REP-02 ✅ | Le bassin des gestes retrouvés (contenu tagué) | M | ∅ (données pures) |
 | REP-03 ✅ | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
-| REP-04 | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
+| REP-04 ✅ | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
 | REP-05 | La restitution : le Scriptorium & le journal | S | ← REP-03 ; converge FAC-09c |
 | REP-06 | Tests du plan | S | ‖ |
 
@@ -183,27 +183,53 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
 
 ## Piste B — Le geste d'éveil
 
-### REP-04 — L'Autel d'éveil (M | ★★★ | MOYENNE)
+### REP-04 ✅ — L'Autel d'éveil (M | ★★★ | MOYENNE) — livré le 2026-08-19
 > Le **seul craft de matéria** du jeu (§12.3) : un service de la ville, jamais un
 > pouvoir de joueur. Exceptionnel, tardif, jamais nécessaire (§2.1).
 > Prérequis : ← ECO-22 ✅ (le Parfait), FOY-06 ✅ (gate Métropole), accords d'arbre
-- [ ] Service de cité gaté **Métropole** (`SettlementGate`, déjà déclaratif) — ouvert à
-      tous, **jamais fermé par la guilde contrôlante** (doctrine D14), taxé par elle ;
-      un foyer de type **Sanctuaire** réduit coût et délai
-- [ ] Entrées : lots d'améthyste **Parfaite** + gils + **temps réel** (time-gating) ;
-      sortie : une matéria choisie dans le **catalogue standard**, filtrée par
-      l'élément/provenance des lots, et dont le joueur possède l'**accord**
-- [ ] Les **gestes retrouvés** (REP-03) élargissent la liste des recettes d'éveil
-      disponibles à l'Autel — c'est leur débouché
-- [ ] Visible avant d'être atteignable : l'Autel apparaît (fermé) dès la Cité, avec ce
-      qui manque — l'objet de désir de l'horizon de l'an se voit
-- [ ] Tests : gate, taxe, réduction Sanctuaire, entrées/sortie, accord requis, jamais
-      de sort inédit
+- [x] Service de cité gaté **Métropole** — ouvert à tous, jamais fermé par la guilde,
+      taxé par elle ; un foyer **Sanctuaire** réduit coût **et** délai, dans la même
+      proportion
+- [x] Entrées : lots d'améthystite **Parfaite** + gils + **temps réel** ; sortie : une
+      matéria du catalogue standard dont le joueur possède l'**accord**
+- [x] Les **gestes retrouvés** (REP-03) sont la liste — c'est leur débouché
+- [x] Visible avant d'être atteignable : l'écran s'ouvre fermé et dit ce qui manque
+- [x] Tests : gate, Sanctuaire, accord requis, Parfait seul, rien à recueillir sans rite
+- [x] **Test de cohérence gate ↔ routeur** (`GatedServiceRoutingTest`)
 
-> **Vigilance (audit 2026-07-29)** : `awakening_altar` est déjà gaté dans
-> `config/game/settlements.yaml` (`minimum_rank: metropolis`) mais **absent du routeur**
-> `SettlementServiceDirectory` — un service « ouvert » sans écran. Couvrir par un test
-> de cohérence gate ↔ routeur au moment de REP-04.
+> **Livré (2026-08-19).** **L'Autel n'éveille que ce que le monde a retrouvé.** Le §12.3
+> annonce deux moitiés — *« le catalogue de base par provenance, **plus** les gestes
+> retrouvés »* —, et ce jalon livre la seconde. C'est celle qui fait payer REP-03 : si la
+> liste de base contenait déjà tout, retrouver un geste n'élargirait rien, et le débouché
+> collectif de « lire » serait vide. **Deux conditions se croisent** — le monde a retrouvé le
+> geste, le personnage en possède l'accord —, ce qui fait de l'éveil un aboutissement à la fois
+> collectif et personnel.
+>
+> **La première moitié est bloquée par une mesure, pas par le temps.** Un catalogue « par
+> provenance » suppose que les lots d'améthystite disent d'où ils viennent. Ils ne le disent
+> pas : REP-01 n'a stampé la provenance que là où le monde la donne — le butin d'un monstre —,
+> et l'améthystite se **récolte**. La remplir depuis la zone de récolte ferait revenir
+> exactement l'erreur que REP-01 a refusée : *un axe rempli par la copie d'un autre*. Cliquet
+> nommé.
+>
+> **Le rite est un contrat, pas un objet en attente** : lots et gils sont pris au lancement, et
+> ce qui vit en base est la promesse de la matéria. Même choix que le ballot de contrebande
+> (FAC-08), et même raison : *rien de ce qui n'existe pas encore ne peut être vendu, échangé ou
+> volé*. Le prix payé est figé sur la ligne — le recalculer à la réclamation ferait payer à un
+> joueur un prix qu'aucun écran ne lui a montré, si le rang du foyer a bougé entre-temps.
+>
+> La taxe suit la règle de l'hôtel des ventes et de l'échoppe : **sans guilde pour la recevoir,
+> elle sort du jeu**. La rendre au joueur en ferait une remise déguisée sur les serveurs sans
+> contrôle, c'est-à-dire l'inverse d'un gold sink.
+>
+> **Le contrat gate ↔ routeur a trouvé un second défaut du même genre.** L'audit avait nommé
+> l'Autel ; le test, écrit pour lui, a aussi trouvé que **`zone_bank` pointait sur une route
+> inexistante** — `IndexController` porte l'attribut sur la classe et Symfony suffixe celui de
+> la méthode, si bien que la route s'appelle `app_game_inventory_index`. Le défaut était
+> **latent** : `zone_bank` s'ouvre à la Cité, qu'aucun foyer du monde livré n'atteint. Il
+> attendait le premier serveur assez vieux pour l'y conduire, et il aurait alors **cassé** le
+> panneau de foyer plutôt que d'y manquer une ligne. Les promesses restantes sont nommées une à
+> une, en cliquet : *une promesse assumée est une décision, une promesse oubliée est un bug*.
 
 ### REP-05 — La restitution : le Scriptorium & le journal (S | ★★ | MOYENNE)
 > Le Répertoire doit se **voir** pour être un projet collectif.

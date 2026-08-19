@@ -38,9 +38,14 @@ class SettlementServiceDirectoryTest extends TestCase
 
         $services = array_column($this->directory()->forZone($this->zone), 'service');
 
-        // `awakening_altar` et `rented_stall` sont declares et ouverts a ce rang,
-        // mais rien ne les sert encore : ils restent une promesse de palier.
-        self::assertSame(['regional_market', 'zone_bank'], $services);
+        // `rented_stall` est declare et ouvert a ce rang, mais rien ne le sert
+        // encore : il reste une promesse de palier (ECO Piste D).
+        //
+        // REP-04 : `awakening_altar` en etait une jusqu'a ce jalon. Il a
+        // desormais son ecran, et il figure donc parmi les portes — c'est ce
+        // que `GatedServiceRoutingTest` verifie en sens inverse, en refusant
+        // qu'un service gate reste sans route sans qu'on l'ait declare.
+        self::assertSame(['regional_market', 'zone_bank', 'awakening_altar'], $services);
     }
 
     public function testAClosedServiceStaysVisibleWithItsMissingRank(): void
@@ -49,7 +54,7 @@ class SettlementServiceDirectoryTest extends TestCase
 
         $rows = $this->directory()->forZone($this->zone);
 
-        self::assertCount(2, $rows);
+        self::assertCount(3, $rows);
         foreach ($rows as $row) {
             self::assertFalse($row['open']);
         }
