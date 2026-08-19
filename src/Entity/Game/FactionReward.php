@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\FactionRewardForm;
 use App\Enum\ReputationTier;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -85,6 +86,32 @@ class FactionReward
     public function setRewardType(string $rewardType): self
     {
         $this->rewardType = $rewardType;
+
+        return $this;
+    }
+
+    /**
+     * La forme de la recompense, **refusee** si elle n'en est pas une (FAC-09).
+     *
+     * La colonne reste une chaine — c'est ce qui permet a une migration de la
+     * relire —, mais rien ne la lit sans passer par ici. Une forme inconnue
+     * leve : *une recompense dont la forme ne se lit pas serait affichee sans
+     * jamais rien faire*, et un cadeau muet se lit comme un choix de design.
+     */
+    public function getForm(): FactionRewardForm
+    {
+        $form = FactionRewardForm::tryFrom($this->rewardType);
+
+        if ($form === null) {
+            throw new \LogicException(sprintf('Forme de recompense inconnue « %s » : les formes admises sont %s.', $this->rewardType, implode(', ', FactionRewardForm::values())));
+        }
+
+        return $form;
+    }
+
+    public function setForm(FactionRewardForm $form): self
+    {
+        $this->rewardType = $form->value;
 
         return $this;
     }

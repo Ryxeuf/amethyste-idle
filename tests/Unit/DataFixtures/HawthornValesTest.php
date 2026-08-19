@@ -261,11 +261,22 @@ class HawthornValesTest extends TestCase
      */
     public function testTheValesAreTheClosestZoneToTheHub(): void
     {
+        // Les Jardins sont un quartier du hub, pas une zone du dehors, et les
+        // cinq portes de FAC-09 en sont d'autres : les compter ferait gagner la
+        // comparaison a une **porte interieure**. La regle etait deja ecrite ici
+        // au singulier, contre un slug ; elle se lit desormais sur le `type`,
+        // qui est ce qu'elle voulait dire — le monde n'avait alors qu'un seul
+        // interieur, et une regle illustree par son unique cas ne vieillit pas.
+        $interiors = [];
+        foreach ($this->world()['zones'] as $zone) {
+            if (($zone['type'] ?? null) === 'interior' || 'quartier-des-jardins' === $zone['slug']) {
+                $interiors[] = $zone['slug'];
+            }
+        }
+
         $fromHub = [];
         foreach ($this->world()['connections'] as $connection) {
-            // Les Jardins sont un quartier du hub, pas une zone du dehors : les
-            // compter ferait gagner la comparaison a une porte interieure.
-            if ('village-de-lumiere' === $connection['from'] && 'quartier-des-jardins' !== $connection['to']) {
+            if ('village-de-lumiere' === $connection['from'] && !\in_array($connection['to'], $interiors, true)) {
                 $fromHub[$connection['to']] = $connection['travel_seconds'];
             }
         }

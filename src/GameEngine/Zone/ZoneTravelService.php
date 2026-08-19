@@ -12,6 +12,7 @@ use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
 use App\GameEngine\GameMaster\GameMasterPolicy;
 use App\GameEngine\Mount\MountTravelSpeed;
+use App\GameEngine\Reputation\FactionGate;
 use App\GameEngine\Reputation\HostileConsequenceResolver;
 use App\GameEngine\Reputation\ShadowsSmuggling;
 use App\Repository\PlayerVisitedZoneRepository;
@@ -36,6 +37,7 @@ class ZoneTravelService
         private readonly GameMasterPolicy $gameMasterPolicy,
         private readonly HostileConsequenceResolver $hostileConsequences,
         private readonly ShadowsSmuggling $shadowsSmuggling,
+        private readonly FactionGate $factionGate,
     ) {
     }
 
@@ -79,6 +81,18 @@ class ZoneTravelService
             }
             if ($connection->requiresDiscovery() && !$this->visitedZoneRepository->hasVisited($player, $connection->getToZone())) {
                 throw new ZoneTravelException('game.zone.travel.error.not_discovered');
+            }
+            // FAC-09 — la porte. Le crochet que le commentaire ci-dessus
+            // annoncait : la question passe par le service de reputation, et le
+            // MJ la franchit par la meme regle que les autres gardes.
+            //
+            // Le refus emprunte la cle d'« indisponible » et **pas** une cle
+            // propre : un message qui dirait « il vous faut etre Exalte chez les
+            // Ruelles » apprendrait a un joueur qui n'a rien gagne qu'une Cour
+            // des Miracles existe, et ou elle est. *Une porte cachee qui se
+            // nomme en se refusant n'est plus cachee.*
+            if (!$this->factionGate->isOpenFor($player, $connection->getToZone())) {
+                throw new ZoneTravelException('game.zone.travel.error.unavailable');
             }
         }
 

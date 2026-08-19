@@ -4,6 +4,7 @@ namespace App\GameEngine\Reputation;
 
 use App\Entity\App\Player;
 use App\Entity\Game\FactionReward;
+use App\Enum\FactionRewardForm;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -77,7 +78,12 @@ class PatronageBonusResolver
         $bestThreshold = null;
         foreach ($this->entityManager->getRepository(FactionReward::class)->findBy([
             'faction' => $patron,
-            'rewardType' => 'stat_bonus',
+            // FAC-09 : la forme s'appelle desormais **patronage**, et c'est le
+            // seul renommage du jalon qui change quelque chose — `stat_bonus`
+            // decrivait ce que la recompense contient, `patronage` dit a quelle
+            // condition elle parle. La seule forme du jeu qui puisse nommer une
+            // statistique porte donc le nom de la regle qui la borne.
+            'rewardType' => FactionRewardForm::Patronage->value,
         ]) as $reward) {
             $threshold = $reward->getRequiredTier()->threshold();
             if ($reputation < $threshold) {

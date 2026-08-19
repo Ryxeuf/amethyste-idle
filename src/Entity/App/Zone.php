@@ -2,6 +2,7 @@
 
 namespace App\Entity\App;
 
+use App\Enum\ReputationTier;
 use App\Repository\ZoneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -92,6 +93,32 @@ class Zone
 
     #[ORM\Column(name: 'enabled', type: 'boolean', options: ['default' => true])]
     private bool $enabled = true;
+
+    /**
+     * La porte : le slug de la faction dont cette zone exige les faveurs (FAC-09).
+     *
+     * Un **slug** et non une cle etrangere, pour la meme raison que le reste du
+     * bloc declaratif : les zones s'importent depuis `zones.yaml` par une
+     * commande, les factions viennent des fixtures, et faire dependre l'import
+     * du graphe de l'ordre de chargement des fixtures ferait echouer un
+     * deploiement sur une question de sequence.
+     *
+     * `null` = aucune garde, ce qui reste le cas de toutes les zones du monde
+     * sauf cinq : *le gate est opt-in, rien de ce qui etait accessible ne se
+     * ferme*.
+     */
+    #[ORM\Column(name: 'required_faction', type: 'string', length: 64, nullable: true)]
+    private ?string $requiredFaction = null;
+
+    /**
+     * Le palier exige a cette faction (FAC-09), valeur de `ReputationTier`.
+     *
+     * Toujours renseigne quand `requiredFaction` l'est, et jamais seul : une
+     * garde a moitie ecrite laisserait la porte ouverte ou la fermerait a tout
+     * le monde, et `ZoneDefinitionLoader` refuse les deux.
+     */
+    #[ORM\Column(name: 'required_tier', type: 'string', length: 32, nullable: true)]
+    private ?string $requiredTier = null;
 
     /**
      * Configuration declarative de l'exploration (ZON-08, prelude ZON-11) :
@@ -480,5 +507,37 @@ class Zone
     public function getConnections(): Collection
     {
         return $this->connections;
+    }
+
+    public function getRequiredFaction(): ?string
+    {
+        return $this->requiredFaction;
+    }
+
+    public function setRequiredFaction(?string $slug): self
+    {
+        $this->requiredFaction = $slug;
+
+        return $this;
+    }
+
+    public function getRequiredTier(): ?ReputationTier
+    {
+        return $this->requiredTier === null ? null : ReputationTier::from($this->requiredTier);
+    }
+
+    public function setRequiredTier(?ReputationTier $tier): self
+    {
+        $this->requiredTier = $tier?->value;
+
+        return $this;
+    }
+
+    /**
+     * Cette zone est-elle gardee par un palier de reputation (FAC-09) ?
+     */
+    public function isGuarded(): bool
+    {
+        return $this->requiredFaction !== null && $this->requiredTier !== null;
     }
 }

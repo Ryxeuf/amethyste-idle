@@ -8,6 +8,7 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\Enum\ReputationTier;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -121,6 +122,14 @@ class ZoneImporter
         $zone->setIsSafe((bool) $data['safe']);
         $zone->setTier((int) $data['tier']);
         $zone->setEnabled((bool) $data['enabled']);
+
+        // FAC-09 — la porte. Reappliquee a chaque import, y compris quand elle
+        // disparait du fichier : une garde retiree du YAML doit s'ouvrir a la
+        // commande suivante, sinon une zone resterait fermee pour une raison
+        // que plus aucune source ne porte.
+        $gate = $data['requires_reputation'] ?? null;
+        $zone->setRequiredFaction(\is_array($gate) ? (string) $gate['faction'] : null);
+        $zone->setRequiredTier(\is_array($gate) ? ReputationTier::from((string) $gate['tier']) : null);
         $zone->setMapX(isset($data['map_x']) ? (int) $data['map_x'] : null);
         $zone->setMapY(isset($data['map_y']) ? (int) $data['map_y'] : null);
         $zone->setMapShape(isset($data['map_shape']) ? (string) $data['map_shape'] : null);

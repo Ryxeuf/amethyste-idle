@@ -1001,6 +1001,82 @@ zones:
               opens_at: 6
               closes_at: 21
 
+    # =========================================================================
+    # FAC-09 — les cinq portes
+    # =========================================================================
+    # GAME_WORLD § 12.5 : « chaque Exalte ouvre une porte quelque part » — cinq
+    # quartiers `interior` caches, un par maison. *Cinq recompenses
+    # d'exaltation, cinq quartiers de lore, zero puissance verticale.*
+    #
+    # Trois regles communes aux cinq, et chacune repare quelque chose :
+    #
+    #  - **aucune n'est placee sur la carte du monde** (`map_x`/`map_y` absents,
+    #    donc masquee) : une porte cachee qui figure sur la carte de tout le
+    #    monde n'est plus cachee ;
+    #  - **`safe: true` et `tier: 0`** : ce sont des salles, pas du contenu de
+    #    haut palier. Une porte est une recompense **laterale** — elle donne du
+    #    lore et un lieu, jamais un terrain de chasse plus rentable ;
+    #  - **chacune s'ouvre depuis une zone deja frequentee**, et la garde est
+    #    donc *purement* une garde de reputation. Y ajouter un detour
+    #    geographique en ferait une recompense a deux conditions, dont une que la
+    #    doctrine n'a pas voulue.
+    #
+    # Deux maisons ont deja un siege dans le monde livre, et leur porte s'ouvre
+    # la : la Fonderie au carreau des Mines (son comptoir, FAC-04a) et les
+    # Ruelles au Fanal (le guichet du receleur, la nuit, FAC-06). Les trois
+    # autres s'ouvrent au Fanal faute de siege declare — c'est un **choix par
+    # defaut assume**, a deplacer le jour ou leurs comptoirs existeront.
+
+    la-grande-halle:
+        name: 'La Grande Halle'
+        name_en: 'The Great Hall'
+        description: "Sous les echoppes du Fanal, une salle voutee ou l'on ne crie jamais. Des maisons marchandes y accordent leurs prix a voix basse, et ce qui s'y dit un soir se lit le lendemain sur toutes les etiquettes du monde."
+        description_en: "Beneath the Beacon's shops, a vaulted hall where no one ever raises their voice. Merchant houses settle their prices here in low tones, and what is said one evening is read the next day on every price tag in the world."
+        type: interior
+        tier: 0
+        safe: true
+        requires_reputation: { faction: marchands, tier: exalte }
+
+    la-salle-du-serment:
+        name: 'La Salle du Serment'
+        name_en: 'The Hall of the Oath'
+        description: "Une chambre nue, sans banc ni fenetre, ou le texte original est grave a hauteur d'homme sur les quatre murs. On y comprend enfin pourquoi le sang ne se depose pas — et ce que l'Ordre a du promettre pour cela."
+        description_en: 'A bare chamber, without bench or window, where the original text is carved at eye level on all four walls. Here one finally understands why blood does not settle — and what the Order had to promise for it.'
+        type: interior
+        tier: 0
+        safe: true
+        requires_reputation: { faction: chevaliers, tier: exalte }
+
+    le-scriptorium:
+        name: 'Le Scriptorium'
+        name_en: 'The Scriptorium'
+        description: "La salle ou le Repertoire s'ecrit physiquement : des rayonnages qui montent hors de portee, et sur la table centrale, l'etat de ce que le monde a lu. Ce qui manque y est plus visible que ce qui s'y trouve."
+        description_en: 'The room where the Repertoire is physically written: shelves climbing out of reach, and on the central table, the state of what the world has read. What is missing is more visible here than what is present.'
+        type: interior
+        tier: 0
+        safe: true
+        requires_reputation: { faction: mages, tier: exalte }
+
+    la-cour-des-miracles:
+        name: 'La Cour des Miracles'
+        name_en: 'The Court of Miracles'
+        description: "Une cour interieure a laquelle aucune rue ne mene. On y apprend qui tient vraiment les ruelles, depuis combien de temps, et ce que la Confrerie fait des gens qui posent la question sans y avoir ete invites."
+        description_en: 'An inner courtyard no street leads to. Here one learns who really holds the alleys, for how long, and what the Brotherhood does with people who ask without being invited.'
+        type: interior
+        tier: 0
+        safe: true
+        requires_reputation: { faction: ombres, tier: exalte }
+
+    le-grand-fourneau:
+        name: 'Le Grand Fourneau'
+        name_en: 'The Great Furnace'
+        description: "Au fond du carreau, la salle de fonte que les visites guidees evitent. Ce qui entre ici ne ressort pas sous la meme forme, et le registre du jour n'est pas celui qu'on affiche au comptoir."
+        description_en: 'At the far end of the pit, the smelting hall the guided tours avoid. What enters here does not leave in the same shape, and the ledger of the day is not the one posted at the counter.'
+        type: interior
+        tier: 0
+        safe: true
+        requires_reputation: { faction: fonderie, tier: exalte }
+
 connections:
     - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }
     - { from: village-de-lumiere, to: foret-des-murmures, travel_seconds: 300, bidirectional: true }
@@ -1032,3 +1108,13 @@ connections:
     - { from: mer-de-sel, to: cite-ensevelie, travel_seconds: 600, bidirectional: true }
     - { from: crete-de-ventombre, to: pas-de-givre, travel_seconds: 780, bidirectional: true }
     - { from: pas-de-givre, to: glacier-du-silence, travel_seconds: 660, bidirectional: true }
+
+    # FAC-09 — les cinq portes. Liaisons **instantanees** : on ne marche pas dix
+    # minutes pour passer une porte de son propre quartier, et l'arrivee se
+    # regle dans la foulee (`settleArrival`). Bidirectionnelles, evidemment : ce
+    # qui garde l'entree n'a aucune raison de garder la sortie.
+    - { from: village-de-lumiere, to: la-grande-halle, travel_seconds: 0, bidirectional: true }
+    - { from: village-de-lumiere, to: la-salle-du-serment, travel_seconds: 0, bidirectional: true }
+    - { from: village-de-lumiere, to: le-scriptorium, travel_seconds: 0, bidirectional: true }
+    - { from: village-de-lumiere, to: la-cour-des-miracles, travel_seconds: 0, bidirectional: true }
+    - { from: mines-profondes, to: le-grand-fourneau, travel_seconds: 0, bidirectional: true }

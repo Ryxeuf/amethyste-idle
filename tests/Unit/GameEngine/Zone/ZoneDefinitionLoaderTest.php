@@ -445,8 +445,9 @@ class ZoneDefinitionLoaderTest extends TestCase
         // 9 depuis HOU-01 (rattachement du Quartier des Jardins au hub),
         // 10 depuis ZON-26b (les Dunes d'Ambre au sud du marais),
         // 14 depuis 128b (les quatre zones de l'Acte 4),
-        // 17 depuis ZON-30 (les Vallons, relies au hub, a la Foret et au Marais).
-        self::assertCount(17, $result['connections']);
+        // 17 depuis ZON-30 (les Vallons, relies au hub, a la Foret et au Marais),
+        // 22 depuis FAC-09 (les cinq portes, chacune sur une seule liaison).
+        self::assertCount(22, $result['connections']);
 
         $dunes = null;
         foreach ($result['zones'] as $zone) {
@@ -700,5 +701,55 @@ class ZoneDefinitionLoaderTest extends TestCase
             $primaries,
             'Aucune zone principale declaree : la loi ne verifierait rien si le monde cessait de partager une carte.',
         );
+    }
+
+    /**
+     * FAC-09 — la garde de reputation se declare **entiere**, ou pas du tout.
+     *
+     * Les trois refus disent la meme chose sous trois formes : *une garde a
+     * moitie ecrite est pire que pas de garde*. Une faction sans palier
+     * laisserait la porte grande ouverte, un palier sans faction la fermerait a
+     * tout le monde, et un palier au niveau du sol n'est pas une garde — c'est
+     * ce dernier qui attrape la faute de frappe qu'aucune autre verification ne
+     * verrait, la valeur `neutre` etant parfaitement valide par ailleurs.
+     */
+    public function testAHalfWrittenReputationGateIsRefused(): void
+    {
+        foreach ([
+            'faction seule' => ['faction' => 'ombres'],
+            'palier seul' => ['tier' => 'exalte'],
+            'palier inconnu' => ['faction' => 'ombres', 'tier' => 'legendaire'],
+            'palier au niveau du sol' => ['faction' => 'ombres', 'tier' => 'neutre'],
+            'pas un tableau' => 'exalte',
+        ] as $case => $gate) {
+            try {
+                $this->loader->normalize([
+                    'zones' => ['porte' => ['name' => 'Porte', 'type' => 'interior', 'requires_reputation' => $gate]],
+                ]);
+                self::fail(sprintf('La garde « %s » a ete acceptee.', $case));
+            } catch (ZoneDefinitionException) {
+                self::assertTrue(true);
+            }
+        }
+    }
+
+    public function testACompleteReputationGateIsKept(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => ['porte' => ['name' => 'Porte', 'type' => 'interior', 'requires_reputation' => ['faction' => 'ombres', 'tier' => 'exalte']]],
+        ]);
+
+        self::assertSame(['faction' => 'ombres', 'tier' => 'exalte'], $result['zones'][0]['requires_reputation']);
+    }
+
+    /**
+     * Et l'absence reste la norme : la garde est **opt-in**, rien de ce qui
+     * etait accessible ne se ferme.
+     */
+    public function testAZoneWithoutAGateStaysOpen(): void
+    {
+        $result = $this->loader->normalize(['zones' => ['clairiere' => ['name' => 'Clairiere']]]);
+
+        self::assertNull($result['zones'][0]['requires_reputation']);
     }
 }
