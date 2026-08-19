@@ -9,6 +9,12 @@
             &larr; Retour guilde
         </a>
         <span class="text-xs text-gray-500">Tresor : <span class="text-amber-400" id="treasury-display">{{ guild.gilsTreasury|number_format(0, ',', ' ') }}</span> Gils</span>
+        {# FOY-19 : ce que les habitants rapportent. Un tresor qui monte sans
+           dire d'ou ne dit rien de la ville qu'on tient — et le trait politique
+           du loyer ne vaut que s'il se voit. #}
+        {% if guild.gilsFromRents > 0 %}
+            <span class="text-xs text-gray-500">{{ 'game.guild.treasury.from_rents'|trans({'%amount%': guild.gilsFromRents|number_format(0, ',', ' ')}) }}</span>
+        {% endif %}
     </div>
 
     <div id="upgrade-messages" class="mb-3 hidden">

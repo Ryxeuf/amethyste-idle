@@ -23,6 +23,8 @@ final class HousingManagerTest extends TestCase
     private PlayerHouseRepository&MockObject $houseRepository;
     private InventoryHelper&MockObject $inventoryHelper;
     private \App\GameEngine\Housing\ResidentialParcels&MockObject $residentialParcels;
+
+    private \App\GameEngine\Housing\HouseRentRouting&MockObject $rentRouting;
     private HousingManager $manager;
 
     /** @var list<object> */
@@ -47,7 +49,11 @@ final class HousingManagerTest extends TestCase
         // configurent explicitement. Le plancher des Jardins n'en depend pas.
         $this->residentialParcels = $this->createMock(\App\GameEngine\Housing\ResidentialParcels::class);
 
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper, $this->residentialParcels);
+        // FOY-19 : le routage du loyer est mesure par `HouseRentRoutingTest` —
+        // ici on verifie que le manager l'appelle, pas ou il envoie.
+        $this->rentRouting = $this->createMock(\App\GameEngine\Housing\HouseRentRouting::class);
+
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $this->inventoryHelper, $this->residentialParcels, $this->rentRouting);
     }
 
     /**
@@ -60,7 +66,7 @@ final class HousingManagerTest extends TestCase
             ->with(HousingManager::FURNISHING_KIT_SLUG, 1)
             ->willReturn(1);
 
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels);
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels, $this->rentRouting);
     }
 
     public function testBuyingLandCostsTheLandPriceAndBuildsTheHouse(): void
@@ -366,7 +372,7 @@ final class HousingManagerTest extends TestCase
     {
         $inventoryHelper = $this->createMock(InventoryHelper::class);
         $inventoryHelper->expects(self::never())->method('removeItemBySlug');
-        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels);
+        $this->manager = new HousingManager($this->em, $this->houseRepository, new NullLogger(), $inventoryHelper, $this->residentialParcels, $this->rentRouting);
 
         $player = $this->playerIn($this->residentialZone(), 10_000);
         $house = $this->ownedHouse($player);

@@ -1514,6 +1514,9 @@
         "empty": "Aucune commande de guilde en cours.",
         "open": "à prendre",
         "taken_by": "prise par %player%"
+      },
+      "treasury": {
+        "from_rents": "dont %amount% Gils de loyers"
       }
     },
     "zone": {

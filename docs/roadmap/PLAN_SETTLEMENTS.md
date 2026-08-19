@@ -434,12 +434,42 @@ Phase 5 (tests)      : FOY-16  (parallélisable)
       (les Jardins ignorent la capacité), Campement/Ruine ne logent pas, foyer plein
       refuse l'achat, refus du chargeur (croissance, sous-Hameau, rang inconnu)
 
-### FOY-19 — Le loyer politique (S | ★★ | HAUTE)
+### FOY-19 ✅ — Le loyer politique (S | ★★ | HAUTE) — livré le 2026-08-19
 > §12.6 c. Le même canal que la taxe HV (GCC-11/ECO-04).
-- [ ] Loyer d'une zone à foyer → trésor de la guilde contrôlante de la région ; sans
-      guilde → sink (destruction) ; Quartier des Jardins → sink toujours
-- [ ] Restitution : la provenance « loyers » visible dans le trésor de guilde
-- [ ] Tests : routage par cas, sink par défaut
+- [x] Loyer d'une zone à foyer → trésor de la guilde contrôlante ; **sans foyer ou sans
+      guilde → sink**
+- [x] Restitution : la provenance « loyers » visible au trésor (`Guild::gilsFromRents`)
+- [x] Tests : les trois cas, le sink qui n'enrichit personne, et **la boucle entière**
+
+> **Livré (2026-08-19).** Le loyer était un **sink pur** : les gils quittaient la bourse et
+> n'allaient nulle part. Il devient politique — *habiter chez quelqu'un est un acte politique
+> doux*, et une guilde bien gérée a désormais des **habitants** comme source de revenus.
+>
+> **La règle est plus générale que son illustration.** Le plan écrivait « Quartier des Jardins →
+> sink toujours » ; ce n'est pas une exception au nom du Quartier, c'est qu'il **n'a pas de
+> foyer** — bâti sur la Voûte, rien ne s'y dépose. Une zone sans foyer n'a aucun corps politique
+> pour percevoir. La règle s'écrit donc sur l'**absence de foyer**, et le Quartier en est le
+> cas, pas la cause : le jour où une seconde zone résidentielle naîtra hors foyer, elle sera
+> traitée sans qu'on revienne au code. *Une règle illustrée par son unique instance ne vieillit
+> pas* — la leçon de `HawthornValesTest` (FAC-09a), retrouvée ici.
+>
+> C'est aussi ce qui rend le plancher du logement **inconditionnel** : personne ne peut fermer
+> le lotissement du Fanal, parce que personne n'en tire rien.
+>
+> **Les deux chemins de paiement sont routés.** Le prélèvement automatique emprunte le même
+> chemin que le paiement à la main : router l'un et pas l'autre ferait dépendre le revenu d'une
+> guilde du **bouton** sur lequel ses habitants ont appuyé.
+>
+> **Le sink reste un sink**, comme à l'hôtel des ventes, à l'échoppe et à l'Autel : les gils
+> sortent du jeu. Les rendre au joueur en ferait une remise déguisée, l'inverse d'un gold sink.
+> Un test le vérifie par ce qui **ne bouge pas** — aucun trésor du monde ne monte.
+>
+> **La restitution demandée n'avait pas de support**, et le jalon le nomme : `addGilsTreasury()`
+> est un simple accumulateur, et il n'existe **aucun journal du trésor** — la taxe HV et celle
+> de l'échoppe arrivent sans provenance distinguable. `gilsFromRents` est un **cumul**, pas un
+> solde, et il ne prétend pas tenir lieu de journal : il répond à la seule question que le canon
+> pose, *combien les habitants rapportent-ils*. Le trait politique ne vaut que s'il se voit — un
+> trésor qui monte sans dire d'où ne dit rien de la ville qu'on tient.
 
 ### FOY-20 — Le retour au logis & les cheminées (M | ★★ | MOYENNE)
 > §12.6 d. La commodité de fin de session (playtest V2) et le grain de résidence.

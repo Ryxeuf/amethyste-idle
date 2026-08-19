@@ -44,6 +44,7 @@ class GilsSupplyCoverageTest extends TestCase
         'guild_gils' => 'GilsSupplySnapshot : le releve lui-meme',
         'shop_gils' => 'GilsSupplySnapshot : le releve lui-meme',
         'escrow_gils' => 'GilsSupplySnapshot : le releve lui-meme',
+        'gils_from_rents' => 'Guild : cumul de ce que les habitants ont rapporte (FOY-19), deja compte dans `gils_treasury`',
         'gils_paid' => 'AwakeningRite : le prix fige a l\'ouverture du rite (REP-04), deja retire de la bourse et deja taxe',
     ];
 

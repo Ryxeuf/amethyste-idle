@@ -36,6 +36,25 @@ class Guild
     #[ORM\Column(name: 'gils_treasury', type: 'integer', options: ['default' => 0])]
     private int $gilsTreasury = 0;
 
+    /**
+     * Ce que les **habitants** ont rapporte, cumule (FOY-19).
+     *
+     * GAME_WORLD § 12.6 c : *« une guilde bien geree a desormais des habitants
+     * comme source de revenus — une raison de plus de rendre sa region
+     * vivable »*. Le trait politique ne vaut que s'il se **voit** : un tresor
+     * qui monte sans dire d'ou ne dit rien de la ville qu'on tient.
+     *
+     * C'est un **cumul**, jamais un solde : les gils vivent dans
+     * `gilsTreasury`, et cette colonne ne fait que se souvenir de leur
+     * provenance. Le journal general du tresor n'existe pas — la taxe de
+     * l'hotel des ventes et celle de l'echoppe arrivent sans provenance
+     * distinguable —, et ce compteur ne pretend pas en tenir lieu : il repond a
+     * la seule question que le canon pose, *combien les habitants
+     * rapportent-ils*.
+     */
+    #[ORM\Column(name: 'gils_from_rents', type: 'integer', options: ['default' => 0])]
+    private int $gilsFromRents = 0;
+
     #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: 'leader_id', referencedColumnName: 'id', nullable: false)]
     private Player $leader;
@@ -196,6 +215,22 @@ class Guild
     public function addGilsTreasury(int $amount): self
     {
         $this->gilsTreasury += $amount;
+
+        return $this;
+    }
+
+    public function getGilsFromRents(): int
+    {
+        return $this->gilsFromRents;
+    }
+
+    /**
+     * Verse un loyer au tresor, en se souvenant que c'en etait un (FOY-19).
+     */
+    public function addRentToTreasury(int $amount): self
+    {
+        $this->gilsTreasury += $amount;
+        $this->gilsFromRents += $amount;
 
         return $this;
     }
