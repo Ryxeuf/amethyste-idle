@@ -5,6 +5,7 @@ namespace App\Tests\Unit\DataFixtures;
 use App\DataFixtures\DomainParchmentFixtures;
 use App\Entity\Game\Domain;
 use App\GameEngine\Item\ItemEffectEncoder;
+use App\GameEngine\Progression\FoundTreeCatalog;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -30,6 +31,12 @@ class DomainParchmentContractTest extends TestCase
         $covered = array_merge(
             array_keys($this->declaredParchments()),
             array_keys(DomainParchmentFixtures::LEGACY_PARCHMENTS),
+            // DOM-10 : un arbre **retrouve** a lui aussi exactement un
+            // parchemin — il vit simplement dans `found_trees.yaml`, parce
+            // qu'aucune echoppe ne le vend. La loi ne change pas : elle
+            // compte une porte d'entree par arbre, quelle qu'en soit la
+            // provenance.
+            (new FoundTreeCatalog(\dirname(__DIR__, 3)))->keys(),
         );
 
         $missing = array_values(array_diff($this->shippedDomainKeys(), $covered));

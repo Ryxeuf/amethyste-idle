@@ -1,0 +1,45 @@
+# =============================================================================
+# Les arbres retrouves (DOM-10)
+# =============================================================================
+# GAME_ONBOARDING § 6.4, arbitrage A17. Une couche d'arbres **hors registre** :
+# absents du catalogue public, sans vendeur, ouverts par un parchemin
+# **retrouve** qu'une rencontre remet — et cette rencontre est declenchee par un
+# **accomplissement**, jamais par un tirage.
+#
+# Ce que ca repare : jusqu'ici, **terminer un arbre ne donnait rien**. Le dernier
+# palier etait un cul-de-sac ; il devient une condition de rencontre.
+#
+# Les cinq lois vivent dans la **forme** de ce fichier autant que dans les tests :
+#
+# 1. **lateral, jamais vertical** — un arbre retrouve n'accorde ni statistique de
+#    combat ni levier. Des options, jamais de la puissance : sinon le joueur qui
+#    n'a pas croise le vieux Nain est mecaniquement derriere.
+# 2. **cumulatif, jamais manque** — la condition est un accomplissement durable,
+#    donc la rencontre reste disponible **indefiniment**. Il n'y a aucun champ ou
+#    ecrire une date, une fenetre ou un quota : *pas de premier arrive*.
+# 3. **jamais necessaire** — aucune recette, aucun palier, aucune quete normale
+#    n'en depend.
+# 4. **la condition est un accomplissement** — le slug d'un nœud terminal, jamais
+#    un jet.
+# 5. **le parchemin est lie** — l'unique exception aux quatre conditions du
+#    parchemin de registre. Ce qui circule entre joueurs est **l'information**,
+#    jamais l'objet : sans cela, le premier decouvreur met le secret a l'hotel
+#    des ventes, et il meurt en deux jours.
+# =============================================================================
+
+trees:
+    # Le mineur qui a tout appris croise, au fond d'une galerie, un vieux Nain a
+    # moitie change en minerai. Il ne vend rien : il donne son carnet.
+    prospector:
+        label: 'Prospecteur'
+        # L'accomplissement : le dernier nœud de l'arbre du mineur. DOM-09 l'a
+        # laisse **vide** — il ne portait qu'une statistique de combat, qui
+        # fuyait. Il retrouve ici une raison d'etre : *ce n'est pas ce qu'il
+        # donne qui compte, c'est ce qu'il prouve*.
+        earned_by: miner-master
+        parchment:
+            slug: prospector-found-parchment
+            name: 'Carnet de prospection'
+            name_en: "Prospector's Notebook"
+            description: "Le carnet d'un vieux mineur, annoté jusque dans les marges. Aucune échoppe n'en vend."
+            description_en: 'The notebook of an old miner, annotated to the margins. No shop sells one.'

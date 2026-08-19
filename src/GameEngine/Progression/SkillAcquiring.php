@@ -17,6 +17,7 @@ class SkillAcquiring
         private readonly PlayerSkillHelper $skillHelper,
         private readonly CrossDomainSkillResolver $crossDomainSkillResolver,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly FoundTreeGranter $foundTreeGranter,
     ) {
     }
 
@@ -56,6 +57,13 @@ class SkillAcquiring
 
         $this->entityManager->persist($player);
         $this->entityManager->flush();
+
+        // DOM-10 — la rencontre qu'un accomplissement declenche. Elle vient
+        // **apres** le flush : un carnet ne se remet que pour un nœud
+        // reellement appris. La quasi-totalite des acquisitions n'en declenche
+        // aucune, et c'est le point — *une rencontre est rare parce que
+        // l'accomplissement l'est, jamais parce qu'un jet l'a decide*.
+        $this->foundTreeGranter->onSkillAcquired($player, $skill);
 
         return SkillAcquisitionResult::acquired();
     }

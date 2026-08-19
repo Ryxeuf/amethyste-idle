@@ -165,6 +165,13 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # DOM-10 — les arbres retrouves, declares en configuration comme les
+    # fourches et l'echelle de port : *une couche de contenu est un bloc de
+    # configuration, jamais une ligne de code*.
+    App\GameEngine\Progression\FoundTreeCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # ARC-03 : le vocabulaire ferme des leviers, et le convertisseur unique.
     # Les taux de change et les plafonds vivent en donnees parce que le canon
     # previent qu'aucun de ses nombres n'est definitif (GAME_ARCHETYPES § 0.2) —
