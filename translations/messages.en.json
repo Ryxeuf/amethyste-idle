@@ -2028,11 +2028,32 @@
         "letter": "A letter awaits you. The people of %zone% have noticed your work — you now have a name there, and someone who knows you."
       },
       "hint": {
-        "weapon": "Go to the Zone",
-        "materia": "Go to the Zone",
-        "trade": "See the Quests",
-        "departure": "Go to the Zone",
-        "expedition": "Go to the Zone"
+        "where": "Where: %where%",
+        "action": {
+          "accept": "Accept “%quest%” in the quest journal",
+          "talk": "Talk to %person%",
+          "travel_to": "Travel to %place%",
+          "equip": "Open your equipment and wear your weapon",
+          "socket": "Open your equipment and socket your materia",
+          "dummy": "Zone screen: train on the dummy",
+          "gather": "Zone screen: harvest a node",
+          "craft": "Open the workshop and craft",
+          "travel": "Open the world map and travel",
+          "expedition": "Zone screen: start an expedition",
+          "step_weapon": "Choose a weapon and the path that allows it",
+          "step_materia": "Attune your materia, then cast its spell",
+          "step_trade": "Choose a gathering trade",
+          "step_departure": "Travel to a real zone",
+          "step_expedition": "Start an expedition"
+        }
+      },
+      "training": {
+        "heading": "Training",
+        "hint": "A risk-free fight — it costs no energy.",
+        "action": "Train",
+        "error": {
+          "not_now": "No training is required right now."
+        }
       }
     },
     "coach": {

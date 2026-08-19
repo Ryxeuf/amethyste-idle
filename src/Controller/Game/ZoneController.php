@@ -25,6 +25,7 @@ use App\GameEngine\Settlement\SettlementPanelBuilder;
 use App\GameEngine\Settlement\VeinRestorationException;
 use App\GameEngine\Settlement\VeinRestorationService;
 use App\GameEngine\Social\ChatManager;
+use App\GameEngine\Tutorial\TrainingDummyOffer;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
@@ -107,6 +108,7 @@ class ZoneController extends AbstractController
         private readonly VeinRestorationService $veinRestorationService,
         private readonly SettlementDoctrineService $settlementDoctrineService,
         private readonly GameMasterPolicy $gameMasterPolicy,
+        private readonly TrainingDummyOffer $trainingDummyOffer,
     ) {
     }
 
@@ -168,6 +170,7 @@ class ZoneController extends AbstractController
                 'groupDungeon' => null,
                 'groupDungeonOffers' => [],
                 'pnjsPresent' => [],
+                'trainingDummy' => null,
                 'gameHour' => $this->gameTimeService->getHour(),
                 'zoneChat' => null,
                 'phase' => $this->gameTimeService->getPhase(),
@@ -275,6 +278,10 @@ class ZoneController extends AbstractController
             'pnjsPresent' => $this->entityManager
                 ->getRepository(Pnj::class)
                 ->findBy(['zone' => $zone], ['name' => 'ASC'], self::MAX_PNJS_LISTED),
+            // Le mannequin de l'acte I, quand l'etape en cours le reclame — et
+            // jamais autrement. Il n'appartient a aucune zone (il n'existe que
+            // le temps du combat) : c'est la quete qui l'amene ici, pas le lieu.
+            'trainingDummy' => $this->trainingDummyOffer->pendingFor($player),
             // Heure in-game : conditionne l'ouverture des boutiques PNJ.
             'gameHour' => $this->gameTimeService->getHour(),
             'phase' => $this->gameTimeService->getPhase(),

@@ -2028,11 +2028,32 @@
         "letter": "Une lettre vous attend. Les gens de %zone% ont remarqué votre travail — vous y avez désormais un nom, et quelqu'un qui vous connaît."
       },
       "hint": {
-        "weapon": "Aller à la Zone",
-        "materia": "Aller à la Zone",
-        "trade": "Voir les Quêtes",
-        "departure": "Aller à la Zone",
-        "expedition": "Aller à la Zone"
+        "where": "Où : %where%",
+        "action": {
+          "accept": "Accepter « %quest% » au journal des quêtes",
+          "talk": "Parler à %person%",
+          "travel_to": "Rejoindre %place%",
+          "equip": "Ouvrir l'équipement et porter votre arme",
+          "socket": "Ouvrir l'équipement et sertir votre matéria",
+          "dummy": "Écran de zone : s'entraîner sur le mannequin",
+          "gather": "Écran de zone : récolter un gisement",
+          "craft": "Ouvrir l'atelier et fabriquer",
+          "travel": "Ouvrir la carte du monde et voyager",
+          "expedition": "Écran de zone : lancer une expédition",
+          "step_weapon": "Choisir une arme et la voie qui l'autorise",
+          "step_materia": "Accorder votre matéria, puis lancer son sort",
+          "step_trade": "Choisir un métier de récolte",
+          "step_departure": "Voyager vers une vraie zone",
+          "step_expedition": "Lancer une expédition"
+        }
+      },
+      "training": {
+        "heading": "Entraînement",
+        "hint": "Un combat sans risque — il ne coûte pas d'énergie.",
+        "action": "S'entraîner",
+        "error": {
+          "not_now": "Aucun entraînement n'est demandé pour l'instant."
+        }
       }
     },
     "coach": {

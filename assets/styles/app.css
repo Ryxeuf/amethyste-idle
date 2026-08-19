@@ -2050,6 +2050,18 @@ a.materia-slots-counter--link:hover {
   color: rgb(74, 31, 149);
 }
 
+/* « Vous y etes » : la meme ligne que le lien, sans l'affordance d'un lien.
+   Un lien qui recharge la page d'ou on le lit ne se lit pas comme inutile,
+   il se lit comme casse — on garde donc l'indication et on retire le clic. */
+.tutorial-hint-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink-2, rgb(93, 86, 74));
+}
+
 /* ===== WORLD MAP: contours de zone cliquables (ZON-16) =====
    Le contour est transparent au repos : la carte illustree se suffit, et un
    territoire cerne en permanence ferait un atlas scolaire. Il ne se revele
