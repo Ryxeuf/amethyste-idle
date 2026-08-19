@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Skill;
 use App\GameEngine\Progression\DomainAccessManager;
+use App\GameEngine\Progression\PortAccessDiscount;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
@@ -30,7 +31,7 @@ class PlayerSkillHelperTest extends TestCase
         // propre test plus bas.
         $this->domainAccessManager = $this->createMock(DomainAccessManager::class);
         $this->domainAccessManager->method('isSkillReachable')->willReturn(true);
-        $this->helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper, $this->domainAccessManager);
+        $this->helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper, $this->domainAccessManager, $this->fullPriceDiscount());
     }
 
     /**
@@ -51,7 +52,7 @@ class PlayerSkillHelperTest extends TestCase
 
         $closed = $this->createMock(DomainAccessManager::class);
         $closed->method('isSkillReachable')->willReturn(false);
-        $helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper, $closed);
+        $helper = new PlayerSkillHelper($this->playerHelper, $this->playerDomainHelper, $closed, $this->fullPriceDiscount());
 
         $this->assertSame(PlayerSkillHelper::REFUSAL_DOMAIN_CLOSED, $helper->refusalFor($skill));
         $this->assertFalse($helper->canAcquireSkill($skill));
@@ -299,5 +300,19 @@ class PlayerSkillHelperTest extends TestCase
         $idProperty->setValue($domain, $id);
 
         return $domain;
+    }
+
+    /**
+     * ARC-16b : ces tests ne parlent pas d'accointance — le cout effectif est
+     * le cout nominal.
+     */
+    private function fullPriceDiscount(): PortAccessDiscount
+    {
+        $discount = $this->createMock(PortAccessDiscount::class);
+        $discount->method('effectiveRequiredPointsOf')->willReturnCallback(
+            fn ($player, $skill) => $skill->getRequiredPoints(),
+        );
+
+        return $discount;
     }
 }

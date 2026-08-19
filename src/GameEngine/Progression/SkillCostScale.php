@@ -72,4 +72,25 @@ final class SkillCostScale
     {
         return [self::ENTRY, self::TIER_1, self::TIER_2, self::TIER_3, self::CAPSTONE];
     }
+
+    /**
+     * Le barreau au-dessous — la remise d'une accointance `access_discount`
+     * (ARC-16b) : *« un palier de moins »*, jamais un nombre en donnees.
+     *
+     * Deux prudences, et les deux sont des refus de deviner : un cout **hors
+     * echelle** est rendu tel quel (le remiser inventerait un barreau que
+     * personne n'a decide), et l'entree reste l'entree — au-dessous de gratuit,
+     * il n'y a rien.
+     */
+    public static function rungBelow(int $cost): int
+    {
+        $rungs = self::learnableRungs();
+        $index = array_search($cost, $rungs, true);
+
+        if ($index === false || $index === 0) {
+            return $cost;
+        }
+
+        return $rungs[$index - 1];
+    }
 }

@@ -18,7 +18,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class MateriaGearSetter
 {
-    public function __construct(private readonly GearHelper $gearHelper, private readonly EntityManagerInterface $entityManager, private readonly PlayerItemHelper $playerItemHelper, private readonly EventDispatcherInterface $eventDispatcher)
+    public function __construct(private readonly GearHelper $gearHelper, private readonly EntityManagerInterface $entityManager, private readonly PlayerItemHelper $playerItemHelper, private readonly EventDispatcherInterface $eventDispatcher, private readonly SlotAcceptanceWidener $slotAcceptanceWidener)
     {
     }
 
@@ -45,9 +45,16 @@ class MateriaGearSetter
         // refus porte sur le **sertissage**, jamais sur le port : rien
         // n'empeche de porter la piece, et c'est la difference entre un
         // emplacement type et une classe (GAME_DOMAINS § 3, garde-fou 1).
+        //
+        // ARC-16b : une accointance `slot_acceptance` active elargit ce que
+        // l'emplacement accepte — apres le refus, jamais a sa place. Elle ne
+        // rend ni point ni levier : la materia se sertit, c'est tout.
         $accepted = $slot->getItem()->getGenericItem()->getMateriaSlotType();
         if (!$accepted->accepts($materia->getGenericItem()->getMateriaKind())) {
-            throw new MateriaSlotTypeException();
+            $player = $materia->getInventory()?->getPlayer();
+            if ($player === null || !$this->slotAcceptanceWidener->widens($player, $materia)) {
+                throw new MateriaSlotTypeException();
+            }
         }
 
         $slot->setItemSet($materia);

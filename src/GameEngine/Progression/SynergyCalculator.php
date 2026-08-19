@@ -114,6 +114,75 @@ class SynergyCalculator
     }
 
     /**
+     * Les accointances actives d'une forme donnee (ARC-16b).
+     *
+     * C'est le point d'entree des trois lecteurs livres par ARC-16b : chacun ne
+     * lit que sa forme, et aucun ne recalcule l'activation — elle se decide ici,
+     * une fois, sur les seuils d'XP des deux ecoles.
+     *
+     * @return list<DomainSynergy>
+     */
+    public function activeOfForm(Player $player, AccointanceForm $form): array
+    {
+        $matching = [];
+        foreach ($this->getActiveSynergies($player) as $entry) {
+            if ($entry['synergy']->getForm() === $form) {
+                $matching[] = $entry['synergy'];
+            }
+        }
+
+        return $matching;
+    }
+
+    /**
+     * Ce qui satisfait **aussi** chaque condition de build (ARC-16b).
+     *
+     * La forme `condition_widening` du canon : *les passifs conditionnes « en
+     * cuir » sont aussi satisfaits par la plaque*. Le service rend la table des
+     * elargissements actifs — c'est `BuildConditionEvaluator` qui decide ensuite
+     * si l'une ou l'autre condition est reellement portee.
+     *
+     * @return array<string, list<string>> condition => ce qui la satisfait aussi
+     */
+    public function conditionWidenings(Player $player): array
+    {
+        $widenings = [];
+        foreach ($this->activeOfForm($player, AccointanceForm::ConditionWidening) as $synergy) {
+            $subject = $synergy->getSubject();
+            $widenedBy = $synergy->getWidenedBy();
+            if ($subject === null || $widenedBy === null) {
+                continue;
+            }
+
+            $widenings[$subject][] = $widenedBy;
+        }
+
+        return $widenings;
+    }
+
+    /**
+     * Les familles de port dont l'echelon 3 coute un barreau de moins (ARC-16b).
+     *
+     * La forme `access_discount` : la remise est **fixe par la regle** (un
+     * barreau sur `SkillCostScale`), le sujet ne nomme que la famille — il n'y a
+     * pas de nombre a lire, et c'est voulu.
+     *
+     * @return list<string>
+     */
+    public function accessDiscountFamilies(Player $player): array
+    {
+        $families = [];
+        foreach ($this->activeOfForm($player, AccointanceForm::AccessDiscount) as $synergy) {
+            $subject = $synergy->getSubject();
+            if ($subject !== null) {
+                $families[] = $subject;
+            }
+        }
+
+        return array_values(array_unique($families));
+    }
+
+    /**
      * @return array<int, int> domainId => totalExperience
      */
     private function buildDomainXpMap(Player $player): array

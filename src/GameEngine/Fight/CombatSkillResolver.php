@@ -8,7 +8,9 @@ use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\Enum\CombatRegister;
 use App\Enum\SpellIntent;
+use App\GameEngine\Progression\BuildConditionEvaluator;
 use App\GameEngine\Progression\CombatLeverScale;
+use App\GameEngine\Progression\SkillCondition;
 use App\GameEngine\Progression\SkillLeverReader;
 use App\GameEngine\Reputation\PatronageBonusResolver;
 use App\GameEngine\Zone\LifeRegenManager;
@@ -25,6 +27,7 @@ class CombatSkillResolver
         private readonly StanceLeverReader $stanceLeverReader,
         private readonly LifeRegenManager $lifeRegen,
         private readonly ManaRegenManager $manaRegen,
+        private readonly BuildConditionEvaluator $buildConditionEvaluator,
     ) {
     }
 
@@ -223,6 +226,24 @@ class CombatSkillResolver
             foreach ($this->leverReader->grantsOf($skill) as $grant) {
                 if (!$applies && $this->leverScale->isBounded($grant->lever)) {
                     continue;
+                }
+
+                // ARC-16b — **une condition de build se verifie enfin.** Un
+                // « +9 % a la dague » parlait a mains nues : la grammaire
+                // d'ARC-12a etait lue, valorisee, affichee — et jamais
+                // confrontee a l'equipement reel. L'evaluateur repond, et les
+                // elargissements d'accointance (`condition_widening`) avec
+                // lui : c'est le meme service, parce qu'un elargissement est
+                // une reponse de plus a la meme question.
+                //
+                // Les conditions de **combat** restent hors de ce filtre —
+                // elles ne se remplissent pas a l'inventaire ; leur lecture en
+                // rencontre est un ecart nomme, tenu par le contrat d'ARC-16b.
+                if ($grant->condition !== null) {
+                    $condition = SkillCondition::parse($grant->condition);
+                    if ($condition->isBuild() && !$this->buildConditionEvaluator->isSatisfied($player, $condition)) {
+                        continue;
+                    }
                 }
 
                 $totals[$grant->lever->value] = ($totals[$grant->lever->value] ?? 0) + $grant->budgetPoints;

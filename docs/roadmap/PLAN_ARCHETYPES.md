@@ -1523,7 +1523,7 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
       *(ARC-15 — 15 tests ; le dépassement est refusé **par construction**, le contrôle de
       plafond s'appliquant au nœud complet)*
 
-### ARC-16 — Les accointances (M → 2 sous-phases | ★★ | MOYENNE) ◐
+### ARC-16 — Les accointances (M → 2 sous-phases | ★★ | MOYENNE) ✅
 > GAME_ARCHETYPES §9.7. **Constat : les synergies livrées sont une fuite de budget.**
 > `DomainSynergy` donne des statistiques plates (`damage +10`, `heal +15`) ajoutées dans
 > `CombatSkillResolver` **hors** des 50 pb, hors des plafonds, hors des palettes.
@@ -1567,10 +1567,42 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 - [x] Tests : aucune accointance ne rend un point de budget, un levier ou une statistique ;
       aucune recette, aucun palier, aucun contenu n'en dépend *(ARC-16a —
       `AccointanceContractTest`)*
-- [ ] **ARC-16b** : les trois formes restantes et leurs lecteurs — `slot_acceptance` (ce qu'un
+- [x] **ARC-16b** : les trois formes restantes et leurs lecteurs — `slot_acceptance` (ce qu'un
       emplacement de matéria accepte), `access_discount` (un échelon de port qui coûte un
       palier de moins) et `condition_widening`, **qui exige d'abord qu'une condition de passif
       soit évaluée quelque part**
+
+> **ARC-16b — livré le 2026-08-19. Les quatre formes ont leur lecteur, ARC-16 est clos.**
+>
+> **L'évaluateur d'abord, parce que tout le reste en dépendait** : `BuildConditionEvaluator`
+> répond enfin à *« ce joueur porte-t-il une dague ? »* — la famille d'une pièce se lit sur
+> l'**échelle de port** (une pièce est de la famille dont elle exige un échelon), jamais dans
+> une table parallèle, la même discipline que le croisement OBJ d'ARC-12b. **Et il corrige un
+> défaut livré** : les 21 passifs conditionnels écrits par ARC-07/08 comptaient *quelle que
+> soit la tenue* — un « +9 % à la dague » parlait à mains nues. `getCombatLevers` ne compte
+> plus une condition de build non portée ; les conditions de **combat** restent hors du
+> filtre, nommément (elles ne se remplissent pas à l'inventaire).
+>
+> **`condition_widening` s'évalue au même endroit** (« Pied sûr » : ce qui demande le cuir se
+> contente de la plaque) — un seul niveau, jamais de chaîne. **`slot_acceptance`** («
+> Liturgie ») s'élargit **après** le refus de `MateriaSlotType`, jamais à sa place : une
+> matéria dont le geste est ouvert par l'une des deux écoles se sertit dans l'emplacement qui
+> l'aurait refusée par son genre — de la souplesse, jamais de la puissance, et le **port**
+> n'est jamais touché. **`access_discount`** (« Fût droit ») remise le **seul échelon 3**,
+> d'un barreau de `SkillCostScale` — la remise est la règle, jamais un nombre en données —,
+> et le refus, la dépense et l'affichage lisent le **même service** (`PortAccessDiscount`) :
+> un coût vérifié à 25 et débité à 50 serait le pire des mensonges. Le respec n'a rien à
+> lire : il remet la dépense à zéro en bloc, et l'activation est **monotone** (l'XP totale ne
+> redescend jamais).
+>
+> **Le sujet entre dans l'entité comme du texte à grammaire fermée** (`subject`/`widenedBy`),
+> refusé à la lecture par `AccointanceRule` — une famille pour la remise, deux conditions de
+> build **de la même ligne** pour l'élargissement (un cuir s'élargit à une plaque, jamais à
+> une épée). Il n'y a toujours **aucun champ où écrire un chiffre**, et le garde-fou
+> d'honnêteté d'ARC-16a se retourne au lieu de disparaître : les quatre formes se lisent, et
+> une cinquième n'entrerait pas sans lecteur. Les trois exemples du canon entrent en
+> fixtures, et le contrat exige que **chaque forme soit exercée par les données** — trois
+> lecteurs que rien n'exerce seraient aussi inertes qu'avant, en silence.
 
 ### ARC-17 — Le simulateur d'équilibrage (M → 3 sous-phases | ★★★ | HAUTE) ✅
 > **Découpé (règle 8)** : 17a rend les dégâts subis mesurables, 17b branche la dérivation,

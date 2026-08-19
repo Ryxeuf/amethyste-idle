@@ -12,6 +12,7 @@ use App\GameEngine\Fight\CombatScope;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\GameEngine\Fight\StanceLeverReader;
+use App\GameEngine\Progression\BuildConditionEvaluator;
 use App\GameEngine\Progression\CombatLeverDefinitionLoader;
 use App\GameEngine\Progression\CombatLeverScale;
 use App\GameEngine\Progression\EquipmentPortCatalog;
@@ -127,7 +128,7 @@ class CombatSkillResolverBuildTest extends TestCase
         $buildDomainResolver = $this->createMock(BuildDomainResolver::class);
         $buildDomainResolver->method('isActive')->willReturn($carried);
 
-        return new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale(), $this->stanceReader(), $this->regen(LifeRegenManager::class), $this->regen(ManaRegenManager::class));
+        return new CombatSkillResolver($buildDomainResolver, $equipmentSetResolver, $this->neutralPatronage(), $this->leverReader(), $this->leverScale(), $this->stanceReader(), $this->regen(LifeRegenManager::class), $this->regen(ManaRegenManager::class), $this->alwaysSatisfiedConditions());
     }
 
     private function skill(
@@ -225,5 +226,17 @@ class CombatSkillResolverBuildTest extends TestCase
     private function leverReader(): SkillLeverReader
     {
         return new SkillLeverReader($this->leverScale(), new EquipmentPortCatalog(\dirname(__DIR__, 4)));
+    }
+
+    /**
+     * ARC-16b : les tests de bornage ne parlent pas d'equipement — toute
+     * condition de build y est reputee portee.
+     */
+    private function alwaysSatisfiedConditions(): BuildConditionEvaluator
+    {
+        $evaluator = $this->createMock(BuildConditionEvaluator::class);
+        $evaluator->method('isSatisfied')->willReturn(true);
+
+        return $evaluator;
     }
 }
