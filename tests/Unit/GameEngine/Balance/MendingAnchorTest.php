@@ -118,18 +118,46 @@ class MendingAnchorTest extends TestCase
     }
 
     /**
-     * **Aucun soin ne lit encore l'ancre, et c'est voulu** — ARC-20a mesure,
-     * ARC-20c deplacera.
+     * La valeur totale d'un depot derive du palier et de la duree — et de la
+     * meme constante que le par-tour, jamais d'un chiffre recopie.
      */
-    public function testNothingReadsTheAnchorYet(): void
+    public function testADepositTotalIsItsPerTurnSpreadOverItsDuration(): void
     {
-        $source = file_get_contents(\dirname(__DIR__, 4) . '/src/GameEngine/Fight/SpellApplicator.php');
-        self::assertIsString($source);
+        self::assertSame(MendingAnchor::depositPerTurnFor(2) * 3, MendingAnchor::depositTotalFor(2, 3));
+        self::assertSame(MendingAnchor::depositPerTurnFor(4) * 4, MendingAnchor::depositTotalFor(4, 4));
+        // Une duree nulle ne rend pas un depot gratuit : le plancher est 1,
+        // la loi du depot (MIN_DURATION = 2) fait le reste chez elle.
+        self::assertSame(MendingAnchor::depositPerTurnFor(1), MendingAnchor::depositTotalFor(1, 0));
+    }
 
-        self::assertStringNotContainsString(
+    /**
+     * **L'ancre a ses lecteurs, et c'est le livrable d'ARC-20c-b** — le
+     * garde-fou d'ARC-20a est retourne, pas supprime (la meme discipline
+     * qu'ARC-17b et ARC-20b-a) : il verifiait que personne ne lisait la loi
+     * tant qu'on mesurait ; il verifie desormais que les deux lecteurs prevus
+     * la lisent vraiment. *Une classe nommee n'est pas une classe lue.*.
+     *
+     * Les deux lecteurs, et pourquoi deux : le soin **direct** vit dans la
+     * donnee (la grille s'applique a la lecture des fixtures), le **depot** se
+     * derive au lancer (`SpellApplicator`) parce que la fiche de statut est
+     * partagee entre paliers — la meme raison qui a fait `MonsterDamageLaw`.
+     */
+    public function testTheAnchorNowHasItsTwoReaders(): void
+    {
+        $applicator = file_get_contents(\dirname(__DIR__, 4) . '/src/GameEngine/Fight/SpellApplicator.php');
+        self::assertIsString($applicator);
+        self::assertStringContainsString(
             'MendingAnchor',
-            $source,
-            'Le combat lit deja l\'ancre : ARC-20a ne devait deplacer aucune valeur de jeu.',
+            $applicator,
+            'Le depot ne derive plus du palier du geste : la Maree et la Grande Maree redeviennent la meme provision.',
+        );
+
+        $fixtures = file_get_contents(\dirname(__DIR__, 4) . '/src/DataFixtures/SpellFixtures.php');
+        self::assertIsString($fixtures);
+        self::assertStringContainsString(
+            'MendingAnchor',
+            $fixtures,
+            'Le soin direct ne derive plus de la grille : les valeurs redeviennent des dosages a la main.',
         );
     }
 }

@@ -13,6 +13,7 @@ use App\Enum\Element;
 use App\Enum\SpellScope;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
+use App\GameEngine\Balance\MendingAnchor;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
@@ -277,7 +278,7 @@ class SpellApplicator
                         ? $this->alliesOf($fight, $sender)
                         : [$target];
 
-                    $total = $this->depositedValue($statusEffect);
+                    $total = $this->depositedValue($statusEffect, $spell);
                     $deposited = $this->statusEffectManager->deposit($fight, $allies, $statusEffect, $total, $aimedLevers);
 
                     if ($deposited > 0) {
@@ -431,18 +432,24 @@ class SpellApplicator
     /**
      * La valeur **totale** que ce depot vaut, avant etalement.
      *
-     * Elle vient de la fiche de l'effet : `healPerTurn` (ou `damagePerTurn`)
-     * multiplie par la duree declaree, c'est-a-dire ce que l'effet rendait
-     * deja sur toute sa vie. C'est ce qui fait qu'**aucune valeur de jeu ne
-     * bouge** : le depot rend le meme total qu'avant, il le rend seulement
-     * selon la duree opposable plutot que selon la duree declaree.
+     * **Un depot de soin vaut le palier du geste qui le pose** (ARC-20c-b,
+     * `MendingAnchor`) : la fiche de l'effet est **partagee** — la meme
+     * `regeneration` sert des gestes de paliers differents —, donc lire son
+     * `healPerTurn` donnerait la meme provision a la Maree (palier 2) et a la
+     * Grande Maree (palier 4). C'est le defaut des gestes partages de monstre,
+     * transpose aux soins, et la meme reponse : *la valeur vit sur le geste,
+     * jamais sur la fiche commune*.
+     *
+     * Les depots de **degats** (DOT hostiles) gardent la lecture de fiche :
+     * leur recalibration appartient a ARC-05c, et les melanger ici deplacerait
+     * des valeurs que ce jalon ne mesure pas.
      */
-    private function depositedValue(StatusEffect $effect): int
+    private function depositedValue(StatusEffect $effect, Spell $spell): int
     {
-        $perTurn = $effect->isHealing()
-            ? (int) $effect->getHealPerTurn()
-            : (int) $effect->getDamagePerTurn();
+        if ($effect->isHealing()) {
+            return MendingAnchor::depositTotalFor($spell->getLevel(), $effect->getDuration());
+        }
 
-        return $perTurn * max(1, $effect->getDuration());
+        return (int) $effect->getDamagePerTurn() * max(1, $effect->getDuration());
     }
 }

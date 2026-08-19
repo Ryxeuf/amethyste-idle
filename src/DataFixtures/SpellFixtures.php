@@ -7,6 +7,8 @@ use App\Enum\CombatRegister;
 use App\Enum\Element;
 use App\Enum\SpellIntent;
 use App\Enum\SpellScope;
+use App\GameEngine\Balance\MendingAnchor;
+use App\GameEngine\Fight\SpellIntentDeriver;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -22,7 +24,7 @@ class SpellFixtures extends Fixture
             $spell->setSlug($data['slug']);
             $spell->setDamage($data['damage']);
             $spell->setElement($data['element']);
-            $spell->setHeal($data['heal']);
+            $spell->setHeal($this->mendingGridHeal($data));
             $spell->setName($data['name']);
             $spell->setDescription($data['description']);
             $spell->setHit($data['hit'] ?? 90);
@@ -52,6 +54,51 @@ class SpellFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    /**
+     * La grille des soins, appliquee a la lecture (ARC-20c-b).
+     *
+     * ARC-20a a pose l'ancre (`MendingAnchor`) et mesure l'ecart — les soins
+     * livres valaient 1 a 12 points sur une barre qui va de 96 a 880. Cette
+     * methode **applique** la grille, et elle le fait en derivation plutot
+     * qu'en reecrivant 60 valeurs a la main : *un dosage ne se calibre pas, il
+     * se re-dose* (ARC-06a), une derivation ne peut pas diverger.
+     *
+     * Trois cas, et chacun est une regle du canon :
+     *
+     * - **un geste dont l'intention est le soin** rend le quart de la barre de
+     *   son palier (`directHealFor`) — *le direct est l'urgence* (§ 7 bis) ;
+     * - **une provision de groupe n'a pas de composante directe** : sa valeur
+     *   est le depot, derive au lancer du palier du geste
+     *   (`SpellApplicator::depositedValue`). Le petit soin direct qu'elle
+     *   portait en plus etait un vestige — un geste ne fait pas l'urgence et
+     *   la provision a la fois ;
+     * - **un geste qui blesse et rend un peu de vie n'est pas un soin**
+     *   (l'ordre des questions d'ARC-11a : le degat d'abord) : les drains et
+     *   les ripostes gardent leur restitution telle quelle, sa recalibration
+     *   appartient a ARC-05c.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function mendingGridHeal(array $data): ?int
+    {
+        $heal = $data['heal'];
+        if ($heal === null || $heal <= 0) {
+            return $heal;
+        }
+
+        $intent = $data['intent']
+            ?? SpellIntentDeriver::deriveIntent($data['damage'], $heal, null);
+        if ($intent !== SpellIntent::Heal) {
+            return $heal;
+        }
+
+        if (($data['scope'] ?? null) === SpellScope::Group) {
+            return 0;
+        }
+
+        return MendingAnchor::directHealFor($data['level'] ?? 1);
     }
 
     /**
@@ -2601,7 +2648,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Soin majeur',
                 'description' => 'Une puissante potion qui restaure une grande quantité de points de vie',
                 'hit' => 100,
-                'level' => 1,
+                // ARC-20c-b : la potion majeure est le barreau 3 de l'echelle —
+                // le niveau porte le palier, la grille derive le soin.
+                'level' => 3,
             ],
             'antidote_heal' => [
                 'slug' => 'antidote-heal',
@@ -2653,7 +2702,22 @@ class SpellFixtures extends Fixture
                 'name' => 'Soin modéré',
                 'description' => 'Restaure une quantité modérée de points de vie',
                 'hit' => 100,
-                'level' => 1,
+                // ARC-20c-b : le barreau 2 de l'echelle de potions.
+                'level' => 2,
+            ],
+            // ARC-20c-b : le barreau 4. L'alchimiste a un produit a chaque
+            // palier au lieu d'un seul qui se perime — l'obsolescence est une
+            // fonctionnalite, l'echelle est la reponse (comme les outils
+            // d'OBJ-06).
+            'potion_heal_supreme_spell' => [
+                'slug' => 'potion-heal-supreme',
+                'damage' => null,
+                'element' => Element::None,
+                'heal' => 1,
+                'name' => 'Soin suprême',
+                'description' => 'Restaure une très grande quantité de points de vie',
+                'hit' => 100,
+                'level' => 4,
             ],
             'poison_vial_spell' => [
                 'slug' => 'poison-vial',

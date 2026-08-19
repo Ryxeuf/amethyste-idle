@@ -6831,7 +6831,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'alchi-grand-potions',
                 'title' => 'Grandes potions',
                 'description' => 'Permet de brasser des potions de grande puissance',
-                'actions' => [['action' => 'equip.tool', 'slugs' => ['mortar-mithril']], ['action' => 'craft', 'recipes' => ['recipe-elixir-vitality']]],
+                // ARC-20c-b : la potion supreme est le barreau 4 de l'echelle —
+                // elle s'apprend la ou les grandes potions s'apprennent deja.
+                'actions' => [['action' => 'equip.tool', 'slugs' => ['mortar-mithril']], ['action' => 'craft', 'recipes' => ['recipe-elixir-vitality', 'recipe-healing-supreme']]],
                 'requiredPoints' => 60,
                 'domain' => $d,
                 'requirements' => ['alchi_health_pot_3', 'alchi_buff_pot'],

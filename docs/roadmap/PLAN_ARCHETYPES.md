@@ -2374,12 +2374,35 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       aucun levier, couverture des 24 arbres en **cliquet**, plancher inconditionnel,
       aucune source indexée sur le nombre d'arbres appris)
 
-#### ARC-20c — Les cascades (M) ◐ → 2 sous-phases
+#### ARC-20c — Les cascades (M) ✅ → 2 sous-phases
 
 > **ARC-20c-a — livré le 2026-08-18** : les deux cascades que le plan désigne comme
-> débloquantes — la régénération proportionnelle et le simulateur qui lit la loi. Restent
-> **ARC-20c-b** : la grille des soins (`MendingAnchor`), l'échelle de potions par palier, et
-> l'arbitrage de `Item::protection`.
+> débloquantes — la régénération proportionnelle et le simulateur qui lit la loi.
+>
+> **ARC-20c-b — livré le 2026-08-19 : la grille des soins, l'échelle de potions, et
+> `Item::protection` tranché.** La grille s'applique **en dérivation, jamais en réécrivant
+> 60 valeurs à la main** : le soin direct vit dans la donnée (la grille s'applique à la
+> lecture des fixtures — un geste dont l'intention est le soin rend le quart de la barre de
+> son palier), le **dépôt se dérive au lancer** (`SpellApplicator`), parce que la fiche de
+> statut est **partagée entre paliers** — la même `regeneration` sert la Marée (palier 2)
+> et la Grande Marée (palier 4), le défaut des gestes partagés de monstre transposé aux
+> soins, et la même réponse que `MonsterDamageLaw` : *la valeur vit sur le geste, jamais
+> sur la fiche commune*. **Une provision de groupe n'a plus de composante directe** (le
+> petit soin direct qu'elle portait était un vestige — *un geste ne fait pas l'urgence et
+> la provision à la fois*, § 7 bis), et **les drains gardent leur restitution** : un geste
+> qui blesse et rend un peu de vie n'est pas un soin (l'ordre des questions d'ARC-11a), sa
+> recalibration appartient à ARC-05c. **L'échelle de potions couvre les quatre paliers**
+> (la suprême est créée, avec sa recette au nœud « Grandes potions » — l'alchimiste a un
+> produit à chaque palier au lieu d'un seul qui se périme, comme les paliers d'outil
+> d'OBJ-06). **`Item::protection` est tranché : on le branche**, et c'est ARC-19 qui le
+> branche — la mitigation d'armure est la moitié que GAME_VITALITY § 9 lui renvoie, et
+> retirer la colonne aurait supprimé le seul véhicule que cette moitié possède ; un test
+> (`ItemProtectionDecisionTest`) tient l'état présent en cliquet sur les **trois** chemins
+> où le dégât se calcule (la leçon d'ARC-17b : brancher à moitié serait pire que ne pas
+> brancher), et ARC-19 le retournera. Le garde-fou d'ARC-20a est **retourné une seconde
+> fois** : il vérifie désormais que les deux lecteurs prévus lisent vraiment l'ancre.
+> L'invariant 10 de GAME_VITALITY § 8 entre en CI (`MendingGridContractTest`) ; le 12
+> attend la mitigation d'ARC-19.
 >
 > **Le simulateur mesure enfin des dégâts subis**, et c'était l'objet du jalon : il partait de
 > `PlayerFactory::BASE_LIFE`, c'est-à-dire **20 PV à tous les paliers**, quand une élite de
@@ -2404,20 +2427,20 @@ statique : il compte et détecte des anomalies, il ne joue pas de combat).
       **12 secondes par point, en absolu** : le retour à pleine vie passe de 19 min au
       palier 1 à **2 h 56** au palier 4, et l'ancre en minutes d'attente de `DailyAnchor`
       explose. Invariant : *le temps de retour à plein ne dépend pas du palier*
-- [ ] **La grille des soins appliquée** — sorts de soin et potions sur `MendingAnchor`.
+- [x] **La grille des soins appliquée** — sorts de soin et potions sur `MendingAnchor`.
       **L'obsolescence est une fonctionnalité** (un soin de palier 1 rend 2,7 % d'une barre
       de palier 4) ; la seule chose à garantir est le **plancher du jour 1** : l'accord
       d'entrée gratuit ouvre un soin de **son** palier, jamais un soin figé au palier 1
-- [ ] **Effet de bord à encaisser, pas à corriger** : les potions deviennent une échelle de
+- [x] **Effet de bord à encaisser, pas à corriger** : les potions deviennent une échelle de
       paliers comme les outils (OBJ-06). L'alchimiste a un produit **à chaque palier** au
       lieu d'un seul qui se périme — du contenu économique gratuit pour MET et ECO
-- [ ] **Trancher `Item::protection`** : lu par `EquipmentSetResolver`, affiché sur la fiche
+- [x] **Trancher `Item::protection`** : lu par `EquipmentSetResolver`, affiché sur la fiche
       d'inventaire, **et par aucune formule de combat**. Le brancher comme mitigation
       (ARC-19) ou le retirer — *un chiffre affiché sans effet est un mensonge d'interface*
 - [x] **`ReferenceCharacterFactory::maxLifeOf()` lit la loi** et non `BASE_LIFE` : c'est ce
       qui rend les cinq seuils d'ARC-17 mesurables, et la raison pour laquelle ce jalon
       passe **avant** la suite d'ARC-17 et **avant** ARC-19
-- [ ] Tests : les invariants 7 à 10 et 12 de GAME_VITALITY §8 (la part qu'un commun retire,
+- [x] Tests : les invariants 7 à 10 et 12 de GAME_VITALITY §8 (la part qu'un commun retire,
       l'élite mortelle en solo, le temps de retour constant, la part qu'un soin rend, et
       **plus de la moitié de l'écart de PV effectifs vient de l'armure** — la décision 21
       du canon, enfin mesurable)

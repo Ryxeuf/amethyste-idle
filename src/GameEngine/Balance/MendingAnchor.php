@@ -65,6 +65,22 @@ final class MendingAnchor
     }
 
     /**
+     * La valeur **totale** d'un depot de soin de ce palier, sur cette duree
+     * (ARC-20c-b).
+     *
+     * *La duree etale la valeur, elle ne l'augmente pas* — mais la valeur par
+     * tour, elle, est fixee par le **palier du geste** et jamais par la fiche
+     * de l'effet : les statuts sont **partages** (la meme `regeneration` sert
+     * des gestes de paliers differents), exactement comme les gestes des
+     * monstres etaient partages avant `MonsterDamageLaw`. *Un joueur porte son
+     * soin dans le palier de sa materia, pas dans une fiche commune.*
+     */
+    public static function depositTotalFor(int $tier, int $duration): int
+    {
+        return self::depositPerTurnFor($tier) * max(1, $duration);
+    }
+
+    /**
      * La part de barre que ce soin rend reellement, a ce palier.
      *
      * C'est par elle que se lit l'obsolescence : un soin garde sa valeur en

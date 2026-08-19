@@ -879,6 +879,25 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Prépare une puissante potion de soin à base de mandragore.',
                 'name_translations' => ['en' => 'Major Healing Potion'],
             ],
+            // ARC-20c-b : le barreau 4 de l'echelle de potions. L'alchimiste
+            // a un produit a chaque palier au lieu d'un seul qui se perime.
+            'recipe_healing_supreme' => [
+                'name' => 'Potion de soin suprême',
+                'slug' => 'recipe-healing-supreme',
+                'craft' => 'alchimiste',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-potion-base', 'quantity' => 2],
+                    ['slug' => 'plant-mandrake', 'quantity' => 1],
+                    ['slug' => 'plant-phoenixflower', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                ],
+                'result_ref' => 'healing_potion_supreme',
+                'crafting_time' => 14,
+                'xp_reward' => 50,
+                'description' => 'Distille une potion de soin du dernier palier, à la fleur de phénix.',
+                'name_translations' => ['en' => 'Supreme Healing Potion'],
+            ],
             'recipe_elixir_vitality' => [
                 'name' => 'Élixir de vitalité',
                 'slug' => 'recipe-elixir-vitality',

@@ -11,6 +11,7 @@ use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
 use App\Enum\MateriaSlotType;
+use App\GameEngine\Balance\MendingAnchor;
 use App\GameEngine\Economy\ResourceAffinityCatalog;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -355,7 +356,10 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 50,
                 'space' => 1,
                 'energy_cost' => 0,
-                'effect' => '{"action":"heal", "amount":20}',
+                // ARC-20c-b : le montant derive de l'ancre des soins — ecrire
+                // « 24 » ici serait recopier la grille, et une regle recopiee
+                // derive de son original en silence.
+                'effect' => json_encode(['action' => 'heal', 'amount' => MendingAnchor::directHealFor(1)]),
                 'nb_usages' => 1,
             ],
             'healing_potion_medium' => [
@@ -402,6 +406,24 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'effect' => '{"action":"use_spell", "slug":"potion-heal-major"}',
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Uncommon,
+            ],
+            // ARC-20c-b : le barreau 4 de l'echelle. L'alchimiste a un
+            // produit a chaque palier au lieu d'un seul qui se perime — du
+            // contenu economique gratuit pour MET et ECO, comme les paliers
+            // d'outil d'OBJ-06.
+            'healing_potion_supreme' => [
+                'name' => 'Potion de soin suprême',
+                'name_translations' => ['en' => 'Supreme Healing Potion'],
+                'description' => 'Restaure une très grande quantité de points de vie',
+                'type' => 'stuff',
+                'slug' => 'healing-potion-supreme',
+                'price' => 640,
+                'space' => 1,
+                'energy_cost' => 0,
+                'spell' => 'potion_heal_supreme_spell',
+                'effect' => '{"action":"use_spell", "slug":"potion-heal-supreme"}',
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Rare,
             ],
             'antidote' => [
                 'name' => 'Antidote',
