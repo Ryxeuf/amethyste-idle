@@ -27,6 +27,29 @@
 daily_readings_per_player: 5
 
 # =============================================================================
+# Le seuil de deblocage (REP-03)
+# =============================================================================
+# BALANCE § 22.5, la mecanique de la Crue : **on mesure la charge, pas les
+# tetes**. Le seuil s'indexe sur la population *effective* — l'energie
+# reellement depensee —, ce qui l'immunise contre le multi-compte : dix comptes
+# qui ne jouent pas ne rendent pas le Repertoire plus dur.
+#
+# **Un petit serveur retrouve aussi, a son rythme.** C'est la raison d'etre de
+# l'indexation : un seuil fixe ferait qu'un serveur de trois cents joueurs
+# epuiserait le bassin en une semaine et qu'un serveur de dix ne retrouverait
+# jamais rien. Proportionnel, les deux avancent au meme rythme relatif — ce
+# qu'ils ne partagent pas, c'est **l'ordre**, et c'est tout l'objet du chantier.
+unlock:
+    # Lectures qu'il faut, par joueur effectif, pour un cran de seuil.
+    per_effective_player: 12
+
+    # Le plancher, pour un monde qui demarre ou qui dort. Sans lui, un serveur a
+    # population quasi nulle aurait un seuil quasi nul, et retrouverait tout le
+    # bassin sur quelques lectures — l'inverse exact de ce que l'indexation
+    # cherche a produire.
+    floor: 40
+
+# =============================================================================
 # Le bassin des gestes retrouves (REP-02)
 # =============================================================================
 # GAME_WORLD § 12.3 b, regle 1 : **un seul bassin, ecrit une fois**. Le contenu

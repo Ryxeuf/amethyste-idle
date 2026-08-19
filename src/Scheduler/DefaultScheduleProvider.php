@@ -111,6 +111,13 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 // foyers s'amincissent ensuite. L'inverse ferait redescendre un
                 // foyer juste avant que la saison ne compte ce qu'il valait.
                 RecurringMessage::cron('7 0 * * *', new RunCommandMessage('app:settlement:tick')),
+
+                // Repertoire : le monde retrouve ce que ses lectures lui ont
+                // merite (REP-03). **Apres** le tick des foyers, parce que deux
+                // des trois conditions rares se lisent sur eux — une Metropole
+                // ou une doctrine adoptee dans la journee doit compter le jour
+                // meme, pas le lendemain.
+                RecurringMessage::cron('9 0 * * *', new RunCommandMessage('app:repertoire:unlock')),
                 // GilsSupply : relève la masse monétaire (ECO-15).
                 // Après le tick de saison : les récompenses de clôture doivent
                 // être versées avant qu'on compte, sinon la masse du jour saute
