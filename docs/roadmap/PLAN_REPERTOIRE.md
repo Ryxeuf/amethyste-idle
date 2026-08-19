@@ -21,7 +21,7 @@
 |------|----------|--------|-------------|
 | REP-01 ✅ | Les lectures contextées (le savoir du serveur) | S | ← FAC-04b (le crochet existe) |
 | REP-02 ✅ | Le bassin des gestes retrouvés (contenu tagué) | M | ∅ (données pures) |
-| REP-03 | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
+| REP-03 ✅ | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
 | REP-04 | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
 | REP-05 | La restitution : le Scriptorium & le journal | S | ← REP-03 ; converge FAC-09c |
 | REP-06 | Tests du plan | S | ‖ |
@@ -133,20 +133,53 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
 > La part rare est bornée **des deux côtés** : sans condition rare, le bassin est une liste que
 > tout le monde épuise ; avec trop, la plupart des serveurs ne retrouvent presque rien.
 
-### REP-03 — Seuils, dominantes & déblocage orienté (M | ★★★ | HAUTE)
+### REP-03 ✅ — Seuils, dominantes & déblocage orienté (M | ★★★ | HAUTE) — livré le 2026-08-19
 > La nuance actée : ce qu'un serveur lit est ce dont il se souvient. Le déblocage est
 > tiré du bassin **selon la dominante des lectures** — deux serveurs d'un an n'ont pas
 > le même Répertoire parce qu'ils n'ont pas vécu pareil.
-> Prérequis : ← REP-01, REP-02
-- [ ] Seuils de déblocage **indexés sur la population effective** (BALANCE §22.5 —
-      même mécanique que la Crue : un petit serveur retrouve aussi, à son rythme)
-- [ ] Au franchissement : tirage dans le bassin **filtré par la dominante** de
-      l'agrégat (élément, puis provenance, puis lieu en départage) ; les gestes à
-      condition rare exigent leur condition en plus
-- [ ] Annonce au journal de monde (« le serveur a retrouvé le geste de… ») — canon
-- [ ] Le déblocage est **cumulatif et sans retrait** : un geste retrouvé ne se
-      re-perd jamais (le savoir n'est jamais borné)
-- [ ] Tests : seuil indexé, tirage par dominante, condition rare, idempotence
+> Prérequis : ← REP-01 ✅, REP-02 ✅
+- [x] Seuil **indexé sur la population effective** (`WorldLoadService`, la mécanique de la
+      Crue), avec un plancher, et le n-ième geste coûtant n crans
+- [x] Au franchissement : choix **déterministe** dans le bassin, l'élément bornant et la
+      provenance puis le lieu départageant ; les conditions rares évaluées en plus
+- [x] Annonce au journal de monde (`WorldFactService`, idempotente par slug)
+- [x] **Cumulatif et sans retrait** : `RepertoireGesture` n'a aucune colonne pour reprendre
+- [x] Commande `app:repertoire:unlock` au calendrier, après le tick des foyers
+- [x] Tests : plancher, rampe, dominante bornante, départage, condition rare ignorée,
+      idempotence, et **la boucle entière** (seuil franchi → geste → journal → relance nulle)
+
+> **Livré (2026-08-19).** **Le tirage n'en est pas un, et c'est la décision du jalon.** Le
+> canon dit « tiré du bassin », et il aurait été facile de mettre un jet là. C'est refusé :
+> *un tirage au sort ferait du souvenir une loterie*, quand toute la thèse du système est que
+> ce qu'un monde retrouve se lit depuis ce qu'il a vécu. Le choix est **déterministe** — même
+> histoire de lectures, même geste —, et c'est précisément ce qui permet à un serveur de faire
+> campagne (« cette marée, lisez du feu ») en sachant ce qu'il obtient. Le canon appelle cela
+> de la politique, et la qualifie explicitement de légitime.
+>
+> **L'élément borne, il ne classe pas.** Un monde qui n'a lu que du feu ne retrouve pas « le
+> geste d'eau le mieux classé » : il ne retrouve **aucun** geste d'eau. La provenance puis le
+> lieu départagent ce qui reste. Les traiter à égalité ferait qu'un serveur lisant du feu
+> partout et de l'eau aux Mines retrouverait un geste d'eau parce que « Mines » l'emporte — et
+> *ce qu'il a lu ne serait plus ce dont il se souvient*.
+>
+> **Le seuil s'indexe sur la charge, pas sur les têtes** (BALANCE §22.5) : dix comptes qui ne
+> jouent pas ne rendent pas le Répertoire plus dur. Un plancher évite l'inverse — un monde
+> naissant, à population quasi nulle, aurait un seuil quasi nul et viderait le bassin en
+> quelques lectures.
+>
+> **La commande rattrape son retard.** Elle boucle tant que le seuil est franchi : la règle du
+> planificateur est que *rien n'est rejoué*, donc un déclenchement manqué pendant un
+> redémarrage n'est pas rattrapé — mais le suivant doit rendre tout ce qui était dû, sinon une
+> panne du worker priverait le serveur de gestes qu'il a mérités.
+>
+> **Un seuil franchi sans candidat ne se consomme pas.** Si les gestes restants portent des
+> conditions que le monde ne remplit pas, on ne retire rien : le seuil retombera le jour où la
+> condition sera remplie. C'est la doctrine du sédiment de la Crue — *une attente ne coûte
+> rien*.
+>
+> Les trois conditions rares que REP-02 avait déclarées sans les évaluer ont leur évaluateur.
+> Le catalogue les refuse à la lecture, l'évaluateur **lève** sur une inconnue plutôt que de
+> rendre `false` : rendre `false` rendrait son geste inatteignable en silence.
 
 ## Piste B — Le geste d'éveil
 

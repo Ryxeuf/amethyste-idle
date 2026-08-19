@@ -42,6 +42,9 @@ class RepertoireCatalog
      */
     private ?array $gestures = null;
 
+    /** @var array{per_effective_player: int, floor: int}|null */
+    private ?array $unlock = null;
+
     public function __construct(
         private readonly string $projectDir,
     ) {
@@ -205,6 +208,48 @@ class RepertoireCatalog
         }
 
         return \is_array($raw) ? $raw : [];
+    }
+
+    /**
+     * Le seuil de deblocage, indexe sur la population effective (REP-03).
+     *
+     * @return array{per_effective_player: int, floor: int}
+     */
+    public function unlockThresholds(): array
+    {
+        if ($this->unlock === null) {
+            $this->unlock = $this->normalizeUnlock($this->raw($this->defaultFile()), $this->defaultFile());
+        }
+
+        return $this->unlock;
+    }
+
+    /**
+     * @param array<array-key, mixed> $raw
+     *
+     * @return array{per_effective_player: int, floor: int}
+     */
+    public function normalizeUnlock(array $raw, string $source = '<array>'): array
+    {
+        $unlock = $raw['unlock'] ?? null;
+        if (!\is_array($unlock)) {
+            throw new RepertoireDefinitionException(sprintf('"%s" must declare an "unlock" block.', $source));
+        }
+
+        $values = [];
+        foreach (['per_effective_player', 'floor'] as $field) {
+            $value = $unlock[$field] ?? null;
+            // Zero est refuse autant qu'une absence, et pour la meme raison :
+            // un seuil nul rendrait tout le bassin d'un coup, le jour ou la
+            // premiere lecture tombe. Le defaut serait spectaculaire et
+            // irrattrapable — un geste retrouve ne se re-perd jamais.
+            if (!\is_int($value) || $value <= 0) {
+                throw new RepertoireDefinitionException(sprintf('"%s" needs a positive "unlock.%s".', $source, $field));
+            }
+            $values[$field] = $value;
+        }
+
+        return ['per_effective_player' => $values['per_effective_player'], 'floor' => $values['floor']];
     }
 
     /**
