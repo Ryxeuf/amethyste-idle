@@ -7,8 +7,8 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Enum\ConsequenceTide;
 use App\Enum\SettlementRank;
-use App\GameEngine\Season\ConsequenceTideDefinitionLoader;
 use App\GameEngine\Season\ConsequenceTideSelector;
+use App\GameEngine\Season\TideDefinitionLoader;
 use App\GameEngine\Settlement\CrueQuotaService;
 use App\GameEngine\Settlement\SettlementDefinitionLoader;
 use App\Repository\ZoneVeinRepository;
@@ -199,7 +199,7 @@ class ConsequenceTideSelectorTest extends TestCase
             'dulls_purity_from' => 0.30,
         ]]);
 
-        $loader = $this->createMock(ConsequenceTideDefinitionLoader::class);
+        $loader = $this->createMock(TideDefinitionLoader::class);
         $loader->method('load')->willReturn(['paleness_threshold' => 6, 'tides' => []]);
 
         $parameter ??= (new Parameter())

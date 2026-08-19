@@ -72,7 +72,7 @@ services:
 
     # FOY-15 : marees consequence. Seuils **et** composition des quatre beats
     # sont de la donnee — ajouter une maree declenchee, c'est ajouter un bloc.
-    App\GameEngine\Season\ConsequenceTideDefinitionLoader:
+    App\GameEngine\Season\TideDefinitionLoader:
         arguments:
             $projectDir: '%kernel.project_dir%'
 

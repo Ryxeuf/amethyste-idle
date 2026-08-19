@@ -7,6 +7,6 @@ namespace App\GameEngine\Season;
  * jamais a l'usage : un fichier mal ecrit doit echouer au demarrage, pas se
  * decouvrir sur un arc de saison six semaines plus tard.
  */
-class ConsequenceTideDefinitionException extends \RuntimeException
+class TideDefinitionException extends \RuntimeException
 {
 }

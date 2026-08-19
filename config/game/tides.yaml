@@ -1,0 +1,308 @@
+# =============================================================================
+# La partition des marees — trois voix, un seul fichier (NAR-15)
+# =============================================================================
+# Conception : docs/GAME_SEASONS.md § 0 a § 3, docs/GAME_WORLD.md § 8.
+#
+# GAME_SEASONS § 0 : l'an 1 n'est pas un calendrier de treize episodes, c'est une
+# **partition a trois voix**, et l'ordre de priorite en est la regle :
+#
+#     consequence declenchee  >  colonne vertebrale datee  >  rotation
+#
+# Les trois vivent ici, et c'est deliberé. Le plan (NAR-15) mettait en garde
+# contre « un second selecteur concurrent de celui que FOY-15 a pose » ; la
+# reponse est plus simple qu'une cohabitation : **une partition se lit d'un seul
+# endroit**. Un fichier, un chargeur, un selecteur — et chaque voix garde son
+# propre service pour repondre a sa propre question.
+#
+# Regle du fichier, la meme que `settlements.yaml` : les seuils, les creneaux et
+# la composition des quatre beats sont des **donnees**. Ajouter une maree, c'est
+# ajouter un bloc — jamais une branche de code.
+#
+# Les fenetres de beat sont exprimees en jours depuis l'ouverture de la maree.
+# Elles doivent etre contiguës et tenir dans les 28 jours (convention NAR-08,
+# `SeasonArcFixtures`) ; le chargeur refuse le contraire.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Voix 1 — la colonne vertebrale (GAME_SEASONS § 1)
+# -----------------------------------------------------------------------------
+# Cinq marees canon a date a peu pres fixe : elles portent l'histoire du serveur.
+# Ce bloc ne les **ecrit** pas, il les **reserve** — et c'est toute sa fonction a
+# ce jalon.
+#
+# Sans lui, une rotation ou une consequence prendrait le creneau M2, et « La
+# Premiere Pierre » n'arriverait jamais : le code ne connaissait aucun de ces
+# creneaux. Une colonne vertebrale reserve, elle n'improvise pas ; le contenu de
+# chaque maree canon arrive avec son jalon (NAR-16 a NAR-19), et tant qu'il n'est
+# pas la, le creneau reste **vide plutot que pris**.
+#
+# `season` est le numero de saison (`InfluenceSeason::seasonNumber`). M1 est
+# livree en fixtures (`SeasonArcFixtures`) et ne se reserve donc pas.
+canon:
+    2:  { theme: 'La Première Pierre', milestone: 'NAR-16' }
+    4:  { theme: 'Le Procès de la Fonderie', milestone: 'NAR-17' }
+    8:  { theme: 'La Marée Basse', milestone: 'NAR-18' }
+    13: { theme: 'Le Grand Inventaire', milestone: 'NAR-18' }
+
+# -----------------------------------------------------------------------------
+# Voix 2 — la rotation (GAME_SEASONS § 2)
+# -----------------------------------------------------------------------------
+# Les creneaux libres tirent un gabarit rejouable. La regle de tirage n'est pas un
+# hasard : **le monde prescrit ce qui lui manque** — on joue le gabarit qui nourrit
+# l'indice de sediment mondial le plus faible (la somme par indice sur tous les
+# foyers). Un serveur de guerriers verra venir des foires, un serveur de marchands
+# des battues. C'est l'indice decroissant d'EVE applique au calendrier.
+#
+# `feeds` liste les indices qu'un gabarit nourrit ; le score d'un gabarit est le
+# **plus bas** des indices qu'il nourrit, ce qui rend un gabarit a deux indices
+# eligible par l'un ou par l'autre.
+#
+# A egalite, c'est le gabarit **joue il y a le plus longtemps** qui passe — jamais
+# un tirage au sort. Le monde ne joue pas aux des avec sa propre partition, et un
+# hasard rendrait le systeme intestable autant qu'illisible.
+rotation:
+    amber_tide:
+        theme: "La Marée d'Ambre"
+        feeds: [lore]
+        beats:
+            - beat: amorce
+              order: 1
+              name: "La Marée d'Ambre — Amorce : les Dunes se souviennent"
+              description: "Le sable rend ce qu'il avait pris. Un jour de l'âge précédent affleure aux Dunes d'Ambre, intact et hors du temps."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: "La Marée d'Ambre — Montée : ce qui était conservé se réveille"
+              description: "Les Lecteurs veulent lire, la Fonderie veut fondre, et l'ambre ne suffira pas aux deux. Chacun ramasse en sachant à qui il retire."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "La Marée d'Ambre — Climax : la veille de l'âge"
+              description: "Ce qui dormait dans l'ambre ouvre les yeux. On ne saura qu'après si c'était un souvenir ou un avertissement."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: "La Marée d'Ambre — Résolution : ce que le Codex retient"
+              description: "Le sable se referme. Ce qui a été lu reste au Codex ; ce qui a été fondu ne reviendra pas."
+              start_day: 21
+              end_day: 28
+
+    the_thaw:
+        theme: 'La Fonte'
+        feeds: [lore, rite]
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'La Fonte — Amorce : le Silence se fissure'
+              description: "L'été d'avant le gel remonte. La glace cède par plaques, et des chemins qu'aucun vivant n'a pris rouvrent pour un mois."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: "La Fonte — Montée : ce qui s'était arrêté reprend son geste"
+              description: "Sous la glace, des gestes interrompus finissent leur mouvement. On récolte des herbes que personne n'a vues fleurir."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "La Fonte — Climax : la zone gelée rend ce qu'elle tenait"
+              description: "Le Silence devient exploitable, et il ne le restera pas. Ce qu'on n'aura pas pris ce mois-ci, la glace le reprendra."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: 'La Fonte — Résolution : le gel revient'
+              description: "Les chemins se referment. Restent les cartes de ceux qui les ont parcourus — et elles vaudront cher au prochain dégel."
+              start_day: 21
+              end_day: 28
+
+    the_choir:
+        theme: 'Le Chœur'
+        feeds: [rite]
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'Le Chœur — Amorce : deux veines entrent en phase'
+              description: "Loin l'une de l'autre, deux veines se mettent à battre ensemble. Ceux qui ont l'oreille l'entendent avant de le comprendre."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: 'Le Chœur — Montée : le lieu-dit se laisse repérer'
+              description: "La Forêt des Murmures porte le son. Le point où les deux veines se répondent se trouve — à qui prend le temps de chercher."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: 'Le Chœur — Climax : la synergie poussée à bout'
+              description: "Ce qui se lève au lieu-dit porte deux éléments à la fois. Aucun build ne couvre les deux : il faudra être plusieurs, ou renoncer."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: 'Le Chœur — Résolution : les veines se déphasent'
+              description: "Le battement se défait. Le lieu-dit reste sur les cartes de ceux qui l'ont trouvé, muet jusqu'au prochain accord."
+              start_day: 21
+              end_day: 28
+
+    the_forgery:
+        theme: 'La Contrefaçon'
+        feeds: [trade]
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'La Contrefaçon — Amorce : le marché se trouble'
+              description: "Des matérias trop belles pour leur prix apparaissent partout. Personne ne sait encore que neuf sur dix tiendront parole."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: 'La Contrefaçon — Montée : la première trahison'
+              description: "Une matéria cède en plein combat, puis une autre. Le marché apprend le mot « faussaire », et les prix cessent de vouloir dire quelque chose."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "La Contrefaçon — Climax : remonter à l'atelier"
+              description: "La piste mène aux Ruelles, et les Ruelles ne se laissent pas trouver par ceux qu'elles n'ont jamais vus. Le terrain est l'hôtel des ventes."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: 'La Contrefaçon — Résolution : le marché gris révélé'
+              description: "L'atelier ferme, et ce qui restera n'est pas une punition mais une adresse : le marché gris est désormais connu de ceux qui l'ont cherché."
+              start_day: 21
+              end_day: 28
+
+    the_great_hunt:
+        theme: 'La Grande Battue'
+        feeds: [war]
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'La Grande Battue — Amorce : une faune déborde'
+              description: "Des bêtes d'un autre âge sortent d'une zone et ne s'arrêtent pas à ses limites. Les Chevaliers ouvrent un tableau de primes."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: 'La Grande Battue — Montée : les routes ne sont plus sûres'
+              description: "Voyager coûte ce qu'il faut payer pour passer. Les primes montent avec le danger, et le tableau se remplit de noms."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: 'La Grande Battue — Climax : la tête de la horde'
+              description: "Ce qui menait la débandade se laisse enfin voir. Personne ne le tiendra seul, et le tableau le dit sans le dire."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: 'La Grande Battue — Résolution : les trophées'
+              description: "La zone se referme sur ce qui reste. Le bestiaire garde la trace, et les Chevaliers celle de qui a répondu."
+              start_day: 21
+              end_day: 28
+
+    the_free_fair:
+        theme: 'La Foire Franche'
+        feeds: [trade]
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'La Foire Franche — Amorce : la foire arrive'
+              description: "La grande foire itinérante choisit son foyer et plante ses toiles. Un étal par artisan, et pas un de plus."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: 'La Foire Franche — Montée : la fièvre des prix'
+              description: "Tout se vend, donc tout se surpaye. Ce qui dormait dans les banques ressort, et le marché découvre qu'il a un tempo."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: 'La Foire Franche — Climax : le dernier jour de foire'
+              description: "Les étals ferment demain. Ce qu'on n'aura pas écoulé repartira dans un sac, et ce qu'on n'aura pas acheté ne repassera pas."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: 'La Foire Franche — Résolution : la route reprend'
+              description: "La foire plie et s'en va vers un autre foyer. Elle laisse un goût de ce que seront les caravanes, et des prix qui mettront un mois à redescendre."
+              start_day: 21
+              end_day: 28
+
+# -----------------------------------------------------------------------------
+# Voix 3 — les consequences (GAME_SEASONS § 3)
+# -----------------------------------------------------------------------------
+# Declenchees, jamais datees. Elles preemptent le prochain creneau **libre** ;
+# elles ne bousculent ni une maree deja posee, ni un creneau que la colonne
+# vertebrale a reserve.
+#
+# Nombre de filons pali au-dessus du seuil de visibilite qu'il faut compter en
+# fin de maree pour que la Paleur preempte le creneau suivant.
+#
+# Calibrage : le monde livre compte une trentaine de filons. A 6, il faut qu'un
+# cinquieme d'entre eux porte une trace visible — c'est-a-dire une exploitation
+# organisee sur plusieurs zones, pas une ruee d'un soir sur un filon.
+paleness_threshold: 6
+
+consequences:
+    paleness:
+        theme: 'La Pâleur'
+        beats:
+            - beat: amorce
+              order: 1
+              name: 'La Pâleur — Amorce : les filons se délavent'
+              description: "Les veines rendent moins, et la couleur s'en va. Ce que le mois passé a pris, ce mois-ci le paie."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: 'La Pâleur — Montée : les foyers vacillent'
+              description: "Les ateliers tournent au ralenti. Les guildes comptent ce qu'il en coûterait de restaurer, et ce qu'il en coûterait de ne rien faire."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "La Pâleur — Climax : empêcher la chute"
+              description: "Un foyer est sur le point de perdre un rang. Restaurer les filons, remplir le chantier de la semaine, déposer : tout compte, et rien ne se fait seul."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: "La Pâleur — Résolution : ce que le monde a retenu"
+              description: "Les veines reprennent des couleurs, ou ne les reprennent pas. La chronique garde le nom de ceux qui ont payé."
+              start_day: 21
+              end_day: 28
+
+    crue_call:
+        theme: 'L''Appel de la Crue'
+        beats:
+            - beat: amorce
+              order: 1
+              name: "L'Appel de la Crue — Amorce : une place se libère"
+              description: "Le monde peut porter une grande ville de plus. Les routes s'animent : chacun sait déjà où il ira déposer."
+              start_day: 0
+              end_day: 7
+            - beat: montee
+              order: 2
+              name: "L'Appel de la Crue — Montée : la course commence"
+              description: "Plusieurs foyers visent la même place. Elle ira au plus fréquenté, et à personne d'autre — sans qu'un seul coup soit échangé."
+              start_day: 7
+              end_day: 14
+            - beat: climax
+              order: 3
+              name: "L'Appel de la Crue — Climax : la place se prend"
+              description: "La marée touche à sa fin et le quota se referme sur celui qui aura tenu. Déposer maintenant vaut plus que déposer demain."
+              start_day: 14
+              end_day: 21
+            - beat: resolution
+              order: 4
+              name: "L'Appel de la Crue — Résolution : la ville nouvelle"
+              description: "Une cité de plus se lève, et le monde reprend son souffle. Le journal retient qui l'a bâtie."
+              start_day: 21
+              end_day: 28

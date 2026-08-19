@@ -54,7 +54,7 @@ class ConsequenceTideSelector
         private readonly ZoneVeinRepository $veinRepository,
         private readonly CrueQuotaService $crueQuotaService,
         private readonly SettlementDefinitionLoader $settlementLoader,
-        private readonly ConsequenceTideDefinitionLoader $loader,
+        private readonly TideDefinitionLoader $loader,
     ) {
     }
 

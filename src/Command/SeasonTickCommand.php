@@ -4,15 +4,17 @@ namespace App\Command;
 
 use App\Entity\App\InfluenceSeason;
 use App\Enum\SeasonStatus;
+use App\Enum\TideVoice;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
-use App\GameEngine\Season\ConsequenceTideComposer;
 use App\GameEngine\Season\ConsequenceTideSelector;
 use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
+use App\GameEngine\Season\TideComposer;
+use App\GameEngine\Season\TideSelector;
 use App\GameEngine\Settlement\SettlementChronicleService;
 use App\GameEngine\World\WorldLoadService;
 use App\GameEngine\World\WorldScaleService;
@@ -45,7 +47,8 @@ class SeasonTickCommand extends Command
         private readonly WorldScaleService $worldScaleService,
         private readonly SettlementChronicleService $chronicleService,
         private readonly ConsequenceTideSelector $consequenceTideSelector,
-        private readonly ConsequenceTideComposer $consequenceTideComposer,
+        private readonly TideSelector $tideSelector,
+        private readonly TideComposer $tideComposer,
     ) {
         parent::__construct();
     }
@@ -75,27 +78,27 @@ class SeasonTickCommand extends Command
         //    la cloture daterait d'avant le basculement de maree.
         $this->captureWorldLoad($io, $now, $tideBoundary);
 
-        // 6. La maree qui vient est-elle une **consequence** (FOY-15) ? Apres le
-        //    releve de charge, pour que le quota de Crue se lise sur la
+        // 6. Quel theme pour la maree qui vient (FOY-15, elargi par NAR-15) ?
+        //    Apres le releve de charge, pour que le quota de Crue se lise sur la
         //    population la plus fraiche — c'est elle qui decide s'il reste une
         //    place a prendre.
-        $this->handleConsequenceTide($io, $tideBoundary);
+        $this->handleNextTide($io, $tideBoundary);
 
         return Command::SUCCESS;
     }
 
     /**
-     * Choisit le theme de la maree qui vient a partir du mois ecoule (FOY-15).
+     * Choisit le theme de la maree qui vient (FOY-15, elargi par NAR-15).
      *
      * **A la cloture seulement.** Une consequence se decide quand une maree
      * s'acheve ; l'evaluer a chaque tick reviendrait a la redecider tous les
      * jours, et l'arc se recomposerait sous les pieds des joueurs.
      *
-     * **Une maree ecrite garde sa place.** Une consequence preempte un creneau
-     * de **rotation** (GAME_SEASONS § 3) ; elle ne bouscule jamais une partition
-     * deja posee. Un theme deja present suffit a le dire.
+     * **La partition entiere se lit ici, en un seul appel.** L'ordre des trois
+     * voix vit dans `TideSelector` et nulle part ailleurs ; cette methode
+     * l'applique, elle ne le rejoue pas.
      */
-    private function handleConsequenceTide(SymfonyStyle $io, bool $tideBoundary): void
+    private function handleNextTide(SymfonyStyle $io, bool $tideBoundary): void
     {
         if (!$tideBoundary) {
             return;
@@ -105,29 +108,43 @@ class SeasonTickCommand extends Command
             ['status' => SeasonStatus::Scheduled],
         );
 
-        if ($scheduled === null || $scheduled->getTheme() !== null) {
-            // Le repere avance quand meme : sans cela, la place liberee pendant
-            // une maree ecrite serait annoncee une maree trop tard.
+        if ($scheduled === null) {
             $this->consequenceTideSelector->rememberFreeSlots();
 
             return;
         }
 
-        $tide = $this->consequenceTideSelector->select();
+        $choice = $this->tideSelector->selectFor($scheduled);
 
         // Le releve suit la lecture, jamais l'inverse : pris avant, il ferait
-        // disparaitre l'ouverture qu'on cherche justement a detecter.
+        // disparaitre l'ouverture qu'on cherche justement a detecter. Il avance
+        // quel que soit le choix — sans cela, la place liberee pendant une maree
+        // deja posee serait annoncee une maree trop tard.
         $this->consequenceTideSelector->rememberFreeSlots();
 
-        if ($tide === null) {
+        if (TideVoice::Canon === $choice->voice) {
+            // Le creneau est **reserve**, pas pris : on ne compose rien, et on
+            // le dit. Une colonne vertebrale reserve, elle n'improvise pas.
+            $io->note(sprintf(
+                'Créneau canon réservé sur "%s" : « %s » (%s l\'écrira). Aucun arc posé.',
+                $scheduled->getName(),
+                (string) $choice->theme,
+                (string) $choice->milestone,
+            ));
+
             return;
         }
 
-        $beats = $this->consequenceTideComposer->compose($scheduled, $tide);
+        if (!$choice->isComposable()) {
+            return;
+        }
+
+        $beats = $this->tideComposer->compose($scheduled, (string) $choice->tide);
         $this->entityManager->flush();
 
         $io->success(sprintf(
-            'Marée conséquence « %s » posée sur "%s" (%d beat(s)).',
+            'Marée %s « %s » posée sur "%s" (%d beat(s)).',
+            TideVoice::Consequence === $choice->voice ? 'conséquence' : 'de rotation',
             (string) $scheduled->getTheme(),
             $scheduled->getName(),
             $beats,
