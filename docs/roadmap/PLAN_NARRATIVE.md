@@ -204,7 +204,7 @@ Phase 5 (fond & tests) : NAR-13, NAR-14  (parallélisable)
 > déclenchées). Le moteur d'arc est livré (vague 1) — cette vague écrit du **contenu**
 > et branche la **règle de tirage**.
 
-### NAR-15 — Le tireur de marées (M | ★★★ | HAUTE)
+### NAR-15 ✅ — Le tireur de marées (M | ★★★ | HAUTE) — livré le 2026-08-19
 > La partition §0 devient un système : conséquence déclenchée > colonne datée > rotation.
 > Prérequis : moteur d'arc livré ; conditions Pâleur/Crue ← FOY-11 / FOY-08
 - [x] **Livré par FOY-15 (2026-07-28)** : la priorité des conséquences sur la rotation —
@@ -212,19 +212,47 @@ Phase 5 (fond & tests) : NAR-13, NAR-14  (parallélisable)
       (`SeasonTickCommand::handleConsequenceTide`)
 - [x] **Livré par FOY-15 (2026-07-28)** : la Pâleur passe avant l'Appel si les deux
       conditions sont vraies (`ConsequenceTide::precedence()`)
-- [ ] Reste : la **colonne vertébrale** — les créneaux M2/M4/M8/M13 des marées canon ;
-      aucun code ne les connaît aujourd'hui
-- [ ] Reste : la **rotation au plus faible indice de sédiment mondial** —
-      `SettlementIndex` existe, mais aucun sélecteur de marée ne le lit
-- [ ] Reste : les **6+2 gabarits rejouables** de GAME_SEASONS en données — aucune
-      existence aujourd'hui, seules les 2 conséquences vivent dans
-      `config/game/consequence_tides.yaml`
-- [ ] Tests : priorités, tirage par indice, déclencheurs
+- [x] **La colonne vertébrale** (2026-08-19) — les créneaux M2/M4/M8/M13 entrent dans
+      la donnée (bloc `canon` de `tides.yaml`, indexé par `InfluenceSeason::seasonNumber`).
+      **Elle réserve, elle n'écrit pas** : le contenu de chaque marée canon arrive avec
+      son jalon (NAR-16 → NAR-19), et tant qu'il n'est pas là le créneau reste **vide
+      plutôt que pris**. C'est tout l'objet du jalon — sans elle, une rotation ou une
+      conséquence prenait le créneau M2 et « La Première Pierre » n'arrivait jamais
+- [x] **La rotation au plus faible indice de sédiment mondial** (2026-08-19) —
+      `RotationTideSelector` somme les quatre indices sur **tous** les foyers (lire le
+      foyer dominant ferait dépendre la partition de l'humeur d'une ville). Un gabarit à
+      deux indices est éligible par le **plus bas** des deux. **Le tirage n'en est pas
+      un** : rien n'est tiré au sort, ici pas plus qu'au Répertoire (REP-03) — à manque
+      égal, c'est le gabarit **joué il y a le plus longtemps** qui passe, si bien que la
+      variété vient de l'histoire du serveur et non d'un dé
+- [x] **Les 6 gabarits rejouables** en données (2026-08-19) — la Marée d'Ambre, la
+      Fonte, le Chœur, la Contrefaçon, la Grande Battue, la Foire Franche, chacun avec
+      ses quatre beats et les indices qu'il nourrit. Les quatre indices sont couverts,
+      vérifié en CI : sans cela, un serveur qui manquerait de rite se verrait prescrire
+      autre chose indéfiniment
+- [x] Tests : les trois voix et leur ordre, la réservation non préemptable, le tirage
+      par indice, le départage par ancienneté, le déterminisme, les refus du chargeur
 
-> **Le fichier cible nommé par ce plan (`config/game/tides.yaml`) n'existe pas.** Les
-> gabarits de rotation s'ajouteront à côté de `config/game/consequence_tides.yaml` (ou
-> le renommeront) — à préciser au moment de NAR-15, pour ne pas créer un second
-> sélecteur concurrent de celui que FOY-15 a posé.
+> **La question que le plan laissait ouverte est tranchée : un fichier, un chargeur, un
+> sélecteur.** Le plan mettait en garde contre « un second sélecteur concurrent de celui
+> que FOY-15 a posé ». La réponse n'est pas une cohabitation mais une **subordination** :
+> `consequence_tides.yaml` devient `tides.yaml` et porte les trois voix ; `TideSelector`
+> est le seul endroit où l'ordre *conséquence > colonne > rotation* existe, et il
+> **délègue** — le service de FOY-15 pour les conséquences, `RotationTideSelector` pour
+> le tirage. Chaque voix garde son service pour répondre à sa propre question, et un
+> seul endroit décide laquelle parle. Le chargeur et le composeur, qui ne servent plus
+> les seules conséquences, sont renommés en conséquence.
+
+> **Ce que le jalon a tranché.** GAME_SEASONS se contredit à un endroit : le § 0 ordonne
+> *conséquence > colonne > rotation*, et le § 3 dit qu'une conséquence préempte « le
+> prochain créneau **de rotation** ». Lu au premier degré, le § 0 laisserait une Pâleur
+> prendre le créneau M2 — et « La Première Pierre » ne se jouerait jamais, ce que le § 1
+> interdit (« cinq marées canon à date à peu près fixe : elles portent l'histoire du
+> serveur »). Le § 0 ordonne donc les trois voix **pour un créneau libre** ; un créneau
+> que la partition a réservé n'en est pas un. C'est aussi ce que FOY-15 avait déjà décidé
+> pour une marée écrite, et la colonne étend la règle plutôt que d'en créer une seconde :
+> *un créneau déjà pris est déjà pris, qu'il le soit par un thème posé ou par la
+> partition*.
 
 ### NAR-16 — La Première Pierre (M | ★★★ | HAUTE)
 > M2 — le premier Bourg comme événement fondateur. Se cale sur BALANCE §23.3.

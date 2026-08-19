@@ -4,17 +4,24 @@ namespace App\GameEngine\Season;
 
 use App\Entity\App\GameEvent;
 use App\Entity\App\InfluenceSeason;
-use App\Enum\ConsequenceTide;
 use App\Repository\GameEventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Pose l'arc d'une maree consequence sur la saison qui vient (FOY-15).
+ * Pose l'arc d'une maree sur la saison qui vient (FOY-15, elargi par NAR-15).
  *
  * Les marees ecrites de l'an 1 ont leurs beats en fixtures (`SeasonArcFixtures`,
  * NAR-08) : on sait d'avance qu'elles arriveront. Une consequence, par
  * definition, non — son arc doit donc se composer au moment ou le monde la
- * declenche, a partir de la meme donnee declarative.
+ * declenche, a partir de la meme donnee declarative. **Une rotation est dans le
+ * meme cas** : le gabarit tire depend de ce qui manque au monde le jour du
+ * tirage.
+ *
+ * Les deux voix composables partagent donc **un seul chemin**, et le composeur
+ * ne sait pas laquelle il sert : il prend une **clef de maree**, la demande au
+ * chargeur, et pose ce qu'on lui rend. Lui faire distinguer les voix aurait
+ * duplique la pose des beats — *une regle recopiee derive de son original en
+ * silence*.
  *
  * **Les fenetres sont derivees des bornes reelles de la saison**, exactement
  * comme en fixtures. Les partir d'une date fixe aurait desynchronise l'arc de
@@ -25,25 +32,35 @@ use Doctrine\ORM\EntityManagerInterface;
  * cette garde, un tick relance a la main aurait double les quatre beats, et
  * `getActiveBeat()` aurait rendu le premier des deux — un bug invisible.
  */
-class ConsequenceTideComposer
+class TideComposer
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly GameEventRepository $gameEventRepository,
-        private readonly ConsequenceTideDefinitionLoader $loader,
+        private readonly TideDefinitionLoader $loader,
     ) {
     }
 
     /**
      * Compose l'arc, et rend le nombre de beats poses (zero si deja fait).
+     *
+     * @param string $tide clef de maree — une consequence ou un gabarit de rotation
+     *
+     * @throws \InvalidArgumentException si la clef ne designe aucune maree composable
      */
-    public function compose(InfluenceSeason $season, ConsequenceTide $tide): int
+    public function compose(InfluenceSeason $season, string $tide): int
     {
         if ([] !== $this->gameEventRepository->findBySeasonOrdered($season)) {
             return 0;
         }
 
-        $definition = $this->loader->load()['tides'][$tide->value];
+        $definition = $this->loader->composable($tide);
+
+        // Une clef inconnue poserait un theme sans arc : la maree s'afficherait
+        // et rien ne s'y passerait. On refuse plutot que de composer a moitie.
+        if ($definition === null) {
+            throw new \InvalidArgumentException(sprintf('Aucune marée composable pour la clef « %s ».', $tide));
+        }
         $base = \DateTime::createFromInterface($season->getStartsAt());
 
         $season->setTheme($definition['theme']);

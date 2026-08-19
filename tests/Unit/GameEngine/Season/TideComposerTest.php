@@ -5,8 +5,8 @@ namespace App\Tests\Unit\GameEngine\Season;
 use App\Entity\App\GameEvent;
 use App\Entity\App\InfluenceSeason;
 use App\Enum\ConsequenceTide;
-use App\GameEngine\Season\ConsequenceTideComposer;
-use App\GameEngine\Season\ConsequenceTideDefinitionLoader;
+use App\GameEngine\Season\TideComposer;
+use App\GameEngine\Season\TideDefinitionLoader;
 use App\Repository\GameEventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  * qu'elles arriveront. Une consequence, non — d'ou ce compositeur, qui lit la
  * meme donnee declarative et la pose sur la saison deja programmee.
  */
-class ConsequenceTideComposerTest extends TestCase
+class TideComposerTest extends TestCase
 {
     /**
      * Les fenetres sont **derivees des bornes reelles de la saison**. Les partir
@@ -31,7 +31,7 @@ class ConsequenceTideComposerTest extends TestCase
         $season = $this->season('2026-09-07 00:00:00');
         $persisted = [];
 
-        $count = $this->composer($persisted, [])->compose($season, ConsequenceTide::Paleness);
+        $count = $this->composer($persisted, [])->compose($season, ConsequenceTide::Paleness->value);
 
         self::assertSame(4, $count);
         self::assertCount(4, $persisted);
@@ -45,7 +45,7 @@ class ConsequenceTideComposerTest extends TestCase
     public function testTheFourBeatsAreOrderedAndContiguous(): void
     {
         $persisted = [];
-        $this->composer($persisted, [])->compose($this->season('2026-09-07 00:00:00'), ConsequenceTide::CrueCall);
+        $this->composer($persisted, [])->compose($this->season('2026-09-07 00:00:00'), ConsequenceTide::CrueCall->value);
 
         self::assertSame(
             [GameEvent::BEAT_AMORCE, GameEvent::BEAT_MONTEE, GameEvent::BEAT_CLIMAX, GameEvent::BEAT_RESOLUTION],
@@ -68,7 +68,7 @@ class ConsequenceTideComposerTest extends TestCase
         $season = $this->season('2026-09-07 00:00:00');
         $persisted = [];
 
-        $count = $this->composer($persisted, [new GameEvent()])->compose($season, ConsequenceTide::Paleness);
+        $count = $this->composer($persisted, [new GameEvent()])->compose($season, ConsequenceTide::Paleness->value);
 
         self::assertSame(0, $count);
         self::assertSame([], $persisted);
@@ -89,7 +89,7 @@ class ConsequenceTideComposerTest extends TestCase
      * @param list<GameEvent> $persisted recueille ce que le compositeur ecrit
      * @param list<GameEvent> $existing  beats deja poses sur la saison
      */
-    private function composer(array &$persisted, array $existing): ConsequenceTideComposer
+    private function composer(array &$persisted, array $existing): TideComposer
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->method('persist')->willReturnCallback(function (object $entity) use (&$persisted): void {
@@ -101,10 +101,10 @@ class ConsequenceTideComposerTest extends TestCase
         $repository = $this->createMock(GameEventRepository::class);
         $repository->method('findBySeasonOrdered')->willReturn($existing);
 
-        return new ConsequenceTideComposer(
+        return new TideComposer(
             $entityManager,
             $repository,
-            new ConsequenceTideDefinitionLoader(\dirname(__DIR__, 4)),
+            new TideDefinitionLoader(\dirname(__DIR__, 4)),
         );
     }
 }

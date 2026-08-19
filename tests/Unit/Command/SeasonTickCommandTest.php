@@ -9,12 +9,14 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
-use App\GameEngine\Season\ConsequenceTideComposer;
 use App\GameEngine\Season\ConsequenceTideSelector;
 use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
+use App\GameEngine\Season\TideChoice;
+use App\GameEngine\Season\TideComposer;
+use App\GameEngine\Season\TideSelector;
 use App\GameEngine\Settlement\SettlementChronicleService;
 use App\GameEngine\World\WorldLoadService;
 use App\GameEngine\World\WorldScaleService;
@@ -79,7 +81,8 @@ class SeasonTickCommandTest extends TestCase
             $this->worldScaleService,
             $this->chronicleService,
             $this->consequenceTideSelector(),
-            $this->consequenceTideComposer(),
+            $this->tideSelector(),
+            $this->tideComposer(),
         );
 
         $app = new Application();
@@ -252,7 +255,8 @@ class SeasonTickCommandTest extends TestCase
             $this->worldScaleService,
             $this->chronicleService,
             $this->consequenceTideSelector(),
-            $this->consequenceTideComposer(),
+            $this->tideSelector(),
+            $this->tideComposer(),
         );
         $app = new Application();
         $app->add($command);
@@ -458,9 +462,21 @@ class SeasonTickCommandTest extends TestCase
         return $selector;
     }
 
-    private function consequenceTideComposer(): ConsequenceTideComposer
+    /**
+     * NAR-15 : de meme, ces tests ne portent pas sur le choix du theme. Un
+     * choix vide laisse le cycle de vie des saisons se derouler seul.
+     */
+    private function tideSelector(): TideSelector
     {
-        return $this->createMock(ConsequenceTideComposer::class);
+        $selector = $this->createMock(TideSelector::class);
+        $selector->method('selectFor')->willReturn(TideChoice::nothing());
+
+        return $selector;
+    }
+
+    private function tideComposer(): TideComposer
+    {
+        return $this->createMock(TideComposer::class);
     }
 
     private function createWorldLoadSnapshot(): WorldLoadSnapshot
