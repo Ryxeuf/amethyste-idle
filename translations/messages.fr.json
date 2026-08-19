@@ -2174,6 +2174,22 @@
           "nothing_to_claim": "Aucun rite à recueillir.",
           "not_ready": "Le rite n'a pas encore pris."
         }
+      },
+      "state": {
+        "title": "Le Répertoire",
+        "intro": "Ce que ce monde a lu, et ce qu'il lui reste à retrouver. Chaque matéria lue au Cercle y dépose quelque chose.",
+        "intro_scriptorium": "Sur la table centrale : l'état de ce que le monde a lu. Ce qui manque y est plus visible que ce qui s'y trouve.",
+        "progress_heading": "Vers le %rank%ᵉ geste",
+        "progress": "%readings% / %threshold% lectures — %percent% %",
+        "remaining": "Il reste %count% geste(s) au bassin.",
+        "dominance_heading": "Ce que ce monde lit",
+        "dominant_element": "Élément — %value%",
+        "dominant_provenance": "Provenance — %value%",
+        "dominant_place": "Lieu de lecture — %value%",
+        "no_dominance": "Rien n'a encore été lu : le Répertoire est vierge.",
+        "recovered_heading": "Ce que ce monde a retrouvé",
+        "nothing_recovered": "Aucun geste retrouvé pour l'instant.",
+        "link": "Le Répertoire"
       }
     }
   },

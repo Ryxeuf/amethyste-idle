@@ -20,7 +20,13 @@
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
             <h2 class="text-base sm:text-lg font-semibold text-white">Codex</h2>
-            <span class="text-sm text-gray-400" title="Entrées débloquées">{{ unlockedCount }}/{{ totalCount }}</span>
+            <div class="flex items-center gap-3">
+                {# REP-05 : le repli du Repertoire. Le Scriptorium demande une
+                   exaltation ; le savoir du serveur est un projet collectif, et
+                   un joueur sans les couleurs du Cercle doit pouvoir le suivre. #}
+                <a href="{{ path('app_game_repertoire') }}" class="text-xs text-purple-300 hover:text-purple-200">{{ 'game.repertoire.state.link'|trans }}</a>
+                <span class="text-sm text-gray-400" title="Entrées débloquées">{{ unlockedCount }}/{{ totalCount }}</span>
+            </div>
         </div>
 
         <div class="game-card-body">

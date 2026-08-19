@@ -238,6 +238,10 @@ class ZoneController extends AbstractController
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
             'connections' => $connectionRows,
+            // REP-05 : le Scriptorium est l'endroit ou l'on voit le Repertoire
+            // s'ecrire. Le meme ecran se lit depuis le Codex — ce que le lieu
+            // ajoute est le fait d'y etre.
+            'repertoireHere' => $zone->getSlug() === RepertoireController::SCRIPTORIUM,
             'firstTravelOffered' => $firstTravelOffered,
             'isGameMaster' => $isGameMaster,
             'mount' => $player->getActiveMount(),
