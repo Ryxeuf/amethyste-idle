@@ -279,25 +279,61 @@ livrent **avec** leurs jalons de domaine (ZON-34, ECO-29→31), pas avant.
 > passait en vérifiant le vide. C'est exactement la famille de défaut que ce fichier existe
 > pour traquer : il lit désormais **le corps de la méthode qui porte la table**.
 
-### DOM-09 — La borne sans fuite (M | ★★★ | HAUTE)
+### DOM-09 — La borne sans fuite (M | ★★★ | HAUTE) ✅
 > **Constat (audit 2026-07-29).** La double borne est livrée, mais quatre fuites lui
 > échappent — trois dans les données, une dans le canon.
-- [ ] **Les 8 nœuds partagés** (`getSharedSkills()`, SkillFixtures ~l.5904-5973) portent
+- [x] **Les 8 nœuds partagés** (`getSharedSkills()`, SkillFixtures ~l.5904-5973) portent
       des stats de combat (heal/life/critical/hit) via des domaines de **métier** → ils
       tombent dans la clause de rétro-compat de `CombatSkillResolver::skillAppliesTo()`
       et s'appliquent à **toute** action de combat, hors de la double borne. Les borner
       (ou acter qu'ils sont globaux) + durcir le test de contrat :
       `DomainPlanContractTest::testEverySkillWithCombatStatsBelongsToADomain` vérifie
       « a un domaine », pas « est borné »
-- [ ] **Étendre les nœuds partagés** au bûcheron et aux 3 métiers de la Piste H
-      (cuisinier/charpentier/tailleur), aujourd'hui hors synergies
-- [ ] **Données** : `t1/t2/t3_staff` rattachés au domaine paladin (light × melee) — un
+- [◐] **Étendre les nœuds partagés** au bûcheron et aux 3 métiers de la Piste H
+      (cuisinier/charpentier/tailleur), aujourd'hui hors synergies *(reporté à MET-03 :
+      **on n'étend pas ce qu'on vient de fermer**. Les nœuds partagés ne portaient que des
+      statistiques de combat ; les étendre à quatre métiers de plus aurait élargi la fuite
+      au lieu de la refermer. MET-03 écrit le vocabulaire des neuf leviers de métier —
+      l'extension s'y fera pour les douze arbres à la fois)*
+- [x] **Données** : `t1/t2/t3_staff` rattachés au domaine paladin (light × melee) — un
       bâton, censé canaliser les sorts (GAME_DOMAINS §3), active la famille **mêlée**
       dans `BuildDomainResolver::carriedRegisters()`. À rattacher à un domaine de sorts
-- [ ] **Arbitrage Element** : `element: 'wood'` est porté par lumberjack et carpenter
+- [x] **Arbitrage Element** : `element: 'wood'` est porté par lumberjack et carpenter
       sans cas dans l'enum `Element` (inoffensif car hors combat, mais incohérent) ;
       GAME_DOMAINS §8 affirme que les composés sont « déjà actés » dans l'enum — **faux**.
       Trancher : ajouter les cas (wood + composés dormants) ou corriger le canon
+
+> **DOM-09 — livré le 2026-08-19. La fuite était sept fois plus large que l'audit ne le
+> disait.** L'audit avait nommé **8 nœuds partagés** ; la mesure en trouve **55**, sur les
+> douze arbres de métier. Tous portaient des statistiques de combat, et
+> `CombatSkillResolver::skillAppliesTo()` traite un nœud dont *aucun* domaine n'est un
+> domaine de combat comme **non borné** — donc applicable à toute action, hors de la double
+> borne, hors des 50 points de budget, hors des plafonds par levier. *Un système qui compte
+> soigneusement 50 points et laisse une porte de service à +10 ne compte rien* : la phrase
+> d'ARC-16a, et le même défaut sous un autre nom.
+>
+> **Le test disait « a un domaine », pas « est borné »** — et c'est exactement par là que la
+> fuite passait : un nœud rattaché à quatre métiers le satisfaisait pleinement. La question
+> juste se lit sur la base, jamais sur un texte source (`DomainBoundContractTest`).
+>
+> **Ce que la fermeture laisse derrière elle, et qui est nommé** : 24 nœuds vidés restent
+> des **portes** (ils ouvrent la suite — *une porte n'est jamais une récompense*, la règle
+> des échelons de port), et **9 sont des péages vides**, listés en cliquet. Ils attendent
+> MET-03, seul jalon où un nœud d'artisanat peut porter un effet sans rouvrir la fuite.
+>
+> **Le bâton cesse d'activer la mêlée.** Le registre d'une arme se lisait sur
+> `Item::domain->getRegister()`, c'est-à-dire sur un couple `élément × registre` : le bâton
+> étant rattaché au paladin (lumière × **mêlée**), *porter un bâton faisait parler les
+> passifs de corps à corps*. C'est le défaut que l'échelle de port avait corrigé du côté de
+> l'apprentissage, resté ouvert du côté de l'objet — et la réponse est la même : ***c'est
+> l'arme qui fixe le registre***, donc il se déclare sur la **famille**, une fois, et le
+> loader refuse une famille d'arme sans registre.
+>
+> **L'arbitrage `wood` est rendu, et il est mesuré** : `Element::cases()` est parcouru par
+> le butin de matéria, par les huit marques et par la loi de nommage. Un neuvième cas
+> produirait une matéria de bois, une marque de bois et une règle de nommage pour un élément
+> qu'aucun domaine de combat ne porte — la neuvième case que le §9 quater interdit. `wood`
+> reste la **teinte** de deux métiers ; le canon (§8) est corrigé.
 
 ### DOM-10 — Les arbres retrouvés (M | ★★ | MOYENNE)
 > Ouvert le 2026-07-29 par la doctrine du parchemin ([../GAME_ONBOARDING.md](../GAME_ONBOARDING.md)

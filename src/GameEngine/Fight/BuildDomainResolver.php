@@ -8,6 +8,8 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Enum\CombatRegister;
 use App\Enum\Element;
+use App\GameEngine\Gear\WornPieceReader;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SynergyCalculator;
 
 /**
@@ -42,6 +44,8 @@ class BuildDomainResolver
 
     public function __construct(
         private readonly SynergyCalculator $synergyCalculator,
+        private readonly WornPieceReader $wornPieces,
+        private readonly EquipmentPortCatalog $portCatalog,
     ) {
     }
 
@@ -140,12 +144,20 @@ class BuildDomainResolver
     }
 
     /**
-     * Les registres que les armes portees apportent.
+     * Les registres que les armes portees apportent (DOM-09).
      *
-     * Le registre d'une arme est celui de **son** domaine : les fixtures le
-     * declarent deja (l'epee est au soldat, l'arc a l'archer). Une arme sans
-     * domaine — l'epee de bois du debutant — n'apporte aucun registre, et c'est
-     * juste : elle n'appartient a aucune ecole.
+     * **Le registre d'une arme vient de sa famille, jamais de son domaine.** Il
+     * se lisait sur `Item::domain->getRegister()`, c'est-a-dire sur un couple
+     * `element x registre` (DOM-01) : le baton etant rattache au paladin
+     * (lumiere x **melee**), *porter un baton activait la famille melee* — une
+     * arme de lanceur de sorts faisait parler les passifs de corps a corps.
+     *
+     * C'est le meme defaut que l'echelle de port avait corrige du cote de
+     * l'apprentissage, reste ouvert du cote de l'objet ; la reponse est la
+     * meme : *c'est l'arme qui fixe le registre*, et la famille le declare
+     * (`equipment_ports.yaml`). Une arme sans echelon de port — l'epee de bois
+     * du debutant — n'apporte aucun registre, et c'est juste : elle n'appartient
+     * a aucune ecole.
      *
      * @return list<CombatRegister>
      */
@@ -159,7 +171,8 @@ class BuildDomainResolver
                 continue;
             }
 
-            $register = $item->getDomain()?->getRegister();
+            $family = $this->wornPieces->familyOf($playerItem);
+            $register = $family !== null ? $this->portCatalog->registerOfFamily($family) : null;
             if ($register !== null) {
                 $registers[] = $register;
             }

@@ -2,6 +2,8 @@
 
 namespace App\GameEngine\Progression;
 
+use App\Enum\CombatRegister;
+
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -22,7 +24,7 @@ use Symfony\Component\Yaml\Yaml;
 class EquipmentPortCatalog
 {
     /**
-     * @var array<string, array{label: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>|null
+     * @var array<string, array{label: string, register: ?string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>|null
      */
     private ?array $families = null;
 
@@ -37,7 +39,7 @@ class EquipmentPortCatalog
     }
 
     /**
-     * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
+     * @return array<string, array{label: string, line: string, register: ?string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      */
     public function families(): array
     {
@@ -113,6 +115,19 @@ class EquipmentPortCatalog
     }
 
     /**
+     * Le registre que cette famille d'arme fait parler (DOM-09).
+     *
+     * `null` pour une ligne d'armure : une armure ne porte pas de registre, et
+     * repondre « melee » par defaut serait exactement la fuite qu'on ferme.
+     */
+    public function registerOfFamily(string $family): ?CombatRegister
+    {
+        $declared = $this->families()[$family]['register'] ?? null;
+
+        return \is_string($declared) ? CombatRegister::tryFrom($declared) : null;
+    }
+
+    /**
      * La famille dont ce slug est l'echelon **3**, et lui seul (ARC-16b).
      *
      * L'accointance `access_discount` ne remise que le dernier barreau — *« l'echelon 3
@@ -160,7 +175,7 @@ class EquipmentPortCatalog
     }
 
     /**
-     * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
+     * @return array<string, array{label: string, line: string, register: ?string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      *
      * @throws EquipmentPortDefinitionException
      */
@@ -186,7 +201,7 @@ class EquipmentPortCatalog
     /**
      * @param array<array-key, mixed> $raw
      *
-     * @return array<string, array{label: string, line: string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
+     * @return array<string, array{label: string, line: string, register: ?string, taught_by: list<string>, rung1: array{reference: string, slug: string, title: string, free: bool}, rung2: string, rung3: string}>
      */
     public function normalize(array $raw, string $source = '<array>'): array
     {
@@ -236,9 +251,25 @@ class EquipmentPortCatalog
                 throw new EquipmentPortDefinitionException(sprintf('Family "%s" declares an unknown line "%s" in "%s": weapon or armor.', $key, \is_scalar($line) ? (string) $line : \gettype($line), $source));
             }
 
+            // DOM-09 : **le registre d'une arme se declare ici, et il est
+            // obligatoire.** Il se lisait sur le domaine de l'objet, donc sur
+            // un couple `element x registre` : le baton, rattache au paladin,
+            // activait la famille **melee**. Le refuser a la lecture vaut mieux
+            // qu'une revue de code — une famille d'arme sans registre ne ferait
+            // parler aucun passif, en silence.
+            $register = $family['register'] ?? null;
+            if ($line === 'weapon') {
+                if (!\is_string($register) || CombatRegister::tryFrom($register) === null) {
+                    throw new EquipmentPortDefinitionException(sprintf('Weapon family "%s" must declare a register (%s) in "%s": it is the arm that fixes the register, never the domain.', $key, implode(', ', array_map(static fn (CombatRegister $r) => $r->value, CombatRegister::cases())), $source));
+                }
+            } elseif ($register !== null) {
+                throw new EquipmentPortDefinitionException(sprintf('Armor family "%s" declares a register in "%s": only a weapon carries one.', $key, $source));
+            }
+
             $normalized[$key] = [
                 'label' => $family['label'],
                 'line' => $line,
+                'register' => \is_string($register) ? $register : null,
                 'taught_by' => array_values(array_map('strval', $taughtBy)),
                 'rung1' => [
                     'reference' => $rungOne['reference'],

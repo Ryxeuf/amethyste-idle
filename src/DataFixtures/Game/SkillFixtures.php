@@ -5227,7 +5227,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['pickaxe-steel']]],
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['miner_iron_xs'],
             ],
             'miner_silver_xs' => [
@@ -5268,7 +5267,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 10]],
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['miner_gold_xs'],
             ],
             'miner_mithril_xs' => [
@@ -5296,8 +5294,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['pickaxe-mithril']], ['action' => 'yield', 'category' => 'gather_percent', 'percent' => 10]],
                 'requiredPoints' => 40,
                 'domain' => $d,
-                'damage' => 1,
-                'critical' => 1,
                 'requirements' => ['miner_mithril_xs'],
             ],
             'miner_darksteel_xs' => [
@@ -5325,8 +5321,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 15]],
                 'requiredPoints' => 70,
                 'domain' => $d,
-                'critical' => 3,
-                'hit' => 2,
                 'requirements' => ['miner_darksteel_xs', 'miner_platinum_xs'],
             ],
             'miner_orichalcum_xs' => [
@@ -5359,9 +5353,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Maitrise absolue du minage — bonus ultimes de l\'art',
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'damage' => 2,
-                'critical' => 2,
-                'hit' => 1,
                 'requirements' => ['miner_amethystite_xs'],
             ],
         ];
@@ -5419,7 +5410,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['sickle-steel']]],
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['herbalist_dandelion'],
             ],
             'herbalist_chamomile' => [
@@ -5457,7 +5447,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Ameliore la qualite des plantes recoltees',
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['herbalist_dandelion_s'],
             ],
             'herbalist_mint_m' => [
@@ -5496,7 +5485,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['sickle-mithril']], ['action' => 'yield', 'category' => 'gather_percent', 'percent' => 15]],
                 'requiredPoints' => 80,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['herbalist_gentle_hands', 'herbalist_mint_m'],
             ],
             'herbalist_preservation' => [
@@ -5505,7 +5493,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Les plantes recoltees conservent mieux leurs proprietes',
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'heal' => 2,
                 'requirements' => ['herbalist_chamomile_s'],
             ],
 
@@ -5574,7 +5561,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['fishing-rod-steel']]],
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['fisher_trout_xs'],
             ],
             'fisher_salmon_xs' => [
@@ -5622,7 +5608,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 12]],
                 'requiredPoints' => 40,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['fisher_trout_m'],
             ],
             'fisher_bait_mastery' => [
@@ -5631,7 +5616,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Les appats sont plus efficaces pour attirer les gros poissons',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['fisher_salmon_s'],
             ],
 
@@ -5752,7 +5736,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['skinning-knife-steel']]],
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['skinner_hide_xs'],
             ],
             'skinner_fang_xs' => [
@@ -5800,7 +5783,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'yield', 'category' => 'gather_percent', 'percent' => 12]],
                 'requiredPoints' => 40,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['skinner_hide_m'],
             ],
             'skinner_scale_xs' => [
@@ -5909,7 +5891,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Gouter avant de servir : les plats sortent meilleurs',
                 'requiredPoints' => 25,
                 'domain' => $d,
-                'life' => 3,
                 'requirements' => ['cook_bread'],
             ],
             // ZON-35 — les epices, reportees par ECO-29 faute de ce jalon. Quatre
@@ -5971,7 +5952,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Retirer au bon moment : les plats sortent plus vite de la marmite',
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['cook_palate'],
             ],
             'cook_thrift' => [
@@ -5980,7 +5960,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Rien ne se perd : les parures et les fonds resservent au plat suivant',
                 'requiredPoints' => 45,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['cook_timing'],
             ],
             'cook_keeping' => [
@@ -5989,7 +5968,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Saler, fumer, confire : ce qui est prepare tient plus longtemps',
                 'requiredPoints' => 70,
                 'domain' => $d,
-                'life' => 4,
                 'requirements' => ['cook_thrift'],
             ],
 
@@ -6007,7 +5985,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'specialization.branch', 'craft' => 'cuisinier', 'branch' => 'feast']],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'life' => 6,
                 'requirements' => ['cook_keeping'],
             ],
             'cook_road_provisions' => [
@@ -6017,8 +5994,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'specialization.branch', 'craft' => 'cuisinier', 'branch' => 'provisions']],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'life' => 4,
-                'hit' => 1,
                 'requirements' => ['cook_keeping'],
             ],
             'cook_master' => [
@@ -6027,8 +6002,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'La signature du cuisinier : ce qui sort de sa table se reconnait',
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'life' => 8,
-                'critical' => 2,
                 'requirements' => ['cook_feast'],
             ],
         ];
@@ -6088,7 +6061,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['axe-iron']]],
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['lumber_axe'],
             ],
             'lumber_whisperoak_xs' => [
@@ -6118,7 +6090,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['axe-steel']]],
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['lumber_edge'],
             ],
             'lumber_reading' => [
@@ -6127,7 +6098,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Savoir ce qu\'un peuplement a encore a donner avant d\'y porter le fer',
                 'requiredPoints' => 45,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['lumber_keen_eye'],
             ],
             'lumber_bark' => [
@@ -6136,7 +6106,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Retirer l\'ecorce sur pied : le bois seche mieux et se fend moins',
                 'requiredPoints' => 55,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['lumber_keen_eye'],
             ],
             'lumber_seasoning' => [
@@ -6174,7 +6143,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Choisir la bille sans defaut : ce qui sort de la coupe se travaille mieux',
                 'requiredPoints' => 80,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['lumber_bark'],
             ],
             'lumber_deep_scouting' => [
@@ -6184,7 +6152,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['axe-mithril']]],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['lumber_reading', 'lumber_heartwood'],
             ],
             'lumber_master' => [
@@ -6265,7 +6232,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Assembler sans clou ni colle : ce qu\'on batit ainsi tient mieux',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'life' => 4,
                 'requirements' => ['carpenter_haft'],
             ],
             'carpenter_composite' => [
@@ -6304,7 +6270,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Debiter dans le fil : le canal du baton porte le sort sans le tordre',
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['carpenter_first_weapons'],
             ],
             'carpenter_offcuts' => [
@@ -6313,7 +6278,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Les tombees d\'une piece font les fleches de la suivante',
                 'requiredPoints' => 45,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['carpenter_true_grain'],
             ],
             'carpenter_batch' => [
@@ -6322,7 +6286,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Douze fleches d\'un coup plutot qu\'une douzaine de fois une',
                 'requiredPoints' => 70,
                 'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['carpenter_offcuts'],
             ],
 
@@ -6332,7 +6295,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Regler la piece jusqu\'a ce que le flux la traverse sans accrocher',
                 'requiredPoints' => 85,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['carpenter_composite'],
             ],
 
@@ -6344,7 +6306,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'specialization.branch', 'craft' => 'charpentier', 'branch' => 'ranged']],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'damage' => 3,
                 'requirements' => ['carpenter_batch'],
             ],
             'carpenter_furnisher' => [
@@ -6354,7 +6315,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'specialization.branch', 'craft' => 'charpentier', 'branch' => 'furnishing']],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'life' => 6,
                 'requirements' => ['carpenter_batch'],
             ],
             'carpenter_signature' => [
@@ -6363,8 +6323,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'La signature au fer sur la piece finie : on sait de qui elle vient',
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'critical' => 2,
-                'hit' => 1,
                 'requirements' => ['carpenter_master'],
             ],
         ];
@@ -6440,7 +6398,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Coudre sans y penser : la main tient plus longtemps',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'life' => 3,
                 'requirements' => ['tailor_robe'],
             ],
             'tailor_fine_robe' => [
@@ -6479,7 +6436,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Coudre l\'emplacement de sort a meme la trame : il tient mieux le flux',
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['tailor_robe'],
             ],
             'tailor_lining' => [
@@ -6488,7 +6444,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Une doublure bien posee : on travaille plus longtemps sans s\'user',
                 'requiredPoints' => 45,
                 'domain' => $d,
-                'life' => 4,
                 'requirements' => ['tailor_setting'],
             ],
             'tailor_selvage' => [
@@ -6497,7 +6452,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Une lisiere qui ne file pas : la piece sort du metier sans perte',
                 'requiredPoints' => 70,
                 'domain' => $d,
-                'hit' => 1,
                 'requirements' => ['tailor_lining'],
             ],
 
@@ -6507,7 +6461,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Une couleur qui ne passe pas au soleil ni sous la pluie',
                 'requiredPoints' => 85,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['tailor_fine_robe'],
             ],
 
@@ -6519,7 +6472,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'specialization.branch', 'craft' => 'tailleur', 'branch' => 'spellrobes']],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'critical' => 3,
                 'requirements' => ['tailor_selvage'],
             ],
             'tailor_workwear' => [
@@ -6529,7 +6481,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'specialization.branch', 'craft' => 'tailleur', 'branch' => 'workwear']],
                 'requiredPoints' => 110,
                 'domain' => $d,
-                'life' => 6,
                 'requirements' => ['tailor_selvage'],
             ],
             'tailor_signature' => [
@@ -6538,8 +6489,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Une couture qu\'on reconnait sans lire l\'etiquette',
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'critical' => 2,
-                'life' => 4,
                 'requirements' => ['tailor_archivist'],
             ],
         ];
@@ -6600,7 +6549,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Augmente la qualite des objets forges',
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'damage' => 1,
                 'requirements' => ['smith_dagger'],
             ],
             'smith_plate' => [
@@ -6654,7 +6602,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Augmente la solidite des equipements forges',
                 'requiredPoints' => 40,
                 'domain' => $d,
-                'life' => 3,
                 'requirements' => ['smith_steel_weapons'],
             ],
             'smith_axe' => [
@@ -6700,7 +6647,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-mithril-ingot', 'recipe-cobalt-ingot', 'recipe-adamantite-ingot', 'recipe-orichalcum-ingot']]],
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'damage' => 2,
                 'requirements' => ['smith_axe'],
             ],
 
@@ -6771,7 +6717,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Ameliore la qualite du cuir tanne',
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'life' => 2,
                 'requirements' => ['leather_light_armor'],
             ],
             'leather_quiver' => [
@@ -6810,7 +6755,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-armor', 'recipe-leather-pants', 'recipe-leather-shoulders']]],
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'hit' => 2,
                 'requirements' => ['leather_tanning'],
             ],
             'leather_exotic_hide' => [
@@ -6848,7 +6792,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Les equipements en cuir conferes accordent des bonus de vie',
                 'requiredPoints' => 80,
                 'domain' => $d,
-                'life' => 5,
                 'requirements' => ['leather_supple', 'leather_exotic_hide'],
             ],
             'leather_enchanted' => [
@@ -6927,7 +6870,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Augmente l\'efficacite des potions brassees',
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'heal' => 1,
                 'requirements' => ['alchi_health_pot'],
             ],
             'alchi_antidote' => [
@@ -6977,7 +6919,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-poison-vial']]],
                 'requiredPoints' => 40,
                 'domain' => $d,
-                'critical' => 2,
                 'requirements' => ['alchi_health_pot_3'],
             ],
             'alchi_speed_pot' => [
@@ -7017,8 +6958,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Augmente la puissance de toutes les potions brassees',
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'heal' => 2,
-                'hit' => 1,
                 'requirements' => ['alchi_speed_pot'],
             ],
 
@@ -7086,7 +7025,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Augmente la qualite des gemmes taillees',
                 'requiredPoints' => 15,
                 'domain' => $d,
-                'critical' => 1,
                 'requirements' => ['jewel_cut_basic'],
             ],
             'jewel_bracelet' => [
@@ -7124,8 +7062,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Maitrise du filigrane — ameliore la qualite des bijoux fabriques',
                 'requiredPoints' => 30,
                 'domain' => $d,
-                'damage' => 1,
-                'heal' => 1,
                 'requirements' => ['jewel_bracelet'],
             ],
             'jewel_crown' => [
@@ -7167,8 +7103,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Maitrise de la taille de gemmes infusees d\'energie elementaire',
                 'requiredPoints' => 80,
                 'domain' => $d,
-                'damage' => 2,
-                'heal' => 2,
                 'requirements' => ['jewel_filigree', 'jewel_crown'],
             ],
             'jewel_prismatic' => [
@@ -7197,90 +7131,42 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // COMPETENCES PARTAGEES — multi-domaines (recolte + craft)
     // =========================================================================
+    /**
+     * Les nœuds partages entre metiers — **et pourquoi il n'y en a plus** (DOM-09).
+     *
+     * Huit nœuds vivaient ici, partages entre domaines de **metier** (mineur,
+     * herboriste, forgeron, tanneur…), et chacun portait des **statistiques de
+     * combat** : « Premiers soins » rendait `heal +1`, « Endurance du
+     * recolteur » `life +3`, « Maitre artisan » `damage +1` et `life +2`.
+     *
+     * **C'etait une fuite, et elle etait franche.** `CombatSkillResolver::
+     * skillAppliesTo()` borne un passif par son domaine — mais un nœud dont
+     * *aucun* domaine n'est un domaine de combat est repute **non borne**, donc
+     * il s'applique a **toute** action : hors de la double borne d'element x
+     * registre (DOM-01), hors des 50 points de budget, hors des plafonds par
+     * levier. Mesure : `damage +1, heal +2, hit +3, critical +3, life +5` pour
+     * qui menait les huit, sur tous les gestes du jeu.
+     *
+     * > *Un systeme qui compte soigneusement 50 points et laisse une porte de
+     * > service a +10 ne compte rien* — la meme phrase qu'ARC-16a, et le meme
+     * > defaut sous un autre nom.
+     *
+     * **Pourquoi les retirer plutot que les vider.** Un nœud de metier ne peut
+     * pas porter de statistique de combat (c'est la fuite) et ne peut pas encore
+     * porter de levier de metier : le vocabulaire des neuf leviers de recolte et
+     * d'artisanat est **MET-03**, et il n'existe pas. Les garder sans effet en
+     * ferait des **peages vides** — un cout en points contre rien, ce que le
+     * respec appelle deja « un piege paye ».
+     *
+     * **Ce qui reste a faire, et ou** : le plan demandait aussi d'etendre ces
+     * nœuds au bucheron et aux trois metiers de la Piste H. *On n'etend pas ce
+     * qu'on vient de fermer.* MET-03 reecrira les nœuds partages avec le bon
+     * vocabulaire, et l'extension se fera la — pour les douze arbres a la fois,
+     * au lieu des huit d'aujourd'hui.
+     */
     private function getSharedSkills(): array
     {
-        return [
-            // Premiers soins — partage entre tous les domaines de recolte
-            'shared_first_aid' => [
-                'slug' => 'shared-first-aid',
-                'title' => 'Premiers soins',
-                'description' => 'Permet de se soigner legerement pendant les activites de recolte',
-                'requiredPoints' => 10,
-                'domain' => ['miner', 'herbalist', 'fisherman', 'skinner'],
-                'heal' => 1,
-            ],
-            // Endurance — partage entre tous les domaines de recolte
-            'shared_endurance' => [
-                'slug' => 'shared-endurance',
-                'title' => 'Endurance du recolteur',
-                'description' => 'Augmente les points de vie pendant les activites de recolte',
-                'requiredPoints' => 20,
-                'domain' => ['miner', 'herbalist', 'fisherman', 'skinner'],
-                'life' => 3,
-                'requirements' => ['shared_first_aid'],
-            ],
-            // Sens du terrain — partage entre mineur et herboriste
-            'shared_terrain_sense' => [
-                'slug' => 'shared-terrain-sense',
-                'title' => 'Sens du terrain',
-                'description' => 'Augmente les chances de trouver des ressources rares en explorant',
-                'requiredPoints' => 30,
-                'domain' => ['miner', 'herbalist'],
-                'critical' => 1,
-                'requirements' => ['shared_endurance'],
-            ],
-            // Instinct de survie — partage entre depeceur et pecheur
-            'shared_survival' => [
-                'slug' => 'shared-survival',
-                'title' => 'Instinct de survie',
-                'description' => 'Ameliore les chances de recolte dans les zones dangereuses',
-                'requiredPoints' => 30,
-                'domain' => ['skinner', 'fisherman'],
-                'hit' => 2,
-                'requirements' => ['shared_endurance'],
-            ],
-            // Efficacite artisanale — partage entre tous les domaines de craft
-            'shared_craft_efficiency' => [
-                'slug' => 'shared-craft-efficiency',
-                'title' => 'Efficacite artisanale',
-                'description' => 'Reduit les chances d\'echec lors de la fabrication d\'objets',
-                'requiredPoints' => 10,
-                'domain' => ['blacksmith', 'leatherworker', 'alchimist', 'jeweller'],
-                'hit' => 1,
-            ],
-            // Economie de materiaux — partage entre tous les domaines de craft
-            'shared_material_saving' => [
-                'slug' => 'shared-material-saving',
-                'title' => 'Economie de materiaux',
-                'description' => 'Chance de ne pas consommer certains materiaux lors du craft',
-                'requiredPoints' => 20,
-                'domain' => ['blacksmith', 'leatherworker', 'alchimist', 'jeweller'],
-                'critical' => 1,
-                'requirements' => ['shared_craft_efficiency'],
-            ],
-            // Masterwork — partage entre forgeron et tanneur
-            'shared_masterwork' => [
-                'slug' => 'shared-masterwork',
-                'title' => 'Maitre artisan',
-                'description' => 'Augmente la qualite globale des equipements fabriques',
-                'requiredPoints' => 30,
-                'domain' => ['blacksmith', 'leatherworker'],
-                'damage' => 1,
-                'life' => 2,
-                'requirements' => ['shared_material_saving'],
-            ],
-            // Savoir alchimique — partage entre alchimiste et joaillier
-            'shared_arcane_craft' => [
-                'slug' => 'shared-arcane-craft',
-                'title' => 'Savoir arcanique',
-                'description' => 'Augmente la puissance des objets a proprietes magiques fabriques',
-                'requiredPoints' => 30,
-                'domain' => ['alchimist', 'jeweller'],
-                'heal' => 1,
-                'critical' => 1,
-                'requirements' => ['shared_material_saving'],
-            ],
-        ];
+        return [];
     }
 
     public function getDependencies(): array
