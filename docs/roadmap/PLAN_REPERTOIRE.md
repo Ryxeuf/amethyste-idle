@@ -15,7 +15,7 @@
 
 ## Vue d'ensemble
 
-**6 jalons** (**REP-01** à **REP-06**) en 2 pistes.
+**6 jalons** (**REP-01** à **REP-06**) en 2 pistes — **plan complet le 2026-08-19**.
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
@@ -24,7 +24,7 @@
 | REP-03 ✅ | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
 | REP-04 ✅ | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
 | REP-05 ✅ | La restitution : le Scriptorium & le journal | S | ← REP-03 ; converge FAC-09c |
-| REP-06 | Tests du plan | S | ‖ |
+| REP-06 ✅ | Tests du plan | S | ‖ |
 
 ```
 Piste A — Le savoir     : REP-01 → REP-02 → REP-03
@@ -270,13 +270,40 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
 > c'est une avance), et le nombre de gestes restants se dit **en nombre, jamais en liste** :
 > *on sait qu'il en reste, pas lesquels*.
 
-### REP-06 — Tests du plan (S | ★★ | HAUTE)
+### REP-06 ✅ — Tests du plan (S | ★★ | HAUTE) — livré le 2026-08-19
 > ‖ au fil des jalons.
-- [ ] Invariants : latéral jamais vertical (aucun geste ne produit hors catalogue), un
-      seul bassin (aucune entrée par-serveur), le déblocage jamais repris, l'Autel
-      jamais fermable par une guilde, le plafond anti-forçage
-- [ ] Contrat transverse : fondre ne verse **rien** au Répertoire (le coût collectif de
-      la fonte est réel, §12.2)
+- [x] Invariants transverses : latéral du côté de **l'Autel**, aucune table ne connaît de
+      serveur, le déblocage jamais repris, l'Autel jamais fermable par une guilde, le
+      plafond qui ne ferme jamais la lecture
+- [x] Contrat transverse : **fondre ne verse rien au Répertoire**, et lire, si
+
+> **Livré (2026-08-19).** `RepertoirePlanContractTest`. Cinq jalons ont leurs tests ; ce
+> fichier n'en refait aucun et porte les invariants qu'aucun d'eux ne peut voir depuis sa
+> position.
+>
+> **Le contrat central est l'asymétrie fondre / lire.** GAME_WORLD §12.2 : *« fondre paie
+> l'individu aujourd'hui ; lire ouvre au serveur, pour toujours »*. Le coût collectif de la
+> fonte est **réel**, et cela ne tient qu'à une chose — fondre ne verse rien au Répertoire.
+> L'asymétrie était correcte dans le code livré (`melt()` ne dispatche rien, `read()` dispatche
+> `MateriaReadEvent`), mais elle n'était vérifiée **nulle part** : c'est exactement le genre de
+> propriété qui se perd sans bruit le jour où quelqu'un uniformise les deux chemins *par souci
+> de symétrie*, et l'axe doctrinal du jeu tomberait avec elle. Le test la mesure dans les deux
+> sens — sans la moitié « lire, si », il passerait aussi bien sur un Répertoire qui ne reçoit
+> jamais rien de personne.
+>
+> **Les quatre autres.** *L'Autel ne bat pas monnaie* (il est le second lecteur du bassin, et
+> `FoundGesturePoolTest` ne tenait la loi que sur le premier). *Aucune table du Répertoire ne
+> porte de discriminant de serveur* — le catalogue tient la moitié « donnée », celle-ci ferme
+> l'autre porte : une colonne suffirait à faire du bassin un contenu par serveur sans qu'aucun
+> fichier de configuration ne le dise. *Aucun code ne retire un geste retrouvé*, ce qui se lit
+> sur les sources parce que c'est la seule façon de mesurer ce qui **n'arrive pas**. Et *l'Autel
+> s'ouvre sur le rang seul* — vérifié là où ça compte : sur une Métropole **sans guilde
+> contrôlante**, il est ouvert ; si la permission dépendait d'un gouvernant, ce cas-là serait
+> fermé, et le service de la ville serait devenu un pouvoir de guilde.
+>
+> Chaque invariant porte son garde-fou de non-vacuité — la fonte doit avoir rapporté quelque
+> chose, trois fichiers au moins doivent nommer l'entité : *un contrat vide ressemble à un
+> contrat tenu*.
 
 ---
 
