@@ -52,6 +52,7 @@ class PatronTreeContractTest extends AbstractIntegrationTestCase
         'Artificier' => 'artificer',
         'Gardien' => 'guardian',
         'Vagabond' => 'wanderer',
+        'Chevalier' => 'knight',
     ];
 
     /**

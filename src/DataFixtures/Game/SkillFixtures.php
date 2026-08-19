@@ -1349,16 +1349,41 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
+    /**
+     * CHEVALIER — metal x melee x assaut (ARC-08f), au gabarit.
+     *
+     * **Le test du voisin dans sa forme la plus dure.** L'Assassin occupe deja
+     * `assaut x melee` (ARC-08b) et seul l'element les separe : ils ne peuvent
+     * donc pas se distinguer par leur case. Ce qui les separe est ce qu'ils
+     * **font** — l'Assassin oppose *ne pas etre touche* a *trancher*, le
+     * Chevalier oppose **enfoncer** a **tenir**.
+     *
+     * **La teinte est `guard`, et c'est la seule branche d'assaut du jeu a en
+     * porter une.** Le canon l'autorise explicitement (§ 5 : *a 10 pb au
+     * maximum, une teinte peut viser le principal d'une autre fonction sans
+     * jamais en attraper l'identite*), et c'est ce qui rend le Rempart lisible
+     * au premier regard : un assaut qui avance derriere sa plaque.
+     *
+     * **Le plafond a ecrit la fourche pour la cinquieme fois** : 14 pb de
+     * `power` au capstone plus les 3 du palier 1 laissent 3 pb sous le plafond
+     * de 20 — `power` ne *pouvait* pas etre le levier de la fourche. Et
+     * `critical_power` tombe **pile a son plafond** (6 + 9 = 15) du cote de la
+     * Charge, comme le Guet de l'Archer avant lui.
+     */
     private function getKnightSkills(): array
     {
         $d = 'knight';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // GAME_MATERIA § 3 : exactement deux accords gratuits. La
+            // Provocation porte **Entaille**, la marque du metal (ARC-13b-a),
+            // et elle blesse — le capstone est donc atteignable des la premiere
+            // rencontre, puisqu'elle ne coute ni PM ni reprise.
             'knight_apprenti_1' => [
                 'title' => 'Materia : Provocation',
                 'slug' => 'knight-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Provocation',
+                'description' => 'Permet d\'utiliser la technique Provocation — celle qui entaille avant de faire mal',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'provocation']],
@@ -1372,124 +1397,177 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'steel-shield']],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord + 1 port ----
+            // Les passifs du palier 1 ne sont **jamais conditionnels** (§ 6.1) :
+            // au jour 1 le joueur n'a pas de tenue a arbitrer.
             'knight_rang2_1' => [
-                'title' => 'Constitution de fer',
+                'title' => 'Poids de la lance',
                 'slug' => 'knight-rang2-1',
-                'description' => 'Augmente les points de vie maximum',
+                'description' => 'Une arme d\'hast ne frappe pas, elle arrive',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'life' => 5,
+                'levers' => [['lever' => 'power', 'points' => 3]],
                 'requirements' => ['knight_apprenti_1'],
             ],
             'knight_rang2_2' => [
-                'title' => 'Materia : Riposte',
+                'title' => 'Defaut de la cuirasse',
                 'slug' => 'knight-rang2-2',
-                'description' => 'Permet d\'utiliser la materia Riposte',
+                'description' => 'Toute armure a un jour ou elle s\'ouvre',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical', 'points' => 3]],
+                'requirements' => ['knight_apprenti_2'],
+            ],
+            'knight_rang2_3' => [
+                'title' => 'Materia : Riposte',
+                'slug' => 'knight-rang2-3',
+                'description' => 'Permet d\'utiliser la technique Riposte — rendre le coup qu\'on vient de prendre',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'riposte']],
                 'requirements' => ['knight_apprenti_1'],
             ],
-            'knight_rang2_3' => [
-                'title' => 'Materia : Peau metallique',
-                'slug' => 'knight-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Peau metallique',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'metal-skin']],
-                'requirements' => ['knight_apprenti_2'],
-            ],
-            'knight_rang2_4' => [
-                'title' => 'Endurance du chevalier',
-                'slug' => 'knight-rang2-4',
-                'description' => 'Augmente la puissance des soins recus',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'heal' => 1,
-                'requirements' => ['knight_apprenti_2'],
-            ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord + 1 port ----
             'knight_rang3_1' => [
-                'title' => 'Materia : Barriere de lames',
+                'title' => 'Coup de pointe',
                 'slug' => 'knight-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Barriere de lames (degats + soin)',
+                'description' => 'La pointe cherche le joint, et le joint cede',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical', 'points' => 6]],
+                'requirements' => ['knight_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est lui
+            // qui fait de l'equipement un build plutot qu'un total. Le budget
+            // compte l'effet **moyen**, l'ecran affiche l'effet obtenu.
+            'knight_rang3_2' => [
+                'title' => 'Fer de lance',
+                'slug' => 'knight-rang3-2',
+                'description' => 'Ce qu\'on tient a deux mains entre plus loin',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical_power', 'points' => 6, 'condition' => 'weapon:lance']],
+                'requirements' => ['knight_rang2_2'],
+            ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous,
+            // et un seul parent au-dela (§ 6.6).
+            'knight_rang3_3' => [
+                'title' => 'Materia : Barriere de lames',
+                'slug' => 'knight-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Barriere de lames — qui blesse ce qui s\'approche',
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'blade-barrier']],
                 'requirements' => ['knight_rang2_1', 'knight_rang2_2'],
             ],
-            'knight_rang3_2' => [
-                'title' => 'Materia : Regeneration metallique',
-                'slug' => 'knight-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Regeneration metallique',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'metallic-regeneration']],
-                'requirements' => ['knight_rang2_3'],
-            ],
-            'knight_rang3_3' => [
-                'title' => 'Armure epaisse',
-                'slug' => 'knight-rang3-3',
-                'description' => 'Augmente les points de vie et la precision',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'life' => 5,
-                'hit' => 1,
-                'requirements' => ['knight_rang2_4'],
-            ],
-            'knight_rang3_4' => [
-                'title' => 'Materia : Chaine d\'eclairs',
-                'slug' => 'knight-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Chaine d\'eclairs',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'chain-lightning']],
-                'requirements' => ['knight_rang3_1'],
-            ],
 
-            // Rang 4 (60-100 pts) — 2 skills
-            'knight_rang4_1' => [
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            // Deux branches de deux passifs **et d'un accord chacune**, dont on
+            // n'apprend qu'une : l'arbre ecrit 60 pb, le personnage en porte 50.
+            // Les prerequis ne traversent jamais la fourche (§ 6.6).
+            'knight_charge_1' => [
+                'title' => 'Elan',
+                'slug' => 'knight-charge-1',
+                'description' => 'Ce n\'est pas le bras qui pousse, c\'est le pas',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'critical_power', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'knight', 'branch' => 'charge']],
+                'requirements' => ['knight_rang3_3'],
+            ],
+            'knight_charge_2' => [
+                'title' => 'Pointe d\'orichalque',
+                'slug' => 'knight-charge-2',
+                'description' => 'Une pointe assez dure n\'a pas a contourner l\'acier',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'pierce', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'knight', 'branch' => 'charge']],
+                'requirements' => ['knight_rang3_3'],
+            ],
+            // La teinte de l'arbre — 9 pb hors palette, sur **un seul** levier
+            // (§ 5, regle des 80/20). `guard` est le principal de l'encaisse :
+            // a ce dosage il donne au Rempart sa silhouette sans lui donner
+            // l'identite d'un tank.
+            'knight_bulwark_1' => [
+                'title' => 'Garde haute',
+                'slug' => 'knight-bulwark-1',
+                'description' => 'Avancer ne veut pas dire s\'ouvrir',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'guard', 'points' => 9, 'condition' => 'shield']],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'knight', 'branch' => 'bulwark']],
+                'requirements' => ['knight_rang3_3'],
+            ],
+            'knight_bulwark_2' => [
+                'title' => 'Contre-temps',
+                'slug' => 'knight-bulwark-2',
+                'description' => 'Le coup rendu part avant que l\'autre ait fini le sien',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'tempo', 'points' => 9, 'condition' => 'took_hit_last_turn']],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'knight', 'branch' => 'bulwark']],
+                'requirements' => ['knight_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis, celle qui
+            // decide si la fourche est un choix ou une decoration : sans lui,
+            // deux branches produisent le meme combat au tour pres.
+            'knight_charge_accord' => [
                 'title' => 'Materia : Poids ecrasant',
-                'slug' => 'knight-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Poids ecrasant — ecrasement brutal',
+                'slug' => 'knight-charge-accord',
+                'description' => 'Permet d\'utiliser la technique Poids ecrasant — tout le poids de la charge sur un point',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'crushing-weight']],
-                'requirements' => ['knight_rang3_1', 'knight_rang3_2'],
+                'actions' => [
+                    'materia' => ['unlock' => 'crushing-weight'],
+                    ['action' => 'specialization.branch', 'domain' => 'knight', 'branch' => 'charge'],
+                ],
+                'requirements' => ['knight_rang3_3'],
             ],
-            'knight_rang4_2' => [
+            'knight_bulwark_accord' => [
                 'title' => 'Materia : Vierge de fer',
-                'slug' => 'knight-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Vierge de fer',
+                'slug' => 'knight-bulwark-accord',
+                'description' => 'Permet d\'utiliser la technique Vierge de fer — se refermer sur qui s\'obstine',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'iron-maiden']],
-                'requirements' => ['knight_rang3_3', 'knight_rang3_4'],
+                'actions' => [
+                    'materia' => ['unlock' => 'iron-maiden'],
+                    ['action' => 'specialization.branch', 'domain' => 'knight', 'branch' => 'bulwark'],
+                ],
+                'requirements' => ['knight_rang3_3'],
             ],
 
-            // Rang 5 (100-150 pts) — 2 skills
-            'knight_t3_orichalcum' => [
-                'title' => 'Materia : Lame d\'orichalque',
-                'slug' => 'knight-t3-orichalcum',
-                'description' => 'Permet d\'utiliser la materia Lame d\'orichalque — tranche les defenses',
+            // --- Capstone (100 pts) ------------------------------------------
+            // Un seul passif, **conditionnel**, 14 pb sur le levier principal.
+            // Sa condition — une cible qui porte la marque — est posee des le
+            // tour 1 par la Provocation, qui est gratuite : elle est donc
+            // **frequente**, x1,4 et non x2,0 (§ 7, decision 23).
+            'knight_capstone' => [
+                'title' => 'Ce qui saigne deja',
+                'slug' => 'knight-capstone',
+                'description' => 'Une entaille ouverte est une porte, et la lance sait ou elle est',
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'orichalcum-blade']],
-                'requirements' => ['knight_rang4_1', 'knight_rang4_2'],
+                'levers' => [['lever' => 'power', 'points' => 14, 'condition' => 'target_marked']],
+                'requirements' => ['knight_rang3_3'],
             ],
+
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1).
             'knight_rang5_1' => [
                 'title' => 'Materia : Forteresse d\'acier',
                 'slug' => 'knight-rang5-1',
-                'description' => 'Permet d\'utiliser la materia Forteresse d\'acier',
+                'description' => 'Permet d\'utiliser la technique Forteresse d\'acier',
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'steel-fortress']],
-                'requirements' => ['knight_rang4_1', 'knight_rang4_2'],
+                'requirements' => ['knight_rang3_3'],
             ],
 
-            // Maitrise des armes (lances)
+            // --- Les echelons de port (0 pb) ---------------------------------
+            // *Un echelon est une porte, jamais une recompense* : ils ne
+            // portent aucune statistique, et ils ne comptent pas dans les 390
+            // points de l'arbre.
             'knight_weapon_t2' => [
                 'title' => 'Maitrise de la lance (T2)',
                 'slug' => 'knight-weapon-t2',

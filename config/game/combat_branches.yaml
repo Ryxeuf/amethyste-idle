@@ -189,3 +189,26 @@ trees:
                 label: 'Le Contre'
                 description: 'Attendre le pas de trop : passer entre les gardes, et durer plus que l''autre.'
                 accord: 'Courant d''air'
+
+    # --- Chevalier — metal x melee x assaut (ARC-08f) ----------------------
+    # **Le test du voisin dans sa forme la plus dure** : l'Assassin occupe
+    # deja `assaut x melee` (ARC-08b), et seul l'element les separe. Ils ne
+    # peuvent donc pas se distinguer par leur case — il faut qu'ils se
+    # distinguent par ce qu'ils **font**, et c'est la fourche qui le decide.
+    #
+    # L'Assassin oppose *ne pas etre touche* a *trancher* ; le Chevalier
+    # oppose **enfoncer** a **tenir**. La Charge pousse la lance a travers ce
+    # qui protege ; le Rempart avance derriere sa plaque et fait payer le coup
+    # qu'il a encaisse — la seule branche d'assaut du jeu dont la teinte est
+    # `guard`, et c'est ce qui la rend lisible au premier regard.
+    knight:
+        label: 'Chevalier'
+        branches:
+            charge:
+                label: 'La Charge'
+                description: 'Ce qui protege ne protege pas d''une lance lancee : percer, et faire payer l''ouverture.'
+                accord: 'Poids ecrasant'
+            bulwark:
+                label: 'Le Rempart'
+                description: 'Avancer derriere sa garde, et rendre chaque coup recu au tour suivant.'
+                accord: 'Vierge de fer'

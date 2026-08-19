@@ -2062,6 +2062,17 @@ class SpellFixtures extends Fixture
             ],
 
             // Sorts spécifiques — Chevalier (métal/tank)
+            // ARC-08f — les trois gestes que le Chevalier ouvre **en propre**
+            // declarent leur registre. Sans cela, ses passifs bornes a la melee
+            // (DOM-01) ne qualifieraient aucun de ses gestes : un arbre de melee
+            // dont les accords sont des sorts est un arbre dont les passifs ne
+            // servent a rien. Les quatre autres restent des **sorts** parce
+            // qu'ils sont partages — *un accord partage garde le registre de
+            // celui qui l'a ouvert le premier* (ARC-08b).
+            //
+            // La Provocation porte **Entaille**, la marque du metal (ARC-13b-a),
+            // et elle blesse : le capstone de l'arbre est donc atteignable des
+            // la premiere rencontre, avec le seul kit d'entree.
             'provocation' => [
                 'slug' => 'provocation',
                 'damage' => 1,
@@ -2070,7 +2081,12 @@ class SpellFixtures extends Fixture
                 'name' => 'Provocation',
                 'description' => 'Provoque l\'ennemi, attirant son attention',
                 'hit' => 100,
-                'energyCost' => 3,
+                // La melee ne paie pas en PM mais en tours (ARC-04a), et un
+                // geste de palier 1 ne coute rien : *un accord d'entree est
+                // gratuit*, il ne peut donc pas partir en reprise.
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'register' => CombatRegister::Melee,
                 'level' => 1,
                 'statusEffectSlug' => 'gash',
             ],
@@ -2082,7 +2098,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Riposte',
                 'description' => 'Contre-attaque après une parade réussie',
                 'hit' => 95,
-                'energyCost' => 8,
+                'energyCost' => 0,
+                'cooldown' => 1,
+                'register' => CombatRegister::Melee,
                 'level' => 2,
             ],
             'steel_fortress' => [
@@ -2093,8 +2111,13 @@ class SpellFixtures extends Fixture
                 'name' => 'Forteresse d\'acier',
                 'description' => 'Se transforme en forteresse imprenable',
                 'hit' => 100,
-                'energyCost' => 20,
+                // ARC-08f — melee, comme les deux autres accords exclusifs du
+                // Chevalier. *Aucune exception par intention* (GAME_MATERIA
+                // § 2.3 bis) : une protection de melee part en reprise comme
+                // un coup de melee, et le jeu s'auto-regule par le cout du tour.
+                'energyCost' => 0,
                 'cooldown' => 4,
+                'register' => CombatRegister::Melee,
                 'statusEffectSlug' => 'shield-strong',
                 'level' => 5,
             ],
