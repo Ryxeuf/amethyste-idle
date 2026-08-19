@@ -44,8 +44,17 @@ class MateriaCatalogIntegrationTest extends AbstractIntegrationTestCase
      *
      * Cliquet : la valeur peut baisser au fil d'ARC-08 **en le disant**, et
      * remonter librement.
+     *
+     * **ARC-08f — le Chevalier, 199 → 197.** L'arbre portait onze accords, le
+     * gabarit en autorise sept : les quatre retires sont la Peau metallique, la
+     * Regeneration metallique, la Chaine d'eclairs et la Lame d'orichalque.
+     * **Deux seulement quittent le catalogue** — la Regeneration metallique et
+     * la Chaine d'eclairs sont ouvertes ailleurs, et *un accord partage survit
+     * a la conversion de l'un de ses arbres*. C'est la meme mesure qu'ARC-08b
+     * sur l'Assassin, pour la meme raison : ***un arbre qui ouvre tout n'ouvre
+     * rien***.
      */
-    private const MEASURED_UNLOCK_FLOOR = 199;
+    private const MEASURED_UNLOCK_FLOOR = 197;
 
     /**
      * @return list<string> les slugs de sort distincts ouverts par un nœud

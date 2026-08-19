@@ -785,6 +785,42 @@ d'un monstre et la valeur d'un geste, on ne peut pas la fixer d'un seul côté.
 > chose derrière lui, **pas comme un familier** — la forme n'existe pas (`DepositLaw` ne
 > dépose que la portée `Group` et la protection), et c'est ARC-18 qui l'ouvrira. Même
 > discipline qu'ARC-07b avec la Dissipation.
+> **ARC-08f — le Chevalier, livré le 2026-08-19. Le test du voisin dans sa forme la plus
+> dure.** Le sixième arbre au gabarit occupe une case **déjà tenue** — `assaut × mêlée`, celle
+> de l'Assassin (ARC-08b) —, et seul l'élément les sépare. C'est le premier arbre qui ne peut
+> pas se distinguer par sa place : *deux arbres de même fonction et même registre ne se
+> distinguent que par ce qu'ils font*. L'Assassin oppose **ne pas être touché** à **trancher** ;
+> le Chevalier oppose **enfoncer** à **tenir**.
+>
+> **La teinte est `guard`, et c'est la seule branche d'assaut du jeu à en porter une.** Le
+> canon l'autorise nommément (§ 5 : *à 10 pb au maximum, une teinte peut viser le principal
+> d'une autre fonction sans jamais en attraper l'identité*), et c'est ce qui rend le Rempart
+> lisible au premier regard — un assaut qui avance derrière sa plaque, là où la Charge pousse
+> la lance à travers ce qui protège.
+>
+> **Le plafond a écrit la fourche pour la cinquième fois**, et deux fois dans le même arbre :
+> 14 pb de `power` au capstone plus les 3 du palier 1 laissent 3 pb sous le plafond de 20, donc
+> `power` ne *pouvait* pas être le levier de la fourche ; et `critical_power` tombe **pile à son
+> plafond** du côté de la Charge (6 + 9 = 15), comme le Guet de l'Archer avant lui. L'arbre
+> tombe sur ses nombres **sans dosage** : 390 points, 50 pb par branche, `PatronTreeContractTest`
+> vert du premier coup.
+>
+> **Trois gestes déclarent enfin leur registre** — la Provocation, la Riposte et la Forteresse
+> d'acier, les seuls que le Chevalier ouvre **en propre**. Les quatre autres restent des sorts,
+> parce qu'ils sont partagés : *un accord partagé garde le registre de celui qui l'a ouvert le
+> premier* (ARC-08b, troisième application). Sans cette conversion, les passifs de l'arbre —
+> bornés à la mêlée par DOM-01 — n'auraient qualifié **aucun** de ses gestes propres.
+>
+> **Le capstone est atteignable au jour 1 sans qu'on ait rien ajouté** : la Provocation porte
+> déjà **Entaille**, la marque du métal (ARC-13b-a), elle blesse, et elle est gratuite. La
+> condition du sommet est donc *fréquente* — ×1,4 et non ×2,0 (décision 23).
+>
+> **Le catalogue rétrécit de deux, et c'est la mesure d'ARC-08b qui se répète** : l'arbre
+> portait onze accords, le gabarit en autorise sept ; sur les quatre retirés, **deux seulement
+> quittent le catalogue** (la Peau métallique et la Lame d'orichalque), les deux autres étant
+> ouverts ailleurs. ***Un arbre qui ouvre tout n'ouvre rien.*** Cliquets : arbres au gabarit
+> 5 → **6**, liste d'attente des fourches 15 → **14**, plancher du catalogue 199 → **197**, dit.
+>
 > **ARC-08e — le Vagabond, livré le 2026-08-18. La grille est couverte.** Le cinquième arbre au
 > gabarit remplit `control × melee`, et le simulateur joue désormais **toutes les cases que le
 > jeu possède**.
