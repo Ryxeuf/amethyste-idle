@@ -126,12 +126,17 @@ class MateriaConversionService
             $this->accordGranter->grantAccordPoints($player, $domain, $accordPoints);
         }
 
+        // REP-01 : la provenance vit sur la **piece**, et la piece dispararait
+        // a la ligne suivante. On la retient avant, sinon le Repertoire ne
+        // saurait jamais d'ou venait ce qu'il a lu.
+        $provenanceZoneId = $materia->getOriginZoneId();
+
         $this->entityManager->remove($materia);
         $this->entityManager->flush();
 
         $this->reputationManager->grantGestureReputation($player, 'materia_read');
 
-        $this->eventDispatcher->dispatch(new MateriaReadEvent($player, $item), MateriaReadEvent::NAME);
+        $this->eventDispatcher->dispatch(new MateriaReadEvent($player, $item, $provenanceZoneId), MateriaReadEvent::NAME);
 
         return [
             'codexUnlocked' => $codexUnlocked,
