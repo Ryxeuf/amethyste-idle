@@ -45,6 +45,10 @@ class HousingManager
         private readonly LoggerInterface $logger,
         private readonly InventoryHelper $inventoryHelper,
         private readonly ResidentialParcels $residentialParcels,
+        // En dernier : une dependance nouvelle s'ajoute en queue, jamais au
+        // milieu — un service insere entre deux autres decalerait sans un mot
+        // toute construction positionnelle dans les tests.
+        private readonly HouseRentRouting $rentRouting,
     ) {
     }
 
@@ -154,6 +158,10 @@ class HousingManager
             throw new \InvalidArgumentException(sprintf('Il vous faut %d Gils pour le loyer.', PlayerHouse::RENT_AMOUNT));
         }
 
+        // FOY-19 : le loyer devient politique. Dans une zone a foyer, il part au
+        // tresor de la guilde controlante ; ailleurs, il sort du jeu.
+        $this->rentRouting->route($house, PlayerHouse::RENT_AMOUNT);
+
         $house->extendRent();
         $this->entityManager->flush();
 
@@ -184,6 +192,11 @@ class HousingManager
             $owner = $house->getOwner();
 
             if ($owner->removeGils(PlayerHouse::RENT_AMOUNT)) {
+                // FOY-19 : le prelevement automatique emprunte le meme chemin
+                // que le paiement a la main. Router l'un et pas l'autre ferait
+                // dependre le revenu d'une guilde du **bouton** sur lequel ses
+                // habitants ont appuye.
+                $this->rentRouting->route($house, PlayerHouse::RENT_AMOUNT);
                 $house->extendRent();
                 ++$charged;
                 continue;

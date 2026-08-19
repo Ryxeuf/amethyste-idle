@@ -1514,6 +1514,9 @@
         "empty": "No guild order in progress.",
         "open": "open",
         "taken_by": "taken by %player%"
+      },
+      "treasury": {
+        "from_rents": "of which %amount% Gils from rents"
       }
     },
     "zone": {
