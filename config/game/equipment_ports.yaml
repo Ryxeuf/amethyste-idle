@@ -32,11 +32,28 @@
 # Hors perimetre, assume : les armures, les boucliers et les outils de metier
 # n'ont pas encore d'echelle (ONB-20b-b). Les declarer ici sans les appliquer
 # donnerait l'illusion d'une couverture qui n'existe pas.
+#
+# -----------------------------------------------------------------------------
+# DOM-09 : le **registre** d'une arme se lit ici, et nulle part ailleurs.
+# -----------------------------------------------------------------------------
+# Il se lisait sur `Item::domain->getRegister()`, c'est-a-dire sur un **domaine**
+# — et un domaine porte `element x registre` (DOM-01). Le baton etait rattache au
+# paladin (lumiere x **melee**), si bien que **porter un baton activait la
+# famille melee** : une arme de lanceur de sorts faisait parler les passifs de
+# corps a corps.
+#
+# C'est le meme defaut que l'echelle de port a corrige pour l'apprentissage
+# (« le baton etait enseigne par le paladin, un arbre de melee »), reste ouvert
+# du cote de l'**objet**. La reponse est la meme : *le domaine est element x
+# registre, c'est l'arme qui fixe le registre* — donc il se declare sur la
+# **famille**, une fois, et le rattachement d'un objet a un domaine cesse d'avoir
+# la moindre consequence sur ce qu'il fait parler.
 # =============================================================================
 
 families:
     axe:
         label: 'Hache'
+        register: melee
         # La hache de **guerre**. La hache de bucheron est un nœud entierement
         # separe, dans l'arbre du bucheron (GAME_ONBOARDING § 6.0 bis d).
         taught_by: [berserker, soldier, guardian, tamer]
@@ -46,6 +63,7 @@ families:
 
     sword:
         label: 'Épée'
+        register: melee
         taught_by: [soldier, knight, paladin, inquisitor, wanderer, assassin]
         rung1: { reference: port_sword, slug: port-sword, title: 'Port de l''épée', free: true }
         rung2: soldier_weapon_t2
@@ -53,6 +71,7 @@ families:
 
     dagger:
         label: 'Dague'
+        register: melee
         taught_by: [assassin, wanderer, hunter, tamer]
         rung1: { reference: port_dagger, slug: port-dagger, title: 'Port de la dague', free: true }
         rung2: assassin_weapon_t2
@@ -60,6 +79,7 @@ families:
 
     lance:
         label: 'Lance'
+        register: melee
         taught_by: [knight, guardian, defender, tamer]
         rung1: { reference: port_lance, slug: port-lance, title: 'Port de la lance', free: true }
         rung2: knight_weapon_t2
@@ -67,6 +87,7 @@ families:
 
     bow:
         label: 'Arc'
+        register: ranged
         taught_by: [archer, hunter, wanderer]
         rung1: { reference: port_bow, slug: port-bow, title: 'Port de l''arc', free: true }
         rung2: archer_weapon_t2
@@ -74,6 +95,7 @@ families:
 
     crossbow:
         label: 'Arbalète'
+        register: ranged
         # Ajoutee le 2026-08-01 (GAME_TREE_ANATOMY § 13.8, ecart n° 10).
         #
         # Elle manquait, et le catalogue public la promettait deja : « Arbaletes,
@@ -92,6 +114,7 @@ families:
 
     staff:
         label: 'Bâton'
+        register: spell
         # Le baton etait enseigne par le **paladin**, un arbre de melee. Une arme
         # de lanceur de sorts derriere une porte de melee : c'est le defaut le
         # plus net de l'echelle heritee.

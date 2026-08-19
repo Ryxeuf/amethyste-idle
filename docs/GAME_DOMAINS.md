@@ -259,8 +259,19 @@ s'activera quand la **fusion** ouvrira (extension — GAME_WORLD §2.1/§2.2) : 
 l'hybride dont son élément est parent (le pyromancien pourra accorder Magma ou Inferno).
 Poser le nœud maintenant coûte une ligne de données et évite un refactor d'arbre le jour
 venu ; l'enum `Element` devra tolérer les éléments composés — **pas encore fait dans
-l'enum** (contrairement à ce qu'une version antérieure de ce paragraphe affirmait) :
-l'arbitrage est porté par **DOM-09** (PLAN_DOMAINS). Les **gestes
+l'enum** (contrairement à ce qu'une version antérieure de ce paragraphe affirmait).
+
+> **Arbitrage rendu par DOM-09 (2026-08-19)** : les composés n'entreront dans l'enum
+> **qu'avec la fusion**, et `wood` n'en est pas un candidat. La mesure le dit :
+> `Element::cases()` est parcouru par le **butin de matéria** (une matéria par élément),
+> par les **huit marques élémentaires** (ARC-13a) et par la **loi de nommage** des zones
+> (ZON-39). Un neuvième cas produirait une matéria de bois, une marque de bois et une
+> règle de nommage pour un élément qu'**aucun domaine de combat ne porte** — la neuvième
+> case que le §9 quater de GAME_ARCHETYPES interdit, celle qui avait éteint l'archer.
+> `wood` reste ce qu'il est : la **teinte** de deux métiers (bûcheron, charpentier), au
+> même titre que `water` teinte le pêcheur. Ce que DOM-09 ferme, c'est la seule chose qui
+> comptait — *une teinte de métier n'entre jamais dans une case de combat*, et un test le
+> tient (`DomainBoundContractTest`). Les **gestes
 retrouvés** du Répertoire, eux, n'exigent pas de nouveau nœud : un geste retrouvé produit
 une matéria du **catalogue standard** — l'accord existant suffit.
 

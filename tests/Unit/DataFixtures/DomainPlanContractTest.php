@@ -69,6 +69,15 @@ class DomainPlanContractTest extends TestCase
      * Un nœud sans domaine tombe dans la clause de retro-compatibilite et
      * s'applique donc partout — ce qui etait le comportement d'avant le jalon.
      * Un seul nœud oublie suffit a rouvrir la breche, et rien ne le signale.
+     *
+     * **Ce qu'il n'attrape pas, et pourquoi il reste (DOM-09).** Ce test lit le
+     * **texte** des fixtures et pose la question « a-t-il un domaine ? ». Un nœud
+     * rattache a quatre metiers y repondait *oui* tout en fuyant, puisqu'aucun de
+     * ses domaines n'est un domaine de combat : c'est ainsi que 55 nœuds de
+     * metier ont distribue des statistiques a toute action. La question juste —
+     * ***son domaine borne-t-il quelque chose ?*** — se lit sur la base, et c'est
+     * `DomainBoundContractTest` qui la pose. Celui-ci garde sa valeur propre : il
+     * attrape le nœud **sans aucun domaine**, avant meme qu'il n'atteigne la base.
      */
     public function testEverySkillWithCombatStatsBelongsToADomain(): void
     {

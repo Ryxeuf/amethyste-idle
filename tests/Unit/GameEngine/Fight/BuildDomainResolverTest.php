@@ -8,10 +8,15 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
+use App\Entity\Game\Skill;
 use App\Enum\CombatRegister;
 use App\Enum\Element;
 use App\GameEngine\Fight\BuildDomainResolver;
+use App\GameEngine\Gear\WornPieceReader;
+use App\GameEngine\Progression\EquipmentPortCatalog;
 use App\GameEngine\Progression\SynergyCalculator;
+use App\Helper\GearHelper;
+use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +38,15 @@ class BuildDomainResolverTest extends TestCase
     {
         $synergies = $this->createMock(SynergyCalculator::class);
         $synergies->method('getExpressionWidenings')->willReturn([]);
-        $this->resolver = new BuildDomainResolver($synergies);
+
+        // DOM-09 : le registre d'une arme vient de sa **famille de port**, plus
+        // du domaine de l'objet — donc le resolveur lit l'echelle reelle.
+        $catalog = new EquipmentPortCatalog(\dirname(__DIR__, 4));
+        $this->resolver = new BuildDomainResolver(
+            $synergies,
+            new WornPieceReader($catalog, new GearHelper($this->createMock(PlayerHelper::class))),
+            $catalog,
+        );
     }
 
     /**
@@ -139,12 +152,34 @@ class BuildDomainResolverTest extends TestCase
         return $piece;
     }
 
+    /**
+     * Une arme, decrite par ce qui la rend portable (DOM-09).
+     *
+     * Le registre ne vient plus du domaine de l'objet mais de sa **famille**,
+     * lue sur l'echelon de port qu'elle exige : une epee dit `melee`, un baton
+     * dit `spell`, et une arme **sans echelon** — l'epee de bois du debutant —
+     * n'apporte aucun registre.
+     */
     private function weapon(?CombatRegister $register): PlayerItem&MockObject
     {
+        $portSkill = match ($register) {
+            CombatRegister::Melee => 'port-sword',
+            CombatRegister::Ranged => 'port-bow',
+            CombatRegister::Spell => 'port-staff',
+            default => null,
+        };
+
+        $requirements = [];
+        if ($portSkill !== null) {
+            $skill = new Skill();
+            $skill->setSlug($portSkill);
+            $requirements[] = $skill;
+        }
+
         $generic = $this->createMock(Item::class);
         $generic->method('getGearLocation')->willReturn('main_weapon');
         $generic->method('getElement')->willReturn(Element::None);
-        $generic->method('getDomain')->willReturn($register === null ? null : $this->domain('metal', $register));
+        $generic->method('getRequirements')->willReturn(new ArrayCollection($requirements));
 
         $piece = $this->createMock(PlayerItem::class);
         $piece->method('getGear')->willReturn(1);
