@@ -121,7 +121,20 @@ class ReferenceCharacterFactoryTest extends AbstractIntegrationTestCase
                 self::assertGreaterThan(0, $outcome->turns, sprintf('%s : une rencontre sans tour.', $character->label));
                 self::assertLessThanOrEqual(EncounterSimulator::MAX_TURNS, $outcome->turns);
                 self::assertLessThanOrEqual($character->maxLife, $outcome->lifeLost, sprintf('%s perd plus que sa barre.', $character->label));
-                self::assertLessThanOrEqual($character->maxResource, $outcome->resourceSpent, sprintf('%s depense plus que son pool.', $character->label));
+                // **La borne est le pool _plus ce que la regeneration a
+                // rendu_**, et pas le pool seul (ARC-08h). Ecrit sur le pool
+                // seul, l'invariant etait vrai par accident : aucun build
+                // converti ne portait assez de `wind` pour le depasser. La
+                // Benediction du Pretre en porte 9 pb et depense 102 pour un
+                // pool de 100 — *ce qui est exactement ce que `wind` existe pour
+                // faire*. Un test qui refuserait cela mesurerait un jeu ou
+                // rendre de la ressource ne sert a rien.
+                $regenerated = $character->resourcePerTurn * $outcome->turns;
+                self::assertLessThanOrEqual(
+                    $character->maxResource + $regenerated,
+                    $outcome->resourceSpent,
+                    sprintf('%s depense plus que son pool et sa regeneration reunis.', $character->label),
+                );
             }
         }
     }

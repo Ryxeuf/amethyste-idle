@@ -4430,175 +4430,219 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     // =========================================================================
     // PRETRE (lumiere) — 18 skills, healer pur
     // =========================================================================
+    /**
+     * PRETRE — lumiere x sorts x entretien (ARC-08h), au gabarit.
+     *
+     * **Le troisieme voisin exact d'affilee**, apres le Chevalier et le
+     * Defenseur : le Guerisseur occupe deja `entretien x sorts` (ARC-07b). Il a
+     * pris l'opposition la plus evidente — *le solitaire contre le groupe* —,
+     * donc le Pretre doit en trouver une autre. La lumiere la donne : **benir**
+     * contre **purifier**, poser ce qui dure contre retirer ce qui gene.
+     *
+     * **Le corollaire 2 du § 7.1 se verifie une septieme fois** : `mending`
+     * plafonne a 20, le capstone en consomme 14 et le palier 1 en met 3 — il
+     * reste **3 pb**, donc le levier principal de l'entretien est *impossible*
+     * dans sa propre fourche. Et `thrift` tombe **pile a son plafond** du cote
+     * de la Purge (6 + 9 = 15).
+     *
+     * **Aucun registre a convertir** : c'est le premier arbre de **sorts** du
+     * chantier, et ses accords etaient deja des sorts. Ce qui manquait n'etait
+     * pas le registre mais la **portee** — la palette de l'entretien exige un
+     * geste de groupe, et le Pretre n'en avait aucun.
+     *
+     * **Il gagne sa marque d'entree, et c'est la mesure qui l'a exige.** Ecrit
+     * d'abord avec deux soins a l'entree — ce que la fonction suggerait —,
+     * l'arbre a produit une branche que le simulateur a refusee : *la
+     * Benediction ne pouvait retirer aucun point de vie*. Le tronc commun ne
+     * portait aucun degat, donc les deux branches en heritaient de zero. La
+     * Lumiere sacree repare les deux a la fois — elle blesse, et elle porte
+     * **Revele** (ARC-13a). ***Le Pretre n'etait pas sans marque par choix, il
+     * l'etait faute d'un geste qui blesse.***
+     */
     private function getPriestSkills(): array
     {
         $d = 'priest';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
+            // --- Entree (0 pt) : les deux accords du jour 1 ------------------
+            // **Un soin et un geste qui blesse**, et ce n'etait pas le plan :
+            // ecrit d'abord avec deux soins — ce que la fonction suggerait —,
+            // l'arbre a produit une branche que le simulateur a refusee, *« La
+            // Benediction ne peut retirer aucun point de vie : elle ne
+            // conclurait jamais une rencontre »*. Le tronc commun ne portait
+            // aucun degat, donc **les deux branches en heritaient de zero**.
+            //
+            // La Lumiere sacree repare les deux choses a la fois : elle blesse,
+            // et elle porte **Revele**, la marque de la lumiere (ARC-13a). Le
+            // Pretre **sort de la liste d'attente des marques**, ou ARC-13b-a
+            // l'avait laisse comme « defendable » — la mesure a montre qu'il n'y
+            // etait pas par choix, mais faute d'un geste qui blesse.
             'priest_apprenti_1' => [
-                'title' => 'Materia : Priere',
-                'slug' => 'priest-apprenti-1',
-                'description' => 'Permet d\'utiliser la materia Priere',
-                'requiredPoints' => 0,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'prayer']],
-            ],
-            'priest_apprenti_2' => [
                 'title' => 'Materia : Toucher angelique',
-                'slug' => 'priest-apprenti-2',
+                'slug' => 'priest-apprenti-1',
                 'description' => 'Permet d\'utiliser la materia Toucher angelique',
                 'requiredPoints' => 0,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'angelic-touch']],
             ],
+            'priest_apprenti_2' => [
+                'title' => 'Materia : Lumiere sacree',
+                'slug' => 'priest-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Lumiere sacree — celle qui revele avant de bruler',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-light']],
+            ],
 
-            // Rang 2 (10-20 pts) — 4 skills
+            // --- Palier 1 (10 pts) : 2 passifs a 3 pb + 1 accord -------------
+            // Les passifs du palier 1 ne sont **jamais conditionnels** (§ 6.1).
             'priest_rang2_1' => [
-                'title' => 'Grace divine',
+                'title' => 'Main sure',
                 'slug' => 'priest-rang2-1',
-                'description' => 'Augmente la puissance des soins',
+                'description' => 'Le meme geste, mieux fait, referme davantage',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'heal' => 1,
+                'levers' => [['lever' => 'mending', 'points' => 3]],
                 'requirements' => ['priest_apprenti_1'],
             ],
             'priest_rang2_2' => [
-                'title' => 'Concentration sacree',
+                'title' => 'Ame claire',
                 'slug' => 'priest-rang2-2',
-                'description' => 'Augmente la precision des soins',
+                'description' => 'Ce qui est en pleine lumiere ne se laisse pas prendre',
                 'requiredPoints' => 10,
                 'domain' => $d,
-                'hit' => 1,
-                'requirements' => ['priest_apprenti_1'],
+                'levers' => [['lever' => 'ward', 'points' => 3]],
+                'requirements' => ['priest_apprenti_2'],
             ],
             'priest_rang2_3' => [
-                'title' => 'Materia : Vague de guerison',
+                'title' => 'Materia : Vague de soin',
                 'slug' => 'priest-rang2-3',
-                'description' => 'Permet d\'utiliser la materia Vague de guerison',
+                'description' => 'Permet d\'utiliser la materia Vague de soin',
                 'requiredPoints' => 10,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'healing-wave']],
-                'requirements' => ['priest_apprenti_2'],
-            ],
-            'priest_rang2_4' => [
-                'title' => 'Materia : Floraison de vie',
-                'slug' => 'priest-rang2-4',
-                'description' => 'Permet d\'utiliser la materia Floraison de vie',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'life-bloom']],
-                'requirements' => ['priest_apprenti_2'],
+                'requirements' => ['priest_apprenti_1'],
             ],
 
-            'priest_rang2_5' => [
-                'title' => 'Benediction passive',
-                'slug' => 'priest-rang2-5',
-                'description' => 'La grace divine renforce le pretre en permanence',
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'heal' => 1,
-                'life' => 2,
-                'requirements' => ['priest_apprenti_2'],
-            ],
-
-            // Rang 3 (25-50 pts) — 5 skills
+            // --- Palier 2 (25 pts) : 2 passifs a 6 pb + 1 accord -------------
             'priest_rang3_1' => [
-                'title' => 'Materia : Regeneration',
+                'title' => 'Office court',
                 'slug' => 'priest-rang3-1',
-                'description' => 'Permet d\'utiliser la materia Regeneration (HoT)',
+                'description' => 'Une priere qui va droit au but coute moins a dire',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 6]],
+                'requirements' => ['priest_rang2_1'],
+            ],
+            // Le premier passif **conditionnel** de l'arbre (§ 4.3) : c'est lui
+            // qui fait de l'equipement un build plutot qu'un total.
+            'priest_rang3_2' => [
+                'title' => 'Habit d\'office',
+                'slug' => 'priest-rang3-2',
+                'description' => 'Ce qu\'on porte pour servir n\'entrave pas le service',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'levers' => [['lever' => 'recovery', 'points' => 6, 'condition' => 'armor:cloth']],
+                'requirements' => ['priest_rang2_2'],
+            ],
+            // Le nœud charniere : la fourche et le capstone en dependent tous,
+            // et un seul parent au-dela (§ 6.6).
+            'priest_rang3_3' => [
+                'title' => 'Materia : Rajeunissement',
+                'slug' => 'priest-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Rajeunissement',
                 'requiredPoints' => 25,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'rejuvenation']],
                 'requirements' => ['priest_rang2_1', 'priest_rang2_2'],
             ],
-            'priest_rang3_2' => [
-                'title' => 'Materia : Afflux de vitalite',
-                'slug' => 'priest-rang3-2',
-                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
-                'requirements' => ['priest_rang2_3'],
-            ],
-            'priest_rang3_3' => [
-                'title' => 'Vitalite du pretre',
-                'slug' => 'priest-rang3-3',
-                'description' => 'Augmente les points de vie maximum',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'life' => 5,
-                'requirements' => ['priest_rang2_4'],
-            ],
-            'priest_rang3_4' => [
-                'title' => 'Materia : Transfert de vie',
-                'slug' => 'priest-rang3-4',
-                'description' => 'Permet d\'utiliser la materia Transfert de vie',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'life-transfer']],
-                'requirements' => ['priest_rang3_1'],
-            ],
 
-            'priest_t2_nova' => [
-                'title' => 'Materia : Nova sacree',
-                'slug' => 'priest-t2-nova',
-                'description' => 'Permet d\'utiliser la materia Nova sacree — explosion de lumiere en zone',
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'holy-nova']],
-                'requirements' => ['priest_rang2_3', 'priest_rang2_5'],
-            ],
-
-            // Rang 4 (60-100 pts) — 3 skills
-            'priest_rang4_1' => [
-                'title' => 'Materia : Benediction celeste',
-                'slug' => 'priest-rang4-1',
-                'description' => 'Permet d\'utiliser la materia Benediction celeste — soin ultime',
+            // --- Palier 3 (50 pts) : la fourche ------------------------------
+            'priest_blessing_1' => [
+                'title' => 'Souffle continu',
+                'slug' => 'priest-blessing-1',
+                'description' => 'Un office qui ne s\'interrompt pas se paie tout seul',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'celestial-blessing']],
-                'requirements' => ['priest_rang3_1', 'priest_rang3_2'],
+                'levers' => [['lever' => 'wind', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'priest', 'branch' => 'blessing']],
+                'requirements' => ['priest_rang3_3'],
             ],
-            'priest_rang4_2' => [
+            'priest_blessing_2' => [
+                'title' => 'Grace couvrante',
+                'slug' => 'priest-blessing-2',
+                'description' => 'Ce qui est beni ne se defait pas si vite',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'ward', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'priest', 'branch' => 'blessing']],
+                'requirements' => ['priest_rang3_3'],
+            ],
+            // La teinte de l'arbre — 9 pb hors palette, sur **un seul** levier
+            // (§ 5, regle des 80/20). `grip` est le principal du controle : la
+            // Purge fait taire, et ce qu'elle fait taire doit le rester.
+            'priest_purge_1' => [
+                'title' => 'Silence tenu',
+                'slug' => 'priest-purge-1',
+                'description' => 'Ce qu\'on a fait taire ne reprend pas la parole au tour suivant',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'grip', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'priest', 'branch' => 'purge']],
+                'requirements' => ['priest_rang3_3'],
+            ],
+            'priest_purge_2' => [
+                'title' => 'Rite depouille',
+                'slug' => 'priest-purge-2',
+                'description' => 'Retirer coute moins cher que donner',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'levers' => [['lever' => 'thrift', 'points' => 9]],
+                'actions' => [['action' => 'specialization.branch', 'domain' => 'priest', 'branch' => 'purge']],
+                'requirements' => ['priest_rang3_3'],
+            ],
+            // L'accord de chaque branche — la regle 5 du § 6.1 bis.
+            'priest_blessing_accord' => [
                 'title' => 'Materia : Benediction divine',
-                'slug' => 'priest-rang4-2',
-                'description' => 'Permet d\'utiliser la materia Benediction divine',
+                'slug' => 'priest-blessing-accord',
+                'description' => 'Permet d\'utiliser la materia Benediction divine — une provision posee sur tout le groupe',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
-                'requirements' => ['priest_rang3_3', 'priest_rang3_4'],
+                'actions' => [
+                    'materia' => ['unlock' => 'divine-blessing'],
+                    ['action' => 'specialization.branch', 'domain' => 'priest', 'branch' => 'blessing'],
+                ],
+                'requirements' => ['priest_rang3_3'],
             ],
-
-            'priest_t2_purge' => [
+            'priest_purge_accord' => [
                 'title' => 'Materia : Purge',
-                'slug' => 'priest-t2-purge',
-                'description' => 'Permet d\'utiliser la materia Purge — dissipe les effets negatifs',
+                'slug' => 'priest-purge-accord',
+                'description' => 'Permet d\'utiliser la materia Purge — ce qui parle trop cesse de parler',
                 'requiredPoints' => 50,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'purge']],
-                'requirements' => ['priest_rang3_1', 'priest_rang3_3'],
+                'actions' => [
+                    'materia' => ['unlock' => 'purge'],
+                    ['action' => 'specialization.branch', 'domain' => 'priest', 'branch' => 'purge'],
+                ],
+                'requirements' => ['priest_rang3_3'],
             ],
 
-            // Rang 5 (100-150 pts) — 3 skills
-            'priest_t3_grace' => [
-                'title' => 'Materia : Grace divine',
-                'slug' => 'priest-t3-grace',
-                'description' => 'Permet d\'utiliser la materia Grace divine — soin et protection celeste',
+            // --- Capstone (100 pts) ------------------------------------------
+            // Un seul passif, **conditionnel**, 14 pb sur le levier principal.
+            // Sa condition — une cible au bord — **peut reellement manquer** :
+            // c'est l'une des rares qui garde x2,0 (§ 4.3), et c'est aussi ce
+            // qui fait qu'un arbre d'entretien ne gagne rien a soigner tot.
+            'priest_capstone' => [
+                'title' => 'Ce qui tient encore',
+                'slug' => 'priest-capstone',
+                'description' => 'La lumiere va d\'abord la ou elle allait s\'eteindre',
                 'requiredPoints' => 100,
                 'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'divine-grace']],
-                'requirements' => ['priest_rang4_1', 'priest_t2_purge'],
+                'levers' => [['lever' => 'mending', 'points' => 14, 'condition' => 'target_below_quarter_life']],
+                'requirements' => ['priest_rang3_3'],
             ],
-            'priest_t3_judgment' => [
-                'title' => 'Materia : Jugement celeste',
-                'slug' => 'priest-t3-judgment',
-                'description' => 'Permet d\'utiliser la materia Jugement celeste — courroux divin',
-                'requiredPoints' => 100,
-                'domain' => $d,
-                'actions' => ['materia' => ['unlock' => 'celestial-judgment']],
-                'requirements' => ['priest_rang4_2', 'priest_t3_grace'],
-            ],
+
+            // Le nœud au cout du dormant : hors du total des 390 (§ 6.1).
             'priest_rang5_1' => [
                 'title' => 'Materia : Miracle',
                 'slug' => 'priest-rang5-1',
@@ -4606,7 +4650,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'miracle']],
-                'requirements' => ['priest_t3_judgment'],
+                'requirements' => ['priest_rang3_3'],
             ],
         ];
     }

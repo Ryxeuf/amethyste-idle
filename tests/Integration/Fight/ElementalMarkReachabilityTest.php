@@ -50,9 +50,21 @@ class ElementalMarkReachabilityTest extends AbstractIntegrationTestCase
      *
      * La liste est un **cliquet** : elle peut retrecir, jamais grandir.
      *
+     * **ARC-08h l'a videe, et pas en la forcant.** Le Pretre etait le dernier,
+     * et il y figurait comme « defendable » — sa palette ne porte pas
+     * d'intention de degat. Sa conversion a montre autre chose : ecrit avec
+     * deux soins a l'entree, il produisait une branche que le simulateur a
+     * refusee, *« elle ne pourrait jamais conclure une rencontre »*. Le geste
+     * qui l'en sort blesse **et** porte sa marque. ***Il n'etait pas sans marque
+     * par choix, il l'etait faute d'un geste qui blesse.***
+     *
+     * Les 24 arbres appliquent desormais leur marque des le jour 1 : le
+     * capstone d'assaut, le levier `grip` et la palette de controle pointent
+     * tous vers quelque chose, dans tous les arbres.
+     *
      * @var list<string>
      */
-    private const WAITING_ON_ARC_08 = ['Prêtre'];
+    private const WAITING_ON_ARC_08 = [];
 
     /**
      * Tout arbre de combat applique sa marque des son entree — ou figure sur

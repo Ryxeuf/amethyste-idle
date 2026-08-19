@@ -232,3 +232,25 @@ trees:
                 label: 'Le Poids'
                 description: 'Faire durer ce qu''on alourdit, et poser la masse la ou elle porte.'
                 accord: 'Lancer de rocher'
+
+    # --- Pretre — lumiere x sorts x entretien (ARC-08h) --------------------
+    # **Le troisieme voisin exact d'affilee** : le Guerisseur occupe deja
+    # `entretien x sorts` (ARC-07b), et il a pris l'opposition la plus
+    # evidente — le solitaire contre le groupe. Le Pretre doit donc en trouver
+    # une autre, et la lumiere la donne : **benir** contre **purifier**.
+    #
+    # La Benediction pose et fait durer ; la Purge retire et fait taire. L'une
+    # sert le groupe, l'autre le duel contre ce qui lance des sorts — la regle
+    # « toute fourche oppose deux contextes » tient sans reprendre les mots du
+    # Guerisseur.
+    priest:
+        label: 'Prêtre'
+        branches:
+            blessing:
+                label: 'La Benediction'
+                description: 'Poser sur tous ce qui dure : une provision qui court, et rien qui l''entame.'
+                accord: 'Benediction divine'
+            purge:
+                label: 'La Purge'
+                description: 'Retirer plutot que rendre : faire taire, et payer moins cher chaque office.'
+                accord: 'Purge'
