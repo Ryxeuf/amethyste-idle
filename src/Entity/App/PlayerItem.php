@@ -231,6 +231,18 @@ class PlayerItem
     #[ORM\Column(name: 'counterfeit_identified', type: 'boolean', options: ['default' => false])]
     private bool $counterfeitIdentified = false;
 
+    /**
+     * La zone d'ou le monde a sorti cet objet (REP-01).
+     *
+     * Renseignee la ou la provenance est **vraie** : le butin d'un monstre sait
+     * de quelle zone il vient. Un objet achete, fabrique ou recu en quete la
+     * laisse nulle — *inconnu reste inconnu*, jamais un repli sur un autre
+     * lieu, sans quoi le Repertoire aurait deux axes remplis par la meme
+     * colonne et croirait en avoir trois.
+     */
+    #[ORM\Column(name: 'origin_zone_id', type: 'integer', nullable: true)]
+    private ?int $originZoneId = null;
+
     public function __construct()
     {
         $this->slots = new ArrayCollection();
@@ -486,6 +498,18 @@ class PlayerItem
      * « plancher T1 echangeable » de l'onboarding (NAR-04) : les recompenses de
      * l'arc intro restent non liees, donc echangeables.
      */
+    public function getOriginZoneId(): ?int
+    {
+        return $this->originZoneId;
+    }
+
+    public function setOriginZoneId(?int $zoneId): self
+    {
+        $this->originZoneId = $zoneId;
+
+        return $this;
+    }
+
     public function isExchangeable(): bool
     {
         return !$this->isBound() && $this->getGear() === 0;

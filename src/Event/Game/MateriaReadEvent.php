@@ -16,6 +16,14 @@ use Symfony\Contracts\EventDispatcher\Event;
  * paire de tension de la Fonderie. Le jour ou REP arrive, il s'abonne ici
  * sans qu'on revienne toucher la lecture. Le Programme du Cercle (FAC-09)
  * ecoutera au meme endroit.
+ *
+ * **REP-01 y a ajoute la provenance, et il fallait bien qu'il le fasse.** Un
+ * crochet declare en avance porte ce que son auteur a devine, et celui-ci
+ * portait exactement les deux choses qui **survivent** a la lecture : le
+ * joueur et la fiche de materia. Ce qui ne survit pas, c'est la piece elle-meme
+ * — `MateriaConversionService` la supprime une ligne avant le dispatch —, et
+ * c'est elle qui savait d'ou elle venait. La provenance se capture donc **avant
+ * la suppression** et voyage dans l'evenement.
  */
 class MateriaReadEvent extends Event
 {
@@ -24,7 +32,20 @@ class MateriaReadEvent extends Event
     public function __construct(
         private readonly Player $player,
         private readonly Item $materia,
+        private readonly ?int $provenanceZoneId = null,
     ) {
+    }
+
+    /**
+     * La zone d'ou le monde avait sorti cette materia, si elle est connue.
+     *
+     * `null` = inconnu, et cela reste inconnu : une materia achetee ou
+     * fabriquee n'a pas de provenance, et lui en inventer une remplirait un axe
+     * du Repertoire avec la copie d'un autre.
+     */
+    public function getProvenanceZoneId(): ?int
+    {
+        return $this->provenanceZoneId;
     }
 
     public function getPlayer(): Player

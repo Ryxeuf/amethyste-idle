@@ -172,6 +172,10 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    App\GameEngine\Repertoire\RepertoireCatalog:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # ARC-03 : le vocabulaire ferme des leviers, et le convertisseur unique.
     # Les taux de change et les plafonds vivent en donnees parce que le canon
     # previent qu'aucun de ses nombres n'est definitif (GAME_ARCHETYPES § 0.2) —

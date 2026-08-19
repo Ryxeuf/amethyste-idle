@@ -553,6 +553,39 @@ class Player implements CharacterInterface
         $this->speed = $speed;
     }
 
+    /**
+     * Ce que ce joueur a deja verse au Repertoire aujourd'hui (REP-01).
+     *
+     * Meme forme que le plafond des gestes de faction : **une cle de jour et un
+     * compteur**, jamais une table d'historique — *une cle differente = un
+     * autre jour = compteur a zero*. Rien a purger, rien qui grossisse.
+     *
+     * Le plafond vit ici et non sur le Repertoire, et c'est une consequence
+     * directe de la forme de celui-ci : `RepertoireReading` ne nomme aucun
+     * joueur, donc il ne peut pas en compter un.
+     */
+    #[ORM\Column(name: 'daily_repertoire_key', type: 'string', length: 16, nullable: true)]
+    private ?string $dailyRepertoireKey = null;
+
+    #[ORM\Column(name: 'daily_repertoire_readings', type: 'integer', options: ['default' => 0])]
+    private int $dailyRepertoireReadings = 0;
+
+    public function repertoireReadingsOn(string $dayKey): int
+    {
+        return $this->dailyRepertoireKey === $dayKey ? $this->dailyRepertoireReadings : 0;
+    }
+
+    public function recordRepertoireReading(string $dayKey): self
+    {
+        if ($this->dailyRepertoireKey !== $dayKey) {
+            $this->dailyRepertoireKey = $dayKey;
+            $this->dailyRepertoireReadings = 0;
+        }
+        ++$this->dailyRepertoireReadings;
+
+        return $this;
+    }
+
     public function getId(): int
     {
         return $this->id;

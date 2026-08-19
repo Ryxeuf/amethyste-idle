@@ -107,6 +107,11 @@ class LootGenerator implements EventSubscriberInterface
             $item = new PlayerItem();
             $item->setMob($mob);
             $item->setGenericItem($materia);
+            // REP-01 : la provenance, la ou elle est **vraie**. Une materia
+            // tombee d'un monstre sait de quelle zone elle vient, et c'est le
+            // seul chemin du jeu ou le monde la donne — l'echoppe, l'etabli et
+            // la quete n'en savent rien, et elles la laissent inconnue.
+            $item->setOriginZoneId($mob->getZone()?->getId());
             // FAC-07 : une part du butin sort contrefaite, non identifiee —
             // l'unique source involontaire du monde, et la raison d'etre de
             // l'œil du faussaire. Indiscernable jusqu'a la trahison.

@@ -1,0 +1,26 @@
+# =============================================================================
+# Le Repertoire du serveur (REP-01)
+# =============================================================================
+# GAME_WORLD § 12.3 b : « chaque materia **lue** chez les Lecteurs nourrit un
+# savoir collectif du serveur. [...] Ce ne sont pas des seuils generiques qui
+# debloquent une liste fixe : **ce qu'un serveur retrouve depend de ce qu'il a
+# lu** — quelles materias, ou, a quelle intensite, a quel moment. »
+#
+# Ce fichier ne porte pour l'instant qu'une chose : **le plafond anti-forcage**.
+# Le bassin des gestes retrouves arrive avec REP-02, et il s'ecrira ici.
+#
+# --- Pourquoi un plafond, et pourquoi celui-la ---------------------------------
+#
+# Le canon veut qu'orienter le Repertoire soit un **projet collectif legitime**
+# — *« cette maree, lisez du feu »* est de la politique, pas un abus. Ce qui
+# doit etre empeche n'est donc pas la campagne, c'est le **forcage par un
+# seul** : un joueur qui viderait son stock de materia Troubles en une soiree
+# ferait basculer une dominante a lui tout seul, et le souvenir du serveur ne
+# dirait plus rien de ce que le serveur a vecu.
+#
+# Le plafond est **par joueur et par jour**, exactement comme celui des gestes
+# de faction (`factions.yaml`) et pour la meme raison : *un geste repete
+# nourrit, un geste ferme ne nourrit plus*. Il est volontairement bas — une
+# lecture est un acte rare et couteux (elle renonce a la fonte), pas une
+# activite de remplissage.
+daily_readings_per_player: 5

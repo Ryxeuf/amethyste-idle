@@ -8,9 +8,10 @@
 > Répertoire est orienté par les lectures ») et §2.1 (les trois verbes de la matéria).
 > C'était **le dernier système acté sans plan d'exécution**. Prérequis livrés : la
 > pureté et le Parfait (ECO-21/22 ✅), le gate Métropole (FOY-05/06 ✅), le journal de
-> monde (NAR ✅). **Attention (audit 2026-07-29)** : fondre/lire (**FAC-04b**) n'est
-> **pas** livré — le plan factions est à 1/10, et le crochet de versement des lectures
-> n'existe donc pas encore. **Ce plan démarre après FAC-04.**
+> monde (NAR ✅). ~~**Attention (audit 2026-07-29)** : fondre/lire (**FAC-04b**)
+> n'est **pas** livré — le plan factions est à 1/10, et le crochet de versement des lectures
+> n'existe donc pas encore.~~ **Levé le 2026-08-19** : le plan factions est à 9,5/10, FAC-04b
+> est livré, et `MateriaReadEvent` a trouvé son premier abonné avec REP-01.
 
 ## Vue d'ensemble
 
@@ -18,7 +19,7 @@
 
 | Code | Livrable | Taille | Dépendances |
 |------|----------|--------|-------------|
-| REP-01 | Les lectures contextées (le savoir du serveur) | S | ← FAC-04b (le crochet existe) |
+| REP-01 ✅ | Les lectures contextées (le savoir du serveur) | S | ← FAC-04b (le crochet existe) |
 | REP-02 | Le bassin des gestes retrouvés (contenu tagué) | M | ∅ (données pures) |
 | REP-03 | Seuils, dominantes & déblocage orienté | M | ← REP-01, REP-02 |
 | REP-04 | L'Autel d'éveil (le seul craft de matéria) | M | ← ECO-22 ✅, FOY-06 ✅ |
@@ -39,18 +40,49 @@ est un objet de désir dès maintenant. Le Programme du Cercle (FAC-09c) consomm
 
 ## Piste A — Le savoir du serveur
 
-### REP-01 — Les lectures contextées (S | ★★★ | HAUTE)
+### REP-01 ✅ — Les lectures contextées (S | ★★★ | HAUTE) — livré le 2026-08-19
 > Chaque lecture est déjà versée au Répertoire (crochet FAC-04b). Ce jalon lui donne
 > une mémoire : le **contexte** de la lecture est ce qui orientera tout.
-> Prérequis : ← FAC-04b
-- [ ] Entité de registre des lectures : élément de la matéria, provenance (zone
-      d'obtention si connue, sinon zone de lecture), lieu de lecture (zone + type de
-      foyer), semaine — **agrégats par serveur**, pas de PII de gameplay inutile
-- [ ] Compteurs d'agrégat par élément / provenance / lieu (les « dominantes » se lisent
-      dessus)
-- [ ] Plafond anti-forçage : les lectures comptent au Répertoire via
-      `InfluenceAntiExploit` (le spam de lectures Troubles ne force pas un seuil)
-- [ ] Tests : versement contexté, agrégats, plafond
+> Prérequis : ← FAC-04b ✅
+- [x] Entité de décompte contexté (`RepertoireReading`) : élément, provenance, lieu de
+      lecture (zone + rang de foyer), semaine — **aucune colonne ne nomme un joueur**
+- [x] Agrégats par élément / provenance / lieu / rang de foyer, calculés en base
+- [x] Plafond anti-forçage journalier, **sur le joueur** (`config/game/repertoire.yaml`)
+- [x] Tests : versement contexté, regroupement des inconnues, agrégats, plafond, remise à
+      zéro sans cron, absence de joueur, et **le crochet a bien un abonné**
+
+> **Livré (2026-08-19).** Trois décisions, dont deux corrigent le plan.
+>
+> **Une ligne n'est pas une lecture, c'est un bâton.** Le Répertoire tient un décompte par
+> contexte, pas un journal — et **aucune de ses colonnes ne nomme un joueur** : *le Répertoire
+> est la mémoire du serveur, pas un journal de joueurs*. Le canon ne demande jamais de savoir
+> qui a lu quoi ; une table d'événements répondrait aux deux questions, dont une que personne
+> n'a posée, et elle grossirait sans fin.
+>
+> La conséquence est structurelle : **le plafond ne peut pas vivre là**, puisqu'on n'y
+> distingue pas les joueurs. Il vit sur le joueur, sous la forme déjà employée par le plafond
+> des gestes de faction — *une clé de jour et un compteur, une clé différente = un autre jour =
+> compteur à zéro*. Rien à purger, aucun cron. Le plan renvoyait à `InfluenceAntiExploit` ;
+> ce service est typé sur `Region` et `InfluenceSeason` (l'influence de guilde) et ne se
+> transpose pas — c'est sa **doctrine** qu'on reprend, pas son code. Et le plafond ne refuse
+> jamais la lecture : réputation, Codex et accord continuent, seule la contribution au souvenir
+> s'arrête. *Il n'est pas une borne de jeu, c'est une borne de mesure.*
+>
+> **Le repli du plan sur « sinon la zone de lecture » aurait détruit un axe.** La provenance
+> n'existait nulle part : aucun `PlayerItem` ne savait d'où il venait. Remplir la provenance
+> avec la zone de lecture aurait donné deux axes remplis par la même colonne, et la dominante
+> de provenance aurait dit exactement ce que dit la dominante de lieu — *le Répertoire aurait
+> cru en avoir trois*. La provenance se stampe donc **là où elle est vraie** (le butin d'un
+> monstre sait de quelle zone il vient, seul chemin où le monde la donne) et **un inconnu reste
+> inconnu**, regroupé avec les autres inconnus.
+>
+> **Le crochet portait ce que son auteur avait deviné.** `MateriaReadEvent` avait été déclaré
+> sans abonné avec la promesse que REP s'y brancherait *« sans qu'on revienne toucher la
+> lecture »*. Il portait exactement les deux choses qui **survivent** à la lecture — le joueur
+> et la fiche de matéria. Ce qui ne survit pas, c'est la pièce, supprimée **une ligne avant le
+> dispatch**, et c'est elle qui savait d'où elle venait. La provenance se capture avant la
+> suppression et voyage dans l'événement. Un test vérifie désormais que le crochet **a** son
+> abonné : *un événement dispatché que personne n'écoute est silencieux par nature*.
 
 ### REP-02 — Le bassin des gestes retrouvés (M | ★★ | HAUTE)
 > **Un seul bassin, écrit une fois** (§12.3) : le contenu est global et tagué, les
