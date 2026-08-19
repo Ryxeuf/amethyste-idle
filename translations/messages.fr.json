@@ -2194,6 +2194,33 @@
         "nothing_recovered": "Aucun geste retrouvé pour l'instant.",
         "link": "Le Répertoire"
       }
+    },
+    "house": {
+      "homecoming": {
+        "action": "Rentrer au logis",
+        "hint": "Une fois par jour, le trajet vers chez vous est instantané.",
+        "done": "Vous êtes rentré chez vous.",
+        "error": {
+          "no_home": "Vous n'avez pas de logis.",
+          "in_fight": "Pas au milieu d'un combat.",
+          "traveling": "Vous êtes déjà en route.",
+          "already_home": "Vous y êtes déjà.",
+          "already_used": "Vous êtes déjà rentré aujourd'hui."
+        }
+      },
+      "chest": {
+        "title": "Coffre domestique",
+        "store": "Ranger",
+        "take": "Reprendre",
+        "moved": "C'est rangé.",
+        "empty": "Le coffre est vide. Ce qu'on y laisse reste chez soi.",
+        "error": {
+          "no_chest": "Vous n'avez pas de coffre : il vient avec le logis.",
+          "not_yours": "Cet objet n'est pas à vous.",
+          "not_movable": "On ne range pas ce qu'on porte, ni ce qui est lié.",
+          "full": "C'est plein."
+        }
+      }
     }
   },
   "common": {

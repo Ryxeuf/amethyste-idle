@@ -183,6 +183,49 @@
         </div>
     </div>
 
+    {# FOY-20 — la commodite de fin de session et le coffre. Les deux ne vivent
+       que si l'on a un logis : sans demeure, la section n'existe pas. #}
+    {% if house %}
+        <div class="game-card mt-4">
+            <div class="game-card-header">
+                <h3 class="text-sm font-semibold text-white">{{ 'game.house.chest.title'|trans }}</h3>
+                <p class="text-gray-400 text-xs mt-0.5">{{ 'game.house.homecoming.hint'|trans }}</p>
+            </div>
+            <div class="game-card-body space-y-3">
+                {% if homecomingRefusal %}
+                    <p class="ds-hint">{{ homecomingRefusal|trans }}</p>
+                {% else %}
+                    <form method="post" action="{{ path('app_game_house_homecoming') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('house_homecoming') }}">
+                        <button type="submit" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-ink-on text-xs rounded-lg">{{ 'game.house.homecoming.action'|trans }}</button>
+                    </form>
+                {% endif %}
+
+                {% if houseChest %}
+                    <p class="ds-label">{{ 'game.house.chest.title'|trans }} <span class="font-mono text-gray-500">{{ houseChest.items|length }}/{{ houseChest.size }}</span></p>
+                    {% if houseChest.items is empty %}
+                        <div class="ds-empty">
+                            <p class="ds-empty__hint">{{ 'game.house.chest.empty'|trans }}</p>
+                        </div>
+                    {% else %}
+                        <div class="space-y-1.5">
+                            {% for item in houseChest.items %}
+                                <div class="ds-line">
+                                    <span class="text-sm text-gray-100 truncate">{{ item.genericItem.name }}</span>
+                                    <form method="post" action="{{ path('app_game_house_chest_move', {id: item.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('house_chest') }}">
+                                        <input type="hidden" name="withdraw" value="1">
+                                        <button type="submit" class="px-2.5 py-1 bg-gray-700 hover:bg-gray-600 text-white text-[10px] rounded">{{ 'game.house.chest.take'|trans }}</button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
     {% if neighbours is not empty %}
         <div class="game-card mt-4">
             <div class="game-card-header">

@@ -94,6 +94,29 @@ class PlayerHouse
     #[ORM\Column(name: 'motto', type: 'string', length: 140, nullable: true)]
     private ?string $motto = null;
 
+    /**
+     * Le jour du dernier retour au logis (FOY-20).
+     *
+     * Une **cle de jour**, comme le plafond des gestes de faction et celui du
+     * Repertoire : une cle differente = un autre jour = la commodite est de
+     * nouveau disponible. Rien a purger, aucune tache de remise a zero.
+     */
+    #[ORM\Column(name: 'homecoming_day_key', type: 'string', length: 16, nullable: true)]
+    private ?string $homecomingDayKey = null;
+
+    #[ORM\Column(name: 'homecoming_used', type: 'integer', options: ['default' => 0])]
+    private int $homecomingUsed = 0;
+
+    /**
+     * Le jour du dernier grain de residence (FOY-20).
+     *
+     * Meme forme, et pour la meme raison : la cheminee fume **une fois par
+     * jour**, et le calendrier ne rejoue rien. Sans cette cle, une relance de la
+     * commande deposerait deux fois.
+     */
+    #[ORM\Column(name: 'residence_grain_day_key', type: 'string', length: 16, nullable: true)]
+    private ?string $residenceGrainDayKey = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -207,5 +230,46 @@ class PlayerHouse
         $this->rentDueAt = $this->rentDueAt->modify(sprintf('+%d days', self::RENT_PERIOD_DAYS));
 
         return $this;
+    }
+
+    public function homecomingsUsedOn(string $dayKey): int
+    {
+        return $this->homecomingDayKey === $dayKey ? $this->homecomingUsed : 0;
+    }
+
+    public function recordHomecoming(string $dayKey): self
+    {
+        if ($this->homecomingDayKey !== $dayKey) {
+            $this->homecomingDayKey = $dayKey;
+            $this->homecomingUsed = 0;
+        }
+        ++$this->homecomingUsed;
+
+        return $this;
+    }
+
+    public function hasBurnedItsHearthOn(string $dayKey): bool
+    {
+        return $this->residenceGrainDayKey === $dayKey;
+    }
+
+    public function recordResidenceGrain(string $dayKey): self
+    {
+        $this->residenceGrainDayKey = $dayKey;
+
+        return $this;
+    }
+
+    /**
+     * Le loyer est-il a jour (FOY-20) ?
+     *
+     * La cheminee ne fume que dans une demeure **habitee**, et une demeure en
+     * arriere ne l'est plus au sens du canon : elle a cesse de rendre service.
+     * C'est aussi ce qui empeche d'entretenir une ville avec des logis vides —
+     * *la population residente soutient la ville*, pas les murs.
+     */
+    public function isRentUpToDate(\DateTimeImmutable $now): bool
+    {
+        return $now < $this->rentDueAt;
     }
 }

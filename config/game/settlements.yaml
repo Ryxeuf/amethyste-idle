@@ -91,6 +91,19 @@ sediment:
     # indices, et hors plafond pour la meme raison que la commission : un
     # chantier collectif se remplit une fois par semaine et n'est pas grindable.
     settlement_work: { index: spread, grains: 120, capped: false }
+    # FOY-20 — la cheminee. Chaque demeure habitee (loyer a jour) depose un
+    # petit grain quotidien au foyer de sa zone : *la population residente
+    # soutient la ville, faiblement mais structurellement* (GAME_WORLD § 12.6 d).
+    #
+    # `spread`, parce qu'habiter ne dit rien de ce qu'on fait : une ville de
+    # residents n'a pas d'identite propre, elle a des habitants.
+    #
+    # `capped: false`, pour la meme raison que la commission et le chantier : le
+    # grain tombe **une fois par jour et du seul fait d'habiter**, donc il est
+    # structurellement ingrindable. Le soumettre au plafond journalier le ferait
+    # disparaitre precisement chez les joueurs les plus actifs — c'est-a-dire
+    # chez ceux qui font vivre la ville.
+    residence: { index: spread, grains: 4, capped: false }
 
 # Plafonds anti-exploit, appliques via `InfluenceAntiExploit` — on ne reecrit
 # pas les garde-fous, on s'y branche. Le grind ne bat jamais la regularite.
@@ -237,6 +250,23 @@ housing:
         town: 20
         city: 40
         metropolis: 80
+
+    # --- Les commodites du logis (FOY-20) ------------------------------------
+    # GAME_WORLD § 12.6 d : *« les avantages du logis sont des commodites, jamais
+    # de la puissance »*. Ni l'un ni l'autre de ces reglages ne rend un
+    # personnage plus fort.
+
+    # Le **retour au logis** : une fois par jour, le voyage vers sa zone de
+    # residence est instantane. C'est la commodite de fin de session, et le canon
+    # la borne par la phrase qui la definit — *jamais vers ailleurs* : un
+    # teleporteur libre rendrait le graphe de zones decoratif, et avec lui les
+    # montures, les durees de trajet et le choix d'itineraire.
+    homecoming_per_day: 1
+
+    # Le **coffre domestique**, complementaire de la banque de zone. Borne, et
+    # nettement plus petit qu'elle : ce n'est pas un second entrepot, c'est ce
+    # qu'on laisse chez soi.
+    chest_size: 60
 
 # Chantier de la semaine (RET-05). A la maniere de la Restauration d'Ishgard :
 # la maree dit **ou va** la ville, le chantier dit **ce qu'elle attend cette

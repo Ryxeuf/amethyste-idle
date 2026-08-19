@@ -2194,6 +2194,33 @@
         "nothing_recovered": "No gesture recovered yet.",
         "link": "The Repertoire"
       }
+    },
+    "house": {
+      "homecoming": {
+        "action": "Head home",
+        "hint": "Once a day, the journey home is instant.",
+        "done": "You are home.",
+        "error": {
+          "no_home": "You have no home.",
+          "in_fight": "Not in the middle of a fight.",
+          "traveling": "You are already on your way.",
+          "already_home": "You are already there.",
+          "already_used": "You have already gone home today."
+        }
+      },
+      "chest": {
+        "title": "Home Chest",
+        "store": "Store",
+        "take": "Take back",
+        "moved": "Stored.",
+        "empty": "The chest is empty. What you leave here stays home.",
+        "error": {
+          "no_chest": "You have no chest: it comes with the home.",
+          "not_yours": "That item is not yours.",
+          "not_movable": "You do not store what you are wearing, nor what is bound.",
+          "full": "It is full."
+        }
+      }
     }
   },
   "common": {

@@ -63,6 +63,11 @@ class SettlementSedimentWiringTest extends TestCase
         'src/EventListener/SettlementSedimentListener.php',
         'src/GameEngine/Retention/WeeklyCommissionDelivery.php',
         'src/GameEngine/Settlement/SettlementWeeklyWorkProgress.php',
+        // FOY-20 : les cheminees. Le seul appelant qui nomme son action par une
+        // **constante** plutot qu'en clair — d'ou la seconde expression
+        // ci-dessous : la constante est la source unique du nom, et l'inliner
+        // pour plaire au test en creerait une seconde.
+        'src/GameEngine/Housing/ResidenceGrain.php',
     ];
 
     /**
@@ -75,9 +80,20 @@ class SettlementSedimentWiringTest extends TestCase
             $path = \dirname(__DIR__, 4) . '/' . $relative;
             self::assertFileExists($path, sprintf('Appelant de depot introuvable : %s.', $relative));
 
-            preg_match_all("/deposit\(\s*\\\$[a-zA-Z>()\\-]+,\s*'([a-z_]+)'/", (string) file_get_contents($path), $matches);
+            $source = (string) file_get_contents($path);
+
+            preg_match_all("/deposit\(\s*\\\$[a-zA-Z>()\\-]+,\s*'([a-z_]+)'/", $source, $matches);
             foreach ($matches[1] as $action) {
                 $actions[$action] = true;
+            }
+
+            // Un appelant peut nommer son action par sa propre constante. On la
+            // resout ici plutot que d'exiger une chaine en clair : demander
+            // l'inline creerait un second endroit ou le nom vit, et deux noms
+            // finissent par diverger.
+            if (preg_match("/deposit\(\s*\\\$[a-zA-Z>()\\-]+,\s*self::([A-Z_]+)/", $source, $constant) === 1
+                && preg_match(sprintf("/const %s = '([a-z_]+)'/", $constant[1]), $source, $value) === 1) {
+                $actions[$value[1]] = true;
             }
         }
 

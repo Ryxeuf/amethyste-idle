@@ -36,6 +36,8 @@ class HousingController extends AbstractController
         private readonly CraftingManager $craftingManager,
         private readonly GardenPlotRepository $plotRepository,
         private readonly EntityManagerInterface $entityManager,
+        // FOY-20 : la commodite de fin de session, et le coffre.
+        private readonly \App\GameEngine\Housing\Homecoming $homecoming,
     ) {
     }
 
@@ -63,6 +65,11 @@ class HousingController extends AbstractController
             // HOU-05 : le coffre et l'atelier existent deja ailleurs ; la
             // demeure les rassemble au lieu de les enfermer.
             'bankInventory' => $this->playerHelper->getBankInventory(),
+            // FOY-20 : le coffre domestique, et la commodite de fin de session.
+            // Le refus est **motive** : un bouton grise sans explication se lit
+            // comme une panne.
+            'houseChest' => $this->housingManager->houseChest($player),
+            'homecomingRefusal' => $this->homecoming->refusalFor($player, new \DateTimeImmutable()),
             'activeJob' => $this->craftingManager->getActiveJob($player),
             'styles' => HouseStyle::purchasable(),
             // Le voisinage : visible des maintenant, visitable en HOU-03.
@@ -322,6 +329,72 @@ class HousingController extends AbstractController
         try {
             $this->housingManager->setMotto($player, $house, (string) $request->request->get('motto', ''));
             $this->addFlash('success', 'Devise gravee.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_house');
+    }
+
+    /**
+     * Le retour au logis (FOY-20).
+     *
+     * **Aucune destination en parametre**, et c'est la borne : la route ne prend
+     * pas de zone, il n'y a donc aucun endroit ou en passer une. *Jamais vers
+     * ailleurs* n'est pas un reglage a respecter, c'est une forme.
+     */
+    #[Route('/homecoming', name: 'app_game_house_homecoming', methods: ['POST'])]
+    public function homecoming(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return $this->redirectToRoute('app_game_index');
+        }
+
+        if (!$this->isCsrfTokenValid('house_homecoming', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.common.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        try {
+            $this->homecoming->comeHome($player, new \DateTimeImmutable());
+            $this->addFlash('success', 'game.house.homecoming.done');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Deposer au coffre, ou en reprendre (FOY-20).
+     *
+     * Un seul point d'entree pour les deux sens : ce qui change est la
+     * destination, et l'ecrire deux fois ferait deux verifications de propriete
+     * a maintenir ensemble.
+     */
+    #[Route('/chest/{id}', name: 'app_game_house_chest_move', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    public function moveToChest(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return $this->redirectToRoute('app_game_index');
+        }
+
+        if (!$this->isCsrfTokenValid('house_chest', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.common.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        try {
+            $this->housingManager->moveToChest($player, $id, $request->request->getBoolean('withdraw'));
+            $this->addFlash('success', 'game.house.chest.moved');
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
         }
