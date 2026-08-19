@@ -42,12 +42,14 @@ class GuildVaultManager
             throw new \InvalidArgumentException('Cet objet ne vous appartient pas.');
         }
 
-        if ($playerItem->getGear() > 0) {
-            throw new \InvalidArgumentException('Vous ne pouvez pas déposer un objet équipé.');
-        }
-
-        if ($playerItem->isBound()) {
-            throw new \InvalidArgumentException('Cet objet est lié à votre personnage.');
+        // FAC-10 : « peut-il circuler ? » se demande **une fois**, et
+        // `PlayerItem::isExchangeable()` est cet endroit. Le coffre reecrivait
+        // le predicat en deux conditions separees — les memes deux, dans le
+        // meme ordre —, et *une regle recopiee derive de son original en
+        // silence*. Les deux messages restent distincts : ce qui a de la valeur
+        // ici, c'est de dire **laquelle** des deux raisons s'applique.
+        if (!$playerItem->isExchangeable()) {
+            throw new \InvalidArgumentException($playerItem->getGear() > 0 ? 'Vous ne pouvez pas déposer un objet équipé.' : 'Cet objet est lié à votre personnage.');
         }
 
         // FAC-07 : le coffre est un canal entre joueurs — une contrefaçon n'y

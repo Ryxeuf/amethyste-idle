@@ -27,7 +27,7 @@
 | FAC-08 ✅ | Contrebande & placements (système Ruelles) | M | ← FAC-06, FAC-07 |
 | FAC-09a ✅ | La loi latérale + les cinq portes | M | ← FAC-01→03 |
 | FAC-09b→e | Les échelles par maison (Ami / Honoré / Révéré) | L → par maison | ← FAC-09a |
-| FAC-10 | Tests du plan | S | ‖ |
+| FAC-10 ✅ | Tests du plan | S | ‖ |
 
 ```
 Piste A — Le système   : FAC-01 → FAC-02 → FAC-03
@@ -339,11 +339,49 @@ et son application viendra avec le jalon qui donnera une vitesse au personnage.
       restent les récompenses de palier
 - [ ] Aucune récompense verticale : la loi est tenue par `FactionLadderContractTest`
 
-### FAC-10 — Tests du plan (S | ★★ | HAUTE)
+### FAC-10 ✅ — Tests du plan (S | ★★ | HAUTE) — livré le 2026-08-19
 > ‖ au fil des jalons.
-- [ ] Invariants transverses : tension symétrique, latéral partout (aucun
-      `FactionReward` de stats hors patronage), bornes d'Hostile, verrous de contrefaçon
-- [ ] Un contrat : « aucun geste d'un joueur ne peut nuire directement à un autre joueur »
+- [x] Invariants transverses : tension symétrique, latéral partout (le côté **code**),
+      seconde borne d'Hostile, verrous de contrefaçon dérivés
+- [x] Un contrat : « aucun geste d'un joueur ne peut nuire directement à un autre joueur »
+
+> **Livré (2026-08-19).** `FactionsPlanContractTest`. Vingt-deux fichiers de test couvraient
+> déjà les factions, chacun sur son jalon ; ce contrat n'en refait aucun. Il porte les
+> invariants **transverses** — ceux qu'aucun test de jalon ne peut voir, parce que chacun ne
+> connaît que son propre sous-système — et sert de table des matières, en vérifiant que son
+> propre index ne pourrit pas (le geste de `DungeonsPlanContractTest`).
+>
+> Quatre invariants, chacun **complétant** un test existant plutôt que le doublant :
+>
+> 1. **La tension est symétrique.** Le catalogue vérifiait l'axe livré ; il ne vérifiait pas la
+>    réciproque. `opponentOf()` parcourt les paires en lisant `left` puis `right` : une paire
+>    écrite à l'envers rendrait la tension à sens unique — la Fonderie coûterait au Cercle, et
+>    le Cercle ne coûterait rien à la Fonderie. Le défaut serait **muet**, et il donnerait un
+>    côté avantageux à l'axe doctrinal.
+> 2. **Latéral partout, du côté du code.** `FactionLadderContractTest` (FAC-09a) tient la loi
+>    sur les données ; elle ne dit rien d'un **second lecteur** qui irait chercher une
+>    statistique ailleurs dans le moteur — une porte de service qui ne se verrait dans aucune
+>    donnée. Exactement une classe lit une récompense pour en tirer une statistique.
+> 3. **La seconde borne d'Hostile : jamais une agression** (§6.4 d, §6.1 — le Serment). Le
+>    catalogue tient la première (la boucle cœur reste ouverte) ; la seconde n'était vérifiée
+>    nulle part, et c'est la plus facile à franchir par inadvertance.
+> 4. **Aucun geste d'un joueur ne peut nuire directement à un autre joueur**, la traduction
+>    testable de la règle 11. Il se lit dans la **signature** : un geste qui nuirait à un autre
+>    joueur devrait le nommer, et aucun service de réputation ne prend deux joueurs.
+>
+> **Ce que la dérivation a trouvé, et qui la valide.** La liste des canaux entre joueurs n'est
+> pas écrite dans le test — *un test qui n'interroge que sa propre liste ne mesure plus rien dès
+> qu'elle vieillit* (DOM-09) : un canal se **dérive** de sa forme, un fichier qui déplace un
+> objet d'un inventaire à un autre et qui se demande si l'objet peut circuler. Le **coffre de
+> guilde** échappait aux deux critères : il réécrivait `isExchangeable()` en deux conditions
+> séparées — les mêmes deux, dans le même ordre — au lieu de l'appeler. Il portait bien son
+> verrou, *mais rien n'aurait dit le contraire*. Le prédicat a désormais un seul endroit, les
+> deux messages distincts sont conservés (ce qui a de la valeur, c'est de dire **laquelle** des
+> deux raisons s'applique), et le coffre entre dans la dérivation comme les autres.
+>
+> Chaque invariant porte un garde-fou de **non-vacuité** : la dérivation doit trouver au moins
+> quatre canaux, la réflexion doit voir au moins dix signatures, le catalogue au moins une
+> conséquence par maison. *Un contrat vide ressemble à un contrat tenu.*
 
 ---
 
