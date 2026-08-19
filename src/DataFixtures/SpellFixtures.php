@@ -795,6 +795,17 @@ class SpellFixtures extends Fixture
                 'hit' => 85,
                 'level' => 2,
             ],
+            // ARC-08g — les gestes que le Defenseur ouvre **en propre** passent
+            // en melee. Sans cela, ses passifs bornes a la melee (DOM-01) ne
+            // qualifieraient aucun de ses accords, et un arbre d'encaisse au
+            // contact n'aurait rien a quoi appliquer sa garde.
+            //
+            // **L'intention est declaree, et c'est necessaire** : la derivation
+            // lit le soin avant le statut (ARC-11a), donc une Parade qui rend
+            // 3 PV et pose un bouclier se rangerait en `soin`. La palette de
+            // l'encaisse exige **deux protections** ; sans declaration, l'arbre
+            // n'en aurait aucune — c'est exactement ce qu'ARC-11b-b annoncait :
+            // *ces intentions n'existeront que declarees a la main*.
             'rock_armor' => [
                 'slug' => 'rock-armor',
                 'damage' => 0,
@@ -803,8 +814,11 @@ class SpellFixtures extends Fixture
                 'name' => 'Parade',
                 'description' => 'Une parade rocheuse qui absorbe les degats',
                 'hit' => 100,
-                'energyCost' => 5,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'register' => CombatRegister::Melee,
                 'statusEffectSlug' => 'shield',
+                'intent' => SpellIntent::Protection,
                 'level' => 1,
             ],
             'boulder_throw' => [
@@ -815,6 +829,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Lancer de rocher',
                 'description' => 'Lance un énorme rocher sur l\'ennemi',
                 'hit' => 80,
+                'energyCost' => 0,
+                'cooldown' => 2,
+                'register' => CombatRegister::Melee,
                 'level' => 3,
             ],
             'earth_spike' => [
@@ -859,6 +876,17 @@ class SpellFixtures extends Fixture
                 'statusEffectSlug' => 'shield-strong',
                 'level' => 3,
             ],
+            // **Le precedent de l'Embuscade** (ARC-08b) : un accord d'entree
+            // distribue a **zero point** qui se declarerait de palier 2 mettrait
+            // en conflit les deux regles qui le regissent — *un accord d'entree
+            // est gratuit* et *au-dela du palier 1, une technique coute toujours
+            // un tour*. Il passe donc au palier 1, et sa materia devient
+            // `m1-earth-shield` : le comptoir de la Foret suit, ce qui le rend
+            // **plus** coherent, puisque c'est le plancher du jour 1 (MAT-04).
+            //
+            // Il porte **Alourdi**, la marque de la terre (ARC-13b-a), et il
+            // blesse : le capstone de l'arbre est atteignable des la premiere
+            // rencontre.
             'earth_shield' => [
                 'slug' => 'earth-shield',
                 'damage' => 1,
@@ -867,7 +895,10 @@ class SpellFixtures extends Fixture
                 'name' => 'Bouclier terreux',
                 'description' => 'Un bouclier de terre qui protège et contre-attaque',
                 'hit' => 100,
-                'level' => 2,
+                'energyCost' => 0,
+                'cooldown' => 0,
+                'register' => CombatRegister::Melee,
+                'level' => 1,
                 'statusEffectSlug' => 'weighed-down',
             ],
             'crystal_spear' => [
@@ -899,9 +930,11 @@ class SpellFixtures extends Fixture
                 'name' => 'Mur de fer',
                 'description' => 'Erige un mur de fer infranchissable',
                 'hit' => 100,
-                'energyCost' => 20,
-                'cooldown' => 4,
+                'energyCost' => 0,
+                'cooldown' => 3,
+                'register' => CombatRegister::Melee,
                 'statusEffectSlug' => 'shield-strong',
+                'intent' => SpellIntent::Protection,
                 'level' => 4,
             ],
             'earth_blessing' => [
@@ -952,6 +985,9 @@ class SpellFixtures extends Fixture
                 'name' => 'Pétrification',
                 'description' => 'Transforme partiellement l\'ennemi en pierre',
                 'hit' => 80,
+                'energyCost' => 0,
+                'cooldown' => 2,
+                'register' => CombatRegister::Melee,
                 'level' => 3,
             ],
 

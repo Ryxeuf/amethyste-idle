@@ -53,8 +53,15 @@ class MateriaCatalogIntegrationTest extends AbstractIntegrationTestCase
      * a la conversion de l'un de ses arbres*. C'est la meme mesure qu'ARC-08b
      * sur l'Assassin, pour la meme raison : ***un arbre qui ouvre tout n'ouvre
      * rien***.
+     *
+     * **ARC-08g — le Defenseur, 197 → 192.** L'arbre portait **treize** accords,
+     * le plus charge de ceux convertis a ce jour ; le gabarit en autorise sept.
+     * Un seul des retires survit ailleurs (les Pics de pierre, que le Geomancien
+     * ouvre aussi). C'est la meme mesure qu'ARC-08b et ARC-08f, et elle se
+     * repete parce que la cause est structurelle : *les arbres herites portent
+     * onze accords en moyenne, le gabarit en ecrit sept*.
      */
-    private const MEASURED_UNLOCK_FLOOR = 197;
+    private const MEASURED_UNLOCK_FLOOR = 192;
 
     /**
      * @return list<string> les slugs de sort distincts ouverts par un nœud
