@@ -181,6 +181,41 @@ workflow.
   docker compose exec php vendor/bin/phpunit --filter DijkstraTest
   ```
 
+#### Le banc d'essai tourne à part, et sans profileur
+
+`PerformanceBenchmarkTest` (groupe `benchmark`) chronomètre les routes critiques.
+Il est **exclu de la course de couverture** et rejoué dans une étape dédiée avec
+`XDEBUG_MODE=off`.
+
+Ce n'est pas un confort. Xdebug instrumente chaque opcode dès que son mode contient
+`coverage` — que PHPUnit collecte ou non, retirer `--coverage-*` ne retire pas le
+coût. Un banc chronométré là-dedans mesure le profileur, pas la page, et la
+compensation qui vivait dans le test (`×2` en présence de Xdebug) était un dosage :
+elle a été re-dosée une fois, puis la mesure est repassée au-dessus (1035 ms pour un
+plafond à 1000, le 2026-08-19, en bloquant une release), alors que le rejeu sans
+couverture de la même CI passait.
+
+Deux moitiés tiennent la règle, et il faut les deux :
+
+- le test **refuse de mesurer** quand un pilote de couverture est actif (il se met en
+  `skipped` avec sa raison) — sans quoi un `phpunit --coverage` lancé à la main
+  rendrait un chiffre faux sans rien dire ;
+- `CiBenchmarkWiringTest` vérifie que l'étape dédiée existe encore et coupe bien
+  l'instrumentation — sans quoi le banc ne tournerait **nulle part**, et la CI serait
+  verte pour cette raison.
+
+Le même test refuse la forme `--exclude-group a,b` : elle est dépréciée depuis
+PHPUnit 11 et disparaît en 12, le lanceur émet alors un avertissement, et **un
+avertissement du lanceur suffit à rendre la course rouge**. Le drapeau se répète donc,
+une fois par groupe. C'est ce qui a fait échouer la première version de ce correctif :
+la CI ne tombait plus sur une mesure fausse, elle tombait sur la façon de l'exclure.
+
+Le seuil (`PERF_MAX_RESPONSE_MS`, 1000 ms) garde une page devenue **inutilisable** —
+une explosion de requêtes N+1, un gabarit qui se recompile à chaque appel — et non un
+contrat à la milliseconde : sur un runner partagé, la milliseconde mesure l'humeur du
+voisin. Il est déclaré à deux endroits (le workflow et `DEFAULT_THRESHOLD_MS`), et un
+test refuse qu'ils divergent.
+
 ---
 
 ## Auto-Merge (`.github/workflows/auto-merge.yml`)
