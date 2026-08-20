@@ -30,6 +30,20 @@ class CiBenchmarkWiringTest extends TestCase
     private const GROUP = 'benchmark';
 
     /**
+     * `--exclude-group a,b` est **deprecie** depuis PHPUnit 11 et disparaît en
+     * 12 ; le lanceur emet alors un avertissement, et un avertissement du
+     * lanceur suffit a rendre la course rouge. C'est ce qui a fait echouer la
+     * premiere version de ce correctif : la CI ne tombait plus sur une mesure
+     * fausse, elle tombait sur la facon de l'exclure.
+     *
+     * Le drapeau se repete donc, une fois par groupe — et le garde-fou le
+     * verifie, faute de quoi la forme deprecie reviendrait au premier
+     * copier-coller et la CI redeviendrait rouge pour une raison qui n'a rien a
+     * voir avec le code teste.
+     */
+    private const REPEATED_FLAG_ONLY = '/--exclude-group\s+[\w-]+,/';
+
+    /**
      * @return array<string, mixed>
      */
     private function testsJob(): array
@@ -130,13 +144,38 @@ class CiBenchmarkWiringTest extends TestCase
 
             ++$coverageRuns;
             self::assertMatchesRegularExpression(
-                '/--exclude-group [\w,]*\b' . self::GROUP . '\b/',
+                '/--exclude-group ' . self::GROUP . '\b/',
                 $run,
                 'La course de couverture chronometre le banc d\'essai : elle mesurerait le profileur.',
             );
         }
 
         self::assertSame(1, $coverageRuns, 'Le nombre de courses avec couverture a change : le garde-fou doit etre relu.');
+    }
+
+    /**
+     * Aucune commande n'emploie la forme depreciee `--exclude-group a,b`.
+     *
+     * Elle leve un avertissement du lanceur, et un avertissement du lanceur
+     * rend la course rouge : la CI tomberait sur la maniere d'exclure le banc,
+     * pas sur ce qu'il mesure.
+     */
+    public function testNoCommandUsesTheDeprecatedCommaSeparatedForm(): void
+    {
+        $offenders = [];
+
+        foreach ($this->steps() as $step) {
+            $run = $step['run'] ?? null;
+            if (\is_string($run) && preg_match(self::REPEATED_FLAG_ONLY, $run) === 1) {
+                $offenders[] = trim($run);
+            }
+        }
+
+        self::assertSame([], $offenders, sprintf(
+            'Forme depreciee `--exclude-group a,b` (retiree en PHPUnit 12), qui leve un avertissement '
+            . "du lanceur et rend la course rouge :\n%s\nRepetez le drapeau, une fois par groupe.",
+            implode("\n", $offenders),
+        ));
     }
 
     /**

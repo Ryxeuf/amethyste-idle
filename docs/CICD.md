@@ -204,6 +204,12 @@ Deux moitiés tiennent la règle, et il faut les deux :
   l'instrumentation — sans quoi le banc ne tournerait **nulle part**, et la CI serait
   verte pour cette raison.
 
+Le même test refuse la forme `--exclude-group a,b` : elle est dépréciée depuis
+PHPUnit 11 et disparaît en 12, le lanceur émet alors un avertissement, et **un
+avertissement du lanceur suffit à rendre la course rouge**. Le drapeau se répète donc,
+une fois par groupe. C'est ce qui a fait échouer la première version de ce correctif :
+la CI ne tombait plus sur une mesure fausse, elle tombait sur la façon de l'exclure.
+
 Le seuil (`PERF_MAX_RESPONSE_MS`, 1000 ms) garde une page devenue **inutilisable** —
 une explosion de requêtes N+1, un gabarit qui se recompile à chaque appel — et non un
 contrat à la milliseconde : sur un runner partagé, la milliseconde mesure l'humeur du
